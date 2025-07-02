@@ -99,7 +99,7 @@ def monitor_command(args: Any) -> int:
 
         interval = args.interval
         count = 0
-        max_count = args.count if args.count else float("inf")
+        max_count = args.count or float("inf")
 
         while count < max_count:
             try:
@@ -193,9 +193,8 @@ Examples:
     # Execute command
     if hasattr(args, "func"):
         return args.func(args)
-    else:
-        parser.print_help()
-        return 1
+    parser.print_help()
+    return 1
 
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@
 
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 import psutil
 
@@ -38,18 +38,18 @@ class MonitoringService:
         self.start_time = time.time()
 
     def record_metric(
-        self, name: str, value: float, tags: Optional[dict[str, str]] = None
+        self, name: str, value: float, tags: dict[str, str] | None = None
     ) -> None:
         """Record a metric value."""
         metric = Metric(
             name=name,
             value=value,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             tags=tags or {},
         )
         self.metrics[name] = metric
 
-    def get_metric(self, name: str) -> Optional[Metric]:
+    def get_metric(self, name: str) -> Metric | None:
         """Get a metric by name."""
         return self.metrics.get(name)
 
@@ -65,12 +65,12 @@ class MonitoringService:
             name=name,
             status=status,
             message=message,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             duration_ms=duration_ms,
         )
         self.health_checks[name] = health_check
 
-    def get_health_check(self, name: str) -> Optional[HealthCheck]:
+    def get_health_check(self, name: str) -> HealthCheck | None:
         """Get a health check by name."""
         return self.health_checks.get(name)
 
@@ -103,7 +103,7 @@ class MonitoringService:
                 "uptime_seconds": time.time() - self.start_time,
             }
         except Exception as e:
-            return {"error": f"Failed to get system metrics: {str(e)}"}
+            return {"error": f"Failed to get system metrics: {e!s}"}
 
     def get_application_metrics(self) -> dict[str, Any]:
         """Get application-specific metrics."""
@@ -135,7 +135,7 @@ class MonitoringService:
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             self.record_health_check(
-                name, "unhealthy", f"Check error: {str(e)}", duration_ms
+                name, "unhealthy", f"Check error: {e!s}", duration_ms
             )
             return self.health_checks[name]
 
@@ -162,7 +162,7 @@ class MonitoringService:
             "health_percentage": (healthy_count / total_checks * 100)
             if total_checks > 0
             else 0,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "uptime_seconds": time.time() - self.start_time,
         }
 
@@ -178,7 +178,7 @@ def get_monitoring_service() -> MonitoringService:
 
 # Convenience functions for quick usage
 def record_metric(
-    name: str, value: float, tags: Optional[dict[str, str]] = None
+    name: str, value: float, tags: dict[str, str] | None = None
 ) -> None:
     """Record a metric using the global monitoring service."""
     _monitoring_service.record_metric(name, value, tags)
