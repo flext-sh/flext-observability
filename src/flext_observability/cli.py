@@ -20,7 +20,6 @@ def info_command(args: Any) -> int:
 def health_command(args: Any) -> int:
     """Check system health."""
     try:
-
         # Create health checker
         health_checker = HealthChecker()
 
@@ -51,7 +50,6 @@ def health_command(args: Any) -> int:
 def metrics_command(args: Any) -> int:
     """Collect and display system metrics."""
     try:
-
         # Create metrics collector
         metrics_collector = MetricsCollector()
 
@@ -96,13 +94,12 @@ def metrics_command(args: Any) -> int:
 def monitor_command(args: Any) -> int:
     """Monitor system in real-time."""
     try:
-
         # Create system monitor
         monitor = SystemMonitor()
 
         interval = args.interval
         count = 0
-        max_count = args.count if args.count else float('inf')
+        max_count = args.count if args.count else float("inf")
 
         while count < max_count:
             try:
@@ -120,10 +117,10 @@ def monitor_command(args: Any) -> int:
                     pass
 
                 if "memory" in metrics:
-                    metrics['memory'].get('percent', 0)
+                    metrics["memory"].get("percent", 0)
 
                 if "disk" in metrics:
-                    metrics['disk'].get('percent', 0)
+                    metrics["disk"].get("percent", 0)
 
                 # Wait for next interval
                 time.sleep(interval)
@@ -155,11 +152,7 @@ Examples:
     )
 
     # Global options
-    parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Output in JSON format"
-    )
+    parser.add_argument("--json", action="store_true", help="Output in JSON format")
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -176,22 +169,21 @@ Examples:
     metrics_parser.set_defaults(func=metrics_command)
 
     # Monitor command
-    monitor_parser = subparsers.add_parser("monitor", help="Real-time system monitoring")
+    monitor_parser = subparsers.add_parser(
+        "monitor", help="Real-time system monitoring"
+    )
     monitor_parser.add_argument(
-        "--interval", "-i",
+        "--interval",
+        "-i",
         type=int,
         default=2,
-        help="Update interval in seconds (default: 2)"
+        help="Update interval in seconds (default: 2)",
     )
     monitor_parser.add_argument(
-        "--count", "-c",
-        type=int,
-        help="Number of updates (default: unlimited)"
+        "--count", "-c", type=int, help="Number of updates (default: unlimited)"
     )
     monitor_parser.add_argument(
-        "--no-clear",
-        action="store_true",
-        help="Don't clear screen between updates"
+        "--no-clear", action="store_true", help="Don't clear screen between updates"
     )
     monitor_parser.set_defaults(func=monitor_command)
 
