@@ -285,7 +285,9 @@ class ProductionErrorHandler:
             "[UUID]",
             normalized_message,
         )
-        normalized_message = re.sub(r"\b\\\1+@\\\1+\\\\1\\\1+\b", "[EMAIL]", normalized_message)
+        normalized_message = re.sub(
+            r"\b\\\1+@\\\1+\\\\1\\\1+\b", "[EMAIL]", normalized_message
+        )
 
         return f"{error_type}:{normalized_message[:200]}"  # Limit length
 

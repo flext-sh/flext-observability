@@ -601,9 +601,7 @@ class EnterpriseMonitoringMiddleware:
                 self.request_duration.labels(
                     method=metrics.method,
                     endpoint=endpoint,
-                ).observe(
-                    metrics.duration_ms / 1000
-                )  # Convert to seconds
+                ).observe(metrics.duration_ms / 1000)  # Convert to seconds
 
             if metrics.response_size is not None:
                 self.response_size.labels(

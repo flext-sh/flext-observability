@@ -535,9 +535,7 @@ class EnterpriseGrpcInterceptor(grpc.ServerInterceptor):
                 self.call_duration.labels(
                     service=metrics.service_name,
                     method=metrics.method_name,
-                ).observe(
-                    metrics.duration_ms / 1000
-                )  # Convert to seconds
+                ).observe(metrics.duration_ms / 1000)  # Convert to seconds
 
             if metrics.request_size is not None:
                 self.request_size.labels(
