@@ -8,13 +8,16 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from enum import Enum
-from typing import Any
-from uuid import UUID, uuid4
+from typing import TYPE_CHECKING, Any
+from uuid import uuid4
 
 import structlog
 from flx_core.domain.advanced_types import ServiceResult
 from flx_core.domain.pydantic_base import DomainBaseModel
 from pydantic import Field
+
+if TYPE_CHECKING:
+    from uuid import UUID
 
 logger = structlog.get_logger(__name__)
 

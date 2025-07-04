@@ -22,7 +22,6 @@ from pydantic import BaseModel, Field
 
 from flx_observability.structured_logging import (
     LoggingMiddleware,
-    StructuredLogger,
     audit_logger,
     get_logger,
 )
@@ -31,6 +30,10 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from fastapi import Request, Response
+
+    from flx_observability.structured_logging import (
+        StructuredLogger,
+    )
 
 
 class RequestMetrics(BaseModel):

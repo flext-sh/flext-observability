@@ -7,9 +7,9 @@ import sys
 import time
 from typing import Any
 
-from .health import HealthChecker
-from .metrics import MetricsCollector
-from .monitoring import SystemMonitor
+from flext_observability.health import HealthChecker
+from flext_observability.metrics import MetricsCollector
+from flext_observability.monitoring import SystemMonitor
 
 
 def info_command(args: Any) -> int:
@@ -29,7 +29,7 @@ def health_command(args: Any) -> int:
         # Display results
         overall_healthy = True
 
-        for _check_name, result in results.items():
+        for result in results.values():
             status = result.get("status", "unknown")
             if status == "healthy":
                 pass

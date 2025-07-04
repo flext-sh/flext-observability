@@ -331,7 +331,7 @@ class HealthChecker:
     async def check_health(self) -> dict[str, object]:
         """Unified health check method for production readiness assessment.
 
-        Returns
+        Returns:
         -------
             dict: Health status with overall status and component details
 
