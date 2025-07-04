@@ -732,7 +732,7 @@ def record_business_metric(name: str, value: float, **labels) -> None:
 def get_metrics_endpoint_handler():
     """Get FastAPI handler for metrics endpoint.
 
-    Returns
+    Returns:
     -------
         FastAPI endpoint function for serving Prometheus metrics
 

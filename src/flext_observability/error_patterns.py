@@ -12,7 +12,7 @@ import traceback
 from datetime import UTC, datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Any
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import structlog
 from flext_core.config.domain_config import get_config
@@ -22,6 +22,7 @@ from pydantic import Field
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from uuid import UUID
 
 logger = structlog.get_logger(__name__)
 

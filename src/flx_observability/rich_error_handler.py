@@ -128,7 +128,7 @@ class RichErrorHandler:
         # Log structured message
         logger.error(message, **log_kwargs)
 
-        # Print rich formatted exception
+        log.error rich formatted exception
         self.print_exception(exc)
 
     @contextmanager
@@ -175,7 +175,7 @@ class RichErrorHandler:
             else:
                 getattr(logger, log_level)(message, error=str(e), **log_kwargs)
 
-            # Print rich formatted exception
+            log.error rich formatted exception
             self.print_exception(e)
 
             if re_raise:
