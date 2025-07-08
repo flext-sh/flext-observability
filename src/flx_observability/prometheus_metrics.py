@@ -18,7 +18,6 @@ from flx_core.config.domain_config import get_config
 # ZERO TOLERANCE CONSOLIDATION: Use centralized Prometheus and psutil import management
 from flx_core.utils.import_fallback_patterns import (
     get_prometheus_components,
-    get_psutil_module,
 )
 from pydantic import BaseModel, Field
 
@@ -529,7 +528,6 @@ class CustomMetricsRegistry:
             return
 
         # ZERO TOLERANCE CONSOLIDATION: Use centralized psutil import management
-        psutil, psutil_available = get_psutil_module()
 
         if psutil and psutil_available:
             try:

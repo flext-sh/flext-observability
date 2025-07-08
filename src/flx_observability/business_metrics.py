@@ -213,9 +213,7 @@ class EnterpriseBusinessMetrics:
         metrics = []
 
         # ZERO TOLERANCE CONSOLIDATION: Use centralized psutil import management
-        from flx_core.utils.import_fallback_patterns import get_psutil_module
 
-        psutil, is_available = get_psutil_module()
         if psutil and is_available:
             # CPU utilization
             # ZERO TOLERANCE - Use domain configuration for CPU monitoring interval
