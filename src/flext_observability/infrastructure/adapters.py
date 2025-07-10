@@ -54,7 +54,9 @@ class InMemoryEventBus(EventBus):
             self._handlers[event_type] = []
         self._handlers[event_type].append(handler)
 
-    async def unsubscribe(self, event_type: type[DomainEvent], handler: callable) -> None:
+    async def unsubscribe(
+        self, event_type: type[DomainEvent], handler: callable,
+    ) -> None:
         """Unsubscribe from domain events."""
         if event_type in self._handlers:
             with contextlib.suppress(ValueError):
@@ -299,8 +301,11 @@ class FileMetricsExporter(MetricsExporter):
     async def export_metrics(self, metrics: list[Metric]) -> None:
         """Export metrics to file."""
         with open(self.file_path, "a", encoding="utf-8") as f:
-            f.writelines(f"{metric.timestamp},{metric.component.full_name},{metric.name},"
-                       f"{metric.value.value},{metric.value.unit},{metric.metric_type.value}\n" for metric in metrics)
+            f.writelines(
+                f"{metric.timestamp},{metric.component.full_name},{metric.name},"
+                f"{metric.value.value},{metric.value.unit},{metric.metric_type.value}\n"
+                for metric in metrics
+            )
 
     async def export_metric(self, metric: Metric) -> None:
         """Export single metric to file."""
@@ -317,5 +322,7 @@ class NoOpEventBus(EventBus):
     async def subscribe(self, event_type: type[DomainEvent], handler: callable) -> None:
         """Do nothing."""
 
-    async def unsubscribe(self, event_type: type[DomainEvent], handler: callable) -> None:
+    async def unsubscribe(
+        self, event_type: type[DomainEvent], handler: callable,
+    ) -> None:
         """Do nothing."""

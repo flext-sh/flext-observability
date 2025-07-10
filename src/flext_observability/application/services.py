@@ -74,7 +74,9 @@ class MetricsService:
         try:
             # Create domain objects
             metric_value = MetricValue(value=value, unit=unit)
-            component = ComponentName(name=component_name, namespace=component_namespace)
+            component = ComponentName(
+                name=component_name, namespace=component_namespace,
+            )
 
             # Create metric entity
             metric = Metric(
@@ -128,7 +130,9 @@ class MetricsService:
         except Exception as e:
             return ServiceResult.fail(f"Failed to get metrics: {e}")
 
-    async def get_metric_trends(self, metric_name: str) -> ServiceResult[dict[str, Any]]:
+    async def get_metric_trends(
+        self, metric_name: str,
+    ) -> ServiceResult[dict[str, Any]]:
         """Get trend analysis for a metric."""
         try:
             # Get recent metrics
@@ -159,7 +163,9 @@ class AlertService:
         self.alerting_service = alerting_service
         self.event_bus = event_bus
 
-    async def evaluate_metric_for_alerts(self, metric: Metric) -> ServiceResult[Alert | None]:
+    async def evaluate_metric_for_alerts(
+        self, metric: Metric,
+    ) -> ServiceResult[Alert | None]:
         """Evaluate a metric against alert rules."""
         try:
             # Use domain service to evaluate
@@ -238,7 +244,9 @@ class AlertService:
 
             # Filter using specification
             active_spec = ActiveAlertSpec()
-            active_alerts = [alert for alert in alerts if active_spec.is_satisfied_by(alert)]
+            active_alerts = [
+                alert for alert in alerts if active_spec.is_satisfied_by(alert)
+            ]
 
             return ServiceResult.ok(active_alerts)
 
@@ -295,8 +303,10 @@ class HealthMonitoringService:
             stored_health_check = await self.health_repository.save(health_check)
 
             # Update component health status
-            status_changed_result = self.health_analysis_service.update_component_health(
-                stored_health_check,
+            status_changed_result = (
+                self.health_analysis_service.update_component_health(
+                    stored_health_check,
+                )
             )
 
             # Publish event
@@ -336,8 +346,12 @@ class HealthMonitoringService:
     ) -> ServiceResult[HealthCheck | None]:
         """Get health status for a specific component."""
         try:
-            component = ComponentName(name=component_name, namespace=component_namespace)
-            health_check = await self.health_repository.get_latest_by_component(component)
+            component = ComponentName(
+                name=component_name, namespace=component_namespace,
+            )
+            health_check = await self.health_repository.get_latest_by_component(
+                component,
+            )
 
             return ServiceResult.ok(health_check)
 
@@ -554,7 +568,9 @@ class TracingService:
         except Exception as e:
             return ServiceResult.fail(f"Failed to get traces: {e}")
 
-    async def get_operation_stats(self, operation_name: str) -> ServiceResult[dict[str, Any]]:
+    async def get_operation_stats(
+        self, operation_name: str,
+    ) -> ServiceResult[dict[str, Any]]:
         """Get statistics for an operation."""
         try:
             return self.trace_analysis_service.get_operation_stats(operation_name)

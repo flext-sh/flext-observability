@@ -53,39 +53,54 @@ def setup_observability(
 
     # Register repositories
     if enable_metrics:
-        container.register(MetricsService, MetricsService(
-            metrics_repository=InMemoryMetricsRepository(),
-            metrics_analysis_service=MetricsAnalysisService(),
-            event_bus=InMemoryEventBus(),
-        ))
+        container.register(
+            MetricsService,
+            MetricsService(
+                metrics_repository=InMemoryMetricsRepository(),
+                metrics_analysis_service=MetricsAnalysisService(),
+                event_bus=InMemoryEventBus(),
+            ),
+        )
 
     if enable_alerts:
-        container.register(AlertService, AlertService(
-            alert_repository=InMemoryAlertRepository(),
-            alerting_service=AlertingService(),
-            event_bus=InMemoryEventBus(),
-        ))
+        container.register(
+            AlertService,
+            AlertService(
+                alert_repository=InMemoryAlertRepository(),
+                alerting_service=AlertingService(),
+                event_bus=InMemoryEventBus(),
+            ),
+        )
 
     if enable_health_checks:
-        container.register(HealthMonitoringService, HealthMonitoringService(
-            health_repository=InMemoryHealthRepository(),
-            health_analysis_service=HealthAnalysisService(),
-            event_bus=InMemoryEventBus(),
-        ))
+        container.register(
+            HealthMonitoringService,
+            HealthMonitoringService(
+                health_repository=InMemoryHealthRepository(),
+                health_analysis_service=HealthAnalysisService(),
+                event_bus=InMemoryEventBus(),
+            ),
+        )
 
     if enable_logging:
-        container.register(LoggingService, LoggingService(
-            log_repository=InMemoryLogRepository(),
-            log_analysis_service=LogAnalysisService(),
-            event_bus=InMemoryEventBus(),
-        ))
+        container.register(
+            LoggingService,
+            LoggingService(
+                log_repository=InMemoryLogRepository(),
+                log_analysis_service=LogAnalysisService(),
+                event_bus=InMemoryEventBus(),
+            ),
+        )
 
     if enable_tracing:
-        container.register(TracingService, TracingService(
-            trace_repository=InMemoryTraceRepository(),
-            trace_analysis_service=TraceAnalysisService(),
-            event_bus=InMemoryEventBus(),
-        ))
+        container.register(
+            TracingService,
+            TracingService(
+                trace_repository=InMemoryTraceRepository(),
+                trace_analysis_service=TraceAnalysisService(),
+                event_bus=InMemoryEventBus(),
+            ),
+        )
 
 
 def collect_metric(
@@ -100,15 +115,17 @@ def collect_metric(
     """Collect a metric value."""
     try:
         service = _get_service(MetricsService)
-        result = asyncio.run(service.collect_metric(
-            name=name,
-            value=value,
-            unit=unit,
-            metric_type=metric_type,
-            component_name=component_name,
-            component_namespace=component_namespace,
-            tags=tags,
-        ))
+        result = asyncio.run(
+            service.collect_metric(
+                name=name,
+                value=value,
+                unit=unit,
+                metric_type=metric_type,
+                component_name=component_name,
+                component_namespace=component_namespace,
+                tags=tags,
+            ),
+        )
         return result.success
     except Exception:
         return False
@@ -150,17 +167,19 @@ def log_message(
     """Log a structured message."""
     try:
         service = _get_service(LoggingService)
-        result = asyncio.run(service.create_log_entry(
-            level=level,
-            message=message,
-            component_name=component_name,
-            component_namespace=component_namespace,
-            correlation_id=correlation_id,
-            trace_id=trace_id,
-            span_id=span_id,
-            fields=fields,
-            exception=exception,
-        ))
+        result = asyncio.run(
+            service.create_log_entry(
+                level=level,
+                message=message,
+                component_name=component_name,
+                component_namespace=component_namespace,
+                correlation_id=correlation_id,
+                trace_id=trace_id,
+                span_id=span_id,
+                fields=fields,
+                exception=exception,
+            ),
+        )
         return result.success
     except Exception:
         return False
@@ -175,12 +194,14 @@ def start_trace(
     """Start a new trace and return trace ID."""
     try:
         service = _get_service(TracingService)
-        result = asyncio.run(service.start_trace(
-            operation_name=operation_name,
-            component_name=component_name,
-            component_namespace=component_namespace,
-            tags=tags,
-        ))
+        result = asyncio.run(
+            service.start_trace(
+                operation_name=operation_name,
+                component_name=component_name,
+                component_namespace=component_namespace,
+                tags=tags,
+            ),
+        )
         if result.success and result.data:
             return result.data.trace_id.trace_id
         return None
@@ -196,11 +217,13 @@ def complete_trace(
     """Complete a trace."""
     try:
         service = _get_service(TracingService)
-        result = asyncio.run(service.complete_trace(
-            trace_id=trace_id,
-            success=success,
-            error=error,
-        ))
+        result = asyncio.run(
+            service.complete_trace(
+                trace_id=trace_id,
+                success=success,
+                error=error,
+            ),
+        )
         return result.success
     except Exception:
         return False
@@ -215,12 +238,14 @@ def check_health(
     """Perform a health check."""
     try:
         service = _get_service(HealthMonitoringService)
-        result = asyncio.run(service.perform_health_check(
-            component_name=component_name,
-            component_namespace=component_namespace,
-            endpoint=endpoint,
-            timeout_ms=timeout_ms,
-        ))
+        result = asyncio.run(
+            service.perform_health_check(
+                component_name=component_name,
+                component_namespace=component_namespace,
+                endpoint=endpoint,
+                timeout_ms=timeout_ms,
+            ),
+        )
         return result.success and result.data and result.data.is_healthy
     except Exception:
         return False
@@ -260,12 +285,15 @@ def get_system_overview() -> dict[str, Any]:
         try:
             log_service = _get_service(LoggingService)
             from datetime import timedelta
+
             start_time = datetime.now() - timedelta(hours=1)
-            logs_result = asyncio.run(log_service.get_logs(
-                level=LogLevel.ERROR,
-                start_time=start_time,
-                limit=100,
-            ))
+            logs_result = asyncio.run(
+                log_service.get_logs(
+                    level=LogLevel.ERROR,
+                    start_time=start_time,
+                    limit=100,
+                ),
+            )
             if logs_result.success and logs_result.data:
                 overview["recent_errors"] = len(logs_result.data)
         except Exception:

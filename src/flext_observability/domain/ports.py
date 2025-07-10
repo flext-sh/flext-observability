@@ -72,7 +72,9 @@ class TracingService(ABC):
         """Finish a trace."""
 
     @abstractmethod
-    async def add_span(self, trace: Trace, span_data: dict[str, Any]) -> ServiceResult[None]:
+    async def add_span(
+        self, trace: Trace, span_data: dict[str, Any],
+    ) -> ServiceResult[None]:
         """Add span to trace."""
 
     @abstractmethod
@@ -104,7 +106,9 @@ class HealthService(ABC):
     """Abstract health service port."""
 
     @abstractmethod
-    async def run_check(self, health_check: HealthCheck) -> ServiceResult[dict[str, Any]]:
+    async def run_check(
+        self, health_check: HealthCheck,
+    ) -> ServiceResult[dict[str, Any]]:
         """Run health check."""
 
     @abstractmethod
@@ -124,17 +128,25 @@ class DashboardService(ABC):
     """Abstract dashboard service port."""
 
     @abstractmethod
-    async def render_dashboard(self, dashboard: Dashboard) -> ServiceResult[dict[str, Any]]:
+    async def render_dashboard(
+        self, dashboard: Dashboard,
+    ) -> ServiceResult[dict[str, Any]]:
         """Render dashboard with current data."""
 
     @abstractmethod
-    async def export_dashboard(self, dashboard: Dashboard, format: str) -> ServiceResult[str]:
+    async def export_dashboard(
+        self, dashboard: Dashboard, format: str,
+    ) -> ServiceResult[str]:
         """Export dashboard configuration."""
 
     @abstractmethod
-    async def import_dashboard(self, config: str, format: str) -> ServiceResult[Dashboard]:
+    async def import_dashboard(
+        self, config: str, format: str,
+    ) -> ServiceResult[Dashboard]:
         """Import dashboard configuration."""
 
     @abstractmethod
-    async def get_widget_data(self, widget_config: dict[str, Any]) -> ServiceResult[dict[str, Any]]:
+    async def get_widget_data(
+        self, widget_config: dict[str, Any],
+    ) -> ServiceResult[dict[str, Any]]:
         """Get data for dashboard widget."""

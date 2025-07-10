@@ -83,7 +83,8 @@ class FileLogPort(LogService):
             logging.basicConfig(
                 level=getattr(logging, config.get("level", "INFO")),
                 format=config.get(
-                    "format", "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                    "format",
+                    "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                 ),
             )
             return ServiceResult.ok(None)
@@ -231,7 +232,9 @@ class JaegerTracingPort(TracingService):
             return ServiceResult.fail(f"Failed to finish trace: {e}")
 
     async def add_span(
-        self, trace: Trace, span_data: dict[str, Any],
+        self,
+        trace: Trace,
+        span_data: dict[str, Any],
     ) -> ServiceResult[None]:
         """Add span to trace."""
         try:
@@ -322,7 +325,8 @@ class SimpleHealthPort(HealthService):
         self.registered_checks = {}
 
     async def run_check(
-        self, health_check: HealthCheck,
+        self,
+        health_check: HealthCheck,
     ) -> ServiceResult[dict[str, Any]]:
         """Run health check."""
         try:
@@ -395,7 +399,8 @@ class MemoryDashboardPort(DashboardService):
         self.dashboard_cache = {}
 
     async def render_dashboard(
-        self, dashboard: Dashboard,
+        self,
+        dashboard: Dashboard,
     ) -> ServiceResult[dict[str, Any]]:
         """Render dashboard with current data."""
         try:
@@ -419,7 +424,9 @@ class MemoryDashboardPort(DashboardService):
             return ServiceResult.fail(f"Failed to render dashboard: {e}")
 
     async def export_dashboard(
-        self, dashboard: Dashboard, format: str,
+        self,
+        dashboard: Dashboard,
+        format: str,
     ) -> ServiceResult[str]:
         """Export dashboard configuration."""
         try:
@@ -439,7 +446,9 @@ class MemoryDashboardPort(DashboardService):
             return ServiceResult.fail(f"Failed to export dashboard: {e}")
 
     async def import_dashboard(
-        self, config: str, format: str,
+        self,
+        config: str,
+        format: str,
     ) -> ServiceResult[Dashboard]:
         """Import dashboard configuration."""
         try:
@@ -460,7 +469,8 @@ class MemoryDashboardPort(DashboardService):
             return ServiceResult.fail(f"Failed to import dashboard: {e}")
 
     async def get_widget_data(
-        self, widget_config: dict[str, Any],
+        self,
+        widget_config: dict[str, Any],
     ) -> ServiceResult[dict[str, Any]]:
         """Get data for dashboard widget."""
         try:

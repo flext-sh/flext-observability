@@ -40,7 +40,9 @@ class InMemoryLogRepository(InMemoryRepository[LogEntry]):
         """Get all log entries."""
         return list(self.storage.values())
 
-    async def find_by_filters(self, filters: dict[str, Any], limit: int = 100) -> list[LogEntry]:
+    async def find_by_filters(
+        self, filters: dict[str, Any], limit: int = 100,
+    ) -> list[LogEntry]:
         """Find log entries by filters."""
         results = []
         for log_entry in self.storage.values():
@@ -103,7 +105,9 @@ class InMemoryMetricsRepository(InMemoryRepository[Metric]):
 
     async def find_by_type(self, metric_type: str) -> list[Metric]:
         """Find metrics by type."""
-        return [metric for metric in self.storage.values() if metric.type == metric_type]
+        return [
+            metric for metric in self.storage.values() if metric.type == metric_type
+        ]
 
     async def find_by_labels(self, labels: dict[str, str]) -> list[Metric]:
         """Find metrics by labels."""
@@ -154,11 +158,19 @@ class InMemoryTraceRepository(InMemoryRepository[Trace]):
 
     async def find_by_operation(self, operation_name: str) -> list[Trace]:
         """Find traces by operation name."""
-        return [trace for trace in self.storage.values() if trace.operation_name == operation_name]
+        return [
+            trace
+            for trace in self.storage.values()
+            if trace.operation_name == operation_name
+        ]
 
     async def find_by_service(self, service_name: str) -> list[Trace]:
         """Find traces by service name."""
-        return [trace for trace in self.storage.values() if trace.service_name == service_name]
+        return [
+            trace
+            for trace in self.storage.values()
+            if trace.service_name == service_name
+        ]
 
     async def find_by_status(self, status: str) -> list[Trace]:
         """Find traces by status."""
@@ -321,11 +333,17 @@ class InMemoryDashboardRepository(InMemoryRepository[Dashboard]):
 
     async def find_by_title(self, title: str) -> list[Dashboard]:
         """Find dashboards by title."""
-        return [dashboard for dashboard in self.storage.values() if dashboard.title == title]
+        return [
+            dashboard for dashboard in self.storage.values() if dashboard.title == title
+        ]
 
     async def find_by_category(self, category: str) -> list[Dashboard]:
         """Find dashboards by category."""
-        return [dashboard for dashboard in self.storage.values() if dashboard.category == category]
+        return [
+            dashboard
+            for dashboard in self.storage.values()
+            if dashboard.category == category
+        ]
 
     async def find_public(self) -> list[Dashboard]:
         """Find public dashboards."""
@@ -345,7 +363,11 @@ class InMemoryDashboardRepository(InMemoryRepository[Dashboard]):
 
     async def find_auto_refreshing(self) -> list[Dashboard]:
         """Find auto-refreshing dashboards."""
-        return [dashboard for dashboard in self.storage.values() if dashboard.is_auto_refreshing]
+        return [
+            dashboard
+            for dashboard in self.storage.values()
+            if dashboard.is_auto_refreshing
+        ]
 
     async def delete_by_id(self, dashboard_id: UUID) -> bool:
         """Delete dashboard by ID."""

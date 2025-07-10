@@ -170,7 +170,10 @@ class Trace(DomainEntity, EntityMixin):
     duration_ms: float | None = None
 
     # Status
-    trace_status: TraceStatus = Field(default=TraceStatus.STARTED, description="Trace status (renamed to avoid conflict with StatusMixin)")
+    trace_status: TraceStatus = Field(
+        default=TraceStatus.STARTED,
+        description="Trace status (renamed to avoid conflict with StatusMixin)",
+    )
     error: str | None = None
 
     # Context
@@ -178,7 +181,10 @@ class Trace(DomainEntity, EntityMixin):
     service_version: str | None = None
 
     # Tags
-    trace_tags: dict[str, str] = Field(default_factory=dict, description="Trace tags (renamed to avoid conflict with MetadataMixin)")
+    trace_tags: dict[str, str] = Field(
+        default_factory=dict,
+        description="Trace tags (renamed to avoid conflict with MetadataMixin)",
+    )
 
     # Baggage
     baggage: dict[str, str] = Field(default_factory=dict)
@@ -250,7 +256,9 @@ class Trace(DomainEntity, EntityMixin):
         """Remove baggage from the trace."""
         self.baggage.pop(key, None)
 
-    def add_log(self, message: str, level: LogLevel = LogLevel.INFO, **kwargs: Any) -> None:
+    def add_log(
+        self, message: str, level: LogLevel = LogLevel.INFO, **kwargs: Any,
+    ) -> None:
         """Add a log entry to the trace."""
         log_entry = {
             "timestamp": datetime.utcnow().isoformat(),
@@ -286,7 +294,10 @@ class Alert(DomainEntity, EntityMixin):
     threshold: float | None = None
 
     # Status
-    alert_status: Status = Field(default=Status.ACTIVE, description="Alert status (renamed to avoid conflict with StatusMixin)")
+    alert_status: Status = Field(
+        default=Status.ACTIVE,
+        description="Alert status (renamed to avoid conflict with StatusMixin)",
+    )
     resolved_at: datetime | None = None
 
     # Context
@@ -329,8 +340,8 @@ class Alert(DomainEntity, EntityMixin):
     def is_suppressed(self) -> bool:
         """Check if alert is suppressed."""
         return (
-            self.suppressed_until is not None and
-            self.suppressed_until > datetime.utcnow()
+            self.suppressed_until is not None
+            and self.suppressed_until > datetime.utcnow()
         )
 
     def resolve(self) -> None:
@@ -369,7 +380,10 @@ class HealthCheck(DomainEntity, EntityMixin):
     """Health check domain entity using enhanced mixins for code reduction."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    health_status: Status = Field(default=Status.ACTIVE, description="Health check status (renamed to avoid conflict with StatusMixin)")
+    health_status: Status = Field(
+        default=Status.ACTIVE,
+        description="Health check status (renamed to avoid conflict with StatusMixin)",
+    )
 
     # Check details
     check_type: str = Field(..., min_length=1)  # database, cache, service, etc.
@@ -417,19 +431,21 @@ class HealthCheck(DomainEntity, EntityMixin):
     def is_critical(self) -> bool:
         """Check if health check is in critical state."""
         return (
-            self.critical_threshold is not None and
-            self.consecutive_failures >= self.critical_threshold
+            self.critical_threshold is not None
+            and self.consecutive_failures >= self.critical_threshold
         )
 
     @property
     def is_warning(self) -> bool:
         """Check if health check is in warning state."""
         return (
-            self.warning_threshold is not None and
-            self.consecutive_failures >= self.warning_threshold
+            self.warning_threshold is not None
+            and self.consecutive_failures >= self.warning_threshold
         )
 
-    def record_success(self, response_time_ms: float, response_data: dict[str, Any] | None = None) -> None:
+    def record_success(
+        self, response_time_ms: float, response_data: dict[str, Any] | None = None,
+    ) -> None:
         """Record successful health check."""
         self.last_check_at = datetime.utcnow()
         self.last_success_at = self.last_check_at

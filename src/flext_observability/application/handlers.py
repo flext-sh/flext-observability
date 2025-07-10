@@ -384,7 +384,9 @@ class HealthHandler(BaseCommandHandler):
 
             # Update check with result
             if result.is_success:
-                health_check.record_success(result.data["response_time_ms"], result.data.get("response_data"))
+                health_check.record_success(
+                    result.data["response_time_ms"], result.data.get("response_data"),
+                )
             else:
                 health_check.record_failure(result.error)
 
@@ -446,7 +448,9 @@ class DashboardHandler(BaseCommandHandler):
         except Exception as e:
             return ServiceResult.error(f"Failed to get dashboard: {e}")
 
-    async def render_dashboard(self, dashboard_id: UUID) -> ServiceResult[dict[str, Any]]:
+    async def render_dashboard(
+        self, dashboard_id: UUID,
+    ) -> ServiceResult[dict[str, Any]]:
         """Render dashboard with current data."""
         try:
             dashboard = await self.dashboard_repository.get_by_id(dashboard_id)

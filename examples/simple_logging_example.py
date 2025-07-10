@@ -28,6 +28,7 @@ def process_data(data: list) -> int:
 
     # Simulate some work
     import time
+
     time.sleep(0.1)
 
     return len(data) * 2
@@ -70,4 +71,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     import os
+
     main()

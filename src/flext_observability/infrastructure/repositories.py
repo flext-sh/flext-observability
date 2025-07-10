@@ -47,9 +47,9 @@ class InMemoryMetricsRepository(MetricsRepository):
 
         # Keep only last MAX_METRICS_PER_NAME metrics per name
         if len(self._metrics_by_name[metric.name]) > MAX_METRICS_PER_NAME:
-            self._metrics_by_name[metric.name] = self._metrics_by_name[
-                metric.name
-            ][-MAX_METRICS_PER_NAME:]
+            self._metrics_by_name[metric.name] = self._metrics_by_name[metric.name][
+                -MAX_METRICS_PER_NAME:
+            ]
 
         return metric
 
@@ -106,8 +106,7 @@ class InMemoryMetricsRepository(MetricsRepository):
             # Remove from name index
             if metric.name in self._metrics_by_name:
                 self._metrics_by_name[metric.name] = [
-                    m for m in self._metrics_by_name[metric.name]
-                    if m.id != metric.id
+                    m for m in self._metrics_by_name[metric.name] if m.id != metric.id
                 ]
 
         return len(to_delete)
@@ -227,7 +226,8 @@ class InMemoryHealthRepository(HealthRepository):
         return self._health_checks.get(health_check_id)
 
     async def get_latest_by_component(
-        self, component: ComponentName | None = None,
+        self,
+        component: ComponentName | None = None,
     ) -> list[HealthCheck]:
         """Get latest health check for each component."""
         if component:
@@ -279,8 +279,10 @@ class InMemoryHealthRepository(HealthRepository):
             health_check = self._health_checks.pop(check_id)
             # Remove from latest index if this was the latest
             component_key = health_check.component.full_name
-            if (component_key in self._latest_by_component and
-                self._latest_by_component[component_key].id == health_check.id):
+            if (
+                component_key in self._latest_by_component
+                and self._latest_by_component[component_key].id == health_check.id
+            ):
                 del self._latest_by_component[component_key]
 
         return len(to_delete)

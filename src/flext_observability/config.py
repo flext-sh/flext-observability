@@ -344,6 +344,7 @@ class ObservabilitySettings(BaseSettings):
 
     class Config:
         """Pydantic configuration."""
+
         env_prefix = "FLEXT_OBSERVABILITY_"
         env_nested_delimiter = "__"
 
