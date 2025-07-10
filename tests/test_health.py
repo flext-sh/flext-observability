@@ -53,7 +53,11 @@ class TestHealthChecker:
     @pytest.mark.asyncio
     async def test_health_check_with_error_handling(self, health_checker) -> None:
         """Test health check handles errors gracefully."""
-        with patch.object(health_checker, "_check_system_health", side_effect=Exception("System error")):
+        with patch.object(
+            health_checker,
+            "_check_system_health",
+            side_effect=Exception("System error"),
+        ):
             status = await health_checker.check_health()
             # Should not raise exception, should return degraded or unhealthy status
             assert status is not None
@@ -108,6 +112,7 @@ class TestHealthIntegration:
 
         # Should be able to JSON serialize the result
         import json
+
         try:
             if hasattr(status, "dict"):
                 json.dumps(status.dict())

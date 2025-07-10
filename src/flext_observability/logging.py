@@ -128,6 +128,7 @@ def with_context(**kwargs: Any) -> Any:
     Returns:
         Decorator function
     """
+
     def decorator(func):
         def wrapper(*args, **func_kwargs):
             bind_context(**kwargs)
@@ -135,7 +136,9 @@ def with_context(**kwargs: Any) -> Any:
                 return func(*args, **func_kwargs)
             finally:
                 clear_context()
+
         return wrapper
+
     return decorator
 
 

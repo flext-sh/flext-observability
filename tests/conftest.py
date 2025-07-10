@@ -36,28 +36,36 @@ def pytest_configure(config: Config) -> None:
     """Configure pytest with custom markers and settings."""
     # Register custom markers
     config.addinivalue_line(
-        "markers", "unit: Unit tests that don't require external dependencies",
+        "markers",
+        "unit: Unit tests that don't require external dependencies",
     )
     config.addinivalue_line(
-        "markers", "integration: Integration tests that may require external services",
+        "markers",
+        "integration: Integration tests that may require external services",
     )
     config.addinivalue_line(
-        "markers", "slow: Tests that take more than 1 second to run",
+        "markers",
+        "slow: Tests that take more than 1 second to run",
     )
     config.addinivalue_line(
-        "markers", "smoke: Quick smoke tests for CI/CD",
+        "markers",
+        "smoke: Quick smoke tests for CI/CD",
     )
     config.addinivalue_line(
-        "markers", "e2e: End-to-end tests",
+        "markers",
+        "e2e: End-to-end tests",
     )
     config.addinivalue_line(
-        "markers", "metrics: Metrics-related tests",
+        "markers",
+        "metrics: Metrics-related tests",
     )
     config.addinivalue_line(
-        "markers", "tracing: Tracing-related tests",
+        "markers",
+        "tracing: Tracing-related tests",
     )
     config.addinivalue_line(
-        "markers", "logging: Logging-related tests",
+        "markers",
+        "logging: Logging-related tests",
     )
 
 

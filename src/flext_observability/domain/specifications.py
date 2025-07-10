@@ -45,7 +45,9 @@ class AndSpecification[T](Specification[T]):
         self.right = right
 
     def is_satisfied_by(self, candidate: T) -> bool:
-        return self.left.is_satisfied_by(candidate) and self.right.is_satisfied_by(candidate)
+        return self.left.is_satisfied_by(candidate) and self.right.is_satisfied_by(
+            candidate,
+        )
 
 
 class OrSpecification[T](Specification[T]):
@@ -56,7 +58,9 @@ class OrSpecification[T](Specification[T]):
         self.right = right
 
     def is_satisfied_by(self, candidate: T) -> bool:
-        return self.left.is_satisfied_by(candidate) or self.right.is_satisfied_by(candidate)
+        return self.left.is_satisfied_by(candidate) or self.right.is_satisfied_by(
+            candidate,
+        )
 
 
 class NotSpecification[T](Specification[T]):
@@ -95,7 +99,9 @@ class MetricTypeSpec(Specification[Metric]):
 class MetricValueRangeSpec(Specification[Metric]):
     """Specification for filtering metrics by value range."""
 
-    def __init__(self, min_value: float | None = None, max_value: float | None = None) -> None:
+    def __init__(
+        self, min_value: float | None = None, max_value: float | None = None,
+    ) -> None:
         self.min_value = min_value
         self.max_value = max_value
 
@@ -191,7 +197,10 @@ class SlowHealthCheckSpec(Specification[HealthCheck]):
         self.threshold_ms = threshold_ms
 
     def is_satisfied_by(self, health_check: HealthCheck) -> bool:
-        return health_check.response_time_ms is not None and health_check.response_time_ms > self.threshold_ms
+        return (
+            health_check.response_time_ms is not None
+            and health_check.response_time_ms > self.threshold_ms
+        )
 
 
 class ComponentNamespaceSpec(Specification[HealthCheck]):
@@ -323,8 +332,9 @@ class CriticalSystemIssuesSpec(Specification[Alert]):
         self.active_spec = ActiveAlertSpec()
 
     def is_satisfied_by(self, alert: Alert) -> bool:
-        return (self.critical_spec.is_satisfied_by(alert) and
-                self.active_spec.is_satisfied_by(alert))
+        return self.critical_spec.is_satisfied_by(
+            alert,
+        ) and self.active_spec.is_satisfied_by(alert)
 
 
 class UnhealthyComponentsSpec(Specification[HealthCheck]):
@@ -335,8 +345,9 @@ class UnhealthyComponentsSpec(Specification[HealthCheck]):
         self.degraded_spec = HealthStatusSpec(HealthStatus.DEGRADED)
 
     def is_satisfied_by(self, health_check: HealthCheck) -> bool:
-        return (self.unhealthy_spec.is_satisfied_by(health_check) or
-                self.degraded_spec.is_satisfied_by(health_check))
+        return self.unhealthy_spec.is_satisfied_by(
+            health_check,
+        ) or self.degraded_spec.is_satisfied_by(health_check)
 
 
 class RecentErrorsSpec(Specification[LogEntry]):
@@ -365,5 +376,6 @@ class PerformanceIssuesSpec(Specification[Trace]):
         self.failed_spec = FailedTraceSpec()
 
     def is_satisfied_by(self, trace: Trace) -> bool:
-        return (self.slow_spec.is_satisfied_by(trace) or
-                self.failed_spec.is_satisfied_by(trace))
+        return self.slow_spec.is_satisfied_by(
+            trace,
+        ) or self.failed_spec.is_satisfied_by(trace)

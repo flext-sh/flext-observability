@@ -45,6 +45,7 @@ class TestMetricsCollector:
         # Should not raise exception when calling prometheus functions
         try:
             from prometheus_client import Counter
+
             test_counter = Counter("test_metric", "Test metric")
             test_counter.inc()
         except ImportError:
@@ -119,6 +120,7 @@ class TestMetricsIntegration:
 
         # Should be JSON serializable
         import json
+
         try:
             json.dumps(metrics)
         except (TypeError, ValueError):

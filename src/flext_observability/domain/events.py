@@ -62,7 +62,9 @@ class AlertResolved(DomainEvent):
 
     alert_id: str = Field(description="ID of the resolved alert")
     resolved_at: datetime = Field(description="When the alert was resolved")
-    resolution_reason: str | None = Field(default=None, description="Reason for resolution")
+    resolution_reason: str | None = Field(
+        default=None, description="Reason for resolution",
+    )
 
 
 class HealthCheckCompleted(DomainEvent):
@@ -112,7 +114,9 @@ class TraceCompleted(DomainEvent):
     """Event raised when a trace is completed."""
 
     trace: Trace = Field(description="The completed trace")
-    component: ComponentName = Field(description="Component that performed the operation")
+    component: ComponentName = Field(
+        description="Component that performed the operation",
+    )
     operation_name: str = Field(description="Name of the operation that was traced")
     duration_ms: int = Field(description="Operation duration in milliseconds")
     success: bool = Field(description="Whether the operation succeeded")
@@ -185,11 +189,15 @@ class MetricThresholdExceeded(DomainEvent):
 class SystemResourceExhausted(DomainEvent):
     """Event raised when system resources are exhausted."""
 
-    resource_type: str = Field(description="Type of exhausted resource (cpu, memory, disk)")
+    resource_type: str = Field(
+        description="Type of exhausted resource (cpu, memory, disk)",
+    )
     current_usage: float = Field(description="Current usage percentage")
     threshold: float = Field(description="Threshold percentage")
     component: ComponentName = Field(description="Component monitoring the resource")
-    recommendations: list[str] = Field(default_factory=list, description="Recommendations")
+    recommendations: list[str] = Field(
+        default_factory=list, description="Recommendations",
+    )
 
 
 class ComponentUnavailable(DomainEvent):

@@ -87,7 +87,9 @@ class ComponentName(DomainValueObject):
     def validate_name(cls, v: str) -> str:
         """Validate component name format."""
         if not v.replace("-", "").replace("_", "").isalnum():
-            raise ValueError("Component name must be alphanumeric with hyphens or underscores")
+            raise ValueError(
+                "Component name must be alphanumeric with hyphens or underscores",
+            )
         return v
 
     @property
