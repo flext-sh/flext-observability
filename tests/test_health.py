@@ -4,7 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from flext_observability.health import ComponentHealth, HealthChecker, HealthStatus
+from flext_observability.health import ComponentHealth
+from flext_observability.health import HealthChecker
+from flext_observability.health import HealthStatus
 
 
 class TestHealthChecker:
@@ -41,7 +43,7 @@ class TestHealthChecker:
         component = ComponentHealth(
             name="test-component",
             status=HealthStatus.HEALTHY,
-            details={"test": "data"}
+            details={"test": "data"},
         )
 
         assert component.name == "test-component"
@@ -81,7 +83,7 @@ class TestComponentHealth:
         component = ComponentHealth(
             name="api",
             status=HealthStatus.HEALTHY,
-            details={}
+            details={},
         )
 
         str_repr = str(component)
@@ -119,7 +121,8 @@ class TestHealthIntegration:
         """Test health endpoint functionality."""
         # This would test actual health endpoint integration
         # For now, just verify the health checker can be imported and used
-        from flext_observability import HealthChecker, HealthStatus
+        from flext_observability import HealthChecker
+        from flext_observability import HealthStatus
 
         checker = HealthChecker()
         assert checker is not None

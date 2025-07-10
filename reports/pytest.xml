@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="1.161" timestamp="2025-07-02T09:10:22.643219-03:00" hostname="tungs"><testcase classname="" name="tests.test_health" time="0.000"><error message="collection failure">ImportError while importing test module '/home/marlonsc/flext/flext-observability/tests/test_health.py'.
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="0" tests="2" time="0.770" timestamp="2025-07-09T10:34:40.387527-03:00" hostname="tungs"><testcase classname="" name="tests.test_health" time="0.000"><error message="collection failure">ImportError while importing test module '/home/marlonsc/flext/flext-observability/tests/test_health.py'.
 Hint: make sure your test modules/packages have valid Python names.
 Traceback:
 ../.venv/lib/python3.13/site-packages/_pytest/python.py:498: in importtestmodule
@@ -20,16 +20,34 @@ Traceback:
     exec(co, module.__dict__)
 tests/test_health.py:7: in &lt;module&gt;
     from flext_observability.health import ComponentHealth, HealthChecker, HealthStatus
-src/flext_observability/__init__.py:18: in &lt;module&gt;
-    from flext_observability.health import ComponentHealth, HealthChecker, HealthStatus
-src/flext_observability/health.py:29: in &lt;module&gt;
-    from flext_grpc.proto import flext_pb2, flext_pb2_grpc
-../flext-grpc/src/flext_grpc/__init__.py:5: in &lt;module&gt;
-    from flext_grpc.server import FlextGrpcServer
-../flext-grpc/src/flext_grpc/server.py:42: in &lt;module&gt;
-    from flext_meltano.event_bridge import MeltanoEventBridge
-../flext-meltano/src/flext_meltano/__init__.py:46: in &lt;module&gt;
-    from flext_meltano.unified_anti_corruption_layer import (
-../flext-meltano/src/flext_meltano/unified_anti_corruption_layer.py:42: in &lt;module&gt;
-    from flext_core.domain.entities import Pipeline, PipelineExecution, Plugin, PluginType
-E   ImportError: cannot import name 'PluginType' from 'flext_core.domain.entities' (/home/marlonsc/flext/flext-core/src/flext_core/domain/entities.py)</error></testcase></testsuite></testsuites>
+src/flext_observability/__init__.py:3: in &lt;module&gt;
+    from flext_observability.business_metrics import (
+src/flext_observability/business_metrics.py:16: in &lt;module&gt;
+    from flext_core.config.domain_config import get_config
+E   ModuleNotFoundError: No module named 'flext_core.config'</error></testcase><testcase classname="" name="tests.test_metrics" time="0.000"><error message="collection failure">ImportError while importing test module '/home/marlonsc/flext/flext-observability/tests/test_metrics.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../.venv/lib/python3.13/site-packages/_pytest/python.py:498: in importtestmodule
+    mod = import_path(
+../.venv/lib/python3.13/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+&lt;frozen importlib._bootstrap&gt;:1387: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1360: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:1331: in _find_and_load_unlocked
+    ???
+&lt;frozen importlib._bootstrap&gt;:935: in _load_unlocked
+    ???
+../.venv/lib/python3.13/site-packages/_pytest/assertion/rewrite.py:186: in exec_module
+    exec(co, module.__dict__)
+tests/test_metrics.py:7: in &lt;module&gt;
+    from flext_observability.business_metrics import (
+src/flext_observability/__init__.py:3: in &lt;module&gt;
+    from flext_observability.business_metrics import (
+src/flext_observability/business_metrics.py:16: in &lt;module&gt;
+    from flext_core.config.domain_config import get_config
+E   ModuleNotFoundError: No module named 'flext_core.config'</error></testcase></testsuite></testsuites>

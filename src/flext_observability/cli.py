@@ -1,201 +1,142 @@
-"""Command-line interface for FLEXT Observability."""
+"""CLI interface for flext-observability."""
 
-from __future__ import annotations
-
-import argparse
+import json
 import sys
-import time
-from typing import Any
 
-from flext_observability.health import HealthChecker
-from flext_observability.metrics import MetricsCollector
-from flext_observability.monitoring import SystemMonitor
+import typer
+from rich.console import Console
+from rich.table import Table
+
+from flext_observability.config import get_settings
+from flext_observability.domain.value_objects import MetricType
+from flext_observability.simple_api import collect_metric
+from flext_observability.simple_api import get_system_overview
+from flext_observability.simple_api import setup_observability
+
+app = typer.Typer(
+    name="flext-observability",
+    help="FLEXT Observability CLI - Enterprise monitoring and observability",
+)
+console = Console()
 
 
-def info_command(args: Any) -> int:
-    """Show FLEXT Observability information."""
-    return 0
-
-
-def health_command(args: Any) -> int:
-    """Check system health."""
+@app.command()
+def setup(
+    metrics: bool = typer.Option(True, help="Enable metrics collection"),
+    alerts: bool = typer.Option(True, help="Enable alerting"),
+    health: bool = typer.Option(True, help="Enable health checks"),
+    logging: bool = typer.Option(True, help="Enable structured logging"),
+    tracing: bool = typer.Option(True, help="Enable distributed tracing"),
+) -> None:
+    """Setup observability services."""
     try:
-        # Create health checker
-        health_checker = HealthChecker()
-
-        # Run health checks
-        results = health_checker.check_all()
-
-        # Display results
-        overall_healthy = True
-
-        for result in results.values():
-            status = result.get("status", "unknown")
-            if status == "healthy":
-                pass
-            else:
-                if "error" in result:
-                    pass
-                overall_healthy = False
-
-        if args.json:
-            pass
-
-        return 0 if overall_healthy else 1
-
-    except Exception:
-        return 1
+        setup_observability(
+            enable_metrics=metrics,
+            enable_alerts=alerts,
+            enable_health_checks=health,
+            enable_logging=logging,
+            enable_tracing=tracing,
+        )
+        console.print("✅ Observability services initialized successfully", style="green")
+    except Exception as e:
+        console.print(f"❌ Failed to setup observability: {e}", style="red")
+        sys.exit(1)
 
 
-def metrics_command(args: Any) -> int:
-    """Collect and display system metrics."""
+@app.command()
+def status() -> None:
+    """Show system status and overview."""
     try:
-        # Create metrics collector
-        metrics_collector = MetricsCollector()
+        overview = get_system_overview()
 
-        # Collect metrics
-        metrics = metrics_collector.collect_all()
+        # Create status table
+        table = Table(title="System Overview")
+        table.add_column("Metric", style="cyan")
+        table.add_column("Value", style="magenta")
 
-        if args.json:
-            pass
+        table.add_row("Status", overview["status"])
+        table.add_row("Components", str(overview["components"]))
+        table.add_row("Active Alerts", str(overview["active_alerts"]))
+        table.add_row("Recent Errors", str(overview["recent_errors"]))
+        table.add_row("Active Traces", str(overview["active_traces"]))
+
+        console.print(table)
+
+    except Exception as e:
+        console.print(f"❌ Failed to get system status: {e}", style="red")
+        sys.exit(1)
+
+
+@app.command()
+def collect(
+    name: str = typer.Argument(..., help="Metric name"),
+    value: float = typer.Argument(..., help="Metric value"),
+    unit: str = typer.Option("count", help="Metric unit"),
+    metric_type: str = typer.Option("gauge", help="Metric type (counter, gauge, histogram, summary)"),
+    component: str = typer.Option("cli", help="Component name"),
+    namespace: str = typer.Option("default", help="Component namespace"),
+) -> None:
+    """Collect a metric value."""
+    try:
+        # Parse metric type
+        try:
+            mt = MetricType(metric_type.lower())
+        except ValueError:
+            console.print(f"❌ Invalid metric type: {metric_type}", style="red")
+            console.print("Valid types: counter, gauge, histogram, summary, business", style="yellow")
+            sys.exit(1)
+
+        success = collect_metric(
+            name=name,
+            value=value,
+            unit=unit,
+            metric_type=mt,
+            component_name=component,
+            component_namespace=namespace,
+        )
+
+        if success:
+            console.print(f"✅ Metric {name} collected successfully", style="green")
         else:
-            # Display formatted metrics
+            console.print(f"❌ Failed to collect metric {name}", style="red")
+            sys.exit(1)
 
-            # CPU metrics
-            if "cpu" in metrics:
-                metrics["cpu"]
-
-            # Memory metrics
-            if "memory" in metrics:
-                memory_data = metrics["memory"]
-                memory_data.get("total", 0) / 1024 / 1024
-                memory_data.get("used", 0) / 1024 / 1024
-                memory_data.get("percent", 0)
-
-            # Disk metrics
-            if "disk" in metrics:
-                disk_data = metrics["disk"]
-                disk_data.get("total", 0) / 1024 / 1024 / 1024
-                disk_data.get("used", 0) / 1024 / 1024 / 1024
-                disk_data.get("percent", 0)
-
-            # Network metrics
-            if "network" in metrics:
-                network_data = metrics["network"]
-                network_data.get("bytes_sent", 0)
-                network_data.get("bytes_recv", 0)
-
-        return 0
-
-    except Exception:
-        return 1
+    except Exception as e:
+        console.print(f"❌ Failed to collect metric: {e}", style="red")
+        sys.exit(1)
 
 
-def monitor_command(args: Any) -> int:
-    """Monitor system in real-time."""
+@app.command()
+def config() -> None:
+    """Show current configuration."""
     try:
-        # Create system monitor
-        monitor = SystemMonitor()
+        settings = get_settings()
+        config_dict = settings.model_dump()
 
-        interval = args.interval
-        count = 0
-        max_count = args.count or float("inf")
+        console.print("Current Configuration:", style="bold cyan")
+        console.print(json.dumps(config_dict, indent=2, default=str))
 
-        while count < max_count:
-            try:
-                # Collect current metrics
-                metrics = monitor.get_current_metrics()
-
-                # Clear screen (simple)
-                if not args.no_clear:
-                    pass
-
-                # Display timestamp
-
-                # Display key metrics
-                if "cpu" in metrics:
-                    pass
-
-                if "memory" in metrics:
-                    metrics["memory"].get("percent", 0)
-
-                if "disk" in metrics:
-                    metrics["disk"].get("percent", 0)
-
-                # Wait for next interval
-                time.sleep(interval)
-                count += 1
-
-            except KeyboardInterrupt:
-                break
-
-        return 0
-
-    except Exception:
-        return 1
+    except Exception as e:
+        console.print(f"❌ Failed to get configuration: {e}", style="red")
+        sys.exit(1)
 
 
-def main() -> int:
+@app.command()
+def version() -> None:
+    """Show version information."""
+    from flext_observability import __version__
+
+    console.print(f"flext-observability version: {__version__}", style="green")
+
+    # Show settings version
+    settings = get_settings()
+    console.print(f"Project version: {settings.project_version}", style="blue")
+
+
+def main() -> None:
     """Main CLI entry point."""
-    parser = argparse.ArgumentParser(
-        description="FLEXT Observability - Monitoring & Health Checks CLI",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  flext-observability info                  # Show observability information
-  flext-observability health                # Run health checks
-  flext-observability health --json         # Health checks as JSON
-  flext-observability metrics               # Collect system metrics
-  flext-observability monitor               # Real-time monitoring
-  flext-observability monitor --interval 5  # Monitor every 5 seconds
-        """,
-    )
-
-    # Global options
-    parser.add_argument("--json", action="store_true", help="Output in JSON format")
-
-    subparsers = parser.add_subparsers(dest="command", help="Available commands")
-
-    # Info command
-    info_parser = subparsers.add_parser("info", help="Show observability information")
-    info_parser.set_defaults(func=info_command)
-
-    # Health command
-    health_parser = subparsers.add_parser("health", help="Run health checks")
-    health_parser.set_defaults(func=health_command)
-
-    # Metrics command
-    metrics_parser = subparsers.add_parser("metrics", help="Collect system metrics")
-    metrics_parser.set_defaults(func=metrics_command)
-
-    # Monitor command
-    monitor_parser = subparsers.add_parser(
-        "monitor", help="Real-time system monitoring"
-    )
-    monitor_parser.add_argument(
-        "--interval",
-        "-i",
-        type=int,
-        default=2,
-        help="Update interval in seconds (default: 2)",
-    )
-    monitor_parser.add_argument(
-        "--count", "-c", type=int, help="Number of updates (default: unlimited)"
-    )
-    monitor_parser.add_argument(
-        "--no-clear", action="store_true", help="Don't clear screen between updates"
-    )
-    monitor_parser.set_defaults(func=monitor_command)
-
-    # Parse arguments
-    args = parser.parse_args()
-
-    # Execute command
-    if hasattr(args, "func"):
-        return args.func(args)
-    parser.print_help()
-    return 1
+    app()
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
