@@ -4,11 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from flext_observability.business_metrics import (
-    BusinessMetric,
-    BusinessMetricType,
-    EnterpriseBusinessMetrics,
-)
+from flext_observability.business_metrics import BusinessMetric
+from flext_observability.business_metrics import BusinessMetricType
+from flext_observability.business_metrics import EnterpriseBusinessMetrics
 from flext_observability.metrics import MetricsCollector
 
 
@@ -62,7 +60,7 @@ class TestBusinessMetrics:
             name="pipeline_success_rate",
             metric_type=BusinessMetricType.GAUGE,
             value=95.5,
-            labels={"environment": "production"}
+            labels={"environment": "production"},
         )
 
         assert metric.name == "pipeline_success_rate"
@@ -92,7 +90,7 @@ class TestBusinessMetrics:
             metrics.record_pipeline_execution(
                 pipeline_id="test-pipeline",
                 duration=120.5,
-                success=True
+                success=True,
             )
         except Exception:
             # If method doesn't exist or has different signature, that's ok

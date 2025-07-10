@@ -114,3 +114,6 @@ dev-test: ## Quick development test cycle
 # Environment variables
 export PYTHONPATH := $(PWD)/src:$(PYTHONPATH)
 export FLEXT_OBSERVABILITY_DEV := true
+
+# Include standardized build system
+include Makefile.build
