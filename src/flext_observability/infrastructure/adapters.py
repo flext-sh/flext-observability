@@ -59,9 +59,12 @@ class InMemoryEventBus(EventBus):
             except (ValueError, TypeError, AttributeError) as e:
                 # Log error but don't stop processing other handlers
                 import logging
-                logging.getLogger(__name__).error(f"Event handler failed: {e}")
 
-    async def subscribe(self, event_type: type[object], handler: Callable[..., object]) -> None:
+                logging.getLogger(__name__).exception(f"Event handler failed: {e}")
+
+    async def subscribe(
+        self, event_type: type[object], handler: Callable[..., object]
+    ) -> None:
         """Subscribe to events of specific type.
 
         Args:
@@ -73,7 +76,9 @@ class InMemoryEventBus(EventBus):
             self._handlers[event_type] = []
         self._handlers[event_type].append(handler)
 
-    async def unsubscribe(self, event_type: type[object], handler: Callable[..., object]) -> None:
+    async def unsubscribe(
+        self, event_type: type[object], handler: Callable[..., object]
+    ) -> None:
         """Unsubscribe from events of specific type.
 
         Args:
@@ -210,10 +215,10 @@ class SlackAlertNotifier(AlertNotifier):
 
     def __init__(self, webhook_url: str | None = None) -> None:
         """Initialize Slack alert notifier.
-        
+
         Args:
             webhook_url: Slack webhook URL for sending notifications.
-        
+
         """
         self.webhook_url = webhook_url
         self._notifications: list[dict[str, object]] = []
@@ -259,7 +264,12 @@ class HttpHealthChecker(HealthChecker):
         """Initialize HTTP health checker."""
         self._registered_components: dict[str, dict[str, object]] = {}
 
-    async def check_health(self, component: ComponentName, endpoint: str | None = None, timeout_ms: int = 5000) -> HealthCheck:
+    async def check_health(
+        self,
+        component: ComponentName,
+        endpoint: str | None = None,
+        timeout_ms: int = 5000,
+    ) -> HealthCheck:
         """Perform HTTP health check on component.
 
         Args:
@@ -401,8 +411,11 @@ class FileMetricsExporter(MetricsExporter):
 
         """
         with open(self.file_path, "a", encoding="utf-8") as f:
-            f.writelines(f"{metric.timestamp},{metric.source or 'default'},{metric.name},"
-                    f"{metric.value},{metric.unit or ''},{metric.metric_type.value}\n" for metric in metrics)
+            f.writelines(
+                f"{metric.timestamp},{metric.source or 'default'},{metric.name},"
+                f"{metric.value},{metric.unit or ''},{metric.metric_type.value}\n"
+                for metric in metrics
+            )
 
     async def export_metric(self, metric: Metric) -> None:
         """Export single metric to file.

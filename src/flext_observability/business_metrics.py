@@ -171,7 +171,10 @@ class EnterpriseBusinessMetrics:
             metric_type=BusinessMetricType.COUNTER,
             component_name="pipeline",
             unit="count",
-            labels={"pipeline_id": pipeline_id, "status": "success" if success else "failure"},
+            labels={
+                "pipeline_id": pipeline_id,
+                "status": "success" if success else "failure",
+            },
         )
         self.record_metric(status_metric)
 

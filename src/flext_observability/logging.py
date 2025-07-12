@@ -26,7 +26,9 @@ class LoggingConfig(BaseConfig):
 
 
 # Context variables for structured logging
-_logging_context: ContextVar[dict[str, Any] | None] = ContextVar("logging_context", default=None)
+_logging_context: ContextVar[dict[str, Any] | None] = ContextVar(
+    "logging_context", default=None
+)
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -50,7 +52,11 @@ def setup_logging(config: LoggingConfig | None = None) -> None:
 
     # Handle LogLevel enum correctly
     log_level = config.log_level
-    level_name = log_level.value.upper() if hasattr(log_level, "value") else str(log_level).upper()
+    level_name = (
+        log_level.value.upper()
+        if hasattr(log_level, "value")
+        else str(log_level).upper()
+    )
 
     logging.basicConfig(
         level=getattr(logging, level_name),

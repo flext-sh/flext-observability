@@ -8,10 +8,11 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+from pydantic import ConfigDict
+
 from flext_core.config.base import BaseConfig
 from flext_core.config.base import BaseSettings
 from flext_core.domain.pydantic_base import Field
-from pydantic import ConfigDict
 
 # from flext_core.domain.constants import FlextConstants
 from flext_core.domain.types import LogLevel

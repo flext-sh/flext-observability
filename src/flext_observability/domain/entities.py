@@ -1,4 +1,4 @@
-"""Domain entities for FLEXT-OBSERVABILITY
+"""Domain entities for FLEXT-OBSERVABILITY.
 
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -121,7 +121,9 @@ class Metric(DomainEntity):
     """Metric domain entity using enhanced mixins for code reduction."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    metric_type: MetricType = Field(default=MetricType.GAUGE)  # Using metric_type instead of type
+    metric_type: MetricType = Field(
+        default=MetricType.GAUGE
+    )  # Using metric_type instead of type
     value: float = Field(...)
     unit: str | None = None
 
