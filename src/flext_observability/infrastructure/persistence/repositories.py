@@ -19,7 +19,7 @@ from flext_observability.domain.entities import Trace
 from flext_observability.infrastructure.persistence.base import InMemoryRepository
 
 if TYPE_CHECKING:
-            from uuid import UUID
+    from uuid import UUID
 
 
 class InMemoryLogRepository(InMemoryRepository[LogEntry]):
@@ -71,7 +71,9 @@ class InMemoryLogRepository(InMemoryRepository[LogEntry]):
         return list(self.storage.values())
 
     async def find_by_filters(
-        self, filters: dict[str, Any], limit: int = 100,
+        self,
+        filters: dict[str, Any],
+        limit: int = 100,
     ) -> list[LogEntry]:
         """Find log entries by filters.
 
@@ -214,7 +216,9 @@ class InMemoryMetricsRepository(InMemoryRepository[Metric]):
 
         """
         return [
-            metric for metric in self.storage.values() if metric.metric_type == metric_type
+            metric
+            for metric in self.storage.values()
+            if metric.metric_type == metric_type
         ]
 
     async def find_by_labels(self, labels: dict[str, str]) -> list[Metric]:
@@ -366,7 +370,9 @@ class InMemoryTraceRepository(InMemoryRepository[Trace]):
             List of traces with the specified status.
 
         """
-        return [trace for trace in self.storage.values() if trace.trace_status == status]
+        return [
+            trace for trace in self.storage.values() if trace.trace_status == status
+        ]
 
     async def find_active_traces(self) -> list[Trace]:
         """Find active (unfinished) traces.
@@ -571,7 +577,9 @@ class InMemoryHealthRepository(InMemoryRepository[HealthCheck]):
         except Exception as e:
             return ServiceResult.fail(f"Failed to save health check: {e}")
 
-    async def get_by_id(self, health_check_id: UUID) -> ServiceResult[HealthCheck | None]:
+    async def get_by_id(
+        self, health_check_id: UUID
+    ) -> ServiceResult[HealthCheck | None]:
         """Get a health check by ID.
 
         Args:

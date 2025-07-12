@@ -136,6 +136,7 @@ class HealthChecker:
 
         """
         from datetime import datetime
+
         return datetime.utcnow().isoformat()
 
     def register_component(self, component: ComponentHealth) -> None:

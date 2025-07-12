@@ -53,13 +53,13 @@ class MetricsService:
         event_bus: EventBus,
     ) -> None:
         """Initialize metrics service.
-        
+
         Args:
             metric_repository: Repository for storing metrics.
             metrics_analysis_service: Service for analyzing metrics.
             alerting_service: Service for handling alerts.
             event_bus: Event bus for publishing events.
-        
+
         """
         self.metric_repository = metric_repository
         self.metrics_analysis_service = metrics_analysis_service
@@ -95,6 +95,7 @@ class MetricsService:
         try:
             # Create metric entity from data, then save
             from flext_observability.domain.entities import Metric
+
             metric_entity = Metric(
                 name=name,
                 value=value,
@@ -109,7 +110,9 @@ class MetricsService:
             )
             metric_result = await self.metric_repository.save(metric_entity)
             if not metric_result.is_success:
-                return ServiceResult.fail(f"Failed to save metric: {metric_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to save metric: {metric_result.error}"
+                )
 
             metric = metric_result.data
             if metric is None:
@@ -174,7 +177,9 @@ class MetricsService:
             # Use list method since find_by_filters doesn't exist in base repository
             metrics_result = await self.metric_repository.list(limit=limit)
             if not metrics_result.is_success:
-                return ServiceResult.fail(f"Failed to get metrics: {metrics_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to get metrics: {metrics_result.error}"
+                )
 
             # Apply filters manually since we don't have a proper filter system
             metrics = metrics_result.data
@@ -203,12 +208,12 @@ class AlertService:
         event_bus: EventBus,
     ) -> None:
         """Initialize alert service.
-        
+
         Args:
             alert_repository: Repository for storing alerts.
             alerting_service: Service for alert logic.
             event_bus: Event bus for publishing events.
-        
+
         """
         self.alert_repository = alert_repository
         self.alerting_service = alerting_service
@@ -243,6 +248,7 @@ class AlertService:
         try:
             # Create alert entity from data, then save
             from flext_observability.domain.entities import Alert
+
             alert_entity = Alert(
                 title=title,
                 description=description,
@@ -263,6 +269,7 @@ class AlertService:
 
             # Publish alert triggered event - create a dummy metric for manual alerts
             from flext_core.domain.types import MetricType
+
             dummy_metric = Metric(
                 name="manual_alert",
                 value=1.0,
@@ -303,6 +310,7 @@ class AlertService:
         """
         try:
             from uuid import UUID
+
             alert_uuid = UUID(alert_id)
             alert_result = await self.alert_repository.get_by_id(alert_uuid)
             if not alert_result.is_success:
@@ -319,7 +327,9 @@ class AlertService:
             # Save the updated alert (using save since there's no update method)
             save_result = await self.alert_repository.save(alert)
             if not save_result.is_success:
-                return ServiceResult.fail(f"Failed to save acknowledged alert: {save_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to save acknowledged alert: {save_result.error}"
+                )
 
             return ServiceResult.ok(alert)
 
@@ -345,6 +355,7 @@ class AlertService:
         """
         try:
             from uuid import UUID
+
             alert_uuid = UUID(alert_id)
             alert_result = await self.alert_repository.get_by_id(alert_uuid)
             if not alert_result.is_success:
@@ -361,7 +372,9 @@ class AlertService:
             # Save the updated alert (using save since there's no update method)
             save_result = await self.alert_repository.save(alert)
             if not save_result.is_success:
-                return ServiceResult.fail(f"Failed to save resolved alert: {save_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to save resolved alert: {save_result.error}"
+                )
 
             return ServiceResult.ok(alert)
 
@@ -381,7 +394,7 @@ class HealthService:
         event_bus: EventBus,
     ) -> None:
         """Initialize health service.
-        
+
         Args:
             health_repository: Repository for storing health checks.
             health_analysis_service: Service for health analysis.
@@ -419,6 +432,7 @@ class HealthService:
         try:
             # Create health check entity from data, then save
             from flext_observability.domain.entities import HealthCheck
+
             health_check_entity = HealthCheck(
                 name=name,
                 check_type=check_type,
@@ -439,23 +453,36 @@ class HealthService:
 
             health_check_result = await self.health_repository.save(health_check_entity)
             if not health_check_result.is_success:
-                return ServiceResult.fail(f"Failed to save health check: {health_check_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to save health check: {health_check_result.error}"
+                )
 
             health_check = health_check_result.data
             if health_check is None:
-                return ServiceResult.fail("Failed to save health check: No data returned")
+                return ServiceResult.fail(
+                    "Failed to save health check: No data returned"
+                )
 
             # Update system health analysis
-            analysis_result = self.health_analysis_service.update_component_health(health_check)
+            analysis_result = self.health_analysis_service.update_component_health(
+                health_check
+            )
             if not analysis_result.is_success:
-                return ServiceResult.fail(f"Failed to update component health: {analysis_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to update component health: {analysis_result.error}"
+                )
 
             # Publish health check completed event
             from flext_observability.domain.value_objects import HealthStatus
+
             event = HealthCheckCompleted(
                 health_check=health_check,
                 component=health_check.component,
-                status=HealthStatus.HEALTHY if health_check.is_healthy else HealthStatus.UNHEALTHY,
+                status=(
+                    HealthStatus.HEALTHY
+                    if health_check.is_healthy
+                    else HealthStatus.UNHEALTHY
+                ),
                 duration_ms=int(health_check.response_time_ms or 50.0),
             )
             await self.event_bus.publish(event)
@@ -494,12 +521,12 @@ class LoggingService:
         event_bus: EventBus,
     ) -> None:
         """Initialize logging service.
-        
+
         Args:
             log_repository: Repository for storing log entries.
             log_analysis_service: Service for log analysis.
             event_bus: Event bus for publishing events.
-        
+
         """
         self.log_repository = log_repository
         self.log_analysis_service = log_analysis_service
@@ -538,6 +565,7 @@ class LoggingService:
         try:
             # Create log entry entity from data, then save
             from flext_observability.domain.entities import LogEntry
+
             log_entry_entity = LogEntry(
                 level=level,
                 message=message,
@@ -550,7 +578,9 @@ class LoggingService:
 
             log_entry_result = await self.log_repository.save(log_entry_entity)
             if not log_entry_result.is_success:
-                return ServiceResult.fail(f"Failed to save log entry: {log_entry_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to save log entry: {log_entry_result.error}"
+                )
 
             log_entry = log_entry_result.data
             if log_entry is None:
@@ -559,11 +589,14 @@ class LoggingService:
             # Analyze log entry
             analysis_result = self.log_analysis_service.analyze_log_entry(log_entry)
             if not analysis_result.is_success:
-                return ServiceResult.fail(f"Failed to analyze log entry: {analysis_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to analyze log entry: {analysis_result.error}"
+                )
 
             # Publish log entry created event
             # LogEntryCreated needs component - we need to add it to LogEntry
             from flext_observability.domain.value_objects import ComponentName
+
             component = ComponentName(
                 name=component_name,
                 namespace=component_namespace,
@@ -594,12 +627,12 @@ class TracingService:
         event_bus: EventBus,
     ) -> None:
         """Initialize tracing service.
-        
+
         Args:
             trace_repository: Repository for storing traces.
             trace_analysis_service: Service for trace analysis.
             event_bus: Event bus for publishing events.
-        
+
         """
         self.trace_repository = trace_repository
         self.trace_analysis_service = trace_analysis_service
@@ -648,6 +681,7 @@ class TracingService:
 
             # Create trace entity from data, then save
             from flext_observability.domain.entities import Trace
+
             trace_entity = Trace(
                 trace_id=trace_data["trace_id"],
                 span_id=trace_data["span_id"],
@@ -703,6 +737,7 @@ class TracingService:
         """
         try:
             from uuid import UUID
+
             trace_uuid = UUID(trace_id)
             trace_result = await self.trace_repository.get_by_id(trace_uuid)
             if not trace_result.is_success:
@@ -720,12 +755,16 @@ class TracingService:
             # Save the updated trace (using save since there's no update method)
             save_result = await self.trace_repository.save(trace)
             if not save_result.is_success:
-                return ServiceResult.fail(f"Failed to save updated trace: {save_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to save updated trace: {save_result.error}"
+                )
 
             # Analyze trace
             analysis_result = self.trace_analysis_service.analyze_trace(trace)
             if not analysis_result.is_success:
-                return ServiceResult.fail(f"Failed to analyze trace: {analysis_result.error}")
+                return ServiceResult.fail(
+                    f"Failed to analyze trace: {analysis_result.error}"
+                )
 
             # Publish trace completed event
             event = TraceCompleted(

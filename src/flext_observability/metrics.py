@@ -53,8 +53,10 @@ class MetricsCollector:
 
         # Cache system metrics for 1 second to improve performance in tests
         current_time = time.time()
-        if (self._cached_system_metrics is not None and
-            current_time - self._cache_time < 1.0):
+        if (
+            self._cached_system_metrics is not None
+            and current_time - self._cache_time < 1.0
+        ):
             return self._cached_system_metrics
 
         try:

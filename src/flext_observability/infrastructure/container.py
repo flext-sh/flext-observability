@@ -80,6 +80,7 @@ def get_container() -> ObservabilityContainer:
     global _container
     if _container is None:
         from flext_observability.config import get_settings
+
         settings = get_settings()
         _container = ObservabilityContainer(settings)
     return _container

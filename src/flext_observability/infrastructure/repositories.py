@@ -37,6 +37,7 @@ if TYPE_CHECKING:
     from flext_observability.domain.entities import Metric
     from flext_observability.domain.entities import Trace
     from flext_observability.domain.value_objects import ComponentName
+
     # HealthStatus will be mapped to Status for consistency
 
 # Constants
@@ -278,7 +279,10 @@ class InMemoryAlertRepository(InMemoryRepository["Alert", UUID]):
                 continue
 
             # Filter by acknowledged status
-            if acknowledged is not None and (alert.acknowledged_at is not None) != acknowledged:
+            if (
+                acknowledged is not None
+                and (alert.acknowledged_at is not None) != acknowledged
+            ):
                 continue
 
             # Filter by resolved status
@@ -304,7 +308,9 @@ class InMemoryAlertRepository(InMemoryRepository["Alert", UUID]):
             Number of active alerts.
 
         """
-        return sum(1 for alert in self._alerts.values() if alert.alert_status == Status.ACTIVE)
+        return sum(
+            1 for alert in self._alerts.values() if alert.alert_status == Status.ACTIVE
+        )
 
 
 @injectable(HealthRepository)
@@ -428,8 +434,10 @@ class InMemoryHealthRepository(InMemoryRepository["HealthCheck", UUID]):
             health_check = self._health_checks.pop(check_id)
             # Remove from latest index if this was the latest
             component_key = health_check.component.full_name
-            if (component_key in self._latest_by_component and
-                self._latest_by_component[component_key].id == health_check.id):
+            if (
+                component_key in self._latest_by_component
+                and self._latest_by_component[component_key].id == health_check.id
+            ):
                 del self._latest_by_component[component_key]
 
         return len(to_delete)
@@ -544,7 +552,9 @@ class InMemoryLogRepository(InMemoryRepository["LogEntry", UUID]):
 
         """
         to_delete = [
-            log_entry for log_entry in self._logs.values() if log_entry.created_at < cutoff_time
+            log_entry
+            for log_entry in self._logs.values()
+            if log_entry.created_at < cutoff_time
         ]
 
         for log_entry in to_delete:

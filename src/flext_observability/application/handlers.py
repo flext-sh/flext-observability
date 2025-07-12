@@ -173,7 +173,9 @@ class MetricsHandler(BaseCommandHandler):
     """Metrics command handler."""
 
     def __init__(
-        self, metrics_repository: MetricsRepository, metrics_service: MetricsService,
+        self,
+        metrics_repository: MetricsRepository,
+        metrics_service: MetricsService,
     ) -> None:
         """Initialize metrics handler.
 
@@ -280,7 +282,9 @@ class TracingHandler(BaseCommandHandler):
     """Tracing command handler."""
 
     def __init__(
-        self, tracing_repository: TracingRepository, tracing_service: TracingService,
+        self,
+        tracing_repository: TracingRepository,
+        tracing_service: TracingService,
     ) -> None:
         """Initialize tracing handler.
 
@@ -389,7 +393,9 @@ class AlertHandler(BaseCommandHandler):
     """Alert command handler."""
 
     def __init__(
-        self, alert_repository: AlertRepository, alert_service: AlertService,
+        self,
+        alert_repository: AlertRepository,
+        alert_service: AlertService,
     ) -> None:
         """Initialize alert handler.
 
@@ -488,7 +494,9 @@ class HealthHandler(BaseCommandHandler):
     """Health check command handler."""
 
     def __init__(
-        self, health_repository: HealthRepository, health_service: HealthService,
+        self,
+        health_repository: HealthRepository,
+        health_service: HealthService,
     ) -> None:
         """Initialize health handler.
 
@@ -559,7 +567,7 @@ class HealthHandler(BaseCommandHandler):
             if result.is_success:
                 health_check.record_success(  # type: ignore[attr-defined]
                     30.0,  # Default response time
-                    {},    # Default response data
+                    {},  # Default response data
                 )
             else:
                 health_check.record_failure(result.error or "Health check failed")  # type: ignore[attr-defined]

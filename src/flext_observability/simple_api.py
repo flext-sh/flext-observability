@@ -155,15 +155,17 @@ def collect_metric(
     """
     try:
         service = _get_service(MetricsService)
-        result = asyncio.run(service.collect_metric(
-            name=name,
-            value=value,
-            unit=unit,
-            metric_type=metric_type,
-            component_name=component_name,
-            component_namespace=component_namespace,
-            tags=tags,
-        ))
+        result = asyncio.run(
+            service.collect_metric(
+                name=name,
+                value=value,
+                unit=unit,
+                metric_type=metric_type,
+                component_name=component_name,
+                component_namespace=component_namespace,
+                tags=tags,
+            )
+        )
         return bool(result.is_success)
     except Exception:
         return False
@@ -233,17 +235,19 @@ def log_message(
     """
     try:
         service = _get_service(LoggingService)
-        result = asyncio.run(service.create_log_entry(
-            level=level,
-            message=message,
-            component_name=component_name,
-            component_namespace=component_namespace,
-            correlation_id=correlation_id,
-            trace_id=trace_id,
-            span_id=span_id,
-            fields=fields,
-            exception=exception,
-        ))
+        result = asyncio.run(
+            service.create_log_entry(
+                level=level,
+                message=message,
+                component_name=component_name,
+                component_namespace=component_namespace,
+                correlation_id=correlation_id,
+                trace_id=trace_id,
+                span_id=span_id,
+                fields=fields,
+                exception=exception,
+            )
+        )
         return bool(result.is_success)
     except Exception:
         return False
@@ -269,12 +273,14 @@ def start_trace(
     """
     try:
         service = _get_service(TracingService)
-        result = asyncio.run(service.start_trace(
-            operation_name=operation_name,
-            component_name=component_name,
-            component_namespace=component_namespace,
-            tags=tags,
-        ))
+        result = asyncio.run(
+            service.start_trace(
+                operation_name=operation_name,
+                component_name=component_name,
+                component_namespace=component_namespace,
+                tags=tags,
+            )
+        )
         if result.is_success and result.data and hasattr(result.data, "trace_id"):
             return str(result.data.trace_id)
         return None
@@ -301,11 +307,13 @@ def complete_trace(
     """
     try:
         service = _get_service(TracingService)
-        result = asyncio.run(service.complete_trace(
-            trace_id=trace_id,
-            success=success,
-            error=error,
-        ))
+        result = asyncio.run(
+            service.complete_trace(
+                trace_id=trace_id,
+                success=success,
+                error=error,
+            )
+        )
         return bool(result.is_success)
     except Exception:
         return False
@@ -331,13 +339,19 @@ def check_health(
     """
     try:
         service = _get_service(HealthService)
-        result = asyncio.run(service.perform_health_check(
-            component_name=component_name,
-            component_namespace=component_namespace,
-            endpoint=endpoint,
-            timeout_ms=timeout_ms,
-        ))
-        return bool(result.is_success) and result.data and getattr(result.data, "is_healthy", False)
+        result = asyncio.run(
+            service.perform_health_check(
+                component_name=component_name,
+                component_namespace=component_namespace,
+                endpoint=endpoint,
+                timeout_ms=timeout_ms,
+            )
+        )
+        return (
+            bool(result.is_success)
+            and result.data
+            and getattr(result.data, "is_healthy", False)
+        )
     except Exception:
         return False
 
@@ -384,7 +398,8 @@ def get_system_overview() -> dict[str, Any]:
             from datetime import timedelta  # TODO Move import to module level
 
             start_time = datetime.now() - timedelta(hours=1)
-            logs_result = asyncio.run(log_service.get_logs(
+            logs_result = asyncio.run(
+                log_service.get_logs(
                     level=LogLevel.ERROR,
                     start_time=start_time,
                     limit=100,
@@ -530,7 +545,12 @@ class TraceContext:
         )
         return self
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: object | None) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: object | None,
+    ) -> None:
         """Exit the trace context.
 
         Args:

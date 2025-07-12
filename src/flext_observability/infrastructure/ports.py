@@ -443,7 +443,9 @@ class JaegerTracingPort(TracingService):
             return ServiceResult.fail(f"Unexpected error finishing trace: {e}")
 
     async def add_span(
-        self, trace: Trace, span_data: dict[str, Any],
+        self,
+        trace: Trace,
+        span_data: dict[str, Any],
     ) -> ServiceResult[None]:
         """Add span data to an existing trace.
 
@@ -518,7 +520,6 @@ class SlackAlertPort(AlertService):
                 "timestamp": alert.created_at.isoformat(),
             }
 
-
             return ServiceResult.ok(None)
         except (KeyError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to send alert: {e}")
@@ -541,7 +542,6 @@ class SlackAlertPort(AlertService):
                 "title": f"RESOLVED: Alert {alert_id}",
                 "resolved_at": datetime.now(UTC).isoformat(),
             }
-
 
             return ServiceResult.ok(None)
         except (ValueError, AttributeError) as e:
@@ -588,7 +588,6 @@ class SlackAlertPort(AlertService):
                 "timestamp": datetime.now(UTC).isoformat(),
             }
 
-
             return ServiceResult.ok(None)
         except (ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to test alert: {e}")
@@ -612,7 +611,6 @@ class SlackAlertPort(AlertService):
                 "acknowledged_at": datetime.now(UTC).isoformat(),
                 "acknowledged_by": "system",
             }
-
 
             return ServiceResult.ok(None)
         except (ValueError, AttributeError) as e:
@@ -667,7 +665,6 @@ class SimpleHealthPort(HealthService):
                 "timestamp": datetime.now(UTC).isoformat(),
                 "response_time_ms": 5.0,
             }
-
 
             return ServiceResult.ok(None)
         except (ValueError, AttributeError) as e:
@@ -762,7 +759,8 @@ class MemoryDashboardPort(DashboardService):
         self.dashboard_cache: dict[str, Any] = {}
 
     async def render_dashboard(
-        self, dashboard: Dashboard,
+        self,
+        dashboard: Dashboard,
     ) -> ServiceResult[dict[str, Any]]:
         """Render dashboard with current data.
 
@@ -796,7 +794,9 @@ class MemoryDashboardPort(DashboardService):
             return ServiceResult.fail(f"Unexpected error rendering dashboard: {e}")
 
     async def export_dashboard(
-        self, dashboard: Dashboard, format_type: str,
+        self,
+        dashboard: Dashboard,
+        format_type: str,
     ) -> ServiceResult[str]:
         """Export dashboard in specified format.
 
@@ -825,7 +825,9 @@ class MemoryDashboardPort(DashboardService):
             return ServiceResult.fail(f"Failed to export dashboard: {e}")
 
     async def import_dashboard(
-        self, config_str: str, format_type: str,
+        self,
+        config_str: str,
+        format_type: str,
     ) -> ServiceResult[Dashboard]:
         """Import dashboard from configuration.
 

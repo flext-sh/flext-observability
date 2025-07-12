@@ -17,7 +17,8 @@ from flext_observability.simple_api import collect_metric
 from flext_observability.simple_api import get_system_overview
 from flext_observability.simple_api import setup_observability
 
-app = typer.Typer(name="flext-observability",
+app = typer.Typer(
+    name="flext-observability",
     help="FLEXT Observability CLI - Enterprise monitoring and observability",
 )
 console = Console()
@@ -78,7 +79,9 @@ def collect(
     name: str = typer.Argument(..., help="Metric name"),
     value: float = typer.Argument(..., help="Metric value"),
     unit: str = typer.Option("count", help="Metric unit"),
-    metric_type: str = typer.Option("gauge", help="Metric type (counter, gauge, histogram, summary)"),
+    metric_type: str = typer.Option(
+        "gauge", help="Metric type (counter, gauge, histogram, summary)"
+    ),
     component: str = typer.Option("cli", help="Component name"),
     namespace: str = typer.Option("default", help="Component namespace"),
 ) -> None:
@@ -89,7 +92,10 @@ def collect(
             mt = MetricType(metric_type.lower())
         except ValueError:
             console.print(f"❌ Invalid metric type: {metric_type}", style="red")
-            console.print("Valid types: counter, gauge, histogram, summary, business", style="yellow")
+            console.print(
+                "Valid types: counter, gauge, histogram, summary, business",
+                style="yellow",
+            )
             sys.exit(1)
 
         success = collect_metric(
