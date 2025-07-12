@@ -34,7 +34,7 @@ test-coverage: ## Run tests with coverage
 # Code Quality - Maximum Strictness
 lint: ## Run all linters with maximum strictness
 	@echo "🔍 Running maximum strictness linting for flext-observability..."
-	poetry run ruff check . --output-format=verbose
+	poetry run ruff check . --output-format=full
 	@echo "✅ Ruff linting complete"
 
 format: ## Format code with strict standards

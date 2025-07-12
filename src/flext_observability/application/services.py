@@ -1,4 +1,8 @@
-"""Application services for observability - orchestrate use cases."""
+"""Application services for observability - orchestrate use cases.
+
+Copyright (c) 2025 Flext. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -8,31 +12,21 @@ from typing import TYPE_CHECKING
 from typing import Any
 from uuid import uuid4
 
-from flext_core.config import injectable
 from flext_core.domain.types import ServiceResult
-from flext_core.domain.types import TraceStatus
-from flext_observability.domain.entities import HealthCheck
-from flext_observability.domain.entities import LogEntry
 from flext_observability.domain.entities import Metric
-from flext_observability.domain.entities import Trace
 from flext_observability.domain.events import AlertTriggered
 from flext_observability.domain.events import HealthCheckCompleted
 from flext_observability.domain.events import LogEntryCreated
 from flext_observability.domain.events import MetricCollected
 from flext_observability.domain.events import TraceCompleted
 from flext_observability.domain.events import TraceStarted
-from flext_observability.domain.specifications import ActiveAlertSpec
-from flext_observability.domain.specifications import MetricValidationSpec
 from flext_observability.domain.value_objects import ComponentName
-from flext_observability.domain.value_objects import Duration
-from flext_observability.domain.value_objects import MetricValue
-from flext_observability.domain.value_objects import TraceId
 
 if TYPE_CHECKING:
-    from flext_core.domain.types import AlertSeverity
-    from flext_core.domain.types import LogLevel
-    from flext_core.domain.types import MetricType
     from flext_observability.domain.entities import Alert
+    from flext_observability.domain.entities import HealthCheck
+    from flext_observability.domain.entities import LogEntry
+    from flext_observability.domain.entities import Trace
     from flext_observability.domain.services import AlertingService
     from flext_observability.domain.services import HealthAnalysisService
     from flext_observability.domain.services import LogAnalysisService
@@ -42,114 +36,163 @@ if TYPE_CHECKING:
     from flext_observability.infrastructure.persistence.base import EventBus
     from flext_observability.infrastructure.persistence.base import HealthRepository
     from flext_observability.infrastructure.persistence.base import LogRepository
-    from flext_observability.infrastructure.persistence.base import MetricsRepository
+    from flext_observability.infrastructure.persistence.base import (
+        MetricsRepository as MetricRepository,
+    )
     from flext_observability.infrastructure.persistence.base import TraceRepository
 
 
-@injectable()
 class MetricsService:
     """Application service for metrics collection and analysis."""
 
     def __init__(
         self,
-        metrics_repository: MetricsRepository,
+        metric_repository: MetricRepository,
         metrics_analysis_service: MetricsAnalysisService,
+        alerting_service: AlertingService,
         event_bus: EventBus,
     ) -> None:
-        self.metrics_repository = metrics_repository
+        """Initialize metrics service.
+        
+        Args:
+            metric_repository: Repository for storing metrics.
+            metrics_analysis_service: Service for analyzing metrics.
+            alerting_service: Service for handling alerts.
+            event_bus: Event bus for publishing events.
+        
+        """
+        self.metric_repository = metric_repository
         self.metrics_analysis_service = metrics_analysis_service
+        self.alerting_service = alerting_service
         self.event_bus = event_bus
 
     async def collect_metric(
         self,
         name: str,
         value: float,
-        unit: str,
-        metric_type: MetricType,
-        component_name: str,
+        *,
+        metric_type: str = "gauge",
+        unit: str | None = None,
+        labels: dict[str, str] | None = None,
+        component_name: str = "unknown",
         component_namespace: str = "default",
-        tags: dict[str, str] | None = None,
     ) -> ServiceResult[Metric]:
-        """Collect a metric value."""
+        """Collect a metric value and perform analysis.
+
+        Args:
+            name: Metric name.
+            value: Metric value.
+            metric_type: Type of metric (gauge, counter, histogram).
+            unit: Unit of measurement.
+            labels: Additional labels for the metric.
+            component_name: Name of the component generating the metric.
+            component_namespace: Namespace of the component.
+
+        Returns:
+            ServiceResult containing the created metric or error.
+
+        """
         try:
-            # Create domain objects
-            metric_value = MetricValue(value=value, unit=unit)
-            component = ComponentName(
-                name=component_name, namespace=component_namespace,
-            )
-
-            # Create metric entity
-            metric = Metric(
+            # Create metric entity from data, then save
+            from flext_observability.domain.entities import Metric
+            metric_entity = Metric(
                 name=name,
+                value=value,
+                unit=unit,
                 metric_type=metric_type,
-                value=metric_value,
-                component=component,
-                tags=tags or {},
+                component=ComponentName(
+                    name=component_name,
+                    namespace=component_namespace,
+                ),
+                labels=labels or {},
+                timestamp=datetime.now(UTC),
             )
+            metric_result = await self.metric_repository.save(metric_entity)
+            if not metric_result.is_success:
+                return ServiceResult.fail(f"Failed to save metric: {metric_result.error}")
 
-            # Validate metric
-            validation_spec = MetricValidationSpec()
-            if not validation_spec.is_satisfied_by(metric):
-                return ServiceResult.fail("Invalid metric data")
+            metric = metric_result.data
+            if metric is None:
+                return ServiceResult.fail("Failed to save metric: No data returned")
 
-            # Store metric
-            stored_metric = await self.metrics_repository.save(metric)
-
-            # Analyze trends
-            self.metrics_analysis_service.analyze_trend(stored_metric)
-
-            # Publish event
-            event = MetricCollected(metric=stored_metric)
+            # Publish metric collected event
+            event = MetricCollected(
+                metric=metric,
+                component=metric.component,
+            )
             await self.event_bus.publish(event)
 
-            return ServiceResult.ok(stored_metric)
+            # Analyze trend
+            trend_result = self.metrics_analysis_service.analyze_trend(metric)
+            if not trend_result.is_success:
+                return ServiceResult.fail(
+                    f"Trend analysis failed: {trend_result.error}",
+                )
 
-        except Exception as e:
+            # Check for alerts
+            alert_result = self.alerting_service.evaluate_metric(metric)
+            if alert_result.is_success and alert_result.data:
+                alert = alert_result.data
+                alert_event = AlertTriggered(
+                    alert=alert,
+                    metric=metric,
+                    severity=alert.severity,
+                )
+                await self.event_bus.publish(alert_event)
+
+            return ServiceResult.ok(metric)
+
+        except (ValueError, TypeError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to collect metric: {e}")
+        except Exception as e:
+            return ServiceResult.fail(f"Unexpected error collecting metric: {e}")
 
     async def get_metrics(
         self,
+        name: str | None = None,
         component_name: str | None = None,
-        metric_type: MetricType | None = None,
-        start_time: datetime | None = None,
-        end_time: datetime | None = None,
         limit: int = 100,
     ) -> ServiceResult[list[Metric]]:
-        """Get metrics with optional filtering."""
-        try:
-            metrics = await self.metrics_repository.find_by_criteria(
-                component_name=component_name,
-                metric_type=metric_type,
-                start_time=start_time,
-                end_time=end_time,
-                limit=limit,
-            )
+        """Get metrics with optional filtering.
 
+        Args:
+            name: Optional metric name filter.
+            component_name: Optional component name filter.
+            limit: Maximum number of metrics to return.
+
+        Returns:
+            ServiceResult containing list of metrics or error.
+
+        """
+        try:
+            filters = {}
+            if name:
+                filters["name"] = name
+            if component_name:
+                filters["component__name"] = component_name
+
+            # Use list method since find_by_filters doesn't exist in base repository
+            metrics_result = await self.metric_repository.list(limit=limit)
+            if not metrics_result.is_success:
+                return ServiceResult.fail(f"Failed to get metrics: {metrics_result.error}")
+
+            # Apply filters manually since we don't have a proper filter system
+            metrics = metrics_result.data
+            if metrics is None:
+                return ServiceResult.ok([])
+
+            if name:
+                metrics = [m for m in metrics if m.name == name]
+            if component_name:
+                metrics = [m for m in metrics if m.component.name == component_name]
             return ServiceResult.ok(metrics)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to get metrics: {e}")
-
-    async def get_metric_trends(
-        self, metric_name: str,
-    ) -> ServiceResult[dict[str, Any]]:
-        """Get trend analysis for a metric."""
-        try:
-            # Get recent metrics
-            metrics = await self.metrics_repository.find_by_name(metric_name, limit=100)
-
-            if not metrics:
-                return ServiceResult.ok({"trend": "no_data", "points": 0})
-
-            # Analyze trends using the latest metric
-            latest_metric = metrics[0]
-            return self.metrics_analysis_service.analyze_trend(latest_metric)
-
         except Exception as e:
-            return ServiceResult.fail(f"Failed to get metric trends: {e}")
+            return ServiceResult.fail(f"Unexpected error getting metrics: {e}")
 
 
-@injectable()
 class AlertService:
     """Application service for alert management."""
 
@@ -159,103 +202,176 @@ class AlertService:
         alerting_service: AlertingService,
         event_bus: EventBus,
     ) -> None:
+        """Initialize alert service.
+        
+        Args:
+            alert_repository: Repository for storing alerts.
+            alerting_service: Service for alert logic.
+            event_bus: Event bus for publishing events.
+        
+        """
         self.alert_repository = alert_repository
         self.alerting_service = alerting_service
         self.event_bus = event_bus
 
-    async def evaluate_metric_for_alerts(
-        self, metric: Metric,
-    ) -> ServiceResult[Alert | None]:
-        """Evaluate a metric against alert rules."""
-        try:
-            # Use domain service to evaluate
-            alert_result = self.alerting_service.evaluate_metric(metric)
+    async def create_alert(
+        self,
+        title: str,
+        *,
+        description: str | None = None,
+        severity: str = "medium",
+        source: str = "manual",
+        source_type: str = "user",
+        condition: str = "manual trigger",
+        threshold: float | None = None,
+    ) -> ServiceResult[Alert]:
+        """Create a new alert and publish alert event.
 
-            if not alert_result.success:
-                return alert_result
+        Args:
+            title: Alert title.
+            description: Optional alert description.
+            severity: Alert severity level.
+            source: Source of the alert.
+            source_type: Type of the alert source.
+            condition: Alert condition description.
+            threshold: Optional threshold value.
+
+        Returns:
+            ServiceResult containing the created alert or error.
+
+        """
+        try:
+            # Create alert entity from data, then save
+            from flext_observability.domain.entities import Alert
+            alert_entity = Alert(
+                title=title,
+                description=description,
+                severity=severity,
+                source=source,
+                source_type=source_type,
+                condition=condition,
+                threshold=threshold,
+                created_at=datetime.now(UTC),
+            )
+            alert_result = await self.alert_repository.save(alert_entity)
+            if not alert_result.is_success:
+                return ServiceResult.fail(f"Failed to save alert: {alert_result.error}")
 
             alert = alert_result.data
             if alert is None:
-                return ServiceResult.ok(None)
+                return ServiceResult.fail("Failed to save alert: No data returned")
 
-            # Store alert
-            stored_alert = await self.alert_repository.save(alert)
-
-            # Publish event
-            event = AlertTriggered(alert=stored_alert)
+            # Publish alert triggered event - create a dummy metric for manual alerts
+            from flext_core.domain.types import MetricType
+            dummy_metric = Metric(
+                name="manual_alert",
+                value=1.0,
+                unit="count",
+                metric_type=MetricType.GAUGE,
+                component=ComponentName(name="manual", namespace="alerts"),
+                labels={},
+                timestamp=datetime.now(UTC),
+            )
+            event = AlertTriggered(
+                alert=alert,
+                metric=dummy_metric,
+                severity=alert.severity,
+            )
             await self.event_bus.publish(event)
 
-            return ServiceResult.ok(stored_alert)
+            return ServiceResult.ok(alert)
 
+        except (ValueError, TypeError, AttributeError) as e:
+            return ServiceResult.fail(f"Failed to create alert: {e}")
         except Exception as e:
-            return ServiceResult.fail(f"Failed to evaluate metric for alerts: {e}")
+            return ServiceResult.fail(f"Unexpected error creating alert: {e}")
 
-    async def acknowledge_alert(self, alert_id: str, user: str) -> ServiceResult[Alert]:
-        """Acknowledge an alert."""
-        try:
-            # Get alert
-            alert = await self.alert_repository.get_by_id(alert_id)
-            if not alert:
-                return ServiceResult.fail("Alert not found")
-
-            # Acknowledge alert
-            alert.acknowledge(user)
-
-            # Save changes
-            updated_alert = await self.alert_repository.save(alert)
-
-            return ServiceResult.ok(updated_alert)
-
-        except Exception as e:
-            return ServiceResult.fail(f"Failed to acknowledge alert: {e}")
-
-    async def resolve_alert(self, alert_id: str) -> ServiceResult[Alert]:
-        """Resolve an alert."""
-        try:
-            # Get alert
-            alert = await self.alert_repository.get_by_id(alert_id)
-            if not alert:
-                return ServiceResult.fail("Alert not found")
-
-            # Resolve alert
-            alert.resolve()
-
-            # Save changes
-            updated_alert = await self.alert_repository.save(alert)
-
-            return ServiceResult.ok(updated_alert)
-
-        except Exception as e:
-            return ServiceResult.fail(f"Failed to resolve alert: {e}")
-
-    async def get_active_alerts(
+    async def acknowledge_alert(
         self,
-        severity: AlertSeverity | None = None,
-        component_name: str | None = None,
-        limit: int = 50,
-    ) -> ServiceResult[list[Alert]]:
-        """Get active alerts."""
+        alert_id: str,
+        user: str,
+    ) -> ServiceResult[Alert]:
+        """Acknowledge an alert.
+
+        Args:
+            alert_id: ID of the alert to acknowledge.
+            user: User acknowledging the alert.
+
+        Returns:
+            ServiceResult containing the acknowledged alert or error.
+
+        """
         try:
-            alerts = await self.alert_repository.find_active(
-                severity=severity,
-                component_name=component_name,
-                limit=limit,
-            )
+            from uuid import UUID
+            alert_uuid = UUID(alert_id)
+            alert_result = await self.alert_repository.get_by_id(alert_uuid)
+            if not alert_result.is_success:
+                return ServiceResult.fail(f"Failed to get alert: {alert_result.error}")
 
-            # Filter using specification
-            active_spec = ActiveAlertSpec()
-            active_alerts = [
-                alert for alert in alerts if active_spec.is_satisfied_by(alert)
-            ]
+            alert = alert_result.data
+            if alert is None:
+                return ServiceResult.fail("Alert not found")
 
-            return ServiceResult.ok(active_alerts)
+            # Update alert status manually since there's no acknowledge method
+            alert.acknowledged_by = user
+            alert.acknowledged_at = datetime.now(UTC)
 
+            # Save the updated alert (using save since there's no update method)
+            save_result = await self.alert_repository.save(alert)
+            if not save_result.is_success:
+                return ServiceResult.fail(f"Failed to save acknowledged alert: {save_result.error}")
+
+            return ServiceResult.ok(alert)
+
+        except (ValueError, TypeError, AttributeError) as e:
+            return ServiceResult.fail(f"Failed to acknowledge alert: {e}")
         except Exception as e:
-            return ServiceResult.fail(f"Failed to get active alerts: {e}")
+            return ServiceResult.fail(f"Unexpected error acknowledging alert: {e}")
+
+    async def resolve_alert(
+        self,
+        alert_id: str,
+        resolution_reason: str | None = None,
+    ) -> ServiceResult[Alert]:
+        """Resolve an alert.
+
+        Args:
+            alert_id: ID of the alert to resolve.
+            resolution_reason: Optional reason for resolution.
+
+        Returns:
+            ServiceResult containing the resolved alert or error.
+
+        """
+        try:
+            from uuid import UUID
+            alert_uuid = UUID(alert_id)
+            alert_result = await self.alert_repository.get_by_id(alert_uuid)
+            if not alert_result.is_success:
+                return ServiceResult.fail(f"Failed to get alert: {alert_result.error}")
+
+            alert = alert_result.data
+            if alert is None:
+                return ServiceResult.fail("Alert not found")
+
+            # Update alert status manually since there's no resolve method
+            alert.resolved_at = datetime.now(UTC)
+            alert.resolution_reason = resolution_reason
+
+            # Save the updated alert (using save since there's no update method)
+            save_result = await self.alert_repository.save(alert)
+            if not save_result.is_success:
+                return ServiceResult.fail(f"Failed to save resolved alert: {save_result.error}")
+
+            return ServiceResult.ok(alert)
+
+        except (ValueError, TypeError, AttributeError) as e:
+            return ServiceResult.fail(f"Failed to resolve alert: {e}")
+        except Exception as e:
+            return ServiceResult.fail(f"Unexpected error resolving alert: {e}")
 
 
-@injectable()
-class HealthMonitoringService:
+class HealthService:
     """Application service for health monitoring."""
 
     def __init__(
@@ -264,102 +380,110 @@ class HealthMonitoringService:
         health_analysis_service: HealthAnalysisService,
         event_bus: EventBus,
     ) -> None:
+        """Initialize health service.
+        
+        Args:
+            health_repository: Repository for storing health checks.
+            health_analysis_service: Service for health analysis.
+            event_bus: Event bus for publishing events.
+
+        """
         self.health_repository = health_repository
         self.health_analysis_service = health_analysis_service
         self.event_bus = event_bus
 
     async def perform_health_check(
         self,
+        name: str,
+        check_type: str,
         component_name: str,
+        *,
         component_namespace: str = "default",
         endpoint: str | None = None,
-        timeout_ms: int = 5000,
+        timeout_seconds: int = 5,
     ) -> ServiceResult[HealthCheck]:
-        """Perform a health check for a component."""
+        """Perform a health check and analyze results.
+
+        Args:
+            name: Name of the health check.
+            check_type: Type of health check to perform.
+            component_name: Name of the component being checked.
+            component_namespace: Namespace of the component.
+            endpoint: Optional endpoint to check.
+            timeout_seconds: Timeout for the health check.
+
+        Returns:
+            ServiceResult containing the health check result or error.
+
+        """
         try:
-            start_time = datetime.now(UTC)
-
-            # Create component name
-            ComponentName(name=component_name, namespace=component_namespace)
-
-            # Perform actual health check (simplified)
-            # In a real implementation, this would call the actual health endpoint
-            error = None
-
-            # Calculate duration
-            end_time = datetime.now(UTC)
-            duration_ms = int((end_time - start_time).total_seconds() * 1000)
-            Duration(milliseconds=duration_ms)
-
-            # Create health check entity
-            health_check = HealthCheck(
-                name=component_name,
-                check_type="api",
+            # Create health check entity from data, then save
+            from flext_observability.domain.entities import HealthCheck
+            health_check_entity = HealthCheck(
+                name=name,
+                check_type=check_type,
+                component=ComponentName(
+                    name=component_name,
+                    namespace=component_namespace,
+                ),
                 endpoint=endpoint,
-                error_message=error,
+                timeout_seconds=timeout_seconds,
             )
 
-            # Store health check
-            stored_health_check = await self.health_repository.save(health_check)
+            # Simulate health check execution
+            # In real implementation, this would perform actual health check
+            health_check_entity.last_check_at = datetime.now(UTC)
+            health_check_entity.is_healthy = True
+            health_check_entity.response_time_ms = 50.0
+            health_check_entity.check_result = {"status": "ok"}
 
-            # Update component health status
-            status_changed_result = (
-                self.health_analysis_service.update_component_health(
-                    stored_health_check,
-                )
+            health_check_result = await self.health_repository.save(health_check_entity)
+            if not health_check_result.is_success:
+                return ServiceResult.fail(f"Failed to save health check: {health_check_result.error}")
+
+            health_check = health_check_result.data
+            if health_check is None:
+                return ServiceResult.fail("Failed to save health check: No data returned")
+
+            # Update system health analysis
+            analysis_result = self.health_analysis_service.update_component_health(health_check)
+            if not analysis_result.is_success:
+                return ServiceResult.fail(f"Failed to update component health: {analysis_result.error}")
+
+            # Publish health check completed event
+            from flext_observability.domain.value_objects import HealthStatus
+            event = HealthCheckCompleted(
+                health_check=health_check,
+                component=health_check.component,
+                status=HealthStatus.HEALTHY if health_check.is_healthy else HealthStatus.UNHEALTHY,
+                duration_ms=int(health_check.response_time_ms or 50.0),
             )
-
-            # Publish event
-            event = HealthCheckCompleted(health_check=stored_health_check)
             await self.event_bus.publish(event)
-
-            # Publish status change event if needed
-            if status_changed_result.success and status_changed_result.data:
-                # Would publish ComponentHealthChanged event
-                pass
-
-            return ServiceResult.ok(stored_health_check)
-
-        except Exception as e:
-            return ServiceResult.fail(f"Failed to perform health check: {e}")
-
-    async def get_system_health(self) -> ServiceResult[dict[str, Any]]:
-        """Get overall system health."""
-        try:
-            # Get latest health checks for all components
-            health_checks = await self.health_repository.get_latest_by_component()
-
-            # Update health analysis service with latest data
-            for health_check in health_checks:
-                self.health_analysis_service.update_component_health(health_check)
-
-            # Get system health
-            return self.health_analysis_service.get_system_health()
-
-        except Exception as e:
-            return ServiceResult.fail(f"Failed to get system health: {e}")
-
-    async def get_component_health(
-        self,
-        component_name: str,
-        component_namespace: str = "default",
-    ) -> ServiceResult[HealthCheck | None]:
-        """Get health status for a specific component."""
-        try:
-            component = ComponentName(
-                name=component_name, namespace=component_namespace,
-            )
-            health_check = await self.health_repository.get_latest_by_component(
-                component,
-            )
 
             return ServiceResult.ok(health_check)
 
+        except (ValueError, TypeError, AttributeError) as e:
+            return ServiceResult.fail(f"Failed to perform health check: {e}")
         except Exception as e:
-            return ServiceResult.fail(f"Failed to get component health: {e}")
+            return ServiceResult.fail(f"Unexpected error performing health check: {e}")
+
+    async def get_system_health(self) -> ServiceResult[dict[str, Any]]:
+        """Get system health overview.
+
+        Returns:
+            ServiceResult containing system health information or error.
+
+        """
+        try:
+            # Health analysis service returns ServiceResult synchronously
+            return self.health_analysis_service.get_system_health()
+
+        except (ValueError, TypeError, AttributeError) as e:
+            return ServiceResult.fail(f"Failed to get system health: {e}")
+        except Exception as e:
+            return ServiceResult.fail(f"Unexpected error getting system health: {e}")
 
 
-@injectable()
 class LoggingService:
     """Application service for structured logging."""
 
@@ -369,86 +493,97 @@ class LoggingService:
         log_analysis_service: LogAnalysisService,
         event_bus: EventBus,
     ) -> None:
+        """Initialize logging service.
+        
+        Args:
+            log_repository: Repository for storing log entries.
+            log_analysis_service: Service for log analysis.
+            event_bus: Event bus for publishing events.
+        
+        """
         self.log_repository = log_repository
         self.log_analysis_service = log_analysis_service
         self.event_bus = event_bus
 
     async def create_log_entry(
         self,
-        level: LogLevel,
+        level: str,
         message: str,
+        logger_name: str,
         component_name: str,
+        *,
         component_namespace: str = "default",
-        correlation_id: str | None = None,
-        trace_id: str | None = None,
-        span_id: str | None = None,
-        fields: dict[str, Any] | None = None,
-        exception: str | None = None,
+        module: str | None = None,
+        function: str | None = None,
+        line_number: int | None = None,
+        extra: dict[str, Any] | None = None,
     ) -> ServiceResult[LogEntry]:
-        """Create a structured log entry."""
-        try:
-            # Create component name
-            ComponentName(name=component_name, namespace=component_namespace)
+        """Create a structured log entry.
 
-            # Create log entry entity
-            log_entry = LogEntry(
+        Args:
+            level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
+            message: Log message.
+            logger_name: Name of the logger.
+            component_name: Name of the component generating the log.
+            component_namespace: Namespace of the component.
+            module: Optional module name.
+            function: Optional function name.
+            line_number: Optional line number.
+            extra: Optional additional fields.
+
+        Returns:
+            ServiceResult containing the created log entry or error.
+
+        """
+        try:
+            # Create log entry entity from data, then save
+            from flext_observability.domain.entities import LogEntry
+            log_entry_entity = LogEntry(
                 level=level,
                 message=message,
-                logger_name=component_name,
-                correlation_id=correlation_id,
-                extra=fields or {},
+                logger_name=logger_name,
+                module=module,
+                function=function,
+                line_number=line_number,
+                extra=extra or {},
             )
 
-            # Store log entry
-            stored_log_entry = await self.log_repository.save(log_entry)
+            log_entry_result = await self.log_repository.save(log_entry_entity)
+            if not log_entry_result.is_success:
+                return ServiceResult.fail(f"Failed to save log entry: {log_entry_result.error}")
+
+            log_entry = log_entry_result.data
+            if log_entry is None:
+                return ServiceResult.fail("Failed to save log entry: No data returned")
 
             # Analyze log entry
-            self.log_analysis_service.analyze_log_entry(stored_log_entry)
+            analysis_result = self.log_analysis_service.analyze_log_entry(log_entry)
+            if not analysis_result.is_success:
+                return ServiceResult.fail(f"Failed to analyze log entry: {analysis_result.error}")
 
-            # Publish event
-            event = LogEntryCreated(log_entry=stored_log_entry)
+            # Publish log entry created event
+            # LogEntryCreated needs component - we need to add it to LogEntry
+            from flext_observability.domain.value_objects import ComponentName
+            component = ComponentName(
+                name=component_name,
+                namespace=component_namespace,
+            )
+            event = LogEntryCreated(
+                log_entry=log_entry,
+                component=component,
+                level=log_entry.level,
+                message=log_entry.message,
+            )
             await self.event_bus.publish(event)
 
-            return ServiceResult.ok(stored_log_entry)
+            return ServiceResult.ok(log_entry)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to create log entry: {e}")
-
-    async def get_logs(
-        self,
-        level: LogLevel | None = None,
-        component_name: str | None = None,
-        start_time: datetime | None = None,
-        end_time: datetime | None = None,
-        search: str | None = None,
-        limit: int = 100,
-    ) -> ServiceResult[list[LogEntry]]:
-        """Get log entries with optional filtering."""
-        try:
-            logs = await self.log_repository.find_by_criteria(
-                level=level,
-                component_name=component_name,
-                start_time=start_time,
-                end_time=end_time,
-                search=search,
-                limit=limit,
-            )
-
-            return ServiceResult.ok(logs)
-
         except Exception as e:
-            return ServiceResult.fail(f"Failed to get logs: {e}")
-
-    async def get_error_patterns(self) -> ServiceResult[dict[str, int]]:
-        """Get detected error patterns."""
-        try:
-            return self.log_analysis_service.get_error_patterns()
-
-        except Exception as e:
-            return ServiceResult.fail(f"Failed to get error patterns: {e}")
+            return ServiceResult.fail(f"Unexpected error creating log entry: {e}")
 
 
-@injectable()
 class TracingService:
     """Application service for distributed tracing."""
 
@@ -458,6 +593,14 @@ class TracingService:
         trace_analysis_service: TraceAnalysisService,
         event_bus: EventBus,
     ) -> None:
+        """Initialize tracing service.
+        
+        Args:
+            trace_repository: Repository for storing traces.
+            trace_analysis_service: Service for trace analysis.
+            event_bus: Event bus for publishing events.
+        
+        """
         self.trace_repository = trace_repository
         self.trace_analysis_service = trace_analysis_service
         self.event_bus = event_bus
@@ -466,114 +609,158 @@ class TracingService:
         self,
         operation_name: str,
         component_name: str,
+        *,
         component_namespace: str = "default",
         trace_id: str | None = None,
         span_id: str | None = None,
         parent_span_id: str | None = None,
         tags: dict[str, str] | None = None,
     ) -> ServiceResult[Trace]:
-        """Start a new trace."""
+        """Start a new distributed trace.
+
+        Args:
+            operation_name: Name of the operation being traced.
+            component_name: Name of the component generating the trace.
+            component_namespace: Namespace of the component.
+            trace_id: Optional trace ID (generated if not provided).
+            span_id: Optional span ID (generated if not provided).
+            parent_span_id: Optional parent span ID for nested spans.
+            tags: Optional tags for the trace.
+
+        Returns:
+            ServiceResult containing the started trace or error.
+
+        """
         try:
-            # Create component name
-            ComponentName(name=component_name, namespace=component_namespace)
+            trace_data = {
+                "trace_id": trace_id or str(uuid4()),
+                "span_id": span_id or str(uuid4()),
+                "parent_span_id": parent_span_id,
+                "operation_name": operation_name,
+                "component": ComponentName(
+                    name=component_name,
+                    namespace=component_namespace,
+                ),
+                "service_name": component_name,
+                "trace_tags": tags or {},
+                "start_time": datetime.now(UTC),
+            }
 
-            # Create trace identifier
-            trace_identifier = TraceId(
-                trace_id=trace_id or str(uuid4()).replace("-", ""),
-                span_id=span_id or str(uuid4()).replace("-", "")[:16],
+            # Create trace entity from data, then save
+            from flext_observability.domain.entities import Trace
+            trace_entity = Trace(
+                trace_id=trace_data["trace_id"],
+                span_id=trace_data["span_id"],
+                parent_span_id=trace_data["parent_span_id"],
+                operation_name=trace_data["operation_name"],
+                component=trace_data["component"],
+                service_name=trace_data["service_name"],
+                trace_tags=trace_data["trace_tags"],
+                start_time=trace_data["start_time"],
             )
+            trace_entity.start()
 
-            # Create trace entity
-            trace = Trace(
-                trace_id=trace_identifier,
-                span_id=str(uuid4()),
-                operation_name=operation_name,
-                service_name=component_name,
-                trace_status=TraceStatus.STARTED,
-                parent_span_id=parent_span_id,
-                trace_tags=tags or {},
+            # Save the trace entity
+            trace_result = await self.trace_repository.save(trace_entity)
+            if not trace_result.is_success:
+                return ServiceResult.fail(f"Failed to save trace: {trace_result.error}")
+
+            trace = trace_result.data
+            if trace is None:
+                return ServiceResult.fail("Failed to save trace: No data returned")
+
+            # Publish trace started event
+            event = TraceStarted(
+                trace=trace,
+                component=trace.component,
+                operation_name=trace.operation_name,
             )
-
-            # Start the trace
-            trace.start()
-
-            # Store trace
-            stored_trace = await self.trace_repository.save(trace)
-
-            # Publish event
-            event = TraceStarted(trace=stored_trace)
             await self.event_bus.publish(event)
 
-            return ServiceResult.ok(stored_trace)
+            return ServiceResult.ok(trace)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to start trace: {e}")
+        except Exception as e:
+            return ServiceResult.fail(f"Unexpected error starting trace: {e}")
 
-    async def complete_trace(
+    async def finish_trace(
         self,
         trace_id: str,
         success: bool = True,
         error: str | None = None,
     ) -> ServiceResult[Trace]:
-        """Complete a trace."""
+        """Finish a distributed trace.
+
+        Args:
+            trace_id: ID of the trace to finish.
+            success: Whether the trace completed successfully.
+            error: Optional error message if the trace failed.
+
+        Returns:
+            ServiceResult containing the finished trace or error.
+
+        """
         try:
-            # Get trace
-            trace = await self.trace_repository.get_by_trace_id(trace_id)
-            if not trace:
+            from uuid import UUID
+            trace_uuid = UUID(trace_id)
+            trace_result = await self.trace_repository.get_by_id(trace_uuid)
+            if not trace_result.is_success:
+                return ServiceResult.fail(f"Failed to get trace: {trace_result.error}")
+
+            trace = trace_result.data
+            if trace is None:
                 return ServiceResult.fail("Trace not found")
 
-            # Complete or fail the trace
             if success:
-                trace.complete()
+                trace.finish()
             else:
                 trace.fail(error or "Unknown error")
 
-            # Store updated trace
-            updated_trace = await self.trace_repository.save(trace)
+            # Save the updated trace (using save since there's no update method)
+            save_result = await self.trace_repository.save(trace)
+            if not save_result.is_success:
+                return ServiceResult.fail(f"Failed to save updated trace: {save_result.error}")
 
             # Analyze trace
-            self.trace_analysis_service.analyze_trace(updated_trace)
+            analysis_result = self.trace_analysis_service.analyze_trace(trace)
+            if not analysis_result.is_success:
+                return ServiceResult.fail(f"Failed to analyze trace: {analysis_result.error}")
 
-            # Publish event
-            event = TraceCompleted(trace=updated_trace)
+            # Publish trace completed event
+            event = TraceCompleted(
+                trace=trace,
+                component=trace.component,
+                operation_name=trace.operation_name,
+                duration_ms=int(trace.duration_ms or 0),
+                success=success,
+            )
             await self.event_bus.publish(event)
 
-            return ServiceResult.ok(updated_trace)
+            return ServiceResult.ok(trace)
 
+        except (ValueError, TypeError, AttributeError) as e:
+            return ServiceResult.fail(f"Failed to finish trace: {e}")
         except Exception as e:
-            return ServiceResult.fail(f"Failed to complete trace: {e}")
-
-    async def get_traces(
-        self,
-        operation_name: str | None = None,
-        component_name: str | None = None,
-        status: TraceStatus | None = None,
-        start_time: datetime | None = None,
-        end_time: datetime | None = None,
-        limit: int = 100,
-    ) -> ServiceResult[list[Trace]]:
-        """Get traces with optional filtering."""
-        try:
-            traces = await self.trace_repository.find_by_criteria(
-                operation_name=operation_name,
-                component_name=component_name,
-                status=status,
-                start_time=start_time,
-                end_time=end_time,
-                limit=limit,
-            )
-
-            return ServiceResult.ok(traces)
-
-        except Exception as e:
-            return ServiceResult.fail(f"Failed to get traces: {e}")
+            return ServiceResult.fail(f"Unexpected error finishing trace: {e}")
 
     async def get_operation_stats(
-        self, operation_name: str,
+        self,
+        operation_name: str,
     ) -> ServiceResult[dict[str, Any]]:
-        """Get statistics for an operation."""
+        """Get statistics for a specific operation.
+
+        Args:
+            operation_name: Name of the operation to get statistics for.
+
+        Returns:
+            ServiceResult containing operation statistics or error.
+
+        """
         try:
             return self.trace_analysis_service.get_operation_stats(operation_name)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to get operation stats: {e}")
+        except Exception as e:
+            return ServiceResult.fail(f"Unexpected error getting operation stats: {e}")

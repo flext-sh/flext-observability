@@ -1,4 +1,8 @@
-"""Infrastructure layer for observability - external concerns."""
+"""Infrastructure layer for observability - external concerns.
+
+Copyright (c) 2025 Flext. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from flext_observability.infrastructure.adapters import HttpHealthChecker
 from flext_observability.infrastructure.adapters import InMemoryEventBus
@@ -33,14 +37,11 @@ from flext_observability.infrastructure.persistence.repositories import (
 )
 
 __all__ = [
-    "AlertNotifier",
-    # Ports
     "AlertRepository",
+    "DashboardRepository",
     "EventBus",
-    "HealthChecker",
     "HealthRepository",
     "HttpHealthChecker",
-    # Repositories
     "InMemoryAlertRepository",
     "InMemoryDashboardRepository",
     "InMemoryEventBus",
@@ -49,10 +50,8 @@ __all__ = [
     "InMemoryMetricsRepository",
     "InMemoryTraceRepository",
     "LogRepository",
-    "MetricsExporter",
     "MetricsRepository",
     "OpenTelemetryTraceExporter",
-    # Adapters
     "PrometheusMetricsExporter",
     "SlackAlertNotifier",
     "StructlogLogAdapter",

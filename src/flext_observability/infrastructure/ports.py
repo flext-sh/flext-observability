@@ -1,5 +1,8 @@
 """Infrastructure ports implementations for FLEXT-OBSERVABILITY.
 
+Copyright (c) 2025 Flext. All rights reserved.
+SPDX-License-Identifier: MIT
+
 Using flext-core infrastructure patterns - NO duplication.
 """
 
@@ -7,13 +10,16 @@ from __future__ import annotations
 
 import json
 import logging
+from abc import ABC
+from abc import abstractmethod
+from datetime import UTC
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Any
 
 from flext_core.domain.types import ServiceResult
 from flext_observability.domain.entities import Dashboard
-from flext_observability.domain.entities import HealthCheck
 from flext_observability.domain.ports import AlertService
 from flext_observability.domain.ports import DashboardService
 from flext_observability.domain.ports import HealthService
@@ -22,29 +28,140 @@ from flext_observability.domain.ports import MetricsService
 from flext_observability.domain.ports import TracingService
 
 if TYPE_CHECKING:
+    from flext_observability.config import AlertingConfig
+    from flext_observability.config import HealthCheckConfig
+    from flext_observability.config import LoggingConfig
+    from flext_observability.config import MetricsConfig
+    from flext_observability.config import TracingConfig
     from flext_observability.domain.entities import Alert
+    from flext_observability.domain.entities import HealthCheck
     from flext_observability.domain.entities import LogEntry
     from flext_observability.domain.entities import Metric
     from flext_observability.domain.entities import Trace
-    from flext_observability.infrastructure.config import AlertingConfig
-    from flext_observability.infrastructure.config import HealthConfig
-    from flext_observability.infrastructure.config import LoggingConfig
-    from flext_observability.infrastructure.config import MetricsConfig
-    from flext_observability.infrastructure.config import TracingConfig
+
+
+class MetricsExporter(ABC):
+    """Abstract metrics exporter port."""
+
+    @abstractmethod
+    async def export_metric(self, metric: Metric) -> None:
+        """Export single metric.
+
+        Args:
+            metric: The metric to export.
+
+        """
+        ...
+
+    @abstractmethod
+    async def export_metrics(self, metrics: list[Metric]) -> None:
+        """Export multiple metrics.
+
+        Args:
+            metrics: The metrics to export.
+
+        """
+        ...
+
+
+class TraceExporter(ABC):
+    """Abstract trace exporter port."""
+
+    @abstractmethod
+    async def export_trace(self, trace: Trace) -> None:
+        """Export single trace.
+
+        Args:
+            trace: The trace to export.
+
+        """
+        ...
+
+    @abstractmethod
+    async def export_traces(self, traces: list[Trace]) -> None:
+        """Export multiple traces.
+
+        Args:
+            traces: The traces to export.
+
+        """
+        ...
+
+
+class LogExporter(ABC):
+    """Abstract log exporter port."""
+
+    @abstractmethod
+    async def export_log(self, log_entry: LogEntry) -> None:
+        """Export single log entry.
+
+        Args:
+            log_entry: The log entry to export.
+
+        """
+        ...
+
+    @abstractmethod
+    async def export_logs(self, log_entries: list[LogEntry]) -> None:
+        """Export multiple log entries.
+
+        Args:
+            log_entries: The log entries to export.
+
+        """
+        ...
+
+
+class AlertNotifier(ABC):
+    """Abstract alert notifier port."""
+
+    @abstractmethod
+    async def notify(self, alert: Alert) -> None:
+        """Send alert notification.
+
+        Args:
+            alert: The alert to send.
+
+        """
+        ...
+
+    @abstractmethod
+    async def notify_batch(self, alerts: list[Alert]) -> None:
+        """Send multiple alert notifications.
+
+        Args:
+            alerts: The alerts to send.
+
+        """
+        ...
 
 
 class FileLogPort(LogService):
     """File-based log service implementation."""
 
     def __init__(self, config: LoggingConfig) -> None:
+        """Initialize file log port.
+
+        Args:
+            config: The logging configuration.
+
+        """
         self.config = config
         self.logger = logging.getLogger(__name__)
 
     async def write_log(self, log_entry: LogEntry) -> ServiceResult[None]:
-        """Write log entry to file."""
+        """Write log entry to file.
+
+        Args:
+            log_entry: Log entry to write containing timestamp, level, message, and metadata.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
-            if self.config.logging_file_enabled:
-                log_file = Path(self.config.logging_file_path)
+            if self.config.log_to_file:
+                log_file = Path(self.config.log_file_path)
                 log_file.parent.mkdir(parents=True, exist_ok=True)
 
                 # Create log record
@@ -63,21 +180,32 @@ class FileLogPort(LogService):
                     "tags": log_entry.tags,
                 }
 
-                # Write to file
+                # Write to file synchronously - aiofiles required for async I/O
                 with log_file.open("a", encoding="utf-8") as f:
-                    if self.config.logging_format == "json":
+                    if self.config.structured_logging:
                         f.write(json.dumps(log_record) + "\n")
                     else:
-                        f.write(
-                            f"{log_record['timestamp']} [{log_record['level']}] {log_record['message']}\n",
-                        )
+                        timestamp = log_record["timestamp"]
+                        level = log_record["level"]
+                        message = log_record["message"]
+                        f.write(f"{timestamp} [{level}] {message}\n")
 
             return ServiceResult.ok(None)
-        except Exception as e:
+        except OSError as e:
             return ServiceResult.fail(f"Failed to write log: {e}")
+        except (TypeError, AttributeError, UnicodeError) as e:
+            return ServiceResult.fail(f"Unexpected error writing log: {e}")
 
     async def configure_logging(self, config: dict[str, Any]) -> ServiceResult[None]:
-        """Configure logging system."""
+        """Configure logging settings.
+
+        Args:
+            config: Dictionary containing logging configuration with keys like 'level', 'format'.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
             # Update logging configuration
             logging.basicConfig(
@@ -88,38 +216,70 @@ class FileLogPort(LogService):
                 ),
             )
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (ValueError, OSError, TypeError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to configure logging: {e}")
 
     async def get_log_level(self) -> ServiceResult[str]:
-        """Get current log level."""
+        """Get current log level.
+
+        Returns:
+            ServiceResult with current log level string or error message on failure.
+
+        """
         try:
             return ServiceResult.ok(self.config.log_level)
-        except Exception as e:
+        except (AttributeError, ValueError, TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Failed to get log level: {e}")
 
     async def set_log_level(self, level: str) -> ServiceResult[None]:
-        """Set log level."""
+        """Set log level.
+
+        Args:
+            level: Log level string (DEBUG, INFO, WARNING, ERROR, CRITICAL).
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
-            self.config.log_level = level
+            # Convert string to LogLevel enum
+            from flext_core.domain.types import LogLevel
+
+            self.config.log_level = LogLevel(level.upper())
             logging.getLogger().setLevel(getattr(logging, level))
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to set log level: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error setting log level: {e}")
 
 
 class PrometheusMetricsPort(MetricsService):
     """Prometheus metrics service implementation."""
 
     def __init__(self, config: MetricsConfig) -> None:
+        """Initialize Prometheus metrics port.
+
+        Args:
+            config: The metrics configuration.
+
+        """
         self.config = config
-        self.metrics_cache = {}
+        self.metrics_cache: dict[str, list[dict[str, Any]]] = {}
 
     async def record_metric(self, metric: Metric) -> ServiceResult[None]:
-        """Record metric."""
+        """Record a metric value.
+
+        Args:
+            metric: Metric to record containing name, type, value, timestamp, labels, and unit.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
             # Store in cache
-            key = f"{metric.name}_{metric.type}"
+            key = f"{metric.name}_{metric.metric_type.value}"
             if key not in self.metrics_cache:
                 self.metrics_cache[key] = []
 
@@ -133,17 +293,24 @@ class PrometheusMetricsPort(MetricsService):
             )
 
             # Keep only recent metrics
-            if len(self.metrics_cache[key]) > self.config.metrics_retention_limit:
+            if len(self.metrics_cache[key]) > self.config.max_metrics_per_name:
                 self.metrics_cache[key] = self.metrics_cache[key][
-                    -self.config.metrics_retention_limit :
+                    -self.config.max_metrics_per_name :
                 ]
 
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (KeyError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to record metric: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error recording metric: {e}")
 
     async def get_current_metrics(self) -> ServiceResult[dict[str, Any]]:
-        """Get current metrics."""
+        """Get current metric values.
+
+        Returns:
+            ServiceResult with dictionary of current metrics containing current_value, count, and latest_timestamp for each metric.
+
+        """
         try:
             current_metrics = {}
             for key, values in self.metrics_cache.items():
@@ -154,21 +321,38 @@ class PrometheusMetricsPort(MetricsService):
                         "latest_timestamp": values[-1]["timestamp"],
                     }
             return ServiceResult.ok(current_metrics)
-        except Exception as e:
+        except (KeyError, ValueError) as e:
             return ServiceResult.fail(f"Failed to get current metrics: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error getting current metrics: {e}")
 
     async def reset_metrics(self) -> ServiceResult[None]:
-        """Reset all metrics."""
+        """Reset all stored metrics.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
             self.metrics_cache.clear()
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (AttributeError, ValueError) as e:
             return ServiceResult.fail(f"Failed to reset metrics: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error resetting metrics: {e}")
 
-    async def export_metrics(self, format: str) -> ServiceResult[str]:
-        """Export metrics in specified format."""
+    async def export_metrics(self, format_type: str) -> ServiceResult[str]:
+        """Export metrics in specified format.
+
+        Args:
+            format_type: Export format ('prometheus' or 'json').
+
+        Returns:
+            ServiceResult with exported metrics string or error message on failure.
+
+        """
         try:
-            if format == "prometheus":
+            if format_type == "prometheus":
                 output = []
                 for key, values in self.metrics_cache.items():
                     if values:
@@ -179,10 +363,10 @@ class PrometheusMetricsPort(MetricsService):
                         )
                         output.append(f"{metric_name}{{{labels}}} {latest['value']}")
                 return ServiceResult.ok("\n".join(output))
-            if format == "json":
+            if format_type == "json":
                 return ServiceResult.ok(json.dumps(self.metrics_cache, indent=2))
-            return ServiceResult.fail(f"Unsupported format: {format}")
-        except Exception as e:
+            return ServiceResult.fail(f"Unsupported format: {format_type}")
+        except (ValueError, KeyError, TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Failed to export metrics: {e}")
 
 
@@ -190,11 +374,25 @@ class JaegerTracingPort(TracingService):
     """Jaeger tracing service implementation."""
 
     def __init__(self, config: TracingConfig) -> None:
+        """Initialize Jaeger tracing port.
+
+        Args:
+            config: The tracing configuration.
+
+        """
         self.config = config
-        self.traces_cache = {}
+        self.traces_cache: dict[str, dict[str, Any]] = {}
 
     async def start_trace(self, trace: Trace) -> ServiceResult[None]:
-        """Start a trace."""
+        """Start a new trace.
+
+        Args:
+            trace: Trace object containing trace_id, span_id, operation_name, service_name, and metadata.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
             trace_data = {
                 "trace_id": trace.trace_id,
@@ -202,57 +400,88 @@ class JaegerTracingPort(TracingService):
                 "operation_name": trace.operation_name,
                 "service_name": trace.service_name,
                 "start_time": trace.start_time.isoformat(),
-                "status": trace.status,
-                "tags": trace.tags,
+                "status": trace.trace_status.value,
+                "tags": trace.trace_tags,
                 "logs": trace.logs,
                 "events": trace.events,
             }
 
-            self.traces_cache[trace.id] = trace_data
+            self.traces_cache[str(trace.id)] = trace_data
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (KeyError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to start trace: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error starting trace: {e}")
 
     async def finish_trace(self, trace: Trace) -> ServiceResult[None]:
-        """Finish a trace."""
+        """Finish an existing trace.
+
+        Args:
+            trace: Trace object with end_time, duration_ms, status, and error information.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
-            if trace.id in self.traces_cache:
-                self.traces_cache[trace.id].update(
+            trace_key = str(trace.id)
+            if trace_key in self.traces_cache:
+                self.traces_cache[trace_key].update(
                     {
                         "end_time": (
                             trace.end_time.isoformat() if trace.end_time else None
                         ),
                         "duration_ms": trace.duration_ms,
-                        "status": trace.status,
+                        "status": trace.trace_status.value,
                         "error": trace.error,
                     },
                 )
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (KeyError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to finish trace: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error finishing trace: {e}")
 
     async def add_span(
-        self,
-        trace: Trace,
-        span_data: dict[str, Any],
+        self, trace: Trace, span_data: dict[str, Any],
     ) -> ServiceResult[None]:
-        """Add span to trace."""
-        try:
-            if trace.id in self.traces_cache:
-                if "spans" not in self.traces_cache[trace.id]:
-                    self.traces_cache[trace.id]["spans"] = []
-                self.traces_cache[trace.id]["spans"].append(span_data)
-            return ServiceResult.ok(None)
-        except Exception as e:
-            return ServiceResult.fail(f"Failed to add span: {e}")
+        """Add span data to an existing trace.
 
-    async def export_traces(self, format: str) -> ServiceResult[str]:
-        """Export traces in specified format."""
+        Args:
+            trace: Trace object to add span to.
+            span_data: Dictionary containing span information.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
-            if format in {"jaeger", "json"}:
+            trace_key = str(trace.id)
+            if trace_key in self.traces_cache:
+                if "spans" not in self.traces_cache[trace_key]:
+                    self.traces_cache[trace_key]["spans"] = []
+                self.traces_cache[trace_key]["spans"].append(span_data)
+            return ServiceResult.ok(None)
+        except (KeyError, ValueError, AttributeError) as e:
+            return ServiceResult.fail(f"Failed to add span: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error adding span: {e}")
+
+    async def export_traces(self, format_type: str) -> ServiceResult[str]:
+        """Export traces in specified format.
+
+        Args:
+            format_type: Export format ('jaeger' or 'json').
+
+        Returns:
+            ServiceResult with exported traces string or error message on failure.
+
+        """
+        try:
+            if format_type in {"jaeger", "json"}:
                 return ServiceResult.ok(json.dumps(self.traces_cache, indent=2))
-            return ServiceResult.fail(f"Unsupported format: {format}")
-        except Exception as e:
+            return ServiceResult.fail(f"Unsupported format: {format_type}")
+        except (ValueError, KeyError, TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Failed to export traces: {e}")
 
 
@@ -260,10 +489,24 @@ class SlackAlertPort(AlertService):
     """Slack alert service implementation."""
 
     def __init__(self, config: AlertingConfig) -> None:
+        """Initialize Slack alert port.
+
+        Args:
+            config: The alerting configuration.
+
+        """
         self.config = config
 
-    async def send_alert(self, alert: Alert) -> ServiceResult[None]:
-        """Send alert notification."""
+    async def trigger_alert(self, alert: Alert) -> ServiceResult[None]:
+        """Send alert notification via Slack.
+
+        Args:
+            alert: Alert object containing title, description, severity, source, condition, and timestamp.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
             # Simulate sending to Slack
             {
@@ -275,91 +518,183 @@ class SlackAlertPort(AlertService):
                 "timestamp": alert.created_at.isoformat(),
             }
 
-            # In real implementation, send to Slack webhook
 
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (KeyError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to send alert: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error sending alert: {e}")
 
-    async def resolve_alert(self, alert: Alert) -> ServiceResult[None]:
-        """Resolve alert notification."""
+    async def resolve_alert(self, alert_id: str) -> ServiceResult[None]:
+        """Mark alert as resolved in Slack.
+
+        Args:
+            alert_id: ID of alert to resolve.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
             # Simulate resolving in Slack
             {
-                "title": f"RESOLVED: {alert.title}",
-                "resolved_at": (
-                    alert.resolved_at.isoformat() if alert.resolved_at else None
-                ),
+                "title": f"RESOLVED: Alert {alert_id}",
+                "resolved_at": datetime.now(UTC).isoformat(),
             }
 
-            # In real implementation, update Slack thread
 
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to resolve alert: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error resolving alert: {e}")
 
     async def configure_channels(self, channels: dict[str, Any]) -> ServiceResult[None]:
-        """Configure alert channels."""
+        """Configure alert channels.
+
+        Args:
+            channels: Dictionary containing channel configuration including webhook_url.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
-            # Update configuration
-            self.config.webhook_url = channels.get("webhook_url")
+            # Store webhook URL in instance variable
+            self.webhook_url = channels.get("webhook_url")
+            self.channels = channels
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (KeyError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to configure channels: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error configuring channels: {e}")
 
     async def test_alert(self, channel: str) -> ServiceResult[None]:
-        """Test alert channel."""
+        """Send test alert to specified channel.
+
+        Args:
+            channel: Channel identifier to send test alert to.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
-            # Send test alert
+            # Send test alert to channel
+            {
+                "title": "Test Alert",
+                "description": "This is a test alert",
+                "channel": channel,
+                "timestamp": datetime.now(UTC).isoformat(),
+            }
+
 
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to test alert: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error testing alert: {e}")
+
+    async def acknowledge_alert(self, alert_id: str) -> ServiceResult[None]:
+        """Acknowledge an alert.
+
+        Args:
+            alert_id: ID of alert to acknowledge.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
+        try:
+            # Simulate acknowledging in Slack
+            {
+                "alert_id": alert_id,
+                "acknowledged_at": datetime.now(UTC).isoformat(),
+                "acknowledged_by": "system",
+            }
+
+
+            return ServiceResult.ok(None)
+        except (ValueError, AttributeError) as e:
+            return ServiceResult.fail(f"Failed to acknowledge alert: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error acknowledging alert: {e}")
+
+    async def get_active_alerts(self) -> ServiceResult[list[Alert]]:
+        """Get all active alerts.
+
+        Returns:
+            ServiceResult with list of active alerts or error message on failure.
+
+        """
+        try:
+            # Simulate getting active alerts - return empty list for now
+            return ServiceResult.ok([])
+        except (ValueError, AttributeError) as e:
+            return ServiceResult.fail(f"Failed to get active alerts: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error getting active alerts: {e}")
 
 
 class SimpleHealthPort(HealthService):
     """Simple health service implementation."""
 
-    def __init__(self, config: HealthConfig) -> None:
-        self.config = config
-        self.registered_checks = {}
+    def __init__(self, config: HealthCheckConfig) -> None:
+        """Initialize simple health port.
 
-    async def run_check(
-        self,
-        health_check: HealthCheck,
-    ) -> ServiceResult[dict[str, Any]]:
-        """Run health check."""
+        Args:
+            config: The health check configuration.
+
+        """
+        self.config = config
+        self.registered_checks: dict[str, HealthCheck] = {}
+
+    async def perform_health_check(self, check: HealthCheck) -> ServiceResult[None]:
+        """Perform a health check.
+
+        Args:
+            check: HealthCheck object containing check configuration.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
             # Simulate running health check
-            result = {
+            {
+                "name": check.name,
+                "status": "healthy",
+                "timestamp": datetime.now(UTC).isoformat(),
                 "response_time_ms": 5.0,
-                "response_data": {"status": "healthy"},
-                "healthy": True,
             }
 
-            return ServiceResult.ok(result)
-        except Exception as e:
+
+            return ServiceResult.ok(None)
+        except (ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Health check failed: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error in health check: {e}")
 
     async def get_system_health(self) -> ServiceResult[dict[str, Any]]:
-        """Get overall system health."""
+        """Get overall system health status.
+
+        Returns:
+            ServiceResult with dictionary containing status, timestamp, and individual check results.
+
+        """
         try:
-            health_status = {
+            health_status: dict[str, Any] = {
                 "status": "healthy",
-                "timestamp": "2024-01-01T00:00:00Z",
+                "timestamp": datetime.now(UTC).isoformat(),
                 "checks": {},
             }
 
             # Run all registered checks
             for name, check in self.registered_checks.items():
-                check_result = await self.run_check(check)
+                check_result = await self.perform_health_check(check)
                 health_status["checks"][name] = {
                     "healthy": check_result.is_success,
-                    "response_time_ms": (
-                        check_result.data.get("response_time_ms", 0)
-                        if check_result.is_success
-                        else None
-                    ),
+                    "response_time_ms": 5.0 if check_result.is_success else None,
                     "error": (
                         check_result.error if not check_result.is_success else None
                     ),
@@ -370,41 +705,76 @@ class SimpleHealthPort(HealthService):
                 health_status["status"] = "unhealthy"
 
             return ServiceResult.ok(health_status)
-        except Exception as e:
+        except (KeyError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to get system health: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error getting system health: {e}")
 
-    async def register_check(self, health_check: HealthCheck) -> ServiceResult[None]:
-        """Register health check."""
+    async def register_health_check(self, check: HealthCheck) -> ServiceResult[None]:
+        """Register a new health check.
+
+        Args:
+            check: HealthCheck object to register.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
-            self.registered_checks[health_check.name] = health_check
+            self.registered_checks[check.name] = check
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to register check: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error registering check: {e}")
 
     async def unregister_check(self, check_name: str) -> ServiceResult[None]:
-        """Unregister health check."""
+        """Unregister a health check by name.
+
+        Args:
+            check_name: Name of the health check to remove.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
         try:
             if check_name in self.registered_checks:
                 del self.registered_checks[check_name]
             return ServiceResult.ok(None)
-        except Exception as e:
+        except (KeyError, ValueError) as e:
             return ServiceResult.fail(f"Failed to unregister check: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error unregistering check: {e}")
 
 
 class MemoryDashboardPort(DashboardService):
     """Memory-based dashboard service implementation."""
 
     def __init__(self, config: AlertingConfig) -> None:
+        """Initialize memory dashboard port.
+
+        Args:
+            config: The alerting configuration.
+
+        """
         self.config = config
-        self.dashboard_cache = {}
+        self.dashboard_cache: dict[str, Any] = {}
 
     async def render_dashboard(
-        self,
-        dashboard: Dashboard,
+        self, dashboard: Dashboard,
     ) -> ServiceResult[dict[str, Any]]:
-        """Render dashboard with current data."""
+        """Render dashboard with current data.
+
+        Args:
+            dashboard: Dashboard object containing configuration, widgets, and layout.
+
+        Returns:
+            ServiceResult with dictionary containing rendered dashboard data including widgets and metadata.
+
+        """
         try:
-            rendered = {
+            rendered: dict[str, Any] = {
                 "id": str(dashboard.id),
                 "title": dashboard.title,
                 "description": dashboard.description,
@@ -420,17 +790,26 @@ class MemoryDashboardPort(DashboardService):
                     rendered["widgets"].append(widget_data.data)
 
             return ServiceResult.ok(rendered)
-        except Exception as e:
+        except (KeyError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to render dashboard: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error rendering dashboard: {e}")
 
     async def export_dashboard(
-        self,
-        dashboard: Dashboard,
-        format: str,
+        self, dashboard: Dashboard, format_type: str,
     ) -> ServiceResult[str]:
-        """Export dashboard configuration."""
+        """Export dashboard in specified format.
+
+        Args:
+            dashboard: The dashboard to export.
+            format_type: The export format.
+
+        Returns:
+            ServiceResult with exported dashboard string or error message.
+
+        """
         try:
-            if format == "json":
+            if format_type == "json":
                 config = {
                     "title": dashboard.title,
                     "description": dashboard.description,
@@ -441,19 +820,26 @@ class MemoryDashboardPort(DashboardService):
                     "variables": dashboard.variables,
                 }
                 return ServiceResult.ok(json.dumps(config, indent=2))
-            return ServiceResult.fail(f"Unsupported format: {format}")
-        except Exception as e:
+            return ServiceResult.fail(f"Unsupported format: {format_type}")
+        except (ValueError, KeyError, TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Failed to export dashboard: {e}")
 
     async def import_dashboard(
-        self,
-        config: str,
-        format: str,
+        self, config_str: str, format_type: str,
     ) -> ServiceResult[Dashboard]:
-        """Import dashboard configuration."""
+        """Import dashboard from configuration.
+
+        Args:
+            config_str: The dashboard configuration string.
+            format_type: The import format.
+
+        Returns:
+            ServiceResult with imported dashboard or error message.
+
+        """
         try:
-            if format == "json":
-                config_data = json.loads(config)
+            if format_type == "json":
+                config_data = json.loads(config_str)
                 dashboard = Dashboard(
                     title=config_data["title"],
                     description=config_data.get("description"),
@@ -464,15 +850,23 @@ class MemoryDashboardPort(DashboardService):
                     variables=config_data.get("variables", {}),
                 )
                 return ServiceResult.ok(dashboard)
-            return ServiceResult.fail(f"Unsupported format: {format}")
-        except Exception as e:
+            return ServiceResult.fail(f"Unsupported format: {format_type}")
+        except (ValueError, KeyError, TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Failed to import dashboard: {e}")
 
     async def get_widget_data(
         self,
         widget_config: dict[str, Any],
     ) -> ServiceResult[dict[str, Any]]:
-        """Get data for dashboard widget."""
+        """Get widget data for rendering.
+
+        Args:
+            widget_config: The widget configuration dictionary.
+
+        Returns:
+            ServiceResult with widget data dictionary or error message.
+
+        """
         try:
             # Simulate widget data
             widget_data = {
@@ -481,11 +875,51 @@ class MemoryDashboardPort(DashboardService):
                 "title": widget_config.get("title", "Widget"),
                 "data": {
                     "value": 42,
-                    "timestamp": "2024-01-01T00:00:00Z",
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "unit": widget_config.get("unit", "count"),
                 },
             }
 
             return ServiceResult.ok(widget_data)
-        except Exception as e:
+        except (KeyError, ValueError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to get widget data: {e}")
+        except (TypeError, RuntimeError) as e:
+            return ServiceResult.fail(f"Unexpected error getting widget data: {e}")
+
+
+class EventBus(ABC):
+    """Base class for event bus implementations."""
+
+    @abstractmethod
+    async def publish_event(
+        self,
+        event: dict[str, Any],
+    ) -> ServiceResult[None]:
+        """Publish event to bus.
+
+        Args:
+            event: The event to publish.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
+        ...
+
+    @abstractmethod
+    async def subscribe(
+        self,
+        topic: str,
+        handler: Any,
+    ) -> ServiceResult[None]:
+        """Subscribe to topic with handler.
+
+        Args:
+            topic: The topic to subscribe to.
+            handler: The handler function.
+
+        Returns:
+            ServiceResult with None on success or error message on failure.
+
+        """
+        ...

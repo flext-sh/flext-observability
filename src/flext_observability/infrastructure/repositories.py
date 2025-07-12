@@ -1,45 +1,67 @@
-"""In-memory implementations of repositories for testing and development."""
+"""In-memory implementations of repositories for testing and development.
+
+Copyright (c) 2025 Flext. All rights reserved.
+SPDX-License-Identifier: MIT
+
+This module provides in-memory repository implementations for observability
+data including metrics, alerts, health checks, logs, and traces.
+"""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from uuid import UUID
 
 from flext_core.config.base import injectable
-from flext_observability.infrastructure.ports import AlertRepository
-from flext_observability.infrastructure.ports import HealthRepository
-from flext_observability.infrastructure.ports import LogRepository
-from flext_observability.infrastructure.ports import MetricsRepository
-from flext_observability.infrastructure.ports import TraceRepository
+from flext_core.domain.types import Status
+from flext_core.infrastructure.persistence.base import InMemoryRepository
+from flext_core.infrastructure.persistence.base import Repository
+
+# Type aliases for domain-specific repositories
+AlertRepository = Repository["Alert", UUID]
+HealthRepository = Repository["HealthCheck", UUID]
+LogRepository = Repository["LogEntry", UUID]
+MetricsRepository = Repository["Metric", UUID]
+TraceRepository = Repository["Trace", UUID]
 
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from flext_core.domain.types import AlertSeverity
+    from flext_core.domain.types import LogLevel
+    from flext_core.domain.types import MetricType
+    from flext_core.domain.types import TraceStatus
     from flext_observability.domain.entities import Alert
     from flext_observability.domain.entities import HealthCheck
     from flext_observability.domain.entities import LogEntry
     from flext_observability.domain.entities import Metric
     from flext_observability.domain.entities import Trace
-    from flext_observability.domain.value_objects import AlertSeverity
     from flext_observability.domain.value_objects import ComponentName
-    from flext_observability.domain.value_objects import HealthStatus
-    from flext_observability.domain.value_objects import LogLevel
-    from flext_observability.domain.value_objects import MetricType
-    from flext_observability.domain.value_objects import TraceStatus
+    # HealthStatus will be mapped to Status for consistency
 
 # Constants
 MAX_METRICS_PER_NAME = 1000
 
 
-@injectable()
-class InMemoryMetricsRepository(MetricsRepository):
+@injectable(MetricsRepository)
+class InMemoryMetricsRepository(InMemoryRepository["Metric", UUID]):
     """In-memory metrics repository for testing."""
 
     def __init__(self) -> None:
+        """Initialize in-memory metrics repository."""
         self._metrics: list[Metric] = []
         self._metrics_by_name: dict[str, list[Metric]] = {}
 
     async def save(self, metric: Metric) -> Metric:
-        """Save a metric."""
+        """Save a metric to the repository.
+
+        Args:
+            metric: The metric to save.
+
+        Returns:
+            The saved metric.
+
+        """
         self._metrics.append(metric)
         if metric.name not in self._metrics_by_name:
             self._metrics_by_name[metric.name] = []
@@ -53,12 +75,29 @@ class InMemoryMetricsRepository(MetricsRepository):
 
         return metric
 
-    async def get_by_id(self, metric_id: str) -> Metric | None:
-        """Get metric by ID."""
+    async def get_by_id(self, metric_id: UUID) -> Metric | None:
+        """Get metric by ID.
+
+        Args:
+            metric_id: The ID of the metric to retrieve.
+
+        Returns:
+            The metric if found, None otherwise.
+
+        """
         return next((m for m in self._metrics if str(m.id) == metric_id), None)
 
     async def find_by_name(self, name: str, limit: int = 100) -> list[Metric]:
-        """Find metrics by name."""
+        """Find metrics by name.
+
+        Args:
+            name: The name of the metrics to find.
+            limit: Maximum number of metrics to return.
+
+        Returns:
+            List of metrics matching the name, sorted by timestamp descending.
+
+        """
         metrics = self._metrics_by_name.get(name, [])
         return sorted(metrics, key=lambda m: m.timestamp, reverse=True)[:limit]
 
@@ -70,7 +109,19 @@ class InMemoryMetricsRepository(MetricsRepository):
         end_time: datetime | None = None,
         limit: int = 100,
     ) -> list[Metric]:
-        """Find metrics by criteria."""
+        """Find metrics by criteria.
+
+        Args:
+            component_name: Optional component name filter.
+            metric_type: Optional metric type filter.
+            start_time: Optional start time filter.
+            end_time: Optional end time filter.
+            limit: Maximum number of metrics to return.
+
+        Returns:
+            List of metrics matching the criteria.
+
+        """
         filtered_metrics = []
 
         for metric in self._metrics:
@@ -95,11 +146,18 @@ class InMemoryMetricsRepository(MetricsRepository):
         return filtered_metrics[:limit]
 
     async def delete_older_than(self, cutoff_time: datetime) -> int:
-        """Delete metrics older than cutoff time."""
-        to_delete = []
-        for metric in self._metrics:
-            if metric.timestamp < cutoff_time:
-                to_delete.append(metric)
+        """Delete metrics older than cutoff time.
+
+        Args:
+            cutoff_time: The cutoff time for deletion.
+
+        Returns:
+            Number of metrics deleted.
+
+        """
+        to_delete = [
+            metric for metric in self._metrics if metric.timestamp < cutoff_time
+        ]
 
         for metric in to_delete:
             self._metrics.remove(metric)
@@ -113,20 +171,37 @@ class InMemoryMetricsRepository(MetricsRepository):
 
 
 @injectable(AlertRepository)
-class InMemoryAlertRepository(AlertRepository):
+class InMemoryAlertRepository(InMemoryRepository["Alert", UUID]):
     """In-memory implementation of alert repository."""
 
     def __init__(self) -> None:
+        """Initialize in-memory alert repository."""
         self._alerts: dict[str, Alert] = {}
 
     async def save(self, alert: Alert) -> Alert:
-        """Save an alert."""
+        """Save an alert to the repository.
+
+        Args:
+            alert: The alert to save.
+
+        Returns:
+            The saved alert.
+
+        """
         self._alerts[str(alert.id)] = alert
         return alert
 
-    async def get_by_id(self, alert_id: str) -> Alert | None:
-        """Get alert by ID."""
-        return self._alerts.get(alert_id)
+    async def get_by_id(self, alert_id: UUID) -> Alert | None:
+        """Get alert by ID.
+
+        Args:
+            alert_id: The ID of the alert to retrieve.
+
+        Returns:
+            The alert if found, None otherwise.
+
+        """
+        return self._alerts.get(str(alert_id))
 
     async def find_active(
         self,
@@ -134,12 +209,22 @@ class InMemoryAlertRepository(AlertRepository):
         component_name: str | None = None,
         limit: int = 50,
     ) -> list[Alert]:
-        """Find active alerts."""
+        """Find active alerts.
+
+        Args:
+            severity: Optional alert severity filter.
+            component_name: Optional component name filter.
+            limit: Maximum number of alerts to return.
+
+        Returns:
+            List of active alerts matching the criteria.
+
+        """
         filtered_alerts = []
 
         for alert in self._alerts.values():
             # Only active alerts
-            if not alert.is_active:
+            if alert.alert_status != Status.ACTIVE:
                 continue
 
             # Filter by severity
@@ -147,7 +232,7 @@ class InMemoryAlertRepository(AlertRepository):
                 continue
 
             # Filter by component name
-            if component_name and alert.metric.component.name != component_name:
+            if component_name and alert.source != component_name:
                 continue
 
             filtered_alerts.append(alert)
@@ -166,7 +251,21 @@ class InMemoryAlertRepository(AlertRepository):
         end_time: datetime | None = None,
         limit: int = 100,
     ) -> list[Alert]:
-        """Find alerts by criteria."""
+        """Find alerts by criteria.
+
+        Args:
+            severity: Optional alert severity filter.
+            component_name: Optional component name filter.
+            acknowledged: Optional acknowledged status filter.
+            resolved: Optional resolved status filter.
+            start_time: Optional start time filter.
+            end_time: Optional end time filter.
+            limit: Maximum number of alerts to return.
+
+        Returns:
+            List of alerts matching the criteria.
+
+        """
         filtered_alerts = []
 
         for alert in self._alerts.values():
@@ -175,15 +274,15 @@ class InMemoryAlertRepository(AlertRepository):
                 continue
 
             # Filter by component name
-            if component_name and alert.metric.component.name != component_name:
+            if component_name and alert.source != component_name:
                 continue
 
             # Filter by acknowledged status
-            if acknowledged is not None and alert.acknowledged != acknowledged:
+            if acknowledged is not None and (alert.acknowledged_at is not None) != acknowledged:
                 continue
 
             # Filter by resolved status
-            if resolved is not None and alert.resolved != resolved:
+            if resolved is not None and alert.is_resolved != resolved:
                 continue
 
             # Filter by time range
@@ -199,20 +298,34 @@ class InMemoryAlertRepository(AlertRepository):
         return filtered_alerts[:limit]
 
     async def count_active(self) -> int:
-        """Count active alerts."""
-        return sum(1 for alert in self._alerts.values() if alert.is_active)
+        """Count active alerts.
+
+        Returns:
+            Number of active alerts.
+
+        """
+        return sum(1 for alert in self._alerts.values() if alert.alert_status == Status.ACTIVE)
 
 
 @injectable(HealthRepository)
-class InMemoryHealthRepository(HealthRepository):
+class InMemoryHealthRepository(InMemoryRepository["HealthCheck", UUID]):
     """In-memory implementation of health repository."""
 
     def __init__(self) -> None:
+        """Initialize in-memory health repository."""
         self._health_checks: dict[str, HealthCheck] = {}
         self._latest_by_component: dict[str, HealthCheck] = {}
 
     async def save(self, health_check: HealthCheck) -> HealthCheck:
-        """Save a health check."""
+        """Save a health check to the repository.
+
+        Args:
+            health_check: The health check to save.
+
+        Returns:
+            The saved health check.
+
+        """
         self._health_checks[str(health_check.id)] = health_check
 
         # Update latest by component
@@ -221,15 +334,31 @@ class InMemoryHealthRepository(HealthRepository):
 
         return health_check
 
-    async def get_by_id(self, health_check_id: str) -> HealthCheck | None:
-        """Get health check by ID."""
-        return self._health_checks.get(health_check_id)
+    async def get_by_id(self, health_check_id: UUID) -> HealthCheck | None:
+        """Get health check by ID.
+
+        Args:
+            health_check_id: The ID of the health check to retrieve.
+
+        Returns:
+            The health check if found, None otherwise.
+
+        """
+        return self._health_checks.get(str(health_check_id))
 
     async def get_latest_by_component(
         self,
         component: ComponentName | None = None,
     ) -> list[HealthCheck]:
-        """Get latest health check for each component."""
+        """Get latest health check for each component.
+
+        Args:
+            component: Optional specific component to get health check for.
+
+        Returns:
+            List of latest health checks for components.
+
+        """
         if component:
             health_check = self._latest_by_component.get(component.full_name)
             return [health_check] if health_check else []
@@ -239,12 +368,24 @@ class InMemoryHealthRepository(HealthRepository):
     async def find_by_criteria(
         self,
         component_name: str | None = None,
-        status: HealthStatus | None = None,
+        status: Status | None = None,
         start_time: datetime | None = None,
         end_time: datetime | None = None,
         limit: int = 100,
     ) -> list[HealthCheck]:
-        """Find health checks by criteria."""
+        """Find health checks by criteria.
+
+        Args:
+            component_name: Optional component name filter.
+            status: Optional health status filter.
+            start_time: Optional start time filter.
+            end_time: Optional end time filter.
+            limit: Maximum number of health checks to return.
+
+        Returns:
+            List of health checks matching the criteria.
+
+        """
         filtered_checks = []
 
         for health_check in self._health_checks.values():
@@ -253,7 +394,7 @@ class InMemoryHealthRepository(HealthRepository):
                 continue
 
             # Filter by status
-            if status and health_check.status != status:
+            if status and health_check.health_status != status:
                 continue
 
             # Filter by time range
@@ -269,7 +410,15 @@ class InMemoryHealthRepository(HealthRepository):
         return filtered_checks[:limit]
 
     async def delete_older_than(self, cutoff_time: datetime) -> int:
-        """Delete health checks older than cutoff time."""
+        """Delete health checks older than cutoff time.
+
+        Args:
+            cutoff_time: The cutoff time for deletion.
+
+        Returns:
+            Number of health checks deleted.
+
+        """
         to_delete = []
         for check_id, health_check in self._health_checks.items():
             if health_check.created_at < cutoff_time:
@@ -279,30 +428,48 @@ class InMemoryHealthRepository(HealthRepository):
             health_check = self._health_checks.pop(check_id)
             # Remove from latest index if this was the latest
             component_key = health_check.component.full_name
-            if (
-                component_key in self._latest_by_component
-                and self._latest_by_component[component_key].id == health_check.id
-            ):
+            if (component_key in self._latest_by_component and
+                self._latest_by_component[component_key].id == health_check.id):
                 del self._latest_by_component[component_key]
 
         return len(to_delete)
 
 
 @injectable(LogRepository)
-class InMemoryLogRepository(LogRepository):
+class InMemoryLogRepository(InMemoryRepository["LogEntry", UUID]):
     """In-memory implementation of log repository."""
 
     def __init__(self) -> None:
-        self._logs: list[LogEntry] = []
+        """Initialize in-memory log repository."""
+        super().__init__()
+        self._logs: dict[str, LogEntry] = {}
 
     async def save(self, log_entry: LogEntry) -> LogEntry:
-        """Save a log entry."""
-        self._logs.append(log_entry)
-        return log_entry
+        """Save a log entry to the repository.
 
-    async def get_by_id(self, log_id: str) -> LogEntry | None:
-        """Get log entry by ID."""
-        return next((log for log in self._logs if str(log.id) == log_id), None)
+        Args:
+            log_entry: The log entry to save.
+
+        Returns:
+            The saved log entry.
+
+        """
+        # Store in both custom dict and parent dict
+        self._logs[str(log_entry.id)] = log_entry
+        # Parent save uses the proper UUID key
+        return await super().save(log_entry)
+
+    async def get_by_id(self, log_id: UUID) -> LogEntry | None:
+        """Get log entry by ID.
+
+        Args:
+            log_id: The ID of the log entry to retrieve.
+
+        Returns:
+            The log entry if found, None otherwise.
+
+        """
+        return self._logs.get(str(log_id))
 
     async def find_by_criteria(
         self,
@@ -313,16 +480,29 @@ class InMemoryLogRepository(LogRepository):
         search: str | None = None,
         limit: int = 100,
     ) -> list[LogEntry]:
-        """Find log entries by criteria."""
+        """Find log entries by criteria.
+
+        Args:
+            level: Optional log level filter.
+            component_name: Optional component name filter.
+            start_time: Optional start time filter.
+            end_time: Optional end time filter.
+            search: Optional search term for message content.
+            limit: Maximum number of log entries to return.
+
+        Returns:
+            List of log entries matching the criteria.
+
+        """
         filtered_logs = []
 
-        for log_entry in self._logs:
+        for log_entry in self._logs.values():
             # Filter by level
             if level and log_entry.level != level:
                 continue
 
             # Filter by component name
-            if component_name and log_entry.component.name != component_name:
+            if component_name and log_entry.logger_name != component_name:
                 continue
 
             # Filter by time range
@@ -338,46 +518,86 @@ class InMemoryLogRepository(LogRepository):
             filtered_logs.append(log_entry)
 
         # Sort by timestamp (newest first) and limit
-        filtered_logs.sort(key=lambda l: l.created_at, reverse=True)
+        filtered_logs.sort(key=lambda log: log.created_at, reverse=True)
         return filtered_logs[:limit]
 
     async def count_by_level(self, level: LogLevel) -> int:
-        """Count log entries by level."""
-        return sum(1 for log_entry in self._logs if log_entry.level == level)
+        """Count log entries by level.
+
+        Args:
+            level: The log level to count.
+
+        Returns:
+            Number of log entries at the specified level.
+
+        """
+        return sum(1 for log_entry in self._logs.values() if log_entry.level == level)
 
     async def delete_older_than(self, cutoff_time: datetime) -> int:
-        """Delete log entries older than cutoff time."""
-        to_delete = []
-        for log_entry in self._logs:
-            if log_entry.created_at < cutoff_time:
-                to_delete.append(log_entry)
+        """Delete log entries older than cutoff time.
+
+        Args:
+            cutoff_time: The cutoff time for deletion.
+
+        Returns:
+            Number of log entries deleted.
+
+        """
+        to_delete = [
+            log_entry for log_entry in self._logs.values() if log_entry.created_at < cutoff_time
+        ]
 
         for log_entry in to_delete:
-            self._logs.remove(log_entry)
+            del self._logs[str(log_entry.id)]
 
         return len(to_delete)
 
 
 @injectable(TraceRepository)
-class InMemoryTraceRepository(TraceRepository):
+class InMemoryTraceRepository(InMemoryRepository["Trace", UUID]):
     """In-memory implementation of trace repository."""
 
     def __init__(self) -> None:
+        """Initialize in-memory trace repository."""
         self._traces: dict[str, Trace] = {}
         self._traces_by_trace_id: dict[str, Trace] = {}
 
     async def save(self, trace: Trace) -> Trace:
-        """Save a trace."""
+        """Save a trace to the repository.
+
+        Args:
+            trace: The trace to save.
+
+        Returns:
+            The saved trace.
+
+        """
         self._traces[str(trace.id)] = trace
-        self._traces_by_trace_id[trace.trace_id.trace_id] = trace
+        self._traces_by_trace_id[trace.trace_id] = trace
         return trace
 
-    async def get_by_id(self, trace_id: str) -> Trace | None:
-        """Get trace by ID."""
-        return self._traces.get(trace_id)
+    async def get_by_id(self, trace_id: UUID) -> Trace | None:
+        """Get trace by ID.
+
+        Args:
+            trace_id: The ID of the trace to retrieve.
+
+        Returns:
+            The trace if found, None otherwise.
+
+        """
+        return self._traces.get(str(trace_id))
 
     async def get_by_trace_id(self, trace_id: str) -> Trace | None:
-        """Get trace by trace ID."""
+        """Get trace by trace ID.
+
+        Args:
+            trace_id: The trace ID to retrieve.
+
+        Returns:
+            The trace if found, None otherwise.
+
+        """
         return self._traces_by_trace_id.get(trace_id)
 
     async def find_by_criteria(
@@ -389,7 +609,20 @@ class InMemoryTraceRepository(TraceRepository):
         end_time: datetime | None = None,
         limit: int = 100,
     ) -> list[Trace]:
-        """Find traces by criteria."""
+        """Find traces by criteria.
+
+        Args:
+            operation_name: Optional operation name filter.
+            component_name: Optional component name filter.
+            status: Optional trace status filter.
+            start_time: Optional start time filter.
+            end_time: Optional end time filter.
+            limit: Maximum number of traces to return.
+
+        Returns:
+            List of traces matching the criteria.
+
+        """
         filtered_traces = []
 
         for trace in self._traces.values():
@@ -402,7 +635,7 @@ class InMemoryTraceRepository(TraceRepository):
                 continue
 
             # Filter by status
-            if status and trace.status != status:
+            if status and trace.trace_status != status:
                 continue
 
             # Filter by time range
@@ -418,13 +651,26 @@ class InMemoryTraceRepository(TraceRepository):
         return filtered_traces[:limit]
 
     async def get_operation_names(self) -> list[str]:
-        """Get all operation names."""
-        operation_names = set()
+        """Get all operation names.
+
+        Returns:
+            Sorted list of unique operation names.
+
+        """
+        operation_names: set[str] = set()
         operation_names.update(trace.operation_name for trace in self._traces.values())
         return sorted(operation_names)
 
     async def delete_older_than(self, cutoff_time: datetime) -> int:
-        """Delete traces older than cutoff time."""
+        """Delete traces older than cutoff time.
+
+        Args:
+            cutoff_time: The cutoff time for deletion.
+
+        Returns:
+            Number of traces deleted.
+
+        """
         to_delete = []
         for trace_id, trace in self._traces.items():
             if trace.start_time < cutoff_time:
@@ -433,6 +679,6 @@ class InMemoryTraceRepository(TraceRepository):
         for trace_id in to_delete:
             trace = self._traces.pop(trace_id)
             # Remove from trace_id index
-            self._traces_by_trace_id.pop(trace.trace_id.trace_id, None)
+            self._traces_by_trace_id.pop(trace.trace_id, None)
 
         return len(to_delete)

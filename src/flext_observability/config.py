@@ -1,24 +1,20 @@
 """Declarative configuration for observability using flext-core patterns.
 
-REFACTORED: Uses enhanced flext-core v0.7.0 patterns with mixins and modern types.
-Zero tolerance for code duplication - all patterns from flext-core.
+Copyright (c) 2025, client-a. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import TYPE_CHECKING
 
-from pydantic import Field
+from flext_core.config.base import BaseConfig
+from flext_core.config.base import BaseSettings
+from flext_core.domain.pydantic_base import Field
+from pydantic import ConfigDict
 
-from flext_core.config import BaseConfig
-from flext_core.config import BaseSettings
-from flext_core.domain.types import FlextConstants
+# from flext_core.domain.constants import FlextConstants
 from flext_core.domain.types import LogLevel
-
-if TYPE_CHECKING:
-    from flext_core.domain.types import ProjectName
-    from flext_core.domain.types import Version
 
 
 class MetricsConfig(BaseConfig):
@@ -39,10 +35,10 @@ class MetricsConfig(BaseConfig):
     )
 
     max_metrics_per_name: int = Field(
-        default=1000,
-        description="Maximum number of metrics to keep per name",
+        default=10000,
+        description="Maximum number of metrics per metric name",
         ge=100,
-        le=FlextConstants.MAX_PAGE_SIZE,
+        le=50000,
     )
 
     enable_anomaly_detection: bool = Field(
@@ -67,22 +63,18 @@ class AlertingConfig(BaseConfig):
     )
 
     default_severity: str = Field(
-        default="warning",
+        default="medium",
         description="Default alert severity",
     )
 
-    notification_cooldown_seconds: int = Field(
-        default=FlextConstants.DEFAULT_TIMEOUT * 5,
-        description="Cooldown period between notifications in seconds",
-        ge=60,
-        le=3600,
+    notification_channels: list[str] = Field(
+        default_factory=list,
+        description="List of notification channels",
     )
 
-    max_alerts_per_component: int = Field(
-        default=10,
-        description="Maximum active alerts per component",
-        ge=1,
-        le=100,
+    email_recipients: list[str] = Field(
+        default_factory=list,
+        description="Email recipients for alerts",
     )
 
     auto_resolve_after_seconds: int = Field(
@@ -143,21 +135,21 @@ class LoggingConfig(BaseConfig):
         description="Use structured logging format",
     )
 
-    include_correlation_id: bool = Field(
-        default=True,
-        description="Include correlation ID in logs",
+    log_to_file: bool = Field(
+        default=False,
+        description="Enable logging to file",
     )
 
-    include_trace_info: bool = Field(
-        default=True,
-        description="Include trace information in logs",
+    log_file_path: str = Field(
+        default="/tmp/flext-observability.log",
+        description="Path to log file",
     )
 
-    retention_days: int = Field(
-        default=7,
-        description="Number of days to retain logs",
+    log_rotation_size_mb: int = Field(
+        default=50,
+        description="Log file rotation size in MB",
         ge=1,
-        le=365,
+        le=500,
     )
 
     max_log_size_mb: int = Field(
@@ -165,6 +157,13 @@ class LoggingConfig(BaseConfig):
         description="Maximum log file size in MB",
         ge=1,
         le=1000,
+    )
+
+    retention_days: int = Field(
+        default=7,
+        description="Number of days to retain log files",
+        ge=1,
+        le=365,
     )
 
 
@@ -185,7 +184,7 @@ class TracingConfig(BaseConfig):
 
     max_trace_duration_seconds: int = Field(
         default=300,
-        description="Maximum trace duration before timeout",
+        description="Maximum trace duration in seconds",
         ge=1,
         le=3600,
     )
@@ -256,14 +255,14 @@ class ThresholdConfig(BaseConfig):
     )
 
     memory_usage_warning: Decimal = Field(
-        default=Decimal("80.0"),
+        default=Decimal("85.0"),
         description="Memory usage warning threshold percentage",
         ge=Decimal("0.0"),
         le=Decimal("100.0"),
     )
 
     memory_usage_critical: Decimal = Field(
-        default=Decimal("90.0"),
+        default=Decimal("95.0"),
         description="Memory usage critical threshold percentage",
         ge=Decimal("0.0"),
         le=Decimal("100.0"),
@@ -299,14 +298,11 @@ class ThresholdConfig(BaseConfig):
 
 
 class ObservabilitySettings(BaseSettings):
-    """Main observability settings using declarative configuration.
-
-    REFACTORED: Uses modern flext-core types and patterns for consistency.
-    """
+    """Main observability settings using declarative configuration."""
 
     # Override project info with typed values
-    project_name: ProjectName = Field(default="flext-observability")
-    project_version: Version = Field(default="0.7.0")
+    project_name: str = Field(default="flext-observability")
+    project_version: str = Field(default="0.7.0")
 
     # Configuration sections using declarative patterns
     metrics: MetricsConfig = Field(default_factory=MetricsConfig)
@@ -342,11 +338,10 @@ class ObservabilitySettings(BaseSettings):
         le=168,
     )
 
-    class Config:
-        """Pydantic configuration."""
-
-        env_prefix = "FLEXT_OBSERVABILITY_"
-        env_nested_delimiter = "__"
+    model_config = ConfigDict(
+        env_prefix="FLEXT_OBSERVABILITY_",
+        env_nested_delimiter="__",
+    )
 
 
 # Global configuration instance
@@ -354,7 +349,12 @@ _settings: ObservabilitySettings | None = None
 
 
 def get_settings() -> ObservabilitySettings:
-    """Get the global observability settings."""
+    """Get the settings.
+
+    Returns:
+        The settings.
+
+    """
     global _settings
     if _settings is None:
         _settings = ObservabilitySettings()
@@ -362,14 +362,24 @@ def get_settings() -> ObservabilitySettings:
 
 
 def configure_observability(settings: ObservabilitySettings) -> None:
-    """Configure observability with custom settings."""
+    """Configure the observability.
+
+    Args:
+        settings: The settings.
+
+    """
     global _settings
     _settings = settings
 
 
 # Helper functions for common configurations
 def create_development_config() -> ObservabilitySettings:
-    """Create development configuration."""
+    """Create a development configuration.
+
+    Returns:
+        The development configuration.
+
+    """
     return ObservabilitySettings(
         debug=True,
         environment="development",
@@ -378,14 +388,11 @@ def create_development_config() -> ObservabilitySettings:
             retention_days=1,
         ),
         alerting=AlertingConfig(
-            notification_cooldown_seconds=60,
-        ),
-        health_checks=HealthCheckConfig(
-            check_interval_seconds=10,
-            timeout_seconds=3,
+            enable_alerts=False,  # Disable alerts in development
         ),
         logging=LoggingConfig(
             log_level=LogLevel.DEBUG,
+            log_to_file=True,
             retention_days=1,
         ),
         tracing=TracingConfig(
@@ -395,7 +402,12 @@ def create_development_config() -> ObservabilitySettings:
 
 
 def create_production_config() -> ObservabilitySettings:
-    """Create production configuration."""
+    """Create a production configuration.
+
+    Returns:
+        The production configuration.
+
+    """
     return ObservabilitySettings(
         debug=False,
         environment="production",
@@ -404,16 +416,12 @@ def create_production_config() -> ObservabilitySettings:
             retention_days=30,
         ),
         alerting=AlertingConfig(
-            notification_cooldown_seconds=300,
+            enable_alerts=True,
             auto_resolve_after_seconds=7200,
-        ),
-        health_checks=HealthCheckConfig(
-            check_interval_seconds=30,
-            timeout_seconds=5,
-            failure_threshold=3,
         ),
         logging=LoggingConfig(
             log_level=LogLevel.INFO,
+            log_to_file=True,
             retention_days=7,
         ),
         tracing=TracingConfig(
@@ -423,27 +431,32 @@ def create_production_config() -> ObservabilitySettings:
 
 
 def create_testing_config() -> ObservabilitySettings:
-    """Create testing configuration."""
+    """Create a testing configuration.
+
+    Returns:
+        The testing configuration.
+
+    """
     return ObservabilitySettings(
         debug=True,
-        environment="testing",
+        environment="test",
         metrics=MetricsConfig(
             collection_interval_seconds=1,
             retention_days=1,
             max_metrics_per_name=100,
         ),
         alerting=AlertingConfig(
-            notification_cooldown_seconds=10,
-        ),
-        health_checks=HealthCheckConfig(
-            check_interval_seconds=5,
-            timeout_seconds=1,
+            enable_alerts=False,  # Disable alerts in tests
         ),
         logging=LoggingConfig(
-            log_level=LogLevel.DEBUG,
-            retention_days=1,
+            log_level=LogLevel.WARNING,
+            log_to_file=False,
         ),
         tracing=TracingConfig(
-            sampling_rate=1.0,
+            enable_tracing=False,  # Disable tracing in tests
+        ),
+        exporters=ExporterConfig(
+            prometheus_enabled=False,
+            otlp_enabled=False,
         ),
     )

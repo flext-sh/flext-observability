@@ -1,7 +1,7 @@
 """Value objects for observability domain - immutable business values.
 
-REFACTORED: Uses flext-core v0.7.0 types - NO duplication.
-All enumerations imported from flext-core.
+Copyright (c) 2025 Flext. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -10,10 +10,10 @@ from decimal import Decimal
 from enum import StrEnum
 from typing import Any
 
-from pydantic import Field
 from pydantic import field_validator
 
 from flext_core.domain.pydantic_base import DomainValueObject
+from flext_core.domain.pydantic_base import Field
 
 
 class HealthStatus(StrEnum):
@@ -25,6 +25,16 @@ class HealthStatus(StrEnum):
     UNKNOWN = "unknown"
     FAILED = "failed"
     TIMEOUT = "timeout"
+
+
+class AlertSeverity(StrEnum):
+    """Alert severity levels for observability components."""
+
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    INFO = "info"
 
 
 # LogLevel is now imported from flext-core to eliminate duplication
@@ -39,13 +49,26 @@ class MetricValue(DomainValueObject):
     @field_validator("value")
     @classmethod
     def validate_value(cls, v: Any) -> Decimal:
-        """Validate metric value is finite and not NaN."""
+        """Validate metric value is numeric and finite.
+
+        Args:
+            v: Value to validate.
+
+        Returns:
+            Validated Decimal value.
+
+        Raises:
+            ValueError: If value is not numeric or not finite.
+
+        """
         if isinstance(v, int | float):
             v = Decimal(str(v))
         if not isinstance(v, Decimal):
-            raise ValueError(f"Value must be numeric, got {type(v)}")
+            msg = f"Value must be numeric, got {type(v)}"
+            raise ValueError(msg)
         if not v.is_finite():
-            raise ValueError("Value must be finite")
+            msg = "Value must be finite"
+            raise ValueError(msg)
         return v
 
 
@@ -58,14 +81,34 @@ class ThresholdValue(DomainValueObject):
     @field_validator("operator")
     @classmethod
     def validate_operator(cls, v: str) -> str:
-        """Validate threshold operator."""
+        """Validate threshold comparison operator.
+
+        Args:
+            v: Operator string to validate.
+
+        Returns:
+            Validated operator string.
+
+        Raises:
+            ValueError: If operator is not supported.
+
+        """
         valid_operators = {"gt", "lt", "eq", "ge", "le"}
         if v not in valid_operators:
-            raise ValueError(f"Invalid operator {v}, must be one of {valid_operators}")
+            msg = f"Invalid operator {v}, must be one of {valid_operators}"
+            raise ValueError(msg)
         return v
 
     def compare(self, value: MetricValue) -> bool:
-        """Compare metric value against threshold."""
+        """Compare metric value against threshold.
+
+        Args:
+            value: Metric value to compare.
+
+        Returns:
+            True if metric value meets threshold condition.
+
+        """
         ops = {
             "gt": value.value > self.value,
             "lt": value.value < self.value,
@@ -85,16 +128,33 @@ class ComponentName(DomainValueObject):
     @field_validator("name")
     @classmethod
     def validate_name(cls, v: str) -> str:
-        """Validate component name format."""
+        """Validate component name format.
+
+        Args:
+            v: Component name to validate.
+
+        Returns:
+            Validated component name.
+
+        Raises:
+            ValueError: If name contains invalid characters.
+
+        """
         if not v.replace("-", "").replace("_", "").isalnum():
+            msg = "Component name must be alphanumeric with hyphens or underscores"
             raise ValueError(
-                "Component name must be alphanumeric with hyphens or underscores",
+                msg,
             )
         return v
 
     @property
     def full_name(self) -> str:
-        """Get fully qualified component name."""
+        """Get fully qualified component name.
+
+        Returns:
+            Namespace-prefixed component name.
+
+        """
         return f"{self.namespace}.{self.name}"
 
 
@@ -107,11 +167,23 @@ class TraceId(DomainValueObject):
     @field_validator("trace_id", "span_id")
     @classmethod
     def validate_hex_string(cls, v: str) -> str:
-        """Validate hex string format."""
+        """Validate trace and span IDs are valid hex strings.
+
+        Args:
+            v: Hex string to validate.
+
+        Returns:
+            Validated hex string.
+
+        Raises:
+            ValueError: If string is not valid hexadecimal.
+
+        """
         try:
             int(v, 16)
         except ValueError as e:
-            raise ValueError(f"Invalid hex string: {v}") from e
+            msg = f"Invalid hex string: {v}"
+            raise ValueError(msg) from e
         return v
 
 
@@ -122,15 +194,33 @@ class Duration(DomainValueObject):
 
     @property
     def seconds(self) -> float:
-        """Get duration in seconds."""
+        """Get duration in seconds.
+
+        Returns:
+            Duration converted to seconds as float.
+
+        """
         return self.milliseconds / 1000.0
 
     @property
     def microseconds(self) -> int:
-        """Get duration in microseconds."""
+        """Get duration in microseconds.
+
+        Returns:
+            Duration converted to microseconds as integer.
+
+        """
         return self.milliseconds * 1000
 
     @classmethod
     def from_seconds(cls, seconds: float) -> Duration:
-        """Create duration from seconds."""
+        """Create Duration from seconds value.
+
+        Args:
+            seconds: Duration in seconds.
+
+        Returns:
+            Duration instance with converted milliseconds.
+
+        """
         return cls(milliseconds=int(seconds * 1000))

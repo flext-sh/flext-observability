@@ -33,7 +33,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 
 def pytest_configure(config: Config) -> None:
-    """Configure pytest with custom markers and settings."""
+    """Configure pytest with custom markers."""
     # Register custom markers
     config.addinivalue_line(
         "markers",
@@ -70,7 +70,7 @@ def pytest_configure(config: Config) -> None:
 
 
 def pytest_collection_modifyitems(config: Config, items: list[Item]) -> None:
-    """Automatically mark tests based on their location."""
+    """Auto-mark tests based on their location."""
     for item in items:
         # Auto-mark based on test location
         if "unit" in str(item.fspath):
@@ -88,7 +88,7 @@ def pytest_collection_modifyitems(config: Config, items: list[Item]) -> None:
 
 @pytest.fixture(scope="session")
 def event_loop_policy() -> asyncio.AbstractEventLoopPolicy:
-    """Use the default asyncio event loop policy."""
+    """Get the event loop policy for testing."""
     return asyncio.DefaultEventLoopPolicy()
 
 
@@ -99,7 +99,7 @@ def event_loop_policy() -> asyncio.AbstractEventLoopPolicy:
 
 @pytest.fixture
 def metrics_registry() -> CollectorRegistry:
-    """Create isolated metrics registry for testing."""
+    """Create a Prometheus metrics registry for testing."""
     from prometheus_client import CollectorRegistry
 
     return CollectorRegistry()
@@ -107,7 +107,7 @@ def metrics_registry() -> CollectorRegistry:
 
 @pytest.fixture
 def metrics_collector(metrics_registry: CollectorRegistry) -> Any:
-    """Create metrics collector with test registry."""
+    """Create a metrics collector for testing."""
     from flext_observability.metrics import MetricsCollector
 
     return MetricsCollector(registry=metrics_registry)
@@ -115,7 +115,7 @@ def metrics_collector(metrics_registry: CollectorRegistry) -> Any:
 
 @pytest.fixture
 def counter_metric(metrics_registry: CollectorRegistry) -> Any:
-    """Create test counter metric."""
+    """Create a counter metric for testing."""
     from prometheus_client import Counter
 
     return Counter(
@@ -128,7 +128,7 @@ def counter_metric(metrics_registry: CollectorRegistry) -> Any:
 
 @pytest.fixture
 def histogram_metric(metrics_registry: CollectorRegistry) -> Any:
-    """Create test histogram metric."""
+    """Create a histogram metric for testing."""
     from prometheus_client import Histogram
 
     return Histogram(
@@ -147,7 +147,7 @@ def histogram_metric(metrics_registry: CollectorRegistry) -> Any:
 
 @pytest_asyncio.fixture
 async def tracer_provider() -> AsyncIterator[Any]:
-    """Create test tracer provider."""
+    """Create a tracer provider for testing."""
     from opentelemetry import trace
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import SimpleSpanProcessor
@@ -172,13 +172,13 @@ async def tracer_provider() -> AsyncIterator[Any]:
 
 @pytest.fixture
 def tracer(tracer_provider: Any) -> Any:
-    """Create test tracer."""
+    """Create a tracer for testing."""
     return tracer_provider.get_tracer("test-tracer")
 
 
 @pytest.fixture
 def span_context() -> Any:
-    """Create test span context."""
+    """Create a span context for testing."""
     from opentelemetry import trace
 
     return trace.SpanContext(
@@ -195,7 +195,7 @@ def span_context() -> Any:
 
 @pytest.fixture
 def structured_logger() -> Any:
-    """Create structured logger for testing."""
+    """Create a structured logger for testing."""
     from flext_observability.logging import create_structured_logger
 
     return create_structured_logger(
@@ -207,7 +207,7 @@ def structured_logger() -> Any:
 
 @pytest.fixture
 def log_context() -> dict[str, Any]:
-    """Provide standard log context."""
+    """Create log context for testing."""
     return {
         "user_id": "test-user-123",
         "request_id": "req-456",
@@ -223,7 +223,7 @@ def log_context() -> dict[str, Any]:
 
 @pytest_asyncio.fixture
 async def health_checker() -> AsyncIterator[Any]:
-    """Create health checker for testing."""
+    """Create a health checker for testing."""
     from flext_observability.health import HealthChecker
 
     checker = HealthChecker()
@@ -235,7 +235,7 @@ async def health_checker() -> AsyncIterator[Any]:
 
 @pytest.fixture
 def health_check_config() -> dict[str, Any]:
-    """Health check configuration."""
+    """Create health check configuration for testing."""
     return {
         "checks": {
             "database": {
@@ -265,7 +265,7 @@ def health_check_config() -> dict[str, Any]:
 
 @pytest.fixture
 def mock_prometheus_client(mocker: Any) -> Any:
-    """Mock Prometheus client."""
+    """Mock Prometheus client for testing."""
     mock = mocker.Mock()
     mock.push_to_gateway.return_value = None
     return mock
@@ -273,7 +273,7 @@ def mock_prometheus_client(mocker: Any) -> Any:
 
 @pytest.fixture
 def mock_otel_exporter(mocker: Any) -> Any:
-    """Mock OpenTelemetry exporter."""
+    """Mock OpenTelemetry exporter for testing."""
     mock = mocker.Mock()
     mock.export.return_value = mocker.Mock(success=True)
     return mock
@@ -286,7 +286,7 @@ def mock_otel_exporter(mocker: Any) -> Any:
 
 @pytest.fixture
 def sample_metric_data() -> dict[str, Any]:
-    """Sample metric data."""
+    """Sample metric data for testing."""
     return {
         "name": "http_requests_total",
         "value": 42,
@@ -301,7 +301,7 @@ def sample_metric_data() -> dict[str, Any]:
 
 @pytest.fixture
 def sample_trace_data() -> dict[str, Any]:
-    """Sample trace data."""
+    """Sample trace data for testing."""
     return {
         "trace_id": "123456789abcdef0123456789abcdef0",
         "span_id": "123456789abcdef0",

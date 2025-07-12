@@ -81,11 +81,11 @@ def handle_request(request_id: str, user_id: str):
     # All logs within this context will include request_id and user_id
     with LogContext(request_id=request_id, user_id=user_id):
         logger.info("Processing request")
-        
+
         # These fields are automatically included
         validate_user()  # Logs will have request_id and user_id
         process_data()   # Logs will have request_id and user_id
-        
+
         logger.info("Request completed")
 ```
 
@@ -101,7 +101,7 @@ try:
 except Exception as e:
     # Option 1: Using log_error helper
     log_error(e, "Operation failed", operation="risky_operation", attempt=3)
-    
+
     # Option 2: Using logger directly
     logger.exception("Operation failed", operation="risky_operation")
 ```
@@ -114,7 +114,7 @@ The logging system respects these environment variables:
 # Service identification
 export SERVICE_NAME=flext-auth
 
-# Logging configuration  
+# Logging configuration
 export LOG_LEVEL=INFO
 export LOG_FORMAT=json  # or "console" for development
 
@@ -166,7 +166,7 @@ logger.error(
 # ❌ Bad - Logs password
 logger.info("User login", username=username, password=password)
 
-# ✅ Good - Masks sensitive data  
+# ✅ Good - Masks sensitive data
 logger.info("User login", username=username, has_password=bool(password))
 ```
 
@@ -176,12 +176,12 @@ logger.info("User login", username=username, has_password=bool(password))
 @app.route("/api/users/<user_id>")
 def get_user(user_id: str):
     request_id = str(uuid.uuid4())
-    
+
     with LogContext(request_id=request_id, user_id=user_id, endpoint="get_user"):
         logger.info("Request started")
-        
+
         user = fetch_user(user_id)  # All logs include context
-        
+
         logger.info("Request completed", status="success")
         return user
 ```
@@ -207,7 +207,7 @@ async def startup_event():
 @app.middleware("http")
 async def logging_middleware(request: Request, call_next):
     request_id = str(uuid.uuid4())
-    
+
     with LogContext(
         request_id=request_id,
         method=request.method,

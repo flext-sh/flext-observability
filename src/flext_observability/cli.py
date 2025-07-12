@@ -1,4 +1,8 @@
-"""CLI interface for flext-observability."""
+"""CLI interface for flext-observability.
+
+Copyright (c) 2025 Flext. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import json
 import sys
@@ -7,14 +11,13 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from flext_core.domain.types import MetricType
 from flext_observability.config import get_settings
-from flext_observability.domain.value_objects import MetricType
 from flext_observability.simple_api import collect_metric
 from flext_observability.simple_api import get_system_overview
 from flext_observability.simple_api import setup_observability
 
-app = typer.Typer(
-    name="flext-observability",
+app = typer.Typer(name="flext-observability",
     help="FLEXT Observability CLI - Enterprise monitoring and observability",
 )
 console = Console()
@@ -28,7 +31,7 @@ def setup(
     logging: bool = typer.Option(True, help="Enable structured logging"),
     tracing: bool = typer.Option(True, help="Enable distributed tracing"),
 ) -> None:
-    """Setup observability services."""
+    """Setup and initialize observability services."""
     try:
         setup_observability(
             enable_metrics=metrics,
@@ -38,16 +41,17 @@ def setup(
             enable_tracing=tracing,
         )
         console.print(
-            "✅ Observability services initialized successfully", style="green",
+            "✅ Observability services initialized successfully",
+            style="green",
         )
     except Exception as e:
-        console.print(f"❌ Failed to setup observability: {e}", style="red")
+        console.print(f"❌ Failed to setup observability {e}", style="red")
         sys.exit(1)
 
 
 @app.command()
 def status() -> None:
-    """Show system status and overview."""
+    """Show system observability status."""
     try:
         overview = get_system_overview()
 
@@ -65,7 +69,7 @@ def status() -> None:
         console.print(table)
 
     except Exception as e:
-        console.print(f"❌ Failed to get system status: {e}", style="red")
+        console.print(f"❌ Failed to get system status {e}", style="red")
         sys.exit(1)
 
 
@@ -74,23 +78,18 @@ def collect(
     name: str = typer.Argument(..., help="Metric name"),
     value: float = typer.Argument(..., help="Metric value"),
     unit: str = typer.Option("count", help="Metric unit"),
-    metric_type: str = typer.Option(
-        "gauge", help="Metric type (counter, gauge, histogram, summary)",
-    ),
+    metric_type: str = typer.Option("gauge", help="Metric type (counter, gauge, histogram, summary)"),
     component: str = typer.Option("cli", help="Component name"),
     namespace: str = typer.Option("default", help="Component namespace"),
 ) -> None:
-    """Collect a metric value."""
+    """Collect a single metric."""
     try:
         # Parse metric type
         try:
             mt = MetricType(metric_type.lower())
         except ValueError:
             console.print(f"❌ Invalid metric type: {metric_type}", style="red")
-            console.print(
-                "Valid types: counter, gauge, histogram, summary, business",
-                style="yellow",
-            )
+            console.print("Valid types: counter, gauge, histogram, summary, business", style="yellow")
             sys.exit(1)
 
         success = collect_metric(
@@ -120,7 +119,7 @@ def config() -> None:
         settings = get_settings()
         config_dict = settings.model_dump()
 
-        console.print("Current Configuration:", style="bold cyan")
+        console.print("Current Configuration", style="bold cyan")
         console.print(json.dumps(config_dict, indent=2, default=str))
 
     except Exception as e:
@@ -131,7 +130,7 @@ def config() -> None:
 @app.command()
 def version() -> None:
     """Show version information."""
-    from flext_observability import __version__
+    from flext_observability import __version__  # TODO: Move import to module level
 
     console.print(f"flext-observability version: {__version__}", style="green")
 
@@ -141,7 +140,7 @@ def version() -> None:
 
 
 def main() -> None:
-    """Main CLI entry point."""
+    """Main entry point for the CLI."""
     app()
 
 
