@@ -1,4 +1,8 @@
-"""Persistence layer for FLEXT-OBSERVABILITY."""
+"""Persistence layer for FLEXT-OBSERVABILITY.
+
+Copyright (c) 2025 Flext. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from flext_observability.infrastructure.persistence.base import AlertRepository
 from flext_observability.infrastructure.persistence.base import DashboardRepository

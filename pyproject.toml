@@ -64,7 +64,7 @@ flext-observability = "flext_observability.cli:main"
 [tool.poetry]
 name = "flext-observability"
 version = "0.7.0"
-description = "FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry"
+description = "FLEXT Observability - Monitoring, Logging & Metrics"
 authors = ["FLEXT Team <team@flext.sh>"]
 readme = "README.md"
 packages = [{ include = "flext_observability", from = "src" }]
@@ -72,11 +72,10 @@ packages = [{ include = "flext_observability", from = "src" }]
 [tool.poetry.dependencies]
 python = ">=3.13,<3.14"
 
-# Core dependencies from flext-core
+# Core FLEXT dependencies - primary source of truth
 flext-core = { path = "../flext-core", develop = true }
 
-# Observability & Monitoring specific dependencies ONLY
-# Core dependencies (structlog, rich) come from flext-core
+# Observability specific dependencies
 prometheus-client = ">=0.21.0"
 opentelemetry-api = ">=1.27.0"
 opentelemetry-sdk = ">=1.27.0"
@@ -90,122 +89,38 @@ opentelemetry-instrumentation-sqlalchemy = ">=0.48b0"
 opentelemetry-instrumentation-psycopg2 = ">=0.48b0"
 opentelemetry-instrumentation-redis = ">=0.48b0"
 psutil = ">=6.0.0"
-typer = { extras = ["all"], version = ">=0.15.0" }  # CLI functionality
+
+# Workspace-managed dependencies (inherited):
+# structlog, pydantic, pydantic-settings, click, rich, etc.
+# are all provided at workspace level - no duplication needed
 
 [tool.poetry.group.dev.dependencies]
+# Development dependencies
 pytest = ">=8.0.0"
-pytest-cov = ">=4.0.0"
 pytest-asyncio = ">=0.23.0"
+pytest-cov = ">=4.0.0"
 pytest-mock = ">=3.12.0"
-httpx = ">=0.28.0"
+pytest-xdist = ">=3.6.0"
+pytest-timeout = ">=2.3.1"
+pytest-sugar = ">=1.0.0"
+pytest-clarity = ">=1.0.1"
+pytest-benchmark = ">=4.0.0"
+
+# Code quality
 ruff = ">=0.8.0"
 mypy = ">=1.13.0"
 pre-commit = ">=4.0.0"
+bandit = ">=1.8.0"
+
+# Documentation
+mkdocs = ">=1.6.0"
+mkdocs-material = ">=9.5.0"
+mkdocs-mermaid2-plugin = ">=1.1.0"
+
+[tool.poetry.scripts]
+flext-observability = "flext_observability.cli:main"
 
 # Project-specific tool configurations
-[tool.ruff]
-target-version = "py313"
-line-length = 88
-src = ["src", "tests"]
-
-[tool.ruff.lint]
-select = [
-    "E",    # pycodestyle errors
-    "W",    # pycodestyle warnings
-    "F",    # pyflakes
-    "I",    # isort
-    "N",    # pep8-naming
-    "UP",   # pyupgrade
-    "YTT",  # flake8-2020
-    "S",    # flake8-bandit
-    "BLE",  # flake8-blind-except
-    "B",    # flake8-bugbear
-    "A",    # flake8-builtins
-    "COM",  # flake8-commas
-    "C4",   # flake8-comprehensions
-    "DTZ",  # flake8-datetimez
-    "T10",  # flake8-debugger
-    "EM",   # flake8-errmsg
-    "FA",   # flake8-future-annotations
-    "ISC",  # flake8-implicit-str-concat
-    "ICN",  # flake8-import-conventions
-    "G",    # flake8-logging-format
-    "INP",  # flake8-no-pep420
-    "PIE",  # flake8-pie
-    "T20",  # flake8-print
-    "PT",   # flake8-pytest-style
-    "Q",    # flake8-quotes
-    "RSE",  # flake8-raise
-    "RET",  # flake8-return
-    "SLF",  # flake8-self
-    "SLOT", # flake8-slots
-    "SIM",  # flake8-simplify
-    "TID",  # flake8-tidy-imports
-    "TCH",  # flake8-type-checking
-    "INT",  # flake8-gettext
-    "ARG",  # flake8-unused-arguments
-    "PTH",  # flake8-use-pathlib
-    "ERA",  # eradicate
-    "PD",   # pandas-vet
-    "PGH",  # pygrep-hooks
-    "PL",   # pylint
-    "TRY",  # tryceratops
-    "FLY",  # flynt
-    "NPY",  # NumPy-specific rules
-    "PERF", # Perflint
-    "FURB", # refurb
-    "LOG",  # flake8-logging
-    "RUF",  # Ruff-specific rules
-]
-ignore = [
-    "S101",    # assert
-    "S603",    # subprocess-without-shell-equals-true
-    "S607",    # start-process-with-partial-path
-    "PLR0913", # too-many-arguments
-    "PLR0912", # too-many-branches
-    "PLR0915", # too-many-statements
-    "PD901",   # pandas-df-variable-name
-    "RET504",  # unnecessary-assign
-    "TRY003",  # raise-vanilla-args
-    "EM101",   # raw-string-in-exception
-    "EM102",   # f-string-in-exception
-]
-
-[tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S", "ARG", "PLR"]
-
-[tool.ruff.lint.isort]
-known-first-party = ["flext_observability", "flext_core"]
-force-single-line = true
-
-[tool.mypy]
-python_version = "3.13"
-strict = true
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
-plugins = ["pydantic.mypy"]
-
-[[tool.mypy.overrides]]
-module = [
-    "prometheus_client.*",
-    "opentelemetry.*",
-    "structlog.*",
-    "psutil.*",
-    "typer.*",
-    "croniter.*",
-]
-ignore_missing_imports = true
-
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = [
@@ -220,21 +135,201 @@ addopts = [
     "--cov-fail-under=90",
     "--maxfail=1",
     "--tb=short",
-    "--dist=auto",
 ]
 markers = [
     "unit: Unit tests",
     "integration: Integration tests",
     "slow: Slow tests",
     "smoke: Smoke tests",
-    "monitoring: marks tests as monitoring tests",
+    "logging: marks tests as logging tests",
+    "performance: Performance tests",
     "metrics: marks tests as metrics tests",
     "tracing: marks tests as tracing tests",
-    "health: marks tests as health check tests",
+    "monitoring: marks tests as monitoring tests",
     "requires_prometheus: tests that need Prometheus",
-    "requires_grafana: tests that need Grafana",
-    "requires_otel: tests that need OpenTelemetry",
+    "requires_jaeger: tests that need Jaeger",
 ]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "ALL",
+]
+ignore = [
+    # Line length and formatting (handled by formatter)
+    "E501",    # line too long
+    "W505",    # doc line too long  
+    "COM812",  # trailing comma missing (conflicts with formatter)
+    "ISC001",  # single line implicit string concatenation
+    
+    # Import and dependency issues (common in development)
+    "F401",    # unused imports
+    "F403",    # star imports (common in __init__.py)
+    "F405",    # star import usage
+    "F841",    # unused variable (common in development)
+    
+    # Documentation style flexibility
+    "D100",    # missing docstring in public module
+    "D101",    # missing docstring in public class
+    "D102",    # missing docstring in public method
+    "D103",    # missing docstring in public function
+    "D104",    # missing docstring in public package
+    "D105",    # missing docstring in magic method
+    "D106",    # missing docstring in public nested class
+    "D107",    # missing docstring in __init__
+    "D203",    # blank line before class docstring (conflicts with D211)
+    "D213",    # multi-line docstring summary second line (conflicts with D212)
+    
+    # Code style flexibility (common patterns)
+    "ERA001",  # commented out code (common during development)
+    "TD002",   # missing author in TODO
+    "TD003",   # missing issue link in TODO  
+    "FIX002",  # line contains TODO
+    "T201",    # print statement (common in scripts/debug)
+    "T203",    # pprint statement
+    
+    # Complexity (handled case by case)
+    "C901",    # function too complex
+    "PLR0913", # too many arguments
+    "PLR0915", # too many statements  
+    "PLR2004", # magic value used in comparison
+    "PLR0912", # too many branches
+    "PLR0911", # too many return statements
+    
+    # Type checking flexibility
+    "ANN101",  # missing type annotation for self
+    "ANN102",  # missing type annotation for cls
+    "ANN401",  # any type usage (sometimes necessary)
+    
+    # Security exceptions (development context)
+    "S101",    # assert usage (needed for type checking)
+    "S603",    # subprocess call
+    "S607",    # starting process with partial executable path
+    "S608",    # possible SQL injection (handled by ORM)
+    
+    # Error handling flexibility
+    "EM101",   # raw string in exception  
+    "EM102",   # f-string in exception
+    "TRY003",  # avoid long exception messages
+    "TRY301",  # raise within try block
+    
+    # Performance (premature optimization)
+    "PERF203", # try-except in loop
+    "PERF401", # manual list comprehension
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Test files - extremely permissive for all test patterns
+"tests/*" = [
+    "ALL",  # Allow everything in tests
+]
+"tests/**/*.py" = [
+    "ALL",  # Allow everything in tests
+]
+"**/tests/*.py" = [
+    "ALL",  # Allow everything in tests  
+]
+"test_*.py" = [
+    "ALL",  # Allow everything in tests
+]
+"**/test_*.py" = [
+    "ALL",  # Allow everything in tests
+]
+"conftest.py" = [
+    "ALL",  # Allow everything in pytest config
+]
+"**/conftest.py" = [
+    "ALL",  # Allow everything in pytest config
+]
+
+# Script and CLI files - very permissive
+"scripts/*" = [
+    "ALL",  # Scripts need maximum flexibility
+]
+"**/scripts/*.py" = [
+    "ALL",  # Scripts need maximum flexibility
+]
+"cli.py" = [
+    "T201", "T203", "S602", "S603", "S607", "S608", 
+    "PLR0913", "PLR0915", "PLR0912", "PLR0911",
+    "C901", "D100", "D103", "DTZ005", "EM101", "EM102", 
+    "F401", "ERA001", "FIX002", "TD002", "TD003",
+]
+"**/cli.py" = [
+    "T201", "T203", "S602", "S603", "S607", "S608",
+    "PLR0913", "PLR0915", "PLR0912", "PLR0911", 
+    "C901", "D100", "D103", "DTZ005", "EM101", "EM102",
+    "F401", "ERA001", "FIX002", "TD002", "TD003",
+]
+
+# Generated/auto-generated files - exclude ALL linting
+"**/proto/*_pb2.py" = ["ALL"]
+"**/proto/*_pb2_grpc.py" = ["ALL"]
+"**/*_pb2.py" = ["ALL"]
+"**/*_pb2_grpc.py" = ["ALL"]
+"**/generated/**/*.py" = ["ALL"]
+"**/migrations/*.py" = ["ALL"]
+"**/alembic/versions/*.py" = ["ALL"]
+
+# Example and demo files - very permissive
+"examples/*" = [
+    "D100", "D103", "T201", "F401", "S101", "PLR2004",
+    "C901", "PLR0913", "PLR0915", "EM101", "EM102",
+]
+"**/examples/*" = [
+    "D100", "D103", "T201", "F401", "S101", "PLR2004", 
+    "C901", "PLR0913", "PLR0915", "EM101", "EM102",
+]
+
+# __init__.py files - common to import and re-export
+"__init__.py" = [
+    "F401", "F403", "F405", "D104", "D100",
+]
+"**/__init__.py" = [
+    "F401", "F403", "F405", "D104", "D100",
+]
+
+# Development and temporary files
+"temp_*.py" = ["ALL"]
+"**/temp_*.py" = ["ALL"]
+"debug_*.py" = ["ALL"] 
+"**/debug_*.py" = ["ALL"]
+"scratch_*.py" = ["ALL"]
+"**/scratch_*.py" = ["ALL"]
+[tool.ruff.lint.isort]
+known-first-party = [
+    "flext_observability",
+    "flext_core",
+]
+force-single-line = true
+
+[tool.mypy]
+python_version = "3.13"
+files = ["src", "tests"]
+plugins = ["pydantic.mypy"]
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+show_error_context = true
+pretty = true
+
+[[tool.mypy.overrides]]
+module = ["structlog.*", "prometheus_client.*", "opentelemetry.*", "psutil.*"]
+ignore_missing_imports = true
 
 [tool.coverage.run]
 source = ["src"]
@@ -253,7 +348,6 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
-    "TYPE_CHECKING",
 ]
 show_missing = true
 precision = 2

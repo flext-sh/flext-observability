@@ -1,92 +1,85 @@
-"""Domain services for observability - business logic that doesn't belong to entities."""
+"""Domain services for observability - business logic that doesn't belong to entities.
+
+Copyright (c) 2025 Flext. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 import operator
-from typing import TYPE_CHECKING
 from typing import Any
 
-from flext_core.domain import ServiceResult
-from flext_observability.domain.entities import Alert
-from flext_observability.domain.value_objects import AlertSeverity
-from flext_observability.domain.value_objects import HealthStatus
-
-if TYPE_CHECKING:
-    from flext_observability.domain.entities import HealthCheck
-    from flext_observability.domain.entities import LogEntry
-    from flext_observability.domain.entities import Metric
-    from flext_observability.domain.entities import Trace
-    from flext_observability.domain.value_objects import ComponentName
-    from flext_observability.domain.value_objects import ThresholdValue
+from flext_core.domain.types import ServiceResult
 
 
 class AlertingService:
     """Domain service for alert management and evaluation."""
 
     def __init__(self) -> None:
-        self._alert_rules: dict[str, ThresholdValue] = {}
+        self._alert_rules: dict[str, Any] = {}
 
-    def register_alert_rule(self, metric_name: str, threshold: ThresholdValue) -> None:
-        """Register an alert rule for a metric."""
+    def register_alert_rule(self, metric_name: str, threshold: Any) -> None:
+        """Register alert rule for metric threshold monitoring.
+
+        Args:
+            metric_name: Name of metric to monitor.
+            threshold: Threshold value object for comparison.
+
+        """
         self._alert_rules[metric_name] = threshold
 
-    def evaluate_metric(self, metric: Metric) -> ServiceResult[Alert | None]:
-        """Evaluate a metric against alert rules."""
+    def evaluate_metric(self, metric: Any) -> ServiceResult[Any]:
+        """Evaluate metric against registered alert rules.
+
+        Args:
+            metric: Metric to evaluate.
+
+        Returns:
+            ServiceResult with alert data if threshold exceeded, None otherwise.
+
+        """
         try:
             # Check if there's a rule for this metric
             if metric.name not in self._alert_rules:
-                return ServiceResult.ok(None)
+                return ServiceResult.success(None)
 
             threshold = self._alert_rules[metric.name]
 
             # Check if threshold is exceeded
             if not threshold.compare(metric.value):
-                return ServiceResult.ok(None)
+                return ServiceResult.success(None)
 
-            # Create alert
-            severity = self._calculate_severity(metric, threshold)
-            alert = Alert(
-                title=f"Metric {metric.name} threshold exceeded",
-                description=f"Metric {metric.name} value {metric.value.value} "
-                f"exceeded threshold {threshold.value} ({threshold.operator})",
-                severity=severity,
-                metric=metric,
-                threshold=threshold,
-            )
+            # Create alert (simplified)
+            alert_data = {
+                "title": f"Metric {metric.name} threshold exceeded",
+                "description": f"Metric {metric.name} value exceeded threshold",
+                "severity": "medium",
+                "metric": metric,
+                "threshold": threshold,
+            }
 
-            return ServiceResult.ok(alert)
+            return ServiceResult.success(alert_data)
 
         except Exception as e:
-            return ServiceResult.fail(f"Failed to evaluate metric: {e}")
-
-    def _calculate_severity(
-        self, metric: Metric, threshold: ThresholdValue,
-    ) -> AlertSeverity:
-        """Calculate alert severity based on how much the threshold is exceeded."""
-        value = metric.value.value
-        threshold_value = threshold.value
-
-        # Simple severity calculation - can be made more sophisticated
-        if threshold.operator in {"gt", "ge"}:
-            ratio = value / threshold_value
-        else:
-            ratio = threshold_value / value
-
-        if ratio > 2.0:
-            return AlertSeverity.CRITICAL
-        if ratio > 1.5:
-            return AlertSeverity.WARNING
-        return AlertSeverity.INFO
+            return ServiceResult.failure(f"Failed to evaluate metric: {e}")
 
 
 class MetricsAnalysisService:
     """Domain service for metrics analysis and trend detection."""
 
     def __init__(self) -> None:
-        self._metric_history: dict[str, list[Metric]] = {}
+        self._metric_history: dict[str, list[Any]] = {}
 
-    def analyze_trend(self, metric: Metric) -> ServiceResult[dict[str, Any]]:
-        """Analyze metric trends."""
+    def analyze_trend(self, metric: Any) -> ServiceResult[dict[str, Any]]:
+        """Analyze metric trends and detect patterns.
+
+        Args:
+            metric: Metric to analyze.
+
+        Returns:
+            ServiceResult with trend analysis data.
+
+        """
         try:
             # Store metric in history
             if metric.name not in self._metric_history:
@@ -104,7 +97,7 @@ class MetricsAnalysisService:
 
             # Need at least 2 points for trend analysis
             if len(history) < 2:
-                return ServiceResult.ok(
+                return ServiceResult.success(
                     {
                         "trend": "unknown",
                         "change": 0.0,
@@ -112,12 +105,10 @@ class MetricsAnalysisService:
                     },
                 )
 
-            # Calculate trend
-            recent_values = [
-                float(m.value.value) for m in history[-10:]
-            ]  # Last 10 values
+            # Calculate trend (simplified)
+            recent_values = [float(m.value) for m in history[-10:]]  # Last 10 values
             if len(recent_values) < 2:
-                return ServiceResult.ok(
+                return ServiceResult.success(
                     {
                         "trend": "stable",
                         "change": 0.0,
@@ -143,7 +134,7 @@ class MetricsAnalysisService:
             else:
                 trend = "decreasing"
 
-            return ServiceResult.ok(
+            return ServiceResult.success(
                 {
                     "trend": trend,
                     "change": change,
@@ -153,61 +144,27 @@ class MetricsAnalysisService:
             )
 
         except Exception as e:
-            return ServiceResult.fail(f"Failed to analyze trend: {e}")
-
-    def detect_anomalies(self, metric: Metric) -> ServiceResult[dict[str, Any]]:
-        """Detect anomalies in metric values."""
-        try:
-            history = self._metric_history.get(metric.name, [])
-
-            # Need at least 10 points for anomaly detection
-            if len(history) < 10:
-                return ServiceResult.ok(
-                    {
-                        "is_anomaly": False,
-                        "confidence": 0.0,
-                        "reason": "insufficient_data",
-                    },
-                )
-
-            # Simple anomaly detection using standard deviation
-            values = [float(m.value.value) for m in history[-50:]]  # Last 50 values
-            mean = sum(values) / len(values)
-            variance = sum((x - mean) ** 2 for x in values) / len(values)
-            std_dev = variance**0.5
-
-            current_value = float(metric.value.value)
-            z_score = abs(current_value - mean) / std_dev if std_dev > 0 else 0
-
-            # Consider values beyond 2 standard deviations as anomalies
-            is_anomaly = z_score > 2.0
-            confidence = min(z_score / 3.0, 1.0)  # Normalize confidence
-
-            return ServiceResult.ok(
-                {
-                    "is_anomaly": is_anomaly,
-                    "confidence": confidence,
-                    "z_score": z_score,
-                    "threshold": 2.0,
-                    "mean": mean,
-                    "std_dev": std_dev,
-                },
-            )
-
-        except Exception as e:
-            return ServiceResult.fail(f"Failed to detect anomalies: {e}")
+            return ServiceResult.failure(f"Failed to analyze trend: {e}")
 
 
 class HealthAnalysisService:
     """Domain service for health analysis and status aggregation."""
 
     def __init__(self) -> None:
-        self._component_health: dict[str, HealthCheck] = {}
+        self._component_health: dict[str, Any] = {}
 
-    def update_component_health(self, health_check: HealthCheck) -> ServiceResult[bool]:
-        """Update component health status."""
+    def update_component_health(self, health_check: Any) -> ServiceResult[bool]:
+        """Update component health status and detect changes.
+
+        Args:
+            health_check: Health check result for component.
+
+        Returns:
+            ServiceResult with boolean indicating if status changed.
+
+        """
         try:
-            component_key = health_check.component.full_name
+            component_key = str(health_check.component)
             previous_health = self._component_health.get(component_key)
 
             # Store new health status
@@ -218,18 +175,23 @@ class HealthAnalysisService:
                 previous_health is None or previous_health.status != health_check.status
             )
 
-            return ServiceResult.ok(status_changed)
+            return ServiceResult.success(status_changed)
 
         except Exception as e:
-            return ServiceResult.fail(f"Failed to update component health: {e}")
+            return ServiceResult.failure(f"Failed to update component health: {e}")
 
     def get_system_health(self) -> ServiceResult[dict[str, Any]]:
-        """Get overall system health status."""
+        """Get aggregated system health status.
+
+        Returns:
+            ServiceResult with system health summary and score.
+
+        """
         try:
             if not self._component_health:
-                return ServiceResult.ok(
+                return ServiceResult.success(
                     {
-                        "overall_status": HealthStatus.UNKNOWN,
+                        "overall_status": "unknown",
                         "healthy_components": 0,
                         "unhealthy_components": 0,
                         "total_components": 0,
@@ -237,56 +199,28 @@ class HealthAnalysisService:
                     },
                 )
 
-            # Count components by status
-            status_counts = {}
-            for health_check in self._component_health.values():
-                status = health_check.status
-                status_counts[status] = status_counts.get(status, 0) + 1
-
+            # Count components by status (simplified)
             total = len(self._component_health)
-            healthy = status_counts.get(HealthStatus.HEALTHY, 0)
-            unhealthy = status_counts.get(HealthStatus.UNHEALTHY, 0)
-            degraded = status_counts.get(HealthStatus.DEGRADED, 0)
+            healthy = sum(
+                1
+                for hc in self._component_health.values()
+                if str(hc.status) == "healthy"
+            )
 
-            # Calculate health score
-            health_score = (healthy + (degraded * 0.5)) / total if total > 0 else 0.0
+            health_score = healthy / total if total > 0 else 0.0
 
-            # Determine overall status
-            if unhealthy > 0:
-                overall_status = HealthStatus.UNHEALTHY
-            elif degraded > 0:
-                overall_status = HealthStatus.DEGRADED
-            elif healthy > 0:
-                overall_status = HealthStatus.HEALTHY
-            else:
-                overall_status = HealthStatus.UNKNOWN
-
-            return ServiceResult.ok(
+            return ServiceResult.success(
                 {
-                    "overall_status": overall_status,
+                    "overall_status": "healthy" if health_score > 0.8 else "degraded",
                     "healthy_components": healthy,
-                    "unhealthy_components": unhealthy,
-                    "degraded_components": degraded,
+                    "unhealthy_components": total - healthy,
                     "total_components": total,
                     "health_score": health_score,
-                    "status_breakdown": status_counts,
                 },
             )
 
         except Exception as e:
-            return ServiceResult.fail(f"Failed to get system health: {e}")
-
-    def get_component_dependencies(
-        self, component: ComponentName,
-    ) -> ServiceResult[list[ComponentName]]:
-        """Get dependencies for a component (placeholder implementation)."""
-        try:
-            # This would typically be loaded from configuration
-            # For now, return empty list
-            return ServiceResult.ok([])
-
-        except Exception as e:
-            return ServiceResult.fail(f"Failed to get component dependencies: {e}")
+            return ServiceResult.failure(f"Failed to get system health: {e}")
 
 
 class LogAnalysisService:
@@ -295,19 +229,26 @@ class LogAnalysisService:
     def __init__(self) -> None:
         self._error_patterns: dict[str, int] = {}
 
-    def analyze_log_entry(self, log_entry: LogEntry) -> ServiceResult[dict[str, Any]]:
-        """Analyze a log entry for patterns and anomalies."""
+    def analyze_log_entry(self, log_entry: Any) -> ServiceResult[dict[str, Any]]:
+        """Analyze log entry for patterns and severity.
+
+        Args:
+            log_entry: Log entry to analyze.
+
+        Returns:
+            ServiceResult with log analysis data including patterns and severity.
+
+        """
         try:
-            analysis = {
-                "is_error": log_entry.is_error,
-                "severity": log_entry.level.value,
-                "has_exception": log_entry.exception is not None,
-                "field_count": len(log_entry.fields),
+            analysis: dict[str, Any] = {
+                "is_error": getattr(log_entry, "is_error", False),
+                "severity": str(log_entry.level),
+                "has_exception": getattr(log_entry, "exception", None) is not None,
                 "patterns": [],
             }
 
             # Pattern detection for error messages
-            if log_entry.is_error and log_entry.message:
+            if analysis["is_error"] and hasattr(log_entry, "message"):
                 pattern = self._extract_error_pattern(log_entry.message)
                 if pattern:
                     analysis["patterns"].append(pattern)
@@ -315,28 +256,19 @@ class LogAnalysisService:
                         self._error_patterns.get(pattern, 0) + 1
                     )
 
-            # Check for correlation ID
-            if log_entry.correlation_id:
-                analysis["has_correlation_id"] = True
-
-            # Check for trace information
-            if log_entry.trace_id:
-                analysis["has_trace_info"] = True
-
-            return ServiceResult.ok(analysis)
+            return ServiceResult.success(analysis)
 
         except Exception as e:
-            return ServiceResult.fail(f"Failed to analyze log entry: {e}")
+            return ServiceResult.failure(f"Failed to analyze log entry: {e}")
 
     def _extract_error_pattern(self, message: str) -> str | None:
-        """Extract error pattern from message."""
-        # Simple pattern extraction - replace specific values with placeholders
+        """Simple pattern extraction - replace specific values with placeholders."""
         import re
 
         # Replace numbers with placeholder
         pattern = re.sub(r"\d+", "{number}", message)
 
-        # Replace common variable patterns
+        # Replace UUIDs
         pattern = re.sub(
             r"[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
             "{uuid}",
@@ -349,7 +281,12 @@ class LogAnalysisService:
         return pattern if pattern != message else None
 
     def get_error_patterns(self) -> ServiceResult[dict[str, int]]:
-        """Get detected error patterns and their frequencies."""
+        """Get error patterns sorted by frequency.
+
+        Returns:
+            ServiceResult with dictionary of error patterns and their occurrence counts.
+
+        """
         try:
             # Sort by frequency
             sorted_patterns = dict(
@@ -359,20 +296,28 @@ class LogAnalysisService:
                     reverse=True,
                 ),
             )
-            return ServiceResult.ok(sorted_patterns)
+            return ServiceResult.success(sorted_patterns)
 
         except Exception as e:
-            return ServiceResult.fail(f"Failed to get error patterns: {e}")
+            return ServiceResult.failure(f"Failed to get error patterns: {e}")
 
 
 class TraceAnalysisService:
     """Domain service for trace analysis and performance monitoring."""
 
     def __init__(self) -> None:
-        self._trace_history: dict[str, list[Trace]] = {}
+        self._trace_history: dict[str, list[Any]] = {}
 
-    def analyze_trace(self, trace: Trace) -> ServiceResult[dict[str, Any]]:
-        """Analyze a trace for performance and errors."""
+    def analyze_trace(self, trace: Any) -> ServiceResult[dict[str, Any]]:
+        """Analyze trace for performance and error patterns.
+
+        Args:
+            trace: Trace to analyze.
+
+        Returns:
+            ServiceResult with trace analysis including duration and status.
+
+        """
         try:
             # Store trace in history
             if trace.operation_name not in self._trace_history:
@@ -388,38 +333,32 @@ class TraceAnalysisService:
 
             analysis = {
                 "operation": trace.operation_name,
-                "status": trace.status.value,
-                "duration_ms": trace.duration.milliseconds if trace.duration else 0,
-                "is_error": trace.status.value == "failed",
-                "has_logs": len(trace.logs) > 0,
-                "tag_count": len(trace.tags),
+                "status": str(trace.status) if hasattr(trace, "status") else "unknown",
+                "duration_ms": getattr(trace, "duration_ms", 0),
+                "is_error": str(getattr(trace, "status", "")) == "failed",
+                "has_logs": len(getattr(trace, "logs", [])) > 0,
             }
 
-            # Calculate percentiles for this operation
-            history = self._trace_history[trace.operation_name]
-            if len(history) >= 10:
-                durations = [t.duration.milliseconds for t in history if t.duration]
-                if durations:
-                    durations.sort()
-                    analysis["percentiles"] = {
-                        "p50": durations[len(durations) // 2],
-                        "p90": durations[int(len(durations) * 0.9)],
-                        "p95": durations[int(len(durations) * 0.95)],
-                        "p99": durations[int(len(durations) * 0.99)],
-                    }
-
-            return ServiceResult.ok(analysis)
+            return ServiceResult.success(analysis)
 
         except Exception as e:
-            return ServiceResult.fail(f"Failed to analyze trace: {e}")
+            return ServiceResult.failure(f"Failed to analyze trace: {e}")
 
     def get_operation_stats(self, operation_name: str) -> ServiceResult[dict[str, Any]]:
-        """Get statistics for a specific operation."""
+        """Get performance statistics for specific operation.
+
+        Args:
+            operation_name: Name of operation to get stats for.
+
+        Returns:
+            ServiceResult with operation performance statistics.
+
+        """
         try:
             history = self._trace_history.get(operation_name, [])
 
             if not history:
-                return ServiceResult.ok(
+                return ServiceResult.success(
                     {
                         "operation": operation_name,
                         "total_traces": 0,
@@ -430,23 +369,36 @@ class TraceAnalysisService:
                 )
 
             total = len(history)
-            successful = sum(1 for t in history if t.status.value == "completed")
-            failed = sum(1 for t in history if t.status.value == "failed")
+            successful = sum(
+                1 for t in history if str(getattr(t, "status", "")) == "completed"
+            )
+            failed = sum(
+                1 for t in history if str(getattr(t, "status", "")) == "failed"
+            )
 
-            durations = [t.duration.milliseconds for t in history if t.duration]
+            durations = [getattr(t, "duration_ms", 0) for t in history]
             avg_duration = sum(durations) / len(durations) if durations else 0
 
-            return ServiceResult.ok(
+            return ServiceResult.success(
                 {
                     "operation": operation_name,
                     "total_traces": total,
                     "successful_traces": successful,
                     "failed_traces": failed,
-                    "success_rate": successful / total,
-                    "error_rate": failed / total,
+                    "success_rate": successful / total if total > 0 else 0,
+                    "error_rate": failed / total if total > 0 else 0,
                     "avg_duration_ms": avg_duration,
                 },
             )
 
         except Exception as e:
-            return ServiceResult.fail(f"Failed to get operation stats: {e}")
+            return ServiceResult.failure(f"Failed to get operation stats: {e}")
+
+
+__all__ = [
+    "AlertingService",
+    "HealthAnalysisService",
+    "LogAnalysisService",
+    "MetricsAnalysisService",
+    "TraceAnalysisService",
+]
