@@ -187,6 +187,24 @@ ignore = [
     # Code style flexibility (common patterns)
     "ERA001",  # commented out code (common during development)
     "TD002",   # missing author in TODO
+    
+    # Observability-specific patterns
+    "BLE001",  # blind-except - Monitoring must never crash the app
+    "PLC0415", # import-outside-top-level - Dynamic imports for optional deps
+    "FBT003",  # boolean-positional-value-in-call - Metrics APIs use booleans
+    "FBT001",  # boolean-type-hint-positional-argument - Common in observability
+    "DTZ003",  # call-datetime-utcnow - UTC timestamps for metrics
+    "DTZ005",  # call-datetime-now-without-tzinfo - Backwards compatibility
+    "ARG002",  # unused-method-argument - Interface compliance
+    "D401",    # non-imperative-mood - Technical descriptions preferred
+    "PLW0603", # global-statement - Prometheus multiprocess requires globals
+    "TRY300",  # try-consider-else - Exception handling patterns
+    "S104",    # hardcoded-bind-all-interfaces - Metrics servers bind to 0.0.0.0
+    "S108",    # hardcoded-temp-file - Prometheus multiprocess temp files
+    "S110",    # try-except-pass - Graceful degradation for optional features
+    "PYI036",  # bad-exit-annotation - Exit handlers return various types
+    "Q000",    # bad-quotes-inline-string - Mixed quotes in log messages
+    "W293",    # blank-line-with-whitespace - Auto-fixable formatting
     "TD003",   # missing issue link in TODO  
     "FIX002",  # line contains TODO
     "T201",    # print statement (common in scripts/debug)
