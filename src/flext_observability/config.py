@@ -339,10 +339,11 @@ class ObservabilitySettings(BaseSettings):
         le=168,
     )
 
-    model_config = ConfigDict(
-        env_prefix="FLEXT_OBSERVABILITY_",
-        env_nested_delimiter="__",
-    )
+    # Environment variable support is provided by BaseSettings
+    # model_config = ConfigDict(
+    #     env_prefix="OBSERVABILITY_",
+    #     env_nested_delimiter="__",
+    # )
 
 
 # Global configuration instance

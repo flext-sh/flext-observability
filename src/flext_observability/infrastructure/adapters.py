@@ -143,18 +143,29 @@ class OpenTelemetryTraceExporter(TraceExporter):
             trace: Trace to export.
 
         """
-        trace_data = {
-            "trace_id": trace.trace_id,
-            "span_id": trace.span_id,
-            "operation_name": trace.operation_name,
-            "service_name": trace.service_name,
-            "status": trace.trace_status.value,
-            "start_time": trace.start_time,
-            "end_time": trace.end_time,
-            "duration_ms": trace.duration_ms,
-            "tags": trace.trace_tags,
-            "logs": trace.logs,
-            "error": trace.error,
+        trace_id = trace.trace_id
+        span_id = trace.span_id
+        parent_span_id = trace.parent_span_id
+        operation_name = trace.operation_name
+        start_time = trace.start_time
+        end_time = trace.end_time
+        duration = trace.duration_ms
+        tags = trace.trace_tags
+        logs = trace.logs
+        status = trace.trace_status.value
+
+        # Store trace data
+        trace_data: dict[str, object] = {
+            "trace_id": trace_id,
+            "span_id": span_id,
+            "parent_span_id": parent_span_id,
+            "operation_name": operation_name,
+            "start_time": start_time,
+            "end_time": end_time,
+            "duration": duration,
+            "tags": tags,
+            "logs": logs,
+            "status": status,
         }
         self._traces.append(trace_data)
 
@@ -184,17 +195,19 @@ class StructlogLogAdapter(LogExporter):
             log_entry: Log entry to export.
 
         """
-        log_data = {
-            "level": log_entry.level.value,
+        # Store log data
+        log_data: dict[str, object] = {
+            "level": log_entry.level,
             "message": log_entry.message,
-            "logger_name": log_entry.logger_name,
+            "logger": log_entry.logger_name,
             "timestamp": log_entry.created_at,
-            "correlation_id": log_entry.correlation_id,
-            "user_id": log_entry.user_id,
-            "request_id": log_entry.request_id,
-            "extra": log_entry.extra,
+            "metadata": log_entry.extra,
+            "trace_id": log_entry.correlation_id,
+            "span_id": log_entry.request_id,
+            "service_name": log_entry.user_id,
+            "exception": None,
+            "stack_trace": None,
             "tags": log_entry.tags,
-            "duration_ms": log_entry.duration_ms,
         }
         self._logs.append(log_data)
 
@@ -243,7 +256,14 @@ class SlackAlertNotifier(AlertNotifier):
         }
 
         # In a real implementation, this would send to Slack
-        self._notifications.append(notification)
+        notification_data: dict[str, object] = {
+            "title": alert.title,
+            "message": alert.description,
+            "severity": alert.severity,
+            "timestamp": alert.created_at,
+            "metadata": {},
+        }
+        self._notifications.append(notification_data)
 
     async def notify_batch(self, alerts: list[Alert]) -> None:
         """Send multiple alert notifications via Slack webhook.
@@ -347,8 +367,8 @@ class HttpHealthChecker(HealthChecker):
             component = ComponentName(name=component_name)
             health_check = await self.check_health(
                 component=component,
-                endpoint=config.get("endpoint"),
-                timeout_ms=config.get("timeout_ms", 5000),
+                endpoint=str(config.get("endpoint", "")),
+                timeout_ms=5000,
             )
             results.append(health_check)
 
