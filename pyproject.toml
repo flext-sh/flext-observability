@@ -24,7 +24,7 @@ dependencies = [
     "opentelemetry-instrumentation-fastapi>=0.48b0",
     "opentelemetry-instrumentation-requests>=0.48b0",
     "opentelemetry-instrumentation-sqlalchemy>=0.48b0",
-    "opentelemetry-instrumentation-psycopg2>=0.48b0",
+    "opentelemetry-instrumentation-psycopg>=0.48b0",
     "opentelemetry-instrumentation-redis>=0.48b0",
     "psutil>=6.0.0",
 ]
@@ -86,7 +86,7 @@ opentelemetry-instrumentation-grpc = ">=0.48b0"
 opentelemetry-instrumentation-fastapi = ">=0.48b0"
 opentelemetry-instrumentation-requests = ">=0.48b0"
 opentelemetry-instrumentation-sqlalchemy = ">=0.48b0"
-opentelemetry-instrumentation-psycopg2 = ">=0.48b0"
+opentelemetry-instrumentation-psycopg = ">=0.48b0"
 opentelemetry-instrumentation-redis = ">=0.48b0"
 psutil = ">=6.0.0"
 

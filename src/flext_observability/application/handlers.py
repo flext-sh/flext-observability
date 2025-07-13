@@ -14,9 +14,6 @@ from typing import Any
 from flext_core.application.handlers import CommandHandler
 from flext_core.domain.types import ServiceResult
 
-if TYPE_CHECKING:
-    pass
-
 logger = logging.getLogger(__name__)
 
 
@@ -157,11 +154,11 @@ class DashboardHandler(CommandHandler):
 
 # Export main classes
 __all__ = [
+    "AlertHandler",
+    "DashboardHandler",
+    "HealthHandler",
     "LogCommand",
     "LogHandler",
     "MetricsHandler",
     "TracingHandler",
-    "AlertHandler",
-    "HealthHandler",
-    "DashboardHandler",
 ]
