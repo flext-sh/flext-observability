@@ -1,12 +1,13 @@
 """Comprehensive tests for health monitoring functionality."""
 
+from __future__ import annotations
+
+import json
 from unittest.mock import patch
 
 import pytest
 
-from flext_observability.health import ComponentHealth
-from flext_observability.health import HealthChecker
-from flext_observability.health import HealthStatus
+from flext_observability.health import ComponentHealth, HealthChecker, HealthStatus
 
 
 class TestHealthChecker:
@@ -17,12 +18,15 @@ class TestHealthChecker:
         """Create a health checker for testing."""
         return HealthChecker()
 
-    def test_health_checker_initialization(self, health_checker) -> None:
+    def test_health_checker_initialization(self, health_checker: HealthChecker) -> None:
         assert health_checker is not None
         assert hasattr(health_checker, "check_health")
 
     @pytest.mark.asyncio
-    async def test_health_check_returns_status(self, health_checker) -> None:
+    async def test_health_check_returns_status(
+        self,
+        health_checker: HealthChecker,
+    ) -> None:
         status = await health_checker.check_health()
 
         assert isinstance(status, HealthStatus | dict)
@@ -47,7 +51,10 @@ class TestHealthChecker:
         assert component.details == {"test": "data"}
 
     @pytest.mark.asyncio
-    async def test_health_check_with_error_handling(self, health_checker) -> None:
+    async def test_health_check_with_error_handling(
+        self,
+        health_checker: HealthChecker,
+    ) -> None:
         with patch.object(
             health_checker,
             "_check_system_health",
@@ -102,7 +109,6 @@ class TestHealthIntegration:
         assert status is not None
 
         # Should be able to JSON serialize the result
-        import json  # TODO: Move import to module level
 
         try:
             if hasattr(status, "dict"):
@@ -116,10 +122,8 @@ class TestHealthIntegration:
     def test_health_endpoint_availability(self) -> None:
         # This would test actual health endpoint integration
         # For now, just verify the health checker can be imported and used
-        from flext_observability import (  # TODO: Move import to module level
+        from flext_observability import (
             HealthChecker,
-        )
-        from flext_observability import (  # TODO: Move import to module level
             HealthStatus,
         )
 

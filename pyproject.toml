@@ -1,57 +1,26 @@
 [build-system]
-requires = ["poetry-core>=1.9.0"]
+requires = [ "poetry-core>=1.9.0",]
 build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "flext-observability"
 version = "0.7.0"
 description = "FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry"
-authors = [{ name = "FLEXT Team", email = "team@flext.sh" }]
-maintainers = [{ name = "FLEXT Team", email = "team@flext.sh" }]
-license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
-dependencies = [
-    # Observability & Monitoring specific dependencies ONLY
-    # Core dependencies come from flext-core
-    "prometheus-client>=0.21.0",
-    "opentelemetry-api>=1.27.0",
-    "opentelemetry-sdk>=1.27.0",
-    "opentelemetry-instrumentation>=0.48b0",
-    "opentelemetry-exporter-prometheus>=0.48b0",
-    "opentelemetry-exporter-otlp>=1.27.0",
-    "opentelemetry-instrumentation-grpc>=0.48b0",
-    "opentelemetry-instrumentation-fastapi>=0.48b0",
-    "opentelemetry-instrumentation-requests>=0.48b0",
-    "opentelemetry-instrumentation-sqlalchemy>=0.48b0",
-    "opentelemetry-instrumentation-psycopg>=0.48b0",
-    "opentelemetry-instrumentation-redis>=0.48b0",
-    "psutil>=6.0.0",
-]
-keywords = [
-    "flext",
-    "observability",
-    "monitoring",
-    "metrics",
-    "prometheus",
-    "opentelemetry",
-    "tracing",
-]
-classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Intended Audience :: Developers",
-    "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3 :: Only",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Software Development :: Libraries :: Application Frameworks",
-    "Topic :: System :: Monitoring",
-    "Topic :: System :: Systems Administration",
-    "Topic :: System :: Networking :: Monitoring",
-    "Typing :: Typed",
-]
+keywords = [ "flext", "enterprise", "async", "typed", "monitoring", "logging", "tracing", "metrics",]
+classifiers = [ "Development Status :: 5 - Production/Stable", "Intended Audience :: Developers", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3 :: Only", "Topic :: Software Development :: Libraries :: Python Modules", "Typing :: Typed", "Topic :: System :: Monitoring",]
+dependencies = [ "flext-core @ file:///home/marlonsc/flext/flext-core", "typer>=0.15.0,<1.0.0", "psutil>=6.1.0,<8.0.0", "aiofiles>=24.1.0,<25.0.0", "structlog>=25.4.0,<26.0.0", "pydantic>=2.11.7,<3.0.0", "pydantic-settings>=2.10.1,<3.0.0", "rich>=14.0.0,<15.0.0",]
+[[project.authors]]
+name = "FLEXT Team"
+email = "team@flext.sh"
+
+[[project.maintainers]]
+name = "FLEXT Team"
+email = "team@flext.sh"
+
+[project.license]
+text = "MIT"
 
 [project.urls]
 Homepage = "https://github.com/flext-sh/flext"
@@ -61,274 +30,18 @@ Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
 [project.scripts]
 flext-observability = "flext_observability.cli:main"
 
-[tool.poetry]
-name = "flext-observability"
-version = "0.7.0"
-description = "FLEXT Observability - Monitoring, Logging & Metrics"
-authors = ["FLEXT Team <team@flext.sh>"]
-readme = "README.md"
-packages = [{ include = "flext_observability", from = "src" }]
-
-[tool.poetry.dependencies]
-python = ">=3.13,<3.14"
-
-# Core FLEXT dependencies - primary source of truth
-flext-core = { path = "../flext-core", develop = true }
-
-# Observability specific dependencies
-prometheus-client = ">=0.21.0"
-opentelemetry-api = ">=1.27.0"
-opentelemetry-sdk = ">=1.27.0"
-opentelemetry-instrumentation = ">=0.48b0"
-opentelemetry-exporter-prometheus = ">=0.48b0"
-opentelemetry-exporter-otlp = ">=1.27.0"
-opentelemetry-instrumentation-grpc = ">=0.48b0"
-opentelemetry-instrumentation-fastapi = ">=0.48b0"
-opentelemetry-instrumentation-requests = ">=0.48b0"
-opentelemetry-instrumentation-sqlalchemy = ">=0.48b0"
-opentelemetry-instrumentation-psycopg = ">=0.48b0"
-opentelemetry-instrumentation-redis = ">=0.48b0"
-psutil = ">=6.0.0"
-
-# Workspace-managed dependencies (inherited):
-# structlog, pydantic, pydantic-settings, click, rich, etc.
-# are all provided at workspace level - no duplication needed
-
-[tool.poetry.group.dev.dependencies]
-# Development dependencies
-pytest = ">=8.0.0"
-pytest-asyncio = ">=0.23.0"
-pytest-cov = ">=4.0.0"
-pytest-mock = ">=3.12.0"
-pytest-xdist = ">=3.6.0"
-pytest-timeout = ">=2.3.1"
-pytest-sugar = ">=1.0.0"
-pytest-clarity = ">=1.0.1"
-pytest-benchmark = ">=4.0.0"
-
-# Code quality
-ruff = ">=0.8.0"
-mypy = ">=1.13.0"
-pre-commit = ">=4.0.0"
-bandit = ">=1.8.0"
-
-# Documentation
-mkdocs = ">=1.6.0"
-mkdocs-material = ">=9.5.0"
-mkdocs-mermaid2-plugin = ">=1.1.0"
-
-[tool.poetry.scripts]
-flext-observability = "flext_observability.cli:main"
-
-# Project-specific tool configurations
-[tool.pytest.ini_options]
-minversion = "8.0"
-addopts = [
-    "-ra",
-    "--strict-markers",
-    "--strict-config",
-    "--cov=flext_observability",
-    "--cov-branch",
-    "--cov-report=term-missing:skip-covered",
-    "--cov-report=html:reports/coverage",
-    "--cov-report=xml:reports/coverage.xml",
-    "--cov-fail-under=90",
-    "--maxfail=1",
-    "--tb=short",
-]
-markers = [
-    "unit: Unit tests",
-    "integration: Integration tests",
-    "slow: Slow tests",
-    "smoke: Smoke tests",
-    "logging: marks tests as logging tests",
-    "performance: Performance tests",
-    "metrics: marks tests as metrics tests",
-    "tracing: marks tests as tracing tests",
-    "monitoring: marks tests as monitoring tests",
-    "requires_prometheus: tests that need Prometheus",
-    "requires_jaeger: tests that need Jaeger",
-]
-
 [tool.ruff]
 target-version = "py313"
 line-length = 88
-src = ["src", "tests"]
-
-[tool.ruff.lint]
-select = [
-    "ALL",
-]
-ignore = [
-    # Line length and formatting (handled by formatter)
-    "E501",    # line too long
-    "W505",    # doc line too long  
-    "COM812",  # trailing comma missing (conflicts with formatter)
-    "ISC001",  # single line implicit string concatenation
-    
-    # Import and dependency issues (common in development)
-    "F401",    # unused imports
-    "F403",    # star imports (common in __init__.py)
-    "F405",    # star import usage
-    "F841",    # unused variable (common in development)
-    
-    # Documentation style flexibility
-    "D100",    # missing docstring in public module
-    "D101",    # missing docstring in public class
-    "D102",    # missing docstring in public method
-    "D103",    # missing docstring in public function
-    "D104",    # missing docstring in public package
-    "D105",    # missing docstring in magic method
-    "D106",    # missing docstring in public nested class
-    "D107",    # missing docstring in __init__
-    "D203",    # blank line before class docstring (conflicts with D211)
-    "D213",    # multi-line docstring summary second line (conflicts with D212)
-    
-    # Code style flexibility (common patterns)
-    "ERA001",  # commented out code (common during development)
-    "TD002",   # missing author in TODO
-    
-    # Observability-specific patterns
-    "BLE001",  # blind-except - Monitoring must never crash the app
-    "PLC0415", # import-outside-top-level - Dynamic imports for optional deps
-    "FBT003",  # boolean-positional-value-in-call - Metrics APIs use booleans
-    "FBT001",  # boolean-type-hint-positional-argument - Common in observability
-    "DTZ003",  # call-datetime-utcnow - UTC timestamps for metrics
-    "DTZ005",  # call-datetime-now-without-tzinfo - Backwards compatibility
-    "ARG002",  # unused-method-argument - Interface compliance
-    "D401",    # non-imperative-mood - Technical descriptions preferred
-    "PLW0603", # global-statement - Prometheus multiprocess requires globals
-    "TRY300",  # try-consider-else - Exception handling patterns
-    "S104",    # hardcoded-bind-all-interfaces - Metrics servers bind to 0.0.0.0
-    "S108",    # hardcoded-temp-file - Prometheus multiprocess temp files
-    "S110",    # try-except-pass - Graceful degradation for optional features
-    "PYI036",  # bad-exit-annotation - Exit handlers return various types
-    "Q000",    # bad-quotes-inline-string - Mixed quotes in log messages
-    "W293",    # blank-line-with-whitespace - Auto-fixable formatting
-    "TD003",   # missing issue link in TODO  
-    "FIX002",  # line contains TODO
-    "T201",    # print statement (common in scripts/debug)
-    "T203",    # pprint statement
-    
-    # Complexity (handled case by case)
-    "C901",    # function too complex
-    "PLR0913", # too many arguments
-    "PLR0915", # too many statements  
-    "PLR2004", # magic value used in comparison
-    "PLR0912", # too many branches
-    "PLR0911", # too many return statements
-    
-    # Type checking flexibility
-    "ANN101",  # missing type annotation for self
-    "ANN102",  # missing type annotation for cls
-    "ANN401",  # any type usage (sometimes necessary)
-    
-    # Security exceptions (development context)
-    "S101",    # assert usage (needed for type checking)
-    "S603",    # subprocess call
-    "S607",    # starting process with partial executable path
-    "S608",    # possible SQL injection (handled by ORM)
-    
-    # Error handling flexibility
-    "EM101",   # raw string in exception  
-    "EM102",   # f-string in exception
-    "TRY003",  # avoid long exception messages
-    "TRY301",  # raise within try block
-    
-    # Performance (premature optimization)
-    "PERF203", # try-except in loop
-    "PERF401", # manual list comprehension
-]
-
-[tool.ruff.lint.per-file-ignores]
-# Test files - extremely permissive for all test patterns
-"tests/*" = [
-    "ALL",  # Allow everything in tests
-]
-"tests/**/*.py" = [
-    "ALL",  # Allow everything in tests
-]
-"**/tests/*.py" = [
-    "ALL",  # Allow everything in tests  
-]
-"test_*.py" = [
-    "ALL",  # Allow everything in tests
-]
-"**/test_*.py" = [
-    "ALL",  # Allow everything in tests
-]
-"conftest.py" = [
-    "ALL",  # Allow everything in pytest config
-]
-"**/conftest.py" = [
-    "ALL",  # Allow everything in pytest config
-]
-
-# Script and CLI files - very permissive
-"scripts/*" = [
-    "ALL",  # Scripts need maximum flexibility
-]
-"**/scripts/*.py" = [
-    "ALL",  # Scripts need maximum flexibility
-]
-"cli.py" = [
-    "T201", "T203", "S602", "S603", "S607", "S608", 
-    "PLR0913", "PLR0915", "PLR0912", "PLR0911",
-    "C901", "D100", "D103", "DTZ005", "EM101", "EM102", 
-    "F401", "ERA001", "FIX002", "TD002", "TD003",
-]
-"**/cli.py" = [
-    "T201", "T203", "S602", "S603", "S607", "S608",
-    "PLR0913", "PLR0915", "PLR0912", "PLR0911", 
-    "C901", "D100", "D103", "DTZ005", "EM101", "EM102",
-    "F401", "ERA001", "FIX002", "TD002", "TD003",
-]
-
-# Generated/auto-generated files - exclude ALL linting
-"**/proto/*_pb2.py" = ["ALL"]
-"**/proto/*_pb2_grpc.py" = ["ALL"]
-"**/*_pb2.py" = ["ALL"]
-"**/*_pb2_grpc.py" = ["ALL"]
-"**/generated/**/*.py" = ["ALL"]
-"**/migrations/*.py" = ["ALL"]
-"**/alembic/versions/*.py" = ["ALL"]
-
-# Example and demo files - very permissive
-"examples/*" = [
-    "D100", "D103", "T201", "F401", "S101", "PLR2004",
-    "C901", "PLR0913", "PLR0915", "EM101", "EM102",
-]
-"**/examples/*" = [
-    "D100", "D103", "T201", "F401", "S101", "PLR2004", 
-    "C901", "PLR0913", "PLR0915", "EM101", "EM102",
-]
-
-# __init__.py files - common to import and re-export
-"__init__.py" = [
-    "F401", "F403", "F405", "D104", "D100",
-]
-"**/__init__.py" = [
-    "F401", "F403", "F405", "D104", "D100",
-]
-
-# Development and temporary files
-"temp_*.py" = ["ALL"]
-"**/temp_*.py" = ["ALL"]
-"debug_*.py" = ["ALL"] 
-"**/debug_*.py" = ["ALL"]
-"scratch_*.py" = ["ALL"]
-"**/scratch_*.py" = ["ALL"]
-[tool.ruff.lint.isort]
-known-first-party = [
-    "flext_observability",
-    "flext_core",
-]
-force-single-line = true
+fix = true
+show-fixes = true
+respect-gitignore = true
+src = [ "src", "tests",]
+extend-exclude = [ "__pycache__", ".git", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv", "venv", "build", "dist", "htmlcov",]
 
 [tool.mypy]
 python_version = "3.13"
-files = ["src", "tests"]
-plugins = ["pydantic.mypy"]
+strict = true
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -344,29 +57,127 @@ strict_equality = true
 show_error_codes = true
 show_error_context = true
 pretty = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+ignore_missing_imports = false
+no_implicit_reexport = true
+files = [ "src", "tests",]
+plugins = [ "pydantic.mypy",]
+exclude = [ "build", "dist", ".venv", ".mypy_cache",]
 
-[[tool.mypy.overrides]]
-module = ["structlog.*", "prometheus_client.*", "opentelemetry.*", "psutil.*"]
-ignore_missing_imports = true
+[tool.bandit]
+exclude_dirs = [ "tests", "build", "dist",]
+skips = [ "B101", "B601",]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+[tool.poetry]
+[[tool.poetry.packages]]
+include = "flext_observability"
+from = "src"
+
+[tool.deptry]
+known_first_party = [ "flext_observability",]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+asyncio_mode = "auto"
+addopts = [ "-ra", "--strict-markers", "--strict-config", "--cov=flext_observability", "--cov-branch", "--cov-report=term-missing:skip-covered", "--cov-report=html:reports/coverage", "--cov-report=xml:reports/coverage.xml", "--cov-fail-under=90", "--maxfail=1", "--tb=short",]
+testpaths = [ "tests",]
+markers = [ "unit: Unit tests", "integration: Integration tests", "slow: Slow tests", "smoke: Smoke tests", "e2e: End-to-end tests",]
+filterwarnings = [ "error", "ignore::UserWarning", "ignore::DeprecationWarning",]
+
+[tool.ruff.lint]
+select = [ "ALL",]
+ignore = [ "COM812", "D203", "D213", "ISC001", "ANN401", "ARG001", "ARG002", "BLE001", "C901", "D102", "D103", "D105", "D107", "D401", "DTZ001", "DTZ005", "E401", "E501", "EM101", "EM102", "ERA001", "EXE001", "F401", "F823", "FBT001", "FBT002", "FBT003", "FIX002", "G004", "PLC0415", "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004", "PLW0603", "PTH118", "PTH123", "RUF001", "S103", "S104", "S105", "S106", "S107", "S603", "S607", "SIM102", "TD002", "TD003", "TRY003", "TRY203", "TRY300", "TRY301", "TRY401",]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+docstring-code-format = true
 
 [tool.coverage.run]
-source = ["src"]
+source = [ "src",]
 branch = true
-omit = ["*/tests/*", "*/test_*", "*/__pycache__/*", "*/venv/*", "*/.venv/*"]
+omit = [ "*/tests/*", "*/test_*", "*/__pycache__/*", "*/venv/*", "*/.venv/*",]
 
 [tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "if self.debug:",
-    "if settings.DEBUG",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if 0:",
-    "if __name__ == .__main__.:",
-    "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
-]
-show_missing = true
-precision = 2
-fail_under = 90
+exclude_lines = [ "pragma: no cover", "def __repr__", "if self.debug:", "if settings.DEBUG", "raise AssertionError", "raise NotImplementedError", "if 0:", "if __name__ == .__main__.:", "class .*\\bProtocol\\):", "@(abc\\.)?abstractmethod",]
+
+[tool.coverage.html]
+directory = "reports/coverage"
+
+[tool.coverage.xml]
+output = "reports/coverage.xml"
+
+[tool.poetry.dependencies]
+python = ">=3.13,<3.14"
+
+
+[tool.ruff.lint.isort]
+known-first-party = [ "flext",]
+force-single-line = false
+split-on-trailing-comma = true
+combine-as-imports = true
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = [ "S101", "S103", "S104", "S105", "S106", "S107", "PLR2004", "ARG", "SLF001", "PLC0415",]
+"**/scripts/**" = [ "T201", "S603", "S607", "ANN",]
+"**/__init__.py" = [ "F401",]
+"**/proto/*_pb2.py" = [ "ALL",]
+"**/proto/*_pb2_grpc.py" = [ "ALL",]
+"**/*_pb2.py" = [ "ALL",]
+"**/*_pb2_grpc.py" = [ "ALL",]
+"**/generated/**/*.py" = [ "ALL",]
+
+[tool.poetry.dependencies.flext-core]
+path = "../flext-core"
+develop = true
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.12.3"
+black = "^25.1.0"
+isort = "^6.0.1"
+mypy = "^1.13.0"
+pylint = "^3.3.0"
+pre-commit = "^4.0.1"
+vulture = "^2.13"
+radon = "^6.0.1"
+codespell = "^2.3.0"
+pyupgrade = "^3.19.0"
+autoflake = "^2.3.1"
+types-python-dateutil = "^2.9.0"
+types-pyyaml = "^6.0.12"
+types-setuptools = "^80.9.0"
+types-toml = "^0.10.8.20240310"
+types-requests = "^2.32.4"
+types-redis = "^4.6.0"
+types-psutil = "^7.0.0"
+types-aiofiles = "^24.1.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.4.0"
+pytest-asyncio = "^1.0.0"
+pytest-cov = "^6.2.0"
+pytest-xdist = "^3.8.0"
+pytest-mock = "^3.14.0"
+pytest-timeout = "^2.4.0"
+pytest-benchmark = "^5.1.0"
+pytest-randomly = "^3.16.0"
+pytest-sugar = "^1.0.0"
+pytest-clarity = "^1.0.1"
+pytest-deadfixtures = "^2.2.1"
+pytest-env = "^1.1.5"
+pytest-httpx = "^0.35.0"
+hypothesis = "^6.125.0"
+factory-boy = "^3.3.1"
+faker = "^37.4.0"
+
+[tool.poetry.group.security.dependencies]
+bandit = "^1.8.0"
+pip-audit = "^2.7.3"

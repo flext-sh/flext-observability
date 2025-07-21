@@ -14,8 +14,7 @@ from uuid import UUID
 
 from flext_core.config.base import injectable
 from flext_core.domain.types import Status
-from flext_core.infrastructure.persistence.base import InMemoryRepository
-from flext_core.infrastructure.persistence.base import Repository
+from flext_core.infrastructure.persistence.base import InMemoryRepository, Repository
 
 # Type aliases for domain-specific repositories
 AlertRepository = Repository["Alert", UUID]
@@ -27,15 +26,15 @@ TraceRepository = Repository["Trace", UUID]
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from flext_core.domain.types import AlertSeverity
-    from flext_core.domain.types import LogLevel
-    from flext_core.domain.types import MetricType
-    from flext_core.domain.types import TraceStatus
-    from flext_observability.domain.entities import Alert
-    from flext_observability.domain.entities import HealthCheck
-    from flext_observability.domain.entities import LogEntry
-    from flext_observability.domain.entities import Metric
-    from flext_observability.domain.entities import Trace
+    from flext_core.domain.types import AlertSeverity, LogLevel, MetricType, TraceStatus
+
+    from flext_observability.domain.entities import (
+        Alert,
+        HealthCheck,
+        LogEntry,
+        Metric,
+        Trace,
+    )
     from flext_observability.domain.value_objects import ComponentName
 
     # HealthStatus will be mapped to Status for consistency

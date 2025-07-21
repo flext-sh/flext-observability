@@ -1,4 +1,4 @@
-"""Business metrics for flext-observability following clean architecture.
+"""Business metrics for flext-infrastructure.monitoring.flext-observability.
 
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from enum import StrEnum
 from typing import Any
+
+from flext_core.domain.types import MetricType
 
 from flext_observability.domain.entities import Metric
 from flext_observability.domain.value_objects import ComponentName
@@ -71,10 +73,28 @@ class BusinessMetric:
             Domain metric entity.
 
         """
+        # Map BusinessMetricType to MetricType
+        metric_type_mapping = {
+            BusinessMetricType.COUNTER: MetricType.COUNTER,
+            BusinessMetricType.GAUGE: MetricType.GAUGE,
+            BusinessMetricType.HISTOGRAM: MetricType.HISTOGRAM,
+            BusinessMetricType.SUMMARY: MetricType.SUMMARY,
+            # Business-specific types map to appropriate metric types
+            BusinessMetricType.PIPELINE_SUCCESS_RATE: MetricType.GAUGE,
+            BusinessMetricType.EXECUTION_DURATION: MetricType.HISTOGRAM,
+            BusinessMetricType.THROUGHPUT: MetricType.GAUGE,
+            BusinessMetricType.ERROR_RATE: MetricType.GAUGE,
+            BusinessMetricType.AVAILABILITY: MetricType.GAUGE,
+            BusinessMetricType.LATENCY: MetricType.HISTOGRAM,
+            BusinessMetricType.COST_PER_OPERATION: MetricType.GAUGE,
+            BusinessMetricType.USER_ACTIVITY: MetricType.COUNTER,
+            BusinessMetricType.SLA_COMPLIANCE: MetricType.GAUGE,
+        }
+
         return Metric(
             name=self.name,
             value=self.value,
-            metric_type=self.metric_type.value,
+            metric_type=metric_type_mapping[self.metric_type],
             unit=self.unit,
             labels=self.labels,
             component=ComponentName(name=self.component_name),

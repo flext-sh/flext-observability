@@ -8,8 +8,7 @@ Simplified container implementation for observability components.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from flext_observability.config import ObservabilitySettings

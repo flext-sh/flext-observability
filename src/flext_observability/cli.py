@@ -1,24 +1,29 @@
-"""CLI interface for flext-observability.
+"""CLI interface for flext-infrastructure.monitoring.flext-observability.
 
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+from __future__ import annotations
+
 import json
 import sys
 
 import typer
+from flext_core.domain.types import MetricType
 from rich.console import Console
 from rich.table import Table
 
-from flext_core.domain.types import MetricType
+from flext_observability import __version__
 from flext_observability.config import get_settings
-from flext_observability.simple_api import collect_metric
-from flext_observability.simple_api import get_system_overview
-from flext_observability.simple_api import setup_observability
+from flext_observability.simple_api import (
+    collect_metric,
+    get_system_overview,
+    register_observability_services,
+)
 
 app = typer.Typer(
-    name="flext-observability",
+    name="flext-infrastructure.monitoring.flext-observability",
     help="FLEXT Observability CLI - Enterprise monitoring and observability",
 )
 console = Console()
@@ -32,9 +37,8 @@ def setup(
     logging: bool = typer.Option(True, help="Enable structured logging"),
     tracing: bool = typer.Option(True, help="Enable distributed tracing"),
 ) -> None:
-    """Setup and initialize observability services."""
     try:
-        setup_observability(
+        register_observability_services(
             enable_metrics=metrics,
             enable_alerts=alerts,
             enable_health_checks=health,
@@ -52,7 +56,6 @@ def setup(
 
 @app.command()
 def status() -> None:
-    """Show system observability status."""
     try:
         overview = get_system_overview()
 
@@ -68,7 +71,6 @@ def status() -> None:
         table.add_row("Active Traces", str(overview["active_traces"]))
 
         console.print(table)
-
     except Exception as e:
         console.print(f"❌ Failed to get system status {e}", style="red")
         sys.exit(1)
@@ -80,14 +82,13 @@ def collect(
     value: float = typer.Argument(..., help="Metric value"),
     unit: str = typer.Option("count", help="Metric unit"),
     metric_type: str = typer.Option(
-        "gauge", help="Metric type (counter, gauge, histogram, summary)"
+        "gauge",
+        help="Metric type (counter, gauge, histogram, summary)",
     ),
     component: str = typer.Option("cli", help="Component name"),
     namespace: str = typer.Option("default", help="Component namespace"),
 ) -> None:
-    """Collect a single metric."""
     try:
-        # Parse metric type
         try:
             mt = MetricType(metric_type.lower())
         except ValueError:
@@ -112,7 +113,6 @@ def collect(
         else:
             console.print(f"❌ Failed to collect metric {name}", style="red")
             sys.exit(1)
-
     except Exception as e:
         console.print(f"❌ Failed to collect metric: {e}", style="red")
         sys.exit(1)
@@ -120,14 +120,12 @@ def collect(
 
 @app.command()
 def config() -> None:
-    """Show current configuration."""
     try:
         settings = get_settings()
         config_dict = settings.model_dump()
 
         console.print("Current Configuration", style="bold cyan")
         console.print(json.dumps(config_dict, indent=2, default=str))
-
     except Exception as e:
         console.print(f"❌ Failed to get configuration: {e}", style="red")
         sys.exit(1)
@@ -136,9 +134,10 @@ def config() -> None:
 @app.command()
 def version() -> None:
     """Show version information."""
-    from flext_observability import __version__  # TODO: Move import to module level
-
-    console.print(f"flext-observability version: {__version__}", style="green")
+    console.print(
+        f"flext-infrastructure.monitoring.flext-observability version: {__version__}",
+        style="green",
+    )
 
     # Show settings version
     settings = get_settings()

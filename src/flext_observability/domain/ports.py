@@ -6,19 +6,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
-from typing import TYPE_CHECKING
-from typing import Any
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from flext_core.domain import ServiceResult
-    from flext_observability.domain.entities import Alert
-    from flext_observability.domain.entities import Dashboard
-    from flext_observability.domain.entities import HealthCheck
-    from flext_observability.domain.entities import LogEntry
-    from flext_observability.domain.entities import Metric
-    from flext_observability.domain.entities import Trace
+    from flext_core.domain.shared_types import ServiceResult
+
+    from flext_observability.domain.entities import (
+        Alert,
+        Dashboard,
+        HealthCheck,
+        LogEntry,
+        Metric,
+        Trace,
+    )
 
 
 class LogService(ABC):
@@ -64,7 +65,7 @@ class MetricsService(ABC):
         ...
 
     @abstractmethod
-    async def export_metrics(self, format: str) -> ServiceResult[str]:
+    async def export_metrics(self, format_type: str) -> ServiceResult[str]:
         """Export metrics in specified format."""
         ...
 
@@ -92,7 +93,7 @@ class TracingService(ABC):
         ...
 
     @abstractmethod
-    async def export_traces(self, format: str) -> ServiceResult[str]:
+    async def export_traces(self, format_type: str) -> ServiceResult[str]:
         """Export traces in specified format."""
         ...
 

@@ -6,16 +6,18 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from flext_core.domain.types import ServiceResult
-from flext_observability.domain.entities import Alert
-from flext_observability.domain.entities import Dashboard
-from flext_observability.domain.entities import HealthCheck
-from flext_observability.domain.entities import LogEntry
-from flext_observability.domain.entities import Metric
-from flext_observability.domain.entities import Trace
+
+from flext_observability.domain.entities import (
+    Alert,
+    Dashboard,
+    HealthCheck,
+    LogEntry,
+    Metric,
+    Trace,
+)
 from flext_observability.infrastructure.persistence.base import InMemoryRepository
 
 if TYPE_CHECKING:
@@ -578,7 +580,8 @@ class InMemoryHealthRepository(InMemoryRepository[HealthCheck]):
             return ServiceResult.fail(f"Failed to save health check: {e}")
 
     async def get_by_id(
-        self, health_check_id: UUID
+        self,
+        health_check_id: UUID,
     ) -> ServiceResult[HealthCheck | None]:
         """Get a health check by ID.
 

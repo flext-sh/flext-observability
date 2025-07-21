@@ -9,27 +9,26 @@ from __future__ import annotations
 import asyncio
 import contextlib
 from datetime import datetime
-from typing import TYPE_CHECKING
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from flext_core.config.base import injectable
+from flext_core.domain.types import EntityStatus
+
 from flext_observability.domain.entities import HealthCheck
 from flext_observability.domain.ports import HealthService as HealthChecker
-from flext_observability.domain.value_objects import ComponentName
-from flext_observability.domain.value_objects import HealthStatus
+from flext_observability.domain.value_objects import ComponentName, HealthStatus
 from flext_observability.infrastructure.persistence.base import EventBus
-from flext_observability.infrastructure.ports import AlertNotifier
-from flext_observability.infrastructure.ports import LogExporter
-from flext_observability.infrastructure.ports import MetricsExporter
-from flext_observability.infrastructure.ports import TraceExporter
+from flext_observability.infrastructure.ports import (
+    AlertNotifier,
+    LogExporter,
+    MetricsExporter,
+    TraceExporter,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from flext_observability.domain.entities import Alert
-    from flext_observability.domain.entities import LogEntry
-    from flext_observability.domain.entities import Metric
-    from flext_observability.domain.entities import Trace
+    from flext_observability.domain.entities import Alert, LogEntry, Metric, Trace
 
 
 @injectable(EventBus)
@@ -56,14 +55,16 @@ class InMemoryEventBus(EventBus):
                     await handler(event)
                 else:
                     handler(event)
-            except (ValueError, TypeError, AttributeError) as e:
+            except (ValueError, TypeError, AttributeError):
                 # Log error but don't stop processing other handlers
                 import logging
 
-                logging.getLogger(__name__).exception(f"Event handler failed: {e}")
+                logging.getLogger(__name__).exception("Event handler failed")
 
     async def subscribe(
-        self, event_type: type[object], handler: Callable[..., object]
+        self,
+        event_type: type[object],
+        handler: Callable[..., object],
     ) -> None:
         """Subscribe to events of specific type.
 
@@ -77,7 +78,9 @@ class InMemoryEventBus(EventBus):
         self._handlers[event_type].append(handler)
 
     async def unsubscribe(
-        self, event_type: type[object], handler: Callable[..., object]
+        self,
+        event_type: type[object],
+        handler: Callable[..., object],
     ) -> None:
         """Unsubscribe from events of specific type.
 
@@ -243,7 +246,8 @@ class SlackAlertNotifier(AlertNotifier):
             alert: Alert to send notification for.
 
         """
-        notification = {
+        # In a real implementation, this would send to Slack
+        notification_data: dict[str, object] = {
             "alert_id": str(alert.id),
             "title": alert.title,
             "description": alert.description,
@@ -253,15 +257,6 @@ class SlackAlertNotifier(AlertNotifier):
             "threshold": float(alert.threshold) if alert.threshold else 0.0,
             "alert_status": alert.alert_status.value,
             "timestamp": alert.created_at,
-        }
-
-        # In a real implementation, this would send to Slack
-        notification_data: dict[str, object] = {
-            "title": alert.title,
-            "message": alert.description,
-            "severity": alert.severity,
-            "timestamp": alert.created_at,
-            "metadata": {},
         }
         self._notifications.append(notification_data)
 
@@ -306,17 +301,19 @@ class HttpHealthChecker(HealthChecker):
         from flext_observability.domain.value_objects import Duration
 
         start_time = datetime.now(UTC)
-
         try:
             # In a real implementation, this would make an HTTP request
             # For now, we'll simulate a health check
             import random
 
-            # Simulate some delay
-            await asyncio.sleep(random.uniform(0.01, 0.1))
+            # Simulate some delay - respect timeout_ms parameter
+            max_delay = min(
+                timeout_ms / 1000.0, 0.1,
+            )  # Convert ms to seconds, cap at 100ms
+            await asyncio.sleep(random.uniform(0.01, max_delay))  # noqa: S311
 
             # Simulate success/failure
-            success = random.random() > 0.1  # 90% success rate
+            success = random.random() > 0.1  # 90% success rate  # noqa: S311
 
             if success:
                 health_status = HealthStatus.HEALTHY
@@ -325,20 +322,30 @@ class HttpHealthChecker(HealthChecker):
                 health_status = HealthStatus.UNHEALTHY
                 error = "Connection timeout"
 
+            # Map HealthStatus to EntityStatus
+            status_mapping = {
+                HealthStatus.HEALTHY: EntityStatus.ACTIVE,
+                HealthStatus.DEGRADED: EntityStatus.ACTIVE,  # Still active but degraded
+                HealthStatus.UNHEALTHY: EntityStatus.ERROR,
+                HealthStatus.UNKNOWN: EntityStatus.PENDING,
+                HealthStatus.FAILED: EntityStatus.ERROR,
+                HealthStatus.TIMEOUT: EntityStatus.ERROR,
+            }
+            entity_status = status_mapping.get(health_status, EntityStatus.PENDING)
+
             end_time = datetime.now(UTC)
             duration_ms = int((end_time - start_time).total_seconds() * 1000)
             duration = Duration(milliseconds=duration_ms)
 
             return HealthCheck(
                 name=component.name,
-                health_status=health_status,
+                health_status=entity_status,
                 endpoint=endpoint,
                 response_time_ms=duration.milliseconds if duration else None,
                 error_message=error,
                 component=component,
                 check_type="automated",
             )
-
         except Exception as e:
             end_time = datetime.now(UTC)
             duration_ms = int((end_time - start_time).total_seconds() * 1000)
@@ -346,7 +353,7 @@ class HttpHealthChecker(HealthChecker):
 
             return HealthCheck(
                 name=component.name,
-                health_status=HealthStatus.UNHEALTHY,
+                health_status=EntityStatus.ERROR,
                 endpoint=endpoint,
                 response_time_ms=duration.milliseconds if duration else None,
                 error_message=str(e),
@@ -420,7 +427,7 @@ class ConsoleAlertNotifier(AlertNotifier):
 class FileMetricsExporter(MetricsExporter):
     """File-based metrics exporter for development."""
 
-    def __init__(self, file_path: str = "/tmp/flext_metrics.log") -> None:
+    def __init__(self, file_path: str = "./logs/flext_metrics.log") -> None:
         self.file_path = file_path
 
     async def export_metrics(self, metrics: list[Metric]) -> None:
@@ -430,8 +437,10 @@ class FileMetricsExporter(MetricsExporter):
             metrics: List of metrics to export to file.
 
         """
-        with open(self.file_path, "a", encoding="utf-8") as f:
-            f.writelines(
+        import aiofiles
+
+        async with aiofiles.open(self.file_path, "a", encoding="utf-8") as f:
+            await f.writelines(
                 f"{metric.timestamp},{metric.source or 'default'},{metric.name},"
                 f"{metric.value},{metric.unit or ''},{metric.metric_type.value}\n"
                 for metric in metrics

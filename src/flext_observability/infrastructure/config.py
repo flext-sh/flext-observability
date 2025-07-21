@@ -8,21 +8,15 @@ This module provides the configuration for the FLEXT Observability.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from pydantic_settings import SettingsConfigDict
-
-from flext_core.config import BaseSettings
-from flext_core.config import get_container
-from flext_core.config import singleton
+from flext_core.config import BaseSettings, get_container, singleton
 from flext_core.domain.constants import FlextFramework
 from flext_core.domain.pydantic_base import Field
+from pydantic_settings import SettingsConfigDict
 
 if TYPE_CHECKING:
-    from flext_core.domain.types import LogLevelLiteral
-    from flext_core.domain.types import ProjectName
-    from flext_core.domain.types import Version
+    from flext_core.domain.types import LogLevelLiteral, ProjectName, Version
 
 
 @singleton()  # type: ignore[arg-type]
@@ -48,7 +42,10 @@ class ObservabilitySettings(BaseSettings):
     )
 
     # Project identification using flext-core types
-    project_name: ProjectName = Field("flext-observability", description="Project name")
+    project_name: ProjectName = Field(
+        "flext-infrastructure.monitoring.flext-observability",
+        description="Project name",
+    )
     project_version: Version = Field(
         FlextFramework.VERSION,
         description="Project version",
@@ -62,7 +59,7 @@ class ObservabilitySettings(BaseSettings):
         ge=1024,
         le=65535,
     )
-    metrics_host: str = Field("0.0.0.0", description="Metrics endpoint host")
+    metrics_host: str = Field("127.0.0.1", description="Metrics endpoint host")
     metrics_path: str = Field("/metrics", description="Metrics endpoint path")
     metrics_interval: int = Field(
         15,
@@ -80,7 +77,7 @@ class ObservabilitySettings(BaseSettings):
     # Tracing Configuration
     tracing_enabled: bool = Field(True, description="Enable distributed tracing")
     tracing_service_name: str = Field(
-        "flext-observability",
+        "flext-infrastructure.monitoring.flext-observability",
         description="Service name for tracing",
     )
     tracing_service_version: str = Field(
@@ -112,7 +109,7 @@ class ObservabilitySettings(BaseSettings):
     # Health Check Configuration
     health_enabled: bool = Field(True, description="Enable health checks")
     health_port: int = Field(8080, description="Health check port", ge=1024, le=65535)
-    health_host: str = Field("0.0.0.0", description="Health check host")
+    health_host: str = Field("127.0.0.1", description="Health check host")
     health_path: str = Field("/health", description="Health check endpoint path")
     health_interval: int = Field(
         30,
@@ -147,7 +144,7 @@ class ObservabilitySettings(BaseSettings):
     # Dashboard Configuration
     dashboard_enabled: bool = Field(True, description="Enable dashboard")
     dashboard_port: int = Field(8080, description="Dashboard port", ge=1024, le=65535)
-    dashboard_host: str = Field("0.0.0.0", description="Dashboard host")
+    dashboard_host: str = Field("127.0.0.1", description="Dashboard host")
     dashboard_auto_refresh: bool = Field(True, description="Auto-refresh dashboard")
     dashboard_refresh_interval: int = Field(
         30,

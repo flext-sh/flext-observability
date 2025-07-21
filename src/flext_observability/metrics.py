@@ -1,4 +1,4 @@
-"""Metrics collection functionality for flext-observability.
+"""Metrics collection functionality for flext-infrastructure.monitoring.flext-observability.
 
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -114,10 +114,17 @@ class MetricsCollector:
             labels: Additional labels.
 
         """
+        from flext_core.domain.types import MetricType
+
+        try:
+            metric_type_enum = MetricType(metric_type.lower())
+        except ValueError:
+            metric_type_enum = MetricType.GAUGE  # Default fallback
+
         metric = Metric(
             name=name,
             value=value,
-            metric_type=metric_type,
+            metric_type=metric_type_enum,
             unit=unit,
             labels=labels or {},
             component=ComponentName(name=component_name),

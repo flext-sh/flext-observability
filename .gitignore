@@ -1,218 +1,169 @@
-# ========================================
-# FLEXT-OBSERVABILITY SPECIFIC .GITIGNORE
-# ========================================
+# ============================================================================
+# FLEXT PYTHON PROJECT STANDARD .gitignore TEMPLATE
+# Python 3.13 | Poetry | Testing | Development Tools
+# ============================================================================
 
-# Python Cache and Bytecode
+# ============================================================================
+# PYTHON BUILD AND RUNTIME ARTIFACTS
+# ============================================================================
+
+# Python cache and compiled files
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
+*.pyd
 *.so
 
-# Testing and Quality Tools
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-wheel-metadata/
+*.dist-info/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================================================================
+# TESTING AND COVERAGE
+# ============================================================================
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
 .coverage
 .coverage.*
-htmlcov/
+.cache
 nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
-.tox/
-.nox/
-pytest.xml
-reports/
+.pytest_cache/
+cover/
+.coverage_html/
+junit.xml
+coverage.json
+.benchmarks/
 
-# Development Tools
-.cursor/
-.claude/
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.rope_project/
+# ============================================================================
+# DEVELOPMENT TOOLS AND CACHE
+# ============================================================================
 
-# Build and Distribution
-build/
-dist/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
-# Virtual Environments
-.venv/
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Ruff
+.ruff_cache/
+
+# Bandit
+.bandit
+
+# pylint
+.pylint.d/
+
+# ============================================================================
+# VIRTUAL ENVIRONMENTS AND DEPENDENCIES
+# ============================================================================
+
+# virtualenv
+.env
+.venv
+env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-.Python
 
-# Observability Specific
-logs/
-metrics/
-traces/
-*.log
-*.log.*
-prometheus_data/
-grafana_data/
-jaeger_data/
-tempo_data/
-loki_data/
+# Poetry - keep lock file for reproducible builds
+# poetry.lock  # KEEP THIS FILE COMMENTED OUT
 
-# Monitoring Data
-monitoring_data/
-.benchmarks/
-performance_reports/
-profiling_data/
-*.prof
-*.pprof
-*.trace
-*.perf
+# Pipenv
+Pipfile.lock.bak
 
-# Configuration
-.env
-.env.*
-!.env.example
-internal.invalid.yaml
-internal.invalid.json
-*.local.conf
+# PDM
+.pdm.toml
+.pdm-python
+.pdm-build/
 
-# Archive and Backup
-.archive/
-archive/
-backup/
-*.bak
-*.backup
-*.old
+# ============================================================================
+# IDEs AND EDITORS
+# ============================================================================
 
-# Migration and Reports
-*_MIGRATION*.md
-CONFIG_MIGRATION*.md
-FLEXT_*_MIGRATION*.md
-*_REPORT*.md
-DEVELOPMENT*.md
-DUPLICATION*.md
-fix_*.py
-*_fix.py
-*_validation.*
-validate_*.*
-.dev_deps_backup_*
-
-# Dependencies
-requirements.txt
-requirements-*.txt
-!requirements-dev.txt
-!requirements-test.txt
-
-# Documentation Build
-docs/_build/
-docs/.doctrees/
-site/
-
-# OS Files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-desktop.ini
-
-# Temporary Files
-*.tmp
-*.temp
-*.pid
-*.seed
-*.pid.lock
-
-# Container Runtime
-docker-compose.override.yml
-.dockerignore
-container_data/
-
-# Secrets and Sensitive Data
-*.key
-*.pem
-*.cert
-*.crt
-*.csr
-private/
-secrets/
-
-# Editor Autosave
-*~
-\#*\#
-.\#*
-
-# Package Manager
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# State Files
-*.state
-state.json
-.state/
-state/
-
-# Session Data
-session_data/
-.sessions/
-
-# Cache Directories
-.cache/
-cache/
-__pycache__/
-
-# Runtime Data
-runtime/
-pid/
-*.pid
-
-# Local Development
-local/
-.local/
-
-# Jupyter Notebooks
-.ipynb_checkpoints/
-*.ipynb
-
-# Database Files
-*.db
-*.sqlite
-*.sqlite3
-db.sqlite3
-db.sqlite3-journal
-
-# Lock Files (keep for reproducibility)
-# Pipfile.lock
-# poetry.lock
-# pdm.lock
+# VSCode
+.vscode/
+*.code-workspace
 
 # PyCharm
 .idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ============================================================================
+# SYSTEM FILES
+# ============================================================================
 
 # macOS
+.DS_Store
 .AppleDouble
 .LSOverride
-Icon
-*.icloud
+._*
 
 # Windows
 Thumbs.db
 ehthumbs.db
-ehthumbs_vista.db
-*.stackdump
-[Dd]esktop.ini
+Desktop.ini
 $RECYCLE.BIN/
 *.cab
 *.msi
@@ -220,3 +171,206 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================================
+# DOCUMENTATION AND REPORTS
+# ============================================================================
+
+# Sphinx documentation
+docs/_build/
+docs/build/
+.buildinfo
+
+# MkDocs
+site/
+
+# Reports
+reports/
+*.report
+*.json.report
+
+# ============================================================================
+# LOGS AND TEMPORARY FILES
+# ============================================================================
+
+# Logs
+*.log
+logs/
+log/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+.tmp/
+tmp/
+
+# ============================================================================
+# DATABASE AND DATA FILES
+# ============================================================================
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+*.db3
+
+# Data files
+*.csv.bak
+*.json.bak
+*.xml.bak
+data/
+*.data
+
+# ============================================================================
+# SINGER/MELTANO SPECIFIC
+# ============================================================================
+
+# Meltano
+.meltano/
+.secrets/
+catalog.json
+tap_done
+target_done
+state.json
+output/
+
+# DBT
+target/
+dbt_packages/
+logs/
+
+# ============================================================================
+# DOCKER AND CONTAINERS
+# ============================================================================
+
+# Docker
+.dockerignore.bak
+docker-compose.override.yml
+
+# ============================================================================
+# CONFIGURATION AND SECRETS
+# ============================================================================
+
+# Environment variables
+.env
+.internal.invalid
+.env.*.local
+.envrc
+
+# Secrets and credentials
+.secrets
+*.key
+*.pem
+*.crt
+*.csr
+*_key
+*_secret
+.credentials
+secrets/
+
+# Configuration backups
+*.conf.bak
+*.config.bak
+*.toml.bak
+
+# ============================================================================
+# PROJECT SPECIFIC - FORBID ANTI-PATTERNS
+# ============================================================================
+
+# Archive directory (for moved junk files)
+archive/
+
+# Reports directory (for metrics, coverage, etc.)
+reports/
+
+# Old requirements.txt (use pyproject.toml)
+requirements.txt
+
+# Manual fix scripts - FORBIDDEN
+fix_*.py
+*_fix.py
+*_validation.py
+validate_*.py
+
+# AI-generated reports and migration files - FORBIDDEN
+*_REPORT.md
+*_REPORT_*.md
+CONFIG_MIGRATION*.md
+FLEXT_*_MIGRATION*.md
+DEVELOPMENT_STANDARDS.md
+FLEXT_*_PATTERNS.md
+LOGGING_MIGRATION.md
+STRICT_COMPLIANCE.md
+LEVEL1_*.md
+DUPLICATION_REPORT.md
+
+# ============================================================================
+# MISCELLANEOUS
+# ============================================================================
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# Custom additions
+*.local
+*.user 
+
+# ============================================================================
+# AI ASSISTANT FILES
+# ============================================================================
+CLAUDE.md
+internal.invalid.md
+.claude/
+.cursor/
+
+# ============================================================================
+# ALWAYS INCLUDE EXCEPTIONS
+# ============================================================================
+
+# Important: Force include critical files
+!pyproject.toml
+!Makefile
+!README.md
+!.pre-commit-config.yaml
+!.env.example

@@ -1,4 +1,4 @@
-"""Declarative configuration for observability using flext-core patterns.
+"""Declarative configuration for observability using flext-core unified patterns.
 
 Copyright (c) 2025, client-a. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -7,15 +7,19 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from decimal import Decimal
-
-from pydantic import ConfigDict
+from pathlib import Path
 
 from flext_core.config.base import BaseConfig
-from flext_core.config.base import BaseSettings
-from flext_core.domain.pydantic_base import Field
-
-# from flext_core.domain.constants import FlextConstants
-from flext_core.domain.types import LogLevel
+from flext_core.config.unified_config import (
+    BaseConfigMixin,
+    LoggingConfigMixin,
+    MonitoringConfigMixin,
+    PerformanceConfigMixin,
+)
+from flext_core.domain.constants import ConfigDefaults
+from flext_core.domain.types import Environment, LogLevel
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class MetricsConfig(BaseConfig):
@@ -142,7 +146,7 @@ class LoggingConfig(BaseConfig):
     )
 
     log_file_path: str = Field(
-        default="/tmp/flext-observability.log",
+        default="./logs/flext-infrastructure.monitoring.flext-observability.log",
         description="Path to log file",
     )
 
@@ -298,18 +302,34 @@ class ThresholdConfig(BaseConfig):
     )
 
 
-class ObservabilitySettings(BaseSettings):
-    """Main observability settings using declarative configuration."""
+class ObservabilitySettings(
+    BaseConfigMixin,
+    LoggingConfigMixin,
+    MonitoringConfigMixin,
+    PerformanceConfigMixin,
+    BaseSettings,
+):
+    """Main observability settings using unified configuration mixins."""
 
-    # Override project info with typed values
-    project_name: str = Field(default="flext-observability")
+    model_config = SettingsConfigDict(
+        env_prefix="FLEXT_OBSERVABILITY_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    # Override project info with observability-specific values
+    project_name: str = Field(
+        default="flext-infrastructure.monitoring.flext-observability",
+        max_length=ConfigDefaults.MAX_ENTITY_NAME_LENGTH,
+    )
     project_version: str = Field(default="0.7.0")
 
     # Configuration sections using declarative patterns
     metrics: MetricsConfig = Field(default_factory=MetricsConfig)
     alerting: AlertingConfig = Field(default_factory=AlertingConfig)
     health_checks: HealthCheckConfig = Field(default_factory=HealthCheckConfig)
-    logging: LoggingConfig = Field(default_factory=LoggingConfig)
+    # Note: logging inherited from LoggingConfigMixin
     tracing: TracingConfig = Field(default_factory=TracingConfig)
     exporters: ExporterConfig = Field(default_factory=ExporterConfig)
     thresholds: ThresholdConfig = Field(default_factory=ThresholdConfig)
@@ -321,7 +341,7 @@ class ObservabilitySettings(BaseSettings):
     )
 
     data_dir: str = Field(
-        default="/tmp/flext-observability",
+        default="./data/flext-infrastructure.monitoring.flext-observability",
         description="Directory for storing observability data",
     )
 
@@ -339,11 +359,11 @@ class ObservabilitySettings(BaseSettings):
         le=168,
     )
 
-    # Environment variable support is provided by BaseSettings
-    # model_config = ConfigDict(
-    #     env_prefix="OBSERVABILITY_",
-    #     env_nested_delimiter="__",
-    # )
+    # Note: Most common settings now inherited from mixins:
+    # - BaseConfigMixin: project_name, project_version, environment, debug
+    # - LoggingConfigMixin: log_level, log_file, log_format, log_rotation
+    # - MonitoringConfigMixin: metrics_enabled, health_check_enabled, prometheus_port
+    # - PerformanceConfigMixin: batch_size, timeout_seconds, retry_count
 
 
 # Global configuration instance
@@ -383,8 +403,9 @@ def create_development_config() -> ObservabilitySettings:
 
     """
     return ObservabilitySettings(
+        project_name="flext-observability-dev",
         debug=True,
-        environment="development",
+        environment=Environment.DEVELOPMENT,
         metrics=MetricsConfig(
             collection_interval_seconds=10,
             retention_days=1,
@@ -392,11 +413,9 @@ def create_development_config() -> ObservabilitySettings:
         alerting=AlertingConfig(
             enable_alerts=False,  # Disable alerts in development
         ),
-        logging=LoggingConfig(
-            log_level=LogLevel.DEBUG,
-            log_to_file=True,
-            retention_days=1,
-        ),
+        # Note: Logging settings now from LoggingConfigMixin
+        log_level=LogLevel.DEBUG,  # From LoggingConfigMixin
+        log_file=Path("./logs/flext-observability-dev.log"),  # From LoggingConfigMixin
         tracing=TracingConfig(
             sampling_rate=1.0,  # Sample all traces in development
         ),
@@ -411,8 +430,9 @@ def create_production_config() -> ObservabilitySettings:
 
     """
     return ObservabilitySettings(
+        project_name="flext-observability-prod",
         debug=False,
-        environment="production",
+        environment=Environment.PRODUCTION,
         metrics=MetricsConfig(
             collection_interval_seconds=60,
             retention_days=30,
@@ -421,11 +441,9 @@ def create_production_config() -> ObservabilitySettings:
             enable_alerts=True,
             auto_resolve_after_seconds=7200,
         ),
-        logging=LoggingConfig(
-            log_level=LogLevel.INFO,
-            log_to_file=True,
-            retention_days=7,
-        ),
+        # Note: Logging settings now from LoggingConfigMixin
+        log_level=LogLevel.INFO,  # From LoggingConfigMixin
+        log_file=Path("./logs/flext-observability-prod.log"),  # From LoggingConfigMixin
         tracing=TracingConfig(
             sampling_rate=0.01,  # Sample 1% of traces in production
         ),
@@ -440,8 +458,9 @@ def create_testing_config() -> ObservabilitySettings:
 
     """
     return ObservabilitySettings(
+        project_name="flext-observability-test",
         debug=True,
-        environment="test",
+        environment=Environment.TEST,
         metrics=MetricsConfig(
             collection_interval_seconds=1,
             retention_days=1,
@@ -450,10 +469,9 @@ def create_testing_config() -> ObservabilitySettings:
         alerting=AlertingConfig(
             enable_alerts=False,  # Disable alerts in tests
         ),
-        logging=LoggingConfig(
-            log_level=LogLevel.WARNING,
-            log_to_file=False,
-        ),
+        # Note: Logging settings now from LoggingConfigMixin
+        log_level=LogLevel.WARNING,  # From LoggingConfigMixin
+        log_file=None,  # No log file for tests
         tracing=TracingConfig(
             enable_tracing=False,  # Disable tracing in tests
         ),

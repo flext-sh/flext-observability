@@ -6,18 +6,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import datetime
-from datetime import timedelta
-from typing import TYPE_CHECKING
-from typing import Any
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING, Any
 
-from flext_core.domain.pydantic_base import DomainEntity
-from flext_core.domain.pydantic_base import Field
-from flext_core.domain.types import AlertSeverity
-from flext_core.domain.types import LogLevel
-from flext_core.domain.types import MetricType
-from flext_core.domain.types import Status
-from flext_core.domain.types import TraceStatus
+from flext_core.domain.pydantic_base import DomainEntity, Field
+from flext_core.domain.types import (
+    AlertSeverity,
+    EntityStatus,
+    LogLevel,
+    MetricType,
+    TraceStatus,
+)
 
 if TYPE_CHECKING:
     from flext_observability.domain.value_objects import ComponentName
@@ -97,7 +96,7 @@ class LogEntry(DomainEntity):
         if tag in self.tags:
             self.tags.remove(tag)
 
-    def add_extra(self, key: str, value: Any) -> None:
+    def add_extra(self, key: str, value: object) -> None:
         """Add extra metadata to the log entry.
 
         Args:
@@ -122,7 +121,7 @@ class Metric(DomainEntity):
 
     name: str = Field(..., min_length=1, max_length=255)
     metric_type: MetricType = Field(
-        default=MetricType.GAUGE
+        default=MetricType.GAUGE,
     )  # Using metric_type instead of type
     value: float = Field(...)
     unit: str | None = None
@@ -331,7 +330,7 @@ class Trace(DomainEntity):
         Sets status to IN_PROGRESS and records start time.
         """
         self.trace_status = TraceStatus.IN_PROGRESS
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(UTC)
 
     def finish(self, end_time: datetime | None = None) -> None:
         """Finish the trace execution.
@@ -340,7 +339,9 @@ class Trace(DomainEntity):
             end_time: Optional end time, defaults to current time.
 
         """
-        self.end_time = end_time or datetime.utcnow()
+        from datetime import UTC
+
+        self.end_time = end_time or datetime.now(UTC)
         if self.trace_status == TraceStatus.IN_PROGRESS:
             self.trace_status = TraceStatus.COMPLETED
 
@@ -408,7 +409,7 @@ class Trace(DomainEntity):
         self,
         message: str,
         level: LogLevel = LogLevel.INFO,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Add a log entry to the trace.
 
@@ -419,14 +420,14 @@ class Trace(DomainEntity):
 
         """
         log_entry = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "level": level.value,
             "message": message,
             **kwargs,
         }
         self.logs.append(log_entry)
 
-    def add_event(self, name: str, **attributes: Any) -> None:
+    def add_event(self, name: str, **attributes: object) -> None:
         """Add an event to the trace.
 
         Args:
@@ -435,7 +436,7 @@ class Trace(DomainEntity):
 
         """
         event = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "name": name,
             "attributes": attributes,
         }
@@ -458,8 +459,8 @@ class Alert(DomainEntity):
     threshold: float | None = None
 
     # Status
-    alert_status: Status = Field(
-        default=Status.ACTIVE,
+    alert_status: EntityStatus = Field(
+        default=EntityStatus.ACTIVE,
         description="Alert status (renamed to avoid conflict with StatusMixin)",
     )
     resolved_at: datetime | None = None
@@ -531,7 +532,7 @@ class Alert(DomainEntity):
         """
         return (
             self.suppressed_until is not None
-            and self.suppressed_until > datetime.utcnow()
+            and self.suppressed_until > datetime.now(UTC)
         )
 
     def resolve(self) -> None:
@@ -539,8 +540,8 @@ class Alert(DomainEntity):
 
         Sets resolution timestamp and status to RESOLVED.
         """
-        self.resolved_at = datetime.utcnow()
-        self.alert_status = Status.RESOLVED
+        self.resolved_at = datetime.now(UTC)
+        self.alert_status = EntityStatus.INACTIVE
 
     def acknowledge(self, user: str) -> None:
         """Acknowledge the alert.
@@ -549,7 +550,7 @@ class Alert(DomainEntity):
             user: User who acknowledged the alert.
 
         """
-        self.acknowledged_at = datetime.utcnow()
+        self.acknowledged_at = datetime.now(UTC)
         self.acknowledged_by = user
 
     def suppress(self, duration_minutes: int, reason: str) -> None:
@@ -560,7 +561,7 @@ class Alert(DomainEntity):
             reason: Reason for suppression.
 
         """
-        self.suppressed_until = datetime.utcnow() + timedelta(minutes=duration_minutes)
+        self.suppressed_until = datetime.now(UTC) + timedelta(minutes=duration_minutes)
         self.suppression_reason = reason
 
     def add_label(self, key: str, value: str) -> None:
@@ -606,8 +607,8 @@ class HealthCheck(DomainEntity):
     """Health check domain entity using enhanced mixins for code reduction."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    health_status: Status = Field(
-        default=Status.ACTIVE,
+    health_status: EntityStatus = Field(
+        default=EntityStatus.ACTIVE,
         description="Health check status (renamed to avoid conflict with StatusMixin)",
     )
 
@@ -651,7 +652,9 @@ class HealthCheck(DomainEntity):
             True if status is ACTIVE and no consecutive failures.
 
         """
-        return self.health_status == Status.ACTIVE and self.consecutive_failures == 0
+        return (
+            self.health_status == EntityStatus.ACTIVE and self.consecutive_failures == 0
+        )
 
     @property
     def success_rate(self) -> float:
@@ -713,7 +716,7 @@ class HealthCheck(DomainEntity):
             response_data: Optional response data.
 
         """
-        self.last_check_at = datetime.utcnow()
+        self.last_check_at = datetime.now(UTC)
         self.last_success_at = self.last_check_at
         self.consecutive_failures = 0
         self.total_checks += 1
@@ -729,7 +732,7 @@ class HealthCheck(DomainEntity):
             error_message: Error message for the failure.
 
         """
-        self.last_check_at = datetime.utcnow()
+        self.last_check_at = datetime.now(UTC)
         self.last_failure_at = self.last_check_at
         self.consecutive_failures += 1
         self.total_checks += 1
@@ -867,7 +870,7 @@ class Dashboard(DomainEntity):
         if tag in self.tags:
             self.tags.remove(tag)
 
-    def set_variable(self, name: str, value: Any) -> None:
+    def set_variable(self, name: str, value: object) -> None:
         """Set a dashboard variable.
 
         Args:
@@ -877,7 +880,7 @@ class Dashboard(DomainEntity):
         """
         self.variables[name] = value
 
-    def get_variable(self, name: str, default: Any = None) -> Any:
+    def get_variable(self, name: str, default: object = None) -> object:
         """Get a dashboard variable.
 
         Args:

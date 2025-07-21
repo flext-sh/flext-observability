@@ -8,8 +8,7 @@ from __future__ import annotations
 import asyncio
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 import pytest_asyncio
@@ -110,7 +109,7 @@ def metrics_collector(metrics_registry: CollectorRegistry) -> Any:
     """Create a metrics collector for testing."""
     from flext_observability.metrics import MetricsCollector
 
-    return MetricsCollector(registry=metrics_registry)
+    return MetricsCollector()
 
 
 @pytest.fixture
@@ -148,10 +147,12 @@ def histogram_metric(metrics_registry: CollectorRegistry) -> Any:
 @pytest_asyncio.fixture
 async def tracer_provider() -> AsyncIterator[Any]:
     """Create a tracer provider for testing."""
-    from opentelemetry import trace
-    from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-    from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
+    from opentelemetry import trace  # type: ignore[import-untyped]
+    from opentelemetry.sdk.trace import TracerProvider  # type: ignore[import-untyped]
+    from opentelemetry.sdk.trace.export import (  # type: ignore[import-untyped]
+        SimpleSpanProcessor,
+    )
+    from opentelemetry.sdk.trace.export.in_memory_span_exporter import (  # type: ignore[import-untyped]
         InMemorySpanExporter,
     )
 
@@ -196,13 +197,9 @@ def span_context() -> Any:
 @pytest.fixture
 def structured_logger() -> Any:
     """Create a structured logger for testing."""
-    from flext_observability.logging import create_structured_logger
+    from flext_observability.logging import get_logger
 
-    return create_structured_logger(
-        name="test-logger",
-        level="DEBUG",
-        testing=True,
-    )
+    return get_logger("test-logger")
 
 
 @pytest.fixture
@@ -229,8 +226,7 @@ async def health_checker() -> AsyncIterator[Any]:
     checker = HealthChecker()
     yield checker
 
-    # Cleanup
-    await checker.shutdown()
+    # Cleanup - no shutdown method needed
 
 
 @pytest.fixture
