@@ -1,5 +1,11 @@
 """Domain services for observability - business logic that doesn't belong to entities.
 
+This module implements SOLID principles:
+- Single Responsibility Principle (SRP): Each service has one responsibility
+- Open/Closed Principle (OCP): Extensible through composition and strategy patterns
+- Interface Segregation Principle (ISP): Segregated interfaces for different concerns
+- Dependency Inversion Principle (DIP): Services depend on abstractions
+
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -7,29 +13,201 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import operator
-from typing import Any
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, Protocol
 
 from flext_core.domain.types import ServiceResult
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+# ==============================================================================
+# INTERFACE SEGREGATION PRINCIPLE: Segregated analysis interfaces
+# ==============================================================================
+
+
+class AlertRuleStorage(Protocol):
+    """Storage interface for alert rules (ISP compliance)."""
+
+    def store_rule(self, metric_name: str, threshold: Any) -> None:
+        """Store alert rule for metric."""
+
+    def get_rule(self, metric_name: str) -> Any | None:
+        """Get alert rule for metric."""
+
+    def remove_rule(self, metric_name: str) -> bool:
+        """Remove alert rule for metric."""
+
+
+class MetricHistoryStorage(Protocol):
+    """Storage interface for metric history (ISP compliance)."""
+
+    def store_metric(self, metric: Any) -> None:
+        """Store metric in history."""
+
+    def get_history(self, metric_name: str, limit: int = 100) -> Sequence[Any]:
+        """Get metric history."""
+
+    def clear_history(self, metric_name: str) -> None:
+        """Clear metric history."""
+
+
+class HealthStatusStorage(Protocol):
+    """Storage interface for health status (ISP compliance)."""
+
+    def update_status(self, component_key: str, health_check: Any) -> Any | None:
+        """Update component health status."""
+
+    def get_status(self, component_key: str) -> Any | None:
+        """Get component health status."""
+
+    def get_all_status(self) -> dict[str, Any]:
+        """Get all component health statuses."""
+
+
+class PatternStorage(Protocol):
+    """Storage interface for error patterns (ISP compliance)."""
+
+    def increment_pattern(self, pattern: str) -> None:
+        """Increment pattern count."""
+
+    def get_patterns(self) -> dict[str, int]:
+        """Get all patterns with counts."""
+
+    def clear_patterns(self) -> None:
+        """Clear all patterns."""
+
+
+class TraceStorage(Protocol):
+    """Storage interface for trace history (ISP compliance)."""
+
+    def store_trace(self, operation_name: str, trace: Any) -> None:
+        """Store trace in history."""
+
+    def get_traces(self, operation_name: str, limit: int = 1000) -> Sequence[Any]:
+        """Get trace history for operation."""
+
+    def clear_traces(self, operation_name: str) -> None:
+        """Clear trace history for operation."""
+
+
+# ==============================================================================
+# OPEN/CLOSED PRINCIPLE: Extensible threshold strategies
+# ==============================================================================
+
+
+class ThresholdEvaluator(ABC):
+    """Abstract threshold evaluator for different comparison strategies (OCP compliance)."""
+
+    @abstractmethod
+    def compare(self, value: Any, threshold: Any) -> bool:
+        """Compare value against threshold."""
+
+    @abstractmethod
+    def get_description(self) -> str:
+        """Get description of threshold logic."""
+
+
+class SimpleThresholdEvaluator(ThresholdEvaluator):
+    """Simple threshold evaluator using threshold.compare method."""
+
+    def compare(self, value: Any, threshold: Any) -> bool:
+        """Use threshold's compare method if available."""
+        if hasattr(threshold, "compare"):
+            result = threshold.compare(value)
+            return bool(result)  # Ensure boolean return
+        return False
+
+    def get_description(self) -> str:
+        """Get description of simple threshold evaluation."""
+        return "Simple threshold comparison using threshold.compare(value)"
+
+
+class NumericThresholdEvaluator(ThresholdEvaluator):
+    """Numeric threshold evaluator for numeric comparisons."""
+
+    def __init__(self, operator_func: Any = operator.gt) -> None:
+        """Initialize with comparison operator (default: greater than)."""
+        self.operator_func = operator_func
+
+    def compare(self, value: Any, threshold: Any) -> bool:
+        """Compare numeric values using operator."""
+        try:
+            result = self.operator_func(float(value), float(threshold))
+            return bool(result)  # Ensure boolean return
+        except (ValueError, TypeError):
+            return False
+
+    def get_description(self) -> str:
+        """Get description of numeric threshold evaluation."""
+        op_name = getattr(self.operator_func, "__name__", "unknown")
+        return f"Numeric threshold comparison using operator: {op_name}"
+
+
+# ==============================================================================
+# SINGLE RESPONSIBILITY PRINCIPLE: Specialized service classes
+# ==============================================================================
+
 
 class AlertingService:
-    """Domain service for alert management and evaluation."""
+    """SOLID-compliant domain service for alert management and evaluation.
 
-    def __init__(self) -> None:
-        self._alert_rules: dict[str, Any] = {}
+    Implements:
+    - SRP: Focused on alert rule management and evaluation
+    - OCP: Extensible through threshold evaluator strategies
+    - DIP: Depends on storage and evaluator abstractions
+    """
 
-    def register_alert_rule(self, metric_name: str, threshold: Any) -> None:
+    def __init__(
+        self,
+        storage: AlertRuleStorage,
+        evaluator: ThresholdEvaluator | None = None,
+    ) -> None:
+        """Initialize alerting service with dependency injection (DIP compliance).
+
+        Args:
+            storage: Storage interface for alert rules
+            evaluator: Threshold evaluator strategy (defaults to SimpleThresholdEvaluator)
+
+        """
+        self._storage = storage
+        self._evaluator = evaluator or SimpleThresholdEvaluator()
+
+    def register_alert_rule(self, metric_name: str, threshold: Any) -> ServiceResult[None]:
         """Register alert rule for metric threshold monitoring.
 
         Args:
             metric_name: Name of metric to monitor.
             threshold: Threshold value object for comparison.
 
-        """
-        self._alert_rules[metric_name] = threshold
+        Returns:
+            ServiceResult indicating success or failure.
 
-    def evaluate_metric(self, metric: Any) -> ServiceResult[Any]:
-        """Evaluate metric against registered alert rules.
+        """
+        try:
+            self._storage.store_rule(metric_name, threshold)
+            return ServiceResult.ok(None)
+        except Exception as e:
+            return ServiceResult.fail(f"Failed to register alert rule: {e}")
+
+    def remove_alert_rule(self, metric_name: str) -> ServiceResult[bool]:
+        """Remove alert rule for metric.
+
+        Args:
+            metric_name: Name of metric to remove rule for.
+
+        Returns:
+            ServiceResult with boolean indicating if rule was removed.
+
+        """
+        try:
+            removed = self._storage.remove_rule(metric_name)
+            return ServiceResult.ok(removed)
+        except Exception as e:
+            return ServiceResult.fail(f"Failed to remove alert rule: {e}")
+
+    def evaluate_metric(self, metric: Any) -> ServiceResult[dict[str, Any] | None]:
+        """Evaluate metric against registered alert rules using strategy pattern (OCP compliance).
 
         Args:
             metric: Metric to evaluate.
@@ -40,22 +218,22 @@ class AlertingService:
         """
         try:
             # Check if there's a rule for this metric
-            if metric.name not in self._alert_rules:
+            threshold = self._storage.get_rule(metric.name)
+            if threshold is None:
                 return ServiceResult.ok(None)
 
-            threshold = self._alert_rules[metric.name]
-
-            # Check if threshold is exceeded
-            if not threshold.compare(metric.value):
+            # Use strategy pattern for threshold evaluation (OCP compliance)
+            if not self._evaluator.compare(metric.value, threshold):
                 return ServiceResult.ok(None)
 
-            # Create alert (simplified)
+            # Create alert data
             alert_data = {
                 "title": f"Metric {metric.name} threshold exceeded",
-                "description": f"Metric {metric.name} value exceeded threshold",
-                "severity": "medium",
+                "description": f"Metric {metric.name} value exceeded threshold using {self._evaluator.get_description()}",
+                "severity": self._determine_severity(metric, threshold),
                 "metric": metric,
                 "threshold": threshold,
+                "evaluator": self._evaluator.get_description(),
             }
 
             return ServiceResult.ok(alert_data)
@@ -63,15 +241,177 @@ class AlertingService:
         except Exception as e:
             return ServiceResult.fail(f"Failed to evaluate metric: {e}")
 
+    def _determine_severity(self, metric: Any, threshold: Any) -> str:
+        """Determine alert severity based on metric and threshold (private helper for SRP)."""
+        # Simple severity logic - can be extended with more sophisticated rules
+        try:
+            metric_value = float(metric.value)
+            threshold_value = float(threshold.value if hasattr(threshold, "value") else threshold)
+
+            if metric_value > threshold_value * 2:
+                return "high"
+            if metric_value > threshold_value * 1.5:
+                return "medium"
+            return "low"
+        except (ValueError, TypeError, AttributeError):
+            return "medium"  # Default severity
+
+
+# ==============================================================================
+# OPEN/CLOSED PRINCIPLE: Extensible trend analysis strategies
+# ==============================================================================
+
+
+class TrendAnalyzer(ABC):
+    """Abstract trend analyzer for different trend detection strategies (OCP compliance)."""
+
+    @abstractmethod
+    def analyze(self, values: Sequence[float]) -> dict[str, Any]:
+        """Analyze trend from sequence of values."""
+
+    @abstractmethod
+    def get_analyzer_name(self) -> str:
+        """Get name of trend analyzer."""
+
+
+class SimpleTrendAnalyzer(TrendAnalyzer):
+    """Simple trend analyzer using first/second half comparison."""
+
+    def __init__(self, stability_threshold: float = 5.0) -> None:
+        """Initialize with stability threshold percentage."""
+        self.stability_threshold = stability_threshold
+
+    def get_analyzer_name(self) -> str:
+        """Get name of trend analyzer."""
+        return "simple_trend"
+
+    def analyze(self, values: Sequence[float]) -> dict[str, Any]:
+        """Analyze trend using first/second half comparison."""
+        if len(values) < 2:
+            return {
+                "trend": "unknown",
+                "change": 0.0,
+                "points": len(values),
+                "analyzer": self.get_analyzer_name(),
+            }
+
+        # Simple trend calculation
+        first_half = values[: len(values) // 2]
+        second_half = values[len(values) // 2 :]
+
+        if not first_half or not second_half:
+            return {
+                "trend": "stable",
+                "change": 0.0,
+                "points": len(values),
+                "analyzer": self.get_analyzer_name(),
+            }
+
+        avg_first = sum(first_half) / len(first_half)
+        avg_second = sum(second_half) / len(second_half)
+
+        change = (
+            ((avg_second - avg_first) / avg_first) * 100 if avg_first != 0 else 0
+        )
+
+        if abs(change) < self.stability_threshold:
+            trend = "stable"
+        elif change > 0:
+            trend = "increasing"
+        else:
+            trend = "decreasing"
+
+        return {
+            "trend": trend,
+            "change": change,
+            "points": len(values),
+            "average": avg_second,
+            "analyzer": self.get_analyzer_name(),
+        }
+
+
+class LinearRegressionTrendAnalyzer(TrendAnalyzer):
+    """Linear regression trend analyzer for more sophisticated trend detection."""
+
+    def get_analyzer_name(self) -> str:
+        """Get name of trend analyzer."""
+        return "linear_regression"
+
+    def analyze(self, values: Sequence[float]) -> dict[str, Any]:
+        """Analyze trend using simple linear regression."""
+        if len(values) < 2:
+            return {
+                "trend": "unknown",
+                "change": 0.0,
+                "points": len(values),
+                "analyzer": self.get_analyzer_name(),
+            }
+
+        # Simple linear regression: y = ax + b
+        n = len(values)
+        x_values = list(range(n))
+
+        # Calculate slope (a)
+        sum_x = sum(x_values)
+        sum_y = sum(values)
+        sum_xy = sum(x * y for x, y in zip(x_values, values, strict=False))
+        sum_x_squared = sum(x * x for x in x_values)
+
+        denominator = n * sum_x_squared - sum_x * sum_x
+        slope = 0 if denominator == 0 else (n * sum_xy - sum_x * sum_y) / denominator
+
+        # Determine trend based on slope
+        if abs(slope) < 0.1:  # Small slope threshold
+            trend = "stable"
+        elif slope > 0:
+            trend = "increasing"
+        else:
+            trend = "decreasing"
+
+        # Calculate change as percentage
+        first_value = values[0]
+        last_value = values[-1]
+        change = ((last_value - first_value) / first_value * 100) if first_value != 0 else 0
+
+        return {
+            "trend": trend,
+            "change": change,
+            "slope": slope,
+            "points": len(values),
+            "average": sum(values) / len(values),
+            "analyzer": self.get_analyzer_name(),
+        }
+
 
 class MetricsAnalysisService:
-    """Domain service for metrics analysis and trend detection."""
+    """SOLID-compliant domain service for metrics analysis and trend detection.
 
-    def __init__(self) -> None:
-        self._metric_history: dict[str, list[Any]] = {}
+    Implements:
+    - SRP: Focused on metrics analysis and trend detection
+    - OCP: Extensible through trend analyzer strategies
+    - DIP: Depends on storage and analyzer abstractions
+    """
+
+    def __init__(
+        self,
+        storage: MetricHistoryStorage,
+        trend_analyzer: TrendAnalyzer | None = None,
+        max_history_size: int = 100,
+    ) -> None:
+        """Initialize metrics analysis service with dependency injection (DIP compliance).
+
+        Args:
+            storage: Storage interface for metric history
+            trend_analyzer: Trend analyzer strategy (defaults to SimpleTrendAnalyzer)
+            max_history_size: Maximum number of metrics to keep in history
+
+        """
+        self._storage = storage
+        self._trend_analyzer = trend_analyzer or SimpleTrendAnalyzer()
+        self._max_history_size = max_history_size
 
     def analyze_trend(self, metric: Any) -> ServiceResult[dict[str, Any]]:
-        """Analyze metric trends and detect patterns.
+        """Analyze metric trends using strategy pattern (OCP compliance).
 
         Args:
             metric: Metric to analyze.
@@ -82,69 +422,90 @@ class MetricsAnalysisService:
         """
         try:
             # Store metric in history
-            if metric.name not in self._metric_history:
-                self._metric_history[metric.name] = []
+            self._storage.store_metric(metric)
 
-            self._metric_history[metric.name].append(metric)
-
-            # Keep only last 100 metrics for performance
-            if len(self._metric_history[metric.name]) > 100:
-                self._metric_history[metric.name] = self._metric_history[metric.name][
-                    -100:
-                ]
-
-            history = self._metric_history[metric.name]
+            # Get history for trend analysis
+            history = self._storage.get_history(metric.name, self._max_history_size)
 
             # Need at least 2 points for trend analysis
             if len(history) < 2:
-                return ServiceResult.ok(
-                    {
-                        "trend": "unknown",
-                        "change": 0.0,
-                        "points": len(history),
-                    },
-                )
+                return ServiceResult.ok({
+                    "trend": "unknown",
+                    "change": 0.0,
+                    "points": len(history),
+                    "analyzer": self._trend_analyzer.get_analyzer_name(),
+                })
 
-            # Calculate trend (simplified)
-            recent_values = [float(m.value) for m in history[-10:]]  # Last 10 values
-            if len(recent_values) < 2:
-                return ServiceResult.ok(
-                    {
-                        "trend": "stable",
-                        "change": 0.0,
-                        "points": len(recent_values),
-                    },
-                )
+            # Extract values for analysis
+            try:
+                values = [float(m.value) for m in history[-10:]]  # Last 10 values
+            except (ValueError, AttributeError) as e:
+                return ServiceResult.fail(f"Failed to extract numeric values: {e}")
 
-            # Simple trend calculation
-            first_half = recent_values[: len(recent_values) // 2]
-            second_half = recent_values[len(recent_values) // 2 :]
+            if len(values) < 2:
+                return ServiceResult.ok({
+                    "trend": "stable",
+                    "change": 0.0,
+                    "points": len(values),
+                    "analyzer": self._trend_analyzer.get_analyzer_name(),
+                })
 
-            avg_first = sum(first_half) / len(first_half)
-            avg_second = sum(second_half) / len(second_half)
+            # Use strategy pattern for trend analysis (OCP compliance)
+            analysis = self._trend_analyzer.analyze(values)
+            analysis["metric_name"] = metric.name
 
-            change = (
-                ((avg_second - avg_first) / avg_first) * 100 if avg_first != 0 else 0
-            )
-
-            if abs(change) < 5:
-                trend = "stable"
-            elif change > 0:
-                trend = "increasing"
-            else:
-                trend = "decreasing"
-
-            return ServiceResult.ok(
-                {
-                    "trend": trend,
-                    "change": change,
-                    "points": len(recent_values),
-                    "average": avg_second,
-                },
-            )
+            return ServiceResult.ok(analysis)
 
         except Exception as e:
             return ServiceResult.fail(f"Failed to analyze trend: {e}")
+
+    def get_metric_statistics(self, metric_name: str) -> ServiceResult[dict[str, Any]]:
+        """Get statistical summary for metric history (additional SRP responsibility).
+
+        Args:
+            metric_name: Name of metric to get statistics for.
+
+        Returns:
+            ServiceResult with metric statistics.
+
+        """
+        try:
+            history = self._storage.get_history(metric_name, self._max_history_size)
+
+            if not history:
+                return ServiceResult.ok({
+                    "metric_name": metric_name,
+                    "count": 0,
+                    "min": None,
+                    "max": None,
+                    "average": None,
+                    "latest": None,
+                })
+
+            # Extract numeric values
+            values = []
+            for m in history:
+                try:
+                    values.append(float(m.value))
+                except (ValueError, AttributeError):
+                    continue
+
+            if not values:
+                return ServiceResult.fail("No numeric values found in metric history")
+
+            statistics = {
+                "metric_name": metric_name,
+                "count": len(values),
+                "min": min(values),
+                "max": max(values),
+                "average": sum(values) / len(values),
+                "latest": values[-1] if values else None,
+            }
+
+            return ServiceResult.ok(statistics)
+
+        except Exception as e:
+            return ServiceResult.fail(f"Failed to get metric statistics: {e}")
 
 
 class HealthAnalysisService:
@@ -396,9 +757,23 @@ class TraceAnalysisService:
 
 
 __all__ = [
+    # Protocol interfaces (ISP compliance)
+    "AlertRuleStorage",
+    # Service classes
     "AlertingService",
     "HealthAnalysisService",
+    "HealthStatusStorage",
+    "LinearRegressionTrendAnalyzer",
     "LogAnalysisService",
+    "MetricHistoryStorage",
     "MetricsAnalysisService",
+    "NumericThresholdEvaluator",
+    "PatternStorage",
+    "SimpleThresholdEvaluator",
+    "SimpleTrendAnalyzer",
+    # Strategy classes (OCP compliance)
+    "ThresholdEvaluator",
     "TraceAnalysisService",
+    "TraceStorage",
+    "TrendAnalyzer",
 ]

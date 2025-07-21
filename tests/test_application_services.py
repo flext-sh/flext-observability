@@ -8,7 +8,8 @@ from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 import pytest
-from flext_core.domain.types import AlertSeverity, LogLevel, MetricType, ServiceResult
+from flext_core.domain.shared_types import AlertSeverity
+from flext_core.domain.types import LogLevel, MetricType, ServiceResult
 
 from flext_observability.application.services import (
     AlertService,

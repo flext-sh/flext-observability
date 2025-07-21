@@ -6,7 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core.domain.types import AlertSeverity, LogLevel, MetricType, TraceStatus
+from flext_core.domain.shared_types import AlertSeverity
+from flext_core.domain.types import LogLevel, MetricType, TraceStatus
 
 from flext_observability.domain.entities import (
     Alert,

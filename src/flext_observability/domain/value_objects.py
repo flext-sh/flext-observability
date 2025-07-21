@@ -25,14 +25,7 @@ class HealthStatus(StrEnum):
     TIMEOUT = "timeout"
 
 
-class AlertSeverity(StrEnum):
-    """Alert severity levels for observability components."""
-
-    CRITICAL = "critical"
-    HIGH = "high"
-    MEDIUM = "medium"
-    LOW = "low"
-    INFO = "info"
+# AlertSeverity is now imported from flext-core to eliminate duplication
 
 
 # LogLevel is now imported from flext-core to eliminate duplication

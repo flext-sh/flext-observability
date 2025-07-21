@@ -12,7 +12,13 @@ from flext_observability.domain.services import (
     HealthAnalysisService,
     LogAnalysisService,
     MetricsAnalysisService,
+    SimpleThresholdEvaluator,
+    SimpleTrendAnalyzer,
     TraceAnalysisService,
+)
+from flext_observability.infrastructure.storage import (
+    InMemoryAlertRuleStorage,
+    InMemoryMetricHistoryStorage,
 )
 
 
@@ -87,19 +93,28 @@ class TestAlertingService:
     @pytest.fixture
     def alerting_service(self) -> Any:
         """Create AlertingService instance."""
-        return AlertingService()
+        return AlertingService(
+            storage=InMemoryAlertRuleStorage(),
+            evaluator=SimpleThresholdEvaluator(),
+        )
 
     def test_init(self, alerting_service: Any) -> None:
         """Test AlertingService initialization."""
-        assert alerting_service._alert_rules == {}
+        # Test that service is properly initialized with storage and evaluator
+        assert alerting_service._storage is not None
+        assert alerting_service._evaluator is not None
+        assert alerting_service._evaluator.get_description() == "Simple threshold comparison using threshold.compare(value)"
 
     def test_register_alert_rule(self, alerting_service: Any) -> None:
         """Test registering an alert rule."""
         threshold = MockThreshold(80.0, "gt")
-        alerting_service.register_alert_rule("cpu_usage", threshold)
+        result = alerting_service.register_alert_rule("cpu_usage", threshold)
 
-        assert "cpu_usage" in alerting_service._alert_rules
-        assert alerting_service._alert_rules["cpu_usage"] == threshold
+        # Test that the method now returns ServiceResult
+        assert result.is_success
+        # Verify rule was stored by trying to get it
+        stored_rule = alerting_service._storage.get_rule("cpu_usage")
+        assert stored_rule == threshold
 
     def test_register_multiple_alert_rules(self, alerting_service: Any) -> None:
         """Test registering multiple alert rules."""
@@ -171,11 +186,18 @@ class TestMetricsAnalysisService:
     @pytest.fixture
     def metrics_analysis_service(self) -> Any:
         """Create MetricsAnalysisService instance."""
-        return MetricsAnalysisService()
+        return MetricsAnalysisService(
+            storage=InMemoryMetricHistoryStorage(),
+            trend_analyzer=SimpleTrendAnalyzer(),
+        )
 
     def test_init(self, metrics_analysis_service: Any) -> None:
         """Test MetricsAnalysisService initialization."""
-        assert metrics_analysis_service._metric_history == {}
+        # Test that service is properly initialized with storage and trend analyzer
+        assert metrics_analysis_service._storage is not None
+        assert metrics_analysis_service._trend_analyzer is not None
+        assert metrics_analysis_service._trend_analyzer.get_analyzer_name() == "simple_trend"
+        assert metrics_analysis_service._max_history_size == 100
 
     def test_analyze_trend_first_metric(self, metrics_analysis_service: Any) -> None:
         """Test analyzing trend for the first metric."""
@@ -206,7 +228,10 @@ class TestMetricsAnalysisService:
         # Now create a scenario where we get < 2 recent values after processing
         # We can't easily trigger this since we always add at least 1 metric
         # But we can test an edge case with a single metric in a fresh service
-        fresh_service = MetricsAnalysisService()
+        fresh_service = MetricsAnalysisService(
+            storage=InMemoryMetricHistoryStorage(),
+            trend_analyzer=SimpleTrendAnalyzer(),
+        )
         metric = MockMetric("cpu_usage", 75.0)
         result = fresh_service.analyze_trend(metric)
 

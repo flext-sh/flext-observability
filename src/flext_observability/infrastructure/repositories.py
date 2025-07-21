@@ -26,7 +26,8 @@ TraceRepository = Repository["Trace", UUID]
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from flext_core.domain.types import AlertSeverity, LogLevel, MetricType, TraceStatus
+    from flext_core.domain.shared_types import AlertSeverity
+    from flext_core.domain.types import LogLevel, MetricType, TraceStatus
 
     from flext_observability.domain.entities import (
         Alert,

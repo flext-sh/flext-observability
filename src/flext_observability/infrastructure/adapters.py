@@ -308,7 +308,8 @@ class HttpHealthChecker(HealthChecker):
 
             # Simulate some delay - respect timeout_ms parameter
             max_delay = min(
-                timeout_ms / 1000.0, 0.1,
+                timeout_ms / 1000.0,
+                0.1,
             )  # Convert ms to seconds, cap at 100ms
             await asyncio.sleep(random.uniform(0.01, max_delay))  # noqa: S311
 
