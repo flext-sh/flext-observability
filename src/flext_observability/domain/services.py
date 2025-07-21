@@ -41,13 +41,13 @@ class AlertingService:
         try:
             # Check if there's a rule for this metric
             if metric.name not in self._alert_rules:
-                return ServiceResult.success(None)
+                return ServiceResult.ok(None)
 
             threshold = self._alert_rules[metric.name]
 
             # Check if threshold is exceeded
             if not threshold.compare(metric.value):
-                return ServiceResult.success(None)
+                return ServiceResult.ok(None)
 
             # Create alert (simplified)
             alert_data = {
@@ -58,10 +58,10 @@ class AlertingService:
                 "threshold": threshold,
             }
 
-            return ServiceResult.success(alert_data)
+            return ServiceResult.ok(alert_data)
 
         except Exception as e:
-            return ServiceResult.failure(f"Failed to evaluate metric: {e}")
+            return ServiceResult.fail(f"Failed to evaluate metric: {e}")
 
 
 class MetricsAnalysisService:
@@ -97,7 +97,7 @@ class MetricsAnalysisService:
 
             # Need at least 2 points for trend analysis
             if len(history) < 2:
-                return ServiceResult.success(
+                return ServiceResult.ok(
                     {
                         "trend": "unknown",
                         "change": 0.0,
@@ -108,7 +108,7 @@ class MetricsAnalysisService:
             # Calculate trend (simplified)
             recent_values = [float(m.value) for m in history[-10:]]  # Last 10 values
             if len(recent_values) < 2:
-                return ServiceResult.success(
+                return ServiceResult.ok(
                     {
                         "trend": "stable",
                         "change": 0.0,
@@ -134,7 +134,7 @@ class MetricsAnalysisService:
             else:
                 trend = "decreasing"
 
-            return ServiceResult.success(
+            return ServiceResult.ok(
                 {
                     "trend": trend,
                     "change": change,
@@ -144,7 +144,7 @@ class MetricsAnalysisService:
             )
 
         except Exception as e:
-            return ServiceResult.failure(f"Failed to analyze trend: {e}")
+            return ServiceResult.fail(f"Failed to analyze trend: {e}")
 
 
 class HealthAnalysisService:
@@ -175,10 +175,10 @@ class HealthAnalysisService:
                 previous_health is None or previous_health.status != health_check.status
             )
 
-            return ServiceResult.success(status_changed)
+            return ServiceResult.ok(status_changed)
 
         except Exception as e:
-            return ServiceResult.failure(f"Failed to update component health: {e}")
+            return ServiceResult.fail(f"Failed to update component health: {e}")
 
     def get_system_health(self) -> ServiceResult[dict[str, Any]]:
         """Get aggregated system health status.
@@ -189,7 +189,7 @@ class HealthAnalysisService:
         """
         try:
             if not self._component_health:
-                return ServiceResult.success(
+                return ServiceResult.ok(
                     {
                         "overall_status": "unknown",
                         "healthy_components": 0,
@@ -209,7 +209,7 @@ class HealthAnalysisService:
 
             health_score = healthy / total if total > 0 else 0.0
 
-            return ServiceResult.success(
+            return ServiceResult.ok(
                 {
                     "overall_status": "healthy" if health_score > 0.8 else "degraded",
                     "healthy_components": healthy,
@@ -220,7 +220,7 @@ class HealthAnalysisService:
             )
 
         except Exception as e:
-            return ServiceResult.failure(f"Failed to get system health: {e}")
+            return ServiceResult.fail(f"Failed to get system health: {e}")
 
 
 class LogAnalysisService:
@@ -256,10 +256,10 @@ class LogAnalysisService:
                         self._error_patterns.get(pattern, 0) + 1
                     )
 
-            return ServiceResult.success(analysis)
+            return ServiceResult.ok(analysis)
 
         except Exception as e:
-            return ServiceResult.failure(f"Failed to analyze log entry: {e}")
+            return ServiceResult.fail(f"Failed to analyze log entry: {e}")
 
     def _extract_error_pattern(self, message: str) -> str | None:
         """Simple pattern extraction - replace specific values with placeholders."""
@@ -296,10 +296,10 @@ class LogAnalysisService:
                     reverse=True,
                 ),
             )
-            return ServiceResult.success(sorted_patterns)
+            return ServiceResult.ok(sorted_patterns)
 
         except Exception as e:
-            return ServiceResult.failure(f"Failed to get error patterns: {e}")
+            return ServiceResult.fail(f"Failed to get error patterns: {e}")
 
 
 class TraceAnalysisService:
@@ -339,10 +339,10 @@ class TraceAnalysisService:
                 "has_logs": len(getattr(trace, "logs", [])) > 0,
             }
 
-            return ServiceResult.success(analysis)
+            return ServiceResult.ok(analysis)
 
         except Exception as e:
-            return ServiceResult.failure(f"Failed to analyze trace: {e}")
+            return ServiceResult.fail(f"Failed to analyze trace: {e}")
 
     def get_operation_stats(self, operation_name: str) -> ServiceResult[dict[str, Any]]:
         """Get performance statistics for specific operation.
@@ -358,7 +358,7 @@ class TraceAnalysisService:
             history = self._trace_history.get(operation_name, [])
 
             if not history:
-                return ServiceResult.success(
+                return ServiceResult.ok(
                     {
                         "operation": operation_name,
                         "total_traces": 0,
@@ -379,7 +379,7 @@ class TraceAnalysisService:
             durations = [getattr(t, "duration_ms", 0) for t in history]
             avg_duration = sum(durations) / len(durations) if durations else 0
 
-            return ServiceResult.success(
+            return ServiceResult.ok(
                 {
                     "operation": operation_name,
                     "total_traces": total,
@@ -392,7 +392,7 @@ class TraceAnalysisService:
             )
 
         except Exception as e:
-            return ServiceResult.failure(f"Failed to get operation stats: {e}")
+            return ServiceResult.fail(f"Failed to get operation stats: {e}")
 
 
 __all__ = [

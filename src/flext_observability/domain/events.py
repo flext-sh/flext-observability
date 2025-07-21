@@ -8,21 +8,25 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core.domain.pydantic_base import DomainEvent
-from flext_core.domain.pydantic_base import Field
+from flext_core.domain.pydantic_base import DomainEvent, Field
 
 if TYPE_CHECKING:
     from datetime import datetime
 
     from flext_core.domain.types import LogLevel
-    from flext_observability.domain.entities import Alert
-    from flext_observability.domain.entities import HealthCheck
-    from flext_observability.domain.entities import LogEntry
-    from flext_observability.domain.entities import Metric
-    from flext_observability.domain.entities import Trace
-    from flext_observability.domain.value_objects import AlertSeverity
-    from flext_observability.domain.value_objects import ComponentName
-    from flext_observability.domain.value_objects import HealthStatus
+
+    from flext_observability.domain.entities import (
+        Alert,
+        HealthCheck,
+        LogEntry,
+        Metric,
+        Trace,
+    )
+    from flext_observability.domain.value_objects import (
+        AlertSeverity,
+        ComponentName,
+        HealthStatus,
+    )
 
 
 class MetricCollected(DomainEvent):

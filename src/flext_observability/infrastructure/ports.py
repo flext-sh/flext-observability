@@ -10,34 +10,38 @@ from __future__ import annotations
 
 import json
 import logging
-from abc import ABC
-from abc import abstractmethod
-from datetime import UTC
-from datetime import datetime
+from abc import ABC, abstractmethod
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from flext_core.domain.types import ServiceResult
+
 from flext_observability.domain.entities import Dashboard
-from flext_observability.domain.ports import AlertService
-from flext_observability.domain.ports import DashboardService
-from flext_observability.domain.ports import HealthService
-from flext_observability.domain.ports import LogService
-from flext_observability.domain.ports import MetricsService
-from flext_observability.domain.ports import TracingService
+from flext_observability.domain.ports import (
+    AlertService,
+    DashboardService,
+    HealthService,
+    LogService,
+    MetricsService,
+    TracingService,
+)
 
 if TYPE_CHECKING:
-    from flext_observability.config import AlertingConfig
-    from flext_observability.config import HealthCheckConfig
-    from flext_observability.config import LoggingConfig
-    from flext_observability.config import MetricsConfig
-    from flext_observability.config import TracingConfig
-    from flext_observability.domain.entities import Alert
-    from flext_observability.domain.entities import HealthCheck
-    from flext_observability.domain.entities import LogEntry
-    from flext_observability.domain.entities import Metric
-    from flext_observability.domain.entities import Trace
+    from flext_observability.config import (
+        AlertingConfig,
+        HealthCheckConfig,
+        LoggingConfig,
+        MetricsConfig,
+        TracingConfig,
+    )
+    from flext_observability.domain.entities import (
+        Alert,
+        HealthCheck,
+        LogEntry,
+        Metric,
+        Trace,
+    )
 
 
 class MetricsExporter(ABC):
@@ -153,7 +157,8 @@ class FileLogPort(LogService):
         """Write log entry to file.
 
         Args:
-            log_entry: Log entry to write containing timestamp, level, message, and metadata.
+            log_entry: Log entry to write containing timestamp, level, message, and
+                metadata.
 
         Returns:
             ServiceResult with None on success or error message on failure.
@@ -180,15 +185,35 @@ class FileLogPort(LogService):
                     "tags": log_entry.tags,
                 }
 
-                # Write to file synchronously - aiofiles required for async I/O
-                with log_file.open("a", encoding="utf-8") as f:
-                    if self.config.structured_logging:
-                        f.write(json.dumps(log_record) + "\n")
-                    else:
-                        timestamp = log_record["timestamp"]
-                        level = log_record["level"]
-                        message = log_record["message"]
-                        f.write(f"{timestamp} [{level}] {message}\n")
+                # Use aiofiles for proper async I/O
+                import aiofiles
+
+                try:
+                    async with aiofiles.open(log_file, "a", encoding="utf-8") as f:
+                        if self.config.structured_logging:
+                            await f.write(json.dumps(log_record) + "\n")
+                        else:
+                            timestamp = log_record["timestamp"]
+                            level = log_record["level"]
+                            message = log_record["message"]
+                            await f.write(f"{timestamp} [{level}] {message}\n")
+                except ImportError:
+                    # Fallback to sync I/O with warning in async context - not ideal \
+                    # functional
+                    # Using executor to avoid blocking async event loop
+                    import asyncio
+
+                    def write_sync() -> None:
+                        with log_file.open("a", encoding="utf-8") as f:
+                            if self.config.structured_logging:
+                                f.write(json.dumps(log_record) + "\n")
+                            else:
+                                timestamp = log_record["timestamp"]
+                                level = log_record["level"]
+                                message = log_record["message"]
+                                f.write(f"{timestamp} [{level}] {message}\n")
+
+                    await asyncio.get_event_loop().run_in_executor(None, write_sync)
 
             return ServiceResult.ok(None)
         except OSError as e:
@@ -200,7 +225,8 @@ class FileLogPort(LogService):
         """Configure logging settings.
 
         Args:
-            config: Dictionary containing logging configuration with keys like 'level', 'format'.
+            config: Dictionary containing logging configuration with keys like
+                'level', 'format'.
 
         Returns:
             ServiceResult with None on success or error message on failure.
@@ -271,7 +297,8 @@ class PrometheusMetricsPort(MetricsService):
         """Record a metric value.
 
         Args:
-            metric: Metric to record containing name, type, value, timestamp, labels, and unit.
+            metric: Metric to record containing name, type, value, timestamp,
+                labels, and unit.
 
         Returns:
             ServiceResult with None on success or error message on failure.
@@ -308,7 +335,8 @@ class PrometheusMetricsPort(MetricsService):
         """Get current metric values.
 
         Returns:
-            ServiceResult with dictionary of current metrics containing current_value, count, and latest_timestamp for each metric.
+            ServiceResult with dictionary of current metrics containing
+                current_value, count, and latest_timestamp for each metric.
 
         """
         try:
@@ -387,7 +415,8 @@ class JaegerTracingPort(TracingService):
         """Start a new trace.
 
         Args:
-            trace: Trace object containing trace_id, span_id, operation_name, service_name, and metadata.
+            trace: Trace object containing trace_id, span_id, operation_name,
+                service_name, and metadata.
 
         Returns:
             ServiceResult with None on success or error message on failure.
@@ -417,7 +446,8 @@ class JaegerTracingPort(TracingService):
         """Finish an existing trace.
 
         Args:
-            trace: Trace object with end_time, duration_ms, status, and error information.
+            trace: Trace object with end_time, duration_ms, status, and error
+                information.
 
         Returns:
             ServiceResult with None on success or error message on failure.
@@ -503,7 +533,8 @@ class SlackAlertPort(AlertService):
         """Send alert notification via Slack.
 
         Args:
-            alert: Alert object containing title, description, severity, source, condition, and timestamp.
+            alert: Alert object containing title, description, severity, source,
+                condition, and timestamp.
 
         Returns:
             ServiceResult with None on success or error message on failure.
@@ -676,7 +707,8 @@ class SimpleHealthPort(HealthService):
         """Get overall system health status.
 
         Returns:
-            ServiceResult with dictionary containing status, timestamp, and individual check results.
+            ServiceResult with dictionary containing status, timestamp, and
+                individual check results.
 
         """
         try:
@@ -768,7 +800,8 @@ class MemoryDashboardPort(DashboardService):
             dashboard: Dashboard object containing configuration, widgets, and layout.
 
         Returns:
-            ServiceResult with dictionary containing rendered dashboard data including widgets and metadata.
+            ServiceResult with dictionary containing rendered dashboard data
+                including widgets and metadata.
 
         """
         try:
@@ -778,7 +811,7 @@ class MemoryDashboardPort(DashboardService):
                 "description": dashboard.description,
                 "refresh_interval": dashboard.refresh_interval_seconds,
                 "widgets": [],
-                "timestamp": dashboard.updated_at.isoformat(),
+                "timestamp": dashboard.created_at.isoformat(),
             }
 
             # Render widgets

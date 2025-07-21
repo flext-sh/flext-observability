@@ -1,4 +1,4 @@
-"""Health monitoring components for flext-observability.
+"""Health monitoring components for flext-infrastructure.monitoring.flext-observability.
 
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -135,9 +135,9 @@ class HealthChecker:
             ISO formatted timestamp.
 
         """
-        from datetime import datetime
+        from datetime import UTC, datetime
 
-        return datetime.utcnow().isoformat()
+        return datetime.now(UTC).isoformat()
 
     def register_component(self, component: ComponentHealth) -> None:
         """Register a component for health monitoring.

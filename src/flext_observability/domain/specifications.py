@@ -6,19 +6,18 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import TypeVar
 
-from flext_core.domain.types import AlertSeverity
-from flext_core.domain.types import LogLevel
-from flext_core.domain.types import MetricType
-from flext_core.domain.types import TraceStatus
-from flext_observability.domain.entities import Alert
-from flext_observability.domain.entities import HealthCheck
-from flext_observability.domain.entities import LogEntry
-from flext_observability.domain.entities import Metric
-from flext_observability.domain.entities import Trace
+from flext_core.domain.types import AlertSeverity, LogLevel, MetricType, TraceStatus
+
+from flext_observability.domain.entities import (
+    Alert,
+    HealthCheck,
+    LogEntry,
+    Metric,
+    Trace,
+)
 
 T = TypeVar("T")
 

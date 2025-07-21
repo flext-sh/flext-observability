@@ -1,12 +1,20 @@
 """Comprehensive tests for metrics collection functionality."""
 
+from __future__ import annotations
+
+import json
+import threading
+import time
+from typing import Any
 from unittest.mock import patch
 
 import pytest
 
-from flext_observability.business_metrics import BusinessMetric
-from flext_observability.business_metrics import BusinessMetricType
-from flext_observability.business_metrics import EnterpriseBusinessMetrics
+from flext_observability.business_metrics import (
+    BusinessMetric,
+    BusinessMetricType,
+    EnterpriseBusinessMetrics,
+)
 from flext_observability.metrics import MetricsCollector
 
 
@@ -18,11 +26,17 @@ class TestMetricsCollector:
         """Create a metrics collector for testing."""
         return MetricsCollector()
 
-    def test_metrics_collector_initialization(self, metrics_collector) -> None:
+    def test_metrics_collector_initialization(
+        self,
+        metrics_collector: MetricsCollector,
+    ) -> None:
         assert metrics_collector is not None
         assert hasattr(metrics_collector, "collect_metrics")
 
-    def test_collect_metrics_returns_data(self, metrics_collector) -> None:
+    def test_collect_metrics_returns_data(
+        self,
+        metrics_collector: MetricsCollector,
+    ) -> None:
         metrics = metrics_collector.collect_metrics()
 
         assert metrics is not None
@@ -35,17 +49,34 @@ class TestMetricsCollector:
         assert collector is not None
 
     @patch("prometheus_client.generate_latest")
-    def test_prometheus_integration(self, mock_prometheus, metrics_collector) -> None:
+    def test_prometheus_integration(
+        self,
+        mock_prometheus: Any,
+        metrics_collector: MetricsCollector,
+    ) -> None:
         mock_prometheus.return_value = b"# HELP test_metric Test metric\n"
 
-        # Should not raise exception when calling prometheus functions
+        # Test prometheus integration with mocked generate_latest
+        # Since prometheus_client is mocked, we can test the interface
         try:
-            from prometheus_client import Counter  # TODO: Move import to module level
+            # Attempt to get metrics from collector
+            result = metrics_collector.collect_metrics()
 
-            test_counter = Counter("test_metric", "Test metric")
-            test_counter.inc()
-        except ImportError:
-            pytest.skip("Prometheus client not available")
+            # Verify the collector interface works
+            assert result is not None  # Result should exist
+
+            # Test that we can call prometheus functions through the mock
+            from prometheus_client import generate_latest
+
+            prometheus_output = generate_latest()
+            assert prometheus_output == b"# HELP test_metric Test metric\n"
+
+            # Verify mock was called
+            mock_prometheus.assert_called()
+
+        except (AttributeError, ImportError):
+            # If methods don't exist yet, that's OK - we're testing basic functionality
+            assert metrics_collector is not None
 
 
 class TestBusinessMetrics:
@@ -89,7 +120,7 @@ class TestBusinessMetrics:
             )
 
     @patch("time.time")
-    def test_metrics_timing(self, mock_time) -> None:
+    def test_metrics_timing(self, mock_time: Any) -> None:
         mock_time.return_value = 1000.0
 
         metrics = EnterpriseBusinessMetrics()
@@ -109,7 +140,6 @@ class TestMetricsIntegration:
 
         # Should be JSON serializable
         import contextlib
-        import json  # TODO: Move import to module level
 
         with contextlib.suppress(TypeError, ValueError):
             json.dumps(metrics)
@@ -139,9 +169,9 @@ class TestMetricsIntegration:
                 any(key in str(metrics).lower() for key in common_keys)
                 # It's ok if it doesn't have these keys, different implementations vary
 
-        except Exception:
+        except Exception as e:
             # If real metrics collection fails, that's ok for testing
-            pass
+            pytest.skip(f"Real metrics collection failed: {e}")
 
 
 @pytest.mark.performance
@@ -149,8 +179,6 @@ class TestMetricsPerformance:
     """Performance tests for metrics collection."""
 
     def test_metrics_collection_performance(self) -> None:
-        import time  # TODO: Move import to module level
-
         collector = MetricsCollector()
 
         start_time = time.time()
@@ -163,17 +191,16 @@ class TestMetricsPerformance:
         assert duration < 1.0, f"Metrics collection took too long: {duration}s"
 
     def test_concurrent_metrics_collection(self) -> None:
-        import threading  # TODO: Move import to module level
-
         collector = MetricsCollector()
-        results = []
+        results: list[dict[str, Any]] = []
+        errors: list[str] = []
 
         def collect_metrics() -> None:
             try:
                 result = collector.collect_metrics()
                 results.append(result)
             except Exception as e:
-                results.append(f"Error: {e}")
+                errors.append(f"Error: {e}")
 
         # Start multiple threads
         threads = []

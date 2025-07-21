@@ -10,10 +10,8 @@ from decimal import Decimal
 from enum import StrEnum
 from typing import Any
 
+from flext_core.domain.pydantic_base import DomainValueObject, Field
 from pydantic import field_validator
-
-from flext_core.domain.pydantic_base import DomainValueObject
-from flext_core.domain.pydantic_base import Field
 
 
 class HealthStatus(StrEnum):
@@ -64,10 +62,10 @@ class MetricValue(DomainValueObject):
         if isinstance(v, int | float):
             v = Decimal(str(v))
         if not isinstance(v, Decimal):
-            msg = f"Value must be numeric, got {type(v)}"
-            raise ValueError(msg)
+            msg = f"Value must be Decimal, got {type(v)}"
+            raise TypeError(msg)
         if not v.is_finite():
-            msg = "Value must be finite"
+            msg = f"Value must be finite, got {v}"
             raise ValueError(msg)
         return v
 
@@ -95,7 +93,7 @@ class ThresholdValue(DomainValueObject):
         """
         valid_operators = {"gt", "lt", "eq", "ge", "le"}
         if v not in valid_operators:
-            msg = f"Invalid operator {v}, must be one of {valid_operators}"
+            msg = f"Invalid operator: {v}. Valid operators: {valid_operators}"
             raise ValueError(msg)
         return v
 
@@ -141,10 +139,8 @@ class ComponentName(DomainValueObject):
 
         """
         if not v.replace("-", "").replace("_", "").isalnum():
-            msg = "Component name must be alphanumeric with hyphens or underscores"
-            raise ValueError(
-                msg,
-            )
+            msg = f"Component name contains invalid characters: {v}"
+            raise ValueError(msg)
         return v
 
     @property
@@ -224,3 +220,23 @@ class Duration(DomainValueObject):
 
         """
         return cls(milliseconds=int(seconds * 1000))
+
+    @classmethod
+    def from_minutes(cls, minutes: float) -> Duration:
+        """Create Duration from minutes value."""
+        return cls.from_seconds(minutes * 60)
+
+    @classmethod
+    def from_hours(cls, hours: float) -> Duration:
+        """Create Duration from hours value."""
+        return cls.from_seconds(hours * 3600)
+
+    def __str__(self) -> str:
+        """String representation of duration."""
+        if self.milliseconds < 1000:
+            return f"{self.milliseconds}ms"
+        if self.milliseconds < 60000:
+            return f"{self.milliseconds / 1000:.1f}s"
+        if self.milliseconds < 3600000:
+            return f"{self.milliseconds / 60000:.1f}m"
+        return f"{self.milliseconds / 3600000:.1f}h"

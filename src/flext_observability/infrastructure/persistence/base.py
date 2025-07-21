@@ -6,11 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
-from typing import TYPE_CHECKING
-from typing import Any
-from typing import TypeVar
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from flext_core.domain.types import ServiceResult
 
