@@ -10,7 +10,8 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
-from flext_core.domain.types import AlertSeverity, LogLevel, MetricType, ServiceResult
+from flext_core.domain.shared_types import AlertSeverity
+from flext_core.domain.types import LogLevel, MetricType, ServiceResult
 
 from flext_observability.domain.entities import (
     Alert,
@@ -192,13 +193,14 @@ class MetricsService:
                 alert_data = alert_result.data
 
                 # Handle both Alert objects and alert data dictionaries
+                alert_obj: Alert
                 if hasattr(alert_data, "severity"):
                     # It's an Alert object
-                    alert = alert_data
-                    severity = alert.severity
+                    alert_obj = alert_data  # type: ignore[assignment]
+                    severity = alert_obj.severity
                 else:
                     # It's alert data dictionary - create Alert object
-                    alert = Alert(
+                    alert_obj = Alert(
                         title=alert_data.get("title", "Generated Alert"),
                         description=alert_data.get("description"),
                         severity=alert_data.get("severity", "medium"),
@@ -208,12 +210,12 @@ class MetricsService:
                         threshold=metric.value,
                         created_at=datetime.now(UTC),
                     )
-                    severity = alert.severity
+                    severity = alert_obj.severity
 
                 # Create and publish alert event
                 try:
                     AlertTriggered(
-                        alert=alert,
+                        alert=alert_obj,
                         metric=metric,
                         severity=severity,
                     )
@@ -362,10 +364,9 @@ class AlertService:
             from flext_core.domain.types import MetricType
 
             from flext_observability.domain.entities import Metric
-            from flext_observability.domain.value_objects import ComponentName
 
             with contextlib.suppress(Exception):
-                Metric.model_rebuild()
+                Alert.model_rebuild()
 
             dummy_metric = Metric(
                 name="manual_alert",
@@ -801,7 +802,6 @@ class TracingService:
             import contextlib
 
             from flext_observability.domain.events import TraceStarted
-            from flext_observability.domain.value_objects import ComponentName
 
             with contextlib.suppress(Exception):
                 Trace.model_rebuild()
@@ -876,7 +876,6 @@ class TracingService:
             import contextlib
 
             from flext_observability.domain.events import TraceCompleted
-            from flext_observability.domain.value_objects import ComponentName
 
             with contextlib.suppress(Exception):
                 ComponentName.model_rebuild()

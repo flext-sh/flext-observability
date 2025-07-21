@@ -10,8 +10,8 @@ from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from flext_core.domain.pydantic_base import DomainEntity, Field
+from flext_core.domain.shared_types import AlertSeverity
 from flext_core.domain.types import (
-    AlertSeverity,
     EntityStatus,
     LogLevel,
     MetricType,

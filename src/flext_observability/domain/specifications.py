@@ -7,9 +7,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
-from flext_core.domain.types import AlertSeverity, LogLevel, MetricType, TraceStatus
+from flext_core.domain.types import LogLevel, MetricType, TraceStatus
 
 from flext_observability.domain.entities import (
     Alert,
@@ -18,6 +18,9 @@ from flext_observability.domain.entities import (
     Metric,
     Trace,
 )
+
+if TYPE_CHECKING:
+    from flext_core.domain.shared_types import AlertSeverity
 
 T = TypeVar("T")
 

@@ -30,6 +30,8 @@ from flext_observability.domain.services import (
     HealthAnalysisService,
     LogAnalysisService,
     MetricsAnalysisService,
+    SimpleThresholdEvaluator,
+    SimpleTrendAnalyzer,
     TraceAnalysisService,
 )
 from flext_observability.infrastructure import (
@@ -40,6 +42,10 @@ from flext_observability.infrastructure import (
     InMemoryTraceRepository,
 )
 from flext_observability.infrastructure.adapters import InMemoryEventBus
+from flext_observability.infrastructure.storage import (
+    InMemoryAlertRuleStorage,
+    InMemoryMetricHistoryStorage,
+)
 
 if TYPE_CHECKING:
     import types
@@ -158,13 +164,18 @@ class FlextObservability:
         if metric_types or labels:
             # Filtered collection
             return await self.metrics_service.collect_metrics(
-                metric_types=metric_types, labels=labels,
+                metric_types=metric_types,
+                labels=labels,
             )
         # Collect all metrics
         return await self.metrics_service.collect_all_metrics()
 
     async def log_event(
-        self, event_type: str, level: str, message: str, **kwargs: Any,
+        self,
+        event_type: str,
+        level: str,
+        message: str,
+        **kwargs: Any,
     ) -> None:
         """Log an event with context.
 
@@ -183,7 +194,10 @@ class FlextObservability:
         )
 
     async def trace_operation(
-        self, operation_name: str, operation_func: Any, **kwargs: Any,
+        self,
+        operation_name: str,
+        operation_func: Any,
+        **kwargs: Any,
     ) -> Any:
         """Trace an operation execution.
 
@@ -366,7 +380,10 @@ async def log_event(
 
     """
     await observability.log_event(
-        event_type=event_type, level=level, message=message, **kwargs,
+        event_type=event_type,
+        level=level,
+        message=message,
+        **kwargs,
     )
 
 
@@ -389,7 +406,9 @@ async def trace_operation(
 
     """
     return await observability.trace_operation(
-        operation_name=operation_name, operation_func=operation_func, **kwargs,
+        operation_name=operation_name,
+        operation_func=operation_func,
+        **kwargs,
     )
 
 
@@ -522,8 +541,14 @@ def register_observability_services(
             MetricsService,
             MetricsService(
                 metric_repository=InMemoryMetricsRepository(),
-                metrics_analysis_service=MetricsAnalysisService(),
-                alerting_service=AlertingService(),
+                metrics_analysis_service=MetricsAnalysisService(
+                    storage=InMemoryMetricHistoryStorage(),
+                    trend_analyzer=SimpleTrendAnalyzer(),
+                ),
+                alerting_service=AlertingService(
+                    storage=InMemoryAlertRuleStorage(),
+                    evaluator=SimpleThresholdEvaluator(),
+                ),
                 event_bus=InMemoryEventBus(),
             ),
         )
@@ -533,7 +558,10 @@ def register_observability_services(
             AlertService,
             AlertService(
                 alert_repository=InMemoryAlertRepository(),
-                alerting_service=AlertingService(),
+                alerting_service=AlertingService(
+                    storage=InMemoryAlertRuleStorage(),
+                    evaluator=SimpleThresholdEvaluator(),
+                ),
                 event_bus=InMemoryEventBus(),
             ),
         )
