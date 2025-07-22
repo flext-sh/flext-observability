@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 
 from flext_observability.domain.entities import (
     Alert,
@@ -32,7 +32,7 @@ class InMemoryLogRepository(InMemoryRepository[LogEntry]):
         super().__init__()
         self.storage: dict[UUID, LogEntry] = {}
 
-    async def save(self, log_entry: LogEntry) -> ServiceResult[LogEntry]:
+    async def save(self, log_entry: LogEntry) -> ServiceResult[Any]:
         """Save a log entry to the repository.
 
         Args:
@@ -48,7 +48,7 @@ class InMemoryLogRepository(InMemoryRepository[LogEntry]):
         except Exception as e:
             return ServiceResult.fail(f"Failed to save log entry: {e}")
 
-    async def get_by_id(self, log_id: UUID) -> ServiceResult[LogEntry | None]:
+    async def get_by_id(self, log_id: UUID) -> ServiceResult[Any]:
         """Get a log entry by ID.
 
         Args:
@@ -155,7 +155,7 @@ class InMemoryMetricsRepository(InMemoryRepository[Metric]):
         super().__init__()
         self.storage: dict[UUID, Metric] = {}
 
-    async def save(self, metric: Metric) -> ServiceResult[Metric]:
+    async def save(self, metric: Metric) -> ServiceResult[Any]:
         """Save a metric to the repository.
 
         Args:
@@ -171,7 +171,7 @@ class InMemoryMetricsRepository(InMemoryRepository[Metric]):
         except Exception as e:
             return ServiceResult.fail(f"Failed to save metric: {e}")
 
-    async def get_by_id(self, metric_id: UUID) -> ServiceResult[Metric | None]:
+    async def get_by_id(self, metric_id: UUID) -> ServiceResult[Any]:
         """Get a metric by ID.
 
         Args:
@@ -278,7 +278,7 @@ class InMemoryTraceRepository(InMemoryRepository[Trace]):
         super().__init__()
         self.storage: dict[UUID, Trace] = {}
 
-    async def save(self, trace: Trace) -> ServiceResult[Trace]:
+    async def save(self, trace: Trace) -> ServiceResult[Any]:
         """Save a trace to the repository.
 
         Args:
@@ -294,7 +294,7 @@ class InMemoryTraceRepository(InMemoryRepository[Trace]):
         except Exception as e:
             return ServiceResult.fail(f"Failed to save trace: {e}")
 
-    async def get_by_id(self, trace_id: UUID) -> ServiceResult[Trace | None]:
+    async def get_by_id(self, trace_id: UUID) -> ServiceResult[Any]:
         """Get a trace by ID.
 
         Args:
@@ -418,7 +418,7 @@ class InMemoryAlertRepository(InMemoryRepository[Alert]):
         super().__init__()
         self.storage: dict[UUID, Alert] = {}
 
-    async def save(self, alert: Alert) -> ServiceResult[Alert]:
+    async def save(self, alert: Alert) -> ServiceResult[Any]:
         """Save an alert to the repository.
 
         Args:
@@ -434,7 +434,7 @@ class InMemoryAlertRepository(InMemoryRepository[Alert]):
         except Exception as e:
             return ServiceResult.fail(f"Failed to save alert: {e}")
 
-    async def get_by_id(self, alert_id: UUID) -> ServiceResult[Alert | None]:
+    async def get_by_id(self, alert_id: UUID) -> ServiceResult[Any]:
         """Get an alert by ID.
 
         Args:
@@ -563,7 +563,7 @@ class InMemoryHealthRepository(InMemoryRepository[HealthCheck]):
         super().__init__()
         self.storage: dict[UUID, HealthCheck] = {}
 
-    async def save(self, health_check: HealthCheck) -> ServiceResult[HealthCheck]:
+    async def save(self, health_check: HealthCheck) -> ServiceResult[Any]:
         """Save a health check to the repository.
 
         Args:
@@ -582,7 +582,7 @@ class InMemoryHealthRepository(InMemoryRepository[HealthCheck]):
     async def get_by_id(
         self,
         health_check_id: UUID,
-    ) -> ServiceResult[HealthCheck | None]:
+    ) -> ServiceResult[Any]:
         """Get a health check by ID.
 
         Args:
@@ -705,7 +705,7 @@ class InMemoryDashboardRepository(InMemoryRepository[Dashboard]):
         super().__init__()
         self.storage: dict[UUID, Dashboard] = {}
 
-    async def save(self, dashboard: Dashboard) -> ServiceResult[Dashboard]:
+    async def save(self, dashboard: Dashboard) -> ServiceResult[Any]:
         """Save a dashboard to the repository.
 
         Args:
@@ -721,7 +721,7 @@ class InMemoryDashboardRepository(InMemoryRepository[Dashboard]):
         except Exception as e:
             return ServiceResult.fail(f"Failed to save dashboard: {e}")
 
-    async def get_by_id(self, dashboard_id: UUID) -> ServiceResult[Dashboard | None]:
+    async def get_by_id(self, dashboard_id: UUID) -> ServiceResult[Any]:
         """Get a dashboard by ID.
 
         Args:
@@ -865,6 +865,6 @@ class InMemoryDashboardRepository(InMemoryRepository[Dashboard]):
 
         """
         result = await self.get_by_id(dashboard_id)
-        if result.is_success and result.data:
+        if result.success and result.data:
             return len(result.data.widgets) if hasattr(result.data, "widgets") else 0
         return 0

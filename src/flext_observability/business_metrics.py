@@ -9,7 +9,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Any
 
-from flext_core.domain.types import MetricType
+from flext_core import MetricType
 
 from flext_observability.domain.entities import Metric
 from flext_observability.domain.value_objects import ComponentName
@@ -78,7 +78,7 @@ class BusinessMetric:
             BusinessMetricType.COUNTER: MetricType.COUNTER,
             BusinessMetricType.GAUGE: MetricType.GAUGE,
             BusinessMetricType.HISTOGRAM: MetricType.HISTOGRAM,
-            BusinessMetricType.SUMMARY: MetricType.SUMMARY,
+            BusinessMetricType.SUMMARY: MetricType.HISTOGRAM,
             # Business-specific types map to appropriate metric types
             BusinessMetricType.PIPELINE_SUCCESS_RATE: MetricType.GAUGE,
             BusinessMetricType.EXECUTION_DURATION: MetricType.HISTOGRAM,

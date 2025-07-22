@@ -10,7 +10,7 @@ from decimal import Decimal
 from enum import StrEnum
 from typing import Any
 
-from flext_core.domain.pydantic_base import DomainValueObject, Field
+from flext_core import DomainValueObject, Field
 from pydantic import field_validator
 
 

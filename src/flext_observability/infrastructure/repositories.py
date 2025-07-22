@@ -12,8 +12,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from flext_core.config.base import injectable
-from flext_core.domain.types import Status
+from flext_core import EntityStatus, injectable
 from flext_core.infrastructure.persistence.base import InMemoryRepository, Repository
 
 # Type aliases for domain-specific repositories
@@ -26,8 +25,12 @@ TraceRepository = Repository["Trace", UUID]
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from flext_core.domain.shared_types import AlertSeverity
-    from flext_core.domain.types import LogLevel, MetricType, TraceStatus
+    from flext_core import (
+        AlertSeverity,
+        LogLevel,
+        MetricType,
+        TraceStatus,
+    )
 
     from flext_observability.domain.entities import (
         Alert,
@@ -225,7 +228,7 @@ class InMemoryAlertRepository(InMemoryRepository["Alert", UUID]):
 
         for alert in self._alerts.values():
             # Only active alerts
-            if alert.alert_status != Status.ACTIVE:
+            if alert.alert_status != EntityStatus.ACTIVE:
                 continue
 
             # Filter by severity
@@ -309,7 +312,7 @@ class InMemoryAlertRepository(InMemoryRepository["Alert", UUID]):
 
         """
         return sum(
-            1 for alert in self._alerts.values() if alert.alert_status == Status.ACTIVE
+            1 for alert in self._alerts.values() if alert.alert_status == EntityStatus.ACTIVE
         )
 
 
@@ -374,7 +377,7 @@ class InMemoryHealthRepository(InMemoryRepository["HealthCheck", UUID]):
     async def find_by_criteria(
         self,
         component_name: str | None = None,
-        status: Status | None = None,
+        status: EntityStatus | None = None,
         start_time: datetime | None = None,
         end_time: datetime | None = None,
         limit: int = 100,

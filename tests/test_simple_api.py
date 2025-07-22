@@ -6,6 +6,7 @@ from typing import Any
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
+from flext_core import DomainError
 
 from flext_observability.simple_api import (
     FlextObservability,
@@ -75,7 +76,7 @@ class TestFlextObservability:
         mock_health_service = AsyncMock()
 
         obs = FlextObservability()
-        obs.container.resolve.side_effect = [  # type: ignore[attr-defined]
+        obs.container.resolve.side_effect = [  # Mock container resolve method
             mock_metrics_service,
             mock_logging_service,
             mock_tracing_service,
@@ -109,7 +110,7 @@ class TestFlextObservability:
         await obs.initialize()
 
         # Should not call container.get since already initialized
-        obs.container.get.assert_not_called()  # type: ignore[attr-defined]
+        obs.container.get.assert_not_called()  # Assert container method not called
 
     @patch("flext_observability.simple_api.get_settings")
     @patch("flext_observability.simple_api.get_container")
@@ -123,7 +124,7 @@ class TestFlextObservability:
         mock_container.return_value = Mock()
 
         obs = FlextObservability()
-        obs.container.resolve.side_effect = Exception("Service initialization failed")  # type: ignore[attr-defined]
+        obs.container.resolve.side_effect = Exception("Service initialization failed")  # Mock container exception
 
         with pytest.raises(Exception, match="Service initialization failed"):
             await obs.initialize()
@@ -166,7 +167,7 @@ class TestFlextObservability:
         obs = FlextObservability()
         obs._initialized = False
 
-        with pytest.raises(RuntimeError, match="Observability not initialized"):
+        with pytest.raises(DomainError, match="Observability services not initialized"):
             await obs.start()
 
     @patch("flext_observability.simple_api.get_settings")
@@ -397,9 +398,9 @@ class TestFlextObservability:
         mock_container.return_value = Mock()
 
         obs = FlextObservability()
-        obs.initialize = AsyncMock()  # type: ignore[method-assign]
-        obs.start = AsyncMock()  # type: ignore[method-assign]
-        obs.stop = AsyncMock()  # type: ignore[method-assign]
+        obs.initialize = AsyncMock()  # Mock initialization method
+        obs.start = AsyncMock()  # Mock start method
+        obs.stop = AsyncMock()  # Mock stop method
 
         async with obs:
             assert obs._initialized
@@ -420,13 +421,14 @@ class TestFlextObservability:
         mock_container.return_value = Mock()
 
         obs = FlextObservability()
-        obs.initialize = AsyncMock()  # type: ignore[method-assign]
-        obs.start = AsyncMock()  # type: ignore[method-assign]
-        obs.stop = AsyncMock()  # type: ignore[method-assign]
+        obs.initialize = AsyncMock()  # Mock initialization method
+        obs.start = AsyncMock()  # Mock start method
+        obs.stop = AsyncMock()  # Mock stop method
 
+        msg = "Test exception"
         with pytest.raises(ValueError, match="Test exception"):
             async with obs:
-                raise ValueError("Test exception")
+                raise ValueError(msg)
 
         # Should still call stop even if exception occurred
         obs.stop.assert_called_once()
@@ -590,7 +592,7 @@ class TestModuleFunctions:
         mock_instance = AsyncMock()
         mock_flext_obs.return_value = mock_instance
 
-        @monitor_function(  # type: ignore[misc]
+        @monitor_function(  # Monitor decorator test
             observability=mock_instance,
             _metric_name="test_function",
             trace_name="test_trace",
@@ -612,7 +614,7 @@ class TestModuleFunctions:
         mock_instance.trace_operation.return_value = 42
         mock_flext_obs.return_value = mock_instance
 
-        @monitor_function(  # type: ignore[misc]
+        @monitor_function(  # Monitor decorator test
             observability=mock_instance,
             _metric_name="test_function",
             trace_name="test_trace",
@@ -643,7 +645,7 @@ class TestEdgeCases:
         mock_container.return_value = Mock()
 
         obs = FlextObservability()
-        obs.container.resolve.side_effect = [  # type: ignore[attr-defined]
+        obs.container.resolve.side_effect = [  # Mock container resolve method
             AsyncMock(),
             AsyncMock(),
             AsyncMock(),
@@ -656,9 +658,9 @@ class TestEdgeCases:
         assert obs._initialized is True
 
         # Second initialization should not re-initialize
-        container_call_count = obs.container.resolve.call_count  # type: ignore[attr-defined]
+        container_call_count = obs.container.resolve.call_count  # Mock call count
         await obs.initialize()
-        assert obs.container.resolve.call_count == container_call_count  # type: ignore[attr-defined]
+        assert obs.container.resolve.call_count == container_call_count  # Assert mock call count
 
     @patch("flext_observability.simple_api.get_settings")
     @patch("flext_observability.simple_api.get_container")
@@ -692,7 +694,7 @@ class TestEdgeCases:
     ) -> None:
         """Test monitor_function decorator with None observability."""
 
-        @monitor_function(observability=None, _metric_name="test_function")  # type: ignore[misc]
+        @monitor_function(observability=None, _metric_name="test_function")  # Monitor with params
         async def test_func() -> str:
             return "result"
 
@@ -757,8 +759,8 @@ class TestEdgeCases:
         mock_container.return_value = Mock()
 
         obs = FlextObservability()
-        obs.initialize = AsyncMock(side_effect=Exception("Init failed"))  # type: ignore[method-assign]
-        obs.stop = AsyncMock()  # type: ignore[method-assign]
+        obs.initialize = AsyncMock(side_effect=Exception("Init failed"))  # Mock init failure
+        obs.stop = AsyncMock()  # Mock stop method
 
         with pytest.raises(Exception, match="Init failed"):
             async with obs:
@@ -806,7 +808,7 @@ class TestIntegration:
         health_service.get_health_status = AsyncMock(return_value={"status": "healthy"})
 
         obs = FlextObservability()
-        obs.container.resolve.side_effect = [  # type: ignore[attr-defined]
+        obs.container.resolve.side_effect = [  # Mock container resolve method
             metrics_service,
             logging_service,
             tracing_service,

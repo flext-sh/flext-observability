@@ -147,12 +147,12 @@ def histogram_metric(metrics_registry: CollectorRegistry) -> Any:
 @pytest_asyncio.fixture
 async def tracer_provider() -> AsyncIterator[Any]:
     """Create a tracer provider for testing."""
-    from opentelemetry import trace  # type: ignore[import-untyped]
-    from opentelemetry.sdk.trace import TracerProvider  # type: ignore[import-untyped]
-    from opentelemetry.sdk.trace.export import (  # type: ignore[import-untyped]
+    from opentelemetry import trace
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import (
         SimpleSpanProcessor,
     )
-    from opentelemetry.sdk.trace.export.in_memory_span_exporter import (  # type: ignore[import-untyped]
+    from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
         InMemorySpanExporter,
     )
 

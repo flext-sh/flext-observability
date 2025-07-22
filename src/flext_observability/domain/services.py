@@ -16,7 +16,7 @@ import operator
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Protocol
 
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -173,7 +173,7 @@ class AlertingService:
         self._storage = storage
         self._evaluator = evaluator or SimpleThresholdEvaluator()
 
-    def register_alert_rule(self, metric_name: str, threshold: Any) -> ServiceResult[None]:
+    def register_alert_rule(self, metric_name: str, threshold: Any) -> ServiceResult[Any]:
         """Register alert rule for metric threshold monitoring.
 
         Args:
@@ -190,7 +190,7 @@ class AlertingService:
         except Exception as e:
             return ServiceResult.fail(f"Failed to register alert rule: {e}")
 
-    def remove_alert_rule(self, metric_name: str) -> ServiceResult[bool]:
+    def remove_alert_rule(self, metric_name: str) -> ServiceResult[Any]:
         """Remove alert rule for metric.
 
         Args:
@@ -206,7 +206,7 @@ class AlertingService:
         except Exception as e:
             return ServiceResult.fail(f"Failed to remove alert rule: {e}")
 
-    def evaluate_metric(self, metric: Any) -> ServiceResult[dict[str, Any] | None]:
+    def evaluate_metric(self, metric: Any) -> ServiceResult[Any]:
         """Evaluate metric against registered alert rules using strategy pattern (OCP compliance).
 
         Args:
@@ -246,7 +246,9 @@ class AlertingService:
         # Simple severity logic - can be extended with more sophisticated rules
         try:
             metric_value = float(metric.value)
-            threshold_value = float(threshold.value if hasattr(threshold, "value") else threshold)
+            threshold_value = float(
+                threshold.value if hasattr(threshold, "value") else threshold,
+            )
 
             if metric_value > threshold_value * 2:
                 return "high"
@@ -310,9 +312,7 @@ class SimpleTrendAnalyzer(TrendAnalyzer):
         avg_first = sum(first_half) / len(first_half)
         avg_second = sum(second_half) / len(second_half)
 
-        change = (
-            ((avg_second - avg_first) / avg_first) * 100 if avg_first != 0 else 0
-        )
+        change = ((avg_second - avg_first) / avg_first) * 100 if avg_first != 0 else 0
 
         if abs(change) < self.stability_threshold:
             trend = "stable"
@@ -371,7 +371,9 @@ class LinearRegressionTrendAnalyzer(TrendAnalyzer):
         # Calculate change as percentage
         first_value = values[0]
         last_value = values[-1]
-        change = ((last_value - first_value) / first_value * 100) if first_value != 0 else 0
+        change = (
+            ((last_value - first_value) / first_value * 100) if first_value != 0 else 0
+        )
 
         return {
             "trend": trend,
@@ -410,7 +412,7 @@ class MetricsAnalysisService:
         self._trend_analyzer = trend_analyzer or SimpleTrendAnalyzer()
         self._max_history_size = max_history_size
 
-    def analyze_trend(self, metric: Any) -> ServiceResult[dict[str, Any]]:
+    def analyze_trend(self, metric: Any) -> ServiceResult[Any]:
         """Analyze metric trends using strategy pattern (OCP compliance).
 
         Args:
@@ -430,11 +432,12 @@ class MetricsAnalysisService:
             # Need at least 2 points for trend analysis
             if len(history) < 2:
                 return ServiceResult.ok({
-                    "trend": "unknown",
-                    "change": 0.0,
-                    "points": len(history),
-                    "analyzer": self._trend_analyzer.get_analyzer_name(),
-                })
+                        "trend": "unknown",
+                        "change": 0.0,
+                        "points": len(history),
+                        "analyzer": self._trend_analyzer.get_analyzer_name(),
+                    },
+                )
 
             # Extract values for analysis
             try:
@@ -444,11 +447,12 @@ class MetricsAnalysisService:
 
             if len(values) < 2:
                 return ServiceResult.ok({
-                    "trend": "stable",
-                    "change": 0.0,
-                    "points": len(values),
-                    "analyzer": self._trend_analyzer.get_analyzer_name(),
-                })
+                        "trend": "stable",
+                        "change": 0.0,
+                        "points": len(values),
+                        "analyzer": self._trend_analyzer.get_analyzer_name(),
+                    },
+                )
 
             # Use strategy pattern for trend analysis (OCP compliance)
             analysis = self._trend_analyzer.analyze(values)
@@ -459,7 +463,7 @@ class MetricsAnalysisService:
         except Exception as e:
             return ServiceResult.fail(f"Failed to analyze trend: {e}")
 
-    def get_metric_statistics(self, metric_name: str) -> ServiceResult[dict[str, Any]]:
+    def get_metric_statistics(self, metric_name: str) -> ServiceResult[Any]:
         """Get statistical summary for metric history (additional SRP responsibility).
 
         Args:
@@ -474,13 +478,14 @@ class MetricsAnalysisService:
 
             if not history:
                 return ServiceResult.ok({
-                    "metric_name": metric_name,
-                    "count": 0,
-                    "min": None,
-                    "max": None,
-                    "average": None,
-                    "latest": None,
-                })
+                        "metric_name": metric_name,
+                        "count": 0,
+                        "min": None,
+                        "max": None,
+                        "average": None,
+                        "latest": None,
+                    },
+                )
 
             # Extract numeric values
             values = []
@@ -514,7 +519,7 @@ class HealthAnalysisService:
     def __init__(self) -> None:
         self._component_health: dict[str, Any] = {}
 
-    def update_component_health(self, health_check: Any) -> ServiceResult[bool]:
+    def update_component_health(self, health_check: Any) -> ServiceResult[Any]:
         """Update component health status and detect changes.
 
         Args:
@@ -541,7 +546,7 @@ class HealthAnalysisService:
         except Exception as e:
             return ServiceResult.fail(f"Failed to update component health: {e}")
 
-    def get_system_health(self) -> ServiceResult[dict[str, Any]]:
+    def get_system_health(self) -> ServiceResult[Any]:
         """Get aggregated system health status.
 
         Returns:
@@ -550,8 +555,7 @@ class HealthAnalysisService:
         """
         try:
             if not self._component_health:
-                return ServiceResult.ok(
-                    {
+                return ServiceResult.ok({
                         "overall_status": "unknown",
                         "healthy_components": 0,
                         "unhealthy_components": 0,
@@ -570,8 +574,7 @@ class HealthAnalysisService:
 
             health_score = healthy / total if total > 0 else 0.0
 
-            return ServiceResult.ok(
-                {
+            return ServiceResult.ok({
                     "overall_status": "healthy" if health_score > 0.8 else "degraded",
                     "healthy_components": healthy,
                     "unhealthy_components": total - healthy,
@@ -590,7 +593,7 @@ class LogAnalysisService:
     def __init__(self) -> None:
         self._error_patterns: dict[str, int] = {}
 
-    def analyze_log_entry(self, log_entry: Any) -> ServiceResult[dict[str, Any]]:
+    def analyze_log_entry(self, log_entry: Any) -> ServiceResult[Any]:
         """Analyze log entry for patterns and severity.
 
         Args:
@@ -641,7 +644,7 @@ class LogAnalysisService:
 
         return pattern if pattern != message else None
 
-    def get_error_patterns(self) -> ServiceResult[dict[str, int]]:
+    def get_error_patterns(self) -> ServiceResult[Any]:
         """Get error patterns sorted by frequency.
 
         Returns:
@@ -669,7 +672,7 @@ class TraceAnalysisService:
     def __init__(self) -> None:
         self._trace_history: dict[str, list[Any]] = {}
 
-    def analyze_trace(self, trace: Any) -> ServiceResult[dict[str, Any]]:
+    def analyze_trace(self, trace: Any) -> ServiceResult[Any]:
         """Analyze trace for performance and error patterns.
 
         Args:
@@ -705,7 +708,7 @@ class TraceAnalysisService:
         except Exception as e:
             return ServiceResult.fail(f"Failed to analyze trace: {e}")
 
-    def get_operation_stats(self, operation_name: str) -> ServiceResult[dict[str, Any]]:
+    def get_operation_stats(self, operation_name: str) -> ServiceResult[Any]:
         """Get performance statistics for specific operation.
 
         Args:
@@ -719,8 +722,7 @@ class TraceAnalysisService:
             history = self._trace_history.get(operation_name, [])
 
             if not history:
-                return ServiceResult.ok(
-                    {
+                return ServiceResult.ok({
                         "operation": operation_name,
                         "total_traces": 0,
                         "success_rate": 0.0,
@@ -740,8 +742,7 @@ class TraceAnalysisService:
             durations = [getattr(t, "duration_ms", 0) for t in history]
             avg_duration = sum(durations) / len(durations) if durations else 0
 
-            return ServiceResult.ok(
-                {
+            return ServiceResult.ok({
                     "operation": operation_name,
                     "total_traces": total,
                     "successful_traces": successful,

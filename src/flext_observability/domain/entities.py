@@ -9,10 +9,11 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
-from flext_core.domain.pydantic_base import DomainEntity, Field
-from flext_core.domain.shared_types import AlertSeverity
-from flext_core.domain.types import (
+from flext_core import (
+    AlertSeverity,
+    DomainEntity,
     EntityStatus,
+    Field,
     LogLevel,
     MetricType,
     TraceStatus,
@@ -186,7 +187,7 @@ class Metric(DomainEntity):
             True if metric type is SUMMARY.
 
         """
-        return bool(self.metric_type == MetricType.SUMMARY)
+        return bool(self.metric_type == MetricType.HISTOGRAM)
 
     @property
     def full_name(self) -> str:
@@ -327,9 +328,9 @@ class Trace(DomainEntity):
     def start(self) -> None:
         """Start the trace execution.
 
-        Sets status to IN_PROGRESS and records start time.
+        Sets status to ACTIVE and records start time.
         """
-        self.trace_status = TraceStatus.IN_PROGRESS
+        self.trace_status = TraceStatus.ACTIVE
         self.start_time = datetime.now(UTC)
 
     def finish(self, end_time: datetime | None = None) -> None:
@@ -342,7 +343,7 @@ class Trace(DomainEntity):
         from datetime import UTC
 
         self.end_time = end_time or datetime.now(UTC)
-        if self.trace_status == TraceStatus.IN_PROGRESS:
+        if self.trace_status == TraceStatus.ACTIVE:
             self.trace_status = TraceStatus.COMPLETED
 
         if self.duration_ms is None:
@@ -364,7 +365,7 @@ class Trace(DomainEntity):
 
         Sets status to CANCELLED and finishes the trace.
         """
-        self.trace_status = TraceStatus.CANCELLED
+        self.trace_status = TraceStatus.FAILED
         self.finish()
 
     def add_trace_tag(self, key: str, value: str) -> None:

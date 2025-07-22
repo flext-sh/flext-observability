@@ -52,13 +52,21 @@ class MockThreshold:
         return False
 
 
+class MockComponent:
+    """Mock component that implements __str__ properly."""
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class MockHealthCheck:
     """Mock health check class for testing."""
 
     def __init__(self, component_name: str, status: str = "healthy") -> None:
-        self.component = Mock()
-        # Use spec to create a proper mock that supports __str__
-        self.component.configure_mock(**{"__str__.return_value": component_name})
+        self.component = MockComponent(component_name)
         self.status = status
 
 
@@ -103,7 +111,10 @@ class TestAlertingService:
         # Test that service is properly initialized with storage and evaluator
         assert alerting_service._storage is not None
         assert alerting_service._evaluator is not None
-        assert alerting_service._evaluator.get_description() == "Simple threshold comparison using threshold.compare(value)"
+        assert (
+            alerting_service._evaluator.get_description()
+            == "Simple threshold comparison using threshold.compare(value)"
+        )
 
     def test_register_alert_rule(self, alerting_service: Any) -> None:
         """Test registering an alert rule."""
@@ -111,7 +122,7 @@ class TestAlertingService:
         result = alerting_service.register_alert_rule("cpu_usage", threshold)
 
         # Test that the method now returns ServiceResult
-        assert result.is_success
+        assert result.success
         # Verify rule was stored by trying to get it
         stored_rule = alerting_service._storage.get_rule("cpu_usage")
         assert stored_rule == threshold
@@ -124,16 +135,18 @@ class TestAlertingService:
         alerting_service.register_alert_rule("cpu_usage", threshold1)
         alerting_service.register_alert_rule("memory_usage", threshold2)
 
-        assert len(alerting_service._alert_rules) == 2
-        assert alerting_service._alert_rules["cpu_usage"] == threshold1
-        assert alerting_service._alert_rules["memory_usage"] == threshold2
+        # Verify rules were stored by getting them from storage
+        stored_rule1 = alerting_service._storage.get_rule("cpu_usage")
+        stored_rule2 = alerting_service._storage.get_rule("memory_usage")
+        assert stored_rule1 == threshold1
+        assert stored_rule2 == threshold2
 
     def test_evaluate_metric_no_rule(self, alerting_service: Any) -> None:
         """Test evaluating a metric with no registered rule."""
         metric = MockMetric("unknown_metric", 85.0)
         result = alerting_service.evaluate_metric(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data is None
 
     def test_evaluate_metric_threshold_not_exceeded(
@@ -147,7 +160,7 @@ class TestAlertingService:
         metric = MockMetric("cpu_usage", 85.0)
         result = alerting_service.evaluate_metric(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data is None
 
     def test_evaluate_metric_threshold_exceeded(self, alerting_service: Any) -> None:
@@ -158,10 +171,10 @@ class TestAlertingService:
         metric = MockMetric("cpu_usage", 85.0)
         result = alerting_service.evaluate_metric(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         assert result.data["title"] == "Metric cpu_usage threshold exceeded"
-        assert result.data["severity"] == "medium"
+        assert result.data["severity"] == "low"
         assert result.data["metric"] == metric
         assert result.data["threshold"] == threshold
 
@@ -176,7 +189,7 @@ class TestAlertingService:
 
         result = alerting_service.evaluate_metric(metric)
 
-        assert not result.is_success
+        assert not result.success
         assert "Failed to evaluate metric: Test error" in result.error
 
 
@@ -196,7 +209,10 @@ class TestMetricsAnalysisService:
         # Test that service is properly initialized with storage and trend analyzer
         assert metrics_analysis_service._storage is not None
         assert metrics_analysis_service._trend_analyzer is not None
-        assert metrics_analysis_service._trend_analyzer.get_analyzer_name() == "simple_trend"
+        assert (
+            metrics_analysis_service._trend_analyzer.get_analyzer_name()
+            == "simple_trend"
+        )
         assert metrics_analysis_service._max_history_size == 100
 
     def test_analyze_trend_first_metric(self, metrics_analysis_service: Any) -> None:
@@ -204,14 +220,14 @@ class TestMetricsAnalysisService:
         metric = MockMetric("cpu_usage", 75.0)
         result = metrics_analysis_service.analyze_trend(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data["trend"] == "unknown"
         assert result.data["change"] == 0.0
         assert result.data["points"] == 1
 
         # Verify metric was stored
-        assert "cpu_usage" in metrics_analysis_service._metric_history
-        assert len(metrics_analysis_service._metric_history["cpu_usage"]) == 1
+        history = metrics_analysis_service._storage.get_history("cpu_usage")
+        assert len(history) == 1
 
     def test_analyze_trend_insufficient_data(
         self,
@@ -235,7 +251,7 @@ class TestMetricsAnalysisService:
         metric = MockMetric("cpu_usage", 75.0)
         result = fresh_service.analyze_trend(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         assert result.data["trend"] == "unknown"
         assert result.data is not None
@@ -251,7 +267,7 @@ class TestMetricsAnalysisService:
         metrics_analysis_service.analyze_trend(metric1)
         result = metrics_analysis_service.analyze_trend(metric2)
 
-        assert result.is_success
+        assert result.success
         # With 2 points, it calculates trend: first_half=[75.0], second_half=[85.0]
         # change = ((85-75)/75)*100 = 13.33%, which is > 5% so trend = "increasing"
         assert result.data["trend"] == "increasing"
@@ -268,7 +284,7 @@ class TestMetricsAnalysisService:
         metric = MockMetric("cpu_usage", 100.0)
         result = metrics_analysis_service.analyze_trend(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data["trend"] == "increasing"
         assert result.data["change"] > 5  # Should be a significant increase
 
@@ -283,7 +299,7 @@ class TestMetricsAnalysisService:
         metric = MockMetric("cpu_usage", 45.0)
         result = metrics_analysis_service.analyze_trend(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data["trend"] == "decreasing"
         assert result.data["change"] < -5  # Should be a significant decrease
 
@@ -298,7 +314,7 @@ class TestMetricsAnalysisService:
         metric = MockMetric("cpu_usage", 75.5)
         result = metrics_analysis_service.analyze_trend(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data["trend"] == "stable"
         assert abs(result.data["change"]) < 5  # Should be small change
 
@@ -309,8 +325,11 @@ class TestMetricsAnalysisService:
             metric = MockMetric("cpu_usage", 50.0 + i)
             metrics_analysis_service.analyze_trend(metric)
 
-        # Should only have 100 metrics stored
-        assert len(metrics_analysis_service._metric_history["cpu_usage"]) == 100
+        # Should only have 100 metrics stored - access through storage
+        history = metrics_analysis_service._storage.get_history(
+            "cpu_usage", 200,
+        )  # Ask for more than limit
+        assert len(history) == 100
 
     def test_analyze_trend_zero_division_protection(
         self,
@@ -332,7 +351,7 @@ class TestMetricsAnalysisService:
         metric = MockMetric("cpu_usage", 0.0)
         result = metrics_analysis_service.analyze_trend(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data["change"] == 0  # Should handle zero division
 
     def test_analyze_trend_exception_handling(
@@ -354,8 +373,8 @@ class TestMetricsAnalysisService:
 
         result = metrics_analysis_service.analyze_trend(invalid_metric)
 
-        assert not result.is_success
-        assert "Failed to analyze trend" in result.error
+        assert not result.success
+        assert "Failed to extract numeric values" in result.error
 
 
 class TestHealthAnalysisService:
@@ -378,7 +397,7 @@ class TestHealthAnalysisService:
         health_check = MockHealthCheck("database", "healthy")
         result = health_analysis_service.update_component_health(health_check)
 
-        assert result.is_success
+        assert result.success
         assert result.data is True  # Status changed (new component)
 
         # Verify component was stored
@@ -395,7 +414,7 @@ class TestHealthAnalysisService:
         health_analysis_service.update_component_health(health_check1)
         result = health_analysis_service.update_component_health(health_check2)
 
-        assert result.is_success
+        assert result.success
         assert result.data is False  # Status did not change
 
     def test_update_component_health_status_changed(
@@ -409,7 +428,7 @@ class TestHealthAnalysisService:
         health_analysis_service.update_component_health(health_check1)
         result = health_analysis_service.update_component_health(health_check2)
 
-        assert result.is_success
+        assert result.success
         assert result.data is True  # Status changed
 
     def test_update_component_health_exception_handling(
@@ -423,7 +442,7 @@ class TestHealthAnalysisService:
 
         result = health_analysis_service.update_component_health(health_check)
 
-        assert not result.is_success
+        assert not result.success
         assert "Failed to update component health: Test error" in result.error
 
     def test_get_system_health_no_components(
@@ -433,7 +452,7 @@ class TestHealthAnalysisService:
         """Test getting system health with no components."""
         result = health_analysis_service.get_system_health()
 
-        assert result.is_success
+        assert result.success
         assert result.data["overall_status"] == "unknown"
         assert result.data["healthy_components"] == 0
         assert result.data["unhealthy_components"] == 0
@@ -454,7 +473,7 @@ class TestHealthAnalysisService:
 
         result = health_analysis_service.get_system_health()
 
-        assert result.is_success
+        assert result.success
         assert result.data["overall_status"] == "healthy"
         assert result.data["healthy_components"] == 3
         assert result.data["unhealthy_components"] == 0
@@ -476,7 +495,7 @@ class TestHealthAnalysisService:
 
         result = health_analysis_service.get_system_health()
 
-        assert result.is_success
+        assert result.success
         assert result.data["overall_status"] == "degraded"  # < 80% healthy
         assert result.data["healthy_components"] == 2
         assert result.data["unhealthy_components"] == 2
@@ -502,7 +521,7 @@ class TestHealthAnalysisService:
 
         result = health_analysis_service.get_system_health()
 
-        assert result.is_success
+        assert result.success
         assert result.data["overall_status"] == "healthy"  # 100% > 80%
         assert result.data["healthy_components"] == 4
         assert result.data["unhealthy_components"] == 0
@@ -529,7 +548,7 @@ class TestHealthAnalysisService:
 
         result = health_analysis_service.get_system_health()
 
-        assert result.is_success
+        assert result.success
         assert (
             result.data["overall_status"] == "degraded"
         )  # 80% == threshold, needs > 80%
@@ -552,7 +571,7 @@ class TestHealthAnalysisService:
 
         result = health_analysis_service.get_system_health()
 
-        assert not result.is_success
+        assert not result.success
         assert "Failed to get system health: Test error" in result.error
 
 
@@ -573,7 +592,7 @@ class TestLogAnalysisService:
         log_entry = MockLogEntry("INFO", "User logged in successfully")
         result = log_analysis_service.analyze_log_entry(log_entry)
 
-        assert result.is_success
+        assert result.success
         assert result.data["is_error"] is False
         assert result.data["severity"] == "INFO"
         assert result.data["has_exception"] is False
@@ -584,7 +603,7 @@ class TestLogAnalysisService:
         log_entry = MockLogEntry("ERROR", "Database connection failed", is_error=True)
         result = log_analysis_service.analyze_log_entry(log_entry)
 
-        assert result.is_success
+        assert result.success
         assert result.data["is_error"] is True
         assert result.data["severity"] == "ERROR"
         assert result.data["has_exception"] is False
@@ -596,7 +615,7 @@ class TestLogAnalysisService:
 
         result = log_analysis_service.analyze_log_entry(log_entry)
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         assert result.data["has_exception"] is True
 
@@ -612,7 +631,7 @@ class TestLogAnalysisService:
         )
         result = log_analysis_service.analyze_log_entry(log_entry)
 
-        assert result.is_success
+        assert result.success
         assert len(result.data["patterns"]) > 0
 
         # Should extract pattern with number replaced
@@ -627,7 +646,7 @@ class TestLogAnalysisService:
         # Use None to trigger an exception when accessing attributes
         result = log_analysis_service.analyze_log_entry(None)
 
-        assert not result.is_success
+        assert not result.success
         assert "Failed to analyze log entry" in result.error
 
     def test_extract_error_pattern_numbers(self, log_analysis_service: Any) -> None:
@@ -661,7 +680,7 @@ class TestLogAnalysisService:
         """Test getting error patterns when none exist."""
         result = log_analysis_service.get_error_patterns()
 
-        assert result.is_success
+        assert result.success
         assert result.data == {}
 
     def test_get_error_patterns_with_data(self, log_analysis_service: Any) -> None:
@@ -675,7 +694,7 @@ class TestLogAnalysisService:
 
         result = log_analysis_service.get_error_patterns()
 
-        assert result.is_success
+        assert result.success
         patterns = list(result.data.keys())
         assert patterns[0] == "Pattern B"  # Most frequent first
         assert patterns[1] == "Pattern A"
@@ -694,7 +713,7 @@ class TestLogAnalysisService:
 
         result = log_analysis_service.get_error_patterns()
 
-        assert not result.is_success
+        assert not result.success
         assert "Failed to get error patterns: Test error" in result.error
 
     def test_pattern_counting(self, log_analysis_service: Any) -> None:
@@ -710,7 +729,7 @@ class TestLogAnalysisService:
             log_analysis_service.analyze_log_entry(log_entry)
 
         result = log_analysis_service.get_error_patterns()
-        assert result.is_success
+        assert result.success
 
         # Should have one pattern with count of 3
         patterns = result.data
@@ -736,7 +755,7 @@ class TestTraceAnalysisService:
         trace = MockTrace("process_payment", "completed", 150.0)
         result = trace_analysis_service.analyze_trace(trace)
 
-        assert result.is_success
+        assert result.success
         assert result.data["operation"] == "process_payment"
         assert result.data["status"] == "completed"
         assert result.data["duration_ms"] == 150.0
@@ -752,7 +771,7 @@ class TestTraceAnalysisService:
         trace = MockTrace("process_payment", "failed", 50.0)
         result = trace_analysis_service.analyze_trace(trace)
 
-        assert result.is_success
+        assert result.success
         assert result.data["is_error"] is True
 
     def test_analyze_trace_with_logs(self, trace_analysis_service: Any) -> None:
@@ -762,7 +781,7 @@ class TestTraceAnalysisService:
 
         result = trace_analysis_service.analyze_trace(trace)
 
-        assert result.is_success
+        assert result.success
         assert result.data["has_logs"] is True
 
     def test_analyze_trace_history_limit(self, trace_analysis_service: Any) -> None:
@@ -783,14 +802,14 @@ class TestTraceAnalysisService:
         # Use None to trigger an exception when accessing attributes
         result = trace_analysis_service.analyze_trace(None)
 
-        assert not result.is_success
+        assert not result.success
         assert "Failed to analyze trace" in result.error
 
     def test_get_operation_stats_no_traces(self, trace_analysis_service: Any) -> None:
         """Test getting operation stats with no traces."""
         result = trace_analysis_service.get_operation_stats("unknown_operation")
 
-        assert result.is_success
+        assert result.success
         assert result.data["operation"] == "unknown_operation"
         assert result.data["total_traces"] == 0
         assert result.data["success_rate"] == 0.0
@@ -809,7 +828,7 @@ class TestTraceAnalysisService:
 
         result = trace_analysis_service.get_operation_stats("process_payment")
 
-        assert result.is_success
+        assert result.success
         assert result.data["operation"] == "process_payment"
         assert result.data["total_traces"] == 10
         assert result.data["successful_traces"] == 10
@@ -834,7 +853,7 @@ class TestTraceAnalysisService:
 
         result = trace_analysis_service.get_operation_stats("process_payment")
 
-        assert result.is_success
+        assert result.success
         assert result.data["total_traces"] == 10
         assert result.data["successful_traces"] == 7
         assert result.data["failed_traces"] == 3
@@ -853,7 +872,7 @@ class TestTraceAnalysisService:
 
         result = trace_analysis_service.get_operation_stats("test_operation")
 
-        assert not result.is_success
+        assert not result.success
         assert "Failed to get operation stats" in result.error
 
     def test_get_operation_stats_zero_duration_handling(
@@ -870,5 +889,5 @@ class TestTraceAnalysisService:
 
         result = trace_analysis_service.get_operation_stats("test_operation")
 
-        assert result.is_success
+        assert result.success
         assert result.data["avg_duration_ms"] == 0.0

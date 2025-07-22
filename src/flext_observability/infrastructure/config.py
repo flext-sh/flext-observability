@@ -10,16 +10,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from flext_core.config import BaseSettings, get_container, singleton
+from flext_core import BaseSettings, Field, get_container, singleton
 from flext_core.domain.constants import FlextFramework
-from flext_core.domain.pydantic_base import Field
 from pydantic_settings import SettingsConfigDict
 
 if TYPE_CHECKING:
-    from flext_core.domain.types import LogLevelLiteral, ProjectName, Version
+    from flext_core.domain.shared_types import LogLevelLiteral, ProjectName, Version
 
 
-@singleton()  # type: ignore[arg-type]
+@singleton
 class ObservabilitySettings(BaseSettings):
     """FLEXT Observability configuration settings with environment variable support.
 

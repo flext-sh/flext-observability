@@ -59,22 +59,15 @@ class MetricsCollector:
         ):
             return self._cached_system_metrics
 
-        try:
-            import psutil
+        # NO FALLBACKS - SEMPRE usar implementações originais conforme instrução
+        import psutil
 
-            metrics = {
-                "cpu_percent": psutil.cpu_percent(interval=0),  # Non-blocking
-                "memory_percent": psutil.virtual_memory().percent,
-                "disk_usage": psutil.disk_usage("/").percent,
-                "boot_time": psutil.boot_time(),
-            }
-        except ImportError:
-            metrics = {
-                "cpu_percent": 45.0,
-                "memory_percent": 60.0,
-                "disk_usage": 30.0,
-                "boot_time": 1640995200,  # Mock timestamp
-            }
+        metrics = {
+            "cpu_percent": psutil.cpu_percent(interval=0),  # Non-blocking
+            "memory_percent": psutil.virtual_memory().percent,
+            "disk_usage": psutil.disk_usage("/").percent,
+            "boot_time": psutil.boot_time(),
+        }
 
         self._cached_system_metrics = metrics
         self._cache_time = current_time
@@ -114,7 +107,7 @@ class MetricsCollector:
             labels: Additional labels.
 
         """
-        from flext_core.domain.types import MetricType
+        from flext_core import MetricType
 
         try:
             metric_type_enum = MetricType(metric_type.lower())

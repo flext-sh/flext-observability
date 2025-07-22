@@ -26,22 +26,22 @@ class LogService(ABC):
     """Abstract log service port."""
 
     @abstractmethod
-    async def write_log(self, log_entry: LogEntry) -> ServiceResult[None]:
+    async def write_log(self, log_entry: LogEntry) -> ServiceResult[Any]:
         """Write a log entry."""
         ...
 
     @abstractmethod
-    async def configure_logging(self, config: dict[str, Any]) -> ServiceResult[None]:
+    async def configure_logging(self, config: dict[str, Any]) -> ServiceResult[Any]:
         """Configure logging settings."""
         ...
 
     @abstractmethod
-    async def get_log_level(self) -> ServiceResult[str]:
+    async def get_log_level(self) -> ServiceResult[Any]:
         """Get current log level."""
         ...
 
     @abstractmethod
-    async def set_log_level(self, level: str) -> ServiceResult[None]:
+    async def set_log_level(self, level: str) -> ServiceResult[Any]:
         """Set log level."""
         ...
 
@@ -50,22 +50,22 @@ class MetricsService(ABC):
     """Abstract metrics service port."""
 
     @abstractmethod
-    async def record_metric(self, metric: Metric) -> ServiceResult[None]:
+    async def record_metric(self, metric: Metric) -> ServiceResult[Any]:
         """Record a metric."""
         ...
 
     @abstractmethod
-    async def get_current_metrics(self) -> ServiceResult[dict[str, Any]]:
+    async def get_current_metrics(self) -> ServiceResult[Any]:
         """Get current metrics."""
         ...
 
     @abstractmethod
-    async def reset_metrics(self) -> ServiceResult[None]:
+    async def reset_metrics(self) -> ServiceResult[Any]:
         """Reset all metrics."""
         ...
 
     @abstractmethod
-    async def export_metrics(self, format_type: str) -> ServiceResult[str]:
+    async def export_metrics(self, format_type: str) -> ServiceResult[Any]:
         """Export metrics in specified format."""
         ...
 
@@ -74,12 +74,12 @@ class TracingService(ABC):
     """Abstract tracing service port."""
 
     @abstractmethod
-    async def start_trace(self, trace: Trace) -> ServiceResult[None]:
+    async def start_trace(self, trace: Trace) -> ServiceResult[Any]:
         """Start a trace."""
         ...
 
     @abstractmethod
-    async def finish_trace(self, trace: Trace) -> ServiceResult[None]:
+    async def finish_trace(self, trace: Trace) -> ServiceResult[Any]:
         """Finish a trace."""
         ...
 
@@ -88,12 +88,12 @@ class TracingService(ABC):
         self,
         trace: Trace,
         span_data: dict[str, Any],
-    ) -> ServiceResult[None]:
+    ) -> ServiceResult[Any]:
         """Add span to trace."""
         ...
 
     @abstractmethod
-    async def export_traces(self, format_type: str) -> ServiceResult[str]:
+    async def export_traces(self, format_type: str) -> ServiceResult[Any]:
         """Export traces in specified format."""
         ...
 
@@ -102,22 +102,22 @@ class AlertService(ABC):
     """Abstract alert service port."""
 
     @abstractmethod
-    async def trigger_alert(self, alert: Alert) -> ServiceResult[None]:
+    async def trigger_alert(self, alert: Alert) -> ServiceResult[Any]:
         """Trigger an alert."""
         ...
 
     @abstractmethod
-    async def acknowledge_alert(self, alert_id: str) -> ServiceResult[None]:
+    async def acknowledge_alert(self, alert_id: str) -> ServiceResult[Any]:
         """Acknowledge an alert."""
         ...
 
     @abstractmethod
-    async def resolve_alert(self, alert_id: str) -> ServiceResult[None]:
+    async def resolve_alert(self, alert_id: str) -> ServiceResult[Any]:
         """Resolve an alert."""
         ...
 
     @abstractmethod
-    async def get_active_alerts(self) -> ServiceResult[list[Alert]]:
+    async def get_active_alerts(self) -> ServiceResult[Any]:
         """Get all active alerts."""
         ...
 
@@ -126,17 +126,17 @@ class HealthService(ABC):
     """Abstract health service port."""
 
     @abstractmethod
-    async def perform_health_check(self, check: HealthCheck) -> ServiceResult[None]:
+    async def perform_health_check(self, check: HealthCheck) -> ServiceResult[Any]:
         """Perform a health check."""
         ...
 
     @abstractmethod
-    async def get_system_health(self) -> ServiceResult[dict[str, Any]]:
+    async def get_system_health(self) -> ServiceResult[Any]:
         """Get overall system health."""
         ...
 
     @abstractmethod
-    async def register_health_check(self, check: HealthCheck) -> ServiceResult[None]:
+    async def register_health_check(self, check: HealthCheck) -> ServiceResult[Any]:
         """Register a health check."""
         ...
 
@@ -145,22 +145,22 @@ class DashboardService(ABC):
     """Abstract dashboard service port."""
 
     @abstractmethod
-    async def create_dashboard(self, dashboard: Dashboard) -> ServiceResult[None]:
+    async def create_dashboard(self, dashboard: Dashboard) -> ServiceResult[Any]:
         """Create a dashboard."""
         ...
 
     @abstractmethod
-    async def update_dashboard(self, dashboard: Dashboard) -> ServiceResult[None]:
+    async def update_dashboard(self, dashboard: Dashboard) -> ServiceResult[Any]:
         """Update a dashboard."""
         ...
 
     @abstractmethod
-    async def get_dashboard(self, dashboard_id: str) -> ServiceResult[Dashboard]:
+    async def get_dashboard(self, dashboard_id: str) -> ServiceResult[Any]:
         """Get a dashboard by ID."""
         ...
 
     @abstractmethod
-    async def list_dashboards(self) -> ServiceResult[list[Dashboard]]:
+    async def list_dashboards(self) -> ServiceResult[Any]:
         """List all dashboards."""
         ...
 
