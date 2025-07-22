@@ -15,7 +15,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 
 from flext_observability.domain.entities import Dashboard
 from flext_observability.domain.ports import (
@@ -153,7 +153,7 @@ class FileLogPort(LogService):
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-    async def write_log(self, log_entry: LogEntry) -> ServiceResult[None]:
+    async def write_log(self, log_entry: LogEntry) -> ServiceResult[Any]:
         """Write log entry to file.
 
         Args:
@@ -188,32 +188,15 @@ class FileLogPort(LogService):
                 # Use aiofiles for proper async I/O
                 import aiofiles
 
-                try:
-                    async with aiofiles.open(log_file, "a", encoding="utf-8") as f:
-                        if self.config.structured_logging:
-                            await f.write(json.dumps(log_record) + "\n")
-                        else:
-                            timestamp = log_record["timestamp"]
-                            level = log_record["level"]
-                            message = log_record["message"]
-                            await f.write(f"{timestamp} [{level}] {message}\n")
-                except ImportError:
-                    # Fallback to sync I/O with warning in async context - not ideal \
-                    # functional
-                    # Using executor to avoid blocking async event loop
-                    import asyncio
-
-                    def write_sync() -> None:
-                        with log_file.open("a", encoding="utf-8") as f:
-                            if self.config.structured_logging:
-                                f.write(json.dumps(log_record) + "\n")
-                            else:
-                                timestamp = log_record["timestamp"]
-                                level = log_record["level"]
-                                message = log_record["message"]
-                                f.write(f"{timestamp} [{level}] {message}\n")
-
-                    await asyncio.get_event_loop().run_in_executor(None, write_sync)
+                # NO FALLBACKS - SEMPRE usar implementações originais conforme instrução
+                async with aiofiles.open(log_file, "a", encoding="utf-8") as f:
+                    if self.config.structured_logging:
+                        await f.write(json.dumps(log_record) + "\n")
+                    else:
+                        timestamp = log_record["timestamp"]
+                        level = log_record["level"]
+                        message = log_record["message"]
+                        await f.write(f"{timestamp} [{level}] {message}\n")
 
             return ServiceResult.ok(None)
         except OSError as e:
@@ -221,7 +204,7 @@ class FileLogPort(LogService):
         except (TypeError, AttributeError, UnicodeError) as e:
             return ServiceResult.fail(f"Unexpected error writing log: {e}")
 
-    async def configure_logging(self, config: dict[str, Any]) -> ServiceResult[None]:
+    async def configure_logging(self, config: dict[str, Any]) -> ServiceResult[Any]:
         """Configure logging settings.
 
         Args:
@@ -245,7 +228,7 @@ class FileLogPort(LogService):
         except (ValueError, OSError, TypeError, AttributeError) as e:
             return ServiceResult.fail(f"Failed to configure logging: {e}")
 
-    async def get_log_level(self) -> ServiceResult[str]:
+    async def get_log_level(self) -> ServiceResult[Any]:
         """Get current log level.
 
         Returns:
@@ -257,7 +240,7 @@ class FileLogPort(LogService):
         except (AttributeError, ValueError, TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Failed to get log level: {e}")
 
-    async def set_log_level(self, level: str) -> ServiceResult[None]:
+    async def set_log_level(self, level: str) -> ServiceResult[Any]:
         """Set log level.
 
         Args:
@@ -269,7 +252,7 @@ class FileLogPort(LogService):
         """
         try:
             # Convert string to LogLevel enum
-            from flext_core.domain.types import LogLevel
+            from flext_core import LogLevel
 
             self.config.log_level = LogLevel(level.upper())
             logging.getLogger().setLevel(getattr(logging, level))
@@ -293,7 +276,7 @@ class PrometheusMetricsPort(MetricsService):
         self.config = config
         self.metrics_cache: dict[str, list[dict[str, Any]]] = {}
 
-    async def record_metric(self, metric: Metric) -> ServiceResult[None]:
+    async def record_metric(self, metric: Metric) -> ServiceResult[Any]:
         """Record a metric value.
 
         Args:
@@ -331,7 +314,7 @@ class PrometheusMetricsPort(MetricsService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error recording metric: {e}")
 
-    async def get_current_metrics(self) -> ServiceResult[dict[str, Any]]:
+    async def get_current_metrics(self) -> ServiceResult[Any]:
         """Get current metric values.
 
         Returns:
@@ -354,7 +337,7 @@ class PrometheusMetricsPort(MetricsService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error getting current metrics: {e}")
 
-    async def reset_metrics(self) -> ServiceResult[None]:
+    async def reset_metrics(self) -> ServiceResult[Any]:
         """Reset all stored metrics.
 
         Returns:
@@ -369,7 +352,7 @@ class PrometheusMetricsPort(MetricsService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error resetting metrics: {e}")
 
-    async def export_metrics(self, format_type: str) -> ServiceResult[str]:
+    async def export_metrics(self, format_type: str) -> ServiceResult[Any]:
         """Export metrics in specified format.
 
         Args:
@@ -411,7 +394,7 @@ class JaegerTracingPort(TracingService):
         self.config = config
         self.traces_cache: dict[str, dict[str, Any]] = {}
 
-    async def start_trace(self, trace: Trace) -> ServiceResult[None]:
+    async def start_trace(self, trace: Trace) -> ServiceResult[Any]:
         """Start a new trace.
 
         Args:
@@ -442,7 +425,7 @@ class JaegerTracingPort(TracingService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error starting trace: {e}")
 
-    async def finish_trace(self, trace: Trace) -> ServiceResult[None]:
+    async def finish_trace(self, trace: Trace) -> ServiceResult[Any]:
         """Finish an existing trace.
 
         Args:
@@ -476,7 +459,7 @@ class JaegerTracingPort(TracingService):
         self,
         trace: Trace,
         span_data: dict[str, Any],
-    ) -> ServiceResult[None]:
+    ) -> ServiceResult[Any]:
         """Add span data to an existing trace.
 
         Args:
@@ -499,7 +482,7 @@ class JaegerTracingPort(TracingService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error adding span: {e}")
 
-    async def export_traces(self, format_type: str) -> ServiceResult[str]:
+    async def export_traces(self, format_type: str) -> ServiceResult[Any]:
         """Export traces in specified format.
 
         Args:
@@ -529,7 +512,7 @@ class SlackAlertPort(AlertService):
         """
         self.config = config
 
-    async def trigger_alert(self, alert: Alert) -> ServiceResult[None]:
+    async def trigger_alert(self, alert: Alert) -> ServiceResult[Any]:
         """Send alert notification via Slack.
 
         Args:
@@ -557,7 +540,7 @@ class SlackAlertPort(AlertService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error sending alert: {e}")
 
-    async def resolve_alert(self, alert_id: str) -> ServiceResult[None]:
+    async def resolve_alert(self, alert_id: str) -> ServiceResult[Any]:
         """Mark alert as resolved in Slack.
 
         Args:
@@ -580,7 +563,7 @@ class SlackAlertPort(AlertService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error resolving alert: {e}")
 
-    async def configure_channels(self, channels: dict[str, Any]) -> ServiceResult[None]:
+    async def configure_channels(self, channels: dict[str, Any]) -> ServiceResult[Any]:
         """Configure alert channels.
 
         Args:
@@ -600,7 +583,7 @@ class SlackAlertPort(AlertService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error configuring channels: {e}")
 
-    async def test_alert(self, channel: str) -> ServiceResult[None]:
+    async def test_alert(self, channel: str) -> ServiceResult[Any]:
         """Send test alert to specified channel.
 
         Args:
@@ -625,7 +608,7 @@ class SlackAlertPort(AlertService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error testing alert: {e}")
 
-    async def acknowledge_alert(self, alert_id: str) -> ServiceResult[None]:
+    async def acknowledge_alert(self, alert_id: str) -> ServiceResult[Any]:
         """Acknowledge an alert.
 
         Args:
@@ -649,7 +632,7 @@ class SlackAlertPort(AlertService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error acknowledging alert: {e}")
 
-    async def get_active_alerts(self) -> ServiceResult[list[Alert]]:
+    async def get_active_alerts(self) -> ServiceResult[Any]:
         """Get all active alerts.
 
         Returns:
@@ -678,7 +661,7 @@ class SimpleHealthPort(HealthService):
         self.config = config
         self.registered_checks: dict[str, HealthCheck] = {}
 
-    async def perform_health_check(self, check: HealthCheck) -> ServiceResult[None]:
+    async def perform_health_check(self, check: HealthCheck) -> ServiceResult[Any]:
         """Perform a health check.
 
         Args:
@@ -703,7 +686,7 @@ class SimpleHealthPort(HealthService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error in health check: {e}")
 
-    async def get_system_health(self) -> ServiceResult[dict[str, Any]]:
+    async def get_system_health(self) -> ServiceResult[Any]:
         """Get overall system health status.
 
         Returns:
@@ -722,11 +705,9 @@ class SimpleHealthPort(HealthService):
             for name, check in self.registered_checks.items():
                 check_result = await self.perform_health_check(check)
                 health_status["checks"][name] = {
-                    "healthy": check_result.is_success,
-                    "response_time_ms": 5.0 if check_result.is_success else None,
-                    "error": (
-                        check_result.error if not check_result.is_success else None
-                    ),
+                    "healthy": check_result.success,
+                    "response_time_ms": 5.0 if check_result.success else None,
+                    "error": (check_result.error if not check_result.success else None),
                 }
 
             # Overall status
@@ -739,7 +720,7 @@ class SimpleHealthPort(HealthService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error getting system health: {e}")
 
-    async def register_health_check(self, check: HealthCheck) -> ServiceResult[None]:
+    async def register_health_check(self, check: HealthCheck) -> ServiceResult[Any]:
         """Register a new health check.
 
         Args:
@@ -757,7 +738,7 @@ class SimpleHealthPort(HealthService):
         except (TypeError, RuntimeError) as e:
             return ServiceResult.fail(f"Unexpected error registering check: {e}")
 
-    async def unregister_check(self, check_name: str) -> ServiceResult[None]:
+    async def unregister_check(self, check_name: str) -> ServiceResult[Any]:
         """Unregister a health check by name.
 
         Args:
@@ -793,7 +774,7 @@ class MemoryDashboardPort(DashboardService):
     async def render_dashboard(
         self,
         dashboard: Dashboard,
-    ) -> ServiceResult[dict[str, Any]]:
+    ) -> ServiceResult[Any]:
         """Render dashboard with current data.
 
         Args:
@@ -830,7 +811,7 @@ class MemoryDashboardPort(DashboardService):
         self,
         dashboard: Dashboard,
         format_type: str,
-    ) -> ServiceResult[str]:
+    ) -> ServiceResult[Any]:
         """Export dashboard in specified format.
 
         Args:
@@ -861,7 +842,7 @@ class MemoryDashboardPort(DashboardService):
         self,
         config_str: str,
         format_type: str,
-    ) -> ServiceResult[Dashboard]:
+    ) -> ServiceResult[Any]:
         """Import dashboard from configuration.
 
         Args:
@@ -892,7 +873,7 @@ class MemoryDashboardPort(DashboardService):
     async def get_widget_data(
         self,
         widget_config: dict[str, Any],
-    ) -> ServiceResult[dict[str, Any]]:
+    ) -> ServiceResult[Any]:
         """Get widget data for rendering.
 
         Args:
@@ -929,7 +910,7 @@ class EventBus(ABC):
     async def publish_event(
         self,
         event: dict[str, Any],
-    ) -> ServiceResult[None]:
+    ) -> ServiceResult[Any]:
         """Publish event to bus.
 
         Args:
@@ -946,7 +927,7 @@ class EventBus(ABC):
         self,
         topic: str,
         handler: Any,
-    ) -> ServiceResult[None]:
+    ) -> ServiceResult[Any]:
         """Subscribe to topic with handler.
 
         Args:

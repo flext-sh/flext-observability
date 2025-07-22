@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-
 # ==============================================================================
 # DEPENDENCY INVERSION PRINCIPLE: Concrete storage implementations
 # ==============================================================================

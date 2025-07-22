@@ -1,17 +1,27 @@
 """Application services for observability - orchestrate use cases.
 
+🚨 DEPRECATION WARNING: Complex import paths are deprecated.
+
+❌ OLD: from flext_observability.application.services import MetricsService
+✅ NEW: from flext_observability import MetricsService
+
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
+import warnings
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 from uuid import uuid4
 
-from flext_core.domain.shared_types import AlertSeverity
-from flext_core.domain.types import LogLevel, MetricType, ServiceResult
+from flext_core import (
+    AlertSeverity,
+    LogLevel,
+    MetricType,
+    ServiceResult,
+)
 
 from flext_observability.domain.entities import (
     Alert,
@@ -29,24 +39,49 @@ from flext_observability.domain.events import (
 )
 from flext_observability.domain.value_objects import ComponentName
 
+
+def _rebuild_models() -> None:
+    """Rebuild all Pydantic models to handle forward references."""
+    import contextlib
+
+    from flext_observability.domain.entities import (
+        Alert,
+        HealthCheck,
+        LogEntry,
+        Metric,
+    )
+    from flext_observability.domain.events import (
+        AlertTriggered,
+        HealthCheckCompleted,
+        LogEntryCreated,
+        MetricCollected,
+    )
+
+    # Import all required models
+    from flext_observability.domain.value_objects import ComponentName
+
+    with contextlib.suppress(Exception):
+        # Rebuild value objects first
+        ComponentName.model_rebuild()
+
+        # Rebuild entities
+        Alert.model_rebuild()
+        HealthCheck.model_rebuild()
+        LogEntry.model_rebuild()
+        Metric.model_rebuild()
+        Trace.model_rebuild()
+
+        # Rebuild events last (they depend on entities and value objects)
+        AlertTriggered.model_rebuild()
+        HealthCheckCompleted.model_rebuild()
+        LogEntryCreated.model_rebuild()
+        MetricCollected.model_rebuild()
+        TraceCompleted.model_rebuild()
+
+
 # Rebuild models to handle forward references in events and value objects
 try:
-    # Import and rebuild value objects first
-
-    # Import and rebuild entities
-    Alert.model_rebuild()
-    HealthCheck.model_rebuild()
-    LogEntry.model_rebuild()
-    Metric.model_rebuild()
-    Trace.model_rebuild()
-
-    # Import and rebuild events
-    AlertTriggered.model_rebuild()
-    HealthCheckCompleted.model_rebuild()
-    LogEntryCreated.model_rebuild()
-    MetricCollected.model_rebuild()
-    TraceCompleted.model_rebuild()
-
+    _rebuild_models()
 except Exception as e:
     # If rebuild fails, it might be due to circular dependencies - that's okay for now
     import logging
@@ -105,7 +140,7 @@ class MetricsService:
         labels: dict[str, str] | None = None,
         component_name: str = "unknown",
         component_namespace: str = "default",
-    ) -> ServiceResult[Metric]:
+    ) -> ServiceResult[Any]:
         """Collect a metric value and perform analysis.
 
         Args:
@@ -156,10 +191,8 @@ class MetricsService:
                 timestamp=datetime.now(UTC),
             )
             metric_result = await self.metric_repository.save(metric_entity)
-            if not metric_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to save metric: {metric_result.error}",
-                )
+            if not metric_result.success:
+                return ServiceResult.fail(f"Failed to save metric: {metric_result.error}")
 
             metric = metric_result.data
             if metric is None:
@@ -167,36 +200,43 @@ class MetricsService:
 
             # Publish metric collected event - handle model rebuild issues gracefully
             try:
-                MetricCollected(
+                # Make sure models are rebuilt before creating events
+                _rebuild_models()
+
+                event = MetricCollected(
                     metric=metric,
                     component=metric.component,
                 )
+                await self.event_bus.publish(event)
             except Exception as event_error:
                 # Only suppress Pydantic model rebuild errors, continue processing
-                if "not fully defined" in str(event_error) or "model_rebuild" in str(
-                    event_error,
-                ):
-                    pass  # Skip model rebuild issues but continue processing
+                error_msg = str(event_error)
+                if "not fully defined" in error_msg or "model_rebuild" in error_msg:
+                    # Skip model rebuild issues but continue processing
+                    import logging
+
+                    logging.getLogger(__name__).debug(
+                        "Skipped event publishing due to model rebuild issue: %s",
+                        event_error,
+                    )
                 else:
                     raise  # Re-raise other unexpected exceptions
 
             # Analyze trend
             trend_result = self.metrics_analysis_service.analyze_trend(metric)
-            if not trend_result.is_success:
-                return ServiceResult.fail(
-                    f"Trend analysis failed: {trend_result.error}",
-                )
+            if not trend_result.success:
+                return ServiceResult.fail(f"Trend analysis failed: {trend_result.error}")
 
             # Check for alerts
             alert_result = self.alerting_service.evaluate_metric(metric)
-            if alert_result.is_success and alert_result.data:
+            if alert_result.success and alert_result.data:
                 alert_data = alert_result.data
 
                 # Handle both Alert objects and alert data dictionaries
                 alert_obj: Alert
                 if hasattr(alert_data, "severity"):
-                    # It's an Alert object
-                    alert_obj = alert_data  # type: ignore[assignment]
+                    # It's an Alert object - type cast for proper typing
+                    alert_obj = cast("Alert", alert_data)
                     severity = alert_obj.severity
                 else:
                     # It's alert data dictionary - create Alert object
@@ -214,12 +254,15 @@ class MetricsService:
 
                 # Create and publish alert event
                 try:
-                    AlertTriggered(
+                    # Make sure models are rebuilt before creating events
+                    _rebuild_models()
+
+                    alert_event = AlertTriggered(
                         alert=alert_obj,
                         metric=metric,
                         severity=severity,
                     )
-                    # Publish alert event would go here
+                    await self.event_bus.publish(alert_event)
                 except Exception as event_error:
                     # Only suppress Pydantic model rebuild errors, continue processing
                     if "not fully defined" in str(
@@ -241,7 +284,7 @@ class MetricsService:
         name: str | None = None,
         component_name: str | None = None,
         limit: int = 100,
-    ) -> ServiceResult[list[Metric]]:
+    ) -> ServiceResult[Any]:
         """Get metrics with optional filtering.
 
         Args:
@@ -262,9 +305,8 @@ class MetricsService:
 
             # Use list method since find_by_filters doesn't exist in base repository
             metrics_result = await self.metric_repository.list(limit=limit)
-            if not metrics_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to get metrics: {metrics_result.error}",
+            if not metrics_result.success:
+                return ServiceResult.fail(f"Failed to get metrics: {metrics_result.error}",
                 )
 
             # Apply filters manually since we don't have a proper filter system
@@ -315,7 +357,7 @@ class AlertService:
         source_type: str = "user",
         condition: str = "manual trigger",
         threshold: float | None = None,
-    ) -> ServiceResult[Alert]:
+    ) -> ServiceResult[Any]:
         """Create a new alert and publish alert event.
 
         Args:
@@ -350,7 +392,7 @@ class AlertService:
                 created_at=datetime.now(UTC),
             )
             alert_result = await self.alert_repository.save(alert_entity)
-            if not alert_result.is_success:
+            if not alert_result.success:
                 return ServiceResult.fail(f"Failed to save alert: {alert_result.error}")
 
             alert = alert_result.data
@@ -361,7 +403,7 @@ class AlertService:
             # Ensure models are rebuilt to handle forward references
             import contextlib
 
-            from flext_core.domain.types import MetricType
+            from flext_core import MetricType
 
             from flext_observability.domain.entities import Metric
 
@@ -377,12 +419,30 @@ class AlertService:
                 labels={},
                 timestamp=datetime.now(UTC),
             )
-            event = AlertTriggered(
-                alert=alert,
-                metric=dummy_metric,
-                severity=alert.severity,
-            )
-            await self.event_bus.publish(event)
+            # Publish alert triggered event - handle model rebuild issues gracefully
+            try:
+                # Make sure models are rebuilt before creating events
+                _rebuild_models()
+
+                event = AlertTriggered(
+                    alert=alert,
+                    metric=dummy_metric,
+                    severity=alert.severity,
+                )
+                await self.event_bus.publish(event)
+            except Exception as event_error:
+                # Only suppress Pydantic model rebuild errors, continue processing
+                error_msg = str(event_error)
+                if "not fully defined" in error_msg or "model_rebuild" in error_msg:
+                    # Skip model rebuild issues but continue processing
+                    import logging
+
+                    logging.getLogger(__name__).debug(
+                        "Skipped alert event publishing due to model rebuild issue: %s",
+                        event_error,
+                    )
+                else:
+                    raise  # Re-raise other unexpected exceptions
 
             return ServiceResult.ok(alert)
 
@@ -395,7 +455,7 @@ class AlertService:
         self,
         alert_id: str,
         user: str,
-    ) -> ServiceResult[Alert]:
+    ) -> ServiceResult[Any]:
         """Acknowledge an alert.
 
         Args:
@@ -410,8 +470,8 @@ class AlertService:
             from uuid import UUID
 
             alert_uuid = UUID(alert_id)
-            alert_result = await self.alert_repository.get_by_id(alert_uuid)
-            if not alert_result.is_success:
+            alert_result = await self.alert_repository.find_by_id(alert_uuid)
+            if not alert_result.success:
                 return ServiceResult.fail(f"Failed to get alert: {alert_result.error}")
 
             alert = alert_result.data
@@ -424,10 +484,8 @@ class AlertService:
 
             # Save the updated alert (using save since there's no update method)
             save_result = await self.alert_repository.save(alert)
-            if not save_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to save acknowledged alert: {save_result.error}",
-                )
+            if not save_result.success:
+                return ServiceResult.fail(f"Failed to save acknowledged alert: {save_result.error}")
 
             return ServiceResult.ok(alert)
 
@@ -440,7 +498,7 @@ class AlertService:
         self,
         alert_id: str,
         resolution_reason: str | None = None,
-    ) -> ServiceResult[Alert]:
+    ) -> ServiceResult[Any]:
         """Resolve an alert.
 
         Args:
@@ -455,8 +513,8 @@ class AlertService:
             from uuid import UUID
 
             alert_uuid = UUID(alert_id)
-            alert_result = await self.alert_repository.get_by_id(alert_uuid)
-            if not alert_result.is_success:
+            alert_result = await self.alert_repository.find_by_id(alert_uuid)
+            if not alert_result.success:
                 return ServiceResult.fail(f"Failed to get alert: {alert_result.error}")
 
             alert = alert_result.data
@@ -469,10 +527,8 @@ class AlertService:
 
             # Save the updated alert (using save since there's no update method)
             save_result = await self.alert_repository.save(alert)
-            if not save_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to save resolved alert: {save_result.error}",
-                )
+            if not save_result.success:
+                return ServiceResult.fail(f"Failed to save resolved alert: {save_result.error}")
 
             return ServiceResult.ok(alert)
 
@@ -512,7 +568,7 @@ class HealthService:
         component_namespace: str = "default",
         endpoint: str | None = None,
         timeout_seconds: int = 5,
-    ) -> ServiceResult[HealthCheck]:
+    ) -> ServiceResult[Any]:
         """Perform a health check and analyze results.
 
         Args:
@@ -548,40 +604,51 @@ class HealthService:
             health_check_entity.check_result = {"status": "ok"}
 
             health_check_result = await self.health_repository.save(health_check_entity)
-            if not health_check_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to save health check: {health_check_result.error}",
+            if not health_check_result.success:
+                return ServiceResult.fail(f"Failed to save health check: {health_check_result.error}",
                 )
 
             health_check = health_check_result.data
             if health_check is None:
-                return ServiceResult.fail(
-                    "Failed to save health check: No data returned",
+                return ServiceResult.fail("Failed to save health check: No data returned",
                 )
 
             # Update system health analysis
             analysis_result = self.health_analysis_service.update_component_health(
                 health_check,
             )
-            if not analysis_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to update component health: {analysis_result.error}",
+            if not analysis_result.success:
+                return ServiceResult.fail(f"Failed to update component health: {analysis_result.error}",
                 )
 
             # Publish health check completed event
+            # Ensure models are rebuilt to handle forward references
+
             from flext_observability.domain.value_objects import HealthStatus
 
-            event = HealthCheckCompleted(
-                health_check=health_check,
-                component=health_check.component,
-                status=(
-                    HealthStatus.HEALTHY
-                    if health_check.is_healthy
-                    else HealthStatus.UNHEALTHY
-                ),
-                duration_ms=int(health_check.response_time_ms or 50.0),
-            )
-            await self.event_bus.publish(event)
+            try:
+                # Make sure models are rebuilt before creating events
+                _rebuild_models()
+
+                event = HealthCheckCompleted(
+                    health_check=health_check,
+                    component=health_check.component,
+                    status=(
+                        HealthStatus.HEALTHY
+                        if health_check.is_healthy
+                        else HealthStatus.UNHEALTHY
+                    ),
+                    duration_ms=int(health_check.response_time_ms or 50.0),
+                )
+                await self.event_bus.publish(event)
+            except Exception as event_error:
+                # Only suppress Pydantic model rebuild errors, continue processing
+                if "not fully defined" in str(event_error) or "model_rebuild" in str(
+                    event_error,
+                ):
+                    pass  # Skip model rebuild issues but continue processing
+                else:
+                    raise  # Re-raise other unexpected exceptions
 
             return ServiceResult.ok(health_check)
 
@@ -590,7 +657,7 @@ class HealthService:
         except Exception as e:
             return ServiceResult.fail(f"Unexpected error performing health check: {e}")
 
-    async def get_system_health(self) -> ServiceResult[dict[str, Any]]:
+    async def get_system_health(self) -> ServiceResult[Any]:
         """Get system health overview.
 
         Returns:
@@ -640,7 +707,7 @@ class LoggingService:
         function: str | None = None,
         line_number: int | None = None,
         extra: dict[str, Any] | None = None,
-    ) -> ServiceResult[LogEntry]:
+    ) -> ServiceResult[Any]:
         """Create a structured log entry.
 
         Args:
@@ -677,9 +744,8 @@ class LoggingService:
             )
 
             log_entry_result = await self.log_repository.save(log_entry_entity)
-            if not log_entry_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to save log entry: {log_entry_result.error}",
+            if not log_entry_result.success:
+                return ServiceResult.fail(f"Failed to save log entry: {log_entry_result.error}",
                 )
 
             log_entry = log_entry_result.data
@@ -688,24 +754,41 @@ class LoggingService:
 
             # Analyze log entry
             analysis_result = self.log_analysis_service.analyze_log_entry(log_entry)
-            if not analysis_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to analyze log entry: {analysis_result.error}",
+            if not analysis_result.success:
+                return ServiceResult.fail(f"Failed to analyze log entry: {analysis_result.error}",
                 )
 
-            # Publish log entry created event
+            # Publish log entry created event - handle model rebuild issues gracefully
             # LogEntryCreated needs component - we need to add it to LogEntry
             component = ComponentName(
                 name=component_name,
                 namespace=component_namespace,
             )
-            event = LogEntryCreated(
-                log_entry=log_entry,
-                component=component,
-                level=log_entry.level,
-                message=log_entry.message,
-            )
-            await self.event_bus.publish(event)
+
+            try:
+                # Make sure models are rebuilt before creating events
+                _rebuild_models()
+
+                event = LogEntryCreated(
+                    log_entry=log_entry,
+                    component=component,
+                    level=log_entry.level,
+                    message=log_entry.message,
+                )
+                await self.event_bus.publish(event)
+            except Exception as event_error:
+                # Only suppress Pydantic model rebuild errors, continue processing
+                error_msg = str(event_error)
+                if "not fully defined" in error_msg or "model_rebuild" in error_msg:
+                    # Skip model rebuild issues but continue processing
+                    import logging
+
+                    logging.getLogger(__name__).debug(
+                        "Skipped log event publishing due to model rebuild issue: %s",
+                        event_error,
+                    )
+                else:
+                    raise  # Re-raise other unexpected exceptions
 
             return ServiceResult.ok(log_entry)
 
@@ -746,7 +829,7 @@ class TracingService:
         span_id: str | None = None,
         parent_span_id: str | None = None,
         tags: dict[str, str] | None = None,
-    ) -> ServiceResult[Trace]:
+    ) -> ServiceResult[Any]:
         """Start a new distributed trace.
 
         Args:
@@ -790,7 +873,7 @@ class TracingService:
 
             # Save the trace entity
             trace_result = await self.trace_repository.save(trace_entity)
-            if not trace_result.is_success:
+            if not trace_result.success:
                 return ServiceResult.fail(f"Failed to save trace: {trace_result.error}")
 
             trace = trace_result.data
@@ -799,21 +882,27 @@ class TracingService:
 
             # Publish trace started event
             # Ensure models are rebuilt to handle forward references
-            import contextlib
 
             from flext_observability.domain.events import TraceStarted
 
-            with contextlib.suppress(Exception):
-                Trace.model_rebuild()
-                ComponentName.model_rebuild()
-                TraceStarted.model_rebuild()
+            try:
+                # Make sure models are rebuilt before creating events
+                _rebuild_models()
 
-            event = TraceStarted(
-                trace=trace,
-                component=trace.component,
-                operation_name=trace.operation_name,
-            )
-            await self.event_bus.publish(event)
+                event = TraceStarted(
+                    trace=trace,
+                    component=trace.component,
+                    operation_name=trace.operation_name,
+                )
+                await self.event_bus.publish(event)
+            except Exception as event_error:
+                # Only suppress Pydantic model rebuild errors, continue processing
+                if "not fully defined" in str(event_error) or "model_rebuild" in str(
+                    event_error,
+                ):
+                    pass  # Skip model rebuild issues but continue processing
+                else:
+                    raise  # Re-raise other unexpected exceptions
 
             return ServiceResult.ok(trace)
 
@@ -828,7 +917,7 @@ class TracingService:
         *,
         success: bool = True,
         error: str | None = None,
-    ) -> ServiceResult[Trace]:
+    ) -> ServiceResult[Any]:
         """Finish a distributed trace.
 
         Args:
@@ -844,8 +933,8 @@ class TracingService:
             from uuid import UUID
 
             trace_uuid = UUID(trace_id)
-            trace_result = await self.trace_repository.get_by_id(trace_uuid)
-            if not trace_result.is_success:
+            trace_result = await self.trace_repository.find_by_id(trace_uuid)
+            if not trace_result.success:
                 return ServiceResult.fail(f"Failed to get trace: {trace_result.error}")
 
             trace = trace_result.data
@@ -859,36 +948,41 @@ class TracingService:
 
             # Save the updated trace (using save since there's no update method)
             save_result = await self.trace_repository.save(trace)
-            if not save_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to save updated trace: {save_result.error}",
+            if not save_result.success:
+                return ServiceResult.fail(f"Failed to save updated trace: {save_result.error}",
                 )
 
             # Analyze trace
             analysis_result = self.trace_analysis_service.analyze_trace(trace)
-            if not analysis_result.is_success:
-                return ServiceResult.fail(
-                    f"Failed to analyze trace: {analysis_result.error}",
+            if not analysis_result.success:
+                return ServiceResult.fail(f"Failed to analyze trace: {analysis_result.error}",
                 )
 
             # Publish trace completed event
             # Ensure models are rebuilt to handle forward references
-            import contextlib
 
             from flext_observability.domain.events import TraceCompleted
 
-            with contextlib.suppress(Exception):
-                ComponentName.model_rebuild()
-                TraceCompleted.model_rebuild()
+            try:
+                # Make sure models are rebuilt before creating events
+                _rebuild_models()
 
-            event = TraceCompleted(
-                trace=trace,
-                component=trace.component,
-                operation_name=trace.operation_name,
-                duration_ms=int(trace.duration_ms or 0),
-                success=success,
-            )
-            await self.event_bus.publish(event)
+                event = TraceCompleted(
+                    trace=trace,
+                    component=trace.component,
+                    operation_name=trace.operation_name,
+                    duration_ms=int(trace.duration_ms or 0),
+                    success=success,
+                )
+                await self.event_bus.publish(event)
+            except Exception as event_error:
+                # Only suppress Pydantic model rebuild errors, continue processing
+                if "not fully defined" in str(event_error) or "model_rebuild" in str(
+                    event_error,
+                ):
+                    pass  # Skip model rebuild issues but continue processing
+                else:
+                    raise  # Re-raise other unexpected exceptions
 
             return ServiceResult.ok(trace)
 
@@ -900,7 +994,7 @@ class TracingService:
     async def get_operation_stats(
         self,
         operation_name: str,
-    ) -> ServiceResult[dict[str, Any]]:
+    ) -> ServiceResult[Any]:
         """Get statistics for a specific operation.
 
         Args:
@@ -917,3 +1011,42 @@ class TracingService:
             return ServiceResult.fail(f"Failed to get operation stats: {e}")
         except Exception as e:
             return ServiceResult.fail(f"Unexpected error getting operation stats: {e}")
+
+
+# Warn when this module is imported directly
+warnings.warn(
+    "🚨 DEPRECATED COMPLEX PATH: Importing from 'flext_observability.application.services' is deprecated.\n"
+    "✅ SIMPLE SOLUTION: from flext_observability import MetricsService, TracingService, LoggingService\n"
+    "💡 ALL services are now available at root level for better productivity!\n"
+    "📖 Complex paths will be removed in version 0.8.0.\n"
+    "📚 Migration guide: https://docs.flext.dev/observability/simple-imports",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+
+def __getattr__(name: str) -> Any:
+    """Handle attribute access with deprecation warnings."""
+    service_classes = {
+        "MetricsService": MetricsService,
+        "AlertService": AlertService,
+        "HealthService": HealthService,
+        "LoggingService": LoggingService,
+        "TracingService": TracingService,
+    }
+
+    if name in service_classes:
+        warnings.warn(
+            f"🚨 DEPRECATED ACCESS: Using 'flext_observability.application.services.{name}' is deprecated.\n"
+            f"✅ SIMPLE SOLUTION: from flext_observability import {name}\n"
+            f"💡 Direct root-level imports are much simpler and more productive!\n"
+            f"📖 This access pattern will be removed in version 0.8.0.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return service_classes[name]
+
+    msg = f"module 'flext_observability.application.services' has no attribute '{name}'"
+    raise AttributeError(
+        msg,
+    )

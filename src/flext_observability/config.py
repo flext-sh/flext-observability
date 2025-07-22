@@ -7,9 +7,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from decimal import Decimal
-from pathlib import Path
 
-from flext_core.config.base import BaseConfig
+from flext_core import BaseConfig, EnvironmentLiteral, LogLevel
 from flext_core.config.unified_config import (
     BaseConfigMixin,
     LoggingConfigMixin,
@@ -17,7 +16,6 @@ from flext_core.config.unified_config import (
     PerformanceConfigMixin,
 )
 from flext_core.domain.constants import ConfigDefaults
-from flext_core.domain.types import Environment, LogLevel
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -405,7 +403,7 @@ def create_development_config() -> ObservabilitySettings:
     return ObservabilitySettings(
         project_name="flext-observability-dev",
         debug=True,
-        environment=Environment.DEVELOPMENT,
+        environment="development",
         metrics=MetricsConfig(
             collection_interval_seconds=10,
             retention_days=1,
@@ -415,7 +413,7 @@ def create_development_config() -> ObservabilitySettings:
         ),
         # Note: Logging settings now from LoggingConfigMixin
         log_level=LogLevel.DEBUG,  # From LoggingConfigMixin
-        log_file=Path("./logs/flext-observability-dev.log"),  # From LoggingConfigMixin
+        log_file="./logs/flext-observability-dev.log",  # From LoggingConfigMixin
         tracing=TracingConfig(
             sampling_rate=1.0,  # Sample all traces in development
         ),
@@ -432,7 +430,7 @@ def create_production_config() -> ObservabilitySettings:
     return ObservabilitySettings(
         project_name="flext-observability-prod",
         debug=False,
-        environment=Environment.PRODUCTION,
+        environment="production",
         metrics=MetricsConfig(
             collection_interval_seconds=60,
             retention_days=30,
@@ -443,7 +441,7 @@ def create_production_config() -> ObservabilitySettings:
         ),
         # Note: Logging settings now from LoggingConfigMixin
         log_level=LogLevel.INFO,  # From LoggingConfigMixin
-        log_file=Path("./logs/flext-observability-prod.log"),  # From LoggingConfigMixin
+        log_file="./logs/flext-observability-prod.log",  # From LoggingConfigMixin
         tracing=TracingConfig(
             sampling_rate=0.01,  # Sample 1% of traces in production
         ),
@@ -460,7 +458,7 @@ def create_testing_config() -> ObservabilitySettings:
     return ObservabilitySettings(
         project_name="flext-observability-test",
         debug=True,
-        environment=Environment.TEST,
+        environment="test",
         metrics=MetricsConfig(
             collection_interval_seconds=1,
             retention_days=1,

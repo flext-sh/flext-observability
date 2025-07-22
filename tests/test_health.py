@@ -7,7 +7,8 @@ from unittest.mock import patch
 
 import pytest
 
-from flext_observability.health import ComponentHealth, HealthChecker, HealthStatus
+# Use simplified imports for health testing
+from flext_observability import ComponentHealth, HealthChecker, HealthStatus
 
 
 class TestHealthChecker:
@@ -111,8 +112,8 @@ class TestHealthIntegration:
         # Should be able to JSON serialize the result
 
         try:
-            if hasattr(status, "dict"):
-                json.dumps(status.dict())
+            if hasattr(status, "model_dump"):
+                json.dumps(status.model_dump())
             else:
                 json.dumps(status)
         except (TypeError, AttributeError):
@@ -123,10 +124,21 @@ class TestHealthIntegration:
         # This would test actual health endpoint integration
         # For now, just verify the health checker can be imported and used
         from flext_observability import (
+            ComponentHealth,
             HealthChecker,
             HealthStatus,
         )
 
-        checker = HealthChecker()
-        assert checker is not None
+        # Test that ComponentHealth can be created with required parameters
+        component_health = ComponentHealth(
+            name="test-component",
+            status=HealthStatus.HEALTHY,
+            details={"test": "data"},
+        )
+        assert component_health is not None
+        assert component_health.name == "test-component"
         assert HealthStatus.HEALTHY is not None
+
+        # Test that HealthChecker can be created
+        health_checker = HealthChecker()
+        assert health_checker is not None

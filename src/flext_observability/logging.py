@@ -9,21 +9,21 @@ from __future__ import annotations
 import logging
 import sys
 from contextvars import ContextVar
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
-from flext_core import BaseConfig, LogLevel
+from flext_core import BaseSettings
 
 if TYPE_CHECKING:
     import types
 
 
-class LoggingConfig(BaseConfig):
+class LoggingConfig(BaseSettings):
     """Configuration for logging using flext-core patterns."""
 
     service_name: str = "flext-infrastructure.monitoring.flext-observability"
-    log_level: LogLevel = LogLevel.INFO
+    log_level: str = "INFO"
     json_logs: bool = True
-    environment: str = "development"
+    environment: Literal["development", "staging", "production", "test"] = "development"
     version: str = "0.7.0"
 
 

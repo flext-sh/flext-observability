@@ -10,7 +10,7 @@ import json
 import sys
 
 import typer
-from flext_core.domain.types import MetricType
+from flext_core import MetricType
 from rich.console import Console
 from rich.table import Table
 

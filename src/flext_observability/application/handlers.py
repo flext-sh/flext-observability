@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from flext_core.application.handlers import CommandHandler
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 
 if TYPE_CHECKING:
     from flext_observability.domain.ports import (
@@ -140,7 +140,7 @@ class LogHandler(CommandHandler[LogCommand, dict[str, Any]]):
         self.log_repository = log_repository
         self.log_service = log_service
 
-    async def handle(self, command: LogCommand) -> ServiceResult[dict[str, Any]]:
+    async def handle(self, command: LogCommand) -> ServiceResult[Any]:
         """Handle log command."""
         try:
             # Log the message
@@ -181,11 +181,10 @@ class MetricsHandler(CommandHandler[MetricsCommand, dict[str, Any]]):
         self.metrics_repository = metrics_repository
         self.metrics_service = metrics_service
 
-    async def handle(self, command: MetricsCommand) -> ServiceResult[dict[str, Any]]:
+    async def handle(self, command: MetricsCommand) -> ServiceResult[Any]:
         """Handle metrics command."""
         try:
-            return ServiceResult.ok(
-                {
+            return ServiceResult.ok({
                     "status": "metrics_recorded",
                     "metric_name": command.name,
                     "value": command.value,
@@ -207,11 +206,10 @@ class TracingHandler(CommandHandler[TracingCommand, dict[str, Any]]):
         self.tracing_repository = tracing_repository
         self.tracing_service = tracing_service
 
-    async def handle(self, command: TracingCommand) -> ServiceResult[dict[str, Any]]:
+    async def handle(self, command: TracingCommand) -> ServiceResult[Any]:
         """Handle tracing command."""
         try:
-            return ServiceResult.ok(
-                {
+            return ServiceResult.ok({
                     "status": "trace_recorded",
                     "operation": command.operation_name,
                     "trace_id": command.trace_id,
@@ -233,11 +231,10 @@ class AlertHandler(CommandHandler[AlertCommand, dict[str, Any]]):
         self.alert_repository = alert_repository
         self.alert_service = alert_service
 
-    async def handle(self, command: AlertCommand) -> ServiceResult[dict[str, Any]]:
+    async def handle(self, command: AlertCommand) -> ServiceResult[Any]:
         """Handle alert command."""
         try:
-            return ServiceResult.ok(
-                {
+            return ServiceResult.ok({
                     "status": "alert_created",
                     "title": command.title,
                     "severity": command.severity,
@@ -259,11 +256,10 @@ class HealthHandler(CommandHandler[HealthCommand, dict[str, Any]]):
         self.health_repository = health_repository
         self.health_service = health_service
 
-    async def handle(self, command: HealthCommand) -> ServiceResult[dict[str, Any]]:
+    async def handle(self, command: HealthCommand) -> ServiceResult[Any]:
         """Handle health check command."""
         try:
-            return ServiceResult.ok(
-                {
+            return ServiceResult.ok({
                     "status": "health_check_performed",
                     "component": command.component_name,
                 },
@@ -284,11 +280,13 @@ class DashboardHandler(CommandHandler[DashboardCommand, dict[str, Any]]):
         self.dashboard_repository = dashboard_repository
         self.dashboard_service = dashboard_service
 
-    async def handle(self, command: DashboardCommand) -> ServiceResult[dict[str, Any]]:
+    async def handle(self, command: DashboardCommand) -> ServiceResult[Any]:
         """Handle dashboard command."""
         try:
-            return ServiceResult.ok(
-                {"status": "dashboard_created", "name": command.dashboard_name},
+            return ServiceResult.ok({
+                    "status": "dashboard_created",
+                    "name": command.dashboard_name,
+                },
             )
         except Exception as e:
             return ServiceResult.fail(f"Failed to handle dashboard command: {e}")

@@ -14,8 +14,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Self
 
 import structlog
-from flext_core.config import get_container
-from flext_core.domain.types import LogLevel, MetricType
+from flext_core import LogLevel, MetricType, get_container
 
 from flext_observability.application import (
     AlertService,
@@ -105,8 +104,11 @@ class FlextObservability:
     async def start(self) -> None:
         """Start all observability services."""
         if not self._initialized:
+            from flext_core import DomainError
+
+            # Use FLEXT DomainError instead of generic RuntimeError
             msg = "Observability services not initialized"
-            raise RuntimeError(msg)
+            raise DomainError(msg)
 
         if self._running:
             return
@@ -634,7 +636,7 @@ def collect_metric(
                 tags=tags,
             ),
         )
-        return bool(result.is_success)
+        return bool(result.success)
     except Exception:
         return False
 
@@ -716,7 +718,7 @@ def log_message(
                 exception=exception,
             ),
         )
-        return bool(result.is_success)
+        return bool(result.success)
     except Exception:
         return False
 
@@ -749,7 +751,7 @@ def start_trace(
                 tags=tags,
             ),
         )
-        if result.is_success and result.data and hasattr(result.data, "trace_id"):
+        if result.success and result.data and hasattr(result.data, "trace_id"):
             return str(result.data.trace_id)
         return None
     except Exception:
@@ -782,7 +784,7 @@ def complete_trace(
                 error=error,
             ),
         )
-        return bool(result.is_success)
+        return bool(result.success)
     except Exception:
         return False
 
@@ -816,7 +818,7 @@ def check_health(
             ),
         )
         return (
-            bool(result.is_success)
+            bool(result.success)
             and result.data
             and getattr(result.data, "is_healthy", False)
         )
@@ -844,7 +846,7 @@ def get_system_overview() -> dict[str, Any]:
         try:
             health_service = _get_service(HealthService)
             health_result = asyncio.run(health_service.get_system_health())
-            if health_result.is_success and health_result.data:
+            if health_result.success and health_result.data:
                 overview["status"] = health_result.data["overall_status"].value
         except Exception as e:
             logger.warning("Failed to get health status: %s", e)

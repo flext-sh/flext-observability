@@ -11,8 +11,7 @@ import contextlib
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from flext_core.config.base import injectable
-from flext_core.domain.types import EntityStatus
+from flext_core import EntityStatus, injectable
 
 from flext_observability.domain.entities import HealthCheck
 from flext_observability.domain.ports import HealthService as HealthChecker
@@ -304,17 +303,18 @@ class HttpHealthChecker(HealthChecker):
         try:
             # In a real implementation, this would make an HTTP request
             # For now, we'll simulate a health check
-            import random
 
             # Simulate some delay - respect timeout_ms parameter
             max_delay = min(
                 timeout_ms / 1000.0,
                 0.1,
             )  # Convert ms to seconds, cap at 100ms
-            await asyncio.sleep(random.uniform(0.01, max_delay))  # noqa: S311
+            import secrets
+            # Use cryptographically secure random for simulation
+            await asyncio.sleep(0.01 + (secrets.randbelow(int(max_delay * 100)) / 100.0))
 
-            # Simulate success/failure
-            success = random.random() > 0.1  # 90% success rate  # noqa: S311
+            # Simulate success/failure using secure random
+            success = secrets.randbelow(10) > 0  # 90% success rate (1 in 10 chance of failure)
 
             if success:
                 health_status = HealthStatus.HEALTHY
@@ -327,10 +327,10 @@ class HttpHealthChecker(HealthChecker):
             status_mapping = {
                 HealthStatus.HEALTHY: EntityStatus.ACTIVE,
                 HealthStatus.DEGRADED: EntityStatus.ACTIVE,  # Still active but degraded
-                HealthStatus.UNHEALTHY: EntityStatus.ERROR,
+                HealthStatus.UNHEALTHY: EntityStatus.INACTIVE,
                 HealthStatus.UNKNOWN: EntityStatus.PENDING,
-                HealthStatus.FAILED: EntityStatus.ERROR,
-                HealthStatus.TIMEOUT: EntityStatus.ERROR,
+                HealthStatus.FAILED: EntityStatus.INACTIVE,
+                HealthStatus.TIMEOUT: EntityStatus.INACTIVE,
             }
             entity_status = status_mapping.get(health_status, EntityStatus.PENDING)
 
@@ -354,7 +354,7 @@ class HttpHealthChecker(HealthChecker):
 
             return HealthCheck(
                 name=component.name,
-                health_status=EntityStatus.ERROR,
+                health_status=EntityStatus.INACTIVE,
                 endpoint=endpoint,
                 response_time_ms=duration.milliseconds if duration else None,
                 error_message=str(e),
