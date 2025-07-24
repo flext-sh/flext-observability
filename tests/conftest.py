@@ -197,7 +197,7 @@ def span_context() -> Any:
 @pytest.fixture
 def structured_logger() -> Any:
     """Create a structured logger for testing."""
-    from flext_observability.logging import get_logger
+    from flext_observability import get_logger
 
     return get_logger("test-logger")
 

@@ -1,5 +1,4 @@
 """Comprehensive tests for simple_api.py to achieve high coverage."""
-
 from __future__ import annotations
 
 from typing import Any

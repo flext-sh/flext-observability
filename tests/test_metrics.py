@@ -1,5 +1,4 @@
 """Comprehensive tests for metrics collection functionality."""
-
 from __future__ import annotations
 
 import json

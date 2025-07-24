@@ -1,19 +1,13 @@
-"""Application layer for FLEXT-OBSERVABILITY.
+"""Application layer for observability - Use cases and application services.
 
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
+
+Application layer implementing use cases with dependency injection.
 """
 
 from __future__ import annotations
 
-from flext_observability.application.handlers import (
-    AlertHandler,
-    DashboardHandler,
-    HealthHandler,
-    LogHandler,
-    MetricsHandler,
-    TracingHandler,
-)
 from flext_observability.application.services import (
     AlertService,
     HealthService,
@@ -23,15 +17,9 @@ from flext_observability.application.services import (
 )
 
 __all__ = [
-    "AlertHandler",
     "AlertService",
-    "DashboardHandler",
-    "HealthHandler",
     "HealthService",
-    "LogHandler",
     "LoggingService",
-    "MetricsHandler",
     "MetricsService",
-    "TracingHandler",
     "TracingService",
 ]
