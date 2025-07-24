@@ -177,6 +177,8 @@ types-psutil = "^7.0.0"
 types-aiofiles = "^24.1.0"
 types-deprecated = "^1.2.15.20250304"
 py = "^1.11.0"
+detect-secrets = "^1.5.0"
+commitizen = "^4.8.3"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.4.0"

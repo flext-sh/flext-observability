@@ -1,18 +1,14 @@
-"""Domain layer for observability - pure business logic.
+"""Domain layer for observability - Clean Architecture domain.
 
 Copyright (c) 2025 Flext. All rights reserved.
 SPDX-License-Identifier: MIT
+
+Domain layer with entities and services using flext-core bases.
 """
 
 from __future__ import annotations
 
-from flext_core import (
-    AlertSeverity,
-    LogLevel,
-    MetricType,
-    TraceStatus,
-)
-
+# Domain entities using flext-core bases
 from flext_observability.domain.entities import (
     Alert,
     HealthCheck,
@@ -20,60 +16,23 @@ from flext_observability.domain.entities import (
     Metric,
     Trace,
 )
-from flext_observability.domain.events import (
-    AlertTriggered,
-    HealthCheckCompleted,
-    MetricCollected,
-    TraceCompleted,
-    TraceStarted,
-)
+
+# Domain services
 from flext_observability.domain.services import (
-    AlertingService,
-    HealthAnalysisService,
-    MetricsAnalysisService,
-)
-from flext_observability.domain.specifications import (
-    AlertThresholdSpec,
-    HealthyComponentSpec,
-    MetricValueRangeSpec,
-)
-from flext_observability.domain.value_objects import (
-    ComponentName,
-    Duration,
-    MetricValue,
-    ThresholdValue,
-    TraceId,
+    AlertDomainService,
+    HealthDomainService,
+    MetricsDomainService,
 )
 
 __all__ = [
     # Entities
     "Alert",
-    # Value Objects
-    "AlertSeverity",
-    # Specifications
-    "AlertThresholdSpec",
-    # Events
-    "AlertTriggered",
-    # Services
-    "AlertingService",
-    "ComponentName",
-    "Duration",
-    "HealthAnalysisService",
+    # Domain Services
+    "AlertDomainService",
     "HealthCheck",
-    "HealthCheckCompleted",
-    "HealthyComponentSpec",
+    "HealthDomainService",
     "LogEntry",
-    "LogLevel",
     "Metric",
-    "MetricCollected",
-    "MetricType",
-    "MetricValue",
-    "MetricValueRangeSpec",
-    "MetricsAnalysisService",
-    "ThresholdValue",
+    "MetricsDomainService",
     "Trace",
-    "TraceCompleted",
-    "TraceId",
-    "TraceStarted",
-    "TraceStatus",
 ]

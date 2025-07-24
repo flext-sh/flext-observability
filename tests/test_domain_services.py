@@ -1,5 +1,4 @@
 """Comprehensive tests for domain services - achieving high coverage."""
-
 from __future__ import annotations
 
 from typing import Any

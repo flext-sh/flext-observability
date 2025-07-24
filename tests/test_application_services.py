@@ -1,5 +1,4 @@
 """Comprehensive tests for application services - achieving high coverage."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -8,7 +7,7 @@ from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 import pytest
-from flext_core import AlertSeverity, LogLevel, MetricType, ServiceResult
+from flext_core import ServiceResult
 
 # Use new simplified imports from flext-observability root
 from flext_observability import (
@@ -24,6 +23,7 @@ from flext_observability import (
     Trace,
     TracingService,
 )
+from flext_observability.domain.types import AlertSeverity, LogLevel, MetricType
 
 
 class TestMetricsService:
