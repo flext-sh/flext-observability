@@ -11,58 +11,65 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core import BaseDomainService, ServiceResult
+from flext_core import FlextDomainService, FlextResult
 
 if TYPE_CHECKING:
     from flext_observability.domain.entities import (
-        Alert,
-        HealthCheck,
-        LogEntry,
-        Metric,
-        Trace,
+        FlextAlert,
+        FlextHealthCheck,
+        FlextMetric,
     )
 
 
-class MetricsDomainService(BaseDomainService):
+class FlextMetricsDomainService(FlextDomainService):
     """Domain service for metrics business logic - Single Responsibility."""
 
-    def validate_metric(self, metric: Metric) -> ServiceResult[bool]:
+    def validate_metric(self, metric: FlextMetric) -> FlextResult[bool]:
         """Validate metric according to business rules."""
         if not metric.name:
-            return ServiceResult.error("Metric name is required")
+            return FlextResult.fail("Metric name is required")
 
-        if metric.value < 0 and metric.unit in ["count", "percentage"]:
-            return ServiceResult.error("Count and percentage metrics cannot be negative")
+        if metric.value < 0 and metric.unit in {"count", "percentage"}:
+            return FlextResult.fail("Count and percentage metrics cannot be negative")
 
-        return ServiceResult.ok(True)
+        return FlextResult.ok(success=True)
 
 
-class AlertDomainService(BaseDomainService):
+class FlextAlertDomainService(FlextDomainService):
     """Domain service for alert business logic - Single Responsibility."""
 
-    def should_escalate(self, alert: Alert) -> ServiceResult[bool]:
+    def should_escalate(self, alert: FlextAlert) -> FlextResult[bool]:
         """Determine if alert should be escalated based on business rules."""
         if alert.severity == "critical":
-            return ServiceResult.ok(True)
+            return FlextResult.ok(success=True)
 
-        return ServiceResult.ok(False)
+        return FlextResult.ok(success=False)
 
 
-class HealthDomainService(BaseDomainService):
+class FlextHealthDomainService(FlextDomainService):
     """Domain service for health check business logic - Single Responsibility."""
 
-    def calculate_overall_health(self, health_checks: list[HealthCheck]) -> ServiceResult[str]:
+    def calculate_overall_health(
+        self,
+        health_checks: list[FlextHealthCheck],
+    ) -> FlextResult[str]:
         """Calculate overall system health from individual checks."""
         if not health_checks:
-            return ServiceResult.ok("unknown")
+            return FlextResult.ok("unknown")
 
         if any(hc.status == "failed" for hc in health_checks):
-            return ServiceResult.ok("unhealthy")
+            return FlextResult.ok("unhealthy")
 
         if any(hc.status == "degraded" for hc in health_checks):
-            return ServiceResult.ok("degraded")
+            return FlextResult.ok("degraded")
 
         if all(hc.status == "healthy" for hc in health_checks):
-            return ServiceResult.ok("healthy")
+            return FlextResult.ok("healthy")
 
-        return ServiceResult.ok("unknown")
+        return FlextResult.ok("unknown")
+
+
+# Backwards compatibility aliases
+MetricsDomainService = FlextMetricsDomainService
+AlertDomainService = FlextAlertDomainService
+HealthDomainService = FlextHealthDomainService

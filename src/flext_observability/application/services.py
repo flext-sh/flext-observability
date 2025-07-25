@@ -9,81 +9,145 @@ Following SOLID, KISS, DRY principles using flext-core DI container.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from flext_core import ServiceResult, get_container
+from flext_core import FlextContainer, FlextDomainService, FlextResult
 
 if TYPE_CHECKING:
     from flext_observability.domain.entities import (
-        Alert,
-        HealthCheck,
-        LogEntry,
-        Metric,
-        Trace,
+        FlextAlert,
+        FlextHealthCheck,
+        FlextLogEntry,
+        FlextMetric,
+        FlextTrace,
     )
 
 
-class MetricsService:
+class FlextMetricsService(FlextDomainService):
     """Application service for metrics - Single Responsibility with DI."""
 
-    def __init__(self) -> None:
-        """Initialize with DI container."""
-        self.container = get_container()
+    container: FlextContainer
 
-    def record_metric(self, metric: Metric) -> ServiceResult[Metric]:
+    def __init__(self, container: FlextContainer | None = None) -> None:
+        """Initialize with DI container."""
+        super().__init__(container=container or FlextContainer())
+
+    def execute(self, *args: object, **kwargs: object) -> FlextResult[Any]:  # noqa: ARG002
+        """Execute service operation (required by FlextDomainService).
+
+        This method is required by the abstract base class but services
+        provide specific methods for their operations.
+
+        Returns:
+            FlextResult indicating this method should not be used directly
+
+        """
+        return FlextResult.fail("Use specific service methods instead of execute")
+
+    def record_metric(self, metric: FlextMetric) -> FlextResult[FlextMetric]:
         """Record a metric - Use case."""
         # Domain validation through DI
-        domain_service = self.container.get("metrics_domain_service")
-        validation = domain_service.validate_metric(metric)
-
-        if not validation.is_success:
-            return ServiceResult.error(validation.error)
+        domain_service_result = self.container.get("metrics_domain_service")
+        if domain_service_result.is_success and domain_service_result.data:
+            validation = domain_service_result.data.validate_metric(metric)
+            if not validation.is_success:
+                return FlextResult.fail(validation.error)
 
         # Repository through DI
-        repository = self.container.get("metrics_repository")
-        return repository.save(metric)
+        repository_result = self.container.get("metrics_repository")
+        if repository_result.is_success and repository_result.data:
+            return repository_result.data.save(metric)
 
-    def get_metric(self, metric_id: str) -> ServiceResult[Metric]:
+        return FlextResult.fail("Metrics repository not configured")
+
+    def get_metric(self, metric_id: str) -> FlextResult[FlextMetric]:
         """Get metric by ID - Use case."""
-        repository = self.container.get("metrics_repository")
-        return repository.get_by_id(metric_id)
+        repository_result = self.container.get("metrics_repository")
+        if repository_result.is_success and repository_result.data:
+            return repository_result.data.get_by_id(metric_id)
+
+        return FlextResult.fail("Metrics repository not configured")
 
 
-class LoggingService:
+class FlextLoggingService(FlextDomainService):
     """Application service for logging - Single Responsibility with DI."""
 
-    def __init__(self) -> None:
+    container: FlextContainer
+
+    def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize with DI container."""
-        self.container = get_container()
+        super().__init__(container=container or FlextContainer())
 
-    def log_entry(self, entry: LogEntry) -> ServiceResult[LogEntry]:
+    def execute(self, *args: object, **kwargs: object) -> FlextResult[Any]:  # noqa: ARG002
+        """Execute service operation (required by FlextDomainService).
+
+        This method is required by the abstract base class but services
+        provide specific methods for their operations.
+
+        Returns:
+            FlextResult indicating this method should not be used directly
+
+        """
+        return FlextResult.fail("Use specific service methods instead of execute")
+
+    def log_entry(self, entry: FlextLogEntry) -> FlextResult[FlextLogEntry]:
         """Log an entry - Use case."""
-        repository = self.container.get("logging_repository")
-        return repository.save(entry)
+        repository_result = self.container.get("logging_repository")
+        if repository_result.is_success and repository_result.data:
+            return repository_result.data.save(entry)
 
-    def get_logs(self, level: str | None = None) -> ServiceResult[list[LogEntry]]:
+        return FlextResult.fail("Logging repository not configured")
+
+    def get_logs(self, level: str | None = None) -> FlextResult[list[FlextLogEntry]]:
         """Get logs by level - Use case."""
-        repository = self.container.get("logging_repository")
-        return repository.find_by_level(level)
+        repository_result = self.container.get("logging_repository")
+        if repository_result.is_success and repository_result.data:
+            return repository_result.data.find_by_level(level)
+
+        return FlextResult.fail("Logging repository not configured")
 
 
-class TracingService:
+class FlextTracingService(FlextDomainService):
     """Application service for tracing - Single Responsibility with DI."""
 
-    def __init__(self) -> None:
-        """Initialize with DI container."""
-        self.container = get_container()
+    container: FlextContainer
 
-    def start_trace(self, trace: Trace) -> ServiceResult[Trace]:
+    def __init__(self, container: FlextContainer | None = None) -> None:
+        """Initialize with DI container."""
+        super().__init__(container=container or FlextContainer())
+
+    def execute(self, *args: object, **kwargs: object) -> FlextResult[Any]:  # noqa: ARG002
+        """Execute service operation (required by FlextDomainService).
+
+        This method is required by the abstract base class but services
+        provide specific methods for their operations.
+
+        Returns:
+            FlextResult indicating this method should not be used directly
+
+        """
+        return FlextResult.fail("Use specific service methods instead of execute")
+
+    def start_trace(self, trace: FlextTrace) -> FlextResult[FlextTrace]:
         """Start a trace - Use case."""
         trace.status = "started"
-        repository = self.container.get("tracing_repository")
-        return repository.save(trace)
+        repository_result = self.container.get("tracing_repository")
+        if repository_result.is_success and repository_result.data:
+            return repository_result.data.save(trace)
 
-    def complete_trace(self, trace_id: str, duration_ms: int) -> ServiceResult[Trace]:
+        return FlextResult.fail("Tracing repository not configured")
+
+    def complete_trace(
+        self,
+        trace_id: str,
+        duration_ms: int,
+    ) -> FlextResult[FlextTrace]:
         """Complete a trace - Use case."""
-        repository = self.container.get("tracing_repository")
-        trace_result = repository.get_by_id(trace_id)
+        repository_result = self.container.get("tracing_repository")
+        if not repository_result.is_success or not repository_result.data:
+            return FlextResult.fail("Tracing repository not configured")
+
+        trace_result = repository_result.data.get_by_id(trace_id)
 
         if not trace_result.is_success:
             return trace_result
@@ -92,49 +156,97 @@ class TracingService:
         trace.duration_ms = duration_ms
         trace.status = "completed"
 
-        return repository.save(trace)
+        return repository_result.data.save(trace)
 
 
-class AlertService:
+class FlextAlertService(FlextDomainService):
     """Application service for alerts - Single Responsibility with DI."""
 
-    def __init__(self) -> None:
-        """Initialize with DI container."""
-        self.container = get_container()
+    container: FlextContainer
 
-    def create_alert(self, alert: Alert) -> ServiceResult[Alert]:
+    def __init__(self, container: FlextContainer | None = None) -> None:
+        """Initialize with DI container."""
+        super().__init__(container=container or FlextContainer())
+
+    def execute(self, *args: object, **kwargs: object) -> FlextResult[Any]:  # noqa: ARG002
+        """Execute service operation (required by FlextDomainService).
+
+        This method is required by the abstract base class but services
+        provide specific methods for their operations.
+
+        Returns:
+            FlextResult indicating this method should not be used directly
+
+        """
+        return FlextResult.fail("Use specific service methods instead of execute")
+
+    def create_alert(self, alert: FlextAlert) -> FlextResult[FlextAlert]:
         """Create an alert - Use case."""
         # Domain logic through DI
-        domain_service = self.container.get("alert_domain_service")
-        should_escalate = domain_service.should_escalate(alert)
+        domain_service_result = self.container.get("alert_domain_service")
+        if domain_service_result.is_success and domain_service_result.data:
+            should_escalate = domain_service_result.data.should_escalate(alert)
+            if should_escalate.is_success and should_escalate.data:
+                # Escalation logic here
+                pass
 
-        if should_escalate.is_success and should_escalate.data:
-            # Escalation logic here
-            pass
+        repository_result = self.container.get("alert_repository")
+        if repository_result.is_success and repository_result.data:
+            return repository_result.data.save(alert)
 
-        repository = self.container.get("alert_repository")
-        return repository.save(alert)
+        return FlextResult.fail("Alert repository not configured")
 
 
-class HealthService:
+class FlextHealthService(FlextDomainService):
     """Application service for health checks - Single Responsibility with DI."""
 
-    def __init__(self) -> None:
+    container: FlextContainer
+
+    def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize with DI container."""
-        self.container = get_container()
+        super().__init__(container=container or FlextContainer())
 
-    def check_health(self, component: str) -> ServiceResult[HealthCheck]:
+    def execute(self, *args: object, **kwargs: object) -> FlextResult[Any]:  # noqa: ARG002
+        """Execute service operation (required by FlextDomainService).
+
+        This method is required by the abstract base class but services
+        provide specific methods for their operations.
+
+        Returns:
+            FlextResult indicating this method should not be used directly
+
+        """
+        return FlextResult.fail("Use specific service methods instead of execute")
+
+    def check_health(self, component: str) -> FlextResult[FlextHealthCheck]:
         """Check component health - Use case."""
-        repository = self.container.get("health_repository")
-        return repository.get_by_component(component)
+        repository_result = self.container.get("health_repository")
+        if repository_result.is_success and repository_result.data:
+            return repository_result.data.get_by_component(component)
 
-    def get_overall_health(self) -> ServiceResult[str]:
+        return FlextResult.fail("Health repository not configured")
+
+    def get_overall_health(self) -> FlextResult[str]:
         """Get overall system health - Use case."""
-        repository = self.container.get("health_repository")
-        all_checks = repository.get_all()
+        repository_result = self.container.get("health_repository")
+        if not repository_result.is_success or not repository_result.data:
+            return FlextResult.fail("Health repository not configured")
+
+        all_checks = repository_result.data.get_all()
 
         if not all_checks.is_success:
-            return ServiceResult.error(all_checks.error)
+            return FlextResult.fail(all_checks.error)
 
-        domain_service = self.container.get("health_domain_service")
-        return domain_service.calculate_overall_health(all_checks.data)
+        domain_service_result = self.container.get("health_domain_service")
+        if domain_service_result.is_success and domain_service_result.data:
+            return domain_service_result.data.calculate_overall_health(all_checks.data)
+
+        return FlextResult.ok("unknown")
+
+
+# Backwards compatibility aliases
+MetricsService = FlextMetricsService
+LoggingService = FlextLoggingService
+TracingService = FlextTracingService
+AlertService = FlextAlertService
+HealthService = FlextHealthService

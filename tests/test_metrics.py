@@ -1,4 +1,5 @@
 """Comprehensive tests for metrics collection functionality."""
+
 from __future__ import annotations
 
 import json
@@ -9,11 +10,6 @@ from unittest.mock import patch
 
 import pytest
 
-from flext_observability.business_metrics import (
-    BusinessMetric,
-    BusinessMetricType,
-    EnterpriseBusinessMetrics,
-)
 from flext_observability.metrics import MetricsCollector
 
 
