@@ -1,25 +1,11 @@
 """Comprehensive tests for simple_api.py to achieve high coverage."""
+
 from __future__ import annotations
 
 from typing import Any
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from flext_core import DomainError
-
-from flext_observability.simple_api import (
-    FlextObservability,
-    collect_metrics,
-    create_alert,
-    get_health_status,
-    log_event,
-    monitor_function,
-    quick_setup,
-    setup_observability,
-    start_observability,
-    stop_observability,
-    trace_operation,
-)
 
 
 class TestFlextObservability:
@@ -123,7 +109,9 @@ class TestFlextObservability:
         mock_container.return_value = Mock()
 
         obs = FlextObservability()
-        obs.container.resolve.side_effect = Exception("Service initialization failed")  # Mock container exception
+        obs.container.resolve.side_effect = Exception(
+            "Service initialization failed",
+        )  # Mock container exception
 
         with pytest.raises(Exception, match="Service initialization failed"):
             await obs.initialize()
@@ -659,7 +647,9 @@ class TestEdgeCases:
         # Second initialization should not re-initialize
         container_call_count = obs.container.resolve.call_count  # Mock call count
         await obs.initialize()
-        assert obs.container.resolve.call_count == container_call_count  # Assert mock call count
+        assert (
+            obs.container.resolve.call_count == container_call_count
+        )  # Assert mock call count
 
     @patch("flext_observability.simple_api.get_settings")
     @patch("flext_observability.simple_api.get_container")
@@ -693,7 +683,10 @@ class TestEdgeCases:
     ) -> None:
         """Test monitor_function decorator with None observability."""
 
-        @monitor_function(observability=None, _metric_name="test_function")  # Monitor with params
+        @monitor_function(
+            observability=None,
+            _metric_name="test_function",
+        )  # Monitor with params
         async def test_func() -> str:
             return "result"
 
@@ -758,7 +751,9 @@ class TestEdgeCases:
         mock_container.return_value = Mock()
 
         obs = FlextObservability()
-        obs.initialize = AsyncMock(side_effect=Exception("Init failed"))  # Mock init failure
+        obs.initialize = AsyncMock(
+            side_effect=Exception("Init failed"),
+        )  # Mock init failure
         obs.stop = AsyncMock()  # Mock stop method
 
         with pytest.raises(Exception, match="Init failed"):

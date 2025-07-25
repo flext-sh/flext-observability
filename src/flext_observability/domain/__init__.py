@@ -10,7 +10,13 @@ from __future__ import annotations
 
 # Domain entities using flext-core bases
 from flext_observability.domain.entities import (
+    # Backwards compatibility
     Alert,
+    FlextAlert,
+    FlextHealthCheck,
+    FlextLogEntry,
+    FlextMetric,
+    FlextTrace,
     HealthCheck,
     LogEntry,
     Metric,
@@ -19,16 +25,30 @@ from flext_observability.domain.entities import (
 
 # Domain services
 from flext_observability.domain.services import (
+    # Backwards compatibility
     AlertDomainService,
+    FlextAlertDomainService,
+    FlextHealthDomainService,
+    FlextMetricsDomainService,
     HealthDomainService,
     MetricsDomainService,
 )
 
 __all__ = [
-    # Entities
+    # Backwards compatibility entities
     "Alert",
-    # Domain Services
+    # Backwards compatibility services
     "AlertDomainService",
+    # Modern entities
+    "FlextAlert",
+    # Modern domain services
+    "FlextAlertDomainService",
+    "FlextHealthCheck",
+    "FlextHealthDomainService",
+    "FlextLogEntry",
+    "FlextMetric",
+    "FlextMetricsDomainService",
+    "FlextTrace",
     "HealthCheck",
     "HealthDomainService",
     "LogEntry",
