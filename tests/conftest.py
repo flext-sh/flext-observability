@@ -3,19 +3,6 @@
 Modern test configuration for observability with metrics, tracing, and logging.
 """
 
-from prometheus_client import CollectorRegistry
-from flext_observability.metrics import MetricsCollector
-from prometheus_client import Counter
-from prometheus_client import Histogram
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import (
-from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
-from opentelemetry import trace
-from flext_observability import get_logger  # type: ignore[attr-defined]
-from flext_observability.health import HealthChecker
-
-
 from __future__ import annotations
 
 import asyncio
@@ -25,13 +12,21 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 import pytest_asyncio
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+from prometheus_client import CollectorRegistry, Counter, Histogram
+
+from flext_observability import get_logger
+from flext_observability.health import HealthChecker
+from flext_observability.metrics import MetricsCollector
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
     from _pytest.config import Config
     from _pytest.nodes import Item
-    from prometheus_client import CollectorRegistry
 
 
 # Add project root to path for imports
@@ -113,7 +108,6 @@ def event_loop_policy() -> asyncio.AbstractEventLoopPolicy:
 def metrics_registry() -> CollectorRegistry:
     """Create a Prometheus metrics registry for testing."""
 
-
     return CollectorRegistry()
 
 
@@ -121,14 +115,12 @@ def metrics_registry() -> CollectorRegistry:
 def metrics_collector(metrics_registry: CollectorRegistry) -> object:
     """Create a metrics collector for testing."""
 
-
     return MetricsCollector()
 
 
 @pytest.fixture
 def counter_metric(metrics_registry: CollectorRegistry) -> object:
     """Create a counter metric for testing."""
-
 
     return Counter(
         "test_counter",
@@ -141,7 +133,6 @@ def counter_metric(metrics_registry: CollectorRegistry) -> object:
 @pytest.fixture
 def histogram_metric(metrics_registry: CollectorRegistry) -> object:
     """Create a histogram metric for testing."""
-
 
     return Histogram(
         "test_histogram",
@@ -160,15 +151,6 @@ def histogram_metric(metrics_registry: CollectorRegistry) -> object:
 @pytest_asyncio.fixture
 async def tracer_provider() -> AsyncIterator[Any]:  # type: ignore[explicit-any,misc]
     """Create a tracer provider for testing."""
-
-
-
-        SimpleSpanProcessor,
-    )
-
-        InMemorySpanExporter,
-    )
-
     # Create in-memory exporter for testing
     exporter = InMemorySpanExporter()
     provider = TracerProvider()
@@ -194,7 +176,6 @@ def tracer(tracer_provider: object) -> object:
 def span_context() -> object:
     """Create a span context for testing."""
 
-
     return trace.SpanContext(
         trace_id=0x123456789ABCDEF0123456789ABCDEF0,
         span_id=0x123456789ABCDEF0,
@@ -210,7 +191,6 @@ def span_context() -> object:
 @pytest.fixture
 def structured_logger() -> object:
     """Create a structured logger for testing."""
-
 
     return get_logger("test-logger")  # type: ignore[attr-defined]
 
@@ -234,7 +214,6 @@ def log_context() -> dict[str, Any]:
 @pytest_asyncio.fixture
 async def health_checker() -> AsyncIterator[Any]:
     """Create a health checker for testing."""
-
 
     checker = HealthChecker()
     yield checker

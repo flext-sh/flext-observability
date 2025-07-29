@@ -71,7 +71,7 @@ class TestTrue100Coverage:
         # Mock import to raise ImportError for psutil specifically
         original_import = __import__
 
-        def mock_import(name: str, *args, **kwargs):  # type: ignore[no-untyped-def]
+        def mock_import(name: str, *args: object, **kwargs: object) -> object:
             if name == "psutil":
                 msg = "No module named 'psutil'"
                 raise ImportError(msg)
@@ -120,7 +120,7 @@ class TestTrue100Coverage:
         if "flext_observability.flext_metrics" in sys.modules:
             del sys.modules["flext_observability.flext_metrics"]
 
-        def force_psutil_error(name: str, *args, **kwargs):  # type: ignore[no-untyped-def]
+        def force_psutil_error(name: str, *args: object, **kwargs: object) -> object:
             if name == "psutil":
                 msg = "Forced psutil error for coverage"
                 raise ImportError(msg)

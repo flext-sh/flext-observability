@@ -20,11 +20,11 @@ from flext_observability import (
     reset_global_factory,
 )
 from flext_observability.entities import (
-    FlextAlert,
-    FlextHealthCheck,
     FlextLogEntry,
     FlextMetric,
-    FlextTrace,
+    flext_alert,
+    flext_health_check,
+    flext_trace,
 )
 from flext_observability.factory import (
     FlextObservabilityMasterFactory,
@@ -66,11 +66,11 @@ from flext_observability.repos import (
     TracingRepository,
 )
 from flext_observability.services import (
-    FlextAlertService,
     FlextHealthService,
     FlextLoggingService,
     FlextMetricsService,
     FlextTracingService,
+    flext_alertService,
 )
 from flext_observability.validation import (
     ObservabilityValidators,
@@ -79,6 +79,12 @@ from flext_observability.validation import (
 
 EXPECTED_BULK_SIZE = 2
 EXPECTED_DATA_COUNT = 3
+
+# Constants for semantic boolean values
+PSUTIL_AVAILABLE = True
+PSUTIL_NOT_AVAILABLE = False
+BOOLEAN_TRUE_VALUE = True
+BOOLEAN_FALSE_VALUE = False
 
 # Fix Pydantic model definition issue
 FlextMetric.model_rebuild()
@@ -105,7 +111,7 @@ class TestFlextMetricsCollectorComplete:
         """Testar coleta de métricas sem psutil."""
         collector = FlextMetricsCollector()
 
-        with patch("flext_observability.flext_metrics.HAS_PSUTIL", False):
+        with patch("flext_observability.flext_metrics.HAS_PSUTIL", PSUTIL_NOT_AVAILABLE):
             result = collector.flext_collect_system_observability_metrics()
 
             assert result.is_success
@@ -125,7 +131,7 @@ class TestFlextMetricsCollectorComplete:
         collector = FlextMetricsCollector()
 
         with (
-            patch("flext_observability.flext_metrics.HAS_PSUTIL", True),
+            patch("flext_observability.flext_metrics.HAS_PSUTIL", PSUTIL_AVAILABLE),
             patch("flext_observability.flext_metrics.psutil") as mock_psutil,
         ):
             mock_psutil.cpu_percent.return_value = 45.5
@@ -642,11 +648,11 @@ class TestValidationComplete:
 
     def test_observability_validators_is_valid_boolean_true(self) -> None:
         """Testar validação de boolean válido."""
-        if not (ObservabilityValidators.is_valid_boolean(True)):
+        if not (ObservabilityValidators.is_valid_boolean(BOOLEAN_TRUE_VALUE)):
             raise AssertionError(
-                f"Expected True, got {ObservabilityValidators.is_valid_boolean(True)}"
+                f"Expected True, got {ObservabilityValidators.is_valid_boolean(BOOLEAN_TRUE_VALUE)}"
             )
-        assert ObservabilityValidators.is_valid_boolean(False) is True
+        assert ObservabilityValidators.is_valid_boolean(BOOLEAN_FALSE_VALUE) is True
 
     def test_observability_validators_is_valid_boolean_false(self) -> None:
         """Testar validação de boolean inválido."""
@@ -1193,7 +1199,7 @@ class TestServicesComplete:
     def test_tracing_service_start_trace(self) -> None:
         """Testar início de trace."""
         service = FlextTracingService()
-        trace = FlextTrace(id="1", trace_id="t1", operation="op", span_id="s1")
+        trace = flext_trace(id="1", trace_id="t1", operation="op", span_id="s1")
 
         result = service.start_trace(trace)
 
@@ -1202,13 +1208,13 @@ class TestServicesComplete:
 
     def test_alert_service_init(self) -> None:
         """Testar inicialização do serviço de alertas."""
-        service = FlextAlertService()
+        service = flext_alertService()
         assert service.container is not None
 
     def test_alert_service_create_alert(self) -> None:
         """Testar criação de alerta."""
-        service = FlextAlertService()
-        alert = FlextAlert(id="1", title="test", message="test")
+        service = flext_alertService()
+        alert = flext_alert(id="1", title="test", message="test")
 
         result = service.create_alert(alert)
 
@@ -1223,7 +1229,7 @@ class TestServicesComplete:
     def test_health_service_check_health(self) -> None:
         """Testar verificação de saúde."""
         service = FlextHealthService()
-        health = FlextHealthCheck(id="1", component="test")
+        health = flext_health_check(id="1", component="test")
 
         result = service.check_health(health)
 
@@ -1305,7 +1311,7 @@ class TestEntitiesValidation:
 
     def test_flext_trace_validate_domain_rules_success(self) -> None:
         """Testar validação de trace com sucesso."""
-        trace = FlextTrace(id="1", trace_id="t1", operation="op", span_id="s1")
+        trace = flext_trace(id="1", trace_id="t1", operation="op", span_id="s1")
 
         result = trace.validate_domain_rules()
 
@@ -1313,7 +1319,7 @@ class TestEntitiesValidation:
 
     def test_flext_trace_validate_domain_rules_invalid_trace_id(self) -> None:
         """Testar validação com trace_id inválido."""
-        trace = FlextTrace(id="1", trace_id="", operation="op", span_id="s1")
+        trace = flext_trace(id="1", trace_id="", operation="op", span_id="s1")
 
         result = trace.validate_domain_rules()
 
@@ -1321,7 +1327,7 @@ class TestEntitiesValidation:
 
     def test_flext_trace_validate_domain_rules_invalid_operation(self) -> None:
         """Testar validação com operação inválida."""
-        trace = FlextTrace(id="1", trace_id="t1", operation="", span_id="s1")
+        trace = flext_trace(id="1", trace_id="t1", operation="", span_id="s1")
 
         result = trace.validate_domain_rules()
 
@@ -1329,7 +1335,7 @@ class TestEntitiesValidation:
 
     def test_flext_alert_validate_domain_rules_success(self) -> None:
         """Testar validação de alerta com sucesso."""
-        alert = FlextAlert(id="1", title="Test", message="Test")
+        alert = flext_alert(id="1", title="Test", message="Test")
 
         result = alert.validate_domain_rules()
 
@@ -1337,7 +1343,7 @@ class TestEntitiesValidation:
 
     def test_flext_alert_validate_domain_rules_invalid_title(self) -> None:
         """Testar validação com título inválido."""
-        alert = FlextAlert(id="1", title="", message="Test")
+        alert = flext_alert(id="1", title="", message="Test")
 
         result = alert.validate_domain_rules()
 
@@ -1345,7 +1351,7 @@ class TestEntitiesValidation:
 
     def test_flext_alert_validate_domain_rules_invalid_message(self) -> None:
         """Testar validação com mensagem inválida."""
-        alert = FlextAlert(id="1", title="Test", message="")
+        alert = flext_alert(id="1", title="Test", message="")
 
         result = alert.validate_domain_rules()
 
@@ -1353,7 +1359,7 @@ class TestEntitiesValidation:
 
     def test_flext_alert_validate_domain_rules_invalid_severity(self) -> None:
         """Testar validação com severidade inválida."""
-        alert = FlextAlert(id="1", title="Test", message="Test", severity="invalid")
+        alert = flext_alert(id="1", title="Test", message="Test", severity="invalid")
 
         result = alert.validate_domain_rules()
 
@@ -1361,7 +1367,7 @@ class TestEntitiesValidation:
 
     def test_flext_health_check_validate_domain_rules_success(self) -> None:
         """Testar validação de health check com sucesso."""
-        health = FlextHealthCheck(id="1", component="database")
+        health = flext_health_check(id="1", component="database")
 
         result = health.validate_domain_rules()
 
@@ -1369,7 +1375,7 @@ class TestEntitiesValidation:
 
     def test_flext_health_check_validate_domain_rules_invalid_component(self) -> None:
         """Testar validação com componente inválido."""
-        health = FlextHealthCheck(id="1", component="")
+        health = flext_health_check(id="1", component="")
 
         result = health.validate_domain_rules()
 
@@ -1377,7 +1383,7 @@ class TestEntitiesValidation:
 
     def test_flext_health_check_validate_domain_rules_invalid_status(self) -> None:
         """Testar validação com status inválido."""
-        health = FlextHealthCheck(id="1", component="test", status="invalid")
+        health = flext_health_check(id="1", component="test", status="invalid")
 
         result = health.validate_domain_rules()
 
@@ -1482,9 +1488,9 @@ class TestInitModule:
         assert hasattr(flext_observability, "FlextObservabilityMasterFactory")
         assert hasattr(flext_observability, "FlextMetric")
         assert hasattr(flext_observability, "FlextLogEntry")
-        assert hasattr(flext_observability, "FlextTrace")
-        assert hasattr(flext_observability, "FlextAlert")
-        assert hasattr(flext_observability, "FlextHealthCheck")
+        assert hasattr(flext_observability, "flext_trace")
+        assert hasattr(flext_observability, "flext_alert")
+        assert hasattr(flext_observability, "flext_health_check")
 
     def test_version_info(self) -> None:
         """Testar informações de versão."""
@@ -1840,7 +1846,7 @@ class TestFactoryErrorHandling:
 
         # Simular exceção na criação
         with patch(
-            "flext_observability.factory.FlextTrace",
+            "flext_observability.factory.flext_trace",
             side_effect=AttributeError("Trace creation failed"),
         ):
             result = factory.trace("trace-123", "operation")
@@ -1858,7 +1864,7 @@ class TestFactoryErrorHandling:
 
         # Simular exceção na criação (usando tipos capturados)
         with patch(
-            "flext_observability.factory.FlextAlert",
+            "flext_observability.factory.flext_alert",
             side_effect=ValueError("Alert creation failed"),
         ):
             result = factory.alert("title", "message")
@@ -1876,7 +1882,7 @@ class TestFactoryErrorHandling:
 
         # Simular exceção na criação (usando tipos capturados)
         with patch(
-            "flext_observability.factory.FlextHealthCheck",
+            "flext_observability.factory.flext_health_check",
             side_effect=AttributeError("Health check creation failed"),
         ):
             result = factory.health_check("component")
@@ -2028,7 +2034,7 @@ class TestServicesErrorHandling:
         with patch.object(
             service.logger, "info", side_effect=TypeError("Trace logging error")
         ):
-            trace = FlextTrace(id="1", trace_id="t1", operation="op", span_id="s1")
+            trace = flext_trace(id="1", trace_id="t1", operation="op", span_id="s1")
             result = service.start_trace(trace)
 
             assert result.is_failure
@@ -2040,13 +2046,13 @@ class TestServicesErrorHandling:
     def test_alert_service_create_alert_exception(self) -> None:
         """Testar exceção na criação de alerta (linhas 119-126)."""
 
-        service = FlextAlertService()
+        service = flext_alertService()
 
         # Mock para simular erro no logging
         with patch.object(
             service.logger, "warning", side_effect=ValueError("Alert logging error")
         ):
-            alert = FlextAlert(id="1", title="test", message="test")
+            alert = flext_alert(id="1", title="test", message="test")
             result = service.create_alert(alert)
 
             assert result.is_failure
@@ -2064,7 +2070,7 @@ class TestServicesErrorHandling:
         with patch.object(
             service.logger, "info", side_effect=AttributeError("Health logging error")
         ):
-            health = FlextHealthCheck(id="1", component="test")
+            health = flext_health_check(id="1", component="test")
             result = service.check_health(health)
 
             assert result.is_failure
@@ -2111,7 +2117,7 @@ class TestServicesErrorHandling:
         assert hasattr(flext_observability.services, "FlextMetricsService")
         assert hasattr(flext_observability.services, "FlextLoggingService")
         assert hasattr(flext_observability.services, "FlextTracingService")
-        assert hasattr(flext_observability.services, "FlextAlertService")
+        assert hasattr(flext_observability.services, "flext_alertService")
         assert hasattr(flext_observability.services, "FlextHealthService")
 
     def test_metrics_service_with_error_in_f_string(self) -> None:
@@ -2198,7 +2204,7 @@ class TestCompleteLineCoverage:
 
         # Linhas 93-94: erro na criação do trace
         with patch(
-            "flext_observability.flext_simple.FlextTrace",
+            "flext_observability.flext_simple.flext_trace",
             side_effect=AttributeError("Trace error"),
         ):
             result = flext_create_trace("trace-123", "operation")
@@ -2210,7 +2216,7 @@ class TestCompleteLineCoverage:
 
         # Linhas 115-116: erro na criação do alert
         with patch(
-            "flext_observability.flext_simple.FlextAlert",
+            "flext_observability.flext_simple.flext_alert",
             side_effect=ValueError("Alert error"),
         ):
             result = flext_create_alert("title", "message")
@@ -2222,7 +2228,7 @@ class TestCompleteLineCoverage:
 
         # Linhas 135-136: erro na criação do health check
         with patch(
-            "flext_observability.flext_simple.FlextHealthCheck",
+            "flext_observability.flext_simple.flext_health_check",
             side_effect=TypeError("Health error"),
         ):
             result = flext_create_health_check("component")
@@ -2539,7 +2545,7 @@ class TestFinal24Lines:
                 result = repo.save(metric)
                 # Se chegou aqui, o save funcionou mesmo com mock
                 assert result.is_success or result.is_failure
-            except:
+            except Exception:
                 # Qualquer erro é ok, estamos forçando cobertura
                 pass
 
@@ -2583,7 +2589,7 @@ class TestFinal24Lines:
 
         # Linhas 19-20: HAS_PSUTIL import path
         # Forçar path quando psutil NÃO está disponível
-        with patch("flext_observability.flext_metrics.HAS_PSUTIL", False):
+        with patch("flext_observability.flext_metrics.HAS_PSUTIL", PSUTIL_NOT_AVAILABLE):
             # Isso deve exercitar o path sem psutil
             result = collector.flext_collect_system_observability_metrics()
             assert result.is_success
@@ -2599,7 +2605,7 @@ class TestFinal24Lines:
 
         original_dict = builtins.dict
 
-        def failing_dict(*args, **kwargs):
+        def failing_dict(*args: object, **kwargs: object) -> dict[object, object]:
             if len(args) > 0 and "observability_events_processed" in str(args):
                 msg = "Dictionary creation failed"
                 raise ValueError(msg)
@@ -2610,7 +2616,7 @@ class TestFinal24Lines:
                 result = collector.flext_collect_observability_application_metrics()
                 # Se funcionou mesmo com o patch, ok
                 assert result.is_success or result.is_failure
-            except:
+            except Exception:
                 # Erro é ok, estamos forçando cobertura
                 pass
 
@@ -2627,11 +2633,11 @@ class TestCompleteModuleCoverage:
         """Testar todas as entidades com validação completa."""
 
         from flext_observability.entities import (
-            FlextAlert,
-            FlextHealthCheck,
             FlextLogEntry,
             FlextMetric,
-            FlextTrace,
+            flext_alert,
+            flext_health_check,
+            flext_trace,
         )
 
         # FlextMetric com Decimal
@@ -2664,8 +2670,8 @@ class TestCompleteModuleCoverage:
         if "user_id" not in log_entry.context:
             raise AssertionError(f"Expected {'user_id'} in {log_entry.context}")
 
-        # FlextTrace com atributos de span
-        trace = FlextTrace(
+        # flext_trace com atributos de span
+        trace = flext_trace(
             id="trace-complex",
             trace_id="abcd1234efgh5678ijkl",
             operation="database_query",
@@ -2685,8 +2691,8 @@ class TestCompleteModuleCoverage:
                 f"Expected True, got {trace.span_attributes['cache_hit']}"
             )
 
-        # FlextAlert com severidade crítica
-        alert = FlextAlert(
+        # flext_alert com severidade crítica
+        alert = flext_alert(
             id="alert-critical",
             title="Database Connection Failed",
             message="Unable to connect to primary database after 3 retries",
@@ -2702,8 +2708,8 @@ class TestCompleteModuleCoverage:
         if alert.severity != "critical":
             raise AssertionError(f"Expected {'critical'}, got {alert.severity}")
 
-        # FlextHealthCheck com métricas detalhadas
-        health = FlextHealthCheck(
+        # flext_health_check com métricas detalhadas
+        health = flext_health_check(
             id="health-detailed",
             component="web_server",
             status="degraded",
@@ -2902,9 +2908,9 @@ class TestCompleteModuleCoverage:
 
         # Verificar todas as exportações principais
         expected_exports = [
-            "FlextAlert",
-            "FlextAlertService",
-            "FlextHealthCheck",
+            "flext_alert",
+            "flext_alertService",
+            "flext_health_check",
             "FlextHealthService",
             "FlextLogEntry",
             "FlextLoggingService",
@@ -2913,7 +2919,7 @@ class TestCompleteModuleCoverage:
             "FlextObservabilityMasterFactory",
             "FlextObservabilityMonitor",
             "FlextObservabilityPlatformV2",
-            "FlextTrace",
+            "flext_trace",
             "FlextTracingService",
             "flext_create_alert",
             "flext_create_health_check",
@@ -2935,30 +2941,30 @@ class TestCompleteModuleCoverage:
                 raise AssertionError(f"Missing from __all__: {export_name}")
 
         # Testar importação direta dos principais tipos
-        FlextMetric = flext_observability.FlextMetric
-        FlextLogEntry = flext_observability.FlextLogEntry
-        FlextTrace = flext_observability.FlextTrace
-        FlextAlert = flext_observability.FlextAlert
-        FlextHealthCheck = flext_observability.FlextHealthCheck
+        flext_metric = flext_observability.FlextMetric
+        flext_log_entry = flext_observability.FlextLogEntry
+        flext_trace = flext_observability.flext_trace
+        flext_alert = flext_observability.flext_alert
+        flext_health_check = flext_observability.flext_health_check
 
         # Verificar que são as classes corretas
-        metric = FlextMetric(id="test", name="test_metric", value=1.0)
+        metric = flext_metric(id="test", name="test_metric", value=1.0)
         if metric.name != "test_metric":
             raise AssertionError(f"Expected {'test_metric'}, got {metric.name}")
 
-        log_entry = FlextLogEntry(id="test", message="test message")
+        log_entry = flext_log_entry(id="test", message="test message")
         if log_entry.message != "test message":
             raise AssertionError(f"Expected {'test message'}, got {log_entry.message}")
 
-        trace = FlextTrace(id="test", trace_id="t1", operation="test_op", span_id="s1")
+        trace = flext_trace(id="test", trace_id="t1", operation="test_op", span_id="s1")
         if trace.trace_id != "t1":
             raise AssertionError(f"Expected {'t1'}, got {trace.trace_id}")
 
-        alert = FlextAlert(id="test", title="Test Alert", message="Test message")
+        alert = flext_alert(id="test", title="Test Alert", message="Test message")
         if alert.title != "Test Alert":
             raise AssertionError(f"Expected {'Test Alert'}, got {alert.title}")
 
-        health = FlextHealthCheck(id="test", component="test_component")
+        health = flext_health_check(id="test", component="test_component")
         if health.component != "test_component":
             raise AssertionError(f"Expected {'test_component'}, got {health.component}")
 

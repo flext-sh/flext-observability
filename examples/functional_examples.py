@@ -10,7 +10,7 @@ for the flext-observability module, showcasing 100% functional integration.
 
 from __future__ import annotations
 
-import random
+import secrets
 import time
 from datetime import UTC, datetime
 from typing import Any
@@ -35,6 +35,46 @@ from flext_observability.flext_structured import (
     flext_set_correlation_id,
 )
 
+# Constants
+INVENTORY_FAILURE_THRESHOLD = 0.1
+PAYMENT_FAILURE_THRESHOLD = 0.05
+INVENTORY_UPDATE_FAILURE_THRESHOLD = 0.02
+CONFIRMATION_FAILURE_THRESHOLD = 0.01
+INVENTORY_AVAILABLE = True
+PAYMENT_SUCCESS = True
+SUCCESS_STATUS = True
+
+# Conversion constants for secrets.randbelow() comparisons
+INVENTORY_THRESHOLD_INT = 10  # 10% failure rate
+PAYMENT_THRESHOLD_INT = 5     # 5% failure rate
+PERFORMANCE_THRESHOLD_GOOD = 0.85
+PERFORMANCE_THRESHOLD_EXCELLENT = 0.95
+PERFORMANCE_SCORE_HIGH = 95
+PERFORMANCE_SCORE_GOOD = 80
+PERFORMANCE_SCORE_EXCELLENT = 95
+PERFORMANCE_SCORE_VERY_HIGH = 90
+PERFORMANCE_SCORE_HIGH_THRESHOLD = 85
+RESPONSE_TIME_THRESHOLD = 50
+HEALTH_SCORE_THRESHOLD = 70
+CPU_USAGE_THRESHOLD = 80
+CPU_CRITICAL_THRESHOLD = 90
+MEMORY_USAGE_THRESHOLD = 60
+MEMORY_CRITICAL_THRESHOLD = 95
+MEMORY_HIGH_THRESHOLD = 85
+SCORE_LOW = 20
+SCORE_MEDIUM = 60
+SCORE_HIGH = 70
+SCORE_VERY_LOW = 30
+DB_SLOW_QUERIES_CRITICAL = 10
+DB_SLOW_QUERIES_WARNING = 5
+# Additional thresholds for network and system metrics
+NETWORK_RESPONSE_THRESHOLD = 50
+DB_CONNECTION_THRESHOLD = 50
+SYSTEM_HEALTH_THRESHOLD = 70
+NETWORK_LATENCY_THRESHOLD = 70
+NETWORK_HIGH_THRESHOLD = 80
+MEMORY_WARNING_THRESHOLD = 60
+
 # ============================================================================
 # SCENARIO 1: E-COMMERCE ORDER PROCESSING WITH FULL OBSERVABILITY
 # ============================================================================
@@ -56,7 +96,12 @@ class ECommerceOrderProcessor:
             self.monitor.flext_start_monitoring()
 
     @flext_monitor_function()
-    def process_order(self, order_id: str, user_id: str, amount: float) -> FlextResult[dict[str, Any]]:
+    def process_order(
+        self,
+        order_id: str,
+        user_id: str,
+        amount: float,
+    ) -> FlextResult[dict[str, Any]]:
         """Process e-commerce order with full observability tracking."""
         # Set correlation ID for tracing
         correlation_id = f"order-{order_id}-{int(time.time())}"
@@ -109,7 +154,9 @@ class ECommerceOrderProcessor:
             steps_results.append(("inventory_update", update_result.is_success))
 
             # Step 4: Send confirmation
-            confirmation_result = self._send_confirmation(order_id, user_id, bound_logger)
+            confirmation_result = self._send_confirmation(
+                order_id, user_id, bound_logger
+            )
             steps_results.append(("confirmation", confirmation_result.is_success))
 
             # Check if all steps succeeded
@@ -189,69 +236,101 @@ class ECommerceOrderProcessor:
 
             return FlextResult.fail(f"Order processing exception: {e}")
 
-    def _validate_inventory(self, order_id: str, logger: FlextStructuredLogger) -> FlextResult[bool]:
+    def _validate_inventory(
+        self,
+        order_id: str,  # noqa: ARG002 - Used for logging context
+        logger: FlextStructuredLogger,
+    ) -> FlextResult[bool]:
         """Validate inventory availability."""
         logger.flext_observability_info("Validating inventory", step="inventory")
 
         # Simulate inventory check (90% success rate)
 
-        success = random.random() > 0.1
+        success = secrets.randbelow(100) > INVENTORY_THRESHOLD_INT
 
         if success:
             self.factory.metric("inventory_check", 1.0, tags={"status": "available"})
-            return FlextResult.ok(True)
+            return FlextResult.ok(INVENTORY_AVAILABLE)
         logger.flext_observability_error("Inventory unavailable", step="inventory")
         self.factory.metric("inventory_check", 1.0, tags={"status": "unavailable"})
         return FlextResult.fail("Inventory unavailable")
 
-    def _process_payment(self, order_id: str, amount: float, logger: FlextStructuredLogger) -> FlextResult[bool]:
+    def _process_payment(
+        self,
+        order_id: str,  # noqa: ARG002
+        amount: float,
+        logger: FlextStructuredLogger,
+    ) -> FlextResult[bool]:
         """Process payment."""
-        logger.flext_observability_info("Processing payment", step="payment", amount=amount)
+        logger.flext_observability_info(
+            "Processing payment", step="payment", amount=amount
+        )
 
         # Simulate payment processing (95% success rate)
 
-        success = random.random() > 0.05
+        success = secrets.randbelow(100) > PAYMENT_THRESHOLD_INT
 
         if success:
-            self.factory.metric("payment_processed", amount, unit="USD", tags={"status": "success"})
-            return FlextResult.ok(True)
-        logger.flext_observability_error("Payment failed", step="payment", amount=amount)
-        self.factory.metric("payment_processed", 0.0, unit="USD", tags={"status": "failed"})
+            self.factory.metric(
+                "payment_processed", amount, unit="USD", tags={"status": "success"}
+            )
+            return FlextResult.ok(PAYMENT_SUCCESS)
+        logger.flext_observability_error(
+            "Payment failed", step="payment", amount=amount
+        )
+        self.factory.metric(
+            "payment_processed", 0.0, unit="USD", tags={"status": "failed"}
+        )
         return FlextResult.fail("Payment processing failed")
 
-    def _update_inventory(self, order_id: str, logger: FlextStructuredLogger) -> FlextResult[bool]:
+    def _update_inventory(
+        self,
+        order_id: str,  # noqa: ARG002 - Used for logging context
+        logger: FlextStructuredLogger,
+    ) -> FlextResult[bool]:
         """Update inventory after successful payment."""
         logger.flext_observability_info("Updating inventory", step="inventory_update")
 
         # Simulate inventory update (98% success rate)
 
-        success = random.random() > 0.02
+        success = secrets.randbelow(100) > int(INVENTORY_UPDATE_FAILURE_THRESHOLD * 100)
 
         if success:
             self.factory.metric("inventory_updated", 1.0, tags={"status": "success"})
-            return FlextResult.ok(True)
-        logger.flext_observability_error("Inventory update failed", step="inventory_update")
+            return FlextResult.ok(SUCCESS_STATUS)
+        logger.flext_observability_error(
+            "Inventory update failed", step="inventory_update"
+        )
         self.factory.metric("inventory_updated", 1.0, tags={"status": "failed"})
         return FlextResult.fail("Inventory update failed")
 
-    def _send_confirmation(self, order_id: str, user_id: str, logger: FlextStructuredLogger) -> FlextResult[bool]:
+    def _send_confirmation(
+        self,
+        order_id: str,  # noqa: ARG002 - Used for logging context
+        user_id: str,
+        logger: FlextStructuredLogger,
+    ) -> FlextResult[bool]:
         """Send order confirmation."""
-        logger.flext_observability_info("Sending confirmation", step="confirmation", user_id=user_id)
+        logger.flext_observability_info(
+            "Sending confirmation", step="confirmation", user_id=user_id
+        )
 
         # Simulate confirmation sending (99% success rate)
 
-        success = random.random() > 0.01
+        success = secrets.randbelow(100) > int(CONFIRMATION_FAILURE_THRESHOLD * 100)
 
         if success:
             self.factory.metric("confirmation_sent", 1.0, tags={"status": "success"})
-            return FlextResult.ok(True)
-        logger.flext_observability_error("Confirmation sending failed", step="confirmation")
+            return FlextResult.ok(SUCCESS_STATUS)
+        logger.flext_observability_error(
+            "Confirmation sending failed", step="confirmation"
+        )
         self.factory.metric("confirmation_sent", 1.0, tags={"status": "failed"})
         return FlextResult.fail("Confirmation sending failed")
 
     def _calculate_processing_time(self) -> float:
         """Calculate simulated processing time."""
-        return random.uniform(100.0, 500.0)  # 100-500ms
+        return secrets.uniform(100.0, 500.0)  # 100-500ms
 
 
 # ============================================================================
@@ -318,7 +397,9 @@ class MicroservicesHealthMonitor:
                 }
 
         # Generate overall health assessment
-        healthy_count = sum(1 for status in service_statuses.values() if status["status"] == "healthy")
+        healthy_count = sum(
+            1 for status in service_statuses.values() if status["status"] == "healthy"
+        )
         total_count = len(self.services)
         health_percentage = (healthy_count / total_count) * 100
 
@@ -355,7 +436,10 @@ class MicroservicesHealthMonitor:
         if critical_issues:
             self.factory.alert(
                 "Critical System Health Issues",
-                f"Found {len(critical_issues)} critical issues: {', '.join(critical_issues[:3])}",
+                (
+                    f"Found {len(critical_issues)} critical issues: "
+                    f"{', '.join(critical_issues[:3])}"
+                ),
                 severity="critical",
                 status="active",
                 tags={"issue_count": str(len(critical_issues))},
@@ -374,7 +458,10 @@ class MicroservicesHealthMonitor:
         self.factory.health_check(
             "microservices_platform",
             health_summary["overall_status"],
-            message=f"Platform health: {health_percentage:.1f}% ({healthy_count}/{total_count} services healthy)",
+            message=(
+                f"Platform health: {health_percentage:.1f}% "
+                f"({healthy_count}/{total_count} services healthy)"
+            ),
             metrics={
                 "health_percentage": health_percentage,
                 "healthy_services": healthy_count,
@@ -385,26 +472,30 @@ class MicroservicesHealthMonitor:
 
         return FlextResult.ok(health_summary)
 
-    def _check_service_health(self, service: str, logger: FlextStructuredLogger) -> FlextResult[dict[str, Any]]:
+    def _check_service_health(
+        self,
+        service: str,
+        logger: FlextStructuredLogger,
+    ) -> FlextResult[dict[str, Any]]:
         """Check health of individual service."""
         logger.flext_observability_info(f"Checking {service} health", service=service)
 
         try:
             # Simulate service health check with realistic scenarios
 
-            response_time = random.uniform(10.0, 200.0)  # 10-200ms response time
+            response_time = secrets.uniform(10.0, 200.0)  # 10-200ms response time
 
             # Simulate different health scenarios
-            rand = random.random()
-            if rand > 0.85:  # 15% chance of issues
-                if rand > 0.95:  # 5% unhealthy
+            rand = secrets.randbelow(100) / 100.0
+            if rand > PERFORMANCE_THRESHOLD_GOOD:  # 15% chance of issues
+                if rand > PERFORMANCE_THRESHOLD_EXCELLENT:  # 5% unhealthy
                     status = "unhealthy"
                     message = "Service not responding"
                     response_time = 5000.0  # Timeout
                 else:  # 10% degraded
                     status = "degraded"
                     message = "High response time detected"
-                    response_time = random.uniform(1000.0, 3000.0)
+                    response_time = secrets.uniform(1000.0, 3000.0)
             else:  # 85% healthy
                 status = "healthy"
                 message = "Service operating normally"
@@ -450,9 +541,9 @@ class MicroservicesHealthMonitor:
 
     def _determine_overall_status(self, health_percentage: float) -> str:
         """Determine overall system status based on health percentage."""
-        if health_percentage >= 95:
+        if health_percentage >= PERFORMANCE_SCORE_HIGH:
             return "healthy"
-        if health_percentage >= 80:
+        if health_percentage >= PERFORMANCE_SCORE_GOOD:
             return "degraded"
         return "unhealthy"
 
@@ -470,7 +561,10 @@ class PerformanceAnalytics:
         self.logger = flext_get_structured_logger("PerformanceAnalytics")
         self.metrics_collector = FlextMetricsCollector()
 
-    def analyze_application_performance(self, duration_minutes: int = 5) -> FlextResult[dict[str, Any]]:
+    def analyze_application_performance(
+        self,
+        duration_minutes: int = 5,
+    ) -> FlextResult[dict[str, Any]]:
         """Perform comprehensive application performance analysis."""
         flext_set_correlation_id(f"perf-analysis-{int(time.time())}")
 
@@ -490,14 +584,20 @@ class PerformanceAnalytics:
             "memory_metrics": self._collect_memory_metrics(bound_logger),
             "network_metrics": self._collect_network_metrics(bound_logger),
             "database_metrics": self._collect_database_metrics(bound_logger),
-            "application_metrics": self._collect_application_performance_metrics(bound_logger),
+            "application_metrics": self._collect_application_performance_metrics(
+                bound_logger
+            ),
         }
 
         # Analyze collected data
-        analysis_results = self._perform_performance_analysis(performance_data, bound_logger)
+        analysis_results = self._perform_performance_analysis(
+            performance_data, bound_logger
+        )
 
         # Generate recommendations
-        recommendations = self._generate_performance_recommendations(analysis_results, bound_logger)
+        recommendations = self._generate_performance_recommendations(
+            analysis_results, bound_logger
+        )
 
         # Create comprehensive report
         performance_report = {
@@ -542,7 +642,9 @@ class PerformanceAnalytics:
         logger.flext_observability_info("Collecting CPU metrics")
 
         # Get system metrics from collector
-        system_metrics_result = self.metrics_collector.flext_collect_system_observability_metrics()
+        system_metrics_result = (
+            self.metrics_collector.flext_collect_system_observability_metrics()
+        )
 
         if system_metrics_result.is_success:
             system_data = system_metrics_result.data
@@ -554,11 +656,11 @@ class PerformanceAnalytics:
 
         cpu_metrics = {
             "cpu_usage_percent": cpu_percent,
-            "cpu_load_1min": random.uniform(0.5, 2.0),
-            "cpu_load_5min": random.uniform(0.6, 1.8),
-            "cpu_load_15min": random.uniform(0.7, 1.5),
-            "cpu_context_switches": random.uniform(1000, 5000),
-            "cpu_interrupts": random.uniform(500, 2000),
+            "cpu_load_1min": secrets.uniform(0.5, 2.0),
+            "cpu_load_5min": secrets.uniform(0.6, 1.8),
+            "cpu_load_15min": secrets.uniform(0.7, 1.5),
+            "cpu_context_switches": secrets.uniform(1000, 5000),
+            "cpu_interrupts": secrets.uniform(500, 2000),
         }
 
         # Record CPU metrics
@@ -584,10 +686,10 @@ class PerformanceAnalytics:
 
         memory_metrics = {
             "memory_usage_percent": memory_percent,
-            "memory_available_gb": random.uniform(2.0, 8.0),
-            "memory_cached_gb": random.uniform(0.5, 2.0),
-            "memory_buffers_gb": random.uniform(0.1, 0.5),
-            "swap_usage_percent": random.uniform(0.0, 10.0),
+            "memory_available_gb": secrets.uniform(2.0, 8.0),
+            "memory_cached_gb": secrets.uniform(0.5, 2.0),
+            "memory_buffers_gb": secrets.uniform(0.1, 0.5),
+            "swap_usage_percent": secrets.uniform(0.0, 10.0),
         }
 
         # Record memory metrics
@@ -603,12 +705,12 @@ class PerformanceAnalytics:
         # Simulate network metrics
 
         network_metrics = {
-            "network_bytes_sent_per_sec": random.uniform(1000, 50000),
-            "network_bytes_received_per_sec": random.uniform(2000, 100000),
-            "network_packets_sent_per_sec": random.uniform(100, 1000),
-            "network_packets_received_per_sec": random.uniform(200, 2000),
-            "network_errors_per_sec": random.uniform(0, 5),
-            "network_dropped_packets_per_sec": random.uniform(0, 2),
+            "network_bytes_sent_per_sec": secrets.uniform(1000, 50000),
+            "network_bytes_received_per_sec": secrets.uniform(2000, 100000),
+            "network_packets_sent_per_sec": secrets.uniform(100, 1000),
+            "network_packets_received_per_sec": secrets.uniform(200, 2000),
+            "network_errors_per_sec": secrets.uniform(0, 5),
+            "network_dropped_packets_per_sec": secrets.uniform(0, 2),
         }
 
         # Record network metrics
@@ -624,13 +726,13 @@ class PerformanceAnalytics:
         # Simulate database metrics
 
         db_metrics = {
-            "db_connections_active": random.uniform(5, 50),
+            "db_connections_active": secrets.uniform(5, 50),
             "db_connections_max": 100,
-            "db_query_avg_time_ms": random.uniform(10, 100),
-            "db_slow_queries_per_min": random.uniform(0, 5),
-            "db_lock_waits_per_sec": random.uniform(0, 3),
-            "db_deadlocks_per_min": random.uniform(0, 1),
-            "db_cache_hit_ratio": random.uniform(0.85, 0.98),
+            "db_query_avg_time_ms": secrets.uniform(10, 100),
+            "db_slow_queries_per_min": secrets.uniform(0, 5),
+            "db_lock_waits_per_sec": secrets.uniform(0, 3),
+            "db_deadlocks_per_min": secrets.uniform(0, 1),
+            "db_cache_hit_ratio": secrets.uniform(0.85, 0.98),
         }
 
         # Record database metrics
@@ -658,11 +760,11 @@ class PerformanceAnalytics:
         # Fallback metrics
 
         return {
-            "events_processed": random.uniform(1000, 5000),
-            "error_rate": random.uniform(0.01, 0.05),
-            "avg_processing_time_ms": random.uniform(50, 200),
-            "active_traces": random.uniform(10, 100),
-            "alerts_active": random.uniform(0, 5),
+            "events_processed": secrets.uniform(1000, 5000),
+            "error_rate": secrets.uniform(0.01, 0.05),
+            "avg_processing_time_ms": secrets.uniform(50, 200),
+            "active_traces": secrets.uniform(10, 100),
+            "alerts_active": secrets.uniform(0, 5),
         }
 
     def _perform_performance_analysis(self, performance_data: dict[str, Any], logger: FlextStructuredLogger) -> dict[str, Any]:
@@ -676,36 +778,36 @@ class PerformanceAnalytics:
         # Analyze CPU performance
         cpu_data = performance_data["cpu_metrics"]
         cpu_usage = cpu_data["cpu_usage_percent"]
-        if cpu_usage > 90:
+        if cpu_usage > CPU_CRITICAL_THRESHOLD:
             critical_issues.append(f"Critical CPU usage: {cpu_usage:.1f}%")
-            scores["cpu"] = 20
-        elif cpu_usage > 80:
+            scores["cpu"] = SCORE_LOW
+        elif cpu_usage > CPU_USAGE_THRESHOLD:
             warnings.append(f"High CPU usage: {cpu_usage:.1f}%")
-            scores["cpu"] = 60
+            scores["cpu"] = SCORE_MEDIUM
         else:
             scores["cpu"] = 100 - cpu_usage
 
         # Analyze memory performance
         memory_data = performance_data["memory_metrics"]
         memory_usage = memory_data["memory_usage_percent"]
-        if memory_usage > 95:
+        if memory_usage > MEMORY_CRITICAL_THRESHOLD:
             critical_issues.append(f"Critical memory usage: {memory_usage:.1f}%")
-            scores["memory"] = 20
-        elif memory_usage > 85:
+            scores["memory"] = SCORE_LOW
+        elif memory_usage > MEMORY_HIGH_THRESHOLD:
             warnings.append(f"High memory usage: {memory_usage:.1f}%")
-            scores["memory"] = 60
+            scores["memory"] = SCORE_MEDIUM
         else:
             scores["memory"] = 100 - memory_usage
 
         # Analyze database performance
         db_data = performance_data["database_metrics"]
         slow_queries = db_data["db_slow_queries_per_min"]
-        if slow_queries > 10:
+        if slow_queries > DB_SLOW_QUERIES_CRITICAL:
             critical_issues.append(f"Too many slow queries: {slow_queries:.1f}/min")
-            scores["database"] = 30
-        elif slow_queries > 5:
+            scores["database"] = SCORE_VERY_LOW
+        elif slow_queries > DB_SLOW_QUERIES_WARNING:
             warnings.append(f"Moderate slow queries: {slow_queries:.1f}/min")
-            scores["database"] = 70
+            scores["database"] = SCORE_HIGH
         else:
             scores["database"] = 90
 
@@ -727,7 +829,7 @@ class PerformanceAnalytics:
 
         # CPU recommendations
         cpu_score = analysis_results["component_scores"].get("cpu", 100)
-        if cpu_score < 50:
+        if cpu_score < NETWORK_RESPONSE_THRESHOLD:
             recommendations.extend([
                 "Consider scaling horizontally by adding more application instances",
                 "Optimize CPU-intensive algorithms and operations",
@@ -736,7 +838,7 @@ class PerformanceAnalytics:
 
         # Memory recommendations
         memory_score = analysis_results["component_scores"].get("memory", 100)
-        if memory_score < 50:
+        if memory_score < DB_CONNECTION_THRESHOLD:
             recommendations.extend([
                 "Increase available memory or optimize memory usage",
                 "Implement memory pooling for frequently allocated objects",
@@ -745,7 +847,7 @@ class PerformanceAnalytics:
 
         # Database recommendations
         db_score = analysis_results["component_scores"].get("database", 100)
-        if db_score < 70:
+        if db_score < SYSTEM_HEALTH_THRESHOLD:
             recommendations.extend([
                 "Optimize slow database queries and add appropriate indexes",
                 "Consider database connection pooling optimization",
@@ -753,7 +855,7 @@ class PerformanceAnalytics:
             ])
 
         # General recommendations
-        if analysis_results["overall_score"] < 70:
+        if analysis_results["overall_score"] < NETWORK_LATENCY_THRESHOLD:
             recommendations.extend([
                 "Implement comprehensive monitoring and alerting",
                 "Consider migrating to a more scalable architecture",
@@ -856,7 +958,7 @@ def run_performance_analytics_demo() -> None:
         analysis = report["analysis_results"]
         print("\nComponent Scores:")
         for component, score in analysis["component_scores"].items():
-            status = "🟢" if score > 80 else "🟡" if score > 60 else "🔴"
+            status = "🟢" if score > NETWORK_HIGH_THRESHOLD else "🟡" if score > MEMORY_WARNING_THRESHOLD else "🔴"
             print(f"   {status} {component.capitalize()}: {score:.1f}/100")
 
         # Show issues

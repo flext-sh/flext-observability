@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+
 def assert_success_with_data[T](result: FlextResult[T]) -> T:
     """Assert result is successful and return non-None data."""
     assert result.is_success
@@ -108,8 +109,8 @@ class TestSimpleApiCreation:
         if data.title != "System Alert":
             raise AssertionError(f"Expected {"System Alert"}, got {data.title}")
         assert data.message == "High CPU usage detected"
-        if data.severity != "low"  # default:
-            raise AssertionError(f"Expected {"low"  # default}, got {data.severity}")
+        if data.severity != "low":  # default
+            raise AssertionError(f"Expected {"low"}, got {data.severity}")
 
     def test_create_alert_high_severity(self) -> None:
         """Test alert creation with high severity."""
@@ -157,7 +158,7 @@ class TestSimpleApiErrorHandling:
         """Test metric creation with invalid value."""
         # This tests error handling
         try:
-            result = flext_create_metric("test", "invalid")  # type: ignore
+            result = flext_create_metric("test", "invalid")  # type: ignore[arg-type]
             # Function should handle this gracefully
             assert result.is_success or result.is_failure
         except (RuntimeError, ValueError, TypeError):

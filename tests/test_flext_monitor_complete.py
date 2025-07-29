@@ -7,15 +7,16 @@ import pytest
 from flext_core import FlextContainer, FlextResult
 
 from flext_observability.flext_monitor import (
-# Constants
-EXPECTED_BULK_SIZE = 2
-EXPECTED_DATA_COUNT = 3
-
     FlextObservabilityMonitor,
     flext_monitor_function,
 )
 
+# Constants
+EXPECTED_BULK_SIZE = 2
+EXPECTED_DATA_COUNT = 3
+
 T = TypeVar("T")
+
 
 def assert_failure_with_error[T](result: FlextResult[T]) -> str:
     """Assert result is failure and return non-None error."""
