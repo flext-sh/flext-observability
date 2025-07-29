@@ -1,24 +1,20 @@
 """TESTE CIRÚRGICO para as 13 linhas exatas restantes - 100% REAL."""
 
-from flext_observability.factory import FlextObservabilityMasterFactory
-import flext_observability.flext_structured
-from flext_observability.flext_structured import (
-from flext_observability.flext_structured import flext_set_correlation_id
-from flext_observability.flext_structured import (
-from flext_observability.factory import FlextObservabilityMasterFactory
-from flext_observability.flext_structured import (
-from flext_observability.flext_structured import flext_set_correlation_id
-from flext_observability.flext_structured import FlextStructuredLogger
 import importlib
-from flext_observability.factory import FlextObservabilityMasterFactory
-from flext_observability.flext_structured import (
-
-
 import sys
 import typing
 from unittest.mock import patch
 
 import pytest
+
+import flext_observability.flext_structured
+from flext_observability.factory import FlextObservabilityMasterFactory
+from flext_observability.flext_structured import (
+    FlextStructuredLogger,
+    _flext_observability_context,
+    flext_get_correlation_id,
+    flext_set_correlation_id,
+)
 
 
 class TestSurgicalCoverage:
@@ -26,7 +22,6 @@ class TestSurgicalCoverage:
 
     def test_factory_lines_71_72_exception_handler(self) -> None:
         """Cobrir linhas 71-72 em factory.py - handler de exceção geral."""
-
 
         # Approach cirúrgico: causar erro específico que cai no except geral
         with patch("flext_observability.factory.FlextMetricsService", side_effect=RuntimeError("Service error")):
@@ -51,7 +46,6 @@ class TestSurgicalCoverage:
 
             # Reimport força a linha 46: from typing import Union
 
-
             # Verificar funcionalidade
             logger = flext_observability.flext_structured.flext_get_structured_logger("test")
             assert logger is not None
@@ -61,11 +55,6 @@ class TestSurgicalCoverage:
 
     def test_flext_structured_line_65_none_context_return(self) -> None:
         """Cobrir linha 65 - return '' quando contexto é None."""
-
-            _flext_observability_context,
-            flext_get_correlation_id,
-        )
-
         # Salvar estado original
         original_context = _flext_observability_context.get({})
 
@@ -87,9 +76,8 @@ class TestSurgicalCoverage:
     def test_flext_structured_lines_89_90_set_correlation_exception(self) -> None:
         """Cobrir linhas 89-90 - except e return fail no set_correlation_id."""
 
-
         # Approach mais cirúrgico - patch interno que força especificamente as linhas 89-90
-        def failing_context_set(value) -> typing.Never:
+        def failing_context_set(value: object) -> typing.Never:
             msg = "Context set failed"
             raise ValueError(msg)
 
@@ -106,10 +94,6 @@ class TestSurgicalCoverage:
 
     def test_flext_structured_lines_100_101_get_correlation_exception(self) -> None:
         """Cobrir linhas 100-101 - except e return fail no flext_get_correlation_id."""
-
-            flext_get_correlation_id,
-        )
-
         # Approach cirúrgico - patch que força erro específico nas linhas 100-101
         with patch("flext_observability.flext_structured._flext_observability_context") as mock_ctx:
             # Fazer get() falhar com um dos tipos de exceção esperados
@@ -126,7 +110,6 @@ class TestSurgicalCoverage:
         """Ataque abrangente das 13 linhas restantes."""
         # 1. factory.py linhas 71-72
 
-
         # Normal creation first
         factory_normal = FlextObservabilityMasterFactory()
         assert factory_normal.container is not None
@@ -135,11 +118,6 @@ class TestSurgicalCoverage:
         # Já exercitado pelos imports necessários
 
         # 3. flext_structured.py linha 65 (context None)
-
-            _flext_observability_context,
-            flext_get_correlation_id,
-        )
-
         original_ctx = _flext_observability_context.get({})
         try:
             _flext_observability_context.set(None)
@@ -152,13 +130,11 @@ class TestSurgicalCoverage:
 
         # 4. flext_structured.py linhas 89-90 (set correlation exception)
 
-
         # Normal path first
         normal_result = flext_set_correlation_id("surgical-test")
         assert normal_result.is_success
 
         # 5. flext_structured.py linhas 100-101 (bind exception)
-
 
         logger = FlextStructuredLogger("surgical")
 
@@ -173,7 +149,6 @@ class TestSurgicalCoverage:
     def test_force_all_remaining_paths(self) -> None:
         """Forçar todos os caminhos restantes sem exceptions."""
 
-
         # 1. Força reimport de todos os módulos relevantes
         modules_to_reload = [
             "flext_observability.factory",
@@ -185,13 +160,7 @@ class TestSurgicalCoverage:
                 importlib.reload(sys.modules[module_name])
 
         # 2. Importar e exercitar TODOS os caminhos
-
-
-            FlextStructuredLogger,
-            _flext_observability_context,
-            flext_get_correlation_id,
-            flext_set_correlation_id,
-        )
+        # Já importados no topo do arquivo
 
         # 3. Exercitar factory
         FlextObservabilityMasterFactory()

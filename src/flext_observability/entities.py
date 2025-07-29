@@ -11,12 +11,12 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from decimal import Decimal
+
 # Note: Removed Any import - using object instead for better type safety
 from flext_core import FlextEntity, FlextResult
 from pydantic import Field
-
-if TYPE_CHECKING:
-    from decimal import Decimal
 
 # ============================================================================
 # CORE ENTITIES - Simplified using flext-core patterns
