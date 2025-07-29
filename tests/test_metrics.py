@@ -46,7 +46,7 @@ class TestMetricsCollector:
     @patch("prometheus_client.generate_latest")
     def test_prometheus_integration(
         self,
-        mock_prometheus: Any,
+        mock_prometheus: object,
         metrics_collector: MetricsCollector,
     ) -> None:
         mock_prometheus.return_value = b"# HELP test_metric Test metric\n"

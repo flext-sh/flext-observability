@@ -59,10 +59,14 @@ class TestFlextHealthCheck:
             assert health_check.status == status
             assert health_check.is_valid() is True
 
-    def test_health_check_string_representation(self, sample_health_check: Mock) -> None:
+    def test_health_check_string_representation(
+        self, sample_health_check: Mock,
+    ) -> None:
         """Test string representation of health check."""
         # Mock string representation
-        sample_health_check.__str__ = Mock(return_value="FlextHealthCheck(component='database', status='healthy')")
+        sample_health_check.__str__ = Mock(
+            return_value="FlextHealthCheck(component='database', status='healthy')",
+        )
         str_repr = str(sample_health_check)
 
         # Just verify it doesn't crash and returns a string
