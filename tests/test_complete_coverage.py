@@ -2,6 +2,7 @@
 
 import builtins
 import importlib
+import math
 import sys
 import typing
 from datetime import UTC, datetime
@@ -661,7 +662,7 @@ class TestValidationComplete:
             raise AssertionError(
                 f"Expected True, got {ObservabilityValidators.is_valid_numeric(42)}"
             )
-        assert ObservabilityValidators.is_valid_numeric(3.14) is True
+        assert ObservabilityValidators.is_valid_numeric(math.pi) is True
 
     def test_observability_validators_is_valid_numeric_false(self) -> None:
         """Testar validação de numérico inválido."""
@@ -2491,9 +2492,9 @@ class TestFinal24Lines:
         if metric1.value != 42:
             raise AssertionError(f"Expected {42}, got {metric1.value}")
 
-        metric2 = FlextMetric(id="2", name="test", value=3.14)  # float
-        if metric2.value != 3.14:
-            raise AssertionError(f"Expected {3.14}, got {metric2.value}")
+        metric2 = FlextMetric(id="2", name="test", value=math.pi)  # float
+        if metric2.value != math.pi:
+            raise AssertionError(f"Expected {math.pi}, got {metric2.value}")
 
     def test_factory_lines_71_72(self) -> None:
         """Cobrir linhas 71-72 em factory.py - try/except no setup_services."""
