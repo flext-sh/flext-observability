@@ -135,14 +135,14 @@ class InMemoryMetricsRepository(MetricsRepository):
                 self._by_name[metric.name] = []
             self._by_name[metric.name].append(metric)
             return FlextResult.ok(metric)
-        except Exception as e:
-            return FlextResult.error(f"Failed to save metric: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Failed to save metric: {e}")
 
     def get_by_id(self, metric_id: str) -> FlextResult[FlextMetric]:
         """Get metric by ID from memory."""
         if metric_id in self._metrics:
             return FlextResult.ok(self._metrics[metric_id])
-        return FlextResult.error(f"Metric not found: {metric_id}")
+        return FlextResult.fail(f"Metric not found: {metric_id}")
 
     def find_by_name(self, name: str) -> FlextResult[list[FlextMetric]]:
         """Find metrics by name from memory."""

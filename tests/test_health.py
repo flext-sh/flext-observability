@@ -24,14 +24,17 @@ class TestFlextHealthCheck:
 
     def test_health_check_creation(self, sample_health_check: Mock) -> None:
         """Test health check creation."""
-        assert sample_health_check.component == "database"
+        if sample_health_check.component != "database":
+            raise AssertionError(f"Expected {"database"}, got {sample_health_check.component}")
         assert sample_health_check.status == "healthy"
-        assert sample_health_check.message == "Database is operational"
+        if sample_health_check.message != "Database is operational":
+            raise AssertionError(f"Expected {"Database is operational"}, got {sample_health_check.message}")
         assert sample_health_check.timestamp is not None
 
     def test_health_check_is_valid_success(self, sample_health_check: Mock) -> None:
         """Test health check validation success."""
-        assert sample_health_check.is_valid() is True
+        if not (sample_health_check.is_valid()):
+            raise AssertionError(f"Expected True, got {sample_health_check.is_valid()}")
 
     def test_health_check_is_valid_no_component(self) -> None:
         """Test health check validation with no component."""
@@ -42,8 +45,9 @@ class TestFlextHealthCheck:
         health_check.timestamp = datetime.now(UTC)
         health_check.is_valid.return_value = False
 
-        assert health_check.is_valid() is False
+        if health_check.is_valid():
 
+            raise AssertionError(f"Expected False, got {health_check.is_valid()}")\ n
     def test_health_check_different_statuses(self) -> None:
         """Test health check with different statuses."""
         statuses = ["healthy", "unhealthy", "degraded", "unknown"]
@@ -56,17 +60,18 @@ class TestFlextHealthCheck:
             health_check.timestamp = datetime.now(UTC)
             health_check.is_valid.return_value = True
 
-            assert health_check.status == status
-            assert health_check.is_valid() is True
+            if health_check.status != status:
+
+                raise AssertionError(f"Expected {status}, got {health_check.status}")
+            if not (health_check.is_valid()):
+                raise AssertionError(f"Expected True, got {health_check.is_valid()}")
 
     def test_health_check_string_representation(
         self, sample_health_check: Mock,
     ) -> None:
         """Test string representation of health check."""
-        # Mock string representation
-        sample_health_check.__str__ = Mock(
-            return_value="FlextHealthCheck(component='database', status='healthy')",
-        )
+        # Test string representation without modifying method
+        # (avoiding method assignment which is not allowed by MyPy)
         str_repr = str(sample_health_check)
 
         # Just verify it doesn't crash and returns a string
@@ -86,8 +91,11 @@ class TestFlextHealthCheckEdgeCases:
         health_check.timestamp = datetime.now(UTC)
         health_check.is_valid.return_value = True
 
-        assert health_check.is_valid() is True
-        assert health_check.message == ""
+        if not (health_check.is_valid()):
+
+            raise AssertionError(f"Expected True, got {health_check.is_valid()}")
+        if health_check.message != "":
+            raise AssertionError(f"Expected {""}, got {health_check.message}")
 
     def test_health_check_long_component_name(self) -> None:
         """Test health check with very long component name."""
@@ -99,8 +107,11 @@ class TestFlextHealthCheckEdgeCases:
         health_check.timestamp = datetime.now(UTC)
         health_check.is_valid.return_value = True
 
-        assert health_check.is_valid() is True
-        assert health_check.component == long_name
+        if not (health_check.is_valid()):
+
+            raise AssertionError(f"Expected True, got {health_check.is_valid()}")
+        if health_check.component != long_name:
+            raise AssertionError(f"Expected {long_name}, got {health_check.component}")
 
     def test_health_check_special_characters(self) -> None:
         """Test health check with special characters."""
@@ -111,8 +122,11 @@ class TestFlextHealthCheckEdgeCases:
         health_check.timestamp = datetime.now(UTC)
         health_check.is_valid.return_value = True
 
-        assert health_check.is_valid() is True
-        assert "special chars" in health_check.message
+        if not (health_check.is_valid()):
+
+            raise AssertionError(f"Expected True, got {health_check.is_valid()}")
+        if "special chars" not in health_check.message:
+            raise AssertionError(f"Expected {"special chars"} in {health_check.message}")
 
     def test_health_check_none_timestamp(self) -> None:
         """Test health check with None timestamp gets default."""
@@ -141,12 +155,14 @@ class TestHealthCheckValidation:
         health_check.timestamp = datetime.now(UTC)
 
         # Mock validation logic
-        def mock_is_valid():
+        def mock_is_valid() -> bool:
             return bool(health_check.component)
 
         health_check.is_valid = mock_is_valid
 
-        assert health_check.is_valid() is True
+        if not (health_check.is_valid()):
+
+            raise AssertionError(f"Expected True, got {health_check.is_valid()}")
 
     def test_invalid_health_check_no_component(self) -> None:
         """Test health check validation fails without component."""
@@ -159,13 +175,14 @@ class TestHealthCheckValidation:
         health_check.timestamp = datetime.now(UTC)
 
         # Mock validation logic
-        def mock_is_valid():
+        def mock_is_valid() -> bool:
             return bool(health_check.component)
 
         health_check.is_valid = mock_is_valid
 
-        assert health_check.is_valid() is False
+        if health_check.is_valid():
 
+            raise AssertionError(f"Expected False, got {health_check.is_valid()}")\ n
     def test_health_check_status_transitions(self) -> None:
         """Test health check status transitions."""
         health_check = Mock()
@@ -178,5 +195,7 @@ class TestHealthCheckValidation:
         statuses = ["healthy", "degraded", "unhealthy", "unknown"]
         for status in statuses:
             health_check.status = status
-            assert health_check.status == status
-            assert health_check.is_valid() is True
+            if health_check.status != status:
+                raise AssertionError(f"Expected {status}, got {health_check.status}")
+            if not (health_check.is_valid()):
+                raise AssertionError(f"Expected True, got {health_check.is_valid()}")
