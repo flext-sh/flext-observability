@@ -10,9 +10,8 @@ from __future__ import annotations
 
 # Generate simple IDs without FlextEntityId dependency
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Any
 
 from flext_core import FlextResult
 
@@ -42,57 +41,57 @@ def flext_create_metric(
             name=name,
             value=Decimal(str(value)),
             unit=unit,
-            entity_id=str(uuid.uuid4()),
+            id=str(uuid.uuid4()),
             tags=tags or {},
-            timestamp=timestamp or datetime.now(),
+            timestamp=timestamp or datetime.now(UTC),
         )
         return FlextResult.ok(metric)
-    except Exception as e:
-        return FlextResult.error(f"Failed to create metric: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to create metric: {e}")
 
 
 def flext_create_log_entry(
     message: str,
     level: str = "info",
-    context: dict[str, Any] | None = None,
+    context: dict[str, object] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextLogEntry]:
     """Create observability log entry with simple parameters."""
     try:
         log_entry = FlextLogEntry(
-            entity_id=str(uuid.uuid4()),
+            id=str(uuid.uuid4()),
             level=level,
             message=message,
             context=context or {},
-            timestamp=timestamp or datetime.now(),
+            timestamp=timestamp or datetime.now(UTC),
         )
         return FlextResult.ok(log_entry)
-    except Exception as e:
-        return FlextResult.error(f"Failed to create log entry: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to create log entry: {e}")
 
 
 def flext_create_trace(
     trace_id: str,
     operation: str,
-    span_id: str = "",
-    duration_ms: int = 0,
-    status: str = "pending",
+    *,
+    config: dict[str, object] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextTrace]:
     """Create observability trace with simple parameters."""
     try:
+        config = config or {}
         trace = FlextTrace(
             trace_id=trace_id,
             operation=operation,
-            span_id=span_id or f"{trace_id}-span",
-            entity_id=str(uuid.uuid4()),
-            duration_ms=duration_ms,
-            status=status,
-            timestamp=timestamp or datetime.now(),
+            span_id=str(config.get("span_id", f"{trace_id}-span")),
+            id=str(uuid.uuid4()),
+            duration_ms=int(str(config.get("duration_ms", 0))),
+            status=str(config.get("status", "pending")),
+            timestamp=timestamp or datetime.now(UTC),
         )
         return FlextResult.ok(trace)
-    except Exception as e:
-        return FlextResult.error(f"Failed to create trace: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to create trace: {e}")
 
 
 def flext_create_alert(
@@ -108,13 +107,13 @@ def flext_create_alert(
             title=title,
             message=message,
             severity=severity,
-            entity_id=str(uuid.uuid4()),
+            id=str(uuid.uuid4()),
             status=status,
-            timestamp=timestamp or datetime.now(),
+            timestamp=timestamp or datetime.now(UTC),
         )
         return FlextResult.ok(alert)
-    except Exception as e:
-        return FlextResult.error(f"Failed to create alert: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to create alert: {e}")
 
 
 def flext_create_health_check(
@@ -126,15 +125,15 @@ def flext_create_health_check(
     """Create observability health check with simple parameters."""
     try:
         health_check = FlextHealthCheck(
-            entity_id=str(uuid.uuid4()),
+            id=str(uuid.uuid4()),
             component=component,
             status=status,
             message=message,
-            timestamp=timestamp or datetime.now(),
+            timestamp=timestamp or datetime.now(UTC),
         )
         return FlextResult.ok(health_check)
-    except Exception as e:
-        return FlextResult.error(f"Failed to create health check: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to create health check: {e}")
 
 
 __all__ = [

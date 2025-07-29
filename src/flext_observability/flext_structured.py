@@ -9,7 +9,6 @@ Extends flext-core logging with observability-specific structured features.
 from __future__ import annotations
 
 from contextvars import ContextVar
-from typing import Any
 
 from flext_core import FlextResult, get_logger
 
@@ -18,9 +17,9 @@ from flext_core import FlextResult, get_logger
 # ============================================================================
 
 # Context for correlation IDs and observability metadata
-_flext_observability_context: ContextVar[dict[str, Any]] = ContextVar(
+_flext_observability_context: ContextVar[dict[str, object] | None] = ContextVar(
     "flext_observability_context",
-    default={},
+    default=None,
 )
 
 
@@ -30,12 +29,14 @@ class FlextStructuredLogger:
     def __init__(self, name: str) -> None:
         """Initialize with flext-core logger."""
         self._core_logger = get_logger(name)
-        self._bound_data: dict[str, Any] = {}
+        self._bound_data: dict[str, object] = {}
 
-    def flext_observability_info(self, message: str, **observability_data: Any) -> FlextResult[None]:
+    def flext_observability_info(
+        self, message: str, **observability_data: object,
+    ) -> FlextResult[None]:
         """Log info with observability context."""
         try:
-            context = _flext_observability_context.get()
+            context = _flext_observability_context.get() or {}
             all_data = {**context, **self._bound_data, **observability_data}
 
             if all_data:
@@ -46,13 +47,15 @@ class FlextStructuredLogger:
 
             self._core_logger.info(formatted_message)
             return FlextResult.ok(None)
-        except Exception as e:
-            return FlextResult.error(f"Structured logging failed: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Structured logging failed: {e}")
 
-    def flext_observability_error(self, message: str, **observability_data: Any) -> FlextResult[None]:
+    def flext_observability_error(
+        self, message: str, **observability_data: object,
+    ) -> FlextResult[None]:
         """Log error with observability context."""
         try:
-            context = _flext_observability_context.get()
+            context = _flext_observability_context.get() or {}
             all_data = {**context, **self._bound_data, **observability_data}
 
             if all_data:
@@ -63,10 +66,12 @@ class FlextStructuredLogger:
 
             self._core_logger.error(formatted_message)
             return FlextResult.ok(None)
-        except Exception as e:
-            return FlextResult.error(f"Structured logging failed: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Structured logging failed: {e}")
 
-    def flext_bind_observability(self, **data: Any) -> FlextStructuredLogger:
+    def flext_bind_observability(
+        self, **data: object,
+    ) -> FlextStructuredLogger:
         """Bind observability-specific data to logger."""
         new_logger = FlextStructuredLogger(self._core_logger.__class__.__name__)
         new_logger._core_logger = self._core_logger
@@ -77,22 +82,23 @@ class FlextStructuredLogger:
 def flext_set_correlation_id(correlation_id: str) -> FlextResult[None]:
     """Set correlation ID for observability context."""
     try:
-        context = _flext_observability_context.get().copy()
+        context = _flext_observability_context.get() or {}.copy()
         context["correlation_id"] = correlation_id
         _flext_observability_context.set(context)
         return FlextResult.ok(None)
-    except Exception as e:
-        return FlextResult.error(f"Failed to set correlation ID: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to set correlation ID: {e}")
 
 
 def flext_get_correlation_id() -> FlextResult[str]:
     """Get current correlation ID."""
     try:
-        context = _flext_observability_context.get()
+        context = _flext_observability_context.get() or {}
         correlation_id = context.get("correlation_id", "")
-        return FlextResult.ok(correlation_id)
-    except Exception as e:
-        return FlextResult.error(f"Failed to get correlation ID: {e}")
+        correlation_id_str = str(correlation_id) if correlation_id else ""
+        return FlextResult.ok(correlation_id_str)
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to get correlation ID: {e}")
 
 
 def flext_get_structured_logger(name: str) -> FlextStructuredLogger:

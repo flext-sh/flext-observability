@@ -8,10 +8,26 @@ Simplified factory eliminating duplicação using flext-core patterns.
 
 from __future__ import annotations
 
-from typing import Any
+import uuid
+from datetime import UTC, datetime
+from typing import cast
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
+from flext_observability.entities import (
+    FlextAlert,
+    FlextHealthCheck,
+    FlextLogEntry,
+    FlextMetric,
+    FlextTrace,
+)
+from flext_observability.services import (
+    FlextAlertService,
+    FlextHealthService,
+    FlextLoggingService,
+    FlextMetricsService,
+    FlextTracingService,
+)
 from flext_observability.validation import create_observability_result_error
 
 # ============================================================================
@@ -29,16 +45,8 @@ class FlextObservabilityMasterFactory:
         self._setup_services()
 
     def _setup_services(self) -> None:
-        """Setup all services automatically."""
+        """Set up all services automatically."""
         try:
-            from flext_observability.services import (
-                FlextAlertService,
-                FlextHealthService,
-                FlextLoggingService,
-                FlextMetricsService,
-                FlextTracingService,
-            )
-
             services = [
                 ("metrics_service", FlextMetricsService),
                 ("logging_service", FlextLoggingService),
@@ -52,25 +60,63 @@ class FlextObservabilityMasterFactory:
                     service = service_class(self.container)
                     register_result = self.container.register(service_key, service)
                     if register_result.is_failure:
-                        self._logger.warning(f"Failed to register {service_key}: {register_result.error}")
-                except Exception as e:
-                    self._logger.exception(f"Failed to create {service_key}: {e}")
+                        error_message = (
+                            f"Failed to register {service_key}: "
+                            f"{register_result.error}"
+                        )
+                        self._logger.warning(error_message)
+                except (
+                    ValueError,
+                    TypeError,
+                    AttributeError,
+                    ImportError,
+                    RuntimeError,
+                ):
+                    self._logger.exception("Failed to create %s", service_key)
 
-        except Exception as e:
-            self._logger.exception(f"Service setup error: {e}")
+        except (
+            ValueError,
+            TypeError,
+            AttributeError,
+            ImportError,
+            RuntimeError,
+        ):
+            self._logger.exception("Service setup error occurred")
 
-    def metric(self, name: str, value: float, **kwargs: Any) -> FlextResult[Any]:
+    def metric(
+        self, name: str, value: float, **kwargs: object,
+    ) -> FlextResult[object]:
         """Create and record metric."""
         try:
-            from flext_observability.entities import FlextMetric
-            metric = FlextMetric(name=name, value=value, **kwargs)
+            # FlextMetric imported at module level
+            tags = kwargs.get("tags", {})
+            tags = cast("dict[str, str]", tags) if isinstance(tags, dict) else {}
+
+            timestamp = kwargs.get("timestamp")
+            if not isinstance(timestamp, datetime):
+                timestamp = datetime.now(UTC)
+
+            metric = FlextMetric(
+                id=str(uuid.uuid4()),
+                name=name,
+                value=value,
+                unit=str(kwargs.get("unit", "")),
+                tags=tags,
+                timestamp=timestamp,
+            )
 
             service_result = self.container.get("metrics_service")
             if service_result.is_success and service_result.data:
-                return service_result.data.record_metric(metric)
+                service = cast("FlextMetricsService", service_result.data)
+                result = service.record_metric(metric)
+                return (
+                    FlextResult.ok(result.data)
+                    if result.is_success
+                    else FlextResult.fail(result.error or "Unknown error")
+                )
             return FlextResult.ok(metric)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError) as e:
             return create_observability_result_error(
                 "metrics",
                 f"Failed to create metric: {e}",
@@ -78,18 +124,42 @@ class FlextObservabilityMasterFactory:
                 metric_value=value,
             )
 
-    def log(self, message: str, level: str = "info", **kwargs: Any) -> FlextResult[Any]:
+    def log(
+        self, message: str, level: str = "info", **kwargs: object,
+    ) -> FlextResult[object]:
         """Create and log entry."""
         try:
-            from flext_observability.entities import FlextLogEntry
-            log_entry = FlextLogEntry(message=message, level=level, **kwargs)
+            # FlextLogEntry imported at module level
+            context = kwargs.get("context", {})
+            if isinstance(context, dict):
+                context = cast("dict[str, object]", context)
+            else:
+                context = {}
+
+            timestamp = kwargs.get("timestamp")
+            if not isinstance(timestamp, datetime):
+                timestamp = datetime.now(UTC)
+
+            log_entry = FlextLogEntry(
+                id=str(uuid.uuid4()),
+                message=message,
+                level=level,
+                context=context,
+                timestamp=timestamp,
+            )
 
             service_result = self.container.get("logging_service")
             if service_result.is_success and service_result.data:
-                return service_result.data.log_entry(log_entry)
+                service = cast("FlextLoggingService", service_result.data)
+                result = service.log_entry(log_entry)
+                return (
+                    FlextResult.ok(result.data)
+                    if result.is_success
+                    else FlextResult.fail(result.error or "Unknown error")
+                )
             return FlextResult.ok(log_entry)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError) as e:
             return create_observability_result_error(
                 "logging",
                 f"Failed to create log: {e}",
@@ -97,18 +167,44 @@ class FlextObservabilityMasterFactory:
                 log_message=message[:100],
             )
 
-    def alert(self, title: str, message: str, severity: str = "low", **kwargs: Any) -> FlextResult[Any]:
+    def alert(
+        self,
+        title: str,
+        message: str,
+        severity: str = "low",
+        **kwargs: object,
+    ) -> FlextResult[object]:
         """Create alert."""
         try:
-            from flext_observability.entities import FlextAlert
-            alert = FlextAlert(title=title, message=message, severity=severity, **kwargs)
+            tags = kwargs.get("tags", {})
+            tags = cast("dict[str, str]", tags) if isinstance(tags, dict) else {}
+
+            timestamp = kwargs.get("timestamp")
+            if not isinstance(timestamp, datetime):
+                timestamp = datetime.now(UTC)
+
+            alert = FlextAlert(
+                id=str(uuid.uuid4()),
+                title=title,
+                message=message,
+                severity=severity,
+                status=str(kwargs.get("status", "active")),
+                tags=tags,
+                timestamp=timestamp,
+            )
 
             service_result = self.container.get("alert_service")
             if service_result.is_success and service_result.data:
-                return service_result.data.create_alert(alert)
+                service = cast("FlextAlertService", service_result.data)
+                result = service.create_alert(alert)
+                return (
+                    FlextResult.ok(result.data)
+                    if result.is_success
+                    else FlextResult.fail(result.error or "Unknown error")
+                )
             return FlextResult.ok(alert)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError) as e:
             return create_observability_result_error(
                 "alert",
                 f"Failed to create alert: {e}",
@@ -116,18 +212,45 @@ class FlextObservabilityMasterFactory:
                 alert_severity=severity,
             )
 
-    def trace(self, trace_id: str, operation: str, **kwargs: Any) -> FlextResult[Any]:
+    def trace(
+        self, trace_id: str, operation: str, **kwargs: object,
+    ) -> FlextResult[object]:
         """Start trace."""
         try:
-            from flext_observability.entities import FlextTrace
-            trace = FlextTrace(trace_id=trace_id, operation=operation, **kwargs)
+            # Extract known parameters from kwargs
+            span_id = kwargs.get("span_id", "")
+            timestamp = kwargs.get("timestamp")
+            span_attributes = kwargs.get("span_attributes", {})
+
+            trace = FlextTrace(
+                id=str(uuid.uuid4()),
+                trace_id=trace_id,
+                operation=operation,
+                span_id=str(span_id) if span_id else "",
+                span_attributes=(
+                    span_attributes if isinstance(span_attributes, dict) else {}
+                ),
+                duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
+                status=str(kwargs.get("status", "pending")),
+                timestamp=(
+                    timestamp
+                    if isinstance(timestamp, datetime)
+                    else datetime.now(UTC)
+                ),
+            )
 
             service_result = self.container.get("tracing_service")
             if service_result.is_success and service_result.data:
-                return service_result.data.start_trace(trace)
+                service = cast("FlextTracingService", service_result.data)
+                result = service.start_trace(trace)
+                return (
+                    FlextResult.ok(result.data)
+                    if result.is_success
+                    else FlextResult.fail(result.error or "Unknown error")
+                )
             return FlextResult.ok(trace)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError) as e:
             return create_observability_result_error(
                 "tracing",
                 f"Failed to create trace: {e}",
@@ -135,18 +258,41 @@ class FlextObservabilityMasterFactory:
                 operation=operation,
             )
 
-    def health_check(self, component: str, status: str = "unknown", **kwargs: Any) -> FlextResult[Any]:
+    def health_check(
+        self, component: str, status: str = "unknown", **kwargs: object,
+    ) -> FlextResult[object]:
         """Create health check."""
         try:
-            from flext_observability.entities import FlextHealthCheck
-            health = FlextHealthCheck(component=component, status=status, **kwargs)
+            # Extract known parameters from kwargs
+            message = kwargs.get("message", "")
+            metrics = kwargs.get("metrics", {})
+            timestamp = kwargs.get("timestamp")
+
+            health = FlextHealthCheck(
+                id=str(uuid.uuid4()),
+                component=component,
+                status=status,
+                message=str(message),
+                metrics=metrics if isinstance(metrics, dict) else {},
+                timestamp=(
+                    timestamp
+                    if isinstance(timestamp, datetime)
+                    else datetime.now(UTC)
+                ),
+            )
 
             service_result = self.container.get("health_service")
             if service_result.is_success and service_result.data:
-                return service_result.data.check_health(health)
+                service = cast("FlextHealthService", service_result.data)
+                result = service.check_health(health)
+                return (
+                    FlextResult.ok(result.data)
+                    if result.is_success
+                    else FlextResult.fail(result.error or "Unknown error")
+                )
             return FlextResult.ok(health)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError) as e:
             return create_observability_result_error(
                 "health_check",
                 f"Failed to create health check: {e}",
@@ -154,20 +300,22 @@ class FlextObservabilityMasterFactory:
                 health_status=status,
             )
 
-    def health_status(self) -> FlextResult[dict[str, Any]]:
+    def health_status(self) -> FlextResult[dict[str, object]]:
         """Get overall health status."""
         try:
             service_result = self.container.get("health_service")
             if service_result.is_success and service_result.data:
-                return service_result.data.get_overall_health()
+                service = cast("FlextHealthService", service_result.data)
+                return service.get_overall_health()
 
             return FlextResult.ok({"status": "healthy", "mode": "fallback"})
 
-        except Exception as e:
-            return create_observability_result_error(
+        except (ValueError, TypeError, AttributeError) as e:
+            error_result = create_observability_result_error(
                 "health_check",
                 f"Health status check failed: {e}",
             )
+            return FlextResult.fail(error_result.error or "Health status check failed")
 
 
 # ============================================================================
@@ -177,9 +325,11 @@ class FlextObservabilityMasterFactory:
 _global_factory: FlextObservabilityMasterFactory | None = None
 
 
-def get_global_factory(container: FlextContainer | None = None) -> FlextObservabilityMasterFactory:
+def get_global_factory(
+    container: FlextContainer | None = None,
+) -> FlextObservabilityMasterFactory:
     """Get global factory instance."""
-    global _global_factory
+    global _global_factory  # noqa: PLW0603
     if _global_factory is None:
         _global_factory = FlextObservabilityMasterFactory(container)
     return _global_factory
@@ -187,31 +337,35 @@ def get_global_factory(container: FlextContainer | None = None) -> FlextObservab
 
 def reset_global_factory() -> None:
     """Reset global factory for testing."""
-    global _global_factory
+    global _global_factory  # noqa: PLW0603
     _global_factory = None
 
 
 # Convenience functions using global factory
-def metric(name: str, value: float, **kwargs: Any) -> FlextResult[Any]:
+def metric(name: str, value: float, **kwargs: object) -> FlextResult[object]:
     """Global metric function."""
     return get_global_factory().metric(name, value, **kwargs)
 
 
-def log(message: str, level: str = "info", **kwargs: Any) -> FlextResult[Any]:
+def log(message: str, level: str = "info", **kwargs: object) -> FlextResult[object]:
     """Global log function."""
     return get_global_factory().log(message, level, **kwargs)
 
 
-def alert(title: str, message: str, severity: str = "low", **kwargs: Any) -> FlextResult[Any]:
+def alert(
+    title: str, message: str, severity: str = "low", **kwargs: object,
+) -> FlextResult[object]:
     """Global alert function."""
     return get_global_factory().alert(title, message, severity, **kwargs)
 
 
-def trace(trace_id: str, operation: str, **kwargs: Any) -> FlextResult[Any]:
+def trace(trace_id: str, operation: str, **kwargs: object) -> FlextResult[object]:
     """Global trace function."""
     return get_global_factory().trace(trace_id, operation, **kwargs)
 
 
-def health_check(component: str, status: str = "unknown", **kwargs: Any) -> FlextResult[Any]:
+def health_check(
+    component: str, status: str = "unknown", **kwargs: object,
+) -> FlextResult[object]:
     """Global health check function."""
     return get_global_factory().health_check(component, status, **kwargs)

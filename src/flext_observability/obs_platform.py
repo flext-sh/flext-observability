@@ -8,14 +8,13 @@ Platform simplificada usando factory patterns do flext-core.
 
 from __future__ import annotations
 
-from typing import Any
-
 from flext_core import FlextContainer, FlextResult, get_logger
 
 from flext_observability.constants import (
     DEFAULT_OBSERVABILITY_CONFIG,
     ObservabilityConstants,
 )
+from flext_observability.factory import FlextObservabilityMasterFactory
 
 
 class FlextObservabilityPlatformV2:
@@ -36,26 +35,37 @@ class FlextObservabilityPlatformV2:
         self.logger = get_logger(self.__class__.__name__)
 
         # Use factory for all operations
-        from flext_observability.factory import FlextObservabilityMasterFactory
         self._factory = FlextObservabilityMasterFactory(self.container)
 
-    def metric(self, name: str, value: float, **kwargs: Any) -> FlextResult[Any]:
+    def metric(
+        self, name: str, value: float, **kwargs: object,
+    ) -> FlextResult[object]:
         """Create metric using factory."""
         return self._factory.metric(name, value, **kwargs)
 
-    def log(self, message: str, level: str = "info", **kwargs: Any) -> FlextResult[Any]:
+    def log(
+        self, message: str, level: str = "info", **kwargs: object,
+    ) -> FlextResult[object]:
         """Create log entry using factory."""
         return self._factory.log(message, level, **kwargs)
 
-    def alert(self, title: str, message: str, severity: str = "low", **kwargs: Any) -> FlextResult[Any]:
+    def alert(
+        self,
+        title: str,
+        message: str,
+        severity: str = "low",
+        **kwargs: object,
+    ) -> FlextResult[object]:
         """Create alert using factory."""
         return self._factory.alert(title, message, severity, **kwargs)
 
-    def trace(self, trace_id: str, operation: str, **kwargs: Any) -> FlextResult[Any]:
+    def trace(
+        self, trace_id: str, operation: str, **kwargs: object,
+    ) -> FlextResult[object]:
         """Create trace using factory."""
         return self._factory.trace(trace_id, operation, **kwargs)
 
-    def health_check(self) -> FlextResult[dict[str, Any]]:
+    def health_check(self) -> FlextResult[dict[str, object]]:
         """Get health status using factory."""
         return self._factory.health_status()
 

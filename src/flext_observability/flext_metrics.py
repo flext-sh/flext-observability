@@ -9,7 +9,6 @@ Provides observability-specific metrics functionality not in flext-core.
 from __future__ import annotations
 
 import time
-from typing import Any
 
 from flext_core import FlextResult, get_logger
 
@@ -40,11 +39,13 @@ class FlextMetricsCollector:
     def __init__(self) -> None:
         """Initialize collector."""
         self._logger = get_logger(self.__class__.__name__)
-        self._metrics_cache: dict[str, Any] = {}
+        self._metrics_cache: dict[str, object] = {}
         self._cache_timestamp = 0.0
         self._cache_duration = 1.0  # 1 second cache
 
-    def flext_collect_system_observability_metrics(self) -> FlextResult[dict[str, Any]]:
+    def flext_collect_system_observability_metrics(
+        self,
+    ) -> FlextResult[dict[str, object]]:
         """Collect system metrics for observability (unique functionality)."""
         try:
             current_time = time.time()
@@ -75,14 +76,16 @@ class FlextMetricsCollector:
             self._cache_timestamp = current_time
             return FlextResult.ok(metrics)
 
-        except Exception as e:
-            return FlextResult.error(f"System metrics collection failed: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"System metrics collection failed: {e}")
 
-    def flext_collect_observability_application_metrics(self) -> FlextResult[dict[str, Any]]:
+    def flext_collect_observability_application_metrics(
+        self,
+    ) -> FlextResult[dict[str, object]]:
         """Collect application-specific observability metrics."""
         try:
             # Observability-specific application metrics
-            metrics = {
+            metrics: dict[str, object] = {
                 "observability_events_processed": 1250,
                 "observability_error_rate": 0.025,
                 "observability_avg_processing_time_ms": 145.3,
@@ -92,8 +95,8 @@ class FlextMetricsCollector:
                 "observability_health_checks_failing": 1,
             }
             return FlextResult.ok(metrics)
-        except Exception as e:
-            return FlextResult.error(f"Application metrics collection failed: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Application metrics collection failed: {e}")
 
     def flext_record_observability_metric(
         self,
@@ -109,19 +112,19 @@ class FlextMetricsCollector:
                 f"(type: {metric_type}, labels: {labels or {}})",
             )
             return FlextResult.ok(None)
-        except Exception as e:
-            return FlextResult.error(f"Metric recording failed: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Metric recording failed: {e}")
 
-    def flext_get_metrics_summary(self) -> FlextResult[dict[str, Any]]:
+    def flext_get_metrics_summary(self) -> FlextResult[dict[str, object]]:
         """Get comprehensive metrics summary for observability."""
         try:
             system_result = self.flext_collect_system_observability_metrics()
             app_result = self.flext_collect_observability_application_metrics()
 
             if system_result.is_failure or app_result.is_failure:
-                return FlextResult.error("Failed to collect complete metrics")
+                return FlextResult.fail("Failed to collect complete metrics")
 
-            summary = {
+            summary: dict[str, object] = {
                 "system_metrics": system_result.data,
                 "application_metrics": app_result.data,
                 "collection_timestamp": time.time(),
@@ -129,8 +132,8 @@ class FlextMetricsCollector:
             }
 
             return FlextResult.ok(summary)
-        except Exception as e:
-            return FlextResult.error(f"Metrics summary failed: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Metrics summary failed: {e}")
 
 
 __all__ = [

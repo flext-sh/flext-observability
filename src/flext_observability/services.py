@@ -8,7 +8,7 @@ Services simplificados usando padrões essenciais do flext-core.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
@@ -41,13 +41,14 @@ class FlextMetricsService:
         try:
             self.logger.info(f"Recording metric: {metric.name} = {metric.value}")
             return FlextResult.ok(metric)
-        except Exception as e:
-            return create_observability_result_error(
+        except (ValueError, TypeError, AttributeError) as e:
+            error_result = create_observability_result_error(
                 "metrics",
                 f"Failed to record metric: {e}",
                 metric_name=metric.name,
                 metric_value=metric.value,
             )
+            return FlextResult.fail(error_result.error or "Unknown error")
 
 
 class FlextLoggingService:
@@ -64,13 +65,14 @@ class FlextLoggingService:
             level_method = getattr(self.logger, entry.level.lower(), self.logger.info)
             level_method(f"{entry.message} | Context: {entry.context}")
             return FlextResult.ok(entry)
-        except Exception as e:
-            return create_observability_result_error(
+        except (ValueError, TypeError, AttributeError) as e:
+            error_result = create_observability_result_error(
                 "logging",
                 f"Failed to log entry: {e}",
                 log_level=entry.level,
                 log_message=entry.message[:100],
             )
+            return FlextResult.fail(error_result.error or "Unknown error")
 
 
 class FlextTracingService:
@@ -84,15 +86,19 @@ class FlextTracingService:
     def start_trace(self, trace: FlextTrace) -> FlextResult[FlextTrace]:
         """Start trace using flext-core patterns."""
         try:
-            self.logger.info(f"Starting trace: {trace.trace_id} | Operation: {trace.operation}")
+            self.logger.info(
+                f"Starting trace: {trace.trace_id} | "
+                f"Operation: {trace.operation}",
+            )
             return FlextResult.ok(trace)
-        except Exception as e:
-            return create_observability_result_error(
+        except (ValueError, TypeError, AttributeError) as e:
+            error_result = create_observability_result_error(
                 "tracing",
                 f"Failed to start trace: {e}",
                 trace_id=trace.trace_id,
                 operation=trace.operation,
             )
+            return FlextResult.fail(error_result.error or "Unknown error")
 
 
 class FlextAlertService:
@@ -106,15 +112,18 @@ class FlextAlertService:
     def create_alert(self, alert: FlextAlert) -> FlextResult[FlextAlert]:
         """Create alert using flext-core patterns."""
         try:
-            self.logger.warning(f"Alert created: {alert.title} | Severity: {alert.severity}")
+            self.logger.warning(
+                f"Alert created: {alert.title} | Severity: {alert.severity}",
+            )
             return FlextResult.ok(alert)
-        except Exception as e:
-            return create_observability_result_error(
+        except (ValueError, TypeError, AttributeError) as e:
+            error_result = create_observability_result_error(
                 "alert",
                 f"Failed to create alert: {e}",
                 alert_title=alert.title,
                 alert_severity=alert.severity,
             )
+            return FlextResult.fail(error_result.error or "Unknown error")
 
 
 class FlextHealthService:
@@ -130,15 +139,16 @@ class FlextHealthService:
         try:
             self.logger.info(f"Health check: {health.component} = {health.status}")
             return FlextResult.ok(health)
-        except Exception as e:
-            return create_observability_result_error(
+        except (ValueError, TypeError, AttributeError) as e:
+            error_result = create_observability_result_error(
                 "health_check",
                 f"Failed to check health: {e}",
                 component_name=health.component,
                 health_status=health.status,
             )
+            return FlextResult.fail(error_result.error or "Unknown error")
 
-    def get_overall_health(self) -> FlextResult[dict[str, Any]]:
+    def get_overall_health(self) -> FlextResult[dict[str, object]]:
         """Get overall system health."""
         try:
             return FlextResult.ok({
@@ -146,8 +156,9 @@ class FlextHealthService:
                 "timestamp": "now",
                 "components": {},
             })
-        except Exception as e:
-            return create_observability_result_error(
+        except (ValueError, TypeError, AttributeError) as e:
+            error_result = create_observability_result_error(
                 "health_check",
                 f"Failed to get overall health: {e}",
             )
+            return FlextResult.fail(error_result.error or "Unknown error")

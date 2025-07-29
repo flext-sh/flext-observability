@@ -8,7 +8,7 @@ Constants simplificadas usando apenas o essencial do flext-core.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import ClassVar
 
 # ============================================================================
 # CORE OBSERVABILITY CONSTANTS
@@ -22,23 +22,33 @@ class ObservabilityConstants:
     VERSION = "1.0.0"
 
     # Log levels
-    LOG_LEVELS = ["debug", "info", "warning", "error", "critical"]
+    LOG_LEVELS: ClassVar[list[str]] = [
+        "debug", "info", "warning", "error", "critical",
+    ]
 
     # Metric types
-    METRIC_TYPES = ["counter", "gauge", "histogram", "summary"]
+    METRIC_TYPES: ClassVar[list[str]] = [
+        "counter", "gauge", "histogram", "summary",
+    ]
 
     # Alert severities
-    ALERT_SEVERITIES = ["low", "medium", "high", "critical", "emergency"]
+    ALERT_SEVERITIES: ClassVar[list[str]] = [
+        "low", "medium", "high", "critical", "emergency",
+    ]
 
     # Health statuses
-    HEALTH_STATUSES = ["healthy", "unhealthy", "degraded", "unknown"]
+    HEALTH_STATUSES: ClassVar[list[str]] = [
+        "healthy", "unhealthy", "degraded", "unknown",
+    ]
 
     # Alert statuses
-    ALERT_STATUSES = ["active", "resolved", "escalated", "suppressed"]
+    ALERT_STATUSES: ClassVar[list[str]] = [
+        "active", "resolved", "escalated", "suppressed",
+    ]
 
 
 # Default configuration
-DEFAULT_OBSERVABILITY_CONFIG: dict[str, Any] = {
+DEFAULT_OBSERVABILITY_CONFIG: dict[str, object] = {
     "environment": "development",
     "log_level": "info",
     "metrics_enabled": True,
@@ -63,6 +73,8 @@ OBSERVABILITY_ERROR_CODES = {
 
 # Simplified enums as classes for compatibility
 class MetricType:
+    """Metric type constants for observability."""
+
     COUNTER = "counter"
     GAUGE = "gauge"
     HISTOGRAM = "histogram"
@@ -70,6 +82,8 @@ class MetricType:
 
 
 class AlertStatus:
+    """Alert status constants for observability."""
+
     ACTIVE = "active"
     RESOLVED = "resolved"
     ESCALATED = "escalated"
@@ -77,6 +91,8 @@ class AlertStatus:
 
 
 class HealthStatus:
+    """Health status constants for observability."""
+
     HEALTHY = "healthy"
     UNHEALTHY = "unhealthy"
     DEGRADED = "degraded"
@@ -84,6 +100,8 @@ class HealthStatus:
 
 
 class TraceStatus:
+    """Trace status constants for observability."""
+
     STARTED = "started"
     COMPLETED = "completed"
     FAILED = "failed"
