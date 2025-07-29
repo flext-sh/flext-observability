@@ -105,7 +105,7 @@ def metrics_registry() -> CollectorRegistry:
 
 
 @pytest.fixture
-def metrics_collector(metrics_registry: CollectorRegistry) -> Any:
+def metrics_collector(metrics_registry: CollectorRegistry) -> object:
     """Create a metrics collector for testing."""
     from flext_observability.metrics import MetricsCollector
 
@@ -113,7 +113,7 @@ def metrics_collector(metrics_registry: CollectorRegistry) -> Any:
 
 
 @pytest.fixture
-def counter_metric(metrics_registry: CollectorRegistry) -> Any:
+def counter_metric(metrics_registry: CollectorRegistry) -> object:
     """Create a counter metric for testing."""
     from prometheus_client import Counter
 
@@ -126,7 +126,7 @@ def counter_metric(metrics_registry: CollectorRegistry) -> Any:
 
 
 @pytest.fixture
-def histogram_metric(metrics_registry: CollectorRegistry) -> Any:
+def histogram_metric(metrics_registry: CollectorRegistry) -> object:
     """Create a histogram metric for testing."""
     from prometheus_client import Histogram
 
@@ -172,13 +172,13 @@ async def tracer_provider() -> AsyncIterator[Any]:
 
 
 @pytest.fixture
-def tracer(tracer_provider: Any) -> Any:
+def tracer(tracer_provider: Any) -> object:
     """Create a tracer for testing."""
     return tracer_provider.get_tracer("test-tracer")
 
 
 @pytest.fixture
-def span_context() -> Any:
+def span_context() -> object:
     """Create a span context for testing."""
     from opentelemetry import trace
 
@@ -195,7 +195,7 @@ def span_context() -> Any:
 
 
 @pytest.fixture
-def structured_logger() -> Any:
+def structured_logger() -> object:
     """Create a structured logger for testing."""
     from flext_observability import get_logger
 
@@ -260,7 +260,7 @@ def health_check_config() -> dict[str, Any]:
 
 
 @pytest.fixture
-def mock_prometheus_client(mocker: Any) -> Any:
+def mock_prometheus_client(mocker: Any) -> object:
     """Mock Prometheus client for testing."""
     mock = mocker.Mock()
     mock.push_to_gateway.return_value = None
@@ -268,7 +268,7 @@ def mock_prometheus_client(mocker: Any) -> Any:
 
 
 @pytest.fixture
-def mock_otel_exporter(mocker: Any) -> Any:
+def mock_otel_exporter(mocker: Any) -> object:
     """Mock OpenTelemetry exporter for testing."""
     mock = mocker.Mock()
     mock.export.return_value = mocker.Mock(success=True)

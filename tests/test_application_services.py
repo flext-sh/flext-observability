@@ -292,7 +292,9 @@ class TestHealthDomainService:
         """Test successful health check."""
         # Setup mock repository
         mock_repository = Mock()
-        mock_repository.get_by_component.return_value = FlextResult.ok(sample_health_check)
+        mock_repository.get_by_component.return_value = FlextResult.ok(
+            sample_health_check,
+        )
         container.register("health_repository", mock_repository)
 
         # Execute
@@ -326,7 +328,9 @@ class TestHealthDomainService:
         container.register("health_repository", mock_repository)
 
         mock_domain_service = Mock()
-        mock_domain_service.calculate_overall_health.return_value = FlextResult.ok("healthy")
+        mock_domain_service.calculate_overall_health.return_value = FlextResult.ok(
+            "healthy",
+        )
         container.register("health_domain_service", mock_domain_service)
 
         # Execute
