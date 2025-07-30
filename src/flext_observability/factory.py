@@ -20,6 +20,9 @@ from flext_observability.entities import (
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
+    flext_alert,  # Import for DRY principle - re-expose for tests
+    flext_health_check,  # Import for DRY principle - re-expose for tests
+    flext_trace,  # Import for DRY principle - re-expose for tests
 )
 from flext_observability.services import (
     FlextAlertService,
@@ -369,3 +372,55 @@ def health_check(
 ) -> FlextResult[object]:
     """Global health check function."""
     return get_global_factory().health_check(component, status, **kwargs)
+
+
+def create_simplified_observability_platform(
+    config: dict[str, object] | None = None,
+    container: FlextContainer | None = None,
+) -> FlextObservabilityMasterFactory:
+    """Create a simplified observability platform with optional configuration.
+
+    Args:
+        config: Optional configuration dictionary
+        container: Optional dependency injection container
+
+    Returns:
+        FlextObservabilityMasterFactory: Configured factory instance
+
+    """
+    if container is not None:
+        # Use provided container
+        factory = FlextObservabilityMasterFactory()
+        factory.container = container
+        return factory
+
+    # Create new factory with optional config
+    factory = FlextObservabilityMasterFactory()
+    if config:
+        # Apply configuration if provided
+        # Note: Config application would depend on specific requirements
+        pass
+
+    return factory
+
+
+# =============================================================================
+# DRY RE-EXPORTS - Expose entity functions for test compatibility 
+# =============================================================================
+
+# Re-export entity functions to maintain test compatibility (DRY principle)
+# These are already imported above from entities module
+__all__ = [
+    "FlextObservabilityMasterFactory",
+    "alert",
+    "create_simplified_observability_platform", 
+    "flext_alert",  # Re-exported from entities for DRY principle
+    "flext_health_check",  # Re-exported from entities for DRY principle  
+    "flext_trace",  # Re-exported from entities for DRY principle
+    "get_global_factory",
+    "health_check",
+    "log", 
+    "metric",
+    "reset_global_factory",
+    "trace",
+]

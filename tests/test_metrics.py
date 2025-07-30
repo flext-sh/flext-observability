@@ -72,8 +72,9 @@ class TestMetricsCollector:
             from prometheus_client import generate_latest
 
             prometheus_output = generate_latest()
-            if prometheus_output != b"# HELP test_metric Test metric\n":
-                msg = f"Expected {b"# HELP test_metric Test metric\n"}, got {prometheus_output}"
+            expected_bytes = b"# HELP test_metric Test metric\n"
+            if prometheus_output != expected_bytes:
+                msg = f"Expected {expected_bytes!r}, got {prometheus_output!r}"
                 raise AssertionError(msg)
 
             # Verify mock was called

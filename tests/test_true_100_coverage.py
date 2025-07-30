@@ -56,7 +56,7 @@ class TestTrue100Coverage:
         object.__setattr__(metric, "value", "not_a_number")
 
         # Call validate() which should hit lines 43-44 exception handler
-        result = metric.validate()
+        result = metric.validate_domain_rules()
         assert result.is_failure
         if "Invalid metric value" not in result.error:
             msg = f"Expected {"Invalid metric value"} in {result.error}"
@@ -113,7 +113,7 @@ class TestTrue100Coverage:
 
         # Force invalid value and validate
         object.__setattr__(metric, "value", [1, 2, 3])  # List can't be converted to float
-        result = metric.validate()
+        result = metric.validate_domain_rules()
         assert result.is_failure
 
         # 4. FlextMetrics psutil ImportError (lines 19-20)

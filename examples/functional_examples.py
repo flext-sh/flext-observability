@@ -627,9 +627,10 @@ class PerformanceAnalytics:
 
         # Create alerts for performance issues
         if analysis_results.get("critical_issues"):
+            critical_count = len(analysis_results["critical_issues"])
             self.factory.alert(
                 "Performance Critical Issues",
-                f"Found {len(analysis_results['critical_issues'])} critical performance issues",
+                f"Found {critical_count} critical performance issues",
                 severity="high",
                 status="active",
                 tags={"analysis_id": flext_get_correlation_id().data},
@@ -669,12 +670,16 @@ class PerformanceAnalytics:
 
         return cpu_metrics
 
-    def _collect_memory_metrics(self, logger: FlextStructuredLogger) -> dict[str, float]:
+    def _collect_memory_metrics(
+        self, logger: FlextStructuredLogger
+    ) -> dict[str, float]:
         """Collect memory performance metrics."""
         logger.flext_observability_info("Collecting memory metrics")
 
         # Get system metrics
-        system_metrics_result = self.metrics_collector.flext_collect_system_observability_metrics()
+        system_metrics_result = (
+            self.metrics_collector.flext_collect_system_observability_metrics()
+        )
 
         if system_metrics_result.is_success:
             system_data = system_metrics_result.data
@@ -698,7 +703,9 @@ class PerformanceAnalytics:
 
         return memory_metrics
 
-    def _collect_network_metrics(self, logger: FlextStructuredLogger) -> dict[str, float]:
+    def _collect_network_metrics(
+        self, logger: FlextStructuredLogger
+    ) -> dict[str, float]:
         """Collect network performance metrics."""
         logger.flext_observability_info("Collecting network metrics")
 
@@ -719,7 +726,9 @@ class PerformanceAnalytics:
 
         return network_metrics
 
-    def _collect_database_metrics(self, logger: FlextStructuredLogger) -> dict[str, float]:
+    def _collect_database_metrics(
+        self, logger: FlextStructuredLogger
+    ) -> dict[str, float]:
         """Collect database performance metrics."""
         logger.flext_observability_info("Collecting database metrics")
 
@@ -741,19 +750,27 @@ class PerformanceAnalytics:
 
         return db_metrics
 
-    def _collect_application_performance_metrics(self, logger: FlextStructuredLogger) -> dict[str, float]:
+    def _collect_application_performance_metrics(
+        self, logger: FlextStructuredLogger
+    ) -> dict[str, float]:
         """Collect application-specific performance metrics."""
         logger.flext_observability_info("Collecting application performance metrics")
 
         # Get application metrics from collector
-        app_metrics_result = self.metrics_collector.flext_collect_observability_application_metrics()
+        app_metrics_result = (
+            self.metrics_collector.flext_collect_observability_application_metrics()
+        )
 
         if app_metrics_result.is_success:
             app_data = app_metrics_result.data
             return {
-                "events_processed": float(app_data.get("observability_events_processed", 0)),
+                "events_processed": float(
+                    app_data.get("observability_events_processed", 0)
+                ),
                 "error_rate": float(app_data.get("observability_error_rate", 0)),
-                "avg_processing_time_ms": float(app_data.get("observability_avg_processing_time_ms", 0)),
+                "avg_processing_time_ms": float(
+                    app_data.get("observability_avg_processing_time_ms", 0)
+                ),
                 "active_traces": float(app_data.get("observability_active_traces", 0)),
                 "alerts_active": float(app_data.get("observability_alerts_active", 0)),
             }
@@ -767,7 +784,9 @@ class PerformanceAnalytics:
             "alerts_active": secrets.uniform(0, 5),
         }
 
-    def _perform_performance_analysis(self, performance_data: dict[str, Any], logger: FlextStructuredLogger) -> dict[str, Any]:
+    def _perform_performance_analysis(
+        self, performance_data: dict[str, Any], logger: FlextStructuredLogger
+    ) -> dict[str, Any]:
         """Analyze collected performance data."""
         logger.flext_observability_info("Performing performance analysis")
 
@@ -821,7 +840,9 @@ class PerformanceAnalytics:
             "warnings": warnings,
         }
 
-    def _generate_performance_recommendations(self, analysis_results: dict[str, Any], logger: FlextStructuredLogger) -> list[str]:
+    def _generate_performance_recommendations(
+        self, analysis_results: dict[str, Any], logger: FlextStructuredLogger
+    ) -> list[str]:
         """Generate performance optimization recommendations."""
         logger.flext_observability_info("Generating performance recommendations")
 
@@ -919,7 +940,9 @@ def run_health_monitoring_demo() -> None:
             health_data = result.data
             print(f"Overall Status: {health_data['overall_status']}")
             print(f"Health Percentage: {health_data['health_percentage']:.1f}%")
-            print(f"Healthy Services: {health_data['healthy_services']}/{health_data['total_services']}")
+            healthy = health_data["healthy_services"]
+            total = health_data["total_services"]
+            print(f"Healthy Services: {healthy}/{total}")
 
             if health_data["critical_issues"]:
                 print(f"🚨 Critical Issues: {len(health_data['critical_issues'])}")
@@ -952,7 +975,8 @@ def run_performance_analytics_demo() -> None:
     if result.is_success:
         report = result.data
         print("\n📊 Performance Analysis Results:")
-        print(f"Overall Performance Score: {report['overall_performance_score']:.1f}/100")
+        score = report['overall_performance_score']
+        print(f"Overall Performance Score: {score:.1f}/100")
 
         # Show component scores
         analysis = report["analysis_results"]

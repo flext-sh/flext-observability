@@ -134,17 +134,38 @@ class FlextHealthService:
         self.container = container or FlextContainer()
         self.logger = get_logger(self.__class__.__name__)
 
-    def check_health(self, health: FlextHealthCheck) -> FlextResult[FlextHealthCheck]:
-        """Check health using flext-core patterns."""
+    def check_health(self, health: FlextHealthCheck | FlextResult[FlextHealthCheck]) -> FlextResult[FlextHealthCheck]:
+        """Check health using flext-core patterns - accepts both FlextHealthCheck and FlextResult[FlextHealthCheck]."""
         try:
-            self.logger.info(f"Health check: {health.component} = {health.status}")
-            return FlextResult.ok(health)
+            # Handle both direct FlextHealthCheck and FlextResult[FlextHealthCheck] for backward compatibility
+            if isinstance(health, FlextResult):
+                if health.is_failure:
+                    return FlextResult.fail(health.error or "Health check creation failed")
+                actual_health = health.data
+            else:
+                actual_health = health
+            
+            self.logger.info(f"Health check: {actual_health.component} = {actual_health.status}")
+            return FlextResult.ok(actual_health)
         except (ValueError, TypeError, AttributeError) as e:
+            # Safe access to health data for error reporting
+            component_name = "unknown"
+            health_status = "unknown"
+            try:
+                if isinstance(health, FlextResult) and health.is_success:
+                    component_name = health.data.component
+                    health_status = health.data.status
+                elif not isinstance(health, FlextResult):
+                    component_name = health.component
+                    health_status = health.status
+            except (AttributeError, TypeError):
+                pass  # Use defaults
+            
             error_result = create_observability_result_error(
                 "health_check",
                 f"Failed to check health: {e}",
-                component_name=health.component,
-                health_status=health.status,
+                component_name=component_name,
+                health_status=health_status,
             )
             return FlextResult.fail(error_result.error or "Unknown error")
 
