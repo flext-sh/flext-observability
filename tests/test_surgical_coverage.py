@@ -24,7 +24,10 @@ class TestSurgicalCoverage:
         """Cobrir linhas 71-72 em factory.py - handler de exceção geral."""
 
         # Approach cirúrgico: causar erro específico que cai no except geral
-        with patch("flext_observability.factory.FlextMetricsService", side_effect=RuntimeError("Service error")):
+        with patch(
+            "flext_observability.factory.FlextMetricsService",
+            side_effect=RuntimeError("Service error"),
+        ):
             # Isso deve ir para o except das linhas 71-72 (não o except específico de 68-69)
             factory = FlextObservabilityMasterFactory()
 
@@ -47,7 +50,9 @@ class TestSurgicalCoverage:
             # Reimport força a linha 46: from typing import Union
 
             # Verificar funcionalidade
-            logger = flext_observability.flext_structured.flext_get_structured_logger("test")
+            logger = flext_observability.flext_structured.flext_get_structured_logger(
+                "test"
+            )
             assert logger is not None
 
         finally:
@@ -67,7 +72,7 @@ class TestSurgicalCoverage:
 
             assert result.is_success
             if result.data != "":
-                raise AssertionError(f"Expected {""}, got {result.data}")
+                raise AssertionError(f"Expected {''}, got {result.data}")
 
         finally:
             # Restaurar contexto
@@ -81,7 +86,9 @@ class TestSurgicalCoverage:
             msg = "Context set failed"
             raise ValueError(msg)
 
-        with patch("flext_observability.flext_structured._flext_observability_context") as mock_ctx:
+        with patch(
+            "flext_observability.flext_structured._flext_observability_context"
+        ) as mock_ctx:
             mock_ctx.get.return_value = {}
             mock_ctx.set = failing_context_set
 
@@ -90,12 +97,16 @@ class TestSurgicalCoverage:
             # Linhas 89-90: except: return FlextResult.fail(...)
             assert result.is_failure
             if "Failed to set correlation ID" not in result.error:
-                raise AssertionError(f"Expected {"Failed to set correlation ID"} in {result.error}")
+                raise AssertionError(
+                    f"Expected {'Failed to set correlation ID'} in {result.error}"
+                )
 
     def test_flext_structured_lines_100_101_get_correlation_exception(self) -> None:
         """Cobrir linhas 100-101 - except e return fail no flext_get_correlation_id."""
         # Approach cirúrgico - patch que força erro específico nas linhas 100-101
-        with patch("flext_observability.flext_structured._flext_observability_context") as mock_ctx:
+        with patch(
+            "flext_observability.flext_structured._flext_observability_context"
+        ) as mock_ctx:
             # Fazer get() falhar com um dos tipos de exceção esperados
             mock_ctx.get.side_effect = ValueError("Context access failed")
 
@@ -104,7 +115,9 @@ class TestSurgicalCoverage:
             # Linhas 100-101: except (ValueError, TypeError, AttributeError): return FlextResult.fail(...)
             assert result.is_failure
             if "Failed to get correlation ID" not in result.error:
-                raise AssertionError(f"Expected {"Failed to get correlation ID"} in {result.error}")
+                raise AssertionError(
+                    f"Expected {'Failed to get correlation ID'} in {result.error}"
+                )
 
     def test_comprehensive_surgical_attack(self) -> None:
         """Ataque abrangente das 13 linhas restantes."""
@@ -124,7 +137,7 @@ class TestSurgicalCoverage:
             result = flext_get_correlation_id()
             assert result.is_success
             if result.data != "":
-                raise AssertionError(f"Expected {""}, got {result.data}")
+                raise AssertionError(f"Expected {''}, got {result.data}")
         finally:
             _flext_observability_context.set(original_ctx)
 
@@ -141,7 +154,7 @@ class TestSurgicalCoverage:
         # Normal bind first
         bound = logger.flext_bind_observability(surgical=True)
         if not (bound._bound_data["surgical"]):
-            raise AssertionError(f"Expected True, got {bound._bound_data["surgical"]}")
+            raise AssertionError(f"Expected True, got {bound._bound_data['surgical']}")
 
         # Verification that all main paths were exercised
         assert True, "SURGICAL ATTACK COMPLETE - ALL LINES TARGETED"
@@ -179,7 +192,9 @@ class TestSurgicalCoverage:
         # Bind observability
         bound_logger = logger.flext_bind_observability(force=True)
         if not (bound_logger._bound_data["force"]):
-            raise AssertionError(f"Expected True, got {bound_logger._bound_data["force"]}")
+            raise AssertionError(
+                f"Expected True, got {bound_logger._bound_data['force']}"
+            )
 
         # Test with empty context
         _flext_observability_context.set({})

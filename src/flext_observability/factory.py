@@ -64,8 +64,7 @@ class FlextObservabilityMasterFactory:
                     register_result = self.container.register(service_key, service)
                     if register_result.is_failure:
                         error_message = (
-                            f"Failed to register {service_key}: "
-                            f"{register_result.error}"
+                            f"Failed to register {service_key}: {register_result.error}"
                         )
                         self._logger.warning(error_message)
                 except (
@@ -87,7 +86,10 @@ class FlextObservabilityMasterFactory:
             self._logger.exception("Service setup error occurred")
 
     def metric(
-        self, name: str, value: float, **kwargs: object,
+        self,
+        name: str,
+        value: float,
+        **kwargs: object,
     ) -> FlextResult[object]:
         """Create and record metric."""
         try:
@@ -128,7 +130,10 @@ class FlextObservabilityMasterFactory:
             )
 
     def log(
-        self, message: str, level: str = "info", **kwargs: object,
+        self,
+        message: str,
+        level: str = "info",
+        **kwargs: object,
     ) -> FlextResult[object]:
         """Create and log entry."""
         try:
@@ -216,7 +221,10 @@ class FlextObservabilityMasterFactory:
             )
 
     def trace(
-        self, trace_id: str, operation: str, **kwargs: object,
+        self,
+        trace_id: str,
+        operation: str,
+        **kwargs: object,
     ) -> FlextResult[object]:
         """Start trace."""
         try:
@@ -236,9 +244,7 @@ class FlextObservabilityMasterFactory:
                 duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
                 status=str(kwargs.get("status", "pending")),
                 timestamp=(
-                    timestamp
-                    if isinstance(timestamp, datetime)
-                    else datetime.now(UTC)
+                    timestamp if isinstance(timestamp, datetime) else datetime.now(UTC)
                 ),
             )
 
@@ -262,7 +268,10 @@ class FlextObservabilityMasterFactory:
             )
 
     def health_check(
-        self, component: str, status: str = "unknown", **kwargs: object,
+        self,
+        component: str,
+        status: str = "unknown",
+        **kwargs: object,
     ) -> FlextResult[object]:
         """Create health check."""
         try:
@@ -278,9 +287,7 @@ class FlextObservabilityMasterFactory:
                 message=str(message),
                 metrics=metrics if isinstance(metrics, dict) else {},
                 timestamp=(
-                    timestamp
-                    if isinstance(timestamp, datetime)
-                    else datetime.now(UTC)
+                    timestamp if isinstance(timestamp, datetime) else datetime.now(UTC)
                 ),
             )
 
@@ -356,7 +363,10 @@ def log(message: str, level: str = "info", **kwargs: object) -> FlextResult[obje
 
 
 def alert(
-    title: str, message: str, severity: str = "low", **kwargs: object,
+    title: str,
+    message: str,
+    severity: str = "low",
+    **kwargs: object,
 ) -> FlextResult[object]:
     """Global alert function."""
     return get_global_factory().alert(title, message, severity, **kwargs)
@@ -368,7 +378,9 @@ def trace(trace_id: str, operation: str, **kwargs: object) -> FlextResult[object
 
 
 def health_check(
-    component: str, status: str = "unknown", **kwargs: object,
+    component: str,
+    status: str = "unknown",
+    **kwargs: object,
 ) -> FlextResult[object]:
     """Global health check function."""
     return get_global_factory().health_check(component, status, **kwargs)

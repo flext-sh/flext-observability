@@ -38,13 +38,19 @@ class FlextObservabilityPlatformV2:
         self._factory = FlextObservabilityMasterFactory(self.container)
 
     def metric(
-        self, name: str, value: float, **kwargs: object,
+        self,
+        name: str,
+        value: float,
+        **kwargs: object,
     ) -> FlextResult[object]:
         """Create metric using factory."""
         return self._factory.metric(name, value, **kwargs)
 
     def log(
-        self, message: str, level: str = "info", **kwargs: object,
+        self,
+        message: str,
+        level: str = "info",
+        **kwargs: object,
     ) -> FlextResult[object]:
         """Create log entry using factory."""
         return self._factory.log(message, level, **kwargs)
@@ -60,7 +66,10 @@ class FlextObservabilityPlatformV2:
         return self._factory.alert(title, message, severity, **kwargs)
 
     def trace(
-        self, trace_id: str, operation: str, **kwargs: object,
+        self,
+        trace_id: str,
+        operation: str,
+        **kwargs: object,
     ) -> FlextResult[object]:
         """Create trace using factory."""
         return self._factory.trace(trace_id, operation, **kwargs)

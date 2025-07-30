@@ -15,6 +15,7 @@ from flext_core import FlextResult, get_logger
 # Try to import psutil for system metrics, fallback if not available
 try:
     import psutil
+
     HAS_PSUTIL = True
 except ImportError:
     HAS_PSUTIL = False
@@ -128,7 +129,7 @@ class FlextMetricsCollector:
                 "system_metrics": system_result.data,
                 "application_metrics": app_result.data,
                 "collection_timestamp": time.time(),
-                "observability_version": "1.0.0",
+                "observability_version": "0.9.0",
             }
 
             return FlextResult.ok(summary)

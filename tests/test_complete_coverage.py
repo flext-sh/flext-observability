@@ -237,7 +237,7 @@ class TestFlextMetricsCollectorComplete:
         if "collection_timestamp" not in summary:
             raise AssertionError(f"Expected collection_timestamp in {summary}")
         assert "observability_version" in summary
-        if summary["observability_version"] != "1.0.0":
+        if summary["observability_version"] != "0.9.0":
             raise AssertionError(
                 f"Expected 1.0.0, got {summary['observability_version']}"
             )
@@ -1204,7 +1204,9 @@ class TestServicesComplete:
     def test_tracing_service_start_trace(self) -> None:
         """Testar início de trace."""
         service = FlextTracingService()
-        result = flext_create_trace(trace_id="t1", operation="op", config={"span_id": "s1"})
+        result = flext_create_trace(
+            trace_id="t1", operation="op", config={"span_id": "s1"}
+        )
         trace = result.data
 
         result = service.start_trace(trace)
@@ -1267,7 +1269,9 @@ class TestEntitiesValidation:
         """Testar validação com valor inválido."""
         # Since Pydantic validates at creation time, we test the validation error directly
         with pytest.raises(ValidationError):
-            FlextMetric(id="1", name="cpu", value="invalid")  # This should raise ValidationError
+            FlextMetric(
+                id="1", name="cpu", value="invalid"
+            )  # This should raise ValidationError
 
         # Test the underlying validation function for different invalid values
         if ObservabilityValidators.is_valid_metric_value("invalid"):
@@ -1302,7 +1306,9 @@ class TestEntitiesValidation:
 
     def test_flext_trace_validate_domain_rules_success(self) -> None:
         """Testar validação de trace com sucesso."""
-        result = flext_create_trace(trace_id="t1", operation="op", config={"span_id": "s1"})
+        result = flext_create_trace(
+            trace_id="t1", operation="op", config={"span_id": "s1"}
+        )
         trace = result.data
 
         result = trace.validate_domain_rules()
@@ -1311,7 +1317,9 @@ class TestEntitiesValidation:
 
     def test_flext_trace_validate_domain_rules_invalid_trace_id(self) -> None:
         """Testar validação com trace_id inválido."""
-        result = flext_create_trace(trace_id="", operation="op", config={"span_id": "s1"})
+        result = flext_create_trace(
+            trace_id="", operation="op", config={"span_id": "s1"}
+        )
         trace = result.data
 
         result = trace.validate_domain_rules()
@@ -1320,7 +1328,9 @@ class TestEntitiesValidation:
 
     def test_flext_trace_validate_domain_rules_invalid_operation(self) -> None:
         """Testar validação com operação inválida."""
-        result = flext_create_trace(trace_id="t1", operation="", config={"span_id": "s1"})
+        result = flext_create_trace(
+            trace_id="t1", operation="", config={"span_id": "s1"}
+        )
         trace = result.data
 
         result = trace.validate_domain_rules()
@@ -2035,7 +2045,9 @@ class TestServicesErrorHandling:
         with patch.object(
             service.logger, "info", side_effect=TypeError("Trace logging error")
         ):
-            result = flext_create_trace(trace_id="t1", operation="op", config={"span_id": "s1"})
+            result = flext_create_trace(
+                trace_id="t1", operation="op", config={"span_id": "s1"}
+            )
             trace = result.data
             result = service.start_trace(trace)
 
@@ -2421,7 +2433,7 @@ class TestCompleteLineCoverage:
         if status["status"] != "healthy":
             raise AssertionError(f"Expected {'healthy'}, got {status['status']}")
         assert status["service"] == "flext-observability"
-        if status["version"] != "1.0.0":
+        if status["version"] != "0.9.0":
             raise AssertionError(f"Expected {'1.0.0'}, got {status['version']}")
 
 
@@ -2877,7 +2889,7 @@ class TestCompleteModuleCoverage:
         """DRY helper - Test module version and basic exports."""
         # Testar versão
         assert hasattr(flext_observability, "__version__")
-        if flext_observability.__version__ != "1.0.0":
+        if flext_observability.__version__ != "0.9.0":
             raise AssertionError(
                 f"Expected {'1.0.0'}, got {flext_observability.__version__}"
             )
@@ -2890,7 +2902,7 @@ class TestCompleteModuleCoverage:
         if status["status"] != "healthy":
             raise AssertionError(f"Expected {'healthy'}, got {status['status']}")
         assert status["service"] == "flext-observability"
-        if status["version"] != "1.0.0":
+        if status["version"] != "0.9.0":
             raise AssertionError(f"Expected {'1.0.0'}, got {status['version']}")
 
     def _test_main_exports(self) -> None:

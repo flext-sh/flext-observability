@@ -119,6 +119,7 @@ class HealthRepository(ABC):
 # IN-MEMORY IMPLEMENTATIONS - For testing/development
 # ============================================================================
 
+
 class InMemoryMetricsRepository(MetricsRepository):
     """In-memory metrics repository for testing."""
 

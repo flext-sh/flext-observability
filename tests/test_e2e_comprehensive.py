@@ -67,10 +67,22 @@ class TestE2EComprehensiveObservability:
     def test_e2e_alert_escalation_flow(self) -> None:
         """E2E test: Create alerts with different severities, validate escalation."""
         alert_scenarios = [
-            ("low", "Database connection slow", {"component": "db", "threshold": "90%"}),
-            ("medium", "API rate limit approaching", {"service": "api", "current_rate": "85%"}),
+            (
+                "low",
+                "Database connection slow",
+                {"component": "db", "threshold": "90%"},
+            ),
+            (
+                "medium",
+                "API rate limit approaching",
+                {"service": "api", "current_rate": "85%"},
+            ),
             ("high", "Service unavailable", {"service": "payment", "status": "down"}),
-            ("critical", "Security breach detected", {"source": "firewall", "threat_level": "high"}),
+            (
+                "critical",
+                "Security breach detected",
+                {"source": "firewall", "threat_level": "high"},
+            ),
         ]
 
         for severity, message, tags in alert_scenarios:
@@ -95,7 +107,11 @@ class TestE2EComprehensiveObservability:
             trace_id,
             "user_request",
             span_id="span-parent",
-            span_attributes={"method": "POST", "endpoint": "/api/users", "user_agent": "test"},
+            span_attributes={
+                "method": "POST",
+                "endpoint": "/api/users",
+                "user_agent": "test",
+            },
             duration_ms=250,
             status="in_progress",
         )
@@ -124,10 +140,30 @@ class TestE2EComprehensiveObservability:
     def test_e2e_health_monitoring_comprehensive(self) -> None:
         """E2E test: Health monitoring across multiple components."""
         components = [
-            ("database", "healthy", "Connection OK", {"response_time": 15, "connections": 8}),
-            ("redis", "healthy", "Cache operational", {"memory_usage": "45%", "hit_rate": "92%"}),
-            ("api_gateway", "degraded", "High latency", {"avg_response": 850, "error_rate": "3%"}),
-            ("message_queue", "unhealthy", "Queue backing up", {"queue_size": 1500, "processing_rate": "low"}),
+            (
+                "database",
+                "healthy",
+                "Connection OK",
+                {"response_time": 15, "connections": 8},
+            ),
+            (
+                "redis",
+                "healthy",
+                "Cache operational",
+                {"memory_usage": "45%", "hit_rate": "92%"},
+            ),
+            (
+                "api_gateway",
+                "degraded",
+                "High latency",
+                {"avg_response": 850, "error_rate": "3%"},
+            ),
+            (
+                "message_queue",
+                "unhealthy",
+                "Queue backing up",
+                {"queue_size": 1500, "processing_rate": "low"},
+            ),
         ]
 
         for component, status, message, metrics in components:
@@ -159,7 +195,11 @@ class TestE2EComprehensiveObservability:
         log_result = self.factory.log(
             "Processing user request",
             level="info",
-            context={"correlation_id": correlation_id, "trace_id": trace_id, "user_id": "user-789"},
+            context={
+                "correlation_id": correlation_id,
+                "trace_id": trace_id,
+                "user_id": "user-789",
+            },
         )
 
         # Create correlated trace
@@ -255,7 +295,9 @@ class TestE2EComprehensiveObservability:
         total_time = end_time - start_time
 
         # Should complete 200 operations in reasonable time (< 2 seconds)
-        assert total_time < 2.0, f"Performance test took {total_time:.2f}s, expected < 2.0s"
+        assert total_time < 2.0, (
+            f"Performance test took {total_time:.2f}s, expected < 2.0s"
+        )
 
     def test_e2e_data_validation_and_integrity(self) -> None:
         """E2E test: Data validation and integrity across all operations."""
@@ -267,13 +309,14 @@ class TestE2EComprehensiveObservability:
             ("zero_metric", 0.0, "count"),
             ("large_metric", 999999999.99, "bytes"),
             ("small_metric", 0.000001, "ms"),
-
             # String edge cases
             ("unicode_metric_🚀", 42.0, "requests"),
         ]
 
         for name, value, unit in edge_cases:
-            result = self.factory.metric(name, value, unit=unit, timestamp=test_timestamp)
+            result = self.factory.metric(
+                name, value, unit=unit, timestamp=test_timestamp
+            )
             assert result.is_success
 
     def test_e2e_complete_observability_workflow(self) -> None:

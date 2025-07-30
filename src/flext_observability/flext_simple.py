@@ -125,12 +125,12 @@ def flext_create_health_check(
     message: str = "",
     timestamp: datetime | None = None,
     *,
-    id: str | None = None,  # Add optional id parameter for compatibility
+    health_id: str | None = None,  # Add optional id parameter for compatibility
 ) -> FlextResult[FlextHealthCheck]:
     """Create observability health check with simple parameters."""
     try:
         health_check = FlextHealthCheck(
-            id=id or str(uuid.uuid4()),  # Use provided id or generate new one
+            id=health_id or str(uuid.uuid4()),  # Use provided id or generate new one
             component=component,
             status=status,
             message=message,

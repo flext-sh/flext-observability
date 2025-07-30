@@ -8,7 +8,7 @@ Main entry point for flext-observability package.
 
 from __future__ import annotations
 
-__version__ = "1.0.0"
+__version__ = "0.9.0"
 
 # Core entities and types
 # Import get_logger from flext_core for convenience
@@ -72,7 +72,7 @@ def flext_health_status() -> dict[str, str]:
     return {
         "status": "healthy",
         "service": "flext-observability",
-        "version": "1.0.0",
+        "version": "0.9.0",
     }
 
 

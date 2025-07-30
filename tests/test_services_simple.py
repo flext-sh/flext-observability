@@ -86,7 +86,13 @@ class TestServicesBasic:
         """Test services initialization with container."""
         container = FlextContainer()
 
-        services: list[FlextMetricsService | FlextLoggingService | FlextTracingService | FlextAlertService | FlextHealthService] = [
+        services: list[
+            FlextMetricsService
+            | FlextLoggingService
+            | FlextTracingService
+            | FlextAlertService
+            | FlextHealthService
+        ] = [
             FlextMetricsService(container),
             FlextLoggingService(container),
             FlextTracingService(container),
