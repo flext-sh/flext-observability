@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
+from flext_observability.factory import get_global_factory
 from flext_observability.services import (
     FlextAlertService,
     FlextHealthService,
@@ -24,6 +25,8 @@ from flext_observability.services import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+# Function type aliases - keeping simple for mypy strict compliance
 
 # ============================================================================
 # OBSERVABILITY MONITORING ORCHESTRATION - Real Implementation with SOLID
@@ -131,7 +134,7 @@ class FlextObservabilityMonitor:
             if health_result.is_failure:
                 return health_result
 
-            health_data = health_result.data
+            health_data = health_result.data or {}
 
             # Add monitor-specific health information
             monitor_health = {
@@ -172,6 +175,8 @@ class FlextObservabilityMonitor:
                     metric_result.error or "Failed to create metric",
                 )
 
+            if metric_result.data is None:
+                return FlextResult.fail("Metric creation returned None")
             return self._metrics_service.record_metric(metric_result.data).map(
                 lambda _: None,
             )
@@ -186,7 +191,7 @@ class FlextObservabilityMonitor:
         return self._metrics_service.get_metrics_summary()
 
 
-def flext_monitor_function(
+def flext_monitor_function(  # type: ignore[explicit-any]
     monitor: FlextObservabilityMonitor | None = None,
     metric_name: str | None = None,
 ) -> Callable[[Callable[..., object]], Callable[..., object]]:
@@ -196,20 +201,13 @@ def flext_monitor_function(
     while maintaining code quality standards and SOLID principles.
     """
 
-    def decorator(func: Callable[..., object]) -> Callable[..., object]:
+    def decorator(func: Callable[..., object]) -> Callable[..., object]:  # type: ignore[explicit-any]
         def wrapper(*args: object, **kwargs: object) -> object:
             # Get or create monitor instance
             active_monitor = monitor
             if not active_monitor:
-                try:
-                    from flext_observability.factory import (
-                        get_global_factory,  # noqa: PLC0415
-                    )
-
-                    factory = get_global_factory()
-                    active_monitor = getattr(factory, "_monitor", None)
-                except (AttributeError, ImportError):
-                    pass
+                factory = get_global_factory()
+                active_monitor = getattr(factory, "_monitor", None)
 
             # Execute function normally if no monitoring
             if not (active_monitor and active_monitor.flext_is_monitoring_active()):
@@ -234,7 +232,7 @@ def flext_monitor_function(
     return decorator
 
 
-def _execute_monitored_function(
+def _execute_monitored_function(  # type: ignore[explicit-any]
     func: Callable[..., object],
     args: tuple[object, ...],
     kwargs: dict[str, object],
@@ -287,14 +285,13 @@ def _execute_monitored_function(
             try:
                 from flext_observability.entities import flext_alert  # noqa: PLC0415
 
-                alert_result = flext_alert(
+                alert = flext_alert(
                     title=f"Function execution error: {function_name}",
                     message=f"Function failed with {type(e).__name__}",
                     severity="error",
                     source="function_monitor",
                 )
-                if alert_result.is_success:
-                    monitor._alert_service.create_alert(alert_result.data)
+                monitor._alert_service.create_alert(alert)
             except (ValueError, TypeError, AttributeError):
                 pass  # Alert creation failed, continue with exception propagation
 

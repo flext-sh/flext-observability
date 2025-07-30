@@ -12,7 +12,7 @@ from __future__ import annotations
 import threading
 import time
 from collections import defaultdict
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
@@ -193,24 +193,28 @@ class FlextMetricsService:
         """Export metrics in Prometheus format for real integration."""
         try:
             with self._metrics_lock:
-                prometheus_lines = []
+                prometheus_lines: list[str] = []
 
                 # Export counters
                 for name, value in self._metric_counters.items():
-                    prometheus_lines.append(f"# TYPE {name} counter")
-                    prometheus_lines.append(f"{name} {value}")
+                    prometheus_lines.extend(
+                        (f"# TYPE {name} counter", f"{name} {value}"),
+                    )
 
                 # Export gauges
                 for name, value in self._metric_gauges.items():
-                    prometheus_lines.append(f"# TYPE {name} gauge")
-                    prometheus_lines.append(f"{name} {value}")
+                    prometheus_lines.extend((f"# TYPE {name} gauge", f"{name} {value}"))
 
                 # Export histograms (simplified)
                 for name, values in self._metric_histograms.items():
                     if values:
-                        prometheus_lines.append(f"# TYPE {name} histogram")
-                        prometheus_lines.append(f"{name}_count {len(values)}")
-                        prometheus_lines.append(f"{name}_sum {sum(values)}")
+                        prometheus_lines.extend(
+                            (
+                                f"# TYPE {name} histogram",
+                                f"{name}_count {len(values)}",
+                                f"{name}_sum {sum(values)}",
+                            ),
+                        )
 
                 prometheus_output = "\n".join(prometheus_lines)
                 return FlextResult.ok(prometheus_output)
@@ -309,13 +313,15 @@ class FlextTracingService:
                 start_time = time.time()
 
                 # Create comprehensive trace context
-                trace_context = {
+                trace_context: dict[str, object] = {
                     "trace_id": trace.trace_id,
                     "operation": trace.operation,
                     "start_time": start_time,
                     "status": "active",
                     "service_name": getattr(
-                        trace, "service_name", "flext-observability"
+                        trace,
+                        "service_name",
+                        "flext-observability",
                     ),
                     "parent_trace_id": getattr(trace, "parent_trace_id", None),
                     "correlation_id": getattr(trace, "correlation_id", trace.trace_id),
@@ -326,7 +332,7 @@ class FlextTracingService:
 
                 # Handle trace hierarchy for distributed tracing
                 parent_trace_id = trace_context.get("parent_trace_id")
-                if parent_trace_id:
+                if parent_trace_id and isinstance(parent_trace_id, str):
                     self._trace_hierarchy[parent_trace_id].append(trace.trace_id)
 
                 # Store active trace
@@ -355,14 +361,17 @@ class FlextTracingService:
             return FlextResult.fail(error_result.error or "Unknown error")
 
     def add_span_to_trace(
-        self, trace_id: str, span_name: str, **span_attributes: object
+        self,
+        trace_id: str,
+        span_name: str,
+        **span_attributes: object,
     ) -> FlextResult[dict[str, object]]:
         """Add span to existing trace with real span tracking."""
         try:
             with self._traces_lock:
                 if trace_id not in self._active_traces:
                     return FlextResult.fail(
-                        f"Trace '{trace_id}' not found or not active"
+                        f"Trace '{trace_id}' not found or not active",
                     )
 
                 span_id = f"{trace_id}_{len(self._trace_spans[trace_id])}"
@@ -382,7 +391,9 @@ class FlextTracingService:
 
                 # Add span to trace
                 self._trace_spans[trace_id].append(span)
-                self._active_traces[trace_id]["spans"].append(span_id)
+                spans_list = self._active_traces[trace_id]["spans"]
+                if isinstance(spans_list, list):
+                    cast("list[str]", spans_list).append(span_id)
 
                 return FlextResult.ok(span)
 
@@ -390,20 +401,25 @@ class FlextTracingService:
             return FlextResult.fail(f"Failed to add span to trace '{trace_id}': {e}")
 
     def finish_trace(
-        self, trace_id: str, status: str = "completed"
+        self,
+        trace_id: str,
+        status: str = "completed",
     ) -> FlextResult[dict[str, object]]:
         """Finish trace with comprehensive context and timing."""
         try:
             with self._traces_lock:
                 if trace_id not in self._active_traces:
                     return FlextResult.fail(
-                        f"Trace '{trace_id}' not found or not active"
+                        f"Trace '{trace_id}' not found or not active",
                     )
 
                 # Complete the trace
                 trace_context = self._active_traces[trace_id]
                 end_time = time.time()
-                duration = end_time - trace_context["start_time"]
+                start_time = trace_context["start_time"]
+                duration = end_time - (
+                    start_time if isinstance(start_time, (int, float)) else 0
+                )
 
                 # Update trace with completion info
                 trace_context.update(
@@ -412,7 +428,7 @@ class FlextTracingService:
                         "duration_seconds": duration,
                         "status": status,
                         "span_count": len(self._trace_spans[trace_id]),
-                    }
+                    },
                 )
 
                 # Move to completed traces
@@ -466,6 +482,8 @@ class FlextTracingService:
                 return trace_info_result
 
             trace_info = trace_info_result.data
+            if trace_info is None:
+                return FlextResult.fail(f"No trace data found for '{trace_id}'")
 
             # Create Jaeger-compatible format
             jaeger_trace = {
@@ -476,37 +494,50 @@ class FlextTracingService:
                         "spanID": span.get("span_id", ""),
                         "operationName": span.get("name", ""),
                         "startTime": int(
-                            span.get("start_time", 0) * 1_000_000
+                            cast("float", span.get("start_time") or 0) * 1_000_000
+                            if isinstance(span.get("start_time"), (int, float))
+                            else 0,
                         ),  # microseconds
-                        "duration": int(span.get("duration_seconds", 0) * 1_000_000),
+                        "duration": int(
+                            cast("float", span.get("duration_seconds") or 0) * 1_000_000
+                            if isinstance(span.get("duration_seconds"), (int, float))
+                            else 0,
+                        ),
                         "tags": [
                             {"key": k, "value": str(v)}
-                            for k, v in span.get("attributes", {}).items()
+                            for k, v in cast(
+                                "dict[str, object]", span.get("attributes") or {},
+                            ).items()
                         ],
                         "process": {
                             "serviceName": trace_info.get(
-                                "service_name", "flext-observability"
+                                "service_name",
+                                "flext-observability",
                             ),
                             "tags": [],
                         },
                     }
-                    for span in trace_info.get("trace_spans", [])
+                    for span in cast(
+                        "list[dict[str, object]]", trace_info.get("trace_spans") or [],
+                    )
+                    if isinstance(span, dict)
                 ],
                 "processes": {
                     "p1": {
                         "serviceName": trace_info.get(
-                            "service_name", "flext-observability"
+                            "service_name",
+                            "flext-observability",
                         ),
                         "tags": [],
-                    }
+                    },
                 },
             }
 
-            return FlextResult.ok(jaeger_trace)
+            return FlextResult.ok(cast("dict[str, object]", jaeger_trace))
 
         except (ValueError, TypeError, KeyError, ArithmeticError) as e:
             return FlextResult.fail(
-                f"Failed to export Jaeger format for trace '{trace_id}': {e}"
+                f"Failed to export Jaeger format for trace '{trace_id}': {e}",
             )
 
     def get_tracing_summary(self) -> FlextResult[dict[str, object]]:
@@ -598,22 +629,27 @@ class FlextHealthService:
 
         # Service metrics
         self._total_health_checks = 0
-        self._healthy_components = set()
-        self._unhealthy_components = set()
+        self._healthy_components: set[str] = set()
+        self._unhealthy_components: set[str] = set()
         self._service_start_time = time.time()
 
     def _extract_actual_health(
-        self, health: FlextHealthCheck | FlextResult[FlextHealthCheck]
+        self,
+        health: FlextHealthCheck | FlextResult[FlextHealthCheck],
     ) -> FlextResult[FlextHealthCheck]:
         """Extract actual health check from various input types."""
         if isinstance(health, FlextResult):
             if health.is_failure:
                 return FlextResult.fail(health.error or "Health check creation failed")
+            if health.data is None:
+                return FlextResult.fail("Health check data is None")
             return FlextResult.ok(health.data)
         return FlextResult.ok(health)
 
     def _create_health_record(
-        self, actual_health: FlextHealthCheck, check_time: float
+        self,
+        actual_health: FlextHealthCheck,
+        check_time: float,
     ) -> dict[str, object]:
         """Create comprehensive health record."""
         return {
@@ -627,10 +663,12 @@ class FlextHealthService:
         }
 
     def _update_component_health_sets(
-        self, component_name: str, health_status: str
+        self,
+        component_name: str,
+        health_status: str,
     ) -> None:
         """Update component health sets based on status."""
-        if health_status in ("healthy", "ok", "up"):
+        if health_status in {"healthy", "ok", "up"}:
             self._healthy_components.add(component_name)
             self._unhealthy_components.discard(component_name)
         else:
@@ -638,14 +676,16 @@ class FlextHealthService:
             self._healthy_components.discard(component_name)
 
     def _check_persistent_unhealthy(
-        self, component_name: str, health_status: str
+        self,
+        component_name: str,
+        health_status: str,
     ) -> None:
         """Check for persistent unhealthy status and log warnings."""
         recent_checks = self._health_history[component_name][
             -self._unhealthy_threshold :
         ]
         if len(recent_checks) >= self._unhealthy_threshold and all(
-            check["status"] not in ("healthy", "ok", "up") for check in recent_checks
+            check["status"] not in {"healthy", "ok", "up"} for check in recent_checks
         ):
             self.logger.warning(
                 "Component consistently unhealthy",
@@ -714,7 +754,11 @@ class FlextHealthService:
             component_name = "unknown"
             health_status = "unknown"
             try:
-                if isinstance(health, FlextResult) and health.is_success:
+                if (
+                    isinstance(health, FlextResult)
+                    and health.is_success
+                    and health.data
+                ):
                     component_name = health.data.component
                     health_status = health.data.status
                 elif not isinstance(health, FlextResult):
@@ -786,14 +830,15 @@ class FlextHealthService:
             return FlextResult.fail(error_result.error or "Unknown error")
 
     def get_component_health_history(
-        self, component_name: str
+        self,
+        component_name: str,
     ) -> FlextResult[list[dict[str, object]]]:
         """Get health history for a specific component."""
         try:
             with self._health_lock:
                 if component_name not in self._health_history:
                     return FlextResult.fail(
-                        f"No health history found for component '{component_name}'"
+                        f"No health history found for component '{component_name}'",
                     )
 
                 history = self._health_history[component_name].copy()
@@ -801,7 +846,7 @@ class FlextHealthService:
 
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult.fail(
-                f"Failed to get health history for '{component_name}': {e}"
+                f"Failed to get health history for '{component_name}': {e}",
             )
 
     def perform_system_health_check(self) -> FlextResult[dict[str, object]]:
@@ -877,7 +922,7 @@ class FlextHealthService:
                 "total_health_checks": self._total_health_checks,
             }
 
-            return FlextResult.ok(system_checks)
+            return FlextResult.ok(cast("dict[str, object]", system_checks))
 
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult.fail(f"System health check failed: {e}")
