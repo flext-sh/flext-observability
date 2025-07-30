@@ -9,13 +9,12 @@ Entities simplificadas usando apenas padrões essenciais do flext-core.
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from decimal import (
+    Decimal,  # noqa: TC003 - Required at runtime for Pydantic field definitions
+)
+from typing import cast
 
-if TYPE_CHECKING:
-    from decimal import Decimal
-
-# Note: Removed Any import - using object instead for better type safety
-from flext_core import FlextEntity, FlextResult
+from flext_core import FlextEntity, FlextGenerators, FlextResult
 from pydantic import Field
 
 # ============================================================================
@@ -68,7 +67,8 @@ class FlextTrace(FlextEntity):
     operation: str = Field(..., description="Operation name")
     span_id: str = Field(..., description="Span ID")
     span_attributes: dict[str, object] = Field(
-        default_factory=dict, description="Span attributes",
+        default_factory=dict,
+        description="Span attributes",
     )
     duration_ms: int = Field(default=0, description="Duration in milliseconds")
     status: str = Field(default="pending", description="Trace status")
@@ -111,7 +111,8 @@ class FlextHealthCheck(FlextEntity):
     status: str = Field(default="unknown", description="Health status")
     message: str = Field(default="", description="Health message")
     metrics: dict[str, object] = Field(
-        default_factory=dict, description="Health metrics",
+        default_factory=dict,
+        description="Health metrics",
     )
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
@@ -125,12 +126,128 @@ class FlextHealthCheck(FlextEntity):
 
 
 # ============================================================================
+# FACTORY FUNCTIONS - Create entities with proper validation
+# ============================================================================
+
+
+def flext_alert(
+    title: str,
+    message: str,
+    severity: str = "low",
+    status: str = "active",
+    **kwargs: object,
+) -> FlextAlert:
+    """Create a FlextAlert entity with proper validation."""
+    tags = cast("dict[str, str]", kwargs.get("tags", {}))
+    timestamp = cast("datetime", kwargs.get("timestamp", datetime.now(UTC)))
+
+    # Create with explicit kwargs for better type safety
+    if "id" in kwargs and "version" in kwargs and "created_at" in kwargs:
+        return FlextAlert(
+            id=cast("str", kwargs["id"]),
+            version=cast("int", kwargs["version"]),
+            created_at=cast("datetime", kwargs["created_at"]),
+            title=title,
+            message=message,
+            severity=severity,
+            status=status,
+            tags=tags,
+            timestamp=timestamp,
+        )
+    if "id" in kwargs:
+        return FlextAlert(
+            id=cast("str", kwargs["id"]),
+            title=title,
+            message=message,
+            severity=severity,
+            status=status,
+            tags=tags,
+            timestamp=timestamp,
+        )
+    return FlextAlert(
+        id=FlextGenerators.generate_entity_id(),
+        title=title,
+        message=message,
+        severity=severity,
+        status=status,
+        tags=tags,
+        timestamp=timestamp,
+    )
+
+
+def flext_trace(
+    trace_id: str,
+    operation: str,
+    span_id: str,
+    status: str = "pending",
+    **kwargs: object,
+) -> FlextTrace:
+    """Create a FlextTrace entity with proper validation."""
+    span_attributes = cast("dict[str, object]", kwargs.get("span_attributes", {}))
+    duration_ms = cast("int", kwargs.get("duration_ms", 0))
+    timestamp = cast("datetime", kwargs.get("timestamp", datetime.now(UTC)))
+
+    # Create with explicit kwargs for better type safety
+    if "id" in kwargs:
+        return FlextTrace(
+            id=cast("str", kwargs["id"]),
+            trace_id=trace_id,
+            operation=operation,
+            span_id=span_id,
+            span_attributes=span_attributes,
+            duration_ms=duration_ms,
+            status=status,
+            timestamp=timestamp,
+        )
+    return FlextTrace(
+        id=FlextGenerators.generate_entity_id(),
+        trace_id=trace_id,
+        operation=operation,
+        span_id=span_id,
+        span_attributes=span_attributes,
+        duration_ms=duration_ms,
+        status=status,
+        timestamp=timestamp,
+    )
+
+
+def flext_health_check(
+    component: str,
+    status: str = "unknown",
+    message: str = "",
+    **kwargs: object,
+) -> FlextHealthCheck:
+    """Create a FlextHealthCheck entity with proper validation."""
+    metrics = cast("dict[str, object]", kwargs.get("metrics", {}))
+    timestamp = cast("datetime", kwargs.get("timestamp", datetime.now(UTC)))
+
+    # Create with explicit kwargs for better type safety
+    if "id" in kwargs:
+        return FlextHealthCheck(
+            id=cast("str", kwargs["id"]),
+            component=component,
+            status=status,
+            message=message,
+            metrics=metrics,
+            timestamp=timestamp,
+        )
+    return FlextHealthCheck(
+        id=FlextGenerators.generate_entity_id(),
+        component=component,
+        status=status,
+        message=message,
+        metrics=metrics,
+        timestamp=timestamp,
+    )
+
+
+# ============================================================================
 # PYDANTIC MODEL REBUILDING - Fix "not fully defined" errors
 # ============================================================================
 
-# Rebuild all models after Decimal import to fix Pydantic forward reference issues
+# Models are now properly defined with Decimal import at the top
 FlextMetric.model_rebuild()
-FlextLogEntry.model_rebuild()
-FlextAlert.model_rebuild()
 FlextTrace.model_rebuild()
+FlextAlert.model_rebuild()
+FlextLogEntry.model_rebuild()
 FlextHealthCheck.model_rebuild()

@@ -21,6 +21,9 @@ from flext_observability.entities import (
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
+    flext_alert,  # Import for DRY principle - reuse existing function
+    flext_health_check,  # Import for DRY principle - reuse existing function
+    flext_trace,  # Import for DRY principle - reuse existing function
 )
 
 # ============================================================================
@@ -121,11 +124,13 @@ def flext_create_health_check(
     status: str = "unknown",
     message: str = "",
     timestamp: datetime | None = None,
+    *,
+    id: str | None = None,  # Add optional id parameter for compatibility
 ) -> FlextResult[FlextHealthCheck]:
     """Create observability health check with simple parameters."""
     try:
         health_check = FlextHealthCheck(
-            id=str(uuid.uuid4()),
+            id=id or str(uuid.uuid4()),  # Use provided id or generate new one
             component=component,
             status=status,
             message=message,
@@ -142,4 +147,7 @@ __all__ = [
     "flext_create_log_entry",
     "flext_create_metric",
     "flext_create_trace",
+    "flext_alert",  # Re-expose from entities for DRY principle
+    "flext_health_check",  # Re-expose from entities for DRY principle
+    "flext_trace",  # Re-expose from entities for DRY principle
 ]

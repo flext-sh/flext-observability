@@ -8,7 +8,7 @@ from __future__ import annotations
 import asyncio
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import pytest
 import pytest_asyncio
@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 
     from _pytest.config import Config
     from _pytest.nodes import Item
+    from pytest_mock import MockerFixture
 
 
 # Add project root to path for imports
@@ -149,7 +150,7 @@ def histogram_metric(metrics_registry: CollectorRegistry) -> object:
 
 
 @pytest_asyncio.fixture
-async def tracer_provider() -> AsyncIterator[Any]:  # type: ignore[explicit-any,misc]
+async def tracer_provider() -> AsyncIterator[TracerProvider]:
     """Create a tracer provider for testing."""
     # Create in-memory exporter for testing
     exporter = InMemorySpanExporter()
@@ -192,11 +193,11 @@ def span_context() -> object:
 def structured_logger() -> object:
     """Create a structured logger for testing."""
 
-    return get_logger("test-logger")  # type: ignore[attr-defined]
+    return get_logger("test-logger")
 
 
 @pytest.fixture
-def log_context() -> dict[str, Any]:
+def log_context() -> dict[str, str]:
     """Create log context for testing."""
     return {
         "user_id": "test-user-123",
@@ -212,7 +213,7 @@ def log_context() -> dict[str, Any]:
 
 
 @pytest_asyncio.fixture
-async def health_checker() -> AsyncIterator[Any]:
+async def health_checker() -> AsyncIterator[object]:
     """Create a health checker for testing."""
 
     checker = HealthChecker()
@@ -222,7 +223,7 @@ async def health_checker() -> AsyncIterator[Any]:
 
 
 @pytest.fixture
-def health_check_config() -> dict[str, Any]:
+def health_check_config() -> dict[str, object]:
     """Create health check configuration for testing."""
     return {
         "checks": {
@@ -252,7 +253,7 @@ def health_check_config() -> dict[str, Any]:
 
 
 @pytest.fixture
-def mock_prometheus_client(mocker: object) -> object:
+def mock_prometheus_client(mocker: MockerFixture) -> object:
     """Mock Prometheus client for testing."""
     mock = mocker.Mock()
     mock.push_to_gateway.return_value = None
@@ -260,7 +261,7 @@ def mock_prometheus_client(mocker: object) -> object:
 
 
 @pytest.fixture
-def mock_otel_exporter(mocker: object) -> object:
+def mock_otel_exporter(mocker: MockerFixture) -> object:
     """Mock OpenTelemetry exporter for testing."""
     mock = mocker.Mock()
     mock.export.return_value = mocker.Mock(success=True)
@@ -273,7 +274,7 @@ def mock_otel_exporter(mocker: object) -> object:
 
 
 @pytest.fixture
-def sample_metric_data() -> dict[str, Any]:
+def sample_metric_data() -> dict[str, object]:
     """Sample metric data for testing."""
     return {
         "name": "http_requests_total",
@@ -288,7 +289,7 @@ def sample_metric_data() -> dict[str, Any]:
 
 
 @pytest.fixture
-def sample_trace_data() -> dict[str, Any]:
+def sample_trace_data() -> dict[str, object]:
     """Sample trace data for testing."""
     return {
         "trace_id": "123456789abcdef0123456789abcdef0",
