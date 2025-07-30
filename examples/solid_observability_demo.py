@@ -2,7 +2,7 @@
 """SOLID Observability Demo - Real functionality demonstration.
 
 This example demonstrates the real functionality implemented in flext-observability
-following SOLID principles with metrics collection, distributed tracing, health monitoring,
+following SOLID principles with metrics, tracing, health monitoring,
 and function monitoring capabilities.
 """
 
@@ -208,10 +208,13 @@ def demo_function_monitoring(monitor: FlextObservabilityMonitor) -> None:
     try:
 
         @flext_monitor_function(monitor=monitor, metric_name="error_demo")
+        def _create_demo_error() -> ValueError:
+            """Create demo error for testing."""
+            return ValueError("Simulated error for demo")
+
         def function_with_error() -> None:
             """Function that will raise an error."""
-            msg = "Simulated error for demo"
-            raise ValueError(msg)
+            raise _create_demo_error()
 
         function_with_error()
     except ValueError:
@@ -265,7 +268,8 @@ def show_health_status(monitor: FlextObservabilityMonitor) -> None:
     monitor_metrics = health_data.get("monitor_metrics", {})
     if monitor_metrics:
         print(
-            f"  ⏱️ Monitor uptime: {monitor_metrics.get('monitor_uptime_seconds', 0):.1f}s"
+            f"  ⏱️ Monitor uptime: "
+            f"{monitor_metrics.get('monitor_uptime_seconds', 0):.1f}s"
         )
         print(
             f"  🔧 Functions monitored: {monitor_metrics.get('functions_monitored', 0)}"
