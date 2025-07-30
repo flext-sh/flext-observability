@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from decimal import (
     Decimal,  # noqa: TC003 - Required at runtime for Pydantic field definitions
 )
-from typing import cast
+from typing import ClassVar, cast
 
 from flext_core import FlextEntity, FlextGenerators, FlextResult
 from pydantic import Field
@@ -25,11 +25,16 @@ from pydantic import Field
 class FlextMetric(FlextEntity):
     """Simplified metric entity using flext-core base."""
 
+    model_config: ClassVar[dict[str, object]] = {
+        "frozen": False,  # Allow dynamic attributes
+    }
+
     name: str = Field(..., description="Metric name")
     value: float | Decimal = Field(..., description="Metric value")
     unit: str = Field(default="", description="Metric unit")
     tags: dict[str, str] = Field(default_factory=dict, description="Metric tags")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    metric_type: str = Field(default="gauge", description="Metric type")
 
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate metric domain rules."""
@@ -209,6 +214,65 @@ def flext_trace(
         status=status,
         timestamp=timestamp,
     )
+
+
+def flext_metric(
+    name: str,
+    value: float | Decimal,
+    unit: str = "",
+    metric_type: str = "gauge",
+    **kwargs: object,
+) -> FlextResult[FlextMetric]:
+    """Create a FlextMetric entity with proper validation and type safety."""
+    try:
+        tags = cast("dict[str, str]", kwargs.get("tags", {}))
+        timestamp = cast("datetime", kwargs.get("timestamp", datetime.now(UTC)))
+
+        # Create with explicit kwargs for better type safety
+        if "id" in kwargs and "version" in kwargs and "created_at" in kwargs:
+            metric = FlextMetric(
+                id=cast("str", kwargs["id"]),
+                version=cast("int", kwargs["version"]),
+                created_at=cast("datetime", kwargs["created_at"]),
+                name=name,
+                value=value,
+                unit=unit,
+                tags=tags,
+                timestamp=timestamp,
+            )
+        elif "id" in kwargs:
+            metric = FlextMetric(
+                id=cast("str", kwargs["id"]),
+                name=name,
+                value=value,
+                unit=unit,
+                tags=tags,
+                timestamp=timestamp,
+            )
+        else:
+            metric = FlextMetric(
+                id=FlextGenerators.generate_entity_id(),
+                name=name,
+                value=value,
+                unit=unit,
+                tags=tags,
+                timestamp=timestamp,
+            )
+
+        # Set metric_type directly on the field
+        metric.metric_type = metric_type
+
+        # Validate domain rules
+        validation_result = metric.validate_domain_rules()
+        if validation_result.is_failure:
+            return FlextResult.fail(
+                validation_result.error or "Metric validation failed",
+            )
+
+        return FlextResult.ok(metric)
+
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to create metric: {e}")
 
 
 def flext_health_check(

@@ -69,8 +69,8 @@ class ObservabilityValidators:
     def is_valid_log_message(value: object) -> bool:
         """Validate log message."""
         return (
-            ObservabilityValidators.is_valid_string(value) and
-            len(str(value)) <= MAX_LOG_MESSAGE_LENGTH
+            ObservabilityValidators.is_valid_string(value)
+            and len(str(value)) <= MAX_LOG_MESSAGE_LENGTH
         )
 
     @staticmethod
@@ -91,8 +91,8 @@ class ObservabilityValidators:
     def is_valid_alert_title(value: object) -> bool:
         """Validate alert title."""
         return (
-            ObservabilityValidators.is_valid_string(value) and
-            len(str(value)) <= MAX_ALERT_TITLE_LENGTH
+            ObservabilityValidators.is_valid_string(value)
+            and len(str(value)) <= MAX_ALERT_TITLE_LENGTH
         )
 
     @staticmethod
@@ -120,6 +120,7 @@ class ObservabilityValidators:
 # ============================================================================
 # EXCEPTIONS - Consolidated with validation
 # ============================================================================
+
 
 def create_observability_result_error(
     error_type: str,

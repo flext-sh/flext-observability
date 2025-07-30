@@ -18,7 +18,10 @@ class TestTrue100Coverage:
     def test_factory_lines_77_84_outer_exception_coverage(self) -> None:
         """Cover factory.py lines 77-84 - outer exception handler in _setup_services."""
         # Cause RuntimeError during service initialization to hit outer exception handler
-        with patch("flext_observability.factory.FlextMetricsService", side_effect=RuntimeError("Service failure")):
+        with patch(
+            "flext_observability.factory.FlextMetricsService",
+            side_effect=RuntimeError("Service failure"),
+        ):
             factory = FlextObservabilityMasterFactory()
             assert factory.container is not None
 
@@ -59,7 +62,7 @@ class TestTrue100Coverage:
         result = metric.validate_domain_rules()
         assert result.is_failure
         if "Invalid metric value" not in result.error:
-            msg = f"Expected {"Invalid metric value"} in {result.error}"
+            msg = f"Expected {'Invalid metric value'} in {result.error}"
             raise AssertionError(msg)
 
     def test_flext_metrics_lines_19_20_psutil_import_error(self) -> None:
@@ -88,7 +91,10 @@ class TestTrue100Coverage:
         """Final comprehensive attack to achieve TRUE 100% COVERAGE."""
         # 1. Factory outer exception handler (lines 77-84)
 
-        with patch("flext_observability.factory.FlextHealthService", side_effect=RuntimeError("Health failed")):
+        with patch(
+            "flext_observability.factory.FlextHealthService",
+            side_effect=RuntimeError("Health failed"),
+        ):
             factory = FlextObservabilityMasterFactory()
 
         # 2. Entities TYPE_CHECKING import (line 15)
@@ -112,7 +118,9 @@ class TestTrue100Coverage:
         )
 
         # Force invalid value and validate
-        object.__setattr__(metric, "value", [1, 2, 3])  # List can't be converted to float
+        object.__setattr__(
+            metric, "value", [1, 2, 3]
+        )  # List can't be converted to float
         result = metric.validate_domain_rules()
         assert result.is_failure
 

@@ -19,31 +19,48 @@ class ObservabilityConstants:
     """Core constants for observability system."""
 
     NAME = "flext-observability"
-    VERSION = "1.0.0"
+    VERSION = "0.9.0"
 
     # Log levels
     LOG_LEVELS: ClassVar[list[str]] = [
-        "debug", "info", "warning", "error", "critical",
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical",
     ]
 
     # Metric types
     METRIC_TYPES: ClassVar[list[str]] = [
-        "counter", "gauge", "histogram", "summary",
+        "counter",
+        "gauge",
+        "histogram",
+        "summary",
     ]
 
     # Alert severities
     ALERT_SEVERITIES: ClassVar[list[str]] = [
-        "low", "medium", "high", "critical", "emergency",
+        "low",
+        "medium",
+        "high",
+        "critical",
+        "emergency",
     ]
 
     # Health statuses
     HEALTH_STATUSES: ClassVar[list[str]] = [
-        "healthy", "unhealthy", "degraded", "unknown",
+        "healthy",
+        "unhealthy",
+        "degraded",
+        "unknown",
     ]
 
     # Alert statuses
     ALERT_STATUSES: ClassVar[list[str]] = [
-        "active", "resolved", "escalated", "suppressed",
+        "active",
+        "resolved",
+        "escalated",
+        "suppressed",
     ]
 
 

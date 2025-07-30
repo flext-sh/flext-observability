@@ -32,7 +32,9 @@ class FlextStructuredLogger:
         self._bound_data: dict[str, object] = {}
 
     def flext_observability_info(
-        self, message: str, **observability_data: object,
+        self,
+        message: str,
+        **observability_data: object,
     ) -> FlextResult[None]:
         """Log info with observability context."""
         try:
@@ -51,7 +53,9 @@ class FlextStructuredLogger:
             return FlextResult.fail(f"Structured logging failed: {e}")
 
     def flext_observability_error(
-        self, message: str, **observability_data: object,
+        self,
+        message: str,
+        **observability_data: object,
     ) -> FlextResult[None]:
         """Log error with observability context."""
         try:
@@ -70,7 +74,8 @@ class FlextStructuredLogger:
             return FlextResult.fail(f"Structured logging failed: {e}")
 
     def flext_bind_observability(
-        self, **data: object,
+        self,
+        **data: object,
     ) -> FlextStructuredLogger:
         """Bind observability-specific data to logger."""
         new_logger = FlextStructuredLogger(self._core_logger.__class__.__name__)
