@@ -12,10 +12,10 @@ from datetime import UTC, datetime
 from decimal import (
     Decimal,  # noqa: TC003 - Required at runtime for Pydantic field definitions
 )
-from typing import ClassVar, cast
+from typing import cast
 
 from flext_core import FlextEntity, FlextGenerators, FlextResult
-from pydantic import Field
+from pydantic import ConfigDict, Field
 
 # ============================================================================
 # CORE ENTITIES - Simplified using flext-core patterns
@@ -25,9 +25,9 @@ from pydantic import Field
 class FlextMetric(FlextEntity):
     """Simplified metric entity using flext-core base."""
 
-    model_config: ClassVar[dict[str, object]] = {
-        "frozen": False,  # Allow dynamic attributes
-    }
+    model_config = ConfigDict(
+        frozen=False,  # Allow dynamic attributes
+    )
 
     name: str = Field(..., description="Metric name")
     value: float | Decimal = Field(..., description="Metric value")

@@ -46,7 +46,7 @@ SUCCESS_STATUS = True
 
 # Conversion constants for secrets.randbelow() comparisons
 INVENTORY_THRESHOLD_INT = 10  # 10% failure rate
-PAYMENT_THRESHOLD_INT = 5     # 5% failure rate
+PAYMENT_THRESHOLD_INT = 5  # 5% failure rate
 PERFORMANCE_THRESHOLD_GOOD = 0.85
 PERFORMANCE_THRESHOLD_EXCELLENT = 0.95
 PERFORMANCE_SCORE_HIGH = 95
@@ -186,12 +186,14 @@ class ECommerceOrderProcessor:
                     metrics={"orders_processed": 1, "success_rate": 100.0},
                 )
 
-                return FlextResult.ok({
-                    "order_id": order_id,
-                    "status": "completed",
-                    "correlation_id": correlation_id,
-                    "steps": steps_results,
-                })
+                return FlextResult.ok(
+                    {
+                        "order_id": order_id,
+                        "status": "completed",
+                        "correlation_id": correlation_id,
+                        "steps": steps_results,
+                    }
+                )
             # Log failure
             bound_logger.flext_observability_error(
                 "Order processing failed",
@@ -336,6 +338,7 @@ class ECommerceOrderProcessor:
 # ============================================================================
 # SCENARIO 2: MICROSERVICES HEALTH MONITORING DASHBOARD
 # ============================================================================
+
 
 class MicroservicesHealthMonitor:
     """Comprehensive health monitoring for microservices architecture."""
@@ -524,12 +527,14 @@ class MicroservicesHealthMonitor:
                     response_time_ms=response_time,
                 )
 
-            return FlextResult.ok({
-                "status": status,
-                "message": message,
-                "response_time_ms": response_time,
-                "check_timestamp": datetime.now(UTC).isoformat(),
-            })
+            return FlextResult.ok(
+                {
+                    "status": status,
+                    "message": message,
+                    "response_time_ms": response_time,
+                    "check_timestamp": datetime.now(UTC).isoformat(),
+                }
+            )
 
         except (RuntimeError, ValueError, TypeError) as e:
             logger.flext_observability_error(
@@ -551,6 +556,7 @@ class MicroservicesHealthMonitor:
 # ============================================================================
 # SCENARIO 3: PERFORMANCE MONITORING AND ANALYTICS
 # ============================================================================
+
 
 class PerformanceAnalytics:
     """Advanced performance monitoring and analytics system."""
@@ -851,37 +857,45 @@ class PerformanceAnalytics:
         # CPU recommendations
         cpu_score = analysis_results["component_scores"].get("cpu", 100)
         if cpu_score < NETWORK_RESPONSE_THRESHOLD:
-            recommendations.extend([
-                "Consider scaling horizontally by adding more application instances",
-                "Optimize CPU-intensive algorithms and operations",
-                "Implement caching to reduce computational load",
-            ])
+            recommendations.extend(
+                [
+                    "Consider scaling horizontally by adding more application instances",
+                    "Optimize CPU-intensive algorithms and operations",
+                    "Implement caching to reduce computational load",
+                ]
+            )
 
         # Memory recommendations
         memory_score = analysis_results["component_scores"].get("memory", 100)
         if memory_score < DB_CONNECTION_THRESHOLD:
-            recommendations.extend([
-                "Increase available memory or optimize memory usage",
-                "Implement memory pooling for frequently allocated objects",
-                "Review and optimize data structures for memory efficiency",
-            ])
+            recommendations.extend(
+                [
+                    "Increase available memory or optimize memory usage",
+                    "Implement memory pooling for frequently allocated objects",
+                    "Review and optimize data structures for memory efficiency",
+                ]
+            )
 
         # Database recommendations
         db_score = analysis_results["component_scores"].get("database", 100)
         if db_score < SYSTEM_HEALTH_THRESHOLD:
-            recommendations.extend([
-                "Optimize slow database queries and add appropriate indexes",
-                "Consider database connection pooling optimization",
-                "Implement query result caching for frequently accessed data",
-            ])
+            recommendations.extend(
+                [
+                    "Optimize slow database queries and add appropriate indexes",
+                    "Consider database connection pooling optimization",
+                    "Implement query result caching for frequently accessed data",
+                ]
+            )
 
         # General recommendations
         if analysis_results["overall_score"] < NETWORK_LATENCY_THRESHOLD:
-            recommendations.extend([
-                "Implement comprehensive monitoring and alerting",
-                "Consider migrating to a more scalable architecture",
-                "Perform regular performance testing and optimization",
-            ])
+            recommendations.extend(
+                [
+                    "Implement comprehensive monitoring and alerting",
+                    "Consider migrating to a more scalable architecture",
+                    "Perform regular performance testing and optimization",
+                ]
+            )
 
         return recommendations
 
@@ -889,6 +903,7 @@ class PerformanceAnalytics:
 # ============================================================================
 # MAIN DEMONSTRATION FUNCTIONS
 # ============================================================================
+
 
 def run_ecommerce_demo() -> None:
     """Run e-commerce order processing demonstration."""
@@ -982,7 +997,13 @@ def run_performance_analytics_demo() -> None:
         analysis = report["analysis_results"]
         print("\nComponent Scores:")
         for component, score in analysis["component_scores"].items():
-            status = "🟢" if score > NETWORK_HIGH_THRESHOLD else "🟡" if score > MEMORY_WARNING_THRESHOLD else "🔴"
+            status = (
+                "🟢"
+                if score > NETWORK_HIGH_THRESHOLD
+                else "🟡"
+                if score > MEMORY_WARNING_THRESHOLD
+                else "🔴"
+            )
             print(f"   {status} {component.capitalize()}: {score:.1f}/100")
 
         # Show issues
