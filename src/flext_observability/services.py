@@ -144,7 +144,7 @@ class FlextHealthService:
                 actual_health = health.data
             else:
                 actual_health = health
-            
+
             self.logger.info(f"Health check: {actual_health.component} = {actual_health.status}")
             return FlextResult.ok(actual_health)
         except (ValueError, TypeError, AttributeError) as e:
@@ -160,7 +160,7 @@ class FlextHealthService:
                     health_status = health.status
             except (AttributeError, TypeError):
                 pass  # Use defaults
-            
+
             error_result = create_observability_result_error(
                 "health_check",
                 f"Failed to check health: {e}",

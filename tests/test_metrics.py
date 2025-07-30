@@ -51,7 +51,7 @@ class TestMetricsCollector:
         assert collector is not None
 
     @patch("prometheus_client.generate_latest")
-    def test_prometheus_integration(  # type: ignore[misc]
+    def test_prometheus_integration(
         self,
         mock_prometheus: MagicMock,
         metrics_collector: MetricsCollector,
@@ -105,7 +105,7 @@ class TestBusinessMetrics:
         pytest.skip("EnterpriseBusinessMetrics not yet implemented")
 
     @patch("time.time")
-    def test_metrics_timing(self, mock_time: MagicMock) -> None:  # type: ignore[misc]
+    def test_metrics_timing(self, mock_time: MagicMock) -> None:
         """Test metrics timing functionality."""
         mock_time.return_value = 1000.0
         pytest.skip("EnterpriseBusinessMetrics not yet implemented")

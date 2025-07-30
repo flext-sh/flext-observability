@@ -78,18 +78,23 @@ class TestFlextObservabilityMonitor:
         assert result.is_failure
         error = assert_failure_with_error(result)
         if "Failed to register" not in error:
-            raise AssertionError(f"Expected {"Failed to register"} in {error}")
+            raise AssertionError(f"Expected {'Failed to register'} in {error}")
 
     def test_initialize_observability_exception(self) -> None:
         """Test initialization with exception."""
-        with patch("flext_observability.flext_monitor.FlextMetricsService", side_effect=ValueError("Service error")):
+        with patch(
+            "flext_observability.flext_monitor.FlextMetricsService",
+            side_effect=ValueError("Service error"),
+        ):
             monitor = FlextObservabilityMonitor()
             result = monitor.flext_initialize_observability()
 
             assert result.is_failure
             error = assert_failure_with_error(result)
             if "Observability initialization failed" not in error:
-                raise AssertionError(f"Expected {"Observability initialization failed"} in {error}")
+                raise AssertionError(
+                    f"Expected {'Observability initialization failed'} in {error}"
+                )
 
     def test_start_monitoring_success(self) -> None:
         """Test successful monitoring start."""
@@ -110,7 +115,7 @@ class TestFlextObservabilityMonitor:
         assert result.is_failure
         error = assert_failure_with_error(result)
         if "Monitor not initialized" not in error:
-            raise AssertionError(f"Expected {"Monitor not initialized"} in {error}")
+            raise AssertionError(f"Expected {'Monitor not initialized'} in {error}")
 
     def test_start_monitoring_already_running(self) -> None:
         """Test monitoring start when already running."""
@@ -127,13 +132,15 @@ class TestFlextObservabilityMonitor:
         monitor = FlextObservabilityMonitor()
         monitor._initialized = True
 
-        with patch.object(monitor._logger, "info", side_effect=ValueError("Logger error")):
+        with patch.object(
+            monitor._logger, "info", side_effect=ValueError("Logger error")
+        ):
             result = monitor.flext_start_monitoring()
 
             assert result.is_failure
             error = assert_failure_with_error(result)
         if "Failed to start monitoring" not in error:
-            raise AssertionError(f"Expected {"Failed to start monitoring"} in {error}")
+            raise AssertionError(f"Expected {'Failed to start monitoring'} in {error}")
 
     def test_stop_monitoring_success(self) -> None:
         """Test successful monitoring stop."""
@@ -158,13 +165,15 @@ class TestFlextObservabilityMonitor:
         monitor = FlextObservabilityMonitor()
         monitor._running = True
 
-        with patch.object(monitor._logger, "info", side_effect=ValueError("Logger error")):
+        with patch.object(
+            monitor._logger, "info", side_effect=ValueError("Logger error")
+        ):
             result = monitor.flext_stop_monitoring()
 
             assert result.is_failure
             error = assert_failure_with_error(result)
         if "Failed to stop monitoring" not in error:
-            raise AssertionError(f"Expected {"Failed to stop monitoring"} in {error}")
+            raise AssertionError(f"Expected {'Failed to stop monitoring'} in {error}")
 
     def test_get_health_status_success(self) -> None:
         """Test successful health status retrieval."""
@@ -187,7 +196,9 @@ class TestFlextObservabilityMonitor:
         assert result.is_failure
         error = assert_failure_with_error(result)
         if "Health service not available" not in error:
-            raise AssertionError(f"Expected {"Health service not available"} in {error}")
+            raise AssertionError(
+                f"Expected {'Health service not available'} in {error}"
+            )
 
     def test_get_health_status_exception(self) -> None:
         """Test health status with exception."""
@@ -203,7 +214,7 @@ class TestFlextObservabilityMonitor:
         assert result.is_failure
         error = assert_failure_with_error(result)
         if "Health status check failed" not in error:
-            raise AssertionError(f"Expected {"Health status check failed"} in {error}")
+            raise AssertionError(f"Expected {'Health status check failed'} in {error}")
 
     def test_is_monitoring_active_true(self) -> None:
         """Test monitoring active check when active."""
@@ -258,8 +269,9 @@ class TestFlextMonitorFunction:
 
     def test_monitor_function_no_monitor(self) -> None:
         """Test function monitoring without monitor."""
+
         @flext_monitor_function()
-        def test_func(x: int, y: int) -> int:  # type: ignore[misc]
+        def test_func(x: int, y: int) -> int:
             return x + y
 
         result = test_func(1, 2)
@@ -271,7 +283,7 @@ class TestFlextMonitorFunction:
         monitor = FlextObservabilityMonitor()
 
         @flext_monitor_function(monitor)
-        def test_func(x: int, y: int) -> int:  # type: ignore[misc]
+        def test_func(x: int, y: int) -> int:
             return x + y
 
         result = test_func(1, 2)
@@ -285,7 +297,7 @@ class TestFlextMonitorFunction:
         monitor.flext_start_monitoring()
 
         @flext_monitor_function(monitor)
-        def test_func(x: int, y: int) -> int:  # type: ignore[misc]
+        def test_func(x: int, y: int) -> int:
             return x + y
 
         result = test_func(1, 2)
@@ -299,7 +311,7 @@ class TestFlextMonitorFunction:
         monitor.flext_start_monitoring()
 
         @flext_monitor_function(monitor)
-        def test_func(x: int, y: int = 10) -> int:  # type: ignore[misc]
+        def test_func(x: int, y: int = 10) -> int:
             return x + y
 
         result = test_func(5, y=15)
@@ -313,7 +325,7 @@ class TestFlextMonitorFunction:
         monitor.flext_start_monitoring()
 
         @flext_monitor_function(monitor)
-        def test_func() -> Never:  # type: ignore[misc]
+        def test_func() -> Never:
             msg = "Test error"
             raise ValueError(msg)
 
@@ -322,8 +334,9 @@ class TestFlextMonitorFunction:
 
     def test_monitor_function_with_none_monitor(self) -> None:
         """Test function monitoring with None monitor."""
+
         @flext_monitor_function(None)
-        def test_func(x: int) -> int:  # type: ignore[misc]
+        def test_func(x: int) -> int:
             return x * 2
 
         result = test_func(5)
@@ -335,19 +348,18 @@ class TestFlextMonitorFunction:
         monitor = FlextObservabilityMonitor()
 
         @flext_monitor_function(monitor)
-        def return_string() -> str:  # type: ignore[misc]
+        def return_string() -> str:
             return "test"
 
         @flext_monitor_function(monitor)
-        def return_dict() -> dict[str, str]:  # type: ignore[misc]
+        def return_dict() -> dict[str, str]:
             return {"key": "value"}
 
         @flext_monitor_function(monitor)
-        def return_none() -> None:  # type: ignore[misc]
+        def return_none() -> None:
             return None
 
         if return_string() != "test":
-
-            raise AssertionError(f"Expected {"test"}, got {return_string()}")
+            raise AssertionError(f"Expected {'test'}, got {return_string()}")
         assert return_dict() == {"key": "value"}
         assert return_none() is None

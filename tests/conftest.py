@@ -170,7 +170,7 @@ async def tracer_provider() -> AsyncIterator[TracerProvider]:
 @pytest.fixture
 def tracer(tracer_provider: object) -> object:
     """Create a tracer for testing."""
-    return tracer_provider.get_tracer("test-tracer")  # type: ignore[attr-defined]
+    return tracer_provider.get_tracer("test-tracer")
 
 
 @pytest.fixture
