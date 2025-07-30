@@ -506,7 +506,8 @@ class FlextTracingService:
                         "tags": [
                             {"key": k, "value": str(v)}
                             for k, v in cast(
-                                "dict[str, object]", span.get("attributes") or {},
+                                "dict[str, object]",
+                                span.get("attributes") or {},
                             ).items()
                         ],
                         "process": {
@@ -518,7 +519,8 @@ class FlextTracingService:
                         },
                     }
                     for span in cast(
-                        "list[dict[str, object]]", trace_info.get("trace_spans") or [],
+                        "list[dict[str, object]]",
+                        trace_info.get("trace_spans") or [],
                     )
                     if isinstance(span, dict)
                 ],

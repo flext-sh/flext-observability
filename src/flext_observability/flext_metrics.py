@@ -10,15 +10,9 @@ from __future__ import annotations
 
 import time
 
+# psutil is a guaranteed dependency - no fallback needed
+import psutil
 from flext_core import FlextResult, get_logger
-
-# Try to import psutil for system metrics, fallback if not available
-try:
-    import psutil
-
-    HAS_PSUTIL = True
-except ImportError:
-    HAS_PSUTIL = False
 
 # ============================================================================
 # OBSERVABILITY-SPECIFIC METRICS TYPES
@@ -55,23 +49,14 @@ class FlextMetricsCollector:
             if current_time - self._cache_timestamp < self._cache_duration:
                 return FlextResult.ok(self._metrics_cache)
 
-            if not HAS_PSUTIL:
-                # Fallback metrics without psutil
-                metrics = {
-                    "cpu_percent": 50.0,
-                    "memory_percent": 60.0,
-                    "disk_usage_percent": 70.0,
-                    "observability_status": "monitoring_fallback",
-                }
-            else:
-                # Real system metrics
-                metrics = {
-                    "cpu_percent": psutil.cpu_percent(interval=0),
-                    "memory_percent": psutil.virtual_memory().percent,
-                    "disk_usage_percent": psutil.disk_usage("/").percent,
-                    "boot_time": psutil.boot_time(),
-                    "observability_status": "monitoring_active",
-                }
+            # Real system metrics using guaranteed psutil dependency
+            metrics = {
+                "cpu_percent": psutil.cpu_percent(interval=0),
+                "memory_percent": psutil.virtual_memory().percent,
+                "disk_usage_percent": psutil.disk_usage("/").percent,
+                "boot_time": psutil.boot_time(),
+                "observability_status": "monitoring_active",
+            }
 
             self._metrics_cache = metrics
             self._cache_timestamp = current_time

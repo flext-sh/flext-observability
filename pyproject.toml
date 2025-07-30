@@ -36,7 +36,7 @@ dependencies = [
     "rich>=14.0.0,<15.0.0",
     "structlog>=25.4.0,<26.0.0",
     "typer>=0.15.0,<1.0.0",
-    "flext-core @ ../flext-core",
+    "flext-core @ file:../flext-core",
 ]
 keywords = [
     "async",

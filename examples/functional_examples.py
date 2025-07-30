@@ -859,7 +859,7 @@ class PerformanceAnalytics:
         if cpu_score < NETWORK_RESPONSE_THRESHOLD:
             recommendations.extend(
                 [
-                    "Consider scaling horizontally by adding more application instances",
+                    "Consider scaling horizontally by adding more app instances",
                     "Optimize CPU-intensive algorithms and operations",
                     "Implement caching to reduce computational load",
                 ]
