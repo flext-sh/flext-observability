@@ -405,7 +405,7 @@ def create_simplified_observability_platform(
 
 
 # =============================================================================
-# DRY RE-EXPORTS - Expose entity functions for test compatibility 
+# DRY RE-EXPORTS - Expose entity functions for test compatibility
 # =============================================================================
 
 # Re-export entity functions to maintain test compatibility (DRY principle)
@@ -413,13 +413,13 @@ def create_simplified_observability_platform(
 __all__ = [
     "FlextObservabilityMasterFactory",
     "alert",
-    "create_simplified_observability_platform", 
+    "create_simplified_observability_platform",
     "flext_alert",  # Re-exported from entities for DRY principle
-    "flext_health_check",  # Re-exported from entities for DRY principle  
+    "flext_health_check",  # Re-exported from entities for DRY principle
     "flext_trace",  # Re-exported from entities for DRY principle
     "get_global_factory",
     "health_check",
-    "log", 
+    "log",
     "metric",
     "reset_global_factory",
     "trace",

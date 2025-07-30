@@ -142,12 +142,12 @@ def flext_create_health_check(
 
 
 __all__ = [
+    "flext_alert",  # Re-expose from entities for DRY principle
     "flext_create_alert",
     "flext_create_health_check",
     "flext_create_log_entry",
     "flext_create_metric",
     "flext_create_trace",
-    "flext_alert",  # Re-expose from entities for DRY principle
     "flext_health_check",  # Re-expose from entities for DRY principle
     "flext_trace",  # Re-expose from entities for DRY principle
 ]

@@ -105,12 +105,12 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory()
 
         # Pass invalid value type to trigger exception
-        result = factory.metric("test", "invalid_value")  # type: ignore[arg-type]
+        result = factory.metric("test", "invalid_value")
 
         assert result.is_failure
         assert result.error is not None
         if "Failed to create metric" not in result.error:
-            msg = f"Expected {"Failed to create metric"} in {result.error}"
+            msg = f"Expected {'Failed to create metric'} in {result.error}"
             raise AssertionError(msg)
 
     def test_log_creation_success(self) -> None:
@@ -143,14 +143,17 @@ class TestFlextObservabilityMasterFactory:
     def test_log_creation_exception(self) -> None:
         """Test log creation with exception."""
         # Mock to raise exception during entity creation
-        with patch("flext_observability.factory.FlextLogEntry", side_effect=ValueError("Test error")):
+        with patch(
+            "flext_observability.factory.FlextLogEntry",
+            side_effect=ValueError("Test error"),
+        ):
             factory = FlextObservabilityMasterFactory()
             result = factory.log("test")
 
             assert result.is_failure
             assert result.error is not None
             if "Failed to create log" not in result.error:
-                msg = f"Expected {"Failed to create log"} in {result.error}"
+                msg = f"Expected {'Failed to create log'} in {result.error}"
                 raise AssertionError(msg)
 
     def test_alert_creation_success(self) -> None:
@@ -184,14 +187,17 @@ class TestFlextObservabilityMasterFactory:
 
     def test_alert_creation_exception(self) -> None:
         """Test alert creation with exception."""
-        with patch("flext_observability.factory.FlextAlert", side_effect=ValueError("Test error")):
+        with patch(
+            "flext_observability.factory.FlextAlert",
+            side_effect=ValueError("Test error"),
+        ):
             factory = FlextObservabilityMasterFactory()
             result = factory.alert("title", "message")
 
             assert result.is_failure
             assert result.error is not None
             if "Failed to create alert" not in result.error:
-                msg = f"Expected {"Failed to create alert"} in {result.error}"
+                msg = f"Expected {'Failed to create alert'} in {result.error}"
                 raise AssertionError(msg)
 
     def test_trace_creation_success(self) -> None:
@@ -226,14 +232,17 @@ class TestFlextObservabilityMasterFactory:
 
     def test_trace_creation_exception(self) -> None:
         """Test trace creation with exception."""
-        with patch("flext_observability.factory.FlextTrace", side_effect=ValueError("Test error")):
+        with patch(
+            "flext_observability.factory.FlextTrace",
+            side_effect=ValueError("Test error"),
+        ):
             factory = FlextObservabilityMasterFactory()
             result = factory.trace("trace-id", "operation")
 
             assert result.is_failure
             assert result.error is not None
             if "Failed to create trace" not in result.error:
-                msg = f"Expected {"Failed to create trace"} in {result.error}"
+                msg = f"Expected {'Failed to create trace'} in {result.error}"
                 raise AssertionError(msg)
 
     def test_health_check_creation_success(self) -> None:
@@ -266,20 +275,25 @@ class TestFlextObservabilityMasterFactory:
 
     def test_health_check_creation_exception(self) -> None:
         """Test health check creation with exception."""
-        with patch("flext_observability.factory.FlextHealthCheck", side_effect=ValueError("Test error")):
+        with patch(
+            "flext_observability.factory.FlextHealthCheck",
+            side_effect=ValueError("Test error"),
+        ):
             factory = FlextObservabilityMasterFactory()
             result = factory.health_check("component")
 
             assert result.is_failure
             assert result.error is not None
             if "Failed to create health check" not in result.error:
-                msg = f"Expected {"Failed to create health check"} in {result.error}"
+                msg = f"Expected {'Failed to create health check'} in {result.error}"
                 raise AssertionError(msg)
 
     def test_health_status_success(self) -> None:
         """Test successful health status retrieval."""
         mock_service = Mock()
-        mock_service.get_overall_health.return_value = FlextResult.ok({"status": "healthy"})
+        mock_service.get_overall_health.return_value = FlextResult.ok(
+            {"status": "healthy"}
+        )
 
         mock_container = Mock(spec=FlextContainer)
         mock_container.get.return_value = FlextResult.ok(mock_service)
@@ -290,7 +304,7 @@ class TestFlextObservabilityMasterFactory:
         assert result.is_success
         assert result.data is not None
         if result.data["status"] != "healthy":
-            msg = f"Expected {"healthy"}, got {result.data["status"]}"
+            msg = f"Expected {'healthy'}, got {result.data['status']}"
             raise AssertionError(msg)
 
     def test_health_status_no_service(self) -> None:
@@ -304,7 +318,7 @@ class TestFlextObservabilityMasterFactory:
         assert result.is_success
         assert result.data is not None
         if result.data["status"] != "healthy":
-            msg = f"Expected {"healthy"}, got {result.data["status"]}"
+            msg = f"Expected {'healthy'}, got {result.data['status']}"
             raise AssertionError(msg)
         assert result.data["mode"] == "fallback"
 
@@ -319,7 +333,7 @@ class TestFlextObservabilityMasterFactory:
         assert result.is_failure
         assert result.error is not None
         if "Health status check failed" not in result.error:
-            msg = f"Expected {"Health status check failed"} in {result.error}"
+            msg = f"Expected {'Health status check failed'} in {result.error}"
             raise AssertionError(msg)
 
 
@@ -336,7 +350,7 @@ class TestGlobalFactory:
         reset_global_factory()
         factory = get_global_factory()
         if type(factory).__name__ != "FlextObservabilityMasterFactory":
-            msg = f"Expected {"FlextObservabilityMasterFactory"}, got {type(factory).__name__}"
+            msg = f"Expected {'FlextObservabilityMasterFactory'}, got {type(factory).__name__}"
             raise AssertionError(msg)
         assert hasattr(factory, "container")
 

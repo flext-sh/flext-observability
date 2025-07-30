@@ -163,7 +163,7 @@ class TestSimpleApiErrorHandling:
         result_obtained = False
 
         try:
-            result = flext_create_metric("test", "invalid")  # type: ignore[arg-type]
+            result = flext_create_metric("test", "invalid")
             # Function should handle this gracefully
             result_obtained = True
             assert result.is_success or result.is_failure

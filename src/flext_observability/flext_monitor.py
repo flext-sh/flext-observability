@@ -120,11 +120,12 @@ class FlextObservabilityMonitor:
         return self._initialized and self._running
 
 
-def flext_monitor_function(  # type: ignore[explicit-any]
+def flext_monitor_function(
     monitor: FlextObservabilityMonitor | None = None,
 ) -> Callable[[Callable[..., object]], Callable[..., object]]:
     """Monitor function execution with observability."""
-    def decorator(func: Callable[..., object]) -> Callable[..., object]:  # type: ignore[explicit-any]
+
+    def decorator(func: Callable[..., object]) -> Callable[..., object]:
         def wrapper(*args: object, **kwargs: object) -> object:
             # Simple monitoring passthrough
             if not (monitor and monitor.flext_is_monitoring_active()):
@@ -134,6 +135,7 @@ def flext_monitor_function(  # type: ignore[explicit-any]
             return func(*args, **kwargs)
 
         return wrapper
+
     return decorator
 
 

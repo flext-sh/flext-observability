@@ -975,7 +975,7 @@ def run_performance_analytics_demo() -> None:
     if result.is_success:
         report = result.data
         print("\n📊 Performance Analysis Results:")
-        score = report['overall_performance_score']
+        score = report["overall_performance_score"]
         print(f"Overall Performance Score: {score:.1f}/100")
 
         # Show component scores
