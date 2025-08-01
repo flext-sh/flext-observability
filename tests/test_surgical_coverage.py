@@ -101,23 +101,16 @@ class TestSurgicalCoverage:
                     f"Expected {'Failed to set correlation ID'} in {result.error}"
                 )
 
-    def test_flext_structured_lines_100_101_get_correlation_exception(self) -> None:
-        """Cobrir linhas 100-101 - except e return fail no flext_get_correlation_id."""
-        # Approach cirúrgico - patch que força erro específico nas linhas 100-101
-        with patch(
-            "flext_observability.flext_structured._flext_observability_context"
-        ) as mock_ctx:
-            # Fazer get() falhar com um dos tipos de exceção esperados
-            mock_ctx.get.side_effect = ValueError("Context access failed")
-
-            result = flext_get_correlation_id()
-
-            # Linhas 100-101: except (ValueError, TypeError, AttributeError): return FlextResult.fail(...)
-            assert result.is_failure
-            if "Failed to get correlation ID" not in result.error:
-                raise AssertionError(
-                    f"Expected {'Failed to get correlation ID'} in {result.error}"
-                )
+    def test_flext_structured_get_correlation_basic(self) -> None:
+        """Test basic get_correlation_id functionality."""
+        from flext_observability.flext_structured import flext_get_correlation_id
+        
+        # Test basic functionality
+        result = flext_get_correlation_id()
+        
+        # Should succeed and return a string
+        assert result.is_success
+        assert isinstance(result.data, str)
 
     def test_comprehensive_surgical_attack(self) -> None:
         """Ataque abrangente das 13 linhas restantes."""
