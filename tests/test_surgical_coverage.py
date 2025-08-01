@@ -17,6 +17,9 @@ from flext_observability.flext_structured import (
 )
 
 
+# Context reset is now handled globally in conftest.py
+
+
 class TestSurgicalCoverage:
     """ATAQUE CIRÚRGICO às 13 linhas exatas."""
 
@@ -64,6 +67,9 @@ class TestSurgicalCoverage:
         original_context = _flext_observability_context.get({})
 
         try:
+            # Limpar completamente o contexto primeiro
+            _flext_observability_context.set({})
+            
             # Definir contexto como None (não dict vazio)
             _flext_observability_context.set(None)
 
@@ -75,8 +81,8 @@ class TestSurgicalCoverage:
                 raise AssertionError(f"Expected {''}, got {result.data}")
 
         finally:
-            # Restaurar contexto
-            _flext_observability_context.set(original_context)
+            # Restaurar contexto limpo
+            _flext_observability_context.set({})
 
     def test_flext_structured_lines_89_90_set_correlation_exception(self) -> None:
         """Cobrir linhas 89-90 - except e return fail no set_correlation_id."""
@@ -124,21 +130,26 @@ class TestSurgicalCoverage:
         # Já exercitado pelos imports necessários
 
         # 3. flext_structured.py linha 65 (context None)
-        original_ctx = _flext_observability_context.get({})
         try:
+            # Limpar contexto completamente primeiro
+            _flext_observability_context.set({})
             _flext_observability_context.set(None)
             result = flext_get_correlation_id()
             assert result.is_success
             if result.data != "":
                 raise AssertionError(f"Expected {''}, got {result.data}")
         finally:
-            _flext_observability_context.set(original_ctx)
+            # Limpar contexto ao final
+            _flext_observability_context.set({})
 
         # 4. flext_structured.py linhas 89-90 (set correlation exception)
 
         # Normal path first
         normal_result = flext_set_correlation_id("surgical-test")
         assert normal_result.is_success
+        
+        # Limpar após set para não vazar para outros testes
+        _flext_observability_context.set({})
 
         # 5. flext_structured.py linhas 100-101 (bind exception)
 
@@ -193,6 +204,9 @@ class TestSurgicalCoverage:
         _flext_observability_context.set({})
         empty_result = flext_get_correlation_id()
         assert empty_result.is_success
+
+        # Final cleanup to avoid leaking to other tests
+        _flext_observability_context.set({})
 
         # Final assertion
         assert True, "ALL PATHS FORCED AND EXERCISED"

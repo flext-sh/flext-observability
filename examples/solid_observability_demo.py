@@ -7,7 +7,6 @@ and function monitoring capabilities.
 """
 
 import time
-from typing import Any
 
 from flext_observability import (
     FlextObservabilityMonitor,
@@ -172,7 +171,7 @@ def demo_function_monitoring(monitor: FlextObservabilityMonitor) -> None:
     """Demonstrate real function monitoring with decorators."""
 
     @flext_monitor_function(monitor=monitor, metric_name="business_operation")
-    def process_business_logic(data: dict[str, Any]) -> dict[str, Any]:
+    def process_business_logic(data: dict[str, object]) -> dict[str, object]:
         """Simulate business logic processing."""
         # Simulate processing time
         time.sleep(0.05)
@@ -186,7 +185,7 @@ def demo_function_monitoring(monitor: FlextObservabilityMonitor) -> None:
         }
 
     @flext_monitor_function(monitor=monitor, metric_name="data_validation")
-    def validate_data(data: dict[str, Any]) -> bool:
+    def validate_data(data: dict[str, object]) -> bool:
         """Simulate data validation."""
         time.sleep(0.02)
         return len(data) > 0 and "required_field" in data

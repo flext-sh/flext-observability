@@ -90,6 +90,26 @@ def pytest_collection_modifyitems(config: Config, items: list[Item]) -> None:
 
 
 # ============================================================================
+# Global Context Reset - CRITICAL for test isolation
+# ============================================================================
+
+
+@pytest.fixture(autouse=True)
+def reset_observability_context():
+    """Reset observability context before and after each test to prevent state leakage."""
+    try:
+        from flext_observability.flext_structured import _flext_observability_context
+        # Reset before test
+        _flext_observability_context.set({})
+        yield
+        # Reset after test  
+        _flext_observability_context.set({})
+    except ImportError:
+        # If import fails, just yield without doing anything
+        yield
+
+
+# ============================================================================
 # Event Loop Configuration
 # ============================================================================
 

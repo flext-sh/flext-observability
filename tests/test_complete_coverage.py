@@ -114,7 +114,10 @@ class TestFlextMetricsCollectorComplete:
 
         # O método psutil.cpu_percent não está dentro de try/catch no código atual
         # Vou testar um erro diferente que está capturado
-        with patch("flext_observability.flext_metrics.time.time", side_effect=ValueError("Time error")):
+        with patch(
+            "flext_observability.flext_metrics.time.time",
+            side_effect=ValueError("Time error"),
+        ):
             result = collector.flext_collect_system_observability_metrics()
 
             assert result.is_failure
@@ -123,7 +126,7 @@ class TestFlextMetricsCollectorComplete:
     def test_flext_collect_system_observability_metrics_with_psutil(self) -> None:
         """Testar coleta de métricas com psutil."""
         collector = FlextMetricsCollector()
-        
+
         # Clear cache to ensure fresh data
         collector._cache_timestamp = 0.0
         collector._metrics_cache = {}
@@ -1234,7 +1237,9 @@ class TestServicesComplete:
 
         assert result.is_success
         if result.data["overall_status"] != "unknown":
-            raise AssertionError(f"Expected {'unknown'}, got {result.data['overall_status']}")
+            raise AssertionError(
+                f"Expected {'unknown'}, got {result.data['overall_status']}"
+            )
 
 
 # ============================================================================
@@ -2583,7 +2588,7 @@ class TestFinal24Lines:
         # O logger não é chamado diretamente de forma que cause exceção
         # Vou forçar um erro nos parâmetros
         try:
-            result = collector.flext_record_observability_metric("test", float('inf'))
+            result = collector.flext_record_observability_metric("test", float("inf"))
             # Se chegou aqui, o teste passou normalmente
             assert result.is_success
         except Exception:
@@ -2591,7 +2596,11 @@ class TestFinal24Lines:
             pass
 
         # Testar erro no método flext_get_metrics_summary
-        with patch.object(collector, 'flext_collect_system_observability_metrics', return_value=FlextResult.fail("System error")):
+        with patch.object(
+            collector,
+            "flext_collect_system_observability_metrics",
+            return_value=FlextResult.fail("System error"),
+        ):
             result = collector.flext_get_metrics_summary()
             assert result.is_failure
             assert "Failed to collect complete metrics" in result.error
