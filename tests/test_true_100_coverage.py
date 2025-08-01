@@ -68,7 +68,7 @@ class TestTrue100Coverage:
     def test_flext_metrics_basic_import(self) -> None:
         """Test basic import of flext_metrics module."""
         import flext_observability.flext_metrics
-        
+
         # Verify module imports successfully
         assert flext_observability.flext_metrics is not None
 

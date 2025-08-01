@@ -38,12 +38,30 @@ def flext_create_metric(
     tags: dict[str, str] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
-    """Create observability metric with simple parameters."""
+    """Create observability metric with simple parameters and smart type inference."""
     try:
+        # Smart metric type inference based on naming conventions and units
+        metric_type = "gauge"  # default
+
+        # Infer from unit
+        if unit in ("count", "counts"):
+            metric_type = "counter"
+        elif "histogram" in unit.lower():
+            metric_type = "histogram"
+        # Infer from name patterns (common Prometheus conventions)
+        elif name.endswith(("_total", "_count")):
+            metric_type = "counter"
+        elif (
+            name.endswith(("_duration", "_time", "_seconds"))
+            or "histogram" in name.lower()
+        ):
+            metric_type = "histogram"
+
         metric = FlextMetric(
             name=name,
             value=Decimal(str(value)),
             unit=unit,
+            metric_type=metric_type,
             id=str(uuid.uuid4()),
             tags=tags or {},
             timestamp=timestamp or datetime.now(UTC),

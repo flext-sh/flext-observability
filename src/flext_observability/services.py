@@ -69,19 +69,34 @@ class FlextMetricsService:
         self._start_time = time.time()
         self._metrics_recorded = 0
 
+    def _validate_metric_input(self, metric: FlextMetric) -> FlextResult[None]:
+        """Validate metric input data."""
+        if not metric or not hasattr(metric, "name") or not hasattr(metric, "value"):
+            return FlextResult.fail("Invalid metric: missing name or value")
+
+        if not metric.name or not isinstance(metric.name, str):
+            return FlextResult.fail("Metric name must be a non-empty string")
+
+        return FlextResult.ok(None)
+
+    def _update_metric_aggregates(
+        self, metric_name: str, metric_value: float, metric_type: str
+    ) -> None:
+        """Update aggregated metrics based on type."""
+        if metric_type == "counter":
+            self._metric_counters[metric_name] += metric_value
+        elif metric_type == "gauge":
+            self._metric_gauges[metric_name] = metric_value
+        elif metric_type == "histogram":
+            self._metric_histograms[metric_name].append(metric_value)
+
     def record_metric(self, metric: FlextMetric) -> FlextResult[FlextMetric]:
         """Record metric with real storage and validation using SOLID principles."""
         try:
             # Input validation (defensive programming)
-            if (
-                not metric
-                or not hasattr(metric, "name")
-                or not hasattr(metric, "value")
-            ):
-                return FlextResult.fail("Invalid metric: missing name or value")
-
-            if not metric.name or not isinstance(metric.name, str):
-                return FlextResult.fail("Metric name must be a non-empty string")
+            validation_result = self._validate_metric_input(metric)
+            if validation_result.is_failure:
+                return FlextResult.fail(validation_result.error or "Validation failed")
 
             # Type-safe metric recording with thread safety
             with self._metrics_lock:
@@ -101,13 +116,10 @@ class FlextMetricsService:
 
                 # Update aggregated metrics based on type
                 metric_type = metric_data.get("type", "gauge")
-
-                if metric_type == "counter":
-                    self._metric_counters[metric.name] += float(metric.value)
-                elif metric_type == "gauge":
-                    self._metric_gauges[metric.name] = float(metric.value)
-                elif metric_type == "histogram":
-                    self._metric_histograms[metric.name].append(float(metric.value))
+                metric_type_str = str(metric_type) if metric_type else "gauge"
+                self._update_metric_aggregates(
+                    metric.name, float(metric.value), metric_type_str
+                )
 
                 # Maintain metrics store size (prevent memory leaks)
                 if len(self._metrics_store[metric.name]) > MAX_METRICS_STORE_SIZE:
@@ -122,18 +134,31 @@ class FlextMetricsService:
                 "Metric recorded successfully",
                 metric_name=metric.name,
                 metric_value=metric.value,
-                metric_type=metric_type,
+                metric_type=metric_type_str,
                 timestamp=timestamp,
             )
 
             return FlextResult.ok(metric)
 
         except (ValueError, TypeError, AttributeError) as e:
+            # Safe access to metric attributes in error handling
+            metric_name = "unknown"
+            metric_value = "unknown"
+            if metric is not None:
+                try:
+                    metric_name = getattr(metric, "name", "unknown")
+                except Exception:
+                    metric_name = "unknown"
+                try:
+                    metric_value = getattr(metric, "value", "unknown")
+                except Exception:
+                    metric_value = "unknown"
+
             error_result = create_observability_result_error(
                 "metrics",
                 f"Failed to record metric: {e}",
-                metric_name=getattr(metric, "name", "unknown"),
-                metric_value=getattr(metric, "value", "unknown"),
+                metric_name=metric_name,
+                metric_value=metric_value,
             )
             return FlextResult.fail(error_result.error or "Unknown error")
 
@@ -141,19 +166,24 @@ class FlextMetricsService:
         """Get current metric value with type-safe retrieval."""
         try:
             with self._metrics_lock:
-                # Try gauge first (most common)
+                # Try gauge first (most common) - with type safety
                 if metric_name in self._metric_gauges:
-                    return FlextResult.ok(self._metric_gauges[metric_name])
+                    gauge_value = self._metric_gauges[metric_name]
+                    # Ensure type safety: convert to float if possible
+                    return FlextResult.ok(float(gauge_value))
 
-                # Try counter
+                # Try counter - with type safety
                 if metric_name in self._metric_counters:
-                    return FlextResult.ok(self._metric_counters[metric_name])
+                    counter_value = self._metric_counters[metric_name]
+                    return FlextResult.ok(float(counter_value))
 
-                # Try histogram (return mean)
+                # Try histogram (return mean) - with type safety
                 if metric_name in self._metric_histograms:
                     values = self._metric_histograms[metric_name]
                     if values:
-                        mean_value = sum(values) / len(values)
+                        # Ensure all values are numeric before calculation
+                        numeric_values = [float(v) for v in values]
+                        mean_value = sum(numeric_values) / len(numeric_values)
                         return FlextResult.ok(mean_value)
 
                 return FlextResult.fail(f"Metric '{metric_name}' not found")
@@ -588,19 +618,36 @@ class FlextAlertService:
         self.container = container or FlextContainer()
         self.logger = get_logger(self.__class__.__name__)
 
-    def create_alert(self, alert: FlextAlert) -> FlextResult[FlextAlert]:
+    def create_alert(self, alert: FlextAlert | None) -> FlextResult[FlextAlert]:
         """Create alert using flext-core patterns."""
         try:
+            # Input validation first
+            if alert is None:
+                return FlextResult.fail("Alert cannot be None")
+
             self.logger.warning(
                 f"Alert created: {alert.title} | Severity: {alert.severity}",
             )
             return FlextResult.ok(alert)
-        except (ValueError, TypeError, AttributeError) as e:
+        except (ValueError, TypeError, AttributeError, ArithmeticError) as e:
+            # Safe access to alert attributes in error handling
+            alert_title = "None"
+            alert_severity = "None"
+            if alert is not None:
+                try:
+                    alert_title = getattr(alert, "title", "unknown")
+                except Exception:
+                    alert_title = "unknown"
+                try:
+                    alert_severity = getattr(alert, "severity", "unknown")
+                except Exception:
+                    alert_severity = "unknown"
+
             error_result = create_observability_result_error(
                 "alert",
                 f"Failed to create alert: {e}",
-                alert_title=alert.title,
-                alert_severity=alert.severity,
+                alert_title=alert_title,
+                alert_severity=alert_severity,
             )
             return FlextResult.fail(error_result.error or "Unknown error")
 
@@ -839,10 +886,9 @@ class FlextHealthService:
         """Get health history for a specific component."""
         try:
             with self._health_lock:
+                # Return empty list if no history exists (not a failure)
                 if component_name not in self._health_history:
-                    return FlextResult.fail(
-                        f"No health history found for component '{component_name}'",
-                    )
+                    return FlextResult.ok([])
 
                 history = self._health_history[component_name].copy()
                 return FlextResult.ok(history)
