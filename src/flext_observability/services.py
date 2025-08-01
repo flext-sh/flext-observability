@@ -14,6 +14,7 @@ import time
 from collections import defaultdict
 from typing import TYPE_CHECKING, cast
 
+import psutil
 from flext_core import FlextContainer, FlextResult, get_logger
 
 from flext_observability.validation import create_observability_result_error
@@ -856,28 +857,20 @@ class FlextHealthService:
         try:
             system_checks = {}
 
-            # Memory usage check
-            try:
-                import psutil  # noqa: PLC0415 - Dynamic import for optional dependency
-
-                memory = psutil.virtual_memory()
-                memory_status = (
-                    "healthy"
-                    if memory.percent < MEMORY_WARNING_THRESHOLD
-                    else "warning"
-                    if memory.percent < MEMORY_CRITICAL_THRESHOLD
-                    else "critical"
-                )
-                system_checks["memory"] = {
-                    "status": memory_status,
-                    "used_percent": memory.percent,
-                    "available_gb": memory.available / (1024**3),
-                }
-            except ImportError:
-                system_checks["memory"] = {
-                    "status": "unknown",
-                    "error": "psutil not available",
-                }
+            # Memory usage check - psutil is a required dependency
+            memory = psutil.virtual_memory()
+            memory_status = (
+                "healthy"
+                if memory.percent < MEMORY_WARNING_THRESHOLD
+                else "warning"
+                if memory.percent < MEMORY_CRITICAL_THRESHOLD
+                else "critical"
+            )
+            system_checks["memory"] = {
+                "status": memory_status,
+                "used_percent": memory.percent,
+                "available_gb": memory.available / (1024**3),
+            }
 
             # Disk usage check
             try:
