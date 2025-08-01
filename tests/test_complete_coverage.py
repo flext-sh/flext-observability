@@ -2819,7 +2819,7 @@ class TestCompleteModuleCoverage:
     def test_monitor_complete_coverage(self) -> None:
         """Testar monitor com todos os cenários."""
 
-        from flext_observability.factory import (
+        from flext_observability.flext_monitor import (
             FlextObservabilityMonitor,
             flext_monitor_function,
         )
@@ -2909,7 +2909,7 @@ class TestCompleteModuleCoverage:
         """DRY helper - Test main module exports."""
         expected_exports = [
             "flext_alert",
-            "flext_alertService",
+            "FlextAlertService",
             "flext_health_check",
             "FlextHealthService",
             "FlextLogEntry",
