@@ -16,7 +16,6 @@ from flext_core import FlextContainer, FlextResult, get_logger
 
 from flext_observability.entities import (
     FlextAlert,
-    FlextHealthCheck,
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
@@ -24,6 +23,7 @@ from flext_observability.entities import (
     flext_health_check,  # Import for DRY principle - re-expose for tests
     flext_trace,  # Import for DRY principle - re-expose for tests
 )
+from flext_observability.flext_simple import flext_create_health_check
 from flext_observability.services import (
     FlextAlertService,
     FlextHealthService,
@@ -277,24 +277,25 @@ class FlextObservabilityMasterFactory:
         try:
             # Extract known parameters from kwargs
             message = kwargs.get("message", "")
-            metrics = kwargs.get("metrics", {})
             timestamp = kwargs.get("timestamp")
 
-            health = FlextHealthCheck(
-                id=str(uuid.uuid4()),
+            # Use imported function for consistency and testability
+            health_result = flext_create_health_check(
                 component=component,
                 status=status,
                 message=str(message),
-                metrics=metrics if isinstance(metrics, dict) else {},
                 timestamp=(
                     timestamp if isinstance(timestamp, datetime) else datetime.now(UTC)
                 ),
             )
+            if health_result.is_failure:
+                return FlextResult.fail(health_result.error or "Health check failed")
+            health = health_result.data
 
             service_result = self.container.get("health_service")
             if service_result.is_success and service_result.data:
                 service = cast("FlextHealthService", service_result.data)
-                result = service.check_health(health)
+                result = service.check_health(health_result)
                 return (
                     FlextResult.ok(result.data)
                     if result.is_success

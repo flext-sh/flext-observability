@@ -98,7 +98,10 @@ def flext_set_correlation_id(correlation_id: str) -> FlextResult[None]:
 def flext_get_correlation_id() -> FlextResult[str]:
     """Get current correlation ID."""
     try:
-        context = _flext_observability_context.get() or {}
+        context = _flext_observability_context.get(None)
+        # If context is explicitly None, return empty string
+        if context is None:
+            return FlextResult.ok("")
         correlation_id = context.get("correlation_id", "")
         correlation_id_str = str(correlation_id) if correlation_id else ""
         return FlextResult.ok(correlation_id_str)

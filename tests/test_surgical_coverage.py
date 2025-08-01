@@ -104,10 +104,10 @@ class TestSurgicalCoverage:
     def test_flext_structured_get_correlation_basic(self) -> None:
         """Test basic get_correlation_id functionality."""
         from flext_observability.flext_structured import flext_get_correlation_id
-        
+
         # Test basic functionality
         result = flext_get_correlation_id()
-        
+
         # Should succeed and return a string
         assert result.is_success
         assert isinstance(result.data, str)

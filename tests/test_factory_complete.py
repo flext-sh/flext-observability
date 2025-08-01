@@ -276,7 +276,7 @@ class TestFlextObservabilityMasterFactory:
     def test_health_check_creation_exception(self) -> None:
         """Test health check creation with exception."""
         with patch(
-            "flext_observability.factory.FlextHealthCheck",
+            "flext_observability.factory.flext_create_health_check",
             side_effect=ValueError("Test error"),
         ):
             factory = FlextObservabilityMasterFactory()
