@@ -13,7 +13,6 @@ from __future__ import annotations
 import secrets
 import time
 from datetime import UTC, datetime
-from typing import Any
 
 from flext_core import FlextResult
 
@@ -101,7 +100,7 @@ class ECommerceOrderProcessor:
         order_id: str,
         user_id: str,
         amount: float,
-    ) -> FlextResult[dict[str, Any]]:
+    ) -> FlextResult[dict[str, object]]:
         """Process e-commerce order with full observability tracking."""
         # Set correlation ID for tracing
         correlation_id = f"order-{order_id}-{int(time.time())}"
@@ -359,7 +358,7 @@ class MicroservicesHealthMonitor:
             "analytics-service",
         ]
 
-    def perform_health_check_cycle(self) -> FlextResult[dict[str, Any]]:
+    def perform_health_check_cycle(self) -> FlextResult[dict[str, object]]:
         """Perform complete health check cycle for all services."""
         flext_set_correlation_id(f"health-check-{int(time.time())}")
 
@@ -479,7 +478,7 @@ class MicroservicesHealthMonitor:
         self,
         service: str,
         logger: FlextStructuredLogger,
-    ) -> FlextResult[dict[str, Any]]:
+    ) -> FlextResult[dict[str, object]]:
         """Check health of individual service."""
         logger.flext_observability_info(f"Checking {service} health", service=service)
 
@@ -570,7 +569,7 @@ class PerformanceAnalytics:
     def analyze_application_performance(
         self,
         duration_minutes: int = 5,
-    ) -> FlextResult[dict[str, Any]]:
+    ) -> FlextResult[dict[str, object]]:
         """Perform comprehensive application performance analysis."""
         flext_set_correlation_id(f"perf-analysis-{int(time.time())}")
 
@@ -791,8 +790,8 @@ class PerformanceAnalytics:
         }
 
     def _perform_performance_analysis(
-        self, performance_data: dict[str, Any], logger: FlextStructuredLogger
-    ) -> dict[str, Any]:
+        self, performance_data: dict[str, object], logger: FlextStructuredLogger
+    ) -> dict[str, object]:
         """Analyze collected performance data."""
         logger.flext_observability_info("Performing performance analysis")
 
@@ -847,7 +846,7 @@ class PerformanceAnalytics:
         }
 
     def _generate_performance_recommendations(
-        self, analysis_results: dict[str, Any], logger: FlextStructuredLogger
+        self, analysis_results: dict[str, object], logger: FlextStructuredLogger
     ) -> list[str]:
         """Generate performance optimization recommendations."""
         logger.flext_observability_info("Generating performance recommendations")

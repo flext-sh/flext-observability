@@ -54,14 +54,14 @@ def test_flext_observability_configuration_error() -> None:
     assert "Custom config error" in error.message
 
     # With config_key
-    error = FlextObservabilityConfigurationError("Config error", config_key="prometheus.endpoint")
+    error = FlextObservabilityConfigurationError(
+        "Config error", config_key="prometheus.endpoint"
+    )
     assert "Config error" in error.message
 
     # With component and config_key
     error = FlextObservabilityConfigurationError(
-        "Config error",
-        config_key="timeout",
-        component="metrics"
+        "Config error", config_key="timeout", component="metrics"
     )
     assert "Config error" in error.message
 
@@ -77,7 +77,9 @@ def test_flext_observability_connection_error() -> None:
     assert "Connection failed" in error.message
 
     # With endpoint
-    error = FlextObservabilityConnectionError("Failed", endpoint="http://localhost:9090")
+    error = FlextObservabilityConnectionError(
+        "Failed", endpoint="http://localhost:9090"
+    )
     assert "Failed" in error.message
 
     # With service_name
