@@ -7,6 +7,7 @@ The Simple API provides the fastest way to integrate observability into FLEXT ec
 ## 📋 API Overview
 
 All Simple API functions follow consistent patterns:
+
 - **Return Type**: `FlextResult[Entity]` for railway-oriented programming
 - **Error Handling**: Domain validation with descriptive error messages
 - **Type Safety**: Full type annotations with MyPy compatibility
@@ -52,8 +53,8 @@ if result.is_success:
 
 # Business metric with tags
 result = flext_create_metric(
-    name="orders_processed", 
-    value=42, 
+    name="orders_processed",
+    value=42,
     unit="count",
     tags={"service": "order-api", "region": "us-east"},
     metric_type="counter"
@@ -175,7 +176,7 @@ from flext_observability import flext_create_alert
 # Basic alert
 result = flext_create_alert(
     name="high_cpu_usage",
-    severity="warning", 
+    severity="warning",
     message="CPU usage exceeded 80% threshold"
 )
 
@@ -257,7 +258,7 @@ result = flext_create_health_check(
 
 # Degraded performance check
 result = flext_create_health_check(
-    name="cache_performance", 
+    name="cache_performance",
     status="degraded",
     message="Redis cache showing increased latency",
     details={
@@ -322,7 +323,7 @@ result = flext_create_log_entry(
     message="Payment processing failed",
     context={
         "user_id": "user123",
-        "order_id": "order456", 
+        "order_id": "order456",
         "error": "INSUFFICIENT_FUNDS"
     },
     correlation_id="req_789xyz"
@@ -340,24 +341,24 @@ from flext_observability import flext_create_metric, flext_create_trace
 
 def process_business_operation(data: dict) -> FlextResult[dict]:
     """Example of chaining observability operations."""
-    
+
     # Create metric - handle potential failure
     metric_result = flext_create_metric("operations_started", 1, "count")
     if not metric_result.is_success:
         return FlextResult.fail(f"Failed to create metric: {metric_result.error}")
-    
-    # Create trace - handle potential failure  
+
+    # Create trace - handle potential failure
     trace_result = flext_create_trace("business_operation", "main-service")
     if not trace_result.is_success:
         return FlextResult.fail(f"Failed to create trace: {trace_result.error}")
-    
+
     # Business logic here
     result_data = {"status": "processed", "data": data}
-    
+
     # Success metric
     success_metric = flext_create_metric("operations_completed", 1, "count")
     # Note: In production, you might want to handle this error too
-    
+
     return FlextResult.ok(result_data)
 ```
 
@@ -366,22 +367,22 @@ def process_business_operation(data: dict) -> FlextResult[dict]:
 ```python
 def create_system_metrics() -> list[FlextResult[FlextMetric]]:
     """Create multiple metrics with error handling."""
-    
+
     metrics_to_create = [
         ("cpu_usage", 75.2, "percent"),
         ("memory_usage", 1024, "MB"),
         ("disk_usage", 85.5, "percent"),
         ("active_connections", 42, "count")
     ]
-    
+
     results = []
     for name, value, unit in metrics_to_create:
         result = flext_create_metric(name, value, unit)
         results.append(result)
-        
+
         if not result.is_success:
             print(f"⚠️  Failed to create {name}: {result.error}")
-    
+
     return results
 ```
 
@@ -390,22 +391,22 @@ def create_system_metrics() -> list[FlextResult[FlextMetric]]:
 ```python
 def handle_user_request(user_id: str, operation: str) -> FlextResult[dict]:
     """Example of propagating context through observability."""
-    
+
     # Create base context
     context = {"user_id": user_id, "operation": operation}
-    
+
     # Create trace with context
     trace_result = flext_create_trace(
         operation_name=operation,
         service_name="user-service",
         context=context
     )
-    
+
     if not trace_result.is_success:
         return FlextResult.fail(f"Tracing failed: {trace_result.error}")
-    
+
     trace_id = trace_result.data.id
-    
+
     # Create metric with tags from context
     metric_result = flext_create_metric(
         name="user_operations",
@@ -413,7 +414,7 @@ def handle_user_request(user_id: str, operation: str) -> FlextResult[dict]:
         unit="count",
         tags={"operation": operation, "user_id": user_id}
     )
-    
+
     # Create log entry with correlation
     log_result = flext_create_log_entry(
         level="info",
@@ -421,7 +422,7 @@ def handle_user_request(user_id: str, operation: str) -> FlextResult[dict]:
         context=context,
         correlation_id=trace_id
     )
-    
+
     return FlextResult.ok({
         "trace_id": trace_id,
         "status": "success",
@@ -433,13 +434,13 @@ def handle_user_request(user_id: str, operation: str) -> FlextResult[dict]:
 
 ### Common Validation Errors
 
-| Error Message | Cause | Solution |
-|---------------|-------|----------|
-| "Invalid metric name" | Empty or non-string name | Provide non-empty string name |
-| "Invalid metric value" | Non-numeric value | Use float, int, or Decimal |
-| "Invalid severity level" | Unknown severity | Use: info, warning, error, critical |
-| "Invalid health status" | Unknown status | Use: healthy, unhealthy, degraded |
-| "Invalid log level" | Unknown log level | Use: debug, info, warning, error, critical |
+| Error Message            | Cause                    | Solution                                   |
+| ------------------------ | ------------------------ | ------------------------------------------ |
+| "Invalid metric name"    | Empty or non-string name | Provide non-empty string name              |
+| "Invalid metric value"   | Non-numeric value        | Use float, int, or Decimal                 |
+| "Invalid severity level" | Unknown severity         | Use: info, warning, error, critical        |
+| "Invalid health status"  | Unknown status           | Use: healthy, unhealthy, degraded          |
+| "Invalid log level"      | Unknown log level        | Use: debug, info, warning, error, critical |
 
 ### Type Safety Errors
 
@@ -456,7 +457,7 @@ flext_create_trace("operation", "service")
 ## 🔗 Related APIs
 
 - **[Factory API](factory-api.md)**: Advanced entity creation patterns
-- **[Service API](service-api.md)**: Full service layer capabilities  
+- **[Service API](service-api.md)**: Full service layer capabilities
 - **[Monitoring API](monitoring-api.md)**: Automatic instrumentation decorators
 
 ---

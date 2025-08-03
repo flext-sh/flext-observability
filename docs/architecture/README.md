@@ -73,6 +73,7 @@ src/flext_observability/
 - **FlextLogEntry**: Structured logging entries with correlation tracking
 
 **Patterns**:
+
 - All entities extend `FlextEntity` from flext-core
 - Domain validation via `validate_domain_rules()` method
 - Immutable value objects for measurements and timestamps
@@ -89,6 +90,7 @@ src/flext_observability/
 - **FlextLoggingService**: Structured logging coordination with context
 
 **Patterns**:
+
 - All operations return `FlextResult[T]` for railway-oriented programming
 - Dependency injection via `FlextContainer`
 - Service orchestration without external dependencies
@@ -104,6 +106,7 @@ src/flext_observability/
 - **Export Formatters**: Prometheus-compatible metrics formatting
 
 **Patterns**:
+
 - Facade pattern for complex service interactions
 - Decorator pattern for automatic monitoring
 - Factory pattern for consistent entity creation
@@ -202,7 +205,7 @@ flext-observability
 ```python
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
-    
+
     def create_metric(self, name: str, value: float, unit: str = "") -> FlextResult[FlextMetric]:
         """Create validated metric with domain rules."""
         # Domain validation
@@ -216,11 +219,11 @@ class FlextObservabilityMasterFactory:
 ```python
 class FlextMetricsService:
     """Application service for metrics operations."""
-    
+
     def __init__(self, container: FlextContainer) -> None:
         self._container = container
         # Dependency injection setup
-    
+
     def record_metric(self, metric: FlextMetric) -> FlextResult[FlextMetric]:
         """Record metric with business logic."""
         # Business validation
@@ -234,11 +237,11 @@ class FlextMetricsService:
 ```python
 class FlextMetricsRepository(Protocol):
     """Repository interface for metrics persistence."""
-    
+
     def store_metric(self, metric: FlextMetric) -> FlextResult[None]:
         """Store metric with persistence abstraction."""
         ...
-    
+
     def query_metrics(self, criteria: MetricsCriteria) -> FlextResult[List[FlextMetric]]:
         """Query metrics with filtering."""
         ...
@@ -308,11 +311,11 @@ class FlextMetricsRepository(Protocol):
 # Future extension point example
 class FlextObservabilityPlugin(Protocol):
     """Plugin interface for extending observability."""
-    
+
     def on_metric_created(self, metric: FlextMetric) -> FlextResult[None]:
         """Hook called when metrics are created."""
         ...
-    
+
     def on_trace_started(self, trace: FlextTrace) -> FlextResult[None]:
         """Hook called when traces are started."""
         ...
@@ -322,7 +325,8 @@ class FlextObservabilityPlugin(Protocol):
 
 **Next Steps**: Review [Domain Model](domain-model.md) for detailed entity patterns, or [Integration Patterns](integration-patterns.md) for ecosystem integration details.
 
-**Related Documentation**: 
+**Related Documentation**:
+
 - [Service Layer Guide](../guides/service-layer.md)
 - [Factory Patterns Guide](../guides/factory-patterns.md)
 - [FLEXT Ecosystem Architecture](../../../docs/architecture/)

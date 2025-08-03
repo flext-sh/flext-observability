@@ -62,7 +62,7 @@ class FlextMetric(FlextEntity):
     unit: str = ""
     tags: dict[str, str] = field(default_factory=dict)
     metric_type: str = "gauge"
-    
+
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate metric domain rules."""
         if not self.name or not isinstance(self.name, str):
@@ -93,20 +93,20 @@ from flext_observability.services import FlextMetricsService
 
 class FlextMetricsService:
     """Application service for metrics operations."""
-    
+
     def __init__(self, container: FlextContainer) -> None:
         self._container = container
         self._metrics_store: dict[str, FlextMetric] = {}
-    
+
     def record_metric(self, metric: FlextMetric) -> FlextResult[FlextMetric]:
         """Record metric with business validation."""
         validation_result = metric.validate_domain_rules()
         if validation_result.is_failure:
             return FlextResult.fail(f"Metric validation failed: {validation_result.error}")
-        
+
         self._metrics_store[metric.id] = metric
         return FlextResult.ok(metric)
-    
+
     def export_prometheus_format(self) -> FlextResult[str]:
         """Export metrics in Prometheus format."""
         # Business logic for Prometheus export
@@ -129,7 +129,7 @@ from flext_observability.factory import FlextObservabilityMasterFactory
 
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
-    
+
     def create_metric(self, name: str, value: float, unit: str = "") -> FlextResult[FlextMetric]:
         """Create validated metric with domain rules."""
         try:
@@ -139,15 +139,15 @@ class FlextObservabilityMasterFactory:
                 unit=unit,
                 timestamp=datetime.now(UTC)
             )
-            
+
             validation_result = metric.validate_domain_rules()
             if validation_result.is_failure:
                 return validation_result
-                
+
             return FlextResult.ok(metric)
         except Exception as e:
             return FlextResult.fail(f"Metric creation failed: {str(e)}")
-    
+
     def create_trace(self, operation_name: str, service_name: str) -> FlextResult[FlextTrace]:
         """Create validated trace span."""
         try:
@@ -224,20 +224,20 @@ from flext_observability.repos import FlextObservabilityRepository
 
 class FlextObservabilityRepository:
     """Repository for observability data access."""
-    
+
     def __init__(self) -> None:
         self._metrics: dict[str, FlextMetric] = {}
         self._traces: dict[str, FlextTrace] = {}
         self._alerts: dict[str, FlextAlert] = {}
-    
+
     def store_metric(self, metric: FlextMetric) -> FlextResult[None]:
         """Store metric with validation."""
         if not metric.id:
             return FlextResult.fail("Metric must have ID")
-        
+
         self._metrics[metric.id] = metric
         return FlextResult.ok(None)
-    
+
     def find_metrics_by_name(self, name: str) -> FlextResult[list[FlextMetric]]:
         """Find metrics by name pattern."""
         matching_metrics = [
@@ -341,7 +341,7 @@ from flext_observability import (
 def process_order(order_data: dict) -> FlextResult[dict]:
     # Create business metrics
     flext_create_metric("orders_processed", 1, "count")
-    
+
     # Business logic here
     return FlextResult.ok({"status": "processed"})
 ```
@@ -362,17 +362,17 @@ class UserAPIService:
         self.metrics = FlextMetricsService(container)
         self.tracing = FlextTracingService(container)
         self.factory = FlextObservabilityMasterFactory()
-    
+
     def handle_user_request(self, request: dict) -> FlextResult[dict]:
         # Create request trace
         trace_result = self.factory.create_trace("user_request", "user-api")
         if trace_result.is_failure:
             return trace_result
-        
+
         # Record request metric
-        metric_result = self.factory.create_metric("api_requests", 1, "count", 
+        metric_result = self.factory.create_metric("api_requests", 1, "count",
                                                   tags={"endpoint": "/users"})
-        
+
         # Process with observability
         return self._process_user_request(request, trace_result.data)
 ```
@@ -390,20 +390,20 @@ from flext_observability import (
 class DatabaseConnectionService:
     def __init__(self, container: FlextContainer) -> None:
         self.health_service = FlextHealthService(container)
-    
+
     def check_database_connectivity(self) -> FlextResult[dict]:
         """Monitor database health with observability."""
         try:
             # Test connection
             connection_time = self._test_connection()
-            
+
             # Create health check
             health_result = flext_create_health_check(
                 name="postgresql_connection",
                 status="healthy",
                 message=f"Connection successful in {connection_time}ms"
             )
-            
+
             # Create performance metric
             metric_result = flext_create_metric(
                 name="db_connection_time",
@@ -411,9 +411,9 @@ class DatabaseConnectionService:
                 unit="milliseconds",
                 tags={"database": "postgresql", "host": self.host}
             )
-            
+
             return FlextResult.ok({"status": "healthy", "metrics": [metric_result.data]})
-            
+
         except Exception as e:
             # Create failure health check
             health_result = flext_create_health_check(
@@ -494,13 +494,13 @@ from flext_observability import flext_monitor_function, flext_get_correlation_id
 def process_payment(payment_data: dict) -> FlextResult[dict]:
     """Function automatically gets observability patterns."""
     correlation_id = flext_get_correlation_id()
-    
+
     # Business logic with automatic:
     # - Execution time metrics
-    # - Success/failure tracing  
+    # - Success/failure tracing
     # - Structured logging with correlation ID
     # - Error capture and categorization
-    
+
     return FlextResult.ok({"status": "processed", "correlation_id": correlation_id})
 ```
 
@@ -514,7 +514,7 @@ def process_payment(payment_data: dict) -> FlextResult[dict]:
 # Basic metric creation
 def create_business_metrics(operation: str, duration: float, success: bool) -> None:
     """Create comprehensive business metrics."""
-    
+
     # Performance metric
     duration_result = flext_create_metric(
         name=f"{operation}_duration",
@@ -522,7 +522,7 @@ def create_business_metrics(operation: str, duration: float, success: bool) -> N
         unit="seconds",
         tags={"operation": operation, "service": "payment-service"}
     )
-    
+
     # Success/failure metric
     status_result = flext_create_metric(
         name=f"{operation}_status",
@@ -531,7 +531,7 @@ def create_business_metrics(operation: str, duration: float, success: bool) -> N
         tags={"operation": operation, "status": "success" if success else "failure"},
         metric_type="counter"
     )
-    
+
     # Business KPI metric
     kpi_result = flext_create_metric(
         name="business_transactions",
@@ -545,7 +545,7 @@ def create_business_metrics(operation: str, duration: float, success: bool) -> N
 def create_validated_metric(name: str, value: float) -> FlextResult[None]:
     """Create metric with comprehensive validation."""
     metric_result = flext_create_metric(name, value, "count")
-    
+
     if metric_result.is_failure:
         # Log metric creation failure
         log_result = flext_create_log_entry(
@@ -554,7 +554,7 @@ def create_validated_metric(name: str, value: float) -> FlextResult[None]:
             context={"metric_name": name, "metric_value": str(value)}
         )
         return FlextResult.fail(f"Metric creation failed: {metric_result.error}")
-    
+
     return FlextResult.ok(None)
 ```
 
@@ -564,23 +564,23 @@ def create_validated_metric(name: str, value: float) -> FlextResult[None]:
 # Parent-child trace correlation
 def process_order_with_tracing(order_data: dict) -> FlextResult[dict]:
     """Process order with distributed tracing."""
-    
+
     # Create parent trace
     parent_trace_result = flext_create_trace("process_order", "order-service")
     if parent_trace_result.is_failure:
         return parent_trace_result
-    
+
     parent_trace = parent_trace_result.data
-    
+
     # Create child operations with parent correlation
     validate_result = validate_order_with_trace(order_data, parent_trace.id)
     if validate_result.is_failure:
         return validate_result
-    
+
     payment_result = process_payment_with_trace(order_data, parent_trace.id)
     if payment_result.is_failure:
         return payment_result
-    
+
     return FlextResult.ok({"order_id": "order123", "trace_id": parent_trace.id})
 
 def validate_order_with_trace(order_data: dict, parent_trace_id: str) -> FlextResult[dict]:
@@ -590,10 +590,10 @@ def validate_order_with_trace(order_data: dict, parent_trace_id: str) -> FlextRe
         service_name="validation-service",
         context={"parent_trace_id": parent_trace_id, "order_size": str(len(order_data))}
     )
-    
+
     if child_trace_result.is_failure:
         return child_trace_result
-    
+
     # Validation logic with trace context
     return FlextResult.ok({"status": "valid", "trace_id": child_trace_result.data.id})
 ```
@@ -604,29 +604,29 @@ def validate_order_with_trace(order_data: dict, parent_trace_id: str) -> FlextRe
 # Comprehensive health monitoring
 def monitor_service_health() -> FlextResult[dict]:
     """Comprehensive service health monitoring."""
-    
+
     health_checks = []
-    
+
     # Database health
     db_health = check_database_health()
     if db_health.is_success:
         health_checks.append(db_health.data)
-    
-    # Cache health  
+
+    # Cache health
     cache_health = check_cache_health()
     if cache_health.is_success:
         health_checks.append(cache_health.data)
-    
+
     # External API health
     api_health = check_external_api_health()
     if api_health.is_success:
         health_checks.append(api_health.data)
-    
+
     # Aggregate health status
     overall_status = "healthy" if all(
         check.status == "healthy" for check in health_checks
     ) else "degraded"
-    
+
     # Create overall health metric
     health_metric = flext_create_metric(
         name="service_health_score",
@@ -634,7 +634,7 @@ def monitor_service_health() -> FlextResult[dict]:
         unit="ratio",
         tags={"service": "order-service"}
     )
-    
+
     return FlextResult.ok({
         "overall_status": overall_status,
         "checks": health_checks,
@@ -647,9 +647,9 @@ def check_database_health() -> FlextResult[FlextHealthCheck]:
         start_time = time.time()
         # Test database query
         connection_time = (time.time() - start_time) * 1000
-        
+
         status = "healthy" if connection_time < 100 else "degraded"
-        
+
         return flext_create_health_check(
             name="postgresql_database",
             status=status,
@@ -675,19 +675,19 @@ def check_database_health() -> FlextResult[FlextHealthCheck]:
 # Business rule-based alerting
 def create_business_alert(metric_name: str, current_value: float, threshold: float) -> FlextResult[None]:
     """Create business rule alert based on metric thresholds."""
-    
+
     if current_value <= threshold:
         return FlextResult.ok(None)  # No alert needed
-    
+
     # Determine severity based on threshold breach
     severity_ratio = current_value / threshold
     if severity_ratio > 2.0:
         severity = "critical"
     elif severity_ratio > 1.5:
-        severity = "error"  
+        severity = "error"
     else:
         severity = "warning"
-    
+
     # Create contextual alert
     alert_result = flext_create_alert(
         name=f"{metric_name}_threshold_breach",
@@ -701,33 +701,33 @@ def create_business_alert(metric_name: str, current_value: float, threshold: flo
             "timestamp": datetime.now(UTC).isoformat()
         }
     )
-    
+
     if alert_result.is_failure:
         return FlextResult.fail(f"Failed to create alert: {alert_result.error}")
-    
+
     # Create alert metric for monitoring
     alert_metric_result = flext_create_metric(
         name="alerts_created",
-        value=1,  
+        value=1,
         unit="count",
         tags={"severity": severity, "metric": metric_name},
         metric_type="counter"
     )
-    
+
     return FlextResult.ok(None)
 
 # Alert escalation patterns
 def escalate_alert_if_needed(alert: FlextAlert, duration_minutes: int) -> FlextResult[None]:
     """Escalate alert based on duration and severity."""
-    
+
     escalation_thresholds = {
         "warning": 60,    # 1 hour
-        "error": 30,      # 30 minutes  
+        "error": 30,      # 30 minutes
         "critical": 15    # 15 minutes
     }
-    
+
     threshold = escalation_thresholds.get(alert.severity, 60)
-    
+
     if duration_minutes >= threshold:
         escalated_alert_result = flext_create_alert(
             name=f"{alert.name}_escalated",
@@ -740,9 +740,9 @@ def escalate_alert_if_needed(alert: FlextAlert, duration_minutes: int) -> FlextR
                 "escalation_threshold": str(threshold)
             }
         )
-        
+
         return escalated_alert_result.map(lambda _: None)
-    
+
     return FlextResult.ok(None)
 ```
 
@@ -779,7 +779,7 @@ from flext_observability import flext_create_metric, flext_create_trace
 def test_metric_creation_success():
     """Test successful metric creation."""
     result = flext_create_metric("api_requests", 42.0, "count")
-    
+
     assert result.is_success
     assert result.data.name == "api_requests"
     assert result.data.value == 42.0
@@ -789,7 +789,7 @@ def test_metric_creation_success():
 def test_metric_creation_failure():
     """Test metric creation validation failure."""
     result = flext_create_metric("", 42.0, "count")  # Empty name
-    
+
     assert result.is_failure
     assert result.data is None
     assert "Invalid metric name" in result.error
@@ -799,14 +799,14 @@ def test_observability_chaining():
     def create_observability_data(operation: str) -> FlextResult[dict]:
         return (
             flext_create_metric(f"{operation}_requests", 1, "count")
-            .flat_map(lambda metric: 
+            .flat_map(lambda metric:
                 flext_create_trace(operation, "test-service")
                 .map(lambda trace: {"metric": metric, "trace": trace})
             )
         )
-    
+
     result = create_observability_data("user_login")
-    
+
     assert result.is_success
     assert "metric" in result.data
     assert "trace" in result.data
@@ -818,14 +818,14 @@ def test_observability_failure_propagation():
     def create_invalid_observability() -> FlextResult[dict]:
         return (
             flext_create_metric("", 1, "count")  # Invalid metric name
-            .flat_map(lambda metric: 
+            .flat_map(lambda metric:
                 flext_create_trace("operation", "service")  # Should not execute
                 .map(lambda trace: {"metric": metric, "trace": trace})
             )
         )
-    
+
     result = create_invalid_observability()
-    
+
     assert result.is_failure
     assert "Invalid metric name" in result.error
 ```
@@ -838,7 +838,7 @@ from decimal import Decimal
 
 class TestFlextMetric:
     """Test observability metric entity behavior."""
-    
+
     def test_metric_validation_success(self):
         """Test successful metric validation."""
         metric = FlextMetric(
@@ -847,24 +847,24 @@ class TestFlextMetric:
             unit="milliseconds",
             tags={"service": "api", "endpoint": "/users"}
         )
-        
+
         validation_result = metric.validate_domain_rules()
-        
+
         assert validation_result.is_success
         assert metric.name == "response_time"
         assert metric.value == 150.5
         assert metric.unit == "milliseconds"
         assert metric.tags["service"] == "api"
-    
+
     def test_metric_validation_invalid_name(self):
         """Test metric validation with invalid name."""
         metric = FlextMetric(name="", value=100.0, unit="count")
-        
+
         validation_result = metric.validate_domain_rules()
-        
+
         assert validation_result.is_failure
         assert "Invalid metric name" in validation_result.error
-    
+
     def test_metric_decimal_value_support(self):
         """Test metric with Decimal value for financial precision."""
         metric = FlextMetric(
@@ -872,16 +872,16 @@ class TestFlextMetric:
             value=Decimal("1234.56"),
             unit="USD"
         )
-        
+
         validation_result = metric.validate_domain_rules()
-        
+
         assert validation_result.is_success
         assert metric.value == Decimal("1234.56")
         assert isinstance(metric.value, Decimal)
 
 class TestFlextTrace:
     """Test observability trace entity behavior."""
-    
+
     def test_trace_creation_with_context(self):
         """Test trace creation with operation context."""
         trace = FlextTrace(
@@ -889,26 +889,26 @@ class TestFlextTrace:
             service_name="payment-service",
             context={"user_id": "123", "amount": "100.00"}
         )
-        
+
         assert trace.operation_name == "process_payment"
         assert trace.service_name == "payment-service"
         assert trace.context["user_id"] == "123"
         assert trace.context["amount"] == "100.00"
         assert trace.start_time is not None
-    
+
     def test_trace_parent_child_relationship(self):
         """Test parent-child trace relationships."""
         parent_trace = FlextTrace(
             operation_name="api_request",
             service_name="api-gateway"
         )
-        
+
         child_trace = FlextTrace(
             operation_name="database_query",
             service_name="user-service",
             parent_trace_id=parent_trace.id
         )
-        
+
         assert child_trace.parent_trace_id == parent_trace.id
         assert child_trace.operation_name == "database_query"
         assert child_trace.service_name == "user-service"
@@ -940,10 +940,10 @@ def test_metrics_service_record_metric(metrics_service, observability_factory):
     # Create metric using factory
     metric_result = observability_factory.create_metric("test_metric", 100.0, "count")
     assert metric_result.is_success
-    
+
     # Record metric using service
     record_result = metrics_service.record_metric(metric_result.data)
-    
+
     assert record_result.is_success
     assert record_result.data.name == "test_metric"
     assert record_result.data.value == 100.0
@@ -956,20 +956,20 @@ def test_metrics_service_prometheus_export(metrics_service, observability_factor
         ("response_time", 250.5, "milliseconds"),
         ("error_rate", 0.05, "ratio")
     ]
-    
+
     for name, value, unit in metrics_data:
         metric_result = observability_factory.create_metric(name, value, unit)
         assert metric_result.is_success
-        
+
         record_result = metrics_service.record_metric(metric_result.data)
         assert record_result.is_success
-    
+
     # Export to Prometheus format
     export_result = metrics_service.export_prometheus_format()
-    
+
     assert export_result.is_success
     prometheus_output = export_result.data
-    
+
     # Verify Prometheus format
     assert "# TYPE api_requests gauge" in prometheus_output
     assert "api_requests 150.0" in prometheus_output
@@ -982,10 +982,10 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
     for i in range(1200):  # Exceeds default limit of 1000
         metric_result = observability_factory.create_metric(f"test_metric_{i}", float(i), "count")
         assert metric_result.is_success
-        
+
         record_result = metrics_service.record_metric(metric_result.data)
         assert record_result.is_success
-    
+
     # Verify memory management kicked in
     total_metrics = len(metrics_service._metrics_store)
     assert total_metrics <= 1000  # Should have cleaned up to stay within limits
@@ -999,34 +999,34 @@ import time
 
 def test_function_monitoring_decorator():
     """Test automatic function monitoring."""
-    
+
     @flext_monitor_function("test_operation")
     def monitored_function(x: int, y: int) -> int:
         """Test function with monitoring."""
         time.sleep(0.1)  # Simulate work
         return x + y
-    
+
     # Execute monitored function
     result = monitored_function(5, 3)
-    
+
     # Verify function result
     assert result == 8
-    
+
     # Verify monitoring data was created (in a real implementation,
     # you would check the metrics service or factory for created metrics)
 
 def test_function_monitoring_with_exception():
     """Test monitoring decorator with function exceptions."""
-    
+
     @flext_monitor_function("error_prone_operation")
     def failing_function() -> int:
         """Function that raises an exception."""
         raise ValueError("Test error")
-    
+
     # Execute function and expect exception
     with pytest.raises(ValueError, match="Test error"):
         failing_function()
-    
+
     # In a real implementation, verify that error metrics were created
     # and failure traces were recorded
 ```
@@ -1059,7 +1059,7 @@ T = TypeVar('T')
 U = TypeVar('U')
 
 def map_observability_result(
-    result: FlextResult[T], 
+    result: FlextResult[T],
     func: Callable[[T], U]
 ) -> FlextResult[U]:
     """Generic result mapping for observability operations."""
@@ -1072,11 +1072,11 @@ from typing import Protocol
 
 class ObservabilityCollector(Protocol):
     """Protocol for observability data collectors."""
-    
+
     def collect_metric(self, metric: FlextMetric) -> FlextResult[None]:
         """Collect metric data."""
         ...
-    
+
     def collect_trace(self, trace: FlextTrace) -> FlextResult[None]:
         """Collect trace data."""
         ...
@@ -1092,16 +1092,16 @@ def create_metric(name, value, unit):  # Missing types
 # ✅ Always use FlextResult for observability error handling
 def create_comprehensive_observability(operation: str) -> FlextResult[dict[str, Any]]:
     """Create comprehensive observability data with error handling."""
-    
+
     # Chain observability operations with proper error handling
     metric_result = flext_create_metric(f"{operation}_requests", 1, "count")
     if metric_result.is_failure:
         return FlextResult.fail(f"Failed to create metric: {metric_result.error}")
-    
+
     trace_result = flext_create_trace(operation, "main-service")
     if trace_result.is_failure:
         return FlextResult.fail(f"Failed to create trace: {trace_result.error}")
-    
+
     return FlextResult.ok({
         "metric": metric_result.data,
         "trace": trace_result.data,
@@ -1113,11 +1113,11 @@ def monitor_business_operation(operation_data: dict) -> FlextResult[dict]:
     """Monitor business operation with comprehensive observability."""
     return (
         flext_create_trace("business_operation", "business-service")
-        .flat_map(lambda trace: 
+        .flat_map(lambda trace:
             flext_create_metric("operations_started", 1, "count")
             .map(lambda metric: {"trace": trace, "metric": metric})
         )
-        .flat_map(lambda obs_data: 
+        .flat_map(lambda obs_data:
             process_operation(operation_data, obs_data["trace"].id)
             .map(lambda result: {**result, **obs_data})
         )
@@ -1192,7 +1192,7 @@ def create_business_observability_dashboard(
             "traces": [],
             "health_checks": []
         }
-        
+
         # Setup metrics based on configuration
         for metric_name, config in metrics_config.items():
             metric_result = flext_create_metric(
@@ -1201,26 +1201,26 @@ def create_business_observability_dashboard(
                 unit=config.get("unit", "count"),
                 metric_type=config.get("type", "gauge")
             )
-            
+
             if metric_result.is_failure:
                 return FlextResult.fail(f"Failed to create metric {metric_name}: {metric_result.error}")
-            
+
             dashboard_config["metrics"].append(metric_result.data)
-        
+
         # Setup tracing based on configuration
         trace_result = flext_create_trace(
             operation_name=f"{service_name}_operations",
             service_name=service_name,
             context=trace_config
         )
-        
+
         if trace_result.is_failure:
             return FlextResult.fail(f"Failed to create trace setup: {trace_result.error}")
-        
+
         dashboard_config["traces"].append(trace_result.data)
-        
+
         return FlextResult.ok(dashboard_config)
-        
+
     except Exception as e:
         return FlextResult.fail(f"Unexpected error creating observability dashboard: {str(e)}")
 ```
@@ -1244,54 +1244,54 @@ from flext_observability import (
 # ✅ Consistent observability patterns across FLEXT projects
 class FlextUserService:
     """User service with standardized observability."""
-    
+
     def __init__(self, container: FlextContainer) -> None:
         self.container = container
         self.observability = FlextMetricsService(container)
-    
+
     @flext_monitor_function("user_creation")
     def create_user(self, user_data: dict) -> FlextResult[dict]:
         """Create user with automatic observability."""
-        
+
         # Business metrics
-        flext_create_metric("users_created", 1, "count", 
+        flext_create_metric("users_created", 1, "count",
                            tags={"service": "user-service"})
-        
+
         # Business logic
         result = self._create_user_impl(user_data)
-        
+
         # Success/failure metrics
         status = "success" if result.is_success else "failure"
         flext_create_metric("user_creation_status", 1, "count",
                            tags={"status": status, "service": "user-service"})
-        
+
         return result
 
 # ✅ Cross-service observability correlation
 def sync_user_between_services(user_id: str) -> FlextResult[dict]:
     """Sync user data between services with trace correlation."""
-    
+
     # Create correlation trace
     correlation_trace = flext_create_trace("user_sync", "integration-service")
     if correlation_trace.is_failure:
         return correlation_trace
-    
+
     trace_id = correlation_trace.data.id
-    
+
     # LDAP service call with trace context
     ldap_result = fetch_user_from_ldap(user_id, trace_id)
     if ldap_result.is_failure:
         return ldap_result
-    
-    # Oracle service call with trace context  
+
+    # Oracle service call with trace context
     oracle_result = update_user_in_oracle(user_id, ldap_result.data, trace_id)
     if oracle_result.is_failure:
         return oracle_result
-    
+
     # Success metrics
     flext_create_metric("user_sync_completed", 1, "count",
                        tags={"correlation_id": trace_id})
-    
+
     return FlextResult.ok({
         "user_id": user_id,
         "correlation_id": trace_id,
@@ -1318,7 +1318,7 @@ class ObservabilitySettings(FlextBaseSettings):
     tracing_enabled: bool = True
     log_level: str = "INFO"
     correlation_id_header: str = "X-Correlation-ID"
-    
+
     class Config:
         env_prefix = "OBSERVABILITY_"
 
@@ -1327,7 +1327,7 @@ class UserServiceSettings(FlextBaseSettings):
     service_name: str = "user-service"
     database_url: str = "postgresql://localhost/users"
     observability: ObservabilitySettings = field(default_factory=ObservabilitySettings)
-    
+
     class Config:
         env_prefix = "USER_SERVICE_"
         env_nested_delimiter = "__"
@@ -1336,11 +1336,11 @@ class UserServiceSettings(FlextBaseSettings):
 class UserService:
     def __init__(self, settings: UserServiceSettings) -> None:
         self.settings = settings
-        
+
         # Initialize observability based on configuration
         if settings.observability.metrics_enabled:
             self.metrics_service = FlextMetricsService(container)
-        
+
         if settings.observability.tracing_enabled:
             self.tracing_service = FlextTracingService(container)
 ```
@@ -1353,18 +1353,18 @@ from flext_observability import flext_monitor_function
 
 class FlextAPIService:
     """API service with ecosystem-standard monitoring."""
-    
+
     @flext_monitor_function("api_endpoint")
     def handle_user_request(self, request_data: dict) -> FlextResult[dict]:
         """Handle API request with automatic monitoring."""
         # Automatically gets:
         # - Request latency metrics
-        # - Success/failure tracking  
+        # - Success/failure tracking
         # - Distributed tracing
         # - Structured logging with correlation IDs
-        
+
         return self._process_request(request_data)
-    
+
     @flext_monitor_function("database_operation")
     def query_user_data(self, user_id: str) -> FlextResult[dict]:
         """Database query with monitoring."""
@@ -1373,7 +1373,7 @@ class FlextAPIService:
 
 class FlextOracleService:
     """Oracle service with ecosystem-standard monitoring."""
-    
+
     @flext_monitor_function("oracle_query")
     def execute_wms_query(self, query: str) -> FlextResult[list[dict]]:
         """Execute Oracle WMS query with monitoring."""
@@ -1382,7 +1382,7 @@ class FlextOracleService:
 
 class FlextLDAPService:
     """LDAP service with ecosystem-standard monitoring."""
-    
+
     @flext_monitor_function("ldap_operation")
     def search_users(self, search_filter: str) -> FlextResult[list[dict]]:
         """LDAP search with monitoring."""
