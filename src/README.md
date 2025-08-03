@@ -7,10 +7,11 @@ This directory contains the complete implementation of FLEXT Observability, orga
 ## Module Organization
 
 ### [flext_observability/](flext_observability/) - Core Package
+
 Complete observability implementation with layered architecture:
 
 - **Domain Layer**: Core entities and business logic
-- **Application Layer**: Services and business operations  
+- **Application Layer**: Services and business operations
 - **Interface Layer**: APIs and external adapters
 - **Infrastructure Layer**: Utilities and cross-cutting concerns
 
@@ -81,9 +82,10 @@ def process_order(order_data: dict) -> dict:
 ## Quality Assurance
 
 All source code passes:
+
 - **Ruff linting** with ALL rules enabled
 - **MyPy type checking** in strict mode
-- **Bandit security scanning** 
+- **Bandit security scanning**
 - **95% test coverage** minimum
 - **Documentation standards** compliance
 

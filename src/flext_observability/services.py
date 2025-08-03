@@ -203,7 +203,7 @@ class FlextMetricsService:
         self._start_time = time.time()
         self._metrics_recorded = 0
 
-    def _validate_metric_input(self, metric: FlextMetric) -> FlextResult[None]:
+    def _validate_metric_input(self, metric: object) -> FlextResult[None]:
         """Validate metric input data."""
         if not metric or not hasattr(metric, "name") or not hasattr(metric, "value"):
             return FlextResult.fail("Invalid metric: missing name or value")

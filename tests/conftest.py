@@ -100,11 +100,14 @@ def reset_observability_context() -> None:
     try:
         from flext_observability.flext_structured import _flext_observability_context
 
-        # Reset before test
-        _flext_observability_context.set({})
+        # Force reset before test - clear any contamination
+        _flext_observability_context.set(None)
+
         yield
-        # Reset after test
-        _flext_observability_context.set({})
+
+        # Force reset after test - prevent leakage to next test
+        _flext_observability_context.set(None)
+
     except ImportError:
         # If import fails, just yield without doing anything
         yield

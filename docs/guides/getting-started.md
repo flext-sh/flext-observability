@@ -71,6 +71,7 @@ else:
 ```
 
 **Expected Output**:
+
 ```
 ✅ Created metric: api_response_time = 150.5 milliseconds
 📊 Metric ID: flext_metric_abc123...
@@ -137,7 +138,7 @@ metric_result = factory.create_metric("database_connections", 42, "connections")
 if metric_result.is_success:
     # Record the metric using the service
     record_result = metrics_service.record_metric(metric_result.data)
-    
+
     if record_result.is_success:
         print(f"✅ Metric recorded successfully: {record_result.data.name}")
     else:
@@ -159,13 +160,13 @@ class UserService:
     @flext_monitor_function("user_service_create")
     def create_user(self, user_data: dict) -> FlextResult[dict]:
         """Create user with automatic monitoring."""
-        
+
         # Record custom metric
         metric_result = flext_create_metric("users_created", 1, "count")
-        
+
         # Your business logic
         user = {"id": "user123", "email": user_data["email"]}
-        
+
         return FlextResult.ok(user)
 ```
 
@@ -181,21 +182,21 @@ class DatabaseConnectionService:
     def __init__(self):
         self.container = FlextContainer()
         self.health_service = FlextHealthService(self.container)
-    
+
     def check_database_health(self) -> FlextResult[dict]:
         """Monitor database connection health."""
-        
+
         # Create health check
         health_result = flext_create_health_check(
             name="postgresql_connection",
             status="healthy",
             message="Database responding normally"
         )
-        
+
         if health_result.is_success:
             # Process health check through service
             return self.health_service.process_health_check(health_result.data)
-        
+
         return health_result
 ```
 
@@ -210,14 +211,14 @@ class FlextTapOracle:
     @flext_monitor_function("tap_oracle_extract")
     def extract_records(self, table_name: str) -> list[dict]:
         """Extract records with monitoring."""
-        
+
         # Your extraction logic
         records = self._query_oracle_table(table_name)
-        
+
         # Record extraction metrics
         flext_create_metric("records_extracted", len(records), "count")
         flext_create_metric("extraction_table", 1, "count", tags={"table": table_name})
-        
+
         return records
 ```
 
@@ -237,7 +238,7 @@ from flext_observability import (
 def test_basic_metric_creation():
     """Test basic metric creation works."""
     result = flext_create_metric("test_metric", 100.0, "count")
-    
+
     assert result.is_success
     assert result.data.name == "test_metric"
     assert result.data.value == 100.0
@@ -246,7 +247,7 @@ def test_basic_metric_creation():
 def test_basic_trace_creation():
     """Test basic trace creation works."""
     result = flext_create_trace("test_operation", "test_service")
-    
+
     assert result.is_success
     assert result.data.operation_name == "test_operation"
     assert result.data.service_name == "test_service"
@@ -298,17 +299,17 @@ from flext_observability import FlextObservabilityMasterFactory
 def display_observability_status():
     """Display current observability status."""
     factory = FlextObservabilityMasterFactory()
-    
+
     # Create some sample observability data
     metrics = [
         factory.create_metric("cpu_usage", 75.2, "percent"),
         factory.create_metric("memory_usage", 1024, "MB"),
         factory.create_metric("active_connections", 15, "connections")
     ]
-    
+
     print("📊 FLEXT Observability Status:")
     print("=" * 40)
-    
+
     for metric_result in metrics:
         if metric_result.is_success:
             m = metric_result.data
@@ -323,14 +324,17 @@ if __name__ == "__main__":
 ## 🔄 Next Steps
 
 ### For Basic Usage
+
 - **[Entity Patterns](entity-patterns.md)**: Learn detailed entity usage patterns
 - **[Basic Usage Examples](../examples/basic-usage.md)**: More comprehensive examples
 
 ### For Advanced Integration
+
 - **[Service Layer Guide](service-layer.md)**: Deep dive into service patterns
 - **[Factory Patterns](factory-patterns.md)**: Advanced entity creation patterns
 
 ### For FLEXT Ecosystem Integration
+
 - **[Ecosystem Integration](../examples/ecosystem-integration.md)**: Cross-project patterns
 - **[Architecture Overview](../architecture/README.md)**: Understand the full architecture
 

@@ -7,19 +7,23 @@ This package implements Clean Architecture and Domain-Driven Design patterns spe
 ## Package Architecture
 
 ### Domain Layer
+
 Core business entities with domain validation and business logic:
 
 #### [entities.py](entities.py) - Domain Entities
+
 - **FlextMetric**: Metrics collection entity with domain validation
-- **FlextTrace**: Distributed tracing span entity with context propagation  
+- **FlextTrace**: Distributed tracing span entity with context propagation
 - **FlextAlert**: Alert management entity with severity handling
 - **FlextHealthCheck**: Health monitoring entity with dependency validation
 - **FlextLogEntry**: Structured logging entity with correlation ID support
 
-### Application Layer  
+### Application Layer
+
 Business logic and service coordination:
 
 #### [services.py](services.py) - Application Services
+
 - **FlextMetricsService**: Metrics collection, validation, and export
 - **FlextTracingService**: Distributed tracing coordination
 - **FlextAlertService**: Alert processing and routing
@@ -27,61 +31,77 @@ Business logic and service coordination:
 - **FlextLoggingService**: Structured logging management
 
 #### [obs_platform.py](obs_platform.py) - Platform Orchestration
+
 - **FlextObservabilityPlatformV2**: Central platform coordinating all services
 
 ### Interface Adapters Layer
+
 External interfaces and API adaptations:
 
 #### [factory.py](factory.py) - Factory Patterns
+
 - **FlextObservabilityMasterFactory**: Central entity creation with validation
 
 #### [flext_simple.py](flext_simple.py) - Simple API
+
 - **flext_create_metric()**: Easy metric creation
-- **flext_create_trace()**: Simple trace creation  
+- **flext_create_trace()**: Simple trace creation
 - **flext_create_alert()**: Alert creation interface
 - **flext_create_health_check()**: Health check creation
 - **flext_create_log_entry()**: Log entry creation
 
 #### [flext_monitor.py](flext_monitor.py) - Monitoring Decorators
+
 - **@flext_monitor_function**: Automatic function monitoring
 - **FlextObservabilityMonitor**: Advanced monitoring coordination
 
 #### [flext_structured.py](flext_structured.py) - Structured Logging
+
 - **FlextStructuredLogger**: JSON structured logging
 - **Correlation ID management**: Context-local correlation tracking
 
 ### Infrastructure Layer
+
 Supporting utilities and cross-cutting concerns:
 
 #### [repos.py](repos.py) - Repository Patterns
+
 - **FlextObservabilityRepository**: Data access patterns (in-memory)
 
 #### [health.py](health.py) - Health Utilities
+
 - **HealthChecker**: Basic health check coordination
 
 #### [metrics.py](metrics.py) - Metrics Utilities
+
 - **MetricsCollector**: Utility metrics collection patterns
 
 #### [flext_metrics.py](flext_metrics.py) - Advanced Metrics
+
 - **FlextMetricsCollector**: Advanced metrics collection with type safety
 
 ### Foundation Layer
+
 Base patterns and cross-cutting concerns:
 
 #### [validation.py](validation.py) - Domain Validation
+
 - **create_observability_result_error()**: Standardized error creation
 - Domain validation utilities and patterns
 
 #### [constants.py](constants.py) - Domain Constants
+
 - Health check thresholds and system limits
 - Metrics collection configuration defaults
 
 #### [exceptions.py](exceptions.py) - Domain Exceptions
+
 - Observability-specific exception types and error handling
 
 ## Usage Examples
 
 ### Basic Entity Creation
+
 ```python
 from flext_observability.entities import FlextMetric, FlextTrace
 
@@ -89,7 +109,7 @@ from flext_observability.entities import FlextMetric, FlextTrace
 metric = FlextMetric(
     name="api_response_time",
     value=150.5,
-    unit="milliseconds", 
+    unit="milliseconds",
     tags={"service": "user-api"}
 )
 
@@ -99,6 +119,7 @@ if validation.is_success:
 ```
 
 ### Service Layer Usage
+
 ```python
 from flext_observability.services import FlextMetricsService
 from flext_core import FlextContainer
@@ -111,7 +132,8 @@ if result.is_success:
     print(f"Recorded: {result.data.name}")
 ```
 
-### Factory Pattern Usage  
+### Factory Pattern Usage
+
 ```python
 from flext_observability.factory import FlextObservabilityMasterFactory
 
@@ -124,17 +146,19 @@ if metric_result.is_success:
 ```
 
 ### Simple API Usage
+
 ```python
 from flext_observability.flext_simple import flext_create_metric, flext_create_trace
 
 # Quick metric creation
 metric_result = flext_create_metric("requests_total", 1, "count")
 
-# Quick trace creation  
+# Quick trace creation
 trace_result = flext_create_trace("user_login", "auth-service")
 ```
 
 ### Monitoring Decorator Usage
+
 ```python
 from flext_observability.flext_monitor import flext_monitor_function
 
@@ -147,13 +171,16 @@ def process_order(order_data: dict) -> dict:
 ## Integration Patterns
 
 ### FLEXT Ecosystem Integration
+
 All modules follow FLEXT ecosystem standards:
+
 - **FlextResult[T]** for railway-oriented programming
 - **FlextContainer** for dependency injection
 - **FlextEntity** base patterns for domain entities
 - **Type safety** with comprehensive annotations
 
 ### Cross-Service Observability
+
 ```python
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
@@ -165,8 +192,9 @@ def handle_user_request(request: dict) -> FlextResult[dict]:
 ## Quality Standards
 
 All modules in this package maintain:
+
 - **100% Type Coverage**: Complete type annotations
-- **95% Test Coverage**: Comprehensive test suites  
+- **95% Test Coverage**: Comprehensive test suites
 - **Domain Validation**: Business rule enforcement
 - **Error Handling**: FlextResult patterns throughout
 - **Documentation**: Enterprise-grade docstrings
