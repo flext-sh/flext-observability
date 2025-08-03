@@ -1,10 +1,58 @@
-"""FlextMonitor - Real monitoring orchestration for observability with SOLID principles.
+"""FLEXT Observability Monitoring Orchestration.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Provides real observability monitoring orchestration with metrics collection,
-distributed tracing, health monitoring, and alerting capabilities.
+Monitoring orchestration and function decoration capabilities implementing comprehensive
+observability automation across the FLEXT ecosystem. Provides decorator patterns for
+automatic function monitoring, service orchestration for observability workflows,
+and centralized coordination of metric collection, distributed tracing, health checks,
+and alerting across all FLEXT services.
+
+This module implements the Decorator pattern and Service Orchestrator patterns to
+provide seamless observability integration with minimal code changes. Functions can
+be automatically monitored for performance, errors, and business metrics through
+simple decorator application, while maintaining enterprise-grade reliability.
+
+Key Components:
+    - FlextObservabilityMonitor: Central orchestrator for all observability services
+    - @flext_monitor_function: Decorator for automatic function monitoring
+    - Service coordination for metrics, tracing, health checks, and alerting
+    - Automatic performance tracking and error correlation
+
+Architecture:
+    Interface Adapters layer providing monitoring automation and service orchestration.
+    Coordinates multiple application services (metrics, tracing, alerts, health) while
+    maintaining Clean Architecture boundaries and dependency inversion principles.
+
+Integration:
+    - Built on flext-core foundation patterns (FlextContainer, FlextResult)
+    - Coordinates all observability application services
+    - Provides automatic monitoring for external functions and services
+    - Supports comprehensive observability across FLEXT ecosystem
+
+Example:
+    Automatic function monitoring with minimal setup:
+
+    >>> from flext_observability.flext_monitor import flext_monitor_function
+    >>>
+    >>> @flext_monitor_function("user_authentication")
+    >>> def authenticate_user(credentials: dict) -> dict:
+    ...     # Function automatically monitored for:
+    ...     # - Execution time metrics
+    ...     # - Success/failure tracking
+    ...     # - Distributed tracing spans
+    ...     # - Error alerting
+    ...     return process_authentication(credentials)
+    >>>
+    >>> # Usage remains identical - monitoring is transparent
+    >>> result = authenticate_user({"username": "user", "password": "pass"})
+
+FLEXT Integration:
+    Provides seamless monitoring integration across all 33 FLEXT ecosystem projects,
+    enabling automatic observability with consistent patterns and minimal
+    learning curve.
+
 """
 
 from __future__ import annotations
@@ -34,13 +82,92 @@ if TYPE_CHECKING:
 
 
 class FlextObservabilityMonitor:
-    """Real observability monitor orchestrating all services with SOLID principles.
+    """Central Observability Services Orchestrator.
 
-    Implements Single Responsibility (observability orchestration),
-    Open/Closed (extensible service integration),
-    Liskov Substitution (monitor interface),
-    Interface Segregation (focused monitoring API), and Dependency Inversion
-    (service abstractions).
+    Enterprise-grade monitoring orchestrator coordinating all observability services
+    including metrics collection, distributed tracing, health monitoring, and alerting.
+    Provides centralized initialization, lifecycle management, and service coordination
+    for comprehensive observability across distributed FLEXT ecosystem components.
+
+    This orchestrator implements the Service Coordinator pattern, managing multiple
+    observability services as a unified system while maintaining clear boundaries
+    and dependency relationships. Supports both programmatic service access and
+    decorator-based automatic monitoring integration.
+
+    Responsibilities:
+        - Centralized observability service initialization and coordination
+        - Service lifecycle management (start, stop, health monitoring)
+        - Cross-service communication and data correlation
+        - Automatic service discovery and registration
+        - Performance monitoring and resource management
+        - Error handling and recovery coordination
+
+    SOLID Principles Implementation:
+        - Single Responsibility: Focused on observability service orchestration
+        - Open/Closed: Extensible for new observability service types
+        - Liskov Substitution: Interface compliance for monitor substitution
+        - Interface Segregation: Focused monitoring orchestration interface
+        - Dependency Inversion: Depends on service abstractions via FlextContainer
+
+    Attributes:
+        container (FlextContainer): Dependency injection container for services
+        _logger: Structured logger for orchestrator operations
+        _initialized: Initialization state for service coordination
+        _monitoring_active: Active monitoring state tracking
+        _metrics_service: Metrics collection and aggregation service
+        _tracing_service: Distributed tracing coordination service
+        _alert_service: Alert processing and routing service
+        _health_service: Health monitoring and validation service
+        _logging_service: Structured logging management service
+
+    Architecture:
+        Interface Adapters layer orchestrator coordinating multiple application
+        services while maintaining Clean Architecture boundaries. Implements
+        Service Orchestrator and Coordinator patterns for complex service ecosystems.
+
+    Example:
+        Comprehensive observability service orchestration:
+
+        >>> from flext_observability.flext_monitor import FlextObservabilityMonitor
+        >>> from flext_core import FlextContainer
+        >>>
+        >>> container = FlextContainer()
+        >>> monitor = FlextObservabilityMonitor(container)
+        >>>
+        >>> # Initialize all observability services
+        >>> init_result = monitor.initialize_observability()
+        >>> if init_result.is_success:
+        ...     print("Observability services initialized")
+        >>>
+        >>> # Start monitoring operations
+        >>> start_result = monitor.start_monitoring()
+        >>> if start_result.is_success:
+        ...     print("Monitoring active")
+        >>>
+        >>> # Check overall system health
+        >>> health_result = monitor.get_health_status()
+        >>> if health_result.is_success:
+        ...     print(f"System health: {health_result.data}")
+
+    Service Coordination:
+        Orchestrates multiple observability services as unified system:
+        - Metrics service for performance and business metrics collection
+        - Tracing service for distributed request correlation and timing
+        - Alert service for proactive issue notification and escalation
+        - Health service for component status monitoring and validation
+        - Logging service for structured event capture and correlation
+
+    Thread Safety:
+        All orchestration operations are thread-safe, supporting concurrent
+        service initialization and monitoring operations from multiple threads
+        without state corruption or service conflicts.
+
+    Performance:
+        - Lazy service initialization for optimal startup performance
+        - Efficient service health monitoring with configurable intervals
+        - Optimized cross-service communication patterns
+        - Resource usage monitoring and automatic cleanup strategies
+
     """
 
     def __init__(self, container: FlextContainer | None = None) -> None:

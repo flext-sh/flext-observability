@@ -1,9 +1,57 @@
-"""FlextMetrics - Advanced metrics collection beyond flext-core.
+"""FLEXT Advanced Metrics Collection - Specialized Observability Metrics.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Provides observability-specific metrics functionality not in flext-core.
+Advanced metrics collection capabilities providing specialized observability
+metrics functionality beyond basic flext-core patterns. Implements comprehensive
+system monitoring, application performance metrics, and observability-specific
+metric types for enterprise-grade monitoring across the FLEXT ecosystem.
+
+This module extends flext-core metrics capabilities with observability-specific
+functionality including system resource monitoring, application performance
+tracking, and specialized metric types designed for operational visibility.
+Provides high-performance metrics collection with caching and optimization.
+
+Key Components:
+    - TFlextMetricType: Specialized metric type definitions for observability
+    - FlextMetricsCollector: Advanced metrics collection engine with caching
+    - System resource monitoring with psutil integration
+    - Application performance metrics with operational KPIs
+    - Observability-specific metric recording and aggregation
+
+Architecture:
+    Infrastructure layer component providing advanced metrics collection
+    capabilities specialized for observability use cases. Extends flext-core
+    metrics patterns while maintaining compatibility and performance.
+
+Integration:
+    - Extends flext-core metrics capabilities for observability scenarios
+    - Used by FlextMetricsService for comprehensive metrics collection
+    - Provides system and application metrics for monitoring dashboards
+    - Supports operational visibility and performance monitoring
+
+Example:
+    Advanced metrics collection with system and application monitoring:
+
+    >>> from flext_observability.flext_metrics import FlextMetricsCollector
+    >>> collector = FlextMetricsCollector()
+    >>>
+    >>> # Collect system resource metrics
+    >>> system_result = collector.flext_collect_system_observability_metrics()
+    >>> if system_result.is_success:
+    ...     metrics = system_result.data
+    ...     print(f"CPU: {metrics['cpu_percent']}%")
+    ...     print(f"Memory: {metrics['memory_percent']}%")
+    >>>
+    >>> # Get comprehensive metrics summary
+    >>> summary_result = collector.flext_get_metrics_summary()
+
+FLEXT Integration:
+    Provides specialized metrics collection capabilities across all 33 FLEXT
+    ecosystem projects, enabling comprehensive system monitoring, application
+    performance tracking, and operational visibility with enterprise reliability.
+
 """
 
 from __future__ import annotations
@@ -20,7 +68,13 @@ from flext_core import FlextResult, get_logger
 
 
 class TFlextMetricType:
-    """Observability metric types extending beyond basic flext-core."""
+    """Specialized Metric Type Definitions for Advanced Observability Scenarios.
+
+    Defines observability-specific metric types extending beyond basic flext-core
+    patterns to support comprehensive monitoring, performance analysis, and
+    operational visibility requirements across the FLEXT ecosystem.
+
+    """
 
     OBSERVABILITY_COUNTER = "observability_counter"
     OBSERVABILITY_GAUGE = "observability_gauge"
@@ -29,10 +83,46 @@ class TFlextMetricType:
 
 
 class FlextMetricsCollector:
-    """Advanced metrics collector for observability-specific needs."""
+    """Advanced Metrics Collection Engine for Specialized Observability Requirements.
+
+    Enterprise-grade metrics collector implementing comprehensive system monitoring,
+    application performance tracking, and observability-specific metrics collection
+    with intelligent caching, performance optimization, and operational visibility.
+
+    This collector extends flext-core metrics capabilities with specialized
+    observability functionality including system resource monitoring, application
+    KPI tracking, and performance-optimized collection strategies designed for
+    enterprise-scale monitoring across distributed FLEXT services.
+
+    Responsibilities:
+        - System resource monitoring with real-time metrics collection
+        - Application performance metrics with operational KPIs
+        - Intelligent caching for high-frequency collection optimization
+        - Specialized metric recording with observability-specific types
+        - Comprehensive metrics summarization and reporting
+        - Error handling and collection reliability for production environments
+
+    Caching Strategy:
+        Implements intelligent caching with configurable duration to optimize
+        performance for high-frequency system metrics collection while maintaining
+        accuracy and reliability for operational monitoring requirements.
+
+    Attributes:
+        _logger: Structured logger for collection operations and diagnostics
+        _metrics_cache: Cached metrics data for performance optimization
+        _cache_timestamp: Cache validity timestamp for intelligent invalidation
+        _cache_duration: Configurable cache duration for collection optimization
+
+    """
 
     def __init__(self) -> None:
-        """Initialize collector."""
+        """Initialize advanced metrics collection engine with caching and logging.
+
+        Sets up comprehensive metrics collection infrastructure with intelligent
+        caching, structured logging, and performance optimization for enterprise-scale
+        observability monitoring across distributed FLEXT services.
+
+        """
         self._logger = get_logger(self.__class__.__name__)
         self._metrics_cache: dict[str, object] = {}
         self._cache_timestamp = 0.0

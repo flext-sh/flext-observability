@@ -1,9 +1,58 @@
-"""FLEXT Observability Factory - Simplified using flext-core patterns.
+"""FLEXT Observability Entity Factory.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Simplified factory eliminating duplicação using flext-core patterns.
+Factory patterns implementing centralized entity creation with comprehensive
+validation, dependency injection, and business rule enforcement for observability
+entities. Provides unified access point for creating FlextMetric, FlextTrace,
+FlextAlert, FlextHealthCheck, and FlextLogEntry entities with consistent
+validation and initialization patterns.
+
+Built following Factory Method and Abstract Factory patterns with dependency
+injection support, this module eliminates code duplication while ensuring
+consistent entity creation across the FLEXT ecosystem. All factory methods
+implement railway-oriented programming with FlextResult error handling.
+
+Key Components:
+    - FlextObservabilityMasterFactory: Central factory for all observability entities
+    - Entity creation methods with validation and business rule enforcement
+    - Service coordination for entity processing and storage
+    - Dependency injection container integration
+
+Architecture:
+    Interface Adapters layer in Clean Architecture, coordinating domain entity
+    creation with application services. Implements Factory patterns with
+    comprehensive validation and error handling for enterprise reliability.
+
+Integration:
+    - Built on flext-core foundation patterns (FlextContainer, FlextResult)
+    - Coordinates observability domain entities and application services
+    - Provides consistent API for external interfaces and client integration
+    - Supports comprehensive observability across FLEXT ecosystem
+
+Example:
+    Centralized entity creation with validation:
+
+    >>> from flext_observability.factory import FlextObservabilityMasterFactory
+    >>> from flext_core import FlextContainer
+    >>>
+    >>> container = FlextContainer()
+    >>> factory = FlextObservabilityMasterFactory(container)
+    >>>
+    >>> # Create metric with automatic validation
+    >>> metric_result = factory.create_metric("api_requests", 42, "count")
+    >>> if metric_result.is_success:
+    ...     print(f"Created: {metric_result.data.name}")
+    >>>
+    >>> # Create trace with business context
+    >>> trace_result = factory.create_trace("user_login", "auth-service")
+
+FLEXT Integration:
+    Provides centralized factory services for observability entity creation
+    across all 33 FLEXT ecosystem projects, ensuring consistent patterns and
+    validation for metrics, tracing, alerting, health monitoring, and logging.
+
 """
 
 from __future__ import annotations
@@ -39,10 +88,120 @@ from flext_observability.validation import create_observability_result_error
 
 
 class FlextObservabilityMasterFactory:
-    """Master factory providing single point of access - simplified."""
+    """Master Factory for Centralized Observability Entity Creation.
+
+    Enterprise-grade factory implementing comprehensive entity creation patterns
+    with validation, dependency injection, and business rule enforcement. Provides
+    unified access point for creating all observability entities (metrics, traces,
+    alerts, health checks, logs) with consistent validation and initialization.
+
+    This factory eliminates code duplication by centralizing entity creation logic
+    while ensuring consistent business rule enforcement, validation patterns, and
+    error handling across all observability entity types. Integrates with application
+    services for entity processing and storage coordination.
+
+    Responsibilities:
+        - Centralized entity creation with comprehensive validation
+        - Business rule enforcement during entity initialization
+        - Dependency injection container coordination
+        - Application service integration for entity processing
+        - Consistent error handling with railway-oriented programming
+        - Entity lifecycle management and coordination
+
+    Factory Patterns Implementation:
+        - Factory Method: Individual entity creation methods
+        - Abstract Factory: Consistent interface across entity types
+        - Dependency Injection: Service coordination via FlextContainer
+        - Template Method: Consistent validation and error handling patterns
+
+    Attributes:
+        container (FlextContainer): Dependency injection container for services
+        _logger: Structured logger for factory operations and diagnostics
+        _metrics_service: Metrics processing and storage service
+        _tracing_service: Distributed tracing coordination service
+        _alert_service: Alert processing and routing service
+        _health_service: Health monitoring and validation service
+        _logging_service: Structured logging management service
+
+    Entity Creation Methods:
+        - create_metric(): FlextMetric creation with validation
+        - create_trace(): FlextTrace creation with correlation support
+        - create_alert(): FlextAlert creation with severity validation
+        - create_health_check(): FlextHealthCheck creation with dependency validation
+        - create_log_entry(): FlextLogEntry creation with context enrichment
+
+    Example:
+        Comprehensive entity creation with business validation:
+
+        >>> from flext_observability.factory import FlextObservabilityMasterFactory
+        >>> from flext_core import FlextContainer
+        >>>
+        >>> container = FlextContainer()
+        >>> factory = FlextObservabilityMasterFactory(container)
+        >>>
+        >>> # Create performance metric with automatic validation
+        >>> metric_result = factory.create_metric(
+        ...     name="api_response_time",
+        ...     value=150.5,
+        ...     unit="milliseconds",
+        ...     tags={"service": "user-api", "endpoint": "/users"},
+        ... )
+        >>> if metric_result.is_success:
+        ...     metric = metric_result.data
+        ...     print(f"Created metric: {metric.name}")
+
+        >>> # Create distributed trace with correlation
+        >>> trace_result = factory.create_trace(
+        ...     operation_name="user_authentication",
+        ...     service_name="auth-service",
+        ...     context={"user_id": "12345", "request_id": "req_abc"},
+        ... )
+
+        >>> # Create critical alert with routing
+        >>> alert_result = factory.create_alert(
+        ...     title="Database Connection Failure",
+        ...     message="Production database unavailable",
+        ...     severity="critical",
+        ...     tags={"service": "database", "environment": "production"},
+        ... )
+
+    Validation and Error Handling:
+        All entity creation methods implement comprehensive validation including:
+        - Domain rule enforcement (entity.validate_domain_rules())
+        - Business constraint validation
+        - Type safety verification
+        - Railway-oriented programming with FlextResult
+        - Detailed error messages for debugging and monitoring
+
+    Service Integration:
+        Factory coordinates with application services for entity processing:
+        - Metrics automatically recorded via FlextMetricsService
+        - Traces coordinated via FlextTracingService
+        - Alerts processed via FlextAlertService
+        - Health checks validated via FlextHealthService
+        - Log entries enriched via FlextLoggingService
+
+    Thread Safety:
+        Factory operations are thread-safe through service coordination,
+        supporting concurrent entity creation from multiple threads without
+        data corruption or validation inconsistencies.
+
+    Architecture:
+        Interface Adapters layer factory coordinating domain entities with
+        application services. Implements Factory patterns while maintaining
+        Clean Architecture boundaries and dependency inversion principles.
+
+    """
 
     def __init__(self, container: FlextContainer | None = None) -> None:
-        """Initialize master factory."""
+        """Initialize master factory with dependency injection and service coordination.
+
+        Args:
+            container: Dependency injection container for service coordination.
+                Defaults to new FlextContainer if not provided. Services are
+                automatically initialized and configured for entity processing.
+
+        """
         self.container = container or FlextContainer()
         self._logger = get_logger(self.__class__.__name__)
         self._setup_services()
