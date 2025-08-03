@@ -1,9 +1,70 @@
-"""FlextSimple - Simple observability API for quick setup.
+"""FLEXT Observability Simple API.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Provides simple factory functions for observability entities using flext-core.
+Simple, user-friendly API providing convenient factory functions for quick
+observability integration across the FLEXT ecosystem. Designed for developers
+who need immediate observability capabilities without complex configuration,
+while maintaining enterprise-grade validation and error handling.
+
+This module implements the Facade pattern, providing simplified interfaces to
+complex observability entity creation and validation. All functions implement
+railway-oriented programming with FlextResult error handling and intelligent
+defaults for rapid integration and development productivity.
+
+Key Components:
+    - flext_create_metric(): Simplified metrics creation with type inference
+    - flext_create_trace(): Easy distributed tracing span creation
+    - flext_create_alert(): Quick alert generation with severity handling
+    - flext_create_health_check(): Simple health check creation
+    - flext_create_log_entry(): Structured logging entry creation
+
+Design Principles:
+    - Simplicity: Minimal parameters with intelligent defaults
+    - Flexibility: Optional parameters for advanced use cases
+    - Consistency: Uniform API patterns across all entity types
+    - Reliability: Comprehensive validation and error handling
+    - Performance: Optimized for high-frequency usage scenarios
+
+Architecture:
+    Interface Adapters layer providing simplified facade over complex domain
+    entities and factory patterns. Maintains Clean Architecture principles
+    while optimizing for developer experience and rapid integration.
+
+Integration:
+    - Built on flext-core foundation patterns (FlextResult, validation)
+    - Coordinates with observability domain entities and services
+    - Provides developer-friendly API for external integrations
+    - Supports comprehensive observability across FLEXT ecosystem
+
+Example:
+    Quick observability integration for immediate results:
+
+    >>> from flext_observability import (
+    ...     flext_create_metric,
+    ...     flext_create_trace,
+    ...     flext_create_alert,
+    ... )
+    >>>
+    >>> # Create performance metric with minimal parameters
+    >>> metric_result = flext_create_metric("api_requests", 42, "count")
+    >>> if metric_result.is_success:
+    ...     print(f"Metric: {metric_result.data.name}")
+    >>>
+    >>> # Create distributed trace for request tracking
+    >>> trace_result = flext_create_trace("user_login", "auth-service")
+    >>>
+    >>> # Create critical alert for immediate attention
+    >>> alert_result = flext_create_alert(
+    ...     "Database Down", "Production database unavailable", "critical"
+    ... )
+
+FLEXT Integration:
+    Provides the primary developer interface for observability integration
+    across all 33 FLEXT ecosystem projects, enabling rapid observability
+    adoption with consistent patterns and minimal learning curve.
+
 """
 
 from __future__ import annotations
@@ -38,13 +99,68 @@ def flext_create_metric(
     tags: dict[str, str] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
-    """Create observability metric with simple parameters and smart type inference."""
+    """Create observability metric with simplified API and intelligent type inference.
+
+    Convenient factory function for creating FlextMetric entities with minimal
+    parameters and intelligent defaults. Automatically infers metric type based
+    on naming conventions and units, while providing comprehensive validation
+    and error handling for enterprise reliability.
+
+    Args:
+        name (str): Metric name following observability naming conventions.
+            Should be descriptive and searchable (e.g., "api_response_time",
+            "user_count", "error_rate"). Used for metric identification and grouping.
+        value (float | Decimal): Numeric metric value with high precision support.
+            Supports both float and Decimal types for financial and precision-critical
+            measurements. Must be finite and valid numeric value.
+        unit (str, optional): Measurement unit for metric value interpretation.
+            Common units: "count", "milliseconds", "seconds", "bytes", "percent".
+            Used for type inference and dashboard display formatting.
+        tags (Dict[str, str], optional): Metadata tags for metric categorization
+            and filtering. Used for grouping, alerting rules, and dashboard filtering.
+            Examples: {"service": "api", "environment": "production"}.
+        timestamp (datetime, optional): Metric creation timestamp. Defaults to
+            current UTC time if not provided. Should use timezone-aware datetime.
+
+    Returns:
+        FlextResult[FlextMetric]: Success with created metric entity,
+        or failure with detailed error message for debugging and monitoring.
+
+    Type Inference:
+        Automatically determines metric type based on intelligent heuristics:
+        - "count"/"counts" units → counter type for cumulative metrics
+        - "histogram" in unit → histogram type for distribution analysis
+        - Default → gauge type for instantaneous measurements
+
+    Example:
+        Create various metric types with automatic inference:
+
+        >>> # Counter metric (inferred from unit)
+        >>> requests = flext_create_metric("api_requests", 42, "count")
+        >>>
+        >>> # Gauge metric (default type)
+        >>> cpu_usage = flext_create_metric("cpu_usage", 75.5, "percent")
+        >>>
+        >>> # Business metric with tags
+        >>> revenue = flext_create_metric(
+        ...     name="daily_revenue",
+        ...     value=15420.50,
+        ...     unit="dollars",
+        ...     tags={"region": "us-east", "product": "premium"},
+        ... )
+
+    Validation:
+        Comprehensive validation including metric naming conventions,
+        value constraints, and business rule enforcement with detailed
+        error messages for debugging and operational visibility.
+
+    """
     try:
         # Smart metric type inference based on naming conventions and units
         metric_type = "gauge"  # default
 
         # Infer from unit
-        if unit in ("count", "counts"):
+        if unit in {"count", "counts"}:
             metric_type = "counter"
         elif "histogram" in unit.lower():
             metric_type = "histogram"

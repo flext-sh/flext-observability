@@ -1,9 +1,60 @@
-"""Observability exception hierarchy using flext-core patterns.
+"""FLEXT Observability Domain Exceptions.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Domain-specific exceptions for observability operations inheriting from flext-core.
+Domain-specific exception hierarchy implementing comprehensive error handling
+for observability operations across the FLEXT ecosystem. Provides specialized
+exceptions for metrics collection, distributed tracing, health monitoring,
+alerting, and structured logging with contextual error information and
+proper inheritance from flext-core exception patterns.
+
+This module implements the Exception Hierarchy pattern, providing specialized
+exception types that capture domain-specific error conditions while maintaining
+consistent error handling patterns. All exceptions inherit from flext-core
+base exceptions to ensure compatibility and consistent error processing.
+
+Key Components:
+    - FlextObservabilityError: Base exception for all observability operations
+    - Specialized exceptions for each observability domain (metrics, tracing, etc.)
+    - Context-aware error information with component identification
+    - Integration with flext-core exception handling patterns
+
+Architecture:
+    Domain layer exceptions supporting comprehensive error handling throughout
+    the observability domain. Provides structured error information while
+    maintaining Clean Architecture boundaries and error handling consistency.
+
+Integration:
+    - Used by domain entities for validation error reporting
+    - Raised by application services during business logic failures
+    - Processed by interface adapters for error handling and response generation
+    - Compatible with flext-core error handling and logging patterns
+
+Example:
+    Domain-specific error handling with context:
+
+    >>> from flext_observability.exceptions import (
+    ...     FlextObservabilityMetricsError,
+    ...     FlextObservabilityTracingError,
+    ... )
+    >>> try:
+    ...     # Metrics operation that fails
+    ...     process_metric_data(invalid_metric)
+    ... except FlextObservabilityMetricsError as e:
+    ...     print(f"Metrics error: {e.message}")
+    ...     print(f"Component: {e.context.get('component')}")
+    >>> try:
+    ...     # Tracing operation that fails
+    ...     start_distributed_trace(invalid_trace)
+    ... except FlextObservabilityTracingError as e:
+    ...     print(f"Tracing error: {e}")
+
+FLEXT Integration:
+    Provides consistent exception handling for observability operations across
+    all 33 FLEXT ecosystem projects, ensuring uniform error reporting and
+    debugging capabilities throughout the distributed data integration platform.
+
 """
 
 from __future__ import annotations

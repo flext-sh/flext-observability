@@ -1,9 +1,63 @@
-"""FlextStructured - Structured logging specific to observability.
+"""FLEXT Structured Logging - Advanced Observability Logging Infrastructure.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Extends flext-core logging with observability-specific structured features.
+Advanced structured logging capabilities extending flext-core logging with
+observability-specific features including correlation ID management, contextual
+metadata binding, and comprehensive observability context propagation across
+distributed services in the FLEXT ecosystem.
+
+This module provides enterprise-grade structured logging infrastructure specifically
+designed for observability scenarios, supporting correlation tracking, contextual
+enrichment, and comprehensive operational visibility across microservices and
+data processing pipelines with performance optimization and reliability.
+
+Key Components:
+    - FlextStructuredLogger: Advanced structured logger with observability context
+    - Correlation ID management with context variable propagation
+    - Contextual metadata binding for enriched logging across request lifecycles
+    - Observability-specific logging methods with structured data integration
+    - Thread-safe context management for concurrent request processing
+
+Architecture:
+    Infrastructure layer component providing advanced logging capabilities
+    specialized for observability use cases. Extends flext-core logging patterns
+    while maintaining compatibility and adding observability-specific features.
+
+Integration:
+    - Extends flext-core logging capabilities for observability scenarios
+    - Used by FlextLoggingService for comprehensive log management
+    - Provides correlation tracking across distributed service calls
+    - Supports operational debugging and request tracing infrastructure
+
+Example:
+    Advanced structured logging with correlation tracking and context binding:
+
+    >>> from flext_observability.flext_structured import (
+    ...     flext_get_structured_logger, flext_set_correlation_id
+    ... )
+    >>>
+    >>> # Set correlation ID for request tracking
+    >>> flext_set_correlation_id("req_abc123def456")
+    >>>
+    >>> # Get structured logger with observability context
+    >>> logger = flext_get_structured_logger("user_service")
+    >>> bound_logger = logger.flext_bind_observability(
+    ...     user_id="12345", operation="user_login"
+    ... )
+    >>>
+    >>> # Log with comprehensive observability context
+    >>> bound_logger.flext_observability_info(
+    ...     "User authentication successful",
+    ...     response_time_ms=245, success_rate=0.98
+    ... )
+
+FLEXT Integration:
+    Provides advanced structured logging infrastructure across all 33 FLEXT
+    ecosystem projects, enabling comprehensive request tracing, operational
+    debugging, and observability context propagation throughout the platform.
+
 """
 
 from __future__ import annotations
@@ -24,7 +78,36 @@ _flext_observability_context: ContextVar[dict[str, object] | None] = ContextVar(
 
 
 class FlextStructuredLogger:
-    """Observability-specific structured logger extending flext-core."""
+    """Advanced Structured Logger for Observability Context and Correlation Tracking.
+
+    Enterprise-grade structured logger extending flext-core logging capabilities
+    with observability-specific features including correlation ID management,
+    contextual metadata binding, and comprehensive request tracing across
+    distributed services in the FLEXT ecosystem.
+
+    This logger provides advanced structured logging with automatic context
+    propagation, correlation tracking, and observability metadata integration
+    designed for enterprise-scale debugging, monitoring, and operational
+    visibility across microservices and data processing workflows.
+
+    Responsibilities:
+        - Structured logging with observability context integration
+        - Correlation ID propagation across distributed service calls
+        - Contextual metadata binding for enriched logging
+        - Thread-safe context management for concurrent processing
+        - Performance-optimized logging with minimal overhead
+        - Integration with log aggregation and monitoring systems
+
+    Context Management:
+        Utilizes Python's contextvars for thread-safe correlation tracking
+        and metadata propagation across async and concurrent execution
+        contexts, ensuring consistent observability data across requests.
+
+    Attributes:
+        _core_logger: Underlying flext-core logger for actual log output
+        _bound_data: Contextual metadata bound to this logger instance
+
+    """
 
     def __init__(self, name: str) -> None:
         """Initialize with flext-core logger."""
