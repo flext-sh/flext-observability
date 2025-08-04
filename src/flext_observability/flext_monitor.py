@@ -58,7 +58,10 @@ FLEXT Integration:
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING
+
+# Import Callable at runtime since it's used in type aliases
+from collections.abc import Callable
+from typing import cast
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
@@ -71,10 +74,17 @@ from flext_observability.services import (
     FlextTracingService,
 )
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
+# Function type aliases - avoiding Callable[..., T] to prevent explicit-any errors
+MonitorableReturnType = str | int | float | bool | None
 
-# Function type aliases - keeping simple for mypy strict compliance
+# Specific function signatures to avoid varargs which trigger explicit-any
+SimpleFunction = Callable[[object], MonitorableReturnType]
+BinaryFunction = Callable[[object, object], MonitorableReturnType]
+TernaryFunction = Callable[[object, object, object], MonitorableReturnType]
+NullaryFunction = Callable[[], MonitorableReturnType]
+
+# Union of supported function types
+MonitorableFunctionType = SimpleFunction | BinaryFunction | TernaryFunction | NullaryFunction
 
 # ============================================================================
 # OBSERVABILITY MONITORING ORCHESTRATION - Real Implementation with SOLID
@@ -318,18 +328,18 @@ class FlextObservabilityMonitor:
         return self._metrics_service.get_metrics_summary()
 
 
-def flext_monitor_function(  # type: ignore[explicit-any]
+def flext_monitor_function(
     monitor: FlextObservabilityMonitor | None = None,
     metric_name: str | None = None,
-) -> Callable[[Callable[..., object]], Callable[..., object]]:
+) -> Callable[[MonitorableFunctionType], MonitorableFunctionType]:
     """Simple function monitoring decorator with real metrics collection.
 
     SOLID compliant with reduced complexity version that provides real functionality
     while maintaining code quality standards and SOLID principles.
     """
 
-    def decorator(func: Callable[..., object]) -> Callable[..., object]:  # type: ignore[explicit-any]
-        def wrapper(*args: object, **kwargs: object) -> object:
+    def decorator(func: MonitorableFunctionType) -> MonitorableFunctionType:
+        def wrapper(*args: object, **kwargs: object) -> MonitorableReturnType:
             # Get or create monitor instance
             active_monitor = monitor
             if not active_monitor:
@@ -354,18 +364,18 @@ def flext_monitor_function(  # type: ignore[explicit-any]
         wrapper.__doc__ = getattr(func, "__doc__", wrapper.__doc__)
         wrapper.__module__ = getattr(func, "__module__", __name__)
 
-        return wrapper
+        return cast("MonitorableFunctionType", wrapper)
 
     return decorator
 
 
-def _execute_monitored_function(  # type: ignore[explicit-any]
-    func: Callable[..., object],
+def _execute_monitored_function(
+    func: MonitorableFunctionType,
     args: tuple[object, ...],
     kwargs: dict[str, object],
     monitor: FlextObservabilityMonitor,
     metric_name: str | None,
-) -> object:
+) -> MonitorableReturnType:
     """Execute function with monitoring (extracted for complexity reduction)."""
     function_name = getattr(func, "__name__", "unknown_function")
     actual_metric_name = metric_name or f"function_execution_{function_name}"
