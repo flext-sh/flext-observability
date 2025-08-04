@@ -30,9 +30,9 @@ class TestServicesBasic:
 
         # Test with valid metric
         metric_result = flext_create_metric("test", 1.0)
-        if metric_result.is_success and metric_result.data is not None:
+        if metric_result.success and metric_result.data is not None:
             record_result = service.record_metric(metric_result.data)
-            assert record_result.is_success
+            assert record_result.success
 
     def test_logging_service(self) -> None:
         """Test logging service basic functionality."""
@@ -41,9 +41,9 @@ class TestServicesBasic:
 
         # Test with valid log entry
         log_result = flext_create_log_entry("test message")
-        if log_result.is_success and log_result.data is not None:
+        if log_result.success and log_result.data is not None:
             service_result = service.log_entry(log_result.data)
-            assert service_result.is_success
+            assert service_result.success
 
     def test_tracing_service(self) -> None:
         """Test tracing service basic functionality."""
@@ -52,9 +52,9 @@ class TestServicesBasic:
 
         # Test with valid trace
         trace_result = flext_create_trace("trace-123", "test_op")
-        if trace_result.is_success and trace_result.data is not None:
+        if trace_result.success and trace_result.data is not None:
             service_result = service.start_trace(trace_result.data)
-            assert service_result.is_success
+            assert service_result.success
 
     def test_alert_service(self) -> None:
         """Test alert service basic functionality."""
@@ -63,9 +63,9 @@ class TestServicesBasic:
 
         # Test with valid alert
         alert_result = flext_create_alert("Test", "Message")
-        if alert_result.is_success and alert_result.data is not None:
+        if alert_result.success and alert_result.data is not None:
             service_result = service.create_alert(alert_result.data)
-            assert service_result.is_success
+            assert service_result.success
 
     def test_health_service(self) -> None:
         """Test health service basic functionality."""
@@ -74,13 +74,13 @@ class TestServicesBasic:
 
         # Test overall health
         health_result = service.get_overall_health()
-        assert health_result.is_success
+        assert health_result.success
 
         # Test with valid health check
         check_result = flext_create_health_check("test_component")
-        if check_result.is_success and check_result.data is not None:
+        if check_result.success and check_result.data is not None:
             service_result = service.check_health(check_result.data)
-            assert service_result.is_success
+            assert service_result.success
 
     def test_services_with_container(self) -> None:
         """Test services initialization with container."""
@@ -103,5 +103,5 @@ class TestServicesBasic:
         for service in services:
             assert service is not None
             if service.container != container:
-                msg = f"Expected {container}, got {service.container}"
+                msg: str = f"Expected {container}, got {service.container}"
                 raise AssertionError(msg)

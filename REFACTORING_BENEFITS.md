@@ -23,7 +23,7 @@ class FlextMetricsService:
 
         # Repository access repetido
         repository_result = self.container.get("metrics_repository")
-        if repository_result.is_success and repository_result.data:
+        if repository_result.success and repository_result.data:
             return repository_result.data.save(metric)
 
         return create_observability_result_error(...)
@@ -119,10 +119,10 @@ class FlextObservabilityPlatform:
     @property
     def metrics_service(self) -> FlextMetricsService:
         result = self.container.get("metrics_service")
-        if result.is_success:
+        if result.success:
             return result.data
         # Error handling manual
-        msg = f"Failed to get metrics service: {result.error}"
+        msg: str = f"Failed to get metrics service: {result.error}"
         raise FlextProcessingError(msg)
 ```
 

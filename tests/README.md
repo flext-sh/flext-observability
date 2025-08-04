@@ -93,7 +93,7 @@ def test_metric_creation_success():
     """Test successful metric creation with FlextResult validation."""
     result = flext_create_metric("api_requests", 42.0, "count")
 
-    assert result.is_success
+    assert result.success
     assert result.data.name == "api_requests"
     assert result.data.value == 42.0
     assert result.error is None
@@ -116,7 +116,7 @@ def test_metric_domain_validation():
 
     validation_result = metric.validate_domain_rules()
 
-    assert validation_result.is_success
+    assert validation_result.success
     assert metric.name == "cpu_usage"
     assert metric.value == 75.5
 ```
@@ -128,11 +128,11 @@ def test_metrics_service_integration(metrics_service, observability_factory):
     """Test service integration with factory patterns."""
     # Create metric via factory
     metric_result = observability_factory.create_metric("test_metric", 100.0)
-    assert metric_result.is_success
+    assert metric_result.success
 
     # Record via service
     record_result = metrics_service.record_metric(metric_result.data)
-    assert record_result.is_success
+    assert record_result.success
     assert record_result.data.name == "test_metric"
 ```
 

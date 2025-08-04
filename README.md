@@ -101,12 +101,12 @@ from flext_observability import (
 
 # Simple metric creation
 metric_result = flext_create_metric("response_time", 150.5, "milliseconds")
-if metric_result.is_success:
+if metric_result.success:
     print(f"Recorded metric: {metric_result.data.name}")
 
 # Distributed tracing
 trace_result = flext_create_trace("user_request", "order_processing")
-if trace_result.is_success:
+if trace_result.success:
     print(f"Started trace: {trace_result.data.operation_name}")
 
 # Function monitoring decorator
@@ -245,7 +245,7 @@ tracing_service = FlextTracingService(container)
 
 # All operations return FlextResult[T]
 result = metrics_service.record_metric(metric)
-if result.is_success:
+if result.success:
     print(f"Metric recorded: {result.data}")
 else:
     print(f"Failed to record metric: {result.error}")

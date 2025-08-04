@@ -106,7 +106,7 @@ class MetricsTestDataFactory:
 def test_metric_processing(sample_metric, mock_metrics_service):
     """Test using shared fixtures."""
     result = mock_metrics_service.record_metric(sample_metric)
-    assert result.is_success
+    assert result.success
     assert result.data.name == "test_metric"
 
 def test_with_factory_data():

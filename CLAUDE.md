@@ -181,7 +181,7 @@ metrics_service = FlextMetricsService(container)
 
 # All operations return FlextResult
 result = metrics_service.record_metric(metric)
-if result.is_success:
+if result.success:
     print(f"Recorded: {result.value.name}")
 ```
 

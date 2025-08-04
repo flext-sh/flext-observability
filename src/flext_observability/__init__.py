@@ -128,7 +128,7 @@ def flext_health_status() -> dict[str, str]:
     }
 
 
-__all__ = [
+__all__: list[str] = [
     # Entities
     "FlextAlert",
     # Services

@@ -49,7 +49,7 @@ Example:
     >>>
     >>> # Create performance metric with minimal parameters
     >>> metric_result = flext_create_metric("api_requests", 42, "count")
-    >>> if metric_result.is_success:
+    >>> if metric_result.success:
     ...     print(f"Metric: {metric_result.data.name}")
     >>>
     >>> # Create distributed trace for request tracking
@@ -275,7 +275,7 @@ def flext_create_health_check(
         return FlextResult.fail(f"Failed to create health check: {e}")
 
 
-__all__ = [
+__all__: list[str] = [
     "flext_alert",  # Re-expose from entities for DRY principle
     "flext_create_alert",
     "flext_create_health_check",

@@ -91,7 +91,7 @@ class ECommerceOrderProcessor:
 
         # Initialize monitoring
         init_result = self.monitor.flext_initialize_observability()
-        if init_result.is_success:
+        if init_result.success:
             self.monitor.flext_start_monitoring()
 
     @flext_monitor_function()
@@ -142,21 +142,21 @@ class ECommerceOrderProcessor:
 
             # Step 1: Validate inventory
             inventory_result = self._validate_inventory(order_id, bound_logger)
-            steps_results.append(("inventory", inventory_result.is_success))
+            steps_results.append(("inventory", inventory_result.success))
 
             # Step 2: Process payment
             payment_result = self._process_payment(order_id, amount, bound_logger)
-            steps_results.append(("payment", payment_result.is_success))
+            steps_results.append(("payment", payment_result.success))
 
             # Step 3: Update inventory
             update_result = self._update_inventory(order_id, bound_logger)
-            steps_results.append(("inventory_update", update_result.is_success))
+            steps_results.append(("inventory_update", update_result.success))
 
             # Step 4: Send confirmation
             confirmation_result = self._send_confirmation(
                 order_id, user_id, bound_logger
             )
-            steps_results.append(("confirmation", confirmation_result.is_success))
+            steps_results.append(("confirmation", confirmation_result.success))
 
             # Check if all steps succeeded
             all_success = all(success for _, success in steps_results)
@@ -381,7 +381,7 @@ class MicroservicesHealthMonitor:
         for service in self.services:
             status_result = self._check_service_health(service, bound_logger)
 
-            if status_result.is_success:
+            if status_result.success:
                 service_status = status_result.data
                 service_statuses[service] = service_status
 
@@ -652,7 +652,7 @@ class PerformanceAnalytics:
             self.metrics_collector.flext_collect_system_observability_metrics()
         )
 
-        if system_metrics_result.is_success:
+        if system_metrics_result.success:
             system_data = system_metrics_result.data
             cpu_percent = float(system_data.get("cpu_percent", 0))
         else:
@@ -686,7 +686,7 @@ class PerformanceAnalytics:
             self.metrics_collector.flext_collect_system_observability_metrics()
         )
 
-        if system_metrics_result.is_success:
+        if system_metrics_result.success:
             system_data = system_metrics_result.data
             memory_percent = float(system_data.get("memory_percent", 0))
         else:
@@ -766,7 +766,7 @@ class PerformanceAnalytics:
             self.metrics_collector.flext_collect_observability_application_metrics()
         )
 
-        if app_metrics_result.is_success:
+        if app_metrics_result.success:
             app_data = app_metrics_result.data
             return {
                 "events_processed": float(
@@ -924,7 +924,7 @@ def run_ecommerce_demo() -> None:
         print(f"\nProcessing order {order_id} for user {user_id} (${amount})")
         result = processor.process_order(order_id, user_id, amount)
 
-        if result.is_success:
+        if result.success:
             print(f"✅ Order {order_id} completed successfully")
             data = result.data
             print(f"   Correlation ID: {data['correlation_id']}")
@@ -950,7 +950,7 @@ def run_health_monitoring_demo() -> None:
         print(f"\n--- Health Check Cycle {cycle} ---")
         result = monitor.perform_health_check_cycle()
 
-        if result.is_success:
+        if result.success:
             health_data = result.data
             print(f"Overall Status: {health_data['overall_status']}")
             print(f"Health Percentage: {health_data['health_percentage']:.1f}%")
@@ -986,7 +986,7 @@ def run_performance_analytics_demo() -> None:
     print("Running comprehensive performance analysis...")
     result = analytics.analyze_application_performance(duration_minutes=1)
 
-    if result.is_success:
+    if result.success:
         report = result.data
         print("\n📊 Performance Analysis Results:")
         score = report["overall_performance_score"]

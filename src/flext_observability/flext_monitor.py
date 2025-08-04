@@ -136,17 +136,17 @@ class FlextObservabilityMonitor:
         >>>
         >>> # Initialize all observability services
         >>> init_result = monitor.initialize_observability()
-        >>> if init_result.is_success:
+        >>> if init_result.success:
         ...     print("Observability services initialized")
         >>>
         >>> # Start monitoring operations
         >>> start_result = monitor.start_monitoring()
-        >>> if start_result.is_success:
+        >>> if start_result.success:
         ...     print("Monitoring active")
         >>>
         >>> # Check overall system health
         >>> health_result = monitor.get_health_status()
-        >>> if health_result.is_success:
+        >>> if health_result.success:
         ...     print(f"System health: {health_result.data}")
 
     Service Coordination:
@@ -426,7 +426,7 @@ def _execute_monitored_function(  # type: ignore[explicit-any]
         raise
 
 
-__all__ = [
+__all__: list[str] = [
     "FlextObservabilityMonitor",
     "flext_monitor_function",
 ]

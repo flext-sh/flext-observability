@@ -81,7 +81,7 @@ class UserService:
             tags={"service": "user-service"}
         )
 
-        if metric_result.is_success:
+        if metric_result.success:
             self.metrics.record_metric(metric_result.data)
 
         # Business logic here
@@ -294,7 +294,7 @@ class FlextAPIService:
         result = self._process_user_request(request_data)
 
         # Response metrics
-        status = "success" if result.is_success else "error"
+        status = "success" if result.success else "error"
         flext_create_metric(
             name="api_responses",
             value=1,

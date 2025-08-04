@@ -26,7 +26,7 @@ Example:
 
     >>> metric = FlextMetric(name="api_requests", value=42.0, unit="count")
     >>> validation_result = metric.validate_domain_rules()
-    >>> if validation_result.is_success:
+    >>> if validation_result.success:
     ...     print(f"Valid metric: {metric.name}")
 
 Integration:
@@ -90,7 +90,7 @@ class FlextMetric(FlextEntity):
         ...     metric_type="histogram",
         ... )
         >>> validation = metric.validate_domain_rules()
-        >>> assert validation.is_success
+        >>> assert validation.success
 
         Create financial metric with decimal precision:
 
@@ -143,7 +143,7 @@ class FlextMetric(FlextEntity):
         Example:
             >>> metric = FlextMetric(name="cpu_usage", value=75.5, unit="percent")
             >>> result = metric.validate_domain_rules()
-            >>> if result.is_success:
+            >>> if result.success:
             ...     print("Metric is valid")
             ... else:
             ...     print(f"Validation failed: {result.error}")

@@ -50,7 +50,7 @@ class TestFlextObservabilityMonitor:
 
         result = monitor.flext_initialize_observability()
 
-        assert result.is_success
+        assert result.success
         assert monitor._initialized
         assert monitor._metrics_service is not None
         assert monitor._logging_service is not None
@@ -65,7 +65,7 @@ class TestFlextObservabilityMonitor:
 
         result = monitor.flext_initialize_observability()
 
-        assert result.is_success
+        assert result.success
 
     def test_initialize_observability_registration_failure(self) -> None:
         """Test initialization with service registration failure."""
@@ -103,7 +103,7 @@ class TestFlextObservabilityMonitor:
 
         result = monitor.flext_start_monitoring()
 
-        assert result.is_success
+        assert result.success
         assert monitor._running
 
     def test_start_monitoring_not_initialized(self) -> None:
@@ -125,7 +125,7 @@ class TestFlextObservabilityMonitor:
 
         result = monitor.flext_start_monitoring()
 
-        assert result.is_success
+        assert result.success
 
     def test_start_monitoring_exception(self) -> None:
         """Test monitoring start with exception."""
@@ -149,7 +149,7 @@ class TestFlextObservabilityMonitor:
 
         result = monitor.flext_stop_monitoring()
 
-        assert result.is_success
+        assert result.success
         assert not monitor._running
 
     def test_stop_monitoring_not_running(self) -> None:
@@ -158,7 +158,7 @@ class TestFlextObservabilityMonitor:
 
         result = monitor.flext_stop_monitoring()
 
-        assert result.is_success
+        assert result.success
 
     def test_stop_monitoring_exception(self) -> None:
         """Test monitoring stop with exception."""
@@ -184,7 +184,7 @@ class TestFlextObservabilityMonitor:
 
         result = monitor.flext_get_health_status()
 
-        assert result.is_success
+        assert result.success
         assert isinstance(result.data, dict)
 
     def test_get_health_status_no_service(self) -> None:
@@ -244,22 +244,22 @@ class TestFlextObservabilityMonitor:
 
         # Initialize
         init_result = monitor.flext_initialize_observability()
-        assert init_result.is_success
+        assert init_result.success
 
         # Start monitoring
         start_result = monitor.flext_start_monitoring()
-        assert start_result.is_success
+        assert start_result.success
 
         # Check status
         assert monitor.flext_is_monitoring_active()
 
         # Get health
         health_result = monitor.flext_get_health_status()
-        assert health_result.is_success
+        assert health_result.success
 
         # Stop monitoring
         stop_result = monitor.flext_stop_monitoring()
-        assert stop_result.is_success
+        assert stop_result.success
 
         assert not monitor.flext_is_monitoring_active()
 

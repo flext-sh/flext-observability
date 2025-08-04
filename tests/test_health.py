@@ -7,6 +7,8 @@ from unittest.mock import Mock
 
 import pytest
 
+from flext_observability.health import HealthChecker
+
 
 class TestFlextHealthCheck:
     """Test FlextHealthCheck entity functionality using mocks."""
@@ -201,3 +203,90 @@ class TestHealthCheckValidation:
                 raise AssertionError(f"Expected {status}, got {health_check.status}")
             if not (health_check.is_valid()):
                 raise AssertionError(f"Expected True, got {health_check.is_valid()}")
+
+
+class TestHealthChecker:
+    """Test HealthChecker class functionality."""
+
+    def test_health_checker_initialization(self) -> None:
+        """Test HealthChecker initialization."""
+        checker = HealthChecker()
+
+        # Verify logger is initialized
+        assert hasattr(checker, "logger")
+        assert checker.logger is not None
+
+    def test_health_checker_check_health(self) -> None:
+        """Test HealthChecker check_health method."""
+        checker = HealthChecker()
+
+        health_status = checker.check_health()
+
+        # Verify return structure
+        assert isinstance(health_status, dict)
+        assert "status" in health_status
+        assert "service" in health_status
+        assert "version" in health_status
+
+        # Verify expected values
+        assert health_status["status"] == "healthy"
+        assert health_status["service"] == "flext-observability"
+        assert health_status["version"] == "0.9.0"
+
+    def test_health_checker_check_health_return_types(self) -> None:
+        """Test HealthChecker check_health return types."""
+        checker = HealthChecker()
+
+        health_status = checker.check_health()
+
+        # Verify all values are strings
+        for key, value in health_status.items():
+            assert isinstance(key, str), f"Key {key} should be string"
+            assert isinstance(value, str), f"Value {value} should be string"
+
+    def test_health_checker_multiple_calls(self) -> None:
+        """Test HealthChecker consistency across multiple calls."""
+        checker = HealthChecker()
+
+        # Call multiple times to ensure consistency
+        health1 = checker.check_health()
+        health2 = checker.check_health()
+        health3 = checker.check_health()
+
+        # All calls should return identical results
+        assert health1 == health2
+        assert health2 == health3
+        assert health1 == health3
+
+    def test_health_checker_thread_safety(self) -> None:
+        """Test HealthChecker thread safety."""
+        import threading
+        from queue import Queue
+
+        checker = HealthChecker()
+        results: Queue[dict[str, str]] = Queue()
+
+        def check_health_threaded() -> None:
+            result = checker.check_health()
+            results.put(result)
+
+        # Create multiple threads
+        threads = []
+        for _i in range(10):
+            thread = threading.Thread(target=check_health_threaded)
+            threads.append(thread)
+            thread.start()
+
+        # Wait for all threads to complete
+        for thread in threads:
+            thread.join()
+
+        # Verify all results are identical
+        all_results = []
+        while not results.empty():
+            all_results.append(results.get())
+
+        assert len(all_results) == 10
+        first_result = all_results[0]
+        for result in all_results:
+            assert result == first_result
