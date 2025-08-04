@@ -232,7 +232,7 @@ All tests must:
 
 ### Test Naming Conventions
 
-- **test*<component>*<scenario>\_<expected_outcome>**
+- \__test_<component>\_<scenario>\_<expected_outcome>\*\*
 - **test_metric_creation_success()** - Clear intent
 - **test_service_integration_failure()** - Specific scenario
 - **test_domain_validation_invalid_input()** - Detailed context
