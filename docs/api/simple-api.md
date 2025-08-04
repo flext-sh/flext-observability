@@ -48,7 +48,7 @@ from flext_observability import flext_create_metric
 
 # Basic metric
 result = flext_create_metric("response_time", 150.5, "milliseconds")
-if result.is_success:
+if result.success:
     print(f"Created: {result.data.name} = {result.data.value}")
 
 # Business metric with tags
@@ -75,12 +75,12 @@ result = flext_create_metric(
 ```python
 # Invalid metric name
 result = flext_create_metric("", 100.0)
-assert not result.is_success
+assert not result.success
 assert "Invalid metric name" in result.error
 
 # Invalid value type
 result = flext_create_metric("test", "not_a_number")  # type: ignore
-assert not result.is_success
+assert not result.success
 assert "Invalid metric value" in result.error
 ```
 
@@ -117,7 +117,7 @@ from flext_observability import flext_create_trace
 
 # Basic trace
 result = flext_create_trace("user_login", "authentication-service")
-if result.is_success:
+if result.success:
     trace = result.data
     print(f"Started trace: {trace.operation_name} in {trace.service_name}")
 
@@ -134,7 +134,7 @@ result = flext_create_trace(
 
 # Child trace with parent correlation
 parent_result = flext_create_trace("api_request", "user-api")
-if parent_result.is_success:
+if parent_result.success:
     child_result = flext_create_trace(
         operation_name="database_query",
         service_name="user-api",
@@ -344,12 +344,12 @@ def process_business_operation(data: dict) -> FlextResult[dict]:
 
     # Create metric - handle potential failure
     metric_result = flext_create_metric("operations_started", 1, "count")
-    if not metric_result.is_success:
+    if not metric_result.success:
         return FlextResult.fail(f"Failed to create metric: {metric_result.error}")
 
     # Create trace - handle potential failure
     trace_result = flext_create_trace("business_operation", "main-service")
-    if not trace_result.is_success:
+    if not trace_result.success:
         return FlextResult.fail(f"Failed to create trace: {trace_result.error}")
 
     # Business logic here
@@ -380,7 +380,7 @@ def create_system_metrics() -> list[FlextResult[FlextMetric]]:
         result = flext_create_metric(name, value, unit)
         results.append(result)
 
-        if not result.is_success:
+        if not result.success:
             print(f"⚠️  Failed to create {name}: {result.error}")
 
     return results
@@ -402,7 +402,7 @@ def handle_user_request(user_id: str, operation: str) -> FlextResult[dict]:
         context=context
     )
 
-    if not trace_result.is_success:
+    if not trace_result.success:
         return FlextResult.fail(f"Tracing failed: {trace_result.error}")
 
     trace_id = trace_result.data.id

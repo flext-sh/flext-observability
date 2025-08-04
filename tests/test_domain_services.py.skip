@@ -56,7 +56,7 @@ class TestFlextMetricsDomainService:
         """Test successful metric validation."""
         result = metrics_domain_service.validate_metric(valid_metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data is True
 
     def test_validate_metric_no_name(
@@ -67,7 +67,7 @@ class TestFlextMetricsDomainService:
         """Test metric validation with no name."""
         result = metrics_domain_service.validate_metric(invalid_metric_no_name)
 
-        assert not result.is_success
+        assert not result.success
         assert "Metric name is required" in result.error
 
     def test_validate_metric_negative_count(
@@ -78,7 +78,7 @@ class TestFlextMetricsDomainService:
         """Test metric validation with negative count."""
         result = metrics_domain_service.validate_metric(invalid_metric_negative_count)
 
-        assert not result.is_success
+        assert not result.success
         assert "Count and percentage metrics cannot be negative" in result.error
 
     def test_validate_metric_negative_percentage(
@@ -93,7 +93,7 @@ class TestFlextMetricsDomainService:
 
         result = metrics_domain_service.validate_metric(metric)
 
-        assert not result.is_success
+        assert not result.success
         assert "Count and percentage metrics cannot be negative" in result.error
 
 
@@ -133,7 +133,7 @@ class TestFlextAlertDomainService:
         """Test escalation for critical alert."""
         result = alert_domain_service.should_escalate(critical_alert)
 
-        assert result.is_success
+        assert result.success
         assert result.data is True
 
     def test_should_escalate_medium(
@@ -144,7 +144,7 @@ class TestFlextAlertDomainService:
         """Test escalation for medium alert."""
         result = alert_domain_service.should_escalate(medium_alert)
 
-        assert result.is_success
+        assert result.success
         assert result.data is False
 
 
@@ -208,7 +208,7 @@ class TestFlextHealthDomainService:
         """Test overall health calculation with no checks."""
         result = health_domain_service.calculate_overall_health([])
 
-        assert result.is_success
+        assert result.success
         assert result.data == "unknown"
 
     def test_calculate_overall_health_all_healthy(
@@ -219,7 +219,7 @@ class TestFlextHealthDomainService:
         """Test overall health calculation with all healthy checks."""
         result = health_domain_service.calculate_overall_health(healthy_checks)
 
-        assert result.is_success
+        assert result.success
         assert result.data == "healthy"
 
     def test_calculate_overall_health_failed(
@@ -230,7 +230,7 @@ class TestFlextHealthDomainService:
         """Test overall health calculation with failed checks."""
         result = health_domain_service.calculate_overall_health(mixed_checks)
 
-        assert result.is_success
+        assert result.success
         assert result.data == "unhealthy"
 
     def test_calculate_overall_health_degraded(
@@ -241,5 +241,5 @@ class TestFlextHealthDomainService:
         """Test overall health calculation with degraded checks."""
         result = health_domain_service.calculate_overall_health(degraded_checks)
 
-        assert result.is_success
+        assert result.success
         assert result.data == "degraded"

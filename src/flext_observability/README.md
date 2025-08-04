@@ -114,7 +114,7 @@ metric = FlextMetric(
 )
 
 validation = metric.validate_domain_rules()
-if validation.is_success:
+if validation.success:
     print(f"Valid metric: {metric.name}")
 ```
 
@@ -128,7 +128,7 @@ container = FlextContainer()
 metrics_service = FlextMetricsService(container)
 
 result = metrics_service.record_metric(metric)
-if result.is_success:
+if result.success:
     print(f"Recorded: {result.data.name}")
 ```
 
@@ -140,7 +140,7 @@ from flext_observability.factory import FlextObservabilityMasterFactory
 factory = FlextObservabilityMasterFactory()
 metric_result = factory.create_metric("cpu_usage", 75.2, "percent")
 
-if metric_result.is_success:
+if metric_result.success:
     metric = metric_result.data
     print(f"Created metric: {metric.name}")
 ```

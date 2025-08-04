@@ -35,7 +35,7 @@ class TestE2EComprehensiveObservability:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
 
         # Verify metric data structure
@@ -61,7 +61,7 @@ class TestE2EComprehensiveObservability:
                 timestamp=datetime.now(UTC),
             )
 
-            assert result.is_success
+            assert result.success
             assert result.data is not None
 
     def test_e2e_alert_escalation_flow(self) -> None:
@@ -95,7 +95,7 @@ class TestE2EComprehensiveObservability:
                 timestamp=datetime.now(UTC),
             )
 
-            assert result.is_success
+            assert result.success
             assert result.data is not None
 
     def test_e2e_distributed_tracing_flow(self) -> None:
@@ -116,7 +116,7 @@ class TestE2EComprehensiveObservability:
             status="in_progress",
         )
 
-        assert parent_result.is_success
+        assert parent_result.success
 
         # Child spans
         child_operations = [
@@ -135,7 +135,7 @@ class TestE2EComprehensiveObservability:
                 status="completed",
             )
 
-            assert child_result.is_success
+            assert child_result.success
 
     def test_e2e_health_monitoring_comprehensive(self) -> None:
         """E2E test: Health monitoring across multiple components."""
@@ -175,7 +175,7 @@ class TestE2EComprehensiveObservability:
                 timestamp=datetime.now(UTC),
             )
 
-            assert result.is_success
+            assert result.success
             assert result.data is not None
 
     def test_e2e_observability_correlation(self) -> None:
@@ -218,10 +218,10 @@ class TestE2EComprehensiveObservability:
         )
 
         # All should succeed
-        assert metric_result.is_success
-        assert log_result.is_success
-        assert trace_result.is_success
-        assert alert_result.is_success
+        assert metric_result.success
+        assert log_result.success
+        assert trace_result.success
+        assert alert_result.success
 
     def test_e2e_factory_resilience_with_service_failures(self) -> None:
         """E2E test: Factory continues working even when services fail."""
@@ -239,10 +239,10 @@ class TestE2EComprehensiveObservability:
             trace_result = resilient_factory.trace("trace-resilience", "test_op")
 
             # All should succeed even with service failures
-            assert metric_result.is_success
-            assert log_result.is_success
-            assert alert_result.is_success
-            assert trace_result.is_success
+            assert metric_result.success
+            assert log_result.success
+            assert alert_result.success
+            assert trace_result.success
 
     def test_e2e_multiple_factories_isolation(self) -> None:
         """E2E test: Multiple factories work independently."""
@@ -257,8 +257,8 @@ class TestE2EComprehensiveObservability:
         result1 = factory1.metric("factory1_metric", 100.0)
         result2 = factory2.metric("factory2_metric", 200.0)
 
-        assert result1.is_success
-        assert result2.is_success
+        assert result1.success
+        assert result2.success
         assert factory1.container is not factory2.container
 
     def test_e2e_global_factory_consistency(self) -> None:
@@ -271,11 +271,11 @@ class TestE2EComprehensiveObservability:
         health_result = health_check("global_component", status="healthy")
 
         # All global functions should work
-        assert metric_result.is_success
-        assert log_result.is_success
-        assert alert_result.is_success
-        assert trace_result.is_success
-        assert health_result.is_success
+        assert metric_result.success
+        assert log_result.success
+        assert alert_result.success
+        assert trace_result.success
+        assert health_result.success
 
     def test_e2e_performance_under_load(self) -> None:
         """E2E test: Performance under simulated load."""
@@ -285,11 +285,11 @@ class TestE2EComprehensiveObservability:
         for i in range(100):
             # Rapid metric creation
             metric_result = self.factory.metric(f"load_test_metric_{i}", float(i))
-            assert metric_result.is_success
+            assert metric_result.success
 
             # Rapid log creation
             log_result = self.factory.log(f"Load test log {i}", level="debug")
-            assert log_result.is_success
+            assert log_result.success
 
         end_time = time.time()
         total_time = end_time - start_time
@@ -317,7 +317,7 @@ class TestE2EComprehensiveObservability:
             result = self.factory.metric(
                 name, value, unit=unit, timestamp=test_timestamp
             )
-            assert result.is_success
+            assert result.success
 
     def test_e2e_complete_observability_workflow(self) -> None:
         """E2E test: Complete end-to-end observability workflow."""
@@ -329,7 +329,7 @@ class TestE2EComprehensiveObservability:
             status="healthy",
             message="System startup complete",
         )
-        assert health_result.is_success
+        assert health_result.success
 
         # 2. Begin tracing user operation
         trace_result = self.factory.trace(
@@ -337,7 +337,7 @@ class TestE2EComprehensiveObservability:
             "user_authentication",
             span_attributes={"workflow_id": workflow_id},
         )
-        assert trace_result.is_success
+        assert trace_result.success
 
         # 3. Log authentication attempt
         log_result = self.factory.log(
@@ -345,7 +345,7 @@ class TestE2EComprehensiveObservability:
             level="info",
             context={"workflow_id": workflow_id, "user": "test_user"},
         )
-        assert log_result.is_success
+        assert log_result.success
 
         # 4. Record authentication metrics
         auth_metric = self.factory.metric(
@@ -354,7 +354,7 @@ class TestE2EComprehensiveObservability:
             unit="count",
             tags={"workflow_id": workflow_id, "result": "success"},
         )
-        assert auth_metric.is_success
+        assert auth_metric.success
 
         # 5. Create alert for monitoring
         alert_result = self.factory.alert(
@@ -363,11 +363,11 @@ class TestE2EComprehensiveObservability:
             severity="low",
             tags={"workflow_id": workflow_id, "category": "security"},
         )
-        assert alert_result.is_success
+        assert alert_result.success
 
         # 6. Final health status check
         final_health = self.factory.health_status()
-        assert final_health.is_success
+        assert final_health.success
 
         # Complete workflow validation
         assert True, "🎉 COMPLETE E2E OBSERVABILITY WORKFLOW SUCCESSFUL! 🎉"

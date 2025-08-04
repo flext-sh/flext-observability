@@ -60,7 +60,7 @@ class TestFlextMetricsServiceComprehensive:
 
         # Create metric with proper attributes
         metric_result = flext_create_metric("test_metric", 1.0, unit="count")
-        assert metric_result.is_success
+        assert metric_result.success
         metric = metric_result.data
 
         # Fill store beyond MAX_METRICS_STORE_SIZE (1000) to trigger cleanup
@@ -77,13 +77,13 @@ class TestFlextMetricsServiceComprehensive:
 
         # Record gauge metric (no metric_type parameter - it's determined by usage)
         metric_result = flext_create_metric("gauge_metric", 50.0, "units")
-        assert metric_result.is_success
+        assert metric_result.success
         service.record_metric(metric_result.data)
 
         # Get value
         result = service.get_metric_value("gauge_metric")
 
-        assert result.is_success
+        assert result.success
         assert result.data == 50.0
 
     def test_get_metric_value_counter(self) -> None:
@@ -92,7 +92,7 @@ class TestFlextMetricsServiceComprehensive:
 
         # Record counter metrics
         metric_result = flext_create_metric("counter_metric", 10.0, "count")
-        assert metric_result.is_success
+        assert metric_result.success
         metric = metric_result.data
 
         service.record_metric(metric)
@@ -102,7 +102,7 @@ class TestFlextMetricsServiceComprehensive:
         # Get value (should be sum)
         result = service.get_metric_value("counter_metric")
 
-        assert result.is_success
+        assert result.success
         assert result.data == 30.0
 
     def test_get_metric_value_histogram(self) -> None:
@@ -111,7 +111,7 @@ class TestFlextMetricsServiceComprehensive:
 
         # Record histogram metrics
         metric_result = flext_create_metric("histogram_metric", 10.0, "histogram_unit")
-        assert metric_result.is_success
+        assert metric_result.success
         metric = metric_result.data
 
         service.record_metric(metric)
@@ -121,7 +121,7 @@ class TestFlextMetricsServiceComprehensive:
         # Get value (should be mean)
         result = service.get_metric_value("histogram_metric")
 
-        assert result.is_success
+        assert result.success
         assert result.data == 15.0  # (10 + 20) / 2
 
     def test_get_metric_value_not_found(self) -> None:
@@ -154,9 +154,9 @@ class TestFlextMetricsServiceComprehensive:
         gauge_result = flext_create_metric("gauge", 50.0, "gauge_unit")
         histogram_result = flext_create_metric("histogram", 30.0, "histogram_unit")
 
-        assert counter_result.is_success
-        assert gauge_result.is_success
-        assert histogram_result.is_success
+        assert counter_result.success
+        assert gauge_result.success
+        assert histogram_result.success
 
         service.record_metric(counter_result.data)
         service.record_metric(gauge_result.data)
@@ -164,7 +164,7 @@ class TestFlextMetricsServiceComprehensive:
 
         result = service.get_metrics_summary()
 
-        assert result.is_success
+        assert result.success
         summary = result.data
         assert "service_info" in summary
         assert "counters" in summary
@@ -193,9 +193,9 @@ class TestFlextMetricsServiceComprehensive:
         gauge_result = flext_create_metric("cpu_usage", 75.5, "gauge_unit")
         histogram_result = flext_create_metric("response_time", 0.5, "histogram_unit")
 
-        assert counter_result.is_success
-        assert gauge_result.is_success
-        assert histogram_result.is_success
+        assert counter_result.success
+        assert gauge_result.success
+        assert histogram_result.success
 
         service.record_metric(counter_result.data)
         service.record_metric(gauge_result.data)
@@ -203,7 +203,7 @@ class TestFlextMetricsServiceComprehensive:
 
         result = service.export_prometheus_format()
 
-        assert result.is_success
+        assert result.success
         prometheus_output = result.data
         assert "# TYPE requests_total counter" in prometheus_output
         assert "requests_total 100.0" in prometheus_output
@@ -219,11 +219,11 @@ class TestFlextTracingServiceComprehensive:
         service = FlextTracingService()
 
         trace_result = flext_create_trace("test_trace_id", "test_operation")
-        assert trace_result.is_success
+        assert trace_result.success
 
         result = service.start_trace(trace_result.data)
 
-        assert result.is_success
+        assert result.success
 
     def test_start_trace_invalid_trace(self) -> None:
         """Test start_trace with invalid trace (line 307)."""
@@ -253,14 +253,14 @@ class TestFlextTracingServiceComprehensive:
         service = FlextTracingService()
 
         trace_result = flext_create_trace("test_trace_id", "test_operation")
-        assert trace_result.is_success
+        assert trace_result.success
         trace = trace_result.data
 
         # Start then finish trace
         service.start_trace(trace)
         result = service.finish_trace(trace.trace_id)
 
-        assert result.is_success
+        assert result.success
 
     def test_finish_trace_not_found(self) -> None:
         """Test finish_trace with non-existent trace ID."""
@@ -275,13 +275,13 @@ class TestFlextTracingServiceComprehensive:
         service = FlextTracingService()
 
         trace_result = flext_create_trace("test_trace_id", "test_operation")
-        assert trace_result.is_success
+        assert trace_result.success
         trace = trace_result.data
 
         service.start_trace(trace)
         result = service.get_trace_info(trace.trace_id)
 
-        assert result.is_success
+        assert result.success
 
     def test_get_trace_info_not_found(self) -> None:
         """Test get_trace_info with non-existent trace ID."""
@@ -296,13 +296,13 @@ class TestFlextTracingServiceComprehensive:
         service = FlextTracingService()
 
         trace_result = flext_create_trace("test_trace_id", "test_operation")
-        assert trace_result.is_success
+        assert trace_result.success
         trace = trace_result.data
 
         service.start_trace(trace)
         result = service.export_jaeger_format(trace.trace_id)
 
-        assert result.is_success
+        assert result.success
 
     def test_get_tracing_summary_success(self) -> None:
         """Test get_tracing_summary success path (lines 546+)."""
@@ -310,7 +310,7 @@ class TestFlextTracingServiceComprehensive:
 
         result = service.get_tracing_summary()
 
-        assert result.is_success
+        assert result.success
         summary = result.data
         assert "service_info" in summary
 
@@ -323,33 +323,33 @@ class TestFlextLoggingServiceComprehensive:
         service = FlextLoggingService()
 
         log_result = flext_create_log_entry("INFO", "Test message")
-        assert log_result.is_success
+        assert log_result.success
 
         result = service.log_entry(log_result.data)
 
-        assert result.is_success
+        assert result.success
 
     def test_log_entry_with_debug_level(self) -> None:
         """Test log_entry with DEBUG level."""
         service = FlextLoggingService()
 
         log_result = flext_create_log_entry("DEBUG", "Debug message")
-        assert log_result.is_success
+        assert log_result.success
 
         result = service.log_entry(log_result.data)
 
-        assert result.is_success
+        assert result.success
 
     def test_log_entry_with_error_level(self) -> None:
         """Test log_entry with ERROR level."""
         service = FlextLoggingService()
 
         log_result = flext_create_log_entry("ERROR", "Error message")
-        assert log_result.is_success
+        assert log_result.success
 
         result = service.log_entry(log_result.data)
 
-        assert result.is_success
+        assert result.success
 
     def test_log_entry_exception_handling(self) -> None:
         """Test log_entry exception handling path."""
@@ -375,11 +375,11 @@ class TestFlextAlertServiceComprehensive:
         service = FlextAlertService()
 
         alert_result = flext_create_alert("Test Alert", "HIGH", "Test message")
-        assert alert_result.is_success
+        assert alert_result.success
 
         result = service.create_alert(alert_result.data)
 
-        assert result.is_success
+        assert result.success
 
     def test_create_alert_invalid_alert(self) -> None:
         """Test create_alert with invalid alert."""
@@ -414,11 +414,11 @@ class TestFlextHealthServiceComprehensive:
         service = FlextHealthService()
 
         health_result = flext_create_health_check("test_service", "healthy")
-        assert health_result.is_success
+        assert health_result.success
 
         result = service.check_health(health_result.data)
 
-        assert result.is_success
+        assert result.success
 
     def test_check_health_invalid_check(self) -> None:
         """Test check_health with invalid health check."""
@@ -434,7 +434,7 @@ class TestFlextHealthServiceComprehensive:
 
         result = service.get_overall_health()
 
-        assert result.is_success
+        assert result.success
         data = result.data  # Use .data instead of .value
         assert data is not None
 
@@ -444,7 +444,7 @@ class TestFlextHealthServiceComprehensive:
 
         result = service.get_component_health_history("test_component")
 
-        assert result.is_success
+        assert result.success
 
     def test_perform_system_health_check_success(self) -> None:
         """Test perform_system_health_check success path."""
@@ -452,7 +452,7 @@ class TestFlextHealthServiceComprehensive:
 
         result = service.perform_system_health_check()
 
-        assert result.is_success
+        assert result.success
         data = result.data
         assert data is not None
 
@@ -480,7 +480,7 @@ class TestServicesExceptionHandling:
         """Test services handling time.time() exceptions."""
         service = FlextMetricsService()
         metric_result = flext_create_metric("test", 1.0)
-        assert metric_result.is_success
+        assert metric_result.success
 
         # Apply patch only during record_metric to avoid breaking container initialization
         with patch("flext_observability.services.time.time") as mock_time:

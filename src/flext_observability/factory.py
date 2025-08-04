@@ -42,7 +42,7 @@ Example:
     >>>
     >>> # Create metric with automatic validation
     >>> metric_result = factory.create_metric("api_requests", 42, "count")
-    >>> if metric_result.is_success:
+    >>> if metric_result.success:
     ...     print(f"Created: {metric_result.data.name}")
     >>>
     >>> # Create trace with business context
@@ -146,7 +146,7 @@ class FlextObservabilityMasterFactory:
         ...     unit="milliseconds",
         ...     tags={"service": "user-api", "endpoint": "/users"},
         ... )
-        >>> if metric_result.is_success:
+        >>> if metric_result.success:
         ...     metric = metric_result.data
         ...     print(f"Created metric: {metric.name}")
 
@@ -270,12 +270,12 @@ class FlextObservabilityMasterFactory:
             )
 
             service_result = self.container.get("metrics_service")
-            if service_result.is_success and service_result.data:
+            if service_result.success and service_result.data:
                 service = cast("FlextMetricsService", service_result.data)
                 result = service.record_metric(metric)
                 return (
                     FlextResult.ok(result.data)
-                    if result.is_success
+                    if result.success
                     else FlextResult.fail(result.error or "Unknown error")
                 )
             return FlextResult.ok(metric)
@@ -316,12 +316,12 @@ class FlextObservabilityMasterFactory:
             )
 
             service_result = self.container.get("logging_service")
-            if service_result.is_success and service_result.data:
+            if service_result.success and service_result.data:
                 service = cast("FlextLoggingService", service_result.data)
                 result = service.log_entry(log_entry)
                 return (
                     FlextResult.ok(result.data)
-                    if result.is_success
+                    if result.success
                     else FlextResult.fail(result.error or "Unknown error")
                 )
             return FlextResult.ok(log_entry)
@@ -361,12 +361,12 @@ class FlextObservabilityMasterFactory:
             )
 
             service_result = self.container.get("alert_service")
-            if service_result.is_success and service_result.data:
+            if service_result.success and service_result.data:
                 service = cast("FlextAlertService", service_result.data)
                 result = service.create_alert(alert)
                 return (
                     FlextResult.ok(result.data)
-                    if result.is_success
+                    if result.success
                     else FlextResult.fail(result.error or "Unknown error")
                 )
             return FlextResult.ok(alert)
@@ -408,12 +408,12 @@ class FlextObservabilityMasterFactory:
             )
 
             service_result = self.container.get("tracing_service")
-            if service_result.is_success and service_result.data:
+            if service_result.success and service_result.data:
                 service = cast("FlextTracingService", service_result.data)
                 result = service.start_trace(trace)
                 return (
                     FlextResult.ok(result.data)
-                    if result.is_success
+                    if result.success
                     else FlextResult.fail(result.error or "Unknown error")
                 )
             return FlextResult.ok(trace)
@@ -452,12 +452,12 @@ class FlextObservabilityMasterFactory:
             health = health_result.data
 
             service_result = self.container.get("health_service")
-            if service_result.is_success and service_result.data:
+            if service_result.success and service_result.data:
                 service = cast("FlextHealthService", service_result.data)
                 result = service.check_health(health_result)
                 return (
                     FlextResult.ok(result.data)
-                    if result.is_success
+                    if result.success
                     else FlextResult.fail(result.error or "Unknown error")
                 )
             return FlextResult.ok(health)
@@ -474,7 +474,7 @@ class FlextObservabilityMasterFactory:
         """Get overall health status."""
         try:
             service_result = self.container.get("health_service")
-            if service_result.is_success and service_result.data:
+            if service_result.success and service_result.data:
                 service = cast("FlextHealthService", service_result.data)
                 return service.get_overall_health()
 
@@ -582,7 +582,7 @@ def create_simplified_observability_platform(
 
 # Re-export entity functions to maintain test compatibility (DRY principle)
 # These are already imported above from entities module
-__all__ = [
+__all__: list[str] = [
     "FlextObservabilityMasterFactory",
     "alert",
     "create_simplified_observability_platform",

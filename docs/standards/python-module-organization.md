@@ -444,7 +444,7 @@ class MyCustomMetric:  # Use FlextMetric instead
 
 # ❌ Don't ignore FlextResult error handling
 result = flext_create_metric("test", 1.0)
-metric = result.data  # Should check result.is_success first
+metric = result.data  # Should check result.success first
 ```
 
 ---
@@ -609,17 +609,17 @@ def monitor_service_health() -> FlextResult[dict]:
 
     # Database health
     db_health = check_database_health()
-    if db_health.is_success:
+    if db_health.success:
         health_checks.append(db_health.data)
 
     # Cache health
     cache_health = check_cache_health()
-    if cache_health.is_success:
+    if cache_health.success:
         health_checks.append(cache_health.data)
 
     # External API health
     api_health = check_external_api_health()
-    if api_health.is_success:
+    if api_health.success:
         health_checks.append(api_health.data)
 
     # Aggregate health status
@@ -638,7 +638,7 @@ def monitor_service_health() -> FlextResult[dict]:
     return FlextResult.ok({
         "overall_status": overall_status,
         "checks": health_checks,
-        "health_score": health_metric.data if health_metric.is_success else None
+        "health_score": health_metric.data if health_metric.success else None
     })
 
 def check_database_health() -> FlextResult[FlextHealthCheck]:
@@ -780,7 +780,7 @@ def test_metric_creation_success():
     """Test successful metric creation."""
     result = flext_create_metric("api_requests", 42.0, "count")
 
-    assert result.is_success
+    assert result.success
     assert result.data.name == "api_requests"
     assert result.data.value == 42.0
     assert result.data.unit == "count"
@@ -807,7 +807,7 @@ def test_observability_chaining():
 
     result = create_observability_data("user_login")
 
-    assert result.is_success
+    assert result.success
     assert "metric" in result.data
     assert "trace" in result.data
     assert result.data["metric"].name == "user_login_requests"
@@ -850,7 +850,7 @@ class TestFlextMetric:
 
         validation_result = metric.validate_domain_rules()
 
-        assert validation_result.is_success
+        assert validation_result.success
         assert metric.name == "response_time"
         assert metric.value == 150.5
         assert metric.unit == "milliseconds"
@@ -875,7 +875,7 @@ class TestFlextMetric:
 
         validation_result = metric.validate_domain_rules()
 
-        assert validation_result.is_success
+        assert validation_result.success
         assert metric.value == Decimal("1234.56")
         assert isinstance(metric.value, Decimal)
 
@@ -939,12 +939,12 @@ def test_metrics_service_record_metric(metrics_service, observability_factory):
     """Test metrics service metric recording."""
     # Create metric using factory
     metric_result = observability_factory.create_metric("test_metric", 100.0, "count")
-    assert metric_result.is_success
+    assert metric_result.success
 
     # Record metric using service
     record_result = metrics_service.record_metric(metric_result.data)
 
-    assert record_result.is_success
+    assert record_result.success
     assert record_result.data.name == "test_metric"
     assert record_result.data.value == 100.0
 
@@ -959,15 +959,15 @@ def test_metrics_service_prometheus_export(metrics_service, observability_factor
 
     for name, value, unit in metrics_data:
         metric_result = observability_factory.create_metric(name, value, unit)
-        assert metric_result.is_success
+        assert metric_result.success
 
         record_result = metrics_service.record_metric(metric_result.data)
-        assert record_result.is_success
+        assert record_result.success
 
     # Export to Prometheus format
     export_result = metrics_service.export_prometheus_format()
 
-    assert export_result.is_success
+    assert export_result.success
     prometheus_output = export_result.data
 
     # Verify Prometheus format
@@ -981,10 +981,10 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
     # Create metrics beyond memory limit to test cleanup
     for i in range(1200):  # Exceeds default limit of 1000
         metric_result = observability_factory.create_metric(f"test_metric_{i}", float(i), "count")
-        assert metric_result.is_success
+        assert metric_result.success
 
         record_result = metrics_service.record_metric(metric_result.data)
-        assert record_result.is_success
+        assert record_result.success
 
     # Verify memory management kicked in
     total_metrics = len(metrics_service._metrics_store)
@@ -1063,7 +1063,7 @@ def map_observability_result(
     func: Callable[[T], U]
 ) -> FlextResult[U]:
     """Generic result mapping for observability operations."""
-    if result.is_success:
+    if result.success:
         return FlextResult.ok(func(result.data))
     return FlextResult.fail(result.error)
 
@@ -1172,7 +1172,7 @@ def create_business_observability_dashboard(
         >>> metrics = {"api_requests": {"type": "counter", "unit": "count"}}
         >>> traces = {"sampling_rate": 0.1}
         >>> result = create_business_observability_dashboard("user-api", metrics, traces)
-        >>> if result.is_success:
+        >>> if result.success:
         ...     dashboard = result.data
         ...     print(f"Created dashboard with {len(dashboard['metrics'])} metrics")
         ... else:
@@ -1261,7 +1261,7 @@ class FlextUserService:
         result = self._create_user_impl(user_data)
 
         # Success/failure metrics
-        status = "success" if result.is_success else "failure"
+        status = "success" if result.success else "failure"
         flext_create_metric("user_creation_status", 1, "count",
                            tags={"status": status, "service": "user-service"})
 

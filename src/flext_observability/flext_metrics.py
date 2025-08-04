@@ -39,7 +39,7 @@ Example:
     >>>
     >>> # Collect system resource metrics
     >>> system_result = collector.flext_collect_system_observability_metrics()
-    >>> if system_result.is_success:
+    >>> if system_result.success:
     ...     metrics = system_result.data
     ...     print(f"CPU: {metrics['cpu_percent']}%")
     ...     print(f"Memory: {metrics['memory_percent']}%")
@@ -212,7 +212,7 @@ class FlextMetricsCollector:
             return FlextResult.fail(f"Metrics summary failed: {e}")
 
 
-__all__ = [
+__all__: list[str] = [
     "FlextMetricsCollector",
     "TFlextMetricType",
 ]

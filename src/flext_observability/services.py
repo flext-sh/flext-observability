@@ -43,7 +43,7 @@ Example:
     >>> # Record metric with business logic
     >>> metric = FlextMetric(name="api_requests", value=1, unit="count")
     >>> result = metrics_service.record_metric(metric)
-    >>> if result.is_success:
+    >>> if result.success:
     ...     print(f"Recorded: {result.data.name}")
 
 FLEXT Integration:
@@ -152,7 +152,7 @@ class FlextMetricsService:
         ...     metric_type="histogram",
         ... )
         >>> result = metrics_service.record_metric(response_time)
-        >>> if result.is_success:
+        >>> if result.success:
         ...     print(f"Recorded metric: {result.data.name}")
 
         Business metrics with validation:
@@ -1200,11 +1200,7 @@ class FlextHealthService:
             component_name = "unknown"
             health_status = "unknown"
             try:
-                if (
-                    isinstance(health, FlextResult)
-                    and health.is_success
-                    and health.data
-                ):
+                if isinstance(health, FlextResult) and health.success and health.data:
                     component_name = health.data.component
                     health_status = health.data.status
                 elif not isinstance(health, FlextResult):

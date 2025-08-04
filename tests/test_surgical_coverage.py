@@ -74,7 +74,7 @@ class TestSurgicalCoverage:
             # Isso deve ir para linha 65: return ""
             result = flext_get_correlation_id()
 
-            assert result.is_success
+            assert result.success
             if result.data != "":
                 raise AssertionError(f"Expected {''}, got {result.data}")
 
@@ -86,7 +86,7 @@ class TestSurgicalCoverage:
         """Cobrir linhas 89-90 - except e return fail no set_correlation_id."""
         # Test successful path first to ensure function works
         result_success = flext_set_correlation_id("test-success")
-        assert result_success.is_success
+        assert result_success.success
 
         # For exception testing, we test with invalid input that causes exception
         # The actual exception path is hard to test due to context isolation issues
@@ -111,7 +111,7 @@ class TestSurgicalCoverage:
         result = flext_get_correlation_id()
 
         # Should succeed and return a string
-        assert result.is_success
+        assert result.success
         assert isinstance(result.data, str)
 
     def test_comprehensive_surgical_attack(self) -> None:
@@ -131,7 +131,7 @@ class TestSurgicalCoverage:
             _flext_observability_context.set({})
             _flext_observability_context.set(None)
             result = flext_get_correlation_id()
-            assert result.is_success
+            assert result.success
             if result.data != "":
                 raise AssertionError(f"Expected {''}, got {result.data}")
         finally:
@@ -142,7 +142,7 @@ class TestSurgicalCoverage:
 
         # Normal path first
         normal_result = flext_set_correlation_id("surgical-test")
-        assert normal_result.is_success
+        assert normal_result.success
 
         # Limpar após set para não vazar para outros testes
         _flext_observability_context.set({})
@@ -183,11 +183,11 @@ class TestSurgicalCoverage:
 
         # Set correlation
         set_result = flext_set_correlation_id("force-correlation")
-        assert set_result.is_success
+        assert set_result.success
 
         # Get correlation
         get_result = flext_get_correlation_id()
-        assert get_result.is_success
+        assert get_result.success
 
         # Bind observability
         bound_logger = logger.flext_bind_observability(force=True)
@@ -199,7 +199,7 @@ class TestSurgicalCoverage:
         # Test with empty context
         _flext_observability_context.set({})
         empty_result = flext_get_correlation_id()
-        assert empty_result.is_success
+        assert empty_result.success
 
         # Final cleanup to avoid leaking to other tests
         _flext_observability_context.set({})

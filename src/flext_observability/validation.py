@@ -232,7 +232,7 @@ def create_observability_result_error(
     """Create standardized observability error result."""
     # Note: Context is logged but not passed to FlextResult.fail
     # as it only accepts error message string
-    error_msg = f"[{error_type.upper()}] {message}"
+    error_msg: str = f"[{error_type.upper()}] {message}"
     if context:
         context_str = " | ".join(f"{k}={v}" for k, v in context.items())
         error_msg += f" | Context: {context_str}"

@@ -82,7 +82,7 @@ def demo_metrics_collection(monitor: FlextObservabilityMonitor) -> None:
 
     for name, value, metric_type in metrics_to_record:
         result = monitor.flext_record_metric(name, value, metric_type)
-        if result.is_success:
+        if result.success:
             print(f"  ✅ Recorded {metric_type}: {name} = {value}")
         else:
             print(f"  ❌ Failed to record {name}: {result.error}")
@@ -104,7 +104,7 @@ def demo_distributed_tracing(monitor: FlextObservabilityMonitor) -> None:
         return
 
     start_result = monitor._tracing_service.start_trace(trace_result.data)
-    if start_result.is_success:
+    if start_result.success:
         print("  ✅ Started distributed trace: demo_trace_001")
 
         # Add spans to the trace
@@ -128,12 +128,12 @@ def demo_distributed_tracing(monitor: FlextObservabilityMonitor) -> None:
         finish_result = monitor._tracing_service.finish_trace(
             "demo_trace_001", "completed"
         )
-        if finish_result.is_success:
+        if finish_result.success:
             print("  ✅ Completed distributed trace")
 
             # Get trace information
             info_result = monitor._tracing_service.get_trace_info("demo_trace_001")
-            if info_result.is_success:
+            if info_result.success:
                 trace_info = info_result.data
                 duration = trace_info.get("duration_seconds", 0)
                 span_count = trace_info.get("span_count", 0)
@@ -159,9 +159,9 @@ def demo_health_monitoring(monitor: FlextObservabilityMonitor) -> None:
             component=component, status=status, message=message
         )
 
-        if health_result.is_success:
+        if health_result.success:
             check_result = monitor._health_service.check_health(health_result.data)
-            if check_result.is_success:
+            if check_result.success:
                 print(f"  ✅ Health check: {component} = {status}")
             else:
                 print(f"  ❌ Failed health check for {component}: {check_result.error}")

@@ -62,7 +62,7 @@ from flext_observability import flext_create_metric
 # Create a simple metric
 result = flext_create_metric("api_response_time", 150.5, "milliseconds")
 
-if result.is_success:
+if result.success:
     metric = result.data
     print(f"✅ Created metric: {metric.name} = {metric.value} {metric.unit}")
     print(f"📊 Metric ID: {metric.id}")
@@ -87,7 +87,7 @@ from flext_observability import flext_create_trace
 # Create a trace for an operation
 result = flext_create_trace("user_authentication", "validate_credentials")
 
-if result.is_success:
+if result.success:
     trace = result.data
     print(f"🔍 Started trace: {trace.operation_name}")
     print(f"🏷️  Service: {trace.service_name}")
@@ -135,11 +135,11 @@ factory = FlextObservabilityMasterFactory()
 # Create and record a metric
 metric_result = factory.create_metric("database_connections", 42, "connections")
 
-if metric_result.is_success:
+if metric_result.success:
     # Record the metric using the service
     record_result = metrics_service.record_metric(metric_result.data)
 
-    if record_result.is_success:
+    if record_result.success:
         print(f"✅ Metric recorded successfully: {record_result.data.name}")
     else:
         print(f"❌ Failed to record metric: {record_result.error}")
@@ -193,7 +193,7 @@ class DatabaseConnectionService:
             message="Database responding normally"
         )
 
-        if health_result.is_success:
+        if health_result.success:
             # Process health check through service
             return self.health_service.process_health_check(health_result.data)
 
@@ -239,7 +239,7 @@ def test_basic_metric_creation():
     """Test basic metric creation works."""
     result = flext_create_metric("test_metric", 100.0, "count")
 
-    assert result.is_success
+    assert result.success
     assert result.data.name == "test_metric"
     assert result.data.value == 100.0
     assert result.data.unit == "count"
@@ -248,7 +248,7 @@ def test_basic_trace_creation():
     """Test basic trace creation works."""
     result = flext_create_trace("test_operation", "test_service")
 
-    assert result.is_success
+    assert result.success
     assert result.data.operation_name == "test_operation"
     assert result.data.service_name == "test_service"
 
@@ -311,7 +311,7 @@ def display_observability_status():
     print("=" * 40)
 
     for metric_result in metrics:
-        if metric_result.is_success:
+        if metric_result.success:
             m = metric_result.data
             print(f"📈 {m.name}: {m.value} {m.unit}")
         else:
@@ -370,7 +370,7 @@ metric = result.data  # May fail if result contains error
 
 # ✅ Correct: Always check success first
 result = flext_create_metric("test", 1.0, "count")
-if result.is_success:
+if result.success:
     metric = result.data  # Safe to access
 else:
     print(f"Error: {result.error}")

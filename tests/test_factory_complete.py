@@ -44,11 +44,11 @@ class TestFlextObservabilityMasterFactory:
         alert_result = factory.container.get("alert_service")
         health_result = factory.container.get("health_service")
 
-        assert metrics_result.is_success
-        assert logging_result.is_success
-        assert tracing_result.is_success
-        assert alert_result.is_success
-        assert health_result.is_success
+        assert metrics_result.success
+        assert logging_result.success
+        assert tracing_result.success
+        assert alert_result.success
+        assert health_result.success
 
     def test_setup_services_with_failures(self) -> None:
         """Test service setup with registration failures."""
@@ -71,7 +71,7 @@ class TestFlextObservabilityMasterFactory:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
 
     def test_metric_creation_with_service(self) -> None:
@@ -85,7 +85,7 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.metric("test", 1.0)
 
-        assert result.is_success
+        assert result.success
 
     def test_metric_creation_service_failure(self) -> None:
         """Test metric creation with service failure."""
@@ -110,7 +110,7 @@ class TestFlextObservabilityMasterFactory:
         assert result.is_failure
         assert result.error is not None
         if "Failed to create metric" not in result.error:
-            msg = f"Expected {'Failed to create metric'} in {result.error}"
+            msg: str = f"Expected {'Failed to create metric'} in {result.error}"
             raise AssertionError(msg)
 
     def test_log_creation_success(self) -> None:
@@ -124,7 +124,7 @@ class TestFlextObservabilityMasterFactory:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
 
     def test_log_creation_with_service(self) -> None:
@@ -138,7 +138,7 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.log("test message")
 
-        assert result.is_success
+        assert result.success
 
     def test_log_creation_exception(self) -> None:
         """Test log creation with exception."""
@@ -153,7 +153,7 @@ class TestFlextObservabilityMasterFactory:
             assert result.is_failure
             assert result.error is not None
             if "Failed to create log" not in result.error:
-                msg = f"Expected {'Failed to create log'} in {result.error}"
+                msg: str = f"Expected {'Failed to create log'} in {result.error}"
                 raise AssertionError(msg)
 
     def test_alert_creation_success(self) -> None:
@@ -169,7 +169,7 @@ class TestFlextObservabilityMasterFactory:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
 
     def test_alert_creation_with_service(self) -> None:
@@ -183,7 +183,7 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.alert("title", "message")
 
-        assert result.is_success
+        assert result.success
 
     def test_alert_creation_exception(self) -> None:
         """Test alert creation with exception."""
@@ -197,7 +197,7 @@ class TestFlextObservabilityMasterFactory:
             assert result.is_failure
             assert result.error is not None
             if "Failed to create alert" not in result.error:
-                msg = f"Expected {'Failed to create alert'} in {result.error}"
+                msg: str = f"Expected {'Failed to create alert'} in {result.error}"
                 raise AssertionError(msg)
 
     def test_trace_creation_success(self) -> None:
@@ -214,7 +214,7 @@ class TestFlextObservabilityMasterFactory:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
 
     def test_trace_creation_with_service(self) -> None:
@@ -228,7 +228,7 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.trace("trace-id", "operation")
 
-        assert result.is_success
+        assert result.success
 
     def test_trace_creation_exception(self) -> None:
         """Test trace creation with exception."""
@@ -242,7 +242,7 @@ class TestFlextObservabilityMasterFactory:
             assert result.is_failure
             assert result.error is not None
             if "Failed to create trace" not in result.error:
-                msg = f"Expected {'Failed to create trace'} in {result.error}"
+                msg: str = f"Expected {'Failed to create trace'} in {result.error}"
                 raise AssertionError(msg)
 
     def test_health_check_creation_success(self) -> None:
@@ -257,7 +257,7 @@ class TestFlextObservabilityMasterFactory:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
 
     def test_health_check_creation_with_service(self) -> None:
@@ -271,7 +271,7 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.health_check("component")
 
-        assert result.is_success
+        assert result.success
 
     def test_health_check_creation_exception(self) -> None:
         """Test health check creation with exception."""
@@ -285,7 +285,9 @@ class TestFlextObservabilityMasterFactory:
             assert result.is_failure
             assert result.error is not None
             if "Failed to create health check" not in result.error:
-                msg = f"Expected {'Failed to create health check'} in {result.error}"
+                msg: str = (
+                    f"Expected {'Failed to create health check'} in {result.error}"
+                )
                 raise AssertionError(msg)
 
     def test_health_status_success(self) -> None:
@@ -301,10 +303,10 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.health_status()
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         if result.data["status"] != "healthy":
-            msg = f"Expected {'healthy'}, got {result.data['status']}"
+            msg: str = f"Expected {'healthy'}, got {result.data['status']}"
             raise AssertionError(msg)
 
     def test_health_status_no_service(self) -> None:
@@ -315,10 +317,10 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.health_status()
 
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         if result.data["status"] != "healthy":
-            msg = f"Expected {'healthy'}, got {result.data['status']}"
+            msg: str = f"Expected {'healthy'}, got {result.data['status']}"
             raise AssertionError(msg)
         assert result.data["mode"] == "fallback"
 
@@ -333,7 +335,7 @@ class TestFlextObservabilityMasterFactory:
         assert result.is_failure
         assert result.error is not None
         if "Health status check failed" not in result.error:
-            msg = f"Expected {'Health status check failed'} in {result.error}"
+            msg: str = f"Expected {'Health status check failed'} in {result.error}"
             raise AssertionError(msg)
 
 
@@ -350,7 +352,7 @@ class TestGlobalFactory:
         reset_global_factory()
         factory = get_global_factory()
         if type(factory).__name__ != "FlextObservabilityMasterFactory":
-            msg = f"Expected {'FlextObservabilityMasterFactory'}, got {type(factory).__name__}"
+            msg: str = f"Expected {'FlextObservabilityMasterFactory'}, got {type(factory).__name__}"
             raise AssertionError(msg)
         assert hasattr(factory, "container")
 
@@ -376,24 +378,24 @@ class TestGlobalFactory:
     def test_global_metric_function(self) -> None:
         """Test global metric convenience function."""
         result = metric("test_metric", 42.0)
-        assert result.is_success
+        assert result.success
 
     def test_global_log_function(self) -> None:
         """Test global log convenience function."""
         result = log("test message", level="info")
-        assert result.is_success
+        assert result.success
 
     def test_global_alert_function(self) -> None:
         """Test global alert convenience function."""
         result = alert("Test Alert", "Alert message", severity="low")
-        assert result.is_success
+        assert result.success
 
     def test_global_trace_function(self) -> None:
         """Test global trace convenience function."""
         result = trace("trace-123", "test_operation")
-        assert result.is_success
+        assert result.success
 
     def test_global_health_check_function(self) -> None:
         """Test global health check convenience function."""
         result = health_check("database", status="healthy")
-        assert result.is_success
+        assert result.success

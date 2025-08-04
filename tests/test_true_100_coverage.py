@@ -62,7 +62,7 @@ class TestTrue100Coverage:
         result = metric.validate_domain_rules()
         assert result.is_failure
         if "Invalid metric value" not in result.error:
-            msg = f"Expected {'Invalid metric value'} in {result.error}"
+            msg: str = f"Expected {'Invalid metric value'} in {result.error}"
             raise AssertionError(msg)
 
     def test_flext_metrics_basic_import(self) -> None:
@@ -126,10 +126,10 @@ class TestTrue100Coverage:
         factory = FlextObservabilityMasterFactory()
 
         metric_result = factory.metric("true_100", 100.0)
-        assert metric_result.is_success
+        assert metric_result.success
 
         log_result = factory.log("TRUE 100% COVERAGE ACHIEVED!")
-        assert log_result.is_success
+        assert log_result.success
 
         # Final assertion of victory
         assert True, "🎉 TRUE 100% COVERAGE ACHIEVED! 🎉"

@@ -35,7 +35,8 @@ Example:
     Advanced structured logging with correlation tracking and context binding:
 
     >>> from flext_observability.flext_structured import (
-    ...     flext_get_structured_logger, flext_set_correlation_id
+    ...     flext_get_structured_logger,
+    ...     flext_set_correlation_id,
     ... )
     >>>
     >>> # Set correlation ID for request tracking
@@ -49,8 +50,7 @@ Example:
     >>>
     >>> # Log with comprehensive observability context
     >>> bound_logger.flext_observability_info(
-    ...     "User authentication successful",
-    ...     response_time_ms=245, success_rate=0.98
+    ...     "User authentication successful", response_time_ms=245, success_rate=0.98
     ... )
 
 FLEXT Integration:
@@ -170,7 +170,7 @@ class FlextStructuredLogger:
 def flext_set_correlation_id(correlation_id: str) -> FlextResult[None]:
     """Set correlation ID for observability context."""
     try:
-        context = _flext_observability_context.get() or {}.copy()
+        context = (_flext_observability_context.get() or {}).copy()
         context["correlation_id"] = correlation_id
         _flext_observability_context.set(context)
         return FlextResult.ok(None)
@@ -197,7 +197,7 @@ def flext_get_structured_logger(name: str) -> FlextStructuredLogger:
     return FlextStructuredLogger(name)
 
 
-__all__ = [
+__all__: list[str] = [
     "FlextStructuredLogger",
     "flext_get_correlation_id",
     "flext_get_structured_logger",

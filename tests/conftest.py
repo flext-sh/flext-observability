@@ -98,14 +98,26 @@ def pytest_collection_modifyitems(config: Config, items: list[Item]) -> None:
 def reset_observability_context() -> None:
     """Reset observability context before and after each test to prevent state leakage."""
     try:
+        import contextvars
+
         from flext_observability.flext_structured import _flext_observability_context
 
-        # Force reset before test - clear any contamination
+        # Create a completely new context for this test
+        new_context = contextvars.copy_context()
+
+        def run_test_with_clean_context() -> None:
+            # Inside clean context, reset observability context
+            _flext_observability_context.set(None)
+
+        # Run the reset in the new context
+        new_context.run(run_test_with_clean_context)
+
+        # Switch to the clean context for the test
         _flext_observability_context.set(None)
 
         yield
 
-        # Force reset after test - prevent leakage to next test
+        # Force complete reset after test - prevent leakage to next test
         _flext_observability_context.set(None)
 
     except ImportError:

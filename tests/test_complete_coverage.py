@@ -133,7 +133,7 @@ class TestFlextMetricsCollectorComplete:
         # Test that the method returns valid structure and types
         result = collector.flext_collect_system_observability_metrics()
 
-        assert result.is_success
+        assert result.success
         metrics = result.data
         assert metrics is not None
 
@@ -163,11 +163,11 @@ class TestFlextMetricsCollectorComplete:
 
         # Primeira chamada
         result1 = collector.flext_collect_system_observability_metrics()
-        assert result1.is_success
+        assert result1.success
 
         # Segunda chamada deve usar cache
         result2 = collector.flext_collect_system_observability_metrics()
-        assert result2.is_success
+        assert result2.success
         if result1.data != result2.data:
             raise AssertionError(f"Expected {result2.data}, got {result1.data}")
 
@@ -177,7 +177,7 @@ class TestFlextMetricsCollectorComplete:
 
         result = collector.flext_collect_observability_application_metrics()
 
-        assert result.is_success
+        assert result.success
         metrics = result.data
         if metrics["observability_events_processed"] != 1250:
             raise AssertionError(
@@ -210,7 +210,7 @@ class TestFlextMetricsCollectorComplete:
             {"service": "test"},
         )
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_record_observability_metric_defaults(self) -> None:
         """Testar gravação com padrões."""
@@ -218,7 +218,7 @@ class TestFlextMetricsCollectorComplete:
 
         result = collector.flext_record_observability_metric("test", 1.0)
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_get_metrics_summary_success(self) -> None:
         """Testar resumo de métricas."""
@@ -226,7 +226,7 @@ class TestFlextMetricsCollectorComplete:
 
         result = collector.flext_get_metrics_summary()
 
-        assert result.is_success
+        assert result.success
         summary = result.data
         if "system_metrics" not in summary:
             raise AssertionError(f"Expected system_metrics in {summary}")
@@ -295,7 +295,7 @@ class TestFlextStructuredLoggerComplete:
 
         result = logger.flext_observability_info("Test message", user_id="123")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_observability_info_with_context(self) -> None:
         """Testar info com contexto."""
@@ -304,7 +304,7 @@ class TestFlextStructuredLoggerComplete:
 
         result = logger.flext_observability_info("Test with context")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_observability_info_with_bound_data(self) -> None:
         """Testar info com dados vinculados."""
@@ -313,7 +313,7 @@ class TestFlextStructuredLoggerComplete:
 
         result = logger.flext_observability_info("Test with bound data")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_observability_info_empty_data(self) -> None:
         """Testar info sem dados extras."""
@@ -321,7 +321,7 @@ class TestFlextStructuredLoggerComplete:
 
         result = logger.flext_observability_info("Simple message")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_observability_error_success(self) -> None:
         """Testar log error com sucesso."""
@@ -329,7 +329,7 @@ class TestFlextStructuredLoggerComplete:
 
         result = logger.flext_observability_error("Error message", error_code="E001")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_observability_error_with_context(self) -> None:
         """Testar error com contexto."""
@@ -338,7 +338,7 @@ class TestFlextStructuredLoggerComplete:
 
         result = logger.flext_observability_error("Error with context")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_observability_error_with_bound_data(self) -> None:
         """Testar error com dados vinculados."""
@@ -347,7 +347,7 @@ class TestFlextStructuredLoggerComplete:
 
         result = logger.flext_observability_error("Error with bound data")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_observability_error_empty_data(self) -> None:
         """Testar error sem dados extras."""
@@ -355,7 +355,7 @@ class TestFlextStructuredLoggerComplete:
 
         result = logger.flext_observability_error("Simple error")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_bind_observability_success(self) -> None:
         """Testar vinculação de dados."""
@@ -401,14 +401,14 @@ class TestCorrelationFunctions:
         """Testar definir correlation ID."""
         result = flext_set_correlation_id("test-123")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_set_correlation_id_with_existing_context(self) -> None:
         """Testar definir com contexto existente."""
         flext_set_correlation_id("first")
         result = flext_set_correlation_id("second")
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_get_correlation_id_success(self) -> None:
         """Testar obter correlation ID."""
@@ -416,36 +416,59 @@ class TestCorrelationFunctions:
 
         result = flext_get_correlation_id()
 
-        assert result.is_success
+        assert result.success
         if result.data != "test-456":
             raise AssertionError(f"Expected test-456, got {result.data}")
 
     def test_flext_get_correlation_id_empty(self) -> None:
         """Testar obter ID quando vazio."""
-        # Limpar contexto primeiro
-        from flext_observability.flext_structured import _flext_observability_context
+        # Import and use context isolation
+        import contextvars
 
-        # Force complete reset to avoid contamination from other tests
-        _flext_observability_context.set(None)
-        _flext_observability_context.set({})
+        from flext_observability.flext_structured import (
+            _flext_observability_context,
+            flext_get_correlation_id,
+        )
 
-        result = flext_get_correlation_id()
+        # Create completely new context
+        new_context = contextvars.copy_context()
 
-        assert result.is_success
-        assert result.data == "", f"Expected empty string, got '{result.data}'"
+        def isolated_test() -> None:
+            # In new context, set to None and test
+            _flext_observability_context.set(None)
+
+            result = flext_get_correlation_id()
+
+            assert result.success
+            assert result.data == "", f"Expected empty string, got '{result.data}'"
+
+        # Run in isolated context
+        new_context.run(isolated_test)
 
     def test_flext_get_correlation_id_none_context(self) -> None:
         """Testar obter com contexto None."""
-        from flext_observability.flext_structured import _flext_observability_context
+        # Import and use context isolation
+        import contextvars
 
-        # Force complete reset and then set to None
-        _flext_observability_context.set({})
-        _flext_observability_context.set(None)
+        from flext_observability.flext_structured import (
+            _flext_observability_context,
+            flext_get_correlation_id,
+        )
 
-        result = flext_get_correlation_id()
+        # Create completely new context
+        new_context = contextvars.copy_context()
 
-        assert result.is_success
-        assert result.data == "", f"Expected empty string, got '{result.data}'"
+        def isolated_test() -> None:
+            # In new context, explicitly set to None and test
+            _flext_observability_context.set(None)
+
+            result = flext_get_correlation_id()
+
+            assert result.success
+            assert result.data == "", f"Expected empty string, got '{result.data}'"
+
+        # Run in isolated context
+        new_context.run(isolated_test)
 
     def test_flext_get_structured_logger(self) -> None:
         """Testar obter logger estruturado."""
@@ -511,7 +534,7 @@ class TestInMemoryMetricsRepositoryComplete:
 
         result = repo.save(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data is metric
         if "1" not in repo._metrics:
             raise AssertionError(f"Expected {'1'} in {repo._metrics}")
@@ -540,7 +563,7 @@ class TestInMemoryMetricsRepositoryComplete:
 
         result = repo.get_by_id("test")
 
-        assert result.is_success
+        assert result.success
         if result.data.id != "test":
             raise AssertionError(f"Expected {'test'}, got {result.data.id}")
 
@@ -565,7 +588,7 @@ class TestInMemoryMetricsRepositoryComplete:
 
         result = repo.find_by_name("cpu")
 
-        assert result.is_success
+        assert result.success
         if len(result.data) != EXPECTED_BULK_SIZE:
             raise AssertionError(f"Expected {2}, got {len(result.data)}")
 
@@ -575,7 +598,7 @@ class TestInMemoryMetricsRepositoryComplete:
 
         result = repo.find_by_name("nonexistent")
 
-        assert result.is_success
+        assert result.success
         if result.data != []:
             raise AssertionError(f"Expected {[]}, got {result.data}")
 
@@ -877,7 +900,7 @@ class TestFlextSimpleComplete:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         metric = result.data
         if metric.name != "cpu_usage":
             raise AssertionError(f"Expected {'cpu_usage'}, got {metric.name}")
@@ -887,7 +910,7 @@ class TestFlextSimpleComplete:
         """Testar criação com padrões."""
         result = flext_create_metric("test", 1.0)
 
-        assert result.is_success
+        assert result.success
         if result.data.unit != "":
             raise AssertionError(f"Expected {''}, got {result.data.unit}")
         assert result.data.tags == {}
@@ -901,7 +924,7 @@ class TestFlextSimpleComplete:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         entry = result.data
         if entry.message != "Test message":
             raise AssertionError(f"Expected {'Test message'}, got {entry.message}")
@@ -911,7 +934,7 @@ class TestFlextSimpleComplete:
         """Testar criação com padrões."""
         result = flext_create_log_entry("Simple message")
 
-        assert result.is_success
+        assert result.success
         if result.data.level != "info":
             raise AssertionError(f"Expected {'info'}, got {result.data.level}")
         assert result.data.context == {}
@@ -929,7 +952,7 @@ class TestFlextSimpleComplete:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         trace = result.data
         if trace.trace_id != "trace-123":
             raise AssertionError(f"Expected {'trace-123'}, got {trace.trace_id}")
@@ -939,7 +962,7 @@ class TestFlextSimpleComplete:
         """Testar criação com padrões."""
         result = flext_create_trace("trace-123", "test")
 
-        assert result.is_success
+        assert result.success
         if result.data.duration_ms != 0:
             raise AssertionError(f"Expected {0}, got {result.data.duration_ms}")
         assert result.data.status == "pending"
@@ -954,7 +977,7 @@ class TestFlextSimpleComplete:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         alert = result.data
         if alert.title != "Test Alert":
             raise AssertionError(f"Expected {'Test Alert'}, got {alert.title}")
@@ -964,7 +987,7 @@ class TestFlextSimpleComplete:
         """Testar criação com padrões."""
         result = flext_create_alert("Title", "Message")
 
-        assert result.is_success
+        assert result.success
         if result.data.severity != "low":
             raise AssertionError(f"Expected {'low'}, got {result.data.severity}")
         assert result.data.status == "active"
@@ -978,7 +1001,7 @@ class TestFlextSimpleComplete:
             timestamp=datetime.now(UTC),
         )
 
-        assert result.is_success
+        assert result.success
         health = result.data
         if health.component != "database":
             raise AssertionError(f"Expected {'database'}, got {health.component}")
@@ -988,7 +1011,7 @@ class TestFlextSimpleComplete:
         """Testar criação com padrões."""
         result = flext_create_health_check("api")
 
-        assert result.is_success
+        assert result.success
         if result.data.status != "unknown":
             raise AssertionError(f"Expected {'unknown'}, got {result.data.status}")
         assert result.data.message == ""
@@ -1033,7 +1056,7 @@ class TestFlextObservabilityPlatformV2Complete:
 
         result = platform.metric("test_metric", 42.0)
 
-        assert result.is_success
+        assert result.success
 
     def test_metric_with_kwargs(self) -> None:
         """Testar métrica com argumentos extras."""
@@ -1043,7 +1066,7 @@ class TestFlextObservabilityPlatformV2Complete:
             "test_metric", 42.0, unit="count", tags={"env": "test"}
         )
 
-        assert result.is_success
+        assert result.success
 
     def test_log_default(self) -> None:
         """Testar log com nível padrão."""
@@ -1051,7 +1074,7 @@ class TestFlextObservabilityPlatformV2Complete:
 
         result = platform.log("Test message")
 
-        assert result.is_success
+        assert result.success
 
     def test_log_with_level(self) -> None:
         """Testar log com nível específico."""
@@ -1059,7 +1082,7 @@ class TestFlextObservabilityPlatformV2Complete:
 
         result = platform.log("Error message", level="error")
 
-        assert result.is_success
+        assert result.success
 
     def test_log_with_kwargs(self) -> None:
         """Testar log com argumentos extras."""
@@ -1067,7 +1090,7 @@ class TestFlextObservabilityPlatformV2Complete:
 
         result = platform.log("Message", level="info", context={"user": "123"})
 
-        assert result.is_success
+        assert result.success
 
     def test_alert_default(self) -> None:
         """Testar alerta com severidade padrão."""
@@ -1075,7 +1098,7 @@ class TestFlextObservabilityPlatformV2Complete:
 
         result = platform.alert("Test Alert", "Alert message")
 
-        assert result.is_success
+        assert result.success
 
     def test_alert_with_severity(self) -> None:
         """Testar alerta com severidade específica."""
@@ -1085,7 +1108,7 @@ class TestFlextObservabilityPlatformV2Complete:
             "Critical Alert", "Critical message", severity="critical"
         )
 
-        assert result.is_success
+        assert result.success
 
     def test_alert_with_kwargs(self) -> None:
         """Testar alerta com argumentos extras."""
@@ -1093,7 +1116,7 @@ class TestFlextObservabilityPlatformV2Complete:
 
         result = platform.alert("Alert", "Message", severity="high", status="active")
 
-        assert result.is_success
+        assert result.success
 
     def test_trace(self) -> None:
         """Testar criação de trace."""
@@ -1101,7 +1124,7 @@ class TestFlextObservabilityPlatformV2Complete:
 
         result = platform.trace("trace-123", "api_call")
 
-        assert result.is_success
+        assert result.success
 
     def test_trace_with_kwargs(self) -> None:
         """Testar trace com argumentos extras."""
@@ -1109,7 +1132,7 @@ class TestFlextObservabilityPlatformV2Complete:
 
         result = platform.trace("trace-123", "database_query", span_id="span-456")
 
-        assert result.is_success
+        assert result.success
 
     def test_health_check(self) -> None:
         """Testar verificação de saúde."""
@@ -1117,7 +1140,7 @@ class TestFlextObservabilityPlatformV2Complete:
 
         result = platform.health_check()
 
-        assert result.is_success
+        assert result.success
 
 
 class TestObsPlatformHelpers:
@@ -1181,7 +1204,7 @@ class TestServicesComplete:
 
         result = service.record_metric(metric)
 
-        assert result.is_success
+        assert result.success
         assert result.data is metric
 
     def test_logging_service_init(self) -> None:
@@ -1196,7 +1219,7 @@ class TestServicesComplete:
 
         result = service.log_entry(entry)
 
-        assert result.is_success
+        assert result.success
         assert result.data is entry
 
     def test_tracing_service_init(self) -> None:
@@ -1214,7 +1237,7 @@ class TestServicesComplete:
 
         result = service.start_trace(trace)
 
-        assert result.is_success
+        assert result.success
         assert result.data is trace
 
     def test_health_service_init(self) -> None:
@@ -1229,7 +1252,7 @@ class TestServicesComplete:
 
         result = service.check_health(health)
 
-        assert result.is_success
+        assert result.success
         # Compare extracted data from both results
         assert result.data is health.data  # Both are FlextHealthCheck objects
 
@@ -1239,7 +1262,7 @@ class TestServicesComplete:
 
         result = service.get_overall_health()
 
-        assert result.is_success
+        assert result.success
         if result.data["overall_status"] != "unknown":
             raise AssertionError(
                 f"Expected {'unknown'}, got {result.data['overall_status']}"
@@ -1260,7 +1283,7 @@ class TestEntitiesValidation:
 
         result = metric.validate_domain_rules()
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_metric_validate_domain_rules_invalid_name(self) -> None:
         """Testar validação com nome inválido."""
@@ -1291,7 +1314,7 @@ class TestEntitiesValidation:
 
         result = entry.validate_domain_rules()
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_log_entry_validate_domain_rules_invalid_message(self) -> None:
         """Testar validação com mensagem inválida."""
@@ -1318,7 +1341,7 @@ class TestEntitiesValidation:
 
         result = trace.validate_domain_rules()
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_trace_validate_domain_rules_invalid_trace_id(self) -> None:
         """Testar validação com trace_id inválido."""
@@ -1349,7 +1372,7 @@ class TestEntitiesValidation:
 
         result = alert.validate_domain_rules()
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_alert_validate_domain_rules_invalid_title(self) -> None:
         """Testar validação com título inválido."""
@@ -1385,7 +1408,7 @@ class TestEntitiesValidation:
 
         result = health.validate_domain_rules()
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_health_check_validate_domain_rules_invalid_component(self) -> None:
         """Testar validação com componente inválido."""
@@ -1438,7 +1461,7 @@ class TestFactoryEdgeCases:
             result = factory.metric("test", 1.0)
 
             # Deve retornar sucesso com a métrica mesmo sem serviço (fallback)
-            assert result.is_success
+            assert result.success
 
     def test_log_without_service(self) -> None:
         """Testar criação de log sem serviço disponível."""
@@ -1450,7 +1473,7 @@ class TestFactoryEdgeCases:
         ):
             result = factory.log("test message")
 
-            assert result.is_success
+            assert result.success
 
     def test_alert_without_service(self) -> None:
         """Testar criação de alerta sem serviço disponível."""
@@ -1462,7 +1485,7 @@ class TestFactoryEdgeCases:
         ):
             result = factory.alert("title", "message")
 
-            assert result.is_success
+            assert result.success
 
     def test_trace_without_service(self) -> None:
         """Testar criação de trace sem serviço disponível."""
@@ -1474,7 +1497,7 @@ class TestFactoryEdgeCases:
         ):
             result = factory.trace("trace-id", "operation")
 
-            assert result.is_success
+            assert result.success
 
     def test_health_check_without_service(self) -> None:
         """Testar criação de health check sem serviço disponível."""
@@ -1486,7 +1509,7 @@ class TestFactoryEdgeCases:
         ):
             result = factory.health_check("component")
 
-            assert result.is_success
+            assert result.success
 
 
 # ============================================================================
@@ -1554,7 +1577,7 @@ class TestFlextObservabilityMonitorComplete:
 
         result = monitor.flext_initialize_observability()
 
-        assert result.is_success
+        assert result.success
         if not (monitor._initialized):
             raise AssertionError(f"Expected True, got {monitor._initialized}")
         assert monitor._metrics_service is not None
@@ -1571,7 +1594,7 @@ class TestFlextObservabilityMonitorComplete:
 
         result = monitor.flext_initialize_observability()
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_initialize_observability_registration_failure(self) -> None:
         """Testar falha na inicialização por falha no registro."""
@@ -1600,7 +1623,7 @@ class TestFlextObservabilityMonitorComplete:
 
         result = monitor.flext_start_monitoring()
 
-        assert result.is_success
+        assert result.success
         if not (monitor._running):
             raise AssertionError(f"Expected True, got {monitor._running}")
 
@@ -1626,7 +1649,7 @@ class TestFlextObservabilityMonitorComplete:
 
         result = monitor.flext_start_monitoring()
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_stop_monitoring_success(self) -> None:
         """Testar parada do monitoramento com sucesso."""
@@ -1637,7 +1660,7 @@ class TestFlextObservabilityMonitorComplete:
 
         result = monitor.flext_stop_monitoring()
 
-        assert result.is_success
+        assert result.success
         if monitor._running:
             raise AssertionError(f"Expected False, got {monitor._running}")
 
@@ -1648,7 +1671,7 @@ class TestFlextObservabilityMonitorComplete:
 
         result = monitor.flext_stop_monitoring()
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_get_health_status_success(self) -> None:
         """Testar obtenção de status de saúde com sucesso."""
@@ -1658,7 +1681,7 @@ class TestFlextObservabilityMonitorComplete:
 
         result = monitor.flext_get_health_status()
 
-        assert result.is_success
+        assert result.success
 
     def test_flext_get_health_status_no_service(self) -> None:
         """Testar obtenção sem serviço de saúde."""
@@ -1922,7 +1945,7 @@ class TestFactoryErrorHandling:
         ):
             result = factory.health_status()
 
-            assert result.is_success
+            assert result.success
             # Deve retornar health check básico mesmo sem serviço
             if result.data["status"] != "healthy":
                 raise AssertionError(
@@ -1983,19 +2006,19 @@ class TestFactoryErrorHandling:
 
         # Testar funções globais
         metric_result = metric("global_metric", 1.0)
-        assert metric_result.is_success
+        assert metric_result.success
 
         log_result = log("Global log message")
-        assert log_result.is_success
+        assert log_result.success
 
         alert_result = alert("Global alert", "Alert message")
-        assert alert_result.is_success
+        assert alert_result.success
 
         trace_result = trace("trace-123", "global_operation")
-        assert trace_result.is_success
+        assert trace_result.success
 
         health_result = health_check("global_component")
-        assert health_result.is_success
+        assert health_result.success
 
 
 # ============================================================================
@@ -2109,7 +2132,7 @@ class TestServicesErrorHandling:
         result = service.log_entry(entry)
 
         # Deve funcionar mesmo com nível inválido (getattr tem fallback)
-        assert result.is_success
+        assert result.success
 
     def test_all_services_type_import_coverage(self) -> None:
         """Testar TYPE_CHECKING imports (linha 18)."""
@@ -2318,7 +2341,7 @@ class TestCompleteLineCoverage:
 
         # Simplificar: o método já tem try/catch, então só testar que funciona
         result = flext_get_correlation_id()
-        assert result.is_success  # Funciona mesmo sem context
+        assert result.success  # Funciona mesmo sem context
 
         # Linhas 69-70: erro no error logging
         with patch.object(
@@ -2333,7 +2356,7 @@ class TestCompleteLineCoverage:
 
         # Linhas 89-90: erro no set correlation ID - simplificar devido ao ContextVar
         result = flext_set_correlation_id("test-123")
-        assert result.is_success  # Deve funcionar normalmente
+        assert result.success  # Deve funcionar normalmente
 
         # Linhas 100-101: erro no bind - testar path normal
         bound_logger = logger.flext_bind_observability(test="data")
@@ -2414,7 +2437,7 @@ class TestCompleteLineCoverage:
         # Testar diferentes caminhos de validação
         metric = FlextMetric(id="1", name="test", value=42.5)
         result = metric.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_remaining_factory_lines(self) -> None:
         """Cobrir linhas restantes em factory.py (71-72)."""
@@ -2545,7 +2568,7 @@ class TestFinal24Lines:
             try:
                 result = repo.save(metric)
                 # Se chegou aqui, o save funcionou mesmo com mock
-                assert result.is_success or result.is_failure
+                assert result.success or result.is_failure
             except Exception as e:
                 # DRY REAL: Log exception details for better debugging
                 print(f"Expected exception in repo save test: {e}")  # noqa: T201
@@ -2573,7 +2596,7 @@ class TestFinal24Lines:
         # Setar um ID e depois tentar pegar para exercitar diferentes paths
         flext_set_correlation_id("test-correlation-id")
         result = flext_get_correlation_id()
-        assert result.is_success
+        assert result.success
 
         # Testar bind com diferentes tipos de dados
         bound_logger = logger.flext_bind_observability(
@@ -2594,7 +2617,7 @@ class TestFinal24Lines:
         try:
             result = collector.flext_record_observability_metric("test", float("inf"))
             # Se chegou aqui, o teste passou normalmente
-            assert result.is_success
+            assert result.success
         except Exception:  # noqa: S110 - Expected exception in robustness test
             # Se houve exceção, é esperado
             pass
@@ -2619,7 +2642,7 @@ class TestFinal24Lines:
             try:
                 result = collector.flext_collect_observability_application_metrics()
                 # Se funcionou mesmo com o patch, ok
-                assert result.is_success or result.is_failure
+                assert result.success or result.is_failure
             except Exception as e:
                 # DRY REAL: Log exception details for better debugging
                 print(f"Expected exception in metrics collection: {e}")  # noqa: T201
@@ -2652,7 +2675,7 @@ class TestCompleteModuleCoverage:
             unit="MB",
             tags={"host": "server1", "env": "prod"},
         )
-        assert metric_decimal.validate_domain_rules().is_success
+        assert metric_decimal.validate_domain_rules().success
         if float(metric_decimal.value) != 123.45:
             raise AssertionError(
                 f"Expected {123.45}, got {float(metric_decimal.value)}"
@@ -2670,7 +2693,7 @@ class TestCompleteModuleCoverage:
                 "metadata": {"ip": "192.168.1.1", "user_agent": "Chrome"},
             },
         )
-        assert log_entry.validate_domain_rules().is_success
+        assert log_entry.validate_domain_rules().success
         if "user_id" not in log_entry.context:
             raise AssertionError(f"Expected {'user_id'} in {log_entry.context}")
 
@@ -2689,7 +2712,7 @@ class TestCompleteModuleCoverage:
             duration_ms=245,
             status="completed",
         )
-        assert trace.validate_domain_rules().is_success
+        assert trace.validate_domain_rules().success
         if not (trace.span_attributes["cache_hit"]):
             raise AssertionError(
                 f"Expected True, got {trace.span_attributes['cache_hit']}"
@@ -2708,7 +2731,7 @@ class TestCompleteModuleCoverage:
                 "priority": "immediate",
             },
         )
-        assert alert.validate_domain_rules().is_success
+        assert alert.validate_domain_rules().success
         if alert.severity != "critical":
             raise AssertionError(f"Expected {'critical'}, got {alert.severity}")
 
@@ -2726,7 +2749,7 @@ class TestCompleteModuleCoverage:
                 "error_rate": 0.03,
             },
         )
-        assert health.validate_domain_rules().is_success
+        assert health.validate_domain_rules().success
         if health.status != "degraded":
             raise AssertionError(f"Expected {'degraded'}, got {health.status}")
         assert health.metrics["response_time_avg"] == 850.3
@@ -2754,7 +2777,7 @@ class TestCompleteModuleCoverage:
             tags={"service": "api", "version": "2.1.0"},
             timestamp=custom_time,
         )
-        assert result.is_success
+        assert result.success
 
         # Testar log com contexto rico
         result = factory.log(
@@ -2768,7 +2791,7 @@ class TestCompleteModuleCoverage:
             },
             timestamp=custom_time,
         )
-        assert result.is_success
+        assert result.success
 
         # Testar trace com configuração completa
         result = factory.trace(
@@ -2784,7 +2807,7 @@ class TestCompleteModuleCoverage:
             duration_ms=1250,
             status="completed",
         )
-        assert result.is_success
+        assert result.success
 
         # Testar alert com status personalizado
         result = factory.alert(
@@ -2795,7 +2818,7 @@ class TestCompleteModuleCoverage:
             tags={"team": "payments", "priority": "high"},
             timestamp=custom_time,
         )
-        assert result.is_success
+        assert result.success
 
         # Testar health check com métricas detalhadas
         result = factory.health_check(
@@ -2808,11 +2831,11 @@ class TestCompleteModuleCoverage:
                 "active_transactions": 78,
             },
         )
-        assert result.is_success
+        assert result.success
 
         # Testar health_status
         result = factory.health_status()
-        assert result.is_success
+        assert result.success
         assert isinstance(result.data, dict)
 
         # Testar global factory com reset
@@ -2837,7 +2860,7 @@ class TestCompleteModuleCoverage:
 
         # Testar inicialização completa
         result = monitor.flext_initialize_observability()
-        assert result.is_success
+        assert result.success
         if not (monitor._initialized):
             raise AssertionError(f"Expected True, got {monitor._initialized}")
         assert monitor._metrics_service is not None
@@ -2850,18 +2873,18 @@ class TestCompleteModuleCoverage:
         assert not monitor.flext_is_monitoring_active()
 
         start_result = monitor.flext_start_monitoring()
-        assert start_result.is_success
+        assert start_result.success
         if not (monitor._running):
             raise AssertionError(f"Expected True, got {monitor._running}")
         assert monitor.flext_is_monitoring_active()
 
         # Testar health status com monitor ativo
         health_result = monitor.flext_get_health_status()
-        assert health_result.is_success
+        assert health_result.success
         assert isinstance(health_result.data, dict)
 
         stop_result = monitor.flext_stop_monitoring()
-        assert stop_result.is_success
+        assert stop_result.success
         if monitor._running:
             raise AssertionError(f"Expected False, got {monitor._running}")
         assert not monitor.flext_is_monitoring_active()
@@ -2992,42 +3015,42 @@ class TestCompleteModuleCoverage:
 
         # Metric com tags não-dict (deve ser convertido para dict vazio)
         result = factory.metric("test", 1.0, tags="invalid_tags")
-        assert result.is_success
+        assert result.success
 
         # Log com context não-dict (deve ser convertido para dict vazio)
         result = factory.log("test", context="invalid_context")
-        assert result.is_success
+        assert result.success
 
         # Alert com tags não-dict (deve ser convertido para dict vazio)
         result = factory.alert("title", "message", tags="invalid_tags")
-        assert result.is_success
+        assert result.success
 
         # Trace com span_attributes não-dict (deve ser convertido para dict vazio)
         result = factory.trace("trace", "op", span_attributes="invalid")
-        assert result.is_success
+        assert result.success
 
         # Health check com metrics não-dict (deve ser convertido para dict vazio)
         result = factory.health_check("component", metrics="invalid")
-        assert result.is_success
+        assert result.success
 
         # Monitor - testar múltiplas inicializações (deve ser idempotente)
         monitor = FlextObservabilityMonitor()
 
         result1 = monitor.flext_initialize_observability()
-        assert result1.is_success
+        assert result1.success
 
         result2 = monitor.flext_initialize_observability()  # Segunda vez
-        assert result2.is_success
+        assert result2.success
 
         # Testar start quando já está running (deve ser idempotente)
         monitor.flext_start_monitoring()
         result = monitor.flext_start_monitoring()  # Segunda vez
-        assert result.is_success
+        assert result.success
 
         # Testar stop quando não está running (deve ser idempotente)
         monitor.flext_stop_monitoring()
         result = monitor.flext_stop_monitoring()  # Segunda vez
-        assert result.is_success
+        assert result.success
 
     def test_type_conversion_edge_cases(self) -> None:
         """Testar conversões de tipo em casos extremos."""
@@ -3038,19 +3061,19 @@ class TestCompleteModuleCoverage:
         invalid_timestamp = "2025-01-15"  # String, não datetime
 
         result = factory.metric("test", 1.0, timestamp=invalid_timestamp)
-        assert result.is_success  # Deve usar datetime.now(UTC) como fallback
+        assert result.success  # Deve usar datetime.now(UTC) como fallback
 
         result = factory.log("test", timestamp=invalid_timestamp)
-        assert result.is_success
+        assert result.success
 
         result = factory.alert("title", "message", timestamp=invalid_timestamp)
-        assert result.is_success
+        assert result.success
 
         result = factory.trace("trace", "op", timestamp=invalid_timestamp)
-        assert result.is_success
+        assert result.success
 
         result = factory.health_check("component", timestamp=invalid_timestamp)
-        assert result.is_success
+        assert result.success
 
         # Testar conversões de parâmetros específicos
         result = factory.trace(
@@ -3059,7 +3082,7 @@ class TestCompleteModuleCoverage:
             span_id=123,  # int, deve ser convertido para string
             duration_ms=100,  # usar int válido ao invés de string inválida
         )
-        assert result.is_success
+        assert result.success
 
     def test_comprehensive_integration(self) -> None:
         """Teste de integração abrangente."""
@@ -3085,7 +3108,7 @@ class TestCompleteModuleCoverage:
             unit="percent",
             tags={"test": "integration", "phase": "execution"},
         )
-        assert metric_result.is_success
+        assert metric_result.success
 
         # 2. Criar log via platform
         log_result = platform.log(
@@ -3093,7 +3116,7 @@ class TestCompleteModuleCoverage:
             level="info",
             context={"test_id": "int-001", "timestamp": "2025-01-15T10:30:00Z"},
         )
-        assert log_result.is_success
+        assert log_result.success
 
         # 3. Criar trace com span
         trace_result = factory.trace(
@@ -3108,7 +3131,7 @@ class TestCompleteModuleCoverage:
             duration_ms=450,
             status="completed",
         )
-        assert trace_result.is_success
+        assert trace_result.success
 
         # 4. Criar alert via platform
         alert_result = platform.alert(
@@ -3116,7 +3139,7 @@ class TestCompleteModuleCoverage:
             "This is a test alert generated during integration testing",
             severity="low",
         )
-        assert alert_result.is_success
+        assert alert_result.success
 
         # 5. Health check via factory
         health_result = factory.health_check(
@@ -3130,19 +3153,19 @@ class TestCompleteModuleCoverage:
                 "coverage_percent": 100.0,
             },
         )
-        assert health_result.is_success
+        assert health_result.success
 
         # 6. Verificar status geral do monitor
         monitor_health = monitor.flext_get_health_status()
-        assert monitor_health.is_success
+        assert monitor_health.success
 
         # 7. Verificar status da plataforma
         platform_health = platform.health_check()
-        assert platform_health.is_success
+        assert platform_health.success
 
         # 8. Parar monitor
         stop_result = monitor.flext_stop_monitoring()
-        assert stop_result.is_success
+        assert stop_result.success
 
         # Verificar que tudo funcionou em harmonia
         assert not monitor.flext_is_monitoring_active()

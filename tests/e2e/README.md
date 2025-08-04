@@ -45,9 +45,9 @@ def test_complete_observability_workflow():
     alert_result = platform.alert("high_cpu", "warning", "CPU usage high")
 
     # 3. Validate all operations succeeded
-    assert metric_result.is_success
-    assert trace_result.is_success
-    assert alert_result.is_success
+    assert metric_result.success
+    assert trace_result.success
+    assert alert_result.success
 
     # 4. Verify data flow and storage
     # Test that metrics are properly stored and retrievable
@@ -70,8 +70,8 @@ def test_production_monitoring_scenario():
                                           random.uniform(50, 500), "ms")
 
         # Validate each metric creation
-        assert api_metric.is_success
-        assert response_time.is_success
+        assert api_metric.success
+        assert response_time.success
 
     # Validate aggregation and performance under load
 ```
@@ -99,8 +99,8 @@ def test_factory_service_monitor_integration():
     function_result = test_function()
 
     # 4. Validate end-to-end data flow
-    assert metric_result.is_success
-    assert record_result.is_success
+    assert metric_result.success
+    assert record_result.success
     assert function_result == "monitored_result"
 ```
 
@@ -184,7 +184,7 @@ def test_performance_under_load(benchmark):
         return factory.create_metric("perf_test", 1.0, "count")
 
     result = benchmark(create_observability_data)
-    assert result.is_success
+    assert result.success
 ```
 
 ## Current Status

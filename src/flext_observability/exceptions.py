@@ -288,7 +288,7 @@ class FlextObservabilityLoggingError(FlextObservabilityError):
         )
 
 
-__all__ = [
+__all__: list[str] = [
     "FlextObservabilityConfigurationError",
     "FlextObservabilityConnectionError",
     "FlextObservabilityError",

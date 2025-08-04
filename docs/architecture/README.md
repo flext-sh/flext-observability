@@ -164,7 +164,7 @@ service = FlextMetricsService(container)
 
 # Railway-oriented programming throughout
 result = service.record_metric(metric)
-if result.is_success:
+if result.success:
     # Success path
     return result.data
 else:
