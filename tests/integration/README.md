@@ -5,6 +5,7 @@
 ## Purpose
 
 This directory is designated for integration tests that:
+
 - Test interactions between multiple FLEXT Observability components
 - Validate integration with external systems (flext-core, databases, etc.)
 - Execute with moderate speed (< 10 seconds per test)
@@ -29,28 +30,30 @@ integration/
 ## Test Patterns
 
 ### Service Integration Testing
+
 ```python
 def test_metrics_service_with_factory_integration():
     """Test metrics service integration with factory."""
     container = FlextContainer()
     factory = FlextObservabilityMasterFactory(container)
     metrics_service = FlextMetricsService(container)
-    
+
     # Create metric via factory
     metric_result = factory.create_metric("integration_test", 42.0)
     assert metric_result.is_success
-    
+
     # Process via service
     record_result = metrics_service.record_metric(metric_result.data)
     assert record_result.is_success
 ```
 
 ### External System Integration
+
 ```python
 def test_flext_core_container_integration():
     """Test integration with flext-core dependency injection."""
     from flext_core import FlextContainer
-    
+
     container = FlextContainer()
     # Test that observability services integrate properly
     factory = FlextObservabilityMasterFactory(container)
@@ -60,11 +63,13 @@ def test_flext_core_container_integration():
 ## Test Environment Setup
 
 ### Required Dependencies
+
 - **flext-core**: Foundation library integration
 - **Test Containers**: Isolated test environments
 - **Mock External Systems**: Controlled external dependencies
 
 ### Configuration
+
 ```python
 @pytest.fixture(scope="module")
 def integration_container():
@@ -93,6 +98,7 @@ pytest tests/integration/ -m integration -v
 ## Test Data Management
 
 ### Test Data Strategy
+
 - **Isolated Test Data**: Each test creates its own test data
 - **Cleanup**: Automatic cleanup after each test
 - **Reproducible**: Tests can run in any order

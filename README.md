@@ -73,7 +73,7 @@ FLEXT Observability sits at the foundation layer alongside flext-core, providing
 
 ### 🚀 **Future Enhancements**
 
-- **HTTP Server**: Metrics endpoint server (/metrics, /health) 
+- **HTTP Server**: Metrics endpoint server (/metrics, /health)
 - **Monitoring Stack**: Docker Compose setup for complete monitoring infrastructure
 - **Advanced Sampling**: Intelligent sampling strategies for high-volume environments
 

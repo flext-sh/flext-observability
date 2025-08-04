@@ -5,6 +5,7 @@
 ## Purpose
 
 This directory is designated for shared test fixtures that:
+
 - Provide consistent test data across all test types (unit, integration, e2e)
 - Create reusable mock objects and test doubles
 - Setup common test environments and configurations
@@ -28,6 +29,7 @@ fixtures/
 ## Fixture Categories
 
 ### Entity Test Fixtures
+
 ```python
 # Example entity fixtures
 @pytest.fixture
@@ -51,6 +53,7 @@ def sample_trace() -> FlextTrace:
 ```
 
 ### Service Mock Fixtures
+
 ```python
 # Example service mocks
 @pytest.fixture
@@ -68,11 +71,12 @@ def mock_container() -> Mock:
 ```
 
 ### Test Data Factories
+
 ```python
 # Example test data factories
 class MetricsTestDataFactory:
     """Factory for creating test metrics data."""
-    
+
     @staticmethod
     def create_api_metric(value: float = 1.0) -> FlextMetric:
         """Create API request metric for testing."""
@@ -82,7 +86,7 @@ class MetricsTestDataFactory:
             unit="count",
             tags={"service": "test-api"}
         )
-    
+
     @staticmethod
     def create_performance_metric(response_time: float = 100.0) -> FlextMetric:
         """Create performance metric for testing."""
@@ -97,6 +101,7 @@ class MetricsTestDataFactory:
 ## Usage Patterns
 
 ### Using Fixtures in Tests
+
 ```python
 def test_metric_processing(sample_metric, mock_metrics_service):
     """Test using shared fixtures."""
@@ -112,6 +117,7 @@ def test_with_factory_data():
 ```
 
 ### Fixture Composition
+
 ```python
 @pytest.fixture
 def configured_observability_platform(mock_container):
@@ -123,6 +129,7 @@ def configured_observability_platform(mock_container):
 ## Test Environment Setup
 
 ### Shared Configuration
+
 ```python
 @pytest.fixture(scope="session")
 def test_config():
@@ -135,6 +142,7 @@ def test_config():
 ```
 
 ### Cleanup Fixtures
+
 ```python
 @pytest.fixture(autouse=True)
 def cleanup_test_state():
