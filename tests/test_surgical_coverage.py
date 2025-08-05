@@ -93,7 +93,7 @@ class TestSurgicalCoverage:
         # But we can test the general robustness of the function
         try:
             # Test with None (should cause AttributeError in context handling)
-            result = flext_set_correlation_id(None)  # type: ignore[arg-type]
+            result = flext_set_correlation_id(None)
             # Function should handle gracefully and either succeed or fail properly
             assert isinstance(result.is_failure, bool)
         except Exception:  # noqa: S110 - Expected exception in robustness test

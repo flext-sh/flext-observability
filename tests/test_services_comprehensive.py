@@ -35,7 +35,7 @@ class TestFlextMetricsServiceComprehensive:
         """Test record_metric with None metric (line 81)."""
         service = FlextMetricsService()
 
-        result = service.record_metric(None)  # type: ignore[arg-type]
+        result = service.record_metric(None)
 
         assert result.is_failure
         assert "Invalid metric: missing name or value" in result.error
@@ -138,7 +138,7 @@ class TestFlextMetricsServiceComprehensive:
         service = FlextMetricsService()
 
         # Force exception by corrupting internal state
-        service._metric_gauges["bad_metric"] = "not_a_number"  # type: ignore[assignment]
+        service._metric_gauges["bad_metric"] = "not_a_number"
 
         result = service.get_metric_value("bad_metric")
 
@@ -177,7 +177,7 @@ class TestFlextMetricsServiceComprehensive:
         service = FlextMetricsService()
 
         # Force exception by corrupting internal state
-        service._metric_histograms["bad"] = ["not", "numbers"]  # type: ignore[assignment]
+        service._metric_histograms["bad"] = ["not", "numbers"]
 
         result = service.get_metrics_summary()
 
@@ -229,7 +229,7 @@ class TestFlextTracingServiceComprehensive:
         """Test start_trace with invalid trace (line 307)."""
         service = FlextTracingService()
 
-        result = service.start_trace(None)  # type: ignore[arg-type]
+        result = service.start_trace(None)
 
         assert result.is_failure
         assert "Invalid trace: missing trace_id or operation" in result.error
@@ -385,7 +385,7 @@ class TestFlextAlertServiceComprehensive:
         """Test create_alert with invalid alert."""
         service = FlextAlertService()
 
-        result = service.create_alert(None)  # type: ignore[arg-type]
+        result = service.create_alert(None)
 
         assert result.is_failure
 
@@ -424,7 +424,7 @@ class TestFlextHealthServiceComprehensive:
         """Test check_health with invalid health check."""
         service = FlextHealthService()
 
-        result = service.check_health(None)  # type: ignore[arg-type]
+        result = service.check_health(None)
 
         assert result.is_failure
 
