@@ -63,7 +63,7 @@ class FlextMetric(FlextEntity):
     tags: dict[str, str] = field(default_factory=dict)
     metric_type: str = "gauge"
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate metric domain rules."""
         if not self.name or not isinstance(self.name, str):
             return FlextResult.fail("Invalid metric name")
@@ -100,7 +100,7 @@ class FlextMetricsService:
 
     def record_metric(self, metric: FlextMetric) -> FlextResult[FlextMetric]:
         """Record metric with business validation."""
-        validation_result = metric.validate_domain_rules()
+        validation_result = metric.validate_business_rules()
         if validation_result.is_failure:
             return FlextResult.fail(f"Metric validation failed: {validation_result.error}")
 
@@ -140,7 +140,7 @@ class FlextObservabilityMasterFactory:
                 timestamp=datetime.now(UTC)
             )
 
-            validation_result = metric.validate_domain_rules()
+            validation_result = metric.validate_business_rules()
             if validation_result.is_failure:
                 return validation_result
 
@@ -848,7 +848,7 @@ class TestFlextMetric:
             tags={"service": "api", "endpoint": "/users"}
         )
 
-        validation_result = metric.validate_domain_rules()
+        validation_result = metric.validate_business_rules()
 
         assert validation_result.success
         assert metric.name == "response_time"
@@ -860,7 +860,7 @@ class TestFlextMetric:
         """Test metric validation with invalid name."""
         metric = FlextMetric(name="", value=100.0, unit="count")
 
-        validation_result = metric.validate_domain_rules()
+        validation_result = metric.validate_business_rules()
 
         assert validation_result.is_failure
         assert "Invalid metric name" in validation_result.error
@@ -873,7 +873,7 @@ class TestFlextMetric:
             unit="USD"
         )
 
-        validation_result = metric.validate_domain_rules()
+        validation_result = metric.validate_business_rules()
 
         assert validation_result.success
         assert metric.value == Decimal("1234.56")
@@ -1421,7 +1421,7 @@ class FlextLDAPService:
 ### **Observability-Specific Standards**
 
 - [ ] **FlextResult Integration**: All observability operations return FlextResult[T]
-- [ ] **Entity Validation**: All observability entities implement `validate_domain_rules()`
+- [ ] **Entity Validation**: All observability entities implement `validate_business_rules()`
 - [ ] **Factory Support**: Entities can be created via FlextObservabilityMasterFactory
 - [ ] **Simple API**: Core functionality available via `flext_create_*` functions
 - [ ] **Monitoring Support**: Functions can be decorated with `@flext_monitor_function`

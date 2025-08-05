@@ -59,18 +59,18 @@ class TestTrue100Coverage:
         object.__setattr__(metric, "value", "not_a_number")
 
         # Call validate() which should hit lines 43-44 exception handler
-        result = metric.validate_domain_rules()
+        result = metric.validate_business_rules()
         assert result.is_failure
         if "Invalid metric value" not in result.error:
             msg: str = f"Expected {'Invalid metric value'} in {result.error}"
             raise AssertionError(msg)
 
-    def test_flext_metrics_basic_import(self) -> None:
-        """Test basic import of flext_metrics module."""
-        import flext_observability.flext_metrics
+    def test_flext_metrics_service_import(self) -> None:
+        """Test basic import of metrics service."""
+        from flext_observability.services import FlextMetricsService
 
-        # Verify module imports successfully
-        assert flext_observability.flext_metrics is not None
+        # Verify service imports successfully
+        assert FlextMetricsService is not None
 
     def test_comprehensive_true_100_attack(self) -> None:
         """Final comprehensive attack to achieve TRUE 100% COVERAGE."""
@@ -106,7 +106,7 @@ class TestTrue100Coverage:
         object.__setattr__(
             metric, "value", [1, 2, 3]
         )  # List can't be converted to float
-        result = metric.validate_domain_rules()
+        result = metric.validate_business_rules()
         assert result.is_failure
 
         # 4. FlextMetrics psutil ImportError (lines 19-20)

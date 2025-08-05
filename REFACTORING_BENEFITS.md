@@ -56,7 +56,7 @@ class FlextMetricsService(FlextObservabilityService[FlextMetric, str]):
 
 ```python
 class FlextMetric(FlextEntity):
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         # 30+ linhas de validação manual repetitiva
         if not ObservabilityValidators.is_valid_metric_name(self.name):
             return FlextResult.fail("Invalid metric name format")

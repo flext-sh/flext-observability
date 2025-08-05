@@ -264,7 +264,7 @@ All code must pass strict quality gates:
 
 1. Define entity in `src/flext_observability/entities.py`
 2. Extend base `FlextEntity` from flext-core
-3. Implement `validate_domain_rules()` method
+3. Implement `validate_business_rules()` method
 4. Add factory methods to `factory.py`
 5. Create corresponding service in `services.py`
 6. Add comprehensive tests with 90%+ coverage

@@ -57,20 +57,22 @@ FLEXT Integration:
 
 from __future__ import annotations
 
-import uuid
-from datetime import UTC, datetime
-from typing import cast
+from datetime import datetime
+from typing import TYPE_CHECKING, cast
 
-from flext_core import FlextContainer, FlextResult, get_logger
+from flext_core import FlextContainer, FlextGenerators, FlextResult, get_logger
+
+if TYPE_CHECKING:
+    from flext_core.types import FlextTypes
 
 from flext_observability.entities import (
     FlextAlert,
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
-    flext_alert,  # Import for DRY principle - re-expose for tests
-    flext_health_check,  # Import for DRY principle - re-expose for tests
-    flext_trace,  # Import for DRY principle - re-expose for tests
+    flext_alert,
+    flext_health_check,
+    flext_trace,
 )
 from flext_observability.flext_simple import flext_create_health_check
 from flext_observability.services import (
@@ -80,7 +82,30 @@ from flext_observability.services import (
     FlextMetricsService,
     FlextTracingService,
 )
-from flext_observability.validation import create_observability_result_error
+
+# Removed validation module - using FlextResult.fail() directly per docs/patterns/
+
+# ============================================================================
+# TIMESTAMP UTILITIES - Use flext-core centralized generation
+# ============================================================================
+
+
+def _generate_utc_datetime() -> datetime:
+    """Generate UTC datetime using flext-core pattern.
+
+    Uses flext-core centralized timestamp generation for consistency
+    across the FLEXT ecosystem. Eliminates local boilerplate duplication.
+
+    Returns:
+        datetime: Current UTC datetime with timezone information
+
+    """
+    # Use flext-core timestamp generation - direct float to datetime conversion
+    timestamp_float = FlextGenerators.generate_timestamp()
+    return datetime.fromtimestamp(
+        timestamp_float, tz=datetime.now().astimezone().tzinfo,
+    )
+
 
 # ============================================================================
 # MASTER FACTORY - Single Point of Access
@@ -167,7 +192,7 @@ class FlextObservabilityMasterFactory:
 
     Validation and Error Handling:
         All entity creation methods implement comprehensive validation including:
-        - Domain rule enforcement (entity.validate_domain_rules())
+        - Domain rule enforcement (entity.validate_business_rules())
         - Business constraint validation
         - Type safety verification
         - Railway-oriented programming with FlextResult
@@ -254,14 +279,14 @@ class FlextObservabilityMasterFactory:
         try:
             # FlextMetric imported at module level
             tags = kwargs.get("tags", {})
-            tags = cast("dict[str, str]", tags) if isinstance(tags, dict) else {}
+            tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
 
             timestamp = kwargs.get("timestamp")
             if not isinstance(timestamp, datetime):
-                timestamp = datetime.now(UTC)
+                timestamp = _generate_utc_datetime()
 
             metric = FlextMetric(
-                id=str(uuid.uuid4()),
+                id=FlextGenerators.generate_uuid(),
                 name=name,
                 value=value,
                 unit=str(kwargs.get("unit", "")),
@@ -281,12 +306,7 @@ class FlextObservabilityMasterFactory:
             return FlextResult.ok(metric)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return create_observability_result_error(
-                "metrics",
-                f"Failed to create metric: {e}",
-                metric_name=name,
-                metric_value=value,
-            )
+            return FlextResult.fail(f"Failed to create metric: {e}")
 
     def log(
         self,
@@ -299,16 +319,16 @@ class FlextObservabilityMasterFactory:
             # FlextLogEntry imported at module level
             context = kwargs.get("context", {})
             if isinstance(context, dict):
-                context = cast("dict[str, object]", context)
+                context = cast("FlextTypes.Data.Dict", context)
             else:
                 context = {}
 
             timestamp = kwargs.get("timestamp")
             if not isinstance(timestamp, datetime):
-                timestamp = datetime.now(UTC)
+                timestamp = _generate_utc_datetime()
 
             log_entry = FlextLogEntry(
-                id=str(uuid.uuid4()),
+                id=FlextGenerators.generate_uuid(),
                 message=message,
                 level=level,
                 context=context,
@@ -327,12 +347,7 @@ class FlextObservabilityMasterFactory:
             return FlextResult.ok(log_entry)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return create_observability_result_error(
-                "logging",
-                f"Failed to create log: {e}",
-                log_level=level,
-                log_message=message[:100],
-            )
+            return FlextResult.fail(f"Failed to create log: {e}")
 
     def alert(
         self,
@@ -344,14 +359,14 @@ class FlextObservabilityMasterFactory:
         """Create alert."""
         try:
             tags = kwargs.get("tags", {})
-            tags = cast("dict[str, str]", tags) if isinstance(tags, dict) else {}
+            tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
 
             timestamp = kwargs.get("timestamp")
             if not isinstance(timestamp, datetime):
-                timestamp = datetime.now(UTC)
+                timestamp = _generate_utc_datetime()
 
             alert = FlextAlert(
-                id=str(uuid.uuid4()),
+                id=FlextGenerators.generate_uuid(),
                 title=title,
                 message=message,
                 severity=severity,
@@ -372,12 +387,7 @@ class FlextObservabilityMasterFactory:
             return FlextResult.ok(alert)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return create_observability_result_error(
-                "alert",
-                f"Failed to create alert: {e}",
-                alert_title=title,
-                alert_severity=severity,
-            )
+            return FlextResult.fail(f"Failed to create alert: {e}")
 
     def trace(
         self,
@@ -393,7 +403,7 @@ class FlextObservabilityMasterFactory:
             span_attributes = kwargs.get("span_attributes", {})
 
             trace = FlextTrace(
-                id=str(uuid.uuid4()),
+                id=FlextGenerators.generate_uuid(),
                 trace_id=trace_id,
                 operation=operation,
                 span_id=str(span_id) if span_id else "",
@@ -403,7 +413,9 @@ class FlextObservabilityMasterFactory:
                 duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
                 status=str(kwargs.get("status", "pending")),
                 timestamp=(
-                    timestamp if isinstance(timestamp, datetime) else datetime.now(UTC)
+                    timestamp
+                    if isinstance(timestamp, datetime)
+                    else _generate_utc_datetime()
                 ),
             )
 
@@ -419,12 +431,7 @@ class FlextObservabilityMasterFactory:
             return FlextResult.ok(trace)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return create_observability_result_error(
-                "tracing",
-                f"Failed to create trace: {e}",
-                trace_id=trace_id,
-                operation=operation,
-            )
+            return FlextResult.fail(f"Failed to create trace: {e}")
 
     def health_check(
         self,
@@ -444,7 +451,9 @@ class FlextObservabilityMasterFactory:
                 status=status,
                 message=str(message),
                 timestamp=(
-                    timestamp if isinstance(timestamp, datetime) else datetime.now(UTC)
+                    timestamp
+                    if isinstance(timestamp, datetime)
+                    else _generate_utc_datetime()
                 ),
             )
             if health_result.is_failure:
@@ -463,14 +472,9 @@ class FlextObservabilityMasterFactory:
             return FlextResult.ok(health)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return create_observability_result_error(
-                "health_check",
-                f"Failed to create health check: {e}",
-                component_name=component,
-                health_status=status,
-            )
+            return FlextResult.fail(f"Failed to create health check: {e}")
 
-    def health_status(self) -> FlextResult[dict[str, object]]:
+    def health_status(self) -> FlextResult[FlextTypes.Data.Dict]:
         """Get overall health status."""
         try:
             service_result = self.container.get("health_service")
@@ -478,14 +482,12 @@ class FlextObservabilityMasterFactory:
                 service = cast("FlextHealthService", service_result.data)
                 return service.get_overall_health()
 
-            return FlextResult.ok({"status": "healthy", "mode": "fallback"})
+            return FlextResult.ok(
+                cast("FlextTypes.Data.Dict", {"status": "healthy", "mode": "fallback"}),
+            )
 
         except (ValueError, TypeError, AttributeError) as e:
-            error_result = create_observability_result_error(
-                "health_check",
-                f"Health status check failed: {e}",
-            )
-            return FlextResult.fail(error_result.error or "Health status check failed")
+            return FlextResult.fail(f"Health status check failed: {e}")
 
 
 # ============================================================================
@@ -547,33 +549,18 @@ def health_check(
 
 
 def create_simplified_observability_platform(
-    config: dict[str, object] | None = None,
     container: FlextContainer | None = None,
 ) -> FlextObservabilityMasterFactory:
-    """Create a simplified observability platform with optional configuration.
+    """Create observability platform using factory pattern.
 
     Args:
-        config: Optional configuration dictionary
         container: Optional dependency injection container
 
     Returns:
         FlextObservabilityMasterFactory: Configured factory instance
 
     """
-    if container is not None:
-        # Use provided container
-        factory = FlextObservabilityMasterFactory()
-        factory.container = container
-        return factory
-
-    # Create new factory with optional config
-    factory = FlextObservabilityMasterFactory()
-    if config:
-        # Apply configuration if provided
-        # Note: Config application would depend on specific requirements
-        pass
-
-    return factory
+    return FlextObservabilityMasterFactory(container)
 
 
 # =============================================================================

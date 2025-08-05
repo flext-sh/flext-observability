@@ -322,7 +322,7 @@ class TestFlextLoggingServiceComprehensive:
         """Test log_entry success path."""
         service = FlextLoggingService()
 
-        log_result = flext_create_log_entry("INFO", "Test message")
+        log_result = flext_create_log_entry("Test message", "info")
         assert log_result.success
 
         result = service.log_entry(log_result.data)
@@ -333,7 +333,7 @@ class TestFlextLoggingServiceComprehensive:
         """Test log_entry with DEBUG level."""
         service = FlextLoggingService()
 
-        log_result = flext_create_log_entry("DEBUG", "Debug message")
+        log_result = flext_create_log_entry("Debug message", "debug")
         assert log_result.success
 
         result = service.log_entry(log_result.data)
@@ -344,7 +344,7 @@ class TestFlextLoggingServiceComprehensive:
         """Test log_entry with ERROR level."""
         service = FlextLoggingService()
 
-        log_result = flext_create_log_entry("ERROR", "Error message")
+        log_result = flext_create_log_entry("Error message", "error")
         assert log_result.success
 
         result = service.log_entry(log_result.data)
@@ -374,7 +374,7 @@ class TestFlextAlertServiceComprehensive:
         """Test create_alert success path."""
         service = FlextAlertService()
 
-        alert_result = flext_create_alert("Test Alert", "HIGH", "Test message")
+        alert_result = flext_create_alert("Test Alert", "Test message", "high")
         assert alert_result.success
 
         result = service.create_alert(alert_result.data)
@@ -476,16 +476,16 @@ class TestServicesExceptionHandling:
 
         assert result.is_failure
 
-    def test_services_time_exception(self) -> None:
-        """Test services handling time.time() exceptions."""
+    def test_services_timestamp_exception(self) -> None:
+        """Test services handling FlextGenerators.generate_timestamp() exceptions."""
         service = FlextMetricsService()
         metric_result = flext_create_metric("test", 1.0)
         assert metric_result.success
 
         # Apply patch only during record_metric to avoid breaking container initialization
-        with patch("flext_observability.services.time.time") as mock_time:
-            mock_time.side_effect = ValueError("Time error")
-            # Should handle time exception gracefully - expects failure
+        with patch("flext_observability.services.FlextGenerators.generate_timestamp") as mock_timestamp:
+            mock_timestamp.side_effect = ValueError("Timestamp error")
+            # Should handle timestamp exception gracefully - expects failure
             result = service.record_metric(metric_result.data)
             # ValueError is captured, so it should fail gracefully
             assert result.is_failure

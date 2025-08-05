@@ -1,450 +1,244 @@
-# FLEXT Observability
+# flext-observability
 
-[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
-[![Version 0.9.0](https://img.shields.io/badge/version-0.9.0-orange.svg)](https://github.com/flext-sh/flext-observability)
-[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Development Status](https://img.shields.io/badge/status-beta-yellow.svg)](https://github.com/flext-sh/flext-observability)
+**Type**: Foundation Library | **Status**: Production Ready | **Dependencies**: flext-core
 
-**Foundation Library for Observability Patterns in the FLEXT Data Integration Ecosystem**
+Observability foundation library providing monitoring, metrics, tracing, and health check patterns for the FLEXT ecosystem.
 
-FLEXT Observability is a core foundation library that provides structured observability patterns, monitoring utilities, and telemetry collection capabilities used across all 33 projects in the FLEXT ecosystem. Built on flext-core patterns, it delivers consistent error handling, dependency injection, and domain-driven design for observability concerns.
+> **⚠️ Development Status**: Core observability patterns production-ready (93% coverage), monitoring stack integration incomplete
 
-## 🎯 Project Mission
+## Quick Start
 
-**Enable consistent observability patterns across the FLEXT ecosystem**
+```bash
+# Install dependencies
+poetry install
 
-FLEXT Observability exists to solve the fundamental challenge of maintaining unified monitoring, metrics collection, and structured logging across a complex ecosystem of 33 interconnected projects. By providing battle-tested patterns for observability entities, services, and utilities, it ensures that every component in the FLEXT ecosystem follows the same enterprise-grade observability standards.
+# Test basic functionality
+python -c "from flext_observability import flext_create_metric; result = flext_create_metric('test', 42.0, 'units'); print('✅ Working')"
 
-## 🏗️ Architecture Role in FLEXT Ecosystem
+# Development setup
+make setup
+```
 
-### **Foundation Layer**
+## Current Reality
 
-FLEXT Observability sits at the foundation layer alongside flext-core, providing essential observability patterns for:
+**What Actually Works:**
+
+- Domain entities (FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck, FlextLogEntry)
+- Service layer with dependency injection and FlextResult patterns
+- Simple API factory functions for easy integration
+- Monitoring decorators for automatic instrumentation
+
+**What Needs Work:**
+
+- Monitoring stack integration (Prometheus, Grafana, Jaeger setup)
+- Cross-service correlation ID propagation
+- Distributed tracing between Go/Python services
+- Metrics standardization across ecosystem
+
+## Architecture Role in FLEXT Ecosystem
+
+### **Foundation Component**
+
+FLEXT Observability provides observability patterns for all ecosystem services:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    FLEXT ECOSYSTEM (33 Projects)                │
+│                    FLEXT ECOSYSTEM (32 Projects)                 │
 ├─────────────────────────────────────────────────────────────────┤
-│ Core Services (2): FlexCore(Go:8080) | FLEXT Service(Go/Py:8081) │
+│ Services: FlexCore(Go) | FLEXT Service(Go/Python) | Clients     │
 ├─────────────────────────────────────────────────────────────────┤
-│ Applications (5): API | Auth | Web | CLI | Quality               │
+│ Applications: API | Auth | Web | CLI | Quality | Observability  │
 ├─────────────────────────────────────────────────────────────────┤
-│ Infrastructure (6): Oracle | LDAP | LDIF | WMS | gRPC | Meltano  │
+│ Infrastructure: Oracle | LDAP | LDIF | gRPC | Plugin | WMS      │
 ├─────────────────────────────────────────────────────────────────┤
-│ Singer Ecosystem (15): 5 Taps | 5 Targets | 4 DBT | 1 Extension │
-├─────────────────────────────────────────────────────────────────┤
-│ Legacy/Specialized (2): ALGAR OUD Migration | GrupoNos Native    │
+│ Singer Ecosystem: Taps(5) | Targets(5) | DBT(4) | Extensions(1) │
 ├═════════════════════════════════════════════════════════════════┤
-│           FLEXT FOUNDATION - ARCHITECTURAL LIBRARIES             │
-│  flext-core (Domain, DI, Results) | flext-observability (O11y)  │
+│ Foundation: FLEXT-CORE | [FLEXT-OBSERVABILITY] (Monitoring)     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ### **Core Responsibilities**
 
-1. **Observability Entities**: FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck domain models
-2. **Monitoring Services**: Type-safe services with FlextResult error handling patterns
-3. **Simple API**: Easy-to-use factory functions for quick observability integration
-4. **Monitoring Decorators**: Function decorators for automatic instrumentation
-5. **Structured Logging**: Correlation ID support for distributed request tracking
-6. **Health Checking**: Standardized health check patterns across services
+1. **Observability Entities**: Domain models for metrics, traces, alerts, health checks
+2. **Monitoring Services**: Type-safe services with FlextResult error handling
+3. **Instrumentation**: Decorators and utilities for automatic monitoring
 
-## 📊 Current Status (v0.9.0 Production Ready)
+## Key Features
 
-### ✅ **Production-Ready Components (100% Tested)**
+### **Current Capabilities**
 
-- **FlextResult[T] Integration**: Complete railway-oriented programming with 93% test coverage
-- **Domain Entities**: FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck, FlextLogEntry with full validation
+- **Domain Entities**: FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck with validation
 - **Service Layer**: Enterprise-grade observability services with dependency injection
-- **Factory Patterns**: FlextObservabilityMasterFactory with comprehensive validation
-- **Simple API**: Battle-tested functions (flext_create_metric, flext_create_trace, etc.)
-- **Monitoring Decorators**: @flext_monitor_function with automatic function instrumentation
-- **Structured Logging**: Correlation ID management and context propagation
-- **Health Monitoring**: System health checks with psutil integration
-- **Metrics Collection**: In-memory metrics storage with cleanup and management
-- **Validation Layer**: Domain rule validation for all observability entities
+- **Simple API**: Easy-to-use factory functions (flext_create_metric, flext_create_trace)
+- **Monitoring Decorators**: Function decorators for automatic instrumentation
 
-### 🔗 **Integration Ready**
+### **FLEXT Core Integration**
 
-- **Prometheus Compatibility**: Metrics export format ready for integration
-- **OpenTelemetry Standards**: Trace and span creation following OTel patterns
-- **ELK Stack Compatibility**: Structured logging ready for log aggregation
-- **Service Discovery**: Health check patterns for automated systems
+- **FlextResult Pattern**: Type-safe error handling for all operations
+- **FlextEntity**: Domain entities with business logic validation
+- **FlextContainer**: Dependency injection for service management
 
-### 🚀 **Future Enhancements**
-
-- **HTTP Server**: Metrics endpoint server (/metrics, /health)
-- **Monitoring Stack**: Docker Compose setup for complete monitoring infrastructure
-- **Advanced Sampling**: Intelligent sampling strategies for high-volume environments
-
-## 🚀 Quick Start
+## Installation & Usage
 
 ### Installation
 
 ```bash
-# Install via Poetry (recommended within FLEXT ecosystem)
-poetry add flext-observability
+# Clone and install
+cd /path/to/flext-observability
+poetry install
 
-# Or via pip
-pip install flext-observability
+# Development setup
+make setup
 ```
 
 ### Basic Usage
 
 ```python
-from flext_observability import (
-    flext_create_metric,
-    flext_create_trace,
-    flext_monitor_function,
-    FlextObservabilityMasterFactory
-)
+from flext_observability import flext_create_metric, flext_create_trace, flext_monitor_function
 
-# Simple metric creation
-metric_result = flext_create_metric("response_time", 150.5, "milliseconds")
+# Create metrics
+metric_result = flext_create_metric("cpu_usage", 85.2, "percent")
 if metric_result.success:
-    print(f"Recorded metric: {metric_result.data.name}")
+    print(f"Metric created: {metric_result.data.name}")
 
-# Distributed tracing
-trace_result = flext_create_trace("user_request", "order_processing")
-if trace_result.success:
-    print(f"Started trace: {trace_result.data.operation_name}")
+# Create traces
+trace_result = flext_create_trace("user_request", "processing_order")
 
-# Function monitoring decorator
-@flext_monitor_function("critical_business_logic")
-def process_order(order_data):
-    """This function is automatically monitored for execution time and errors."""
-    return {"status": "processed", "order_id": order_data["id"]}
-
-# Factory pattern usage
-factory = FlextObservabilityMasterFactory()
-alert_result = factory.create_alert(
-    name="high_error_rate",
-    severity="warning",
-    message="Error rate exceeded threshold"
-)
+# Monitor functions automatically
+@flext_monitor_function("data_processing")
+def process_data(data):
+    # Function automatically monitored for:
+    # - Execution time metrics
+    # - Success/failure traces
+    # - Structured logging
+    return processed_data
 ```
 
-## 🔧 Development Commands
+## Development Commands
 
-### Essential Commands
+### Quality Gates (Zero Tolerance)
 
 ```bash
-# Quick quality check (run before committing)
-make check                   # Lint + type check + test
-
-# Complete validation (zero tolerance)
-make validate               # Lint + type + security + test (90% coverage)
-
-# Individual quality gates
-make lint                   # Ruff linting (ALL rules enabled)
-make type-check             # MyPy strict mode (zero errors tolerated)
-make test                   # Pytest with 90% coverage requirement
-make security               # Bandit + pip-audit + secrets scan
+# Complete validation pipeline (run before commits)
+make validate              # Full validation (lint + type + security + test)
+make check                 # Quick lint + type check + test
+make test                  # Run all tests (90% coverage requirement)
+make lint                  # Code linting
+make type-check            # Type checking
+make format                # Code formatting
+make security              # Security scanning
 ```
 
-### Development Setup
+### Testing
 
 ```bash
-# Complete development setup
-make setup                  # Install dependencies + pre-commit hooks
-make install-dev           # Development environment setup
-make install               # Install dependencies only
-
-# Development tools
-make format                # Format code with ruff
-make fix                   # Auto-fix all issues (format + lint)
+# Test categories
+make test-unit             # Unit tests only
+make test-integration      # Integration tests only
+make test-monitoring       # Monitoring-specific tests
+make coverage-html         # Generate HTML coverage report
 ```
 
-### Testing Commands
-
-```bash
-# Run specific test types
-make test-unit              # Unit tests (pytest -m "not integration")
-make test-integration       # Integration tests (pytest -m integration)
-make test-fast              # Tests without coverage reporting
-
-# Coverage reporting
-make coverage-html          # Generate HTML coverage report in htmlcov/
-```
-
-## 🏛️ Architecture Overview
-
-### Clean Architecture Structure
-
-```
-src/flext_observability/
-├── entities.py             # Domain Entities (FlextMetric, FlextTrace, etc.)
-├── services.py             # Application Services (Metrics, Tracing, Health)
-├── factory.py              # Factory Patterns (FlextObservabilityMasterFactory)
-├── flext_simple.py         # Simple API (flext_create_* functions)
-├── flext_monitor.py        # Monitoring Decorators (@flext_monitor_function)
-├── flext_structured.py     # Structured Logging with Correlation IDs
-├── obs_platform.py         # Observability Platform (FlextObservabilityPlatformV2)
-├── validation.py           # Domain Validation Logic
-├── health.py               # Health Checking Utilities
-├── metrics.py              # Metrics Collection Utilities
-├── repos.py                # Repository Patterns
-├── constants.py            # Domain Constants
-└── exceptions.py           # Domain-Specific Exceptions
-```
-
-### Domain-Driven Design Structure
-
-- **Entities**: Core observability business objects with domain rules validation
-- **Services**: Application business logic coordinating observability operations
-- **Factories**: Consistent creation patterns following DDD factory pattern
-- **Value Objects**: Immutable observability data structures
-- **Repositories**: Data access patterns (currently in-memory implementations)
-
-## 🔍 Core Components
-
-### Observability Entities
-
-All entities extend flext-core FlextEntity patterns with domain validation:
-
-```python
-from flext_observability import FlextMetric, FlextTrace, FlextHealthCheck
-
-# Metrics with domain validation
-metric = FlextMetric(
-    name="api_response_time",
-    value=125.5,
-    unit="milliseconds",
-    tags={"service": "user-api", "endpoint": "/users"},
-    metric_type="histogram"
-)
-
-# Distributed tracing
-trace = FlextTrace(
-    operation_name="database_query",
-    service_name="user-service",
-    context={"user_id": "12345", "request_id": "req-789"}
-)
-
-# Health checks
-health_check = FlextHealthCheck(
-    name="database_connection",
-    status="healthy",
-    message="PostgreSQL connection active",
-    details={"host": "localhost", "port": 5432}
-)
-```
-
-### Service Layer
-
-Services follow flext-core patterns with FlextResult and dependency injection:
-
-```python
-from flext_observability import FlextMetricsService, FlextTracingService
-from flext_core import FlextContainer
-
-# Initialize with dependency injection
-container = FlextContainer()
-metrics_service = FlextMetricsService(container)
-tracing_service = FlextTracingService(container)
-
-# All operations return FlextResult[T]
-result = metrics_service.record_metric(metric)
-if result.success:
-    print(f"Metric recorded: {result.data}")
-else:
-    print(f"Failed to record metric: {result.error}")
-```
-
-### Factory Patterns
-
-Centralized creation with validation and error handling:
-
-```python
-from flext_observability import FlextObservabilityMasterFactory, get_global_factory
-
-# Global factory (singleton pattern)
-factory = get_global_factory()
-
-# Create entities with validation
-metric_result = factory.create_metric("cpu_usage", 85.2, "percent")
-trace_result = factory.create_trace("payment_processing", "process_payment")
-alert_result = factory.create_alert("disk_space_low", "critical", "Disk usage at 95%")
-
-# All factory methods return FlextResult[Entity]
-```
-
-### Monitoring Decorators
-
-Automatic instrumentation for functions and classes:
-
-```python
-from flext_observability import flext_monitor_function, FlextObservabilityMonitor
-
-# Function-level monitoring
-@flext_monitor_function("order_processing")
-def process_order(order_data):
-    """Automatically creates metrics and traces for this function."""
-    return {"status": "processed", "id": order_data["id"]}
-
-# Advanced monitoring with custom context
-monitor = FlextObservabilityMonitor("payment_service")
-
-@monitor.monitor_function("charge_card")
-def charge_credit_card(amount, card_token):
-    """Function monitored with service-specific context."""
-    return {"transaction_id": "txn_123", "status": "success"}
-```
-
-## 🧪 Testing Strategy
-
-### Test Organization
-
-```
-tests/
-├── test_entities_simple.py           # Entity domain logic tests
-├── test_services_simple.py           # Service layer tests
-├── test_factory_complete.py          # Factory pattern tests
-├── test_flext_simple.py              # Simple API tests
-├── test_flext_monitor_complete.py    # Monitoring decorator tests
-├── test_health.py                    # Health checking tests
-├── test_metrics.py                   # Metrics collection tests
-├── test_complete_coverage.py         # Comprehensive coverage tests
-└── conftest.py                       # Shared test fixtures and configuration
-```
-
-### Test Fixtures
-
-The `conftest.py` provides comprehensive fixtures for:
-
-- FlextContainer dependency injection setup
-- In-memory observability service mocks
-- Test data factories for entities
-- Async test utilities for future async operations
-
-### Coverage Requirements
-
-- **Minimum**: 90% test coverage (enforced by `make test`)
-- **Current**: 95%+ coverage achieved across all modules
-- **Reports**: HTML coverage reports generated in `htmlcov/`
-
-## 🔗 Integration with FLEXT Ecosystem
-
-### Dependency Flow
-
-```
-FLEXT Ecosystem Projects
-         ↓
-   flext-observability  ←→  flext-core
-         ↓                      ↓
-   OpenTelemetry SDK      FlextResult[T]
-   Prometheus Client      FlextContainer
-   Structured Logging     Domain Patterns
-```
-
-### Usage Across Ecosystem
-
-- **FlexCore (Go)**: Cross-language observability via HTTP endpoints
-- **FLEXT Service**: Python bridge observability and performance monitoring
-- **Singer Ecosystem**: Data pipeline monitoring and quality metrics
-- **Application Services**: REST API monitoring, authentication tracing
-- **Infrastructure Services**: Database connection health, LDAP operation metrics
-
-### Standards Compliance
-
-- **Error Handling**: All operations return FlextResult[T] following ecosystem patterns
-- **Dependency Injection**: FlextContainer integration for consistent service location
-- **Domain Modeling**: DDD patterns with entities, value objects, and domain services
-- **Type Safety**: Full type annotations with strict MyPy validation
-- **Code Quality**: Zero-tolerance quality gates with comprehensive linting
-
-## 📈 Observability Capabilities
-
-### Current Implementation
-
-- **In-Memory Metrics**: Collected and stored with configurable retention
-- **Prometheus Export**: Basic Prometheus-compatible metrics formatting
-- **Structured Logging**: JSON logging with correlation ID propagation
-- **Health Checks**: System resource monitoring with psutil integration
-- **Function Monitoring**: Decorator-based automatic instrumentation
-
-### Future Roadmap
-
-- **External Integrations**: Real Prometheus, Grafana, Jaeger connectivity
-- **HTTP Metrics Server**: RESTful endpoints for metrics export (/metrics, /health)
-- **OpenTelemetry**: Full distributed tracing with span correlation
-- **Advanced Sampling**: Intelligent sampling strategies for high-volume environments
-- **Dashboard Templates**: Pre-built Grafana dashboards for FLEXT services
-
-## 🛠️ Configuration
+## Configuration
 
 ### Environment Variables
 
 ```bash
-# Basic observability settings
-export FLEXT_OBSERVABILITY_ENABLED=true
-export FLEXT_LOG_LEVEL=info
-
-# Future OpenTelemetry configuration
-export OTEL_SERVICE_NAME=flext-observability
+# OpenTelemetry settings
+export OTEL_SERVICE_NAME=flext-service
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 
-# Future Prometheus settings
+# Prometheus settings
 export PROMETHEUS_ENDPOINT=http://localhost:9090
 export PROMETHEUS_PUSH_GATEWAY=http://localhost:9091
 ```
 
-### Container Integration
+## Quality Standards
 
-Basic Docker support for containerized environments:
+### **Zero Tolerance Quality Gates**
 
-```dockerfile
-FROM python:3.13-slim
+- **Coverage**: 90% test coverage enforced (currently 93%)
+- **Type Safety**: Strict MyPy configuration
+- **Linting**: Ruff with comprehensive rules
+- **Security**: Bandit + pip-audit scanning
 
-# Install flext-observability
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+## Integration with FLEXT Ecosystem
 
-# Application code
-COPY src/ ./src/
-COPY pyproject.toml .
-RUN pip install -e .
+### **FLEXT Core Patterns**
 
-# Future: Expose metrics port
-# EXPOSE 9090
+```python
+# FlextResult for all operations
+from flext_observability import FlextMetricsService
+from flext_core import FlextContainer
 
-# Future: Health check endpoint
-# HEALTHCHECK CMD curl -f http://localhost:9090/health || exit 1
+container = FlextContainer()
+metrics_service = FlextMetricsService(container)
+
+result = metrics_service.record_metric(metric)
+if result.success:
+    print(f"Recorded: {result.data.name}")
+else:
+    print(f"Error: {result.error}")
 ```
 
-## 🤝 Contributing
+### **Service Integration**
+
+- **All FLEXT Services**: Provides observability patterns for entire ecosystem
+- **OpenTelemetry**: Distributed tracing and metrics collection
+- **Prometheus**: Metrics storage and alerting
+- **Structured Logging**: JSON-structured logging with correlation IDs
+
+## Current Status
+
+**Version**: 0.9.0 (Production Ready)
+
+**Completed**:
+
+- ✅ Domain entities with full validation (93% test coverage)
+- ✅ Service layer with dependency injection
+- ✅ Simple API factory functions
+- ✅ Monitoring decorators
+
+**In Progress**:
+
+- 🔄 Monitoring stack integration (Prometheus, Grafana, Jaeger)
+- 🔄 Cross-service correlation ID propagation
+- 🔄 Distributed tracing between Go/Python services
+
+**Planned**:
+
+- 📋 Ecosystem-wide metrics standardization
+- 📋 SLA/SLO tracking and alerting
+- 📋 Auto-generated dashboards for services
+
+## Contributing
 
 ### Development Standards
 
-1. **Follow Clean Architecture**: Clear separation between entities, services, and adapters
-2. **Maintain 90%+ Test Coverage**: Comprehensive test suites for all new features
-3. **Use FlextResult Pattern**: All operations must return FlextResult[T] for error handling
-4. **Type Safety**: Full type annotations with strict MyPy validation
-5. **Domain-Driven Design**: Implement proper DDD patterns for business logic
+- **FLEXT Core Integration**: Use established patterns
+- **Type Safety**: All code must pass MyPy
+- **Testing**: Maintain 90%+ coverage
+- **Code Quality**: Follow linting rules
 
-### Quality Gates
+### Development Workflow
 
-All contributions must pass:
+```bash
+# Setup and validate
+make setup
+make validate
+make test
+```
 
-- **Linting**: Ruff with ALL rule categories enabled
-- **Type Checking**: MyPy in strict mode with zero errors
-- **Security**: Bandit security scanning and pip-audit
-- **Testing**: 90%+ coverage with comprehensive test suites
-- **Pre-commit**: Automated quality checks on every commit
+## License
 
-## 📜 License
+MIT License - See [LICENSE](LICENSE) file for details.
 
-This project is part of the FLEXT ecosystem. Licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Links
 
-## 🔗 Related Projects
-
-- **[flext-core](../flext-core/)**: Foundation library with domain patterns and error handling
-- **[FLEXT Control Panel](../README.md)**: Main orchestration platform
-- **[FlexCore](../flexcore/)**: Go runtime container service
-- **[FLEXT Documentation](docs/)**: Comprehensive development guides and architecture documentation
+- **[flext-core](../flext-core)**: Foundation library
+- **[CLAUDE.md](CLAUDE.md)**: Development guidance
+- **[Documentation](docs/)**: Complete documentation
 
 ---
 
-**Development Status**: This is a foundational library in active development. APIs are stabilizing toward v1.0.0 but may still evolve based on ecosystem needs.
-
-**Support**: For development guidance, see [CLAUDE.md](CLAUDE.md) for detailed development patterns and [docs/TODO.md](docs/TODO.md) for current development priorities.
+_Part of the FLEXT ecosystem - Enterprise data integration platform_
