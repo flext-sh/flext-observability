@@ -75,7 +75,7 @@ src/flext_observability/
 **Patterns**:
 
 - All entities extend `FlextEntity` from flext-core
-- Domain validation via `validate_domain_rules()` method
+- Domain validation via `validate_business_rules()` method
 - Immutable value objects for measurements and timestamps
 - Business rule enforcement at entity level
 

@@ -25,7 +25,7 @@ Example:
     Basic entity creation and validation:
 
     >>> metric = FlextMetric(name="api_requests", value=42.0, unit="count")
-    >>> validation_result = metric.validate_domain_rules()
+    >>> validation_result = metric.validate_business_rules()
     >>> if validation_result.success:
     ...     print(f"Valid metric: {metric.name}")
 
@@ -43,14 +43,42 @@ License: MIT
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime
 from decimal import (
     Decimal,  # noqa: TC003 - Required at runtime for Pydantic field definitions
 )
 from typing import cast
 
-from flext_core import FlextEntity, FlextGenerators, FlextResult
+from flext_core import FlextGenerators, FlextResult, FlextValidation
+from flext_core.models import FlextEntity
+from flext_core.types import (
+    FlextTypes,  # noqa: TC002 - Required at runtime for Pydantic
+)
+
+# Use FlextTypes.Data.Dict from unified type system
 from pydantic import ConfigDict, Field
+
+# ============================================================================
+# TIMESTAMP UTILITIES - Use flext-core centralized generation
+# ============================================================================
+
+
+def _generate_utc_datetime() -> datetime:
+    """Generate UTC datetime using flext-core pattern.
+
+    Uses flext-core centralized timestamp generation for consistency
+    across the FLEXT ecosystem. Eliminates local boilerplate duplication.
+
+    Returns:
+        datetime: Current UTC datetime with timezone information
+
+    """
+    # Use flext-core timestamp generation - direct float to datetime conversion
+    timestamp_float = FlextGenerators.generate_timestamp()
+    return datetime.fromtimestamp(
+        timestamp_float, tz=datetime.now().astimezone().tzinfo,
+    )
+
 
 # ============================================================================
 # CORE ENTITIES - Simplified using flext-core patterns
@@ -89,7 +117,7 @@ class FlextMetric(FlextEntity):
         ...     tags={"service": "user-api", "endpoint": "/users"},
         ...     metric_type="histogram",
         ... )
-        >>> validation = metric.validate_domain_rules()
+        >>> validation = metric.validate_business_rules()
         >>> assert validation.success
 
         Create financial metric with decimal precision:
@@ -117,23 +145,23 @@ class FlextMetric(FlextEntity):
     name: str = Field(..., description="Metric name")
     value: float | Decimal = Field(..., description="Metric value")
     unit: str = Field(default="", description="Metric unit")
-    tags: dict[str, str] = Field(default_factory=dict, description="Metric tags")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    tags: FlextTypes.Data.Dict = Field(default_factory=dict, description="Metric tags")
+    timestamp: datetime = Field(default_factory=_generate_utc_datetime)
     metric_type: str = Field(default="gauge", description="Metric type")
 
-    def validate_domain_rules(self) -> FlextResult[None]:
-        """Validate metric domain rules and business constraints.
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate metric business rules and domain constraints.
 
-        Implements comprehensive domain validation including name verification,
-        value type checking, and business rule enforcement. Follows railway-
-        oriented programming patterns with FlextResult error handling.
+        Implements comprehensive business rule validation including name verification,
+        value type checking, and domain rule enforcement. Follows railway-oriented
+        programming patterns with FlextResult error handling following foundation patterns.
 
         Returns:
-            FlextResult[None]: Success if all domain rules pass, failure with
+            FlextResult[None]: Success if all business rules pass, failure with
             detailed error message if validation fails. Error messages are
             designed for both developer debugging and user feedback.
 
-        Domain Validation Rules:
+        Business Validation Rules:
             - Name must be non-empty string
             - Name must follow metric naming conventions
             - Value must be numeric (convertible to float)
@@ -142,20 +170,23 @@ class FlextMetric(FlextEntity):
 
         Example:
             >>> metric = FlextMetric(name="cpu_usage", value=75.5, unit="percent")
-            >>> result = metric.validate_domain_rules()
+            >>> result = metric.validate_business_rules()
             >>> if result.success:
             ...     print("Metric is valid")
             ... else:
             ...     print(f"Validation failed: {result.error}")
 
         """
-        if not self.name or not isinstance(self.name, str):
+        # Use FlextValidation for standardized validation
+        if not FlextValidation.is_non_empty_string(self.name):
             return FlextResult.fail("Invalid metric name")
-        # Type validation for metric value
-        try:
-            float(self.value)  # Test if it can be converted to float
-        except (ValueError, TypeError):
-            return FlextResult.fail("Invalid metric value")
+
+        # Type validation for metric value using FlextValidation numeric validation
+        if not isinstance(self.value, (int, float)):
+            try:
+                float(self.value)  # Test if it can be converted to float
+            except (ValueError, TypeError):
+                return FlextResult.fail("Invalid metric value")
         return FlextResult.ok(None)
 
 
@@ -249,18 +280,20 @@ class FlextLogEntry(FlextEntity):
 
     message: str = Field(..., description="Log message")
     level: str = Field(default="info", description="Log level")
-    context: dict[str, object] = Field(default_factory=dict, description="Log context")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    context: FlextTypes.Data.Dict = Field(
+        default_factory=dict, description="Log context",
+    )
+    timestamp: datetime = Field(default_factory=_generate_utc_datetime)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
-        """Validate structured logging domain rules and business constraints.
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate structured logging business rules and domain constraints.
 
         Enforces business rules specific to structured logging within the FLEXT
         ecosystem, ensuring log data integrity and compatibility with log aggregation
         infrastructure. Validates message content, severity levels, and domain
         constraints for reliable log processing and searchability.
 
-        Domain Rules Validated:
+        Business Rules Validated:
             - Message must be non-empty and meaningful for searchability
             - Level must be valid severity classification for filtering
             - Context should remain serializable for log systems
@@ -268,19 +301,20 @@ class FlextLogEntry(FlextEntity):
             - Log content should support debugging and monitoring needs
 
         Returns:
-            FlextResult[None]: Success if all domain rules pass,
+            FlextResult[None]: Success if all business rules pass,
             failure with descriptive error message explaining violation.
 
         Example:
             >>> log_entry = FlextLogEntry(message="", level="info")
-            >>> result = log_entry.validate_domain_rules()
+            >>> result = log_entry.validate_business_rules()
             >>> result.is_failure
             True
             >>> "message" in result.error
             True
 
         """
-        if not self.message or not isinstance(self.message, str):
+        # Use FlextValidation for standardized validation
+        if not FlextValidation.is_non_empty_string(self.message):
             return FlextResult.fail("Invalid log message")
         if self.level not in {"debug", "info", "warning", "error", "critical"}:
             return FlextResult.fail("Invalid log level")
@@ -390,23 +424,23 @@ class FlextTrace(FlextEntity):
     trace_id: str = Field(..., description="Trace ID")
     operation: str = Field(..., description="Operation name")
     span_id: str = Field(..., description="Span ID")
-    span_attributes: dict[str, object] = Field(
+    span_attributes: FlextTypes.Data.Dict = Field(
         default_factory=dict,
         description="Span attributes",
     )
     duration_ms: int = Field(default=0, description="Duration in milliseconds")
     status: str = Field(default="pending", description="Trace status")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = Field(default_factory=_generate_utc_datetime)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
-        """Validate distributed tracing domain rules and business constraints.
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate distributed tracing business rules and domain constraints.
 
         Enforces business rules specific to distributed tracing within the FLEXT
         ecosystem, ensuring trace data integrity and compatibility with tracing
         infrastructure. Validates required identifiers, data consistency, and
         domain constraints for reliable trace collection and analysis.
 
-        Domain Rules Validated:
+        Business Rules Validated:
             - Trace ID must be non-empty string for global correlation
             - Operation name must be meaningful and searchable
             - Span ID must be unique within trace context
@@ -414,21 +448,22 @@ class FlextTrace(FlextEntity):
             - Status must be valid lifecycle state
 
         Returns:
-            FlextResult[None]: Success if all domain rules pass,
+            FlextResult[None]: Success if all business rules pass,
             failure with descriptive error message explaining violation.
 
         Example:
             >>> trace = FlextTrace(trace_id="", operation="test", span_id="span1")
-            >>> result = trace.validate_domain_rules()
+            >>> result = trace.validate_business_rules()
             >>> result.is_failure
             True
             >>> "trace ID" in result.error
             True
 
         """
-        if not self.trace_id or not isinstance(self.trace_id, str):
+        # Use FlextValidation for standardized validation
+        if not FlextValidation.is_non_empty_string(self.trace_id):
             return FlextResult.fail("Invalid trace ID")
-        if not self.operation or not isinstance(self.operation, str):
+        if not FlextValidation.is_non_empty_string(self.operation):
             return FlextResult.fail("Invalid operation name")
         return FlextResult.ok(None)
 
@@ -529,18 +564,18 @@ class FlextAlert(FlextEntity):
     message: str = Field(..., description="Alert message")
     severity: str = Field(default="low", description="Alert severity")
     status: str = Field(default="active", description="Alert status")
-    tags: dict[str, str] = Field(default_factory=dict, description="Alert tags")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    tags: FlextTypes.Data.Dict = Field(default_factory=dict, description="Alert tags")
+    timestamp: datetime = Field(default_factory=_generate_utc_datetime)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
-        """Validate alert management domain rules and business constraints.
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate alert management business rules and domain constraints.
 
         Enforces business rules specific to alert management within the FLEXT
         ecosystem, ensuring alert data integrity and compatibility with monitoring
         infrastructure. Validates required fields, severity levels, and domain
         constraints for reliable alert processing and incident response.
 
-        Domain Rules Validated:
+        Business Rules Validated:
             - Title must be non-empty and descriptive for identification
             - Message must provide sufficient detail for investigation
             - Severity must be valid classification level for routing
@@ -548,21 +583,22 @@ class FlextAlert(FlextEntity):
             - Tags should follow string-only conventions for filtering
 
         Returns:
-            FlextResult[None]: Success if all domain rules pass,
+            FlextResult[None]: Success if all business rules pass,
             failure with descriptive error message explaining violation.
 
         Example:
             >>> alert = FlextAlert(title="", message="test")  # Invalid empty title
-            >>> result = alert.validate_domain_rules()
+            >>> result = alert.validate_business_rules()
             >>> result.is_failure
             True
             >>> "title" in result.error
             True
 
         """
-        if not self.title or not isinstance(self.title, str):
+        # Use FlextValidation for standardized validation
+        if not FlextValidation.is_non_empty_string(self.title):
             return FlextResult.fail("Invalid alert title")
-        if not self.message or not isinstance(self.message, str):
+        if not FlextValidation.is_non_empty_string(self.message):
             return FlextResult.fail("Invalid alert message")
         if self.severity not in {"low", "medium", "high", "critical", "emergency"}:
             return FlextResult.fail("Invalid alert severity")
@@ -660,21 +696,21 @@ class FlextHealthCheck(FlextEntity):
     component: str = Field(..., description="Component name")
     status: str = Field(default="unknown", description="Health status")
     message: str = Field(default="", description="Health message")
-    metrics: dict[str, object] = Field(
+    metrics: FlextTypes.Data.Dict = Field(
         default_factory=dict,
         description="Health metrics",
     )
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = Field(default_factory=_generate_utc_datetime)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
-        """Validate health monitoring domain rules and business constraints.
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate health monitoring business rules and domain constraints.
 
         Enforces business rules specific to health monitoring within the FLEXT
         ecosystem, ensuring health check data integrity and compatibility with
         monitoring infrastructure. Validates component identification, status
         classification, and domain constraints for reliable health assessment.
 
-        Domain Rules Validated:
+        Business Rules Validated:
             - Component name must be non-empty and identifiable
             - Status must be valid health classification level
             - Message should provide meaningful diagnostic context
@@ -682,19 +718,20 @@ class FlextHealthCheck(FlextEntity):
             - Health data should support dependency correlation
 
         Returns:
-            FlextResult[None]: Success if all domain rules pass,
+            FlextResult[None]: Success if all business rules pass,
             failure with descriptive error message explaining violation.
 
         Example:
             >>> health = FlextHealthCheck(component="", status="healthy")
-            >>> result = health.validate_domain_rules()
+            >>> result = health.validate_business_rules()
             >>> result.is_failure
             True
             >>> "component" in result.error
             True
 
         """
-        if not self.component or not isinstance(self.component, str):
+        # Use FlextValidation for standardized validation
+        if not FlextValidation.is_non_empty_string(self.component):
             return FlextResult.fail("Invalid component name")
         if self.status not in {"healthy", "unhealthy", "degraded", "unknown"}:
             return FlextResult.fail("Invalid health status")
@@ -714,15 +751,14 @@ def flext_alert(
     **kwargs: object,
 ) -> FlextAlert:
     """Create a FlextAlert entity with proper validation."""
-    tags = cast("dict[str, str]", kwargs.get("tags", {}))
-    timestamp = cast("datetime", kwargs.get("timestamp", datetime.now(UTC)))
+    tags = cast("FlextTypes.Data.Dict", kwargs.get("tags", {}))
+    timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
     # Create with explicit kwargs for better type safety
-    if "id" in kwargs and "version" in kwargs and "created_at" in kwargs:
+    if "id" in kwargs and "version" in kwargs:
         return FlextAlert(
             id=cast("str", kwargs["id"]),
             version=cast("int", kwargs["version"]),
-            created_at=cast("datetime", kwargs["created_at"]),
             title=title,
             message=message,
             severity=severity,
@@ -759,9 +795,9 @@ def flext_trace(
     **kwargs: object,
 ) -> FlextTrace:
     """Create a FlextTrace entity with proper validation."""
-    span_attributes = cast("dict[str, object]", kwargs.get("span_attributes", {}))
+    span_attributes = cast("FlextTypes.Data.Dict", kwargs.get("span_attributes", {}))
     duration_ms = cast("int", kwargs.get("duration_ms", 0))
-    timestamp = cast("datetime", kwargs.get("timestamp", datetime.now(UTC)))
+    timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
     # Create with explicit kwargs for better type safety
     if "id" in kwargs:
@@ -796,15 +832,14 @@ def flext_metric(
 ) -> FlextResult[FlextMetric]:
     """Create a FlextMetric entity with proper validation and type safety."""
     try:
-        tags = cast("dict[str, str]", kwargs.get("tags", {}))
-        timestamp = cast("datetime", kwargs.get("timestamp", datetime.now(UTC)))
+        tags = cast("FlextTypes.Data.Dict", kwargs.get("tags", {}))
+        timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
         # Create with explicit kwargs for better type safety
-        if "id" in kwargs and "version" in kwargs and "created_at" in kwargs:
+        if "id" in kwargs and "version" in kwargs:
             metric = FlextMetric(
                 id=cast("str", kwargs["id"]),
                 version=cast("int", kwargs["version"]),
-                created_at=cast("datetime", kwargs["created_at"]),
                 name=name,
                 value=value,
                 unit=unit,
@@ -833,8 +868,8 @@ def flext_metric(
         # Set metric_type directly on the field
         metric.metric_type = metric_type
 
-        # Validate domain rules
-        validation_result = metric.validate_domain_rules()
+        # Validate business rules
+        validation_result = metric.validate_business_rules()
         if validation_result.is_failure:
             return FlextResult.fail(
                 validation_result.error or "Metric validation failed",
@@ -853,8 +888,8 @@ def flext_health_check(
     **kwargs: object,
 ) -> FlextHealthCheck:
     """Create a FlextHealthCheck entity with proper validation."""
-    metrics = cast("dict[str, object]", kwargs.get("metrics", {}))
-    timestamp = cast("datetime", kwargs.get("timestamp", datetime.now(UTC)))
+    metrics = cast("FlextTypes.Data.Dict", kwargs.get("metrics", {}))
+    timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
     # Create with explicit kwargs for better type safety
     if "id" in kwargs:

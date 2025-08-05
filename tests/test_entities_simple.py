@@ -20,7 +20,7 @@ class TestEntityValidation:
         result = flext_create_metric("valid_metric", 42.0)
         assert result.success
         assert result.data is not None
-        validation_result = result.data.validate_domain_rules()
+        validation_result = result.data.validate_business_rules()
         assert validation_result.success
 
     def test_log_entry_validation(self) -> None:
@@ -28,7 +28,7 @@ class TestEntityValidation:
         result = flext_create_log_entry("Test message", "info")
         assert result.success
         assert result.data is not None
-        validation_result = result.data.validate_domain_rules()
+        validation_result = result.data.validate_business_rules()
         assert validation_result.success
 
     def test_trace_validation(self) -> None:
@@ -36,7 +36,7 @@ class TestEntityValidation:
         result = flext_create_trace("trace-123", "test_operation")
         assert result.success
         assert result.data is not None
-        validation_result = result.data.validate_domain_rules()
+        validation_result = result.data.validate_business_rules()
         assert validation_result.success
 
     def test_alert_validation(self) -> None:
@@ -44,7 +44,7 @@ class TestEntityValidation:
         result = flext_create_alert("Test Alert", "Test message")
         assert result.success
         assert result.data is not None
-        validation_result = result.data.validate_domain_rules()
+        validation_result = result.data.validate_business_rules()
         assert validation_result.success
 
     def test_health_check_validation(self) -> None:
@@ -52,5 +52,5 @@ class TestEntityValidation:
         result = flext_create_health_check("test_component")
         assert result.success
         assert result.data is not None
-        validation_result = result.data.validate_domain_rules()
+        validation_result = result.data.validate_business_rules()
         assert validation_result.success

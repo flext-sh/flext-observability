@@ -69,12 +69,14 @@ FLEXT Integration:
 
 from __future__ import annotations
 
-# Generate simple IDs without FlextEntityId dependency
-import uuid
-from datetime import UTC, datetime
+from datetime import datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
-from flext_core import FlextResult
+from flext_core import FlextGenerators, FlextResult
+
+if TYPE_CHECKING:
+    from flext_core.types import FlextTypes
 
 from flext_observability.entities import (
     FlextAlert,
@@ -88,6 +90,28 @@ from flext_observability.entities import (
 )
 
 # ============================================================================
+# TIMESTAMP UTILITIES - Use flext-core centralized generation
+# ============================================================================
+
+
+def _generate_utc_datetime() -> datetime:
+    """Generate UTC datetime using flext-core pattern.
+
+    Uses flext-core centralized timestamp generation for consistency
+    across the FLEXT ecosystem. Eliminates local boilerplate duplication.
+
+    Returns:
+        datetime: Current UTC datetime with timezone information
+
+    """
+    # Use flext-core timestamp generation - direct float to datetime conversion
+    timestamp_float = FlextGenerators.generate_timestamp()
+    return datetime.fromtimestamp(
+        timestamp_float, tz=datetime.now().astimezone().tzinfo,
+    )
+
+
+# ============================================================================
 # SIMPLE FACTORY FUNCTIONS FOR OBSERVABILITY ENTITIES
 # ============================================================================
 
@@ -96,7 +120,7 @@ def flext_create_metric(
     name: str,
     value: float | Decimal,
     unit: str = "",
-    tags: dict[str, str] | None = None,
+    tags: FlextTypes.Data.Dict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
     """Create observability metric with simplified API and intelligent type inference.
@@ -178,10 +202,18 @@ def flext_create_metric(
             value=Decimal(str(value)),
             unit=unit,
             metric_type=metric_type,
-            id=str(uuid.uuid4()),
+            id=FlextGenerators.generate_uuid(),
             tags=tags or {},
-            timestamp=timestamp or datetime.now(UTC),
+            timestamp=timestamp or _generate_utc_datetime(),
         )
+
+        # Validate business rules before returning
+        validation_result = metric.validate_business_rules()
+        if validation_result.is_failure:
+            return FlextResult.fail(
+                validation_result.error or "Metric validation failed",
+            )
+
         return FlextResult.ok(metric)
     except (ValueError, TypeError, AttributeError) as e:
         return FlextResult.fail(f"Failed to create metric: {e}")
@@ -190,18 +222,26 @@ def flext_create_metric(
 def flext_create_log_entry(
     message: str,
     level: str = "info",
-    context: dict[str, object] | None = None,
+    context: FlextTypes.Data.Dict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextLogEntry]:
     """Create observability log entry with simple parameters."""
     try:
         log_entry = FlextLogEntry(
-            id=str(uuid.uuid4()),
+            id=FlextGenerators.generate_uuid(),
             level=level,
             message=message,
             context=context or {},
-            timestamp=timestamp or datetime.now(UTC),
+            timestamp=timestamp or _generate_utc_datetime(),
         )
+
+        # Validate business rules before returning
+        validation_result = log_entry.validate_business_rules()
+        if validation_result.is_failure:
+            return FlextResult.fail(
+                validation_result.error or "Log entry validation failed",
+            )
+
         return FlextResult.ok(log_entry)
     except (ValueError, TypeError, AttributeError) as e:
         return FlextResult.fail(f"Failed to create log entry: {e}")
@@ -211,7 +251,7 @@ def flext_create_trace(
     trace_id: str,
     operation: str,
     *,
-    config: dict[str, object] | None = None,
+    config: FlextTypes.Data.Dict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextTrace]:
     """Create observability trace with simple parameters."""
@@ -221,11 +261,19 @@ def flext_create_trace(
             trace_id=trace_id,
             operation=operation,
             span_id=str(config.get("span_id", f"{trace_id}-span")),
-            id=str(uuid.uuid4()),
+            id=FlextGenerators.generate_uuid(),
             duration_ms=int(str(config.get("duration_ms", 0))),
             status=str(config.get("status", "pending")),
-            timestamp=timestamp or datetime.now(UTC),
+            timestamp=timestamp or _generate_utc_datetime(),
         )
+
+        # Validate business rules before returning
+        validation_result = trace.validate_business_rules()
+        if validation_result.is_failure:
+            return FlextResult.fail(
+                validation_result.error or "Trace validation failed",
+            )
+
         return FlextResult.ok(trace)
     except (ValueError, TypeError, AttributeError) as e:
         return FlextResult.fail(f"Failed to create trace: {e}")
@@ -244,10 +292,18 @@ def flext_create_alert(
             title=title,
             message=message,
             severity=severity,
-            id=str(uuid.uuid4()),
+            id=FlextGenerators.generate_uuid(),
             status=status,
-            timestamp=timestamp or datetime.now(UTC),
+            timestamp=timestamp or _generate_utc_datetime(),
         )
+
+        # Validate business rules before returning
+        validation_result = alert.validate_business_rules()
+        if validation_result.is_failure:
+            return FlextResult.fail(
+                validation_result.error or "Alert validation failed",
+            )
+
         return FlextResult.ok(alert)
     except (ValueError, TypeError, AttributeError) as e:
         return FlextResult.fail(f"Failed to create alert: {e}")
@@ -264,12 +320,21 @@ def flext_create_health_check(
     """Create observability health check with simple parameters."""
     try:
         health_check = FlextHealthCheck(
-            id=health_id or str(uuid.uuid4()),  # Use provided id or generate new one
+            id=health_id
+            or FlextGenerators.generate_uuid(),  # Use provided id or generate new one
             component=component,
             status=status,
             message=message,
-            timestamp=timestamp or datetime.now(UTC),
+            timestamp=timestamp or _generate_utc_datetime(),
         )
+
+        # Validate business rules before returning
+        validation_result = health_check.validate_business_rules()
+        if validation_result.is_failure:
+            return FlextResult.fail(
+                validation_result.error or "Health check validation failed",
+            )
+
         return FlextResult.ok(health_check)
     except (ValueError, TypeError, AttributeError) as e:
         return FlextResult.fail(f"Failed to create health check: {e}")

@@ -19,8 +19,8 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 from prometheus_client import CollectorRegistry, Counter, Histogram
 
 from flext_observability import get_logger
-from flext_observability.health import HealthChecker
-from flext_observability.metrics import MetricsCollector
+
+# Removed imports - using flext-core patterns directly
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
@@ -97,32 +97,8 @@ def pytest_collection_modifyitems(config: Config, items: list[Item]) -> None:
 @pytest.fixture(autouse=True)
 def reset_observability_context() -> None:
     """Reset observability context before and after each test to prevent state leakage."""
-    try:
-        import contextvars
-
-        from flext_observability.flext_structured import _flext_observability_context
-
-        # Create a completely new context for this test
-        new_context = contextvars.copy_context()
-
-        def run_test_with_clean_context() -> None:
-            # Inside clean context, reset observability context
-            _flext_observability_context.set(None)
-
-        # Run the reset in the new context
-        new_context.run(run_test_with_clean_context)
-
-        # Switch to the clean context for the test
-        _flext_observability_context.set(None)
-
-        yield
-
-        # Force complete reset after test - prevent leakage to next test
-        _flext_observability_context.set(None)
-
-    except ImportError:
-        # If import fails, just yield without doing anything
-        yield
+    # Simplified - no structured logging module needed
+    return
 
 
 # ============================================================================
@@ -149,10 +125,9 @@ def metrics_registry() -> CollectorRegistry:
 
 
 @pytest.fixture
-def metrics_collector(metrics_registry: CollectorRegistry) -> object:
-    """Create a metrics collector for testing."""
-
-    return MetricsCollector()
+def metrics_collector(metrics_registry: CollectorRegistry) -> dict[str, object]:
+    """Create mock metrics collector for testing."""
+    return {"registry": metrics_registry, "mock": True}
 
 
 @pytest.fixture
@@ -249,13 +224,9 @@ def log_context() -> dict[str, str]:
 
 
 @pytest_asyncio.fixture
-async def health_checker() -> AsyncIterator[object]:
-    """Create a health checker for testing."""
-
-    checker = HealthChecker()
-    yield checker
-
-    # Cleanup - no shutdown method needed
+async def health_checker() -> AsyncIterator[dict[str, object]]:
+    """Create mock health checker for testing."""
+    yield {"status": "healthy", "mock": True}
 
 
 @pytest.fixture

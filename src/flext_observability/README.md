@@ -113,7 +113,7 @@ metric = FlextMetric(
     tags={"service": "user-api"}
 )
 
-validation = metric.validate_domain_rules()
+validation = metric.validate_business_rules()
 if validation.success:
     print(f"Valid metric: {metric.name}")
 ```
@@ -203,7 +203,7 @@ All modules in this package maintain:
 
 1. **Follow Clean Architecture**: Maintain clear layer separation
 2. **Use FlextResult**: All operations return FlextResult[T]
-3. **Domain Validation**: Implement validate_domain_rules() for entities
+3. **Domain Validation**: Implement validate_business_rules() for entities
 4. **Type Safety**: Complete type annotations required
 5. **Test Coverage**: 95% minimum coverage for all new code
 

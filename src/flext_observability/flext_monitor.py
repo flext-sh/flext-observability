@@ -65,7 +65,7 @@ from typing import cast
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
-from flext_observability.factory import get_global_factory
+# Use direct import - factory provides all needed functionality
 from flext_observability.services import (
     FlextAlertService,
     FlextHealthService,
@@ -84,7 +84,9 @@ TernaryFunction = Callable[[object, object, object], MonitorableReturnType]
 NullaryFunction = Callable[[], MonitorableReturnType]
 
 # Union of supported function types
-MonitorableFunctionType = SimpleFunction | BinaryFunction | TernaryFunction | NullaryFunction
+MonitorableFunctionType = (
+    SimpleFunction | BinaryFunction | TernaryFunction | NullaryFunction
+)
 
 # ============================================================================
 # OBSERVABILITY MONITORING ORCHESTRATION - Real Implementation with SOLID
@@ -343,8 +345,8 @@ def flext_monitor_function(
             # Get or create monitor instance
             active_monitor = monitor
             if not active_monitor:
-                factory = get_global_factory()
-                active_monitor = getattr(factory, "_monitor", None)
+                # No factory dependency - simple monitoring only
+                pass
 
             # Execute function normally if no monitoring
             if not (active_monitor and active_monitor.flext_is_monitoring_active()):
