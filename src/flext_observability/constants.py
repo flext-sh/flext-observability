@@ -57,140 +57,185 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-# ============================================================================
-# CORE OBSERVABILITY CONSTANTS
-# ============================================================================
+from flext_core.constants import FlextSemanticConstants
+
+# =============================================================================
+# OBSERVABILITY-SPECIFIC SEMANTIC CONSTANTS - Modern Python 3.13 Structure
+# =============================================================================
 
 
-class ObservabilityConstants:
-    """Centralized Domain Constants for Observability Business Rules.
+class FlextObservabilitySemanticConstants(FlextSemanticConstants):
+    """Observability semantic constants extending FlextSemanticConstants.
 
-    Immutable constants class defining business rules, validation thresholds,
-    and system constraints for all observability operations. Provides centralized
-    configuration supporting domain validation, business rule enforcement,
-    and consistent behavior across distributed FLEXT ecosystem components.
-
-    This class implements the Constants pattern with static class variables,
-    ensuring immutable configuration values that support domain validation
-    while maintaining clear separation between business policies and
-    technical implementation details.
-
-    Constant Categories:
-        - System Information: Version, name, and identification constants
-        - Validation Thresholds: Business rule enforcement limits
-        - Enumeration Values: Valid states for domain entities
-        - Performance Limits: System scalability and resource constraints
-        - Default Values: Fallback configuration for optional parameters
-
-    Architecture:
-        Domain layer constants supporting entity validation and business
-        rule enforcement. Provides configuration values that remain constant
-        across service deployments while supporting domain-driven validation.
-
-    Example:
-        Business rule validation using domain constants:
-
-        >>> # Validate log level against defined enum
-        >>> log_level = "info"
-        >>> assert log_level in ObservabilityConstants.LOG_LEVELS
-        >>> # Check alert severity classification
-        >>> severity = "critical"
-        >>> assert severity in ObservabilityConstants.ALERT_SEVERITIES
-        >>> # Validate health status enum
-        >>> health_status = "healthy"
-        >>> assert health_status in ObservabilityConstants.HEALTH_STATUSES
-        >>> # Check system version for compatibility
-        >>> version = ObservabilityConstants.VERSION
-        >>> major_version = version.split(".")[0]
-        >>> assert int(major_version) >= 0
-
-    Integration:
-        Constants are referenced throughout the observability domain:
-        - Domain entities use constants for validation rules
-        - Application services reference limits and thresholds
-        - Interface adapters use defaults and configuration values
-        - Infrastructure components respect system constraints
-
-    Immutability:
-        All constants are defined as ClassVar to ensure immutability
-        and prevent accidental modification during runtime, supporting
-        reliable business rule enforcement across service instances.
-
+    Modern Python 3.13 constants following semantic grouping patterns.
+    Extends the FLEXT ecosystem constants with observability-specific
+    values while maintaining full backward compatibility.
     """
 
-    NAME = "flext-observability"
-    VERSION = "0.9.0"
+    class Core:
+        """Core observability system constants."""
 
-    # Log levels
-    LOG_LEVELS: ClassVar[list[str]] = [
-        "debug",
-        "info",
-        "warning",
-        "error",
-        "critical",
-    ]
+        NAME = "flext-observability"
+        VERSION = "0.9.0"
+        ECOSYSTEM_SIZE = 33
 
-    # Metric types
-    METRIC_TYPES: ClassVar[list[str]] = [
-        "counter",
-        "gauge",
-        "histogram",
-        "summary",
-    ]
+    class Logging:
+        """Logging configuration constants."""
 
-    # Alert severities
-    ALERT_SEVERITIES: ClassVar[list[str]] = [
-        "low",
-        "medium",
-        "high",
-        "critical",
-        "emergency",
-    ]
+        LEVELS: ClassVar[list[str]] = [
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical",
+        ]
 
-    # Health statuses
-    HEALTH_STATUSES: ClassVar[list[str]] = [
-        "healthy",
-        "unhealthy",
-        "degraded",
-        "unknown",
-    ]
+        DEFAULT_LEVEL = "info"
+        DEFAULT_FORMAT = "json"
 
-    # Alert statuses
-    ALERT_STATUSES: ClassVar[list[str]] = [
-        "active",
-        "resolved",
-        "escalated",
-        "suppressed",
-    ]
+    class Metrics:
+        """Metrics collection constants."""
+
+        TYPES: ClassVar[list[str]] = [
+            "counter",
+            "gauge",
+            "histogram",
+            "summary",
+        ]
+
+        DEFAULT_COLLECTION_INTERVAL = 60
+        DEFAULT_RETENTION_DAYS = 30
+
+    class Alerts:
+        """Alerting system constants."""
+
+        SEVERITIES: ClassVar[list[str]] = [
+            "low",
+            "medium",
+            "high",
+            "critical",
+            "emergency",
+        ]
+
+        STATUSES: ClassVar[list[str]] = [
+            "active",
+            "resolved",
+            "escalated",
+            "suppressed",
+        ]
+
+        DEFAULT_TIMEOUT = 300
+        MAX_RETRY_ATTEMPTS = 3
+
+    class Health:
+        """Health monitoring constants."""
+
+        STATUSES: ClassVar[list[str]] = [
+            "healthy",
+            "unhealthy",
+            "degraded",
+            "unknown",
+        ]
+
+        DEFAULT_CHECK_INTERVAL = 30
+        DEFAULT_TIMEOUT = 10
+
+    class Tracing:
+        """Distributed tracing constants."""
+
+        STATUSES: ClassVar[list[str]] = [
+            "started",
+            "completed",
+            "failed",
+            "cancelled",
+        ]
+
+        DEFAULT_SAMPLING_RATE = 0.1
+        MAX_SPAN_ATTRIBUTES = 100
+
+    class Configuration:
+        """Configuration management constants."""
+
+        DEFAULT_CONFIG: ClassVar[dict[str, object]] = {
+            "environment": "development",
+            "log_level": "info",
+            "metrics_enabled": True,
+            "logging_enabled": True,
+            "tracing_enabled": True,
+            "alerts_enabled": True,
+            "health_checks_enabled": True,
+        }
+
+    class ErrorCodes:
+        """Error code constants for observability operations."""
+
+        METRICS_VALIDATION = "OBSERVABILITY_METRICS_001"
+        LOGGING_ERROR = "OBSERVABILITY_LOGGING_002"
+        TRACING_ERROR = "OBSERVABILITY_TRACING_003"
+        ALERT_ERROR = "OBSERVABILITY_ALERT_004"
+        HEALTH_CHECK_ERROR = "OBSERVABILITY_HEALTH_005"
+        VALIDATION_ERROR = "OBSERVABILITY_VALIDATION_006"
+        CONFIG_ERROR = "OBSERVABILITY_CONFIG_007"
 
 
-# Default configuration
-DEFAULT_OBSERVABILITY_CONFIG: dict[str, object] = {
-    "environment": "development",
-    "log_level": "info",
-    "metrics_enabled": True,
-    "logging_enabled": True,
-    "tracing_enabled": True,
-    "alerts_enabled": True,
-    "health_checks_enabled": True,
-}
+class FlextObservabilityConstants(FlextObservabilitySemanticConstants):
+    """Observability constants with backward compatibility.
+
+    Legacy compatibility layer providing both modern semantic access
+    and traditional flat constant access patterns for smooth migration.
+    """
+
+    # Modern semantic access (Primary API) - direct references
+    Core = FlextObservabilitySemanticConstants.Core
+    Logging = FlextObservabilitySemanticConstants.Logging
+    Metrics = FlextObservabilitySemanticConstants.Metrics
+    Alerts = FlextObservabilitySemanticConstants.Alerts
+    Health = FlextObservabilitySemanticConstants.Health
+    Tracing = FlextObservabilitySemanticConstants.Tracing
+    Configuration = FlextObservabilitySemanticConstants.Configuration
+    ErrorCodes = FlextObservabilitySemanticConstants.ErrorCodes
+
+    # Legacy compatibility - flat access patterns (DEPRECATED - use semantic access)
+    NAME = FlextObservabilitySemanticConstants.Core.NAME
+    VERSION = FlextObservabilitySemanticConstants.Core.VERSION
+
+    LOG_LEVELS = FlextObservabilitySemanticConstants.Logging.LEVELS
+    METRIC_TYPES = FlextObservabilitySemanticConstants.Metrics.TYPES
+    ALERT_SEVERITIES = FlextObservabilitySemanticConstants.Alerts.SEVERITIES
+    ALERT_STATUSES = FlextObservabilitySemanticConstants.Alerts.STATUSES
+    HEALTH_STATUSES = FlextObservabilitySemanticConstants.Health.STATUSES
 
 
-# Error codes for observability
+# Legacy class alias (DEPRECATED - use FlextObservabilityConstants)
+ObservabilityConstants = FlextObservabilityConstants
+
+
+# =============================================================================
+# LEGACY CONSTANTS - Backward compatibility module-level aliases
+# =============================================================================
+
+# Default configuration (DEPRECATED - use FlextObservabilityConstants.Configuration.DEFAULT_CONFIG)
+DEFAULT_OBSERVABILITY_CONFIG: dict[str, object] = FlextObservabilitySemanticConstants.Configuration.DEFAULT_CONFIG
+
+# Error codes for observability (DEPRECATED - use FlextObservabilityConstants.ErrorCodes.*)
 OBSERVABILITY_ERROR_CODES = {
-    "METRICS_VALIDATION": "OBSERVABILITY_METRICS_001",
-    "LOGGING_ERROR": "OBSERVABILITY_LOGGING_002",
-    "TRACING_ERROR": "OBSERVABILITY_TRACING_003",
-    "ALERT_ERROR": "OBSERVABILITY_ALERT_004",
-    "HEALTH_CHECK_ERROR": "OBSERVABILITY_HEALTH_005",
-    "VALIDATION_ERROR": "OBSERVABILITY_VALIDATION_006",
-    "CONFIG_ERROR": "OBSERVABILITY_CONFIG_007",
+    "METRICS_VALIDATION": FlextObservabilitySemanticConstants.ErrorCodes.METRICS_VALIDATION,
+    "LOGGING_ERROR": FlextObservabilitySemanticConstants.ErrorCodes.LOGGING_ERROR,
+    "TRACING_ERROR": FlextObservabilitySemanticConstants.ErrorCodes.TRACING_ERROR,
+    "ALERT_ERROR": FlextObservabilitySemanticConstants.ErrorCodes.ALERT_ERROR,
+    "HEALTH_CHECK_ERROR": FlextObservabilitySemanticConstants.ErrorCodes.HEALTH_CHECK_ERROR,
+    "VALIDATION_ERROR": FlextObservabilitySemanticConstants.ErrorCodes.VALIDATION_ERROR,
+    "CONFIG_ERROR": FlextObservabilitySemanticConstants.ErrorCodes.CONFIG_ERROR,
 }
 
 
-# Simplified enums as classes for compatibility
+# =============================================================================
+# LEGACY ENUM CLASSES - Backward compatibility (DEPRECATED - use semantic access)
+# =============================================================================
+
+
 class MetricType:
-    """Metric type constants for observability."""
+    """Metric type constants for observability (DEPRECATED - use FlextObservabilityConstants.Metrics.TYPES)."""
 
     COUNTER = "counter"
     GAUGE = "gauge"
@@ -199,7 +244,7 @@ class MetricType:
 
 
 class AlertStatus:
-    """Alert status constants for observability."""
+    """Alert status constants for observability (DEPRECATED - use FlextObservabilityConstants.Alerts.STATUSES)."""
 
     ACTIVE = "active"
     RESOLVED = "resolved"
@@ -208,7 +253,7 @@ class AlertStatus:
 
 
 class HealthStatus:
-    """Health status constants for observability."""
+    """Health status constants for observability (DEPRECATED - use FlextObservabilityConstants.Health.STATUSES)."""
 
     HEALTHY = "healthy"
     UNHEALTHY = "unhealthy"
@@ -217,9 +262,31 @@ class HealthStatus:
 
 
 class TraceStatus:
-    """Trace status constants for observability."""
+    """Trace status constants for observability (DEPRECATED - use FlextObservabilityConstants.Tracing.STATUSES)."""
 
     STARTED = "started"
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+
+
+# =============================================================================
+# EXPORTS - Observability constants API
+# =============================================================================
+
+__all__: list[str] = [
+    # Module-level legacy constants
+    "DEFAULT_OBSERVABILITY_CONFIG",
+    "OBSERVABILITY_ERROR_CODES",
+    # Legacy enum classes (deprecated)
+    "AlertStatus",
+    # Legacy Compatibility (Backward Compatibility)
+    "FlextObservabilityConstants",
+    # Modern Semantic Constants (Primary API)
+    "FlextObservabilitySemanticConstants",
+    "HealthStatus",
+    "MetricType",
+    # Legacy class alias (deprecated)
+    "ObservabilityConstants",
+    "TraceStatus",
+]
