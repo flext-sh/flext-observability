@@ -79,7 +79,7 @@ assert not result.success
 assert "Invalid metric name" in result.error
 
 # Invalid value type
-result = flext_create_metric("test", "not_a_number")  # type: ignore
+result = flext_create_metric("test", "not_a_number")
 assert not result.success
 assert "Invalid metric value" in result.error
 ```
