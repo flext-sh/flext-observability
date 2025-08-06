@@ -27,7 +27,9 @@ class TestInitCoverage:
             factory = create_observability_platform()
             assert len(warning_list) == 1
             assert issubclass(warning_list[0].category, DeprecationWarning)
-            assert "create_observability_platform is deprecated" in str(warning_list[0].message)
+            assert "create_observability_platform is deprecated" in str(
+                warning_list[0].message
+            )
 
         assert factory is not None
 
@@ -52,7 +54,9 @@ class TestInitCoverage:
             factory = observability_platform()
             assert len(warning_list) == 1
             assert issubclass(warning_list[0].category, DeprecationWarning)
-            assert "observability_platform is deprecated" in str(warning_list[0].message)
+            assert "observability_platform is deprecated" in str(
+                warning_list[0].message
+            )
 
         assert factory is not None
 
@@ -78,7 +82,9 @@ class TestInitCoverage:
             value = constants.DEFAULT_TIMEOUT
             assert len(warning_list) == 1
             assert issubclass(warning_list[0].category, DeprecationWarning)
-            assert "constants.DEFAULT_TIMEOUT is deprecated" in str(warning_list[0].message)
+            assert "constants.DEFAULT_TIMEOUT is deprecated" in str(
+                warning_list[0].message
+            )
 
         # Should return something (even if "UNKNOWN")
         assert value is not None
@@ -111,6 +117,8 @@ class TestInitCoverage:
 
         # Test all exports from __all__ list can be imported
         for export_name in flext_observability.__all__:
-            assert hasattr(flext_observability, export_name), f"Missing export: {export_name}"
+            assert hasattr(flext_observability, export_name), (
+                f"Missing export: {export_name}"
+            )
             exported_item = getattr(flext_observability, export_name)
             assert exported_item is not None, f"Null export: {export_name}"

@@ -1,6 +1,5 @@
 """Test entity validation error paths for complete coverage."""
 
-
 from flext_observability.entities import (
     FlextAlert,
     FlextHealthCheck,

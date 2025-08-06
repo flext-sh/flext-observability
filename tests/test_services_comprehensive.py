@@ -483,7 +483,9 @@ class TestServicesExceptionHandling:
         assert metric_result.success
 
         # Apply patch only during record_metric to avoid breaking container initialization
-        with patch("flext_observability.services.FlextGenerators.generate_timestamp") as mock_timestamp:
+        with patch(
+            "flext_observability.services.FlextGenerators.generate_timestamp"
+        ) as mock_timestamp:
             mock_timestamp.side_effect = ValueError("Timestamp error")
             # Should handle timestamp exception gracefully - expects failure
             result = service.record_metric(metric_result.data)

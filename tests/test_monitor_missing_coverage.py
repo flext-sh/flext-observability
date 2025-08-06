@@ -21,7 +21,9 @@ class TestMonitorMissingCoverage:
         monitor._health_service = Mock()
 
         # Mock health service to return failure
-        monitor._health_service.get_overall_health.return_value = FlextResult.fail("Health check failed")
+        monitor._health_service.get_overall_health.return_value = FlextResult.fail(
+            "Health check failed"
+        )
 
         result = monitor.flext_get_health_status()
         assert result.is_failure
@@ -91,7 +93,9 @@ class TestMonitorMissingCoverage:
 
         # Mock service to return success
         expected_summary = {"total_metrics": 5, "last_update": "2025-01-01"}
-        monitor._metrics_service.get_metrics_summary.return_value = FlextResult.ok(expected_summary)
+        monitor._metrics_service.get_metrics_summary.return_value = FlextResult.ok(
+            expected_summary
+        )
 
         result = monitor.flext_get_metrics_summary()
         assert result.success
@@ -164,7 +168,7 @@ class TestMonitorMissingCoverage:
         exception_types = [
             ValueError("Value error"),
             TypeError("Type error"),
-            AttributeError("Attribute error")
+            AttributeError("Attribute error"),
         ]
 
         for exception in exception_types:

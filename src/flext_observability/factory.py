@@ -103,7 +103,8 @@ def _generate_utc_datetime() -> datetime:
     # Use flext-core timestamp generation - direct float to datetime conversion
     timestamp_float = FlextGenerators.generate_timestamp()
     return datetime.fromtimestamp(
-        timestamp_float, tz=datetime.now().astimezone().tzinfo,
+        timestamp_float,
+        tz=datetime.now().astimezone().tzinfo,
     )
 
 
