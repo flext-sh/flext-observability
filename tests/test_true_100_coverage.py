@@ -7,7 +7,6 @@ from unittest.mock import patch
 
 import pytest
 
-import flext_observability.entities  # noqa: F401
 from flext_observability.entities import FlextMetric
 from flext_observability.factory import FlextObservabilityMasterFactory
 

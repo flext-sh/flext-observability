@@ -55,6 +55,7 @@ FLEXT Integration:
 
 from __future__ import annotations
 
+import shutil
 import threading
 from collections import defaultdict
 from typing import TYPE_CHECKING, cast
@@ -1263,8 +1264,6 @@ class FlextHealthService:
 
             # Disk usage check
             try:
-                import shutil  # noqa: PLC0415 - Dynamic import for disk operations
-
                 disk_usage = shutil.disk_usage("/")
                 used_percent = (disk_usage.used / disk_usage.total) * 100
                 disk_status = (

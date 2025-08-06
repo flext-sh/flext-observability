@@ -239,7 +239,7 @@ class ECommerceOrderProcessor:
 
     def _validate_inventory(
         self,
-        order_id: str,  # noqa: ARG002 - Used for logging context
+        order_id: str,
         logger: FlextStructuredLogger,
     ) -> FlextResult[bool]:
         """Validate inventory availability."""
@@ -258,7 +258,7 @@ class ECommerceOrderProcessor:
 
     def _process_payment(
         self,
-        order_id: str,  # noqa: ARG002
+        order_id: str,
         amount: float,
         logger: FlextStructuredLogger,
     ) -> FlextResult[bool]:
@@ -286,7 +286,7 @@ class ECommerceOrderProcessor:
 
     def _update_inventory(
         self,
-        order_id: str,  # noqa: ARG002 - Used for logging context
+        order_id: str,
         logger: FlextStructuredLogger,
     ) -> FlextResult[bool]:
         """Update inventory after successful payment."""
@@ -307,7 +307,7 @@ class ECommerceOrderProcessor:
 
     def _send_confirmation(
         self,
-        order_id: str,  # noqa: ARG002 - Used for logging context
+        order_id: str,
         user_id: str,
         logger: FlextStructuredLogger,
     ) -> FlextResult[bool]:
