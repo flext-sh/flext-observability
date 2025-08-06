@@ -58,7 +58,9 @@ class TestServicesMissingCoverage:
             trace_id="child_trace_456",
             operation="child_operation",
             span_id="child_span",
-            span_attributes={"parent_trace_id": "parent_trace_123"},  # Use span_attributes instead
+            span_attributes={
+                "parent_trace_id": "parent_trace_123"
+            },  # Use span_attributes instead
         )
 
         child_result = service.start_trace(child_trace)
@@ -125,6 +127,7 @@ class TestServicesMissingCoverage:
 
         # Test with FlextResult failure
         from flext_core import FlextResult
+
         failure_result = FlextResult.fail("Health check creation failed")
 
         result = service._extract_actual_health(failure_result)
@@ -136,6 +139,7 @@ class TestServicesMissingCoverage:
         service = FlextHealthService()
 
         from flext_core import FlextResult
+
         none_result = FlextResult.ok(None)
 
         result = service._extract_actual_health(none_result)
@@ -189,6 +193,7 @@ class TestServicesMissingCoverage:
         )
 
         from flext_core import FlextResult
+
         health_result = FlextResult.ok(health_check)
 
         result = service.check_health(health_result)
@@ -200,6 +205,7 @@ class TestServicesMissingCoverage:
         service = FlextHealthService()
 
         from flext_core import FlextResult
+
         health_result = FlextResult.fail("Health check failed")
 
         result = service.check_health(health_result)

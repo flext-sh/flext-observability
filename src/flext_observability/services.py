@@ -327,7 +327,8 @@ class FlextMetricsService:
             with self._metrics_lock:
                 summary = {
                     "service_info": {
-                        "uptime_seconds": FlextGenerators.generate_timestamp() - self._start_time,
+                        "uptime_seconds": FlextGenerators.generate_timestamp()
+                        - self._start_time,
                         "metrics_recorded": self._metrics_recorded,
                         "unique_metrics": len(self._metrics_store),
                     },
@@ -934,7 +935,7 @@ class FlextAlertService:
                 return FlextResult.fail("Alert cannot be None")
 
             self.logger.warning(
-                f"Alert created: {alert.title} | Severity: {alert.severity}",
+                "Alert created: %s | Severity: %s", alert.title, alert.severity,
             )
             return FlextResult.ok(alert)
         except (ValueError, TypeError, AttributeError, ArithmeticError) as e:
@@ -1301,7 +1302,8 @@ class FlextHealthService:
             # Service availability check
             system_checks["observability_service"] = {
                 "status": "healthy",
-                "uptime_seconds": FlextGenerators.generate_timestamp() - self._service_start_time,
+                "uptime_seconds": FlextGenerators.generate_timestamp()
+                - self._service_start_time,
                 "total_health_checks": self._total_health_checks,
             }
 

@@ -18,30 +18,30 @@ class TestFactoryMissingCoverage:
             patch.object(factory, "_logger") as mock_logger,
             patch.object(factory.container, "register") as mock_register,
         ):
-                # Test ValueError exception path
-                mock_register.side_effect = ValueError("Service creation error")
-                factory._setup_services()
-                mock_logger.exception.assert_called()
+            # Test ValueError exception path
+            mock_register.side_effect = ValueError("Service creation error")
+            factory._setup_services()
+            mock_logger.exception.assert_called()
 
-                # Test TypeError exception path
-                mock_register.side_effect = TypeError("Type error")
-                factory._setup_services()
-                mock_logger.exception.assert_called()
+            # Test TypeError exception path
+            mock_register.side_effect = TypeError("Type error")
+            factory._setup_services()
+            mock_logger.exception.assert_called()
 
-                # Test AttributeError exception path
-                mock_register.side_effect = AttributeError("Attribute error")
-                factory._setup_services()
-                mock_logger.exception.assert_called()
+            # Test AttributeError exception path
+            mock_register.side_effect = AttributeError("Attribute error")
+            factory._setup_services()
+            mock_logger.exception.assert_called()
 
-                # Test ImportError exception path
-                mock_register.side_effect = ImportError("Import error")
-                factory._setup_services()
-                mock_logger.exception.assert_called()
+            # Test ImportError exception path
+            mock_register.side_effect = ImportError("Import error")
+            factory._setup_services()
+            mock_logger.exception.assert_called()
 
-                # Test RuntimeError exception path
-                mock_register.side_effect = RuntimeError("Runtime error")
-                factory._setup_services()
-                mock_logger.exception.assert_called()
+            # Test RuntimeError exception path
+            mock_register.side_effect = RuntimeError("Runtime error")
+            factory._setup_services()
+            mock_logger.exception.assert_called()
 
     def test_log_context_not_dict(self) -> None:
         """Test log when context is not a dict - covers line 324."""
@@ -50,7 +50,7 @@ class TestFactoryMissingCoverage:
         # Pass context that is not a dict (should be converted to empty dict)
         result = factory.log(
             message="test message",
-            context="not_a_dict"  # This should trigger line 324
+            context="not_a_dict",  # This should trigger line 324
         )
 
         assert result.success
@@ -63,7 +63,7 @@ class TestFactoryMissingCoverage:
         # Pass timestamp that is not datetime (should be converted)
         result = factory.log(
             message="test message",
-            timestamp="not_a_datetime"  # This should trigger timestamp conversion
+            timestamp="not_a_datetime",  # This should trigger timestamp conversion
         )
 
         assert result.success
@@ -77,7 +77,7 @@ class TestFactoryMissingCoverage:
             trace_id="test_trace",
             operation="test_op",
             span_id="test_span",
-            span_attributes="not_a_dict"  # This should trigger conversion
+            span_attributes="not_a_dict",  # This should trigger conversion
         )
 
         assert result.success
@@ -91,7 +91,7 @@ class TestFactoryMissingCoverage:
             trace_id="test_trace",
             operation="test_op",
             span_id="test_span",
-            timestamp="not_a_datetime"  # This should trigger conversion
+            timestamp="not_a_datetime",  # This should trigger conversion
         )
 
         assert result.success
@@ -104,7 +104,7 @@ class TestFactoryMissingCoverage:
         result = factory.alert(
             title="Test Alert",
             message="Test message",
-            tags="not_a_dict"  # This should trigger conversion
+            tags="not_a_dict",  # This should trigger conversion
         )
 
         assert result.success
@@ -117,7 +117,7 @@ class TestFactoryMissingCoverage:
         result = factory.alert(
             title="Test Alert",
             message="Test message",
-            timestamp="not_a_datetime"  # This should trigger conversion
+            timestamp="not_a_datetime",  # This should trigger conversion
         )
 
         assert result.success
@@ -129,7 +129,7 @@ class TestFactoryMissingCoverage:
 
         result = factory.health_check(
             component="test_component",
-            metrics="not_a_dict"  # This should trigger conversion
+            metrics="not_a_dict",  # This should trigger conversion
         )
 
         assert result.success
@@ -141,7 +141,7 @@ class TestFactoryMissingCoverage:
 
         result = factory.health_check(
             component="test_component",
-            timestamp="not_a_datetime"  # This should trigger conversion
+            timestamp="not_a_datetime",  # This should trigger conversion
         )
 
         assert result.success
@@ -154,7 +154,7 @@ class TestFactoryMissingCoverage:
         result = factory.metric(
             name="test_metric",
             value=42.0,
-            tags="not_a_dict"  # This should trigger conversion
+            tags="not_a_dict",  # This should trigger conversion
         )
 
         assert result.success
@@ -167,7 +167,7 @@ class TestFactoryMissingCoverage:
         result = factory.metric(
             name="test_metric",
             value=42.0,
-            timestamp="not_a_datetime"  # This should trigger conversion
+            timestamp="not_a_datetime",  # This should trigger conversion
         )
 
         assert result.success
@@ -181,20 +181,20 @@ class TestFactoryMissingCoverage:
             patch.object(factory, "_logger") as mock_logger,
             patch.object(factory.container, "register") as mock_register,
         ):
-                # Test each exception type individually to ensure all paths are covered
-                exception_types = [
-                    ValueError("Value error"),
-                    TypeError("Type error"),
-                    AttributeError("Attribute error"),
-                    ImportError("Import error"),
-                    RuntimeError("Runtime error")
-                ]
+            # Test each exception type individually to ensure all paths are covered
+            exception_types = [
+                ValueError("Value error"),
+                TypeError("Type error"),
+                AttributeError("Attribute error"),
+                ImportError("Import error"),
+                RuntimeError("Runtime error"),
+            ]
 
-                for exception in exception_types:
-                    mock_register.side_effect = exception
-                    factory._setup_services()
-                    # Verify exception was logged
-                    assert mock_logger.exception.called
+            for exception in exception_types:
+                mock_register.side_effect = exception
+                factory._setup_services()
+                # Verify exception was logged
+                assert mock_logger.exception.called
 
     def test_all_factory_methods_with_invalid_inputs(self) -> None:
         """Test all factory methods with various invalid input types."""

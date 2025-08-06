@@ -172,7 +172,10 @@ class TestEntityFactoryFunctions:
         from unittest.mock import patch
 
         # Force a TypeError during FlextGenerators.generate_entity_id() to hit exception handler
-        with patch("flext_observability.entities.FlextGenerators.generate_entity_id", side_effect=TypeError("Forced error")):
+        with patch(
+            "flext_observability.entities.FlextGenerators.generate_entity_id",
+            side_effect=TypeError("Forced error"),
+        ):
             result = flext_metric("test_metric", 42.0)
             assert result.is_failure
             assert "Failed to create metric: Forced error" in result.error

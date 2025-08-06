@@ -119,7 +119,8 @@ def create_observability_platform(
 ) -> FlextObservabilityMasterFactory:
     """DEPRECATED: Use FlextObservabilityMasterFactory directly."""
     _deprecated_warning(
-        "create_observability_platform", "FlextObservabilityMasterFactory",
+        "create_observability_platform",
+        "FlextObservabilityMasterFactory",
     )
     # Import moved to top-level to satisfy PLC0415
     container_typed = container if isinstance(container, FlextContainer) else None
@@ -142,7 +143,8 @@ class _LegacyConstants:
 
     def __getattr__(self, name: str) -> object:
         _deprecated_warning(
-            f"constants.{name}", "flext_core.constants.FlextSemanticConstants",
+            f"constants.{name}",
+            "flext_core.constants.FlextSemanticConstants",
         )
         # Import moved to top-level to satisfy PLC0415
         return getattr(FlextSemanticConstants, name, "UNKNOWN")

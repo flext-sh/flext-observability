@@ -76,7 +76,8 @@ def _generate_utc_datetime() -> datetime:
     # Use flext-core timestamp generation - direct float to datetime conversion
     timestamp_float = FlextGenerators.generate_timestamp()
     return datetime.fromtimestamp(
-        timestamp_float, tz=datetime.now().astimezone().tzinfo,
+        timestamp_float,
+        tz=datetime.now().astimezone().tzinfo,
     )
 
 
@@ -281,7 +282,8 @@ class FlextLogEntry(FlextEntity):
     message: str = Field(..., description="Log message")
     level: str = Field(default="info", description="Log level")
     context: FlextTypes.Data.Dict = Field(
-        default_factory=dict, description="Log context",
+        default_factory=dict,
+        description="Log context",
     )
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
 
