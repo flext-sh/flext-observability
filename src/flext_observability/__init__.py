@@ -37,7 +37,8 @@ import warnings
 __version__ = "0.9.0"
 
 # Import get_logger from flext_core
-from flext_core import get_logger
+from flext_core import FlextContainer, get_logger
+from flext_core.constants import FlextSemanticConstants
 
 # Core entities (minimal, no redundancy)
 from flext_observability.entities import (
@@ -120,7 +121,7 @@ def create_observability_platform(
     _deprecated_warning(
         "create_observability_platform", "FlextObservabilityMasterFactory",
     )
-    from flext_core import FlextContainer  # noqa: PLC0415
+    # Import moved to top-level to satisfy PLC0415
     container_typed = container if isinstance(container, FlextContainer) else None
     return FlextObservabilityMasterFactory(container_typed)
 
@@ -130,7 +131,7 @@ def observability_platform(
 ) -> FlextObservabilityMasterFactory:
     """DEPRECATED: Use FlextObservabilityMasterFactory instead."""
     _deprecated_warning("observability_platform", "FlextObservabilityMasterFactory")
-    from flext_core import FlextContainer  # noqa: PLC0415
+    # Import moved to top-level to satisfy PLC0415
     container_typed = container if isinstance(container, FlextContainer) else None
     return FlextObservabilityMasterFactory(container_typed)
 
@@ -143,8 +144,7 @@ class _LegacyConstants:
         _deprecated_warning(
             f"constants.{name}", "flext_core.constants.FlextSemanticConstants",
         )
-        from flext_core.constants import FlextSemanticConstants  # noqa: PLC0415
-
+        # Import moved to top-level to satisfy PLC0415
         return getattr(FlextSemanticConstants, name, "UNKNOWN")
 
 
