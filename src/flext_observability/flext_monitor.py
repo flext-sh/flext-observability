@@ -431,8 +431,10 @@ def _execute_monitored_function(
                     source="function_monitor",
                 )
                 monitor._alert_service.create_alert(alert)
-            except (ValueError, TypeError, AttributeError):
-                pass  # Alert creation failed, continue with exception propagation
+            except (ValueError, TypeError, AttributeError) as e:
+                logger = get_logger(__name__)
+                logger.warning(f"Alert creation failed during exception handling: {e}")
+                # Continue with exception propagation
 
         # Re-raise the original exception
         raise

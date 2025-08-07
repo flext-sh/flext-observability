@@ -1169,8 +1169,10 @@ class FlextHealthService:
                 elif not isinstance(health, FlextResult):
                     component_name = health.component
                     health_status = health.status
-            except (AttributeError, TypeError):
-                pass  # Use defaults
+            except (AttributeError, TypeError) as ae:
+                logger = get_logger(__name__)
+                logger.warning(f"Health status extraction failed, using defaults: {ae}")
+                # Use defaults
 
             return FlextResult.fail(f"Failed to check health: {e}")
 
