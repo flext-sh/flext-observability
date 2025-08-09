@@ -44,19 +44,14 @@ License: MIT
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING, cast
 
-# Import Decimal at runtime for Pydantic model rebuilds
-from decimal import Decimal  # noqa: TC003
-from typing import cast
-
-from flext_core import FlextGenerators, FlextResult, FlextValidation
+from flext_core import FlextGenerators, FlextResult, FlextTypes, FlextValidation
 from flext_core.models import FlextEntity
-
-# Import FlextTypes for runtime use in Pydantic fields
-from flext_core.types import FlextTypes  # noqa: TC002
-
-# Use FlextTypes.Data.Dict from unified type system
 from pydantic import ConfigDict, Field
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation

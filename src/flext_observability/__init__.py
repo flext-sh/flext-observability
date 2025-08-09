@@ -38,7 +38,7 @@ __version__ = "0.9.0"
 
 # Import get_logger from flext_core
 from flext_core import FlextContainer, get_logger
-from flext_core.constants import FlextSemanticConstants
+from flext_core.constants import FlextConstants
 
 # Core entities (minimal, no redundancy)
 from flext_observability.entities import (
@@ -139,15 +139,15 @@ def observability_platform(
 
 # Legacy constant facades
 class _LegacyConstants:
-    """DEPRECATED: Use flext_core.constants.FlextSemanticConstants instead."""
+    """DEPRECATED: Use flext_core.constants.FlextConstants instead."""
 
     def __getattr__(self, name: str) -> object:
         _deprecated_warning(
             f"constants.{name}",
-            "flext_core.constants.FlextSemanticConstants",
+            "flext_core.constants.FlextConstants",
         )
         # Import moved to top-level to satisfy PLC0415
-        return getattr(FlextSemanticConstants, name, "UNKNOWN")
+        return getattr(FlextConstants, name, "UNKNOWN")
 
 
 constants = _LegacyConstants()

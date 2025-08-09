@@ -69,7 +69,7 @@ from flext_core import (
 )
 
 if TYPE_CHECKING:
-    from flext_core.types import FlextTypes
+    from flext_core.typings import FlextTypes
 
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
@@ -935,7 +935,9 @@ class FlextAlertService:
                 return FlextResult.fail("Alert cannot be None")
 
             self.logger.warning(
-                "Alert created: %s | Severity: %s", alert.title, alert.severity,
+                "Alert created: %s | Severity: %s",
+                alert.title,
+                alert.severity,
             )
             return FlextResult.ok(alert)
         except (ValueError, TypeError, AttributeError, ArithmeticError) as e:
