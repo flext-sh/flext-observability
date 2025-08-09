@@ -75,9 +75,6 @@ from typing import TYPE_CHECKING
 
 from flext_core import FlextGenerators, FlextResult
 
-if TYPE_CHECKING:
-    from flext_core.types import FlextTypes
-
 from flext_observability.entities import (
     FlextAlert,
     FlextHealthCheck,
@@ -88,6 +85,10 @@ from flext_observability.entities import (
     flext_health_check,  # Import for DRY principle - reuse existing function
     flext_trace,  # Import for DRY principle - reuse existing function
 )
+
+if TYPE_CHECKING:
+    from flext_core.typings import FlextTypes
+
 
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation

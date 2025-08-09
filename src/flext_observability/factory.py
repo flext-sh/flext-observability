@@ -62,9 +62,6 @@ from typing import TYPE_CHECKING, cast
 
 from flext_core import FlextContainer, FlextGenerators, FlextResult, get_logger
 
-if TYPE_CHECKING:
-    from flext_core.types import FlextTypes
-
 from flext_observability.entities import (
     FlextAlert,
     FlextLogEntry,
@@ -82,6 +79,9 @@ from flext_observability.services import (
     FlextMetricsService,
     FlextTracingService,
 )
+
+if TYPE_CHECKING:
+    from flext_core.typings import FlextTypes
 
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
@@ -502,7 +502,7 @@ def get_global_factory(
     container: FlextContainer | None = None,
 ) -> FlextObservabilityMasterFactory:
     """Get global factory instance."""
-    global _global_factory  # noqa: PLW0603
+    global _global_factory
     if _global_factory is None:
         _global_factory = FlextObservabilityMasterFactory(container)
     return _global_factory
@@ -510,7 +510,7 @@ def get_global_factory(
 
 def reset_global_factory() -> None:
     """Reset global factory for testing."""
-    global _global_factory  # noqa: PLW0603
+    global _global_factory
     _global_factory = None
 
 

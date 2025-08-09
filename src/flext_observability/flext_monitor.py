@@ -306,7 +306,7 @@ class FlextObservabilityMonitor:
             return FlextResult.fail("Metrics service not available")
 
         try:
-            from flext_observability.entities import flext_metric  # noqa: PLC0415
+            from flext_observability.entities import flext_metric
 
             metric_result = flext_metric(name, value, metric_type=metric_type)
             if metric_result.is_failure:
@@ -422,7 +422,7 @@ def _execute_monitored_function(
         # Create alert if alert service is available
         if monitor._alert_service:
             try:
-                from flext_observability.entities import flext_alert  # noqa: PLC0415
+                from flext_observability.entities import flext_alert
 
                 alert = flext_alert(
                     title=f"Function execution error: {function_name}",
