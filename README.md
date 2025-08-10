@@ -1,6 +1,6 @@
 # flext-observability
 
-**Type**: Foundation Library | **Status**: Production Ready | **Dependencies**: flext-core
+**Type**: Foundation Library | **Status**: Active Development | **Dependencies**: flext-core
 
 Observability foundation library providing monitoring, metrics, tracing, and health check patterns for the FLEXT ecosystem.
 
@@ -190,7 +190,7 @@ else:
 
 ## Current Status
 
-**Version**: 0.9.0 (Production Ready)
+**Version**: 0.9.0 (Active Development)
 
 **Completed**:
 
