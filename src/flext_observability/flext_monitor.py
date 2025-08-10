@@ -58,14 +58,12 @@ FLEXT Integration:
 from __future__ import annotations
 
 import time
-
-# Import Callable at runtime since it's used in type aliases
 from collections.abc import Callable
 from typing import cast
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
-# Use direct import - factory provides all needed functionality
+from flext_observability.entities import flext_alert, flext_metric
 from flext_observability.services import (
     FlextAlertService,
     FlextHealthService,
@@ -306,8 +304,6 @@ class FlextObservabilityMonitor:
             return FlextResult.fail("Metrics service not available")
 
         try:
-            from flext_observability.entities import flext_metric
-
             metric_result = flext_metric(name, value, metric_type=metric_type)
             if metric_result.is_failure:
                 return FlextResult.fail(
@@ -422,8 +418,6 @@ def _execute_monitored_function(
         # Create alert if alert service is available
         if monitor._alert_service:
             try:
-                from flext_observability.entities import flext_alert
-
                 alert = flext_alert(
                     title=f"Function execution error: {function_name}",
                     message=f"Function failed with {type(e).__name__}",
