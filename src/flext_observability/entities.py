@@ -46,8 +46,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, cast
 
-from flext_core import FlextGenerators, FlextResult, FlextTypes, FlextValidation
-from flext_core.models import FlextEntity
+from flext_core import (
+    FlextEntity,
+    FlextIdGenerator,
+    FlextResult,
+    FlextTypes,
+    FlextValidation,
+)
 from pydantic import ConfigDict, Field
 
 if TYPE_CHECKING:
@@ -69,7 +74,7 @@ def _generate_utc_datetime() -> datetime:
 
     """
     # Use flext-core timestamp generation - direct float to datetime conversion
-    timestamp_float = FlextGenerators.generate_timestamp()
+    timestamp_float = FlextIdGenerator.generate_timestamp()
     return datetime.fromtimestamp(
         timestamp_float,
         tz=datetime.now().astimezone().tzinfo,
@@ -774,7 +779,7 @@ def flext_alert(
             timestamp=timestamp,
         )
     return FlextAlert(
-        id=FlextGenerators.generate_entity_id(),
+        id=FlextIdGenerator.generate_entity_id(),
         title=title,
         message=message,
         severity=severity,
@@ -809,7 +814,7 @@ def flext_trace(
             timestamp=timestamp,
         )
     return FlextTrace(
-        id=FlextGenerators.generate_entity_id(),
+        id=FlextIdGenerator.generate_entity_id(),
         trace_id=trace_id,
         operation=operation,
         span_id=span_id,
@@ -854,7 +859,7 @@ def flext_metric(
             )
         else:
             metric = FlextMetric(
-                id=FlextGenerators.generate_entity_id(),
+                id=FlextIdGenerator.generate_entity_id(),
                 name=name,
                 value=value,
                 unit=unit,
@@ -899,7 +904,7 @@ def flext_health_check(
             timestamp=timestamp,
         )
     return FlextHealthCheck(
-        id=FlextGenerators.generate_entity_id(),
+        id=FlextIdGenerator.generate_entity_id(),
         component=component,
         status=status,
         message=message,

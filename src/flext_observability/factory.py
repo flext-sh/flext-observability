@@ -60,7 +60,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, cast
 
-from flext_core import FlextContainer, FlextGenerators, FlextResult, get_logger
+from flext_core import FlextContainer, FlextIdGenerator, FlextResult, get_logger
 
 from flext_observability.entities import (
     FlextAlert,
@@ -81,7 +81,7 @@ from flext_observability.services import (
 )
 
 if TYPE_CHECKING:
-    from flext_core.typings import FlextTypes
+    from flext_core import FlextTypes
 
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
@@ -101,7 +101,7 @@ def _generate_utc_datetime() -> datetime:
 
     """
     # Use flext-core timestamp generation - direct float to datetime conversion
-    timestamp_float = FlextGenerators.generate_timestamp()
+    timestamp_float = FlextIdGenerator.generate_timestamp()
     return datetime.fromtimestamp(
         timestamp_float,
         tz=datetime.now().astimezone().tzinfo,
@@ -287,7 +287,7 @@ class FlextObservabilityMasterFactory:
                 timestamp = _generate_utc_datetime()
 
             metric = FlextMetric(
-                id=FlextGenerators.generate_uuid(),
+                id=FlextIdGenerator.generate_uuid(),
                 name=name,
                 value=value,
                 unit=str(kwargs.get("unit", "")),
@@ -329,7 +329,7 @@ class FlextObservabilityMasterFactory:
                 timestamp = _generate_utc_datetime()
 
             log_entry = FlextLogEntry(
-                id=FlextGenerators.generate_uuid(),
+                id=FlextIdGenerator.generate_uuid(),
                 message=message,
                 level=level,
                 context=context,
@@ -367,7 +367,7 @@ class FlextObservabilityMasterFactory:
                 timestamp = _generate_utc_datetime()
 
             alert = FlextAlert(
-                id=FlextGenerators.generate_uuid(),
+                id=FlextIdGenerator.generate_uuid(),
                 title=title,
                 message=message,
                 severity=severity,
@@ -404,7 +404,7 @@ class FlextObservabilityMasterFactory:
             span_attributes = kwargs.get("span_attributes", {})
 
             trace = FlextTrace(
-                id=FlextGenerators.generate_uuid(),
+                id=FlextIdGenerator.generate_uuid(),
                 trace_id=trace_id,
                 operation=operation,
                 span_id=str(span_id) if span_id else "",

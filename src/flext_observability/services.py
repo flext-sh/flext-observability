@@ -63,13 +63,13 @@ from typing import TYPE_CHECKING, cast
 import psutil
 from flext_core import (
     FlextContainer,
-    FlextGenerators,  # Add for boilerplate reduction
+    FlextIdGenerator,  # Add for boilerplate reduction
     FlextResult,
     get_logger,
 )
 
 if TYPE_CHECKING:
-    from flext_core.typings import FlextTypes
+    from flext_core import FlextTypes
 
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
@@ -210,7 +210,7 @@ class FlextMetricsService:
         )  # Keep as-is, specific numeric type
 
         # Service health tracking - use flext-core facilities
-        self._start_time = FlextGenerators.generate_timestamp()
+        self._start_time = FlextIdGenerator.generate_timestamp()
         self._metrics_recorded = 0
 
     def _validate_metric_input(self, metric: object) -> FlextResult[None]:
@@ -247,7 +247,7 @@ class FlextMetricsService:
 
             # Type-safe metric recording with thread safety
             with self._metrics_lock:
-                timestamp = FlextGenerators.generate_timestamp()
+                timestamp = FlextIdGenerator.generate_timestamp()
 
                 # Store raw metric data
                 metric_data = {
@@ -327,7 +327,7 @@ class FlextMetricsService:
             with self._metrics_lock:
                 summary = {
                     "service_info": {
-                        "uptime_seconds": FlextGenerators.generate_timestamp()
+                        "uptime_seconds": FlextIdGenerator.generate_timestamp()
                         - self._start_time,
                         "metrics_recorded": self._metrics_recorded,
                         "unique_metrics": len(self._metrics_store),
@@ -393,7 +393,7 @@ class FlextMetricsService:
                 self._metric_gauges.clear()
                 self._metric_histograms.clear()
                 self._metrics_recorded = 0
-                self._start_time = FlextGenerators.generate_timestamp()
+                self._start_time = FlextIdGenerator.generate_timestamp()
 
             self.logger.info("All metrics reset successfully")
             return FlextResult.ok(None)
@@ -586,7 +586,7 @@ class FlextTracingService:
         # Service metrics - use flext-core facilities
         self._traces_started = 0
         self._traces_completed = 0
-        self._service_start_time = FlextGenerators.generate_timestamp()
+        self._service_start_time = FlextIdGenerator.generate_timestamp()
 
     def start_trace(self, trace: FlextTrace) -> FlextResult[FlextTrace]:
         """Start distributed trace with real span tracking and correlation."""
@@ -604,7 +604,7 @@ class FlextTracingService:
 
             # Real trace management with thread safety
             with self._traces_lock:
-                start_time = FlextGenerators.generate_timestamp()
+                start_time = FlextIdGenerator.generate_timestamp()
 
                 # Create comprehensive trace context
                 trace_context: FlextTypes.Data.Dict = {
@@ -663,7 +663,7 @@ class FlextTracingService:
                     )
 
                 span_id = f"{trace_id}_{len(self._trace_spans[trace_id])}"
-                span_start_time = FlextGenerators.generate_timestamp()
+                span_start_time = FlextIdGenerator.generate_timestamp()
 
                 # Create comprehensive span
                 span = {
@@ -703,7 +703,7 @@ class FlextTracingService:
 
                 # Complete the trace
                 trace_context = self._active_traces[trace_id]
-                end_time = FlextGenerators.generate_timestamp()
+                end_time = FlextIdGenerator.generate_timestamp()
                 start_time = trace_context["start_time"]
                 duration = end_time - (
                     start_time if isinstance(start_time, (int, float)) else 0
@@ -834,7 +834,7 @@ class FlextTracingService:
         """Get comprehensive tracing service summary with statistics."""
         try:
             with self._traces_lock:
-                current_time = FlextGenerators.generate_timestamp()
+                current_time = FlextIdGenerator.generate_timestamp()
                 uptime = current_time - self._service_start_time
 
                 summary = {
@@ -1042,7 +1042,7 @@ class FlextHealthService:
         self._total_health_checks = 0
         self._healthy_components: set[str] = set()
         self._unhealthy_components: set[str] = set()
-        self._service_start_time = FlextGenerators.generate_timestamp()
+        self._service_start_time = FlextIdGenerator.generate_timestamp()
 
     def _extract_actual_health(
         self,
@@ -1127,7 +1127,7 @@ class FlextHealthService:
 
             # Real health monitoring with thread safety
             with self._health_lock:
-                check_time = FlextGenerators.generate_timestamp()
+                check_time = FlextIdGenerator.generate_timestamp()
 
                 # Create and store health record
                 health_record = self._create_health_record(actual_health, check_time)
@@ -1182,7 +1182,7 @@ class FlextHealthService:
         """Get comprehensive overall system health with detailed component status."""
         try:
             with self._health_lock:
-                current_time = FlextGenerators.generate_timestamp()
+                current_time = FlextIdGenerator.generate_timestamp()
                 uptime = current_time - self._service_start_time
 
                 # Calculate overall health status
@@ -1306,7 +1306,7 @@ class FlextHealthService:
             # Service availability check
             system_checks["observability_service"] = {
                 "status": "healthy",
-                "uptime_seconds": FlextGenerators.generate_timestamp()
+                "uptime_seconds": FlextIdGenerator.generate_timestamp()
                 - self._service_start_time,
                 "total_health_checks": self._total_health_checks,
             }
