@@ -73,7 +73,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from flext_core import FlextGenerators, FlextResult
+from flext_core import FlextIdGenerator, FlextResult
 
 from flext_observability.entities import (
     FlextAlert,
@@ -87,7 +87,7 @@ from flext_observability.entities import (
 )
 
 if TYPE_CHECKING:
-    from flext_core.typings import FlextTypes
+    from flext_core import FlextTypes
 
 
 # ============================================================================
@@ -106,7 +106,7 @@ def _generate_utc_datetime() -> datetime:
 
     """
     # Use flext-core timestamp generation - direct float to datetime conversion
-    timestamp_float = FlextGenerators.generate_timestamp()
+    timestamp_float = FlextIdGenerator.generate_timestamp()
     return datetime.fromtimestamp(
         timestamp_float,
         tz=datetime.now().astimezone().tzinfo,
@@ -125,17 +125,13 @@ def flext_create_metric(
     tags: FlextTypes.Data.Dict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
-    """Create observability metric with simplified API and intelligent type inference.
+    """Create observability metric with simplified API.
 
-    Convenient factory function for creating FlextMetric entities with minimal
-    parameters and intelligent defaults. Automatically infers metric type based
-    on naming conventions and units, while providing comprehensive validation
-    and error handling for enterprise reliability.
+    ✅ ELIMINATED DUPLICATION: Delegates to entities.flext_metric()
+    to avoid code duplication. Single source of truth for metric creation.
 
     Args:
         name (str): Metric name following observability naming conventions.
-            Should be descriptive and searchable (e.g., "api_response_time",
-            "user_count", "error_rate"). Used for metric identification and grouping.
         value (float | Decimal): Numeric metric value with high precision support.
             Supports both float and Decimal types for financial and precision-critical
             measurements. Must be finite and valid numeric value.
@@ -181,44 +177,35 @@ def flext_create_metric(
         error messages for debugging and operational visibility.
 
     """
-    try:
-        # Smart metric type inference based on naming conventions and units
-        metric_type = "gauge"  # default
+    # Import locally to avoid circular dependency
+    from flext_observability.entities import flext_metric
 
-        # Infer from unit
-        if unit in {"count", "counts"}:
-            metric_type = "counter"
-        elif "histogram" in unit.lower():
-            metric_type = "histogram"
-        # Infer from name patterns (common Prometheus conventions)
-        elif name.endswith(("_total", "_count")):
-            metric_type = "counter"
-        elif (
-            name.endswith(("_duration", "_time", "_seconds"))
-            or "histogram" in name.lower()
-        ):
-            metric_type = "histogram"
+    # Smart metric type inference based on naming conventions and units
+    metric_type = "gauge"  # default
 
-        metric = FlextMetric(
-            name=name,
-            value=Decimal(str(value)),
-            unit=unit,
-            metric_type=metric_type,
-            id=FlextGenerators.generate_uuid(),
-            tags=tags or {},
-            timestamp=timestamp or _generate_utc_datetime(),
-        )
+    # Infer from unit
+    if unit in {"count", "counts"}:
+        metric_type = "counter"
+    elif "histogram" in unit.lower():
+        metric_type = "histogram"
+    # Infer from name patterns (common Prometheus conventions)
+    elif name.endswith(("_total", "_count")):
+        metric_type = "counter"
+    elif (
+        name.endswith(("_duration", "_time", "_seconds"))
+        or "histogram" in name.lower()
+    ):
+        metric_type = "histogram"
 
-        # Validate business rules before returning
-        validation_result = metric.validate_business_rules()
-        if validation_result.is_failure:
-            return FlextResult.fail(
-                validation_result.error or "Metric validation failed",
-            )
-
-        return FlextResult.ok(metric)
-    except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create metric: {e}")
+    # ✅ DELEGATE to entities.flext_metric() to eliminate duplication
+    return flext_metric(
+        name=name,
+        value=value,
+        unit=unit,
+        metric_type=metric_type,
+        tags=tags,
+        timestamp=timestamp,
+    )
 
 
 def flext_create_log_entry(
@@ -230,7 +217,7 @@ def flext_create_log_entry(
     """Create observability log entry with simple parameters."""
     try:
         log_entry = FlextLogEntry(
-            id=FlextGenerators.generate_uuid(),
+            id=FlextIdGenerator.generate_uuid(),
             level=level,
             message=message,
             context=context or {},
@@ -256,29 +243,28 @@ def flext_create_trace(
     config: FlextTypes.Data.Dict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextTrace]:
-    """Create observability trace with simple parameters."""
-    try:
-        config = config or {}
-        trace = FlextTrace(
-            trace_id=trace_id,
-            operation=operation,
-            span_id=str(config.get("span_id", f"{trace_id}-span")),
-            id=FlextGenerators.generate_uuid(),
-            duration_ms=int(str(config.get("duration_ms", 0))),
-            status=str(config.get("status", "pending")),
-            timestamp=timestamp or _generate_utc_datetime(),
-        )
+    """Create observability trace with simple parameters.
+    
+    ✅ ELIMINATED DUPLICATION: Delegates to entities.flext_trace()
+    to avoid code duplication. Single source of truth for trace creation.
+    """
+    # Import locally to avoid circular dependency
+    from flext_observability.entities import flext_trace
 
-        # Validate business rules before returning
-        validation_result = trace.validate_business_rules()
-        if validation_result.is_failure:
-            return FlextResult.fail(
-                validation_result.error or "Trace validation failed",
-            )
-
-        return FlextResult.ok(trace)
-    except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create trace: {e}")
+    config = config or {}
+    
+    # ✅ DELEGATE to entities.flext_trace() to eliminate duplication  
+    trace = flext_trace(
+        trace_id=trace_id,
+        operation=operation,
+        span_id=str(config.get("span_id", f"{trace_id}-span")),
+        duration_ms=int(str(config.get("duration_ms", 0))),
+        status=str(config.get("status", "pending")),
+        timestamp=timestamp,
+        id=FlextIdGenerator.generate_uuid(),
+    )
+    
+    return FlextResult.ok(trace)
 
 
 def flext_create_alert(
@@ -294,7 +280,7 @@ def flext_create_alert(
             title=title,
             message=message,
             severity=severity,
-            id=FlextGenerators.generate_uuid(),
+            id=FlextIdGenerator.generate_uuid(),
             status=status,
             timestamp=timestamp or _generate_utc_datetime(),
         )
@@ -323,7 +309,7 @@ def flext_create_health_check(
     try:
         health_check = FlextHealthCheck(
             id=health_id
-            or FlextGenerators.generate_uuid(),  # Use provided id or generate new one
+            or FlextIdGenerator.generate_uuid(),  # Use provided id or generate new one
             component=component,
             status=status,
             message=message,
