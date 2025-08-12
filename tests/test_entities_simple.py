@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flext_observability.flext_simple import (
+from flext_observability.observability_api import (
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,

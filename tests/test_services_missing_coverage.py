@@ -2,13 +2,13 @@
 
 from unittest.mock import patch
 
-from flext_observability.entities import (
+from flext_observability.observability_models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
     FlextTrace,
 )
-from flext_observability.services import (
+from flext_observability.observability_services import (
     FlextAlertService,
     FlextHealthService,
     FlextLoggingService,

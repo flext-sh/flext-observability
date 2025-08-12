@@ -3,7 +3,7 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from flext_observability.factory import FlextObservabilityMasterFactory
+from flext_observability.observability_factory import FlextObservabilityMasterFactory
 
 
 class TestFactoryMissingCoverage:

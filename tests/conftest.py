@@ -120,7 +120,6 @@ def event_loop_policy() -> asyncio.AbstractEventLoopPolicy:
 @pytest.fixture
 def metrics_registry() -> CollectorRegistry:
     """Create a Prometheus metrics registry for testing."""
-
     return CollectorRegistry()
 
 
@@ -133,7 +132,6 @@ def metrics_collector(metrics_registry: CollectorRegistry) -> dict[str, object]:
 @pytest.fixture
 def counter_metric(metrics_registry: CollectorRegistry) -> object:
     """Create a counter metric for testing."""
-
     return Counter(
         "test_counter",
         "Test counter for unit tests",
@@ -145,7 +143,6 @@ def counter_metric(metrics_registry: CollectorRegistry) -> object:
 @pytest.fixture
 def histogram_metric(metrics_registry: CollectorRegistry) -> object:
     """Create a histogram metric for testing."""
-
     return Histogram(
         "test_histogram",
         "Test histogram for unit tests",
@@ -187,7 +184,6 @@ def tracer(tracer_provider: object) -> object:
 @pytest.fixture
 def span_context() -> object:
     """Create a span context for testing."""
-
     return trace.SpanContext(
         trace_id=0x123456789ABCDEF0123456789ABCDEF0,
         span_id=0x123456789ABCDEF0,
@@ -203,7 +199,6 @@ def span_context() -> object:
 @pytest.fixture
 def structured_logger() -> object:
     """Create a structured logger for testing."""
-
     return get_logger("test-logger")
 
 

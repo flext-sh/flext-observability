@@ -40,8 +40,8 @@ __version__ = "0.9.0"
 from flext_core import FlextContainer, get_logger
 from flext_core.constants import FlextConstants
 
-# Core entities (minimal, no redundancy)
-from flext_observability.entities import (
+# Core entities (minimal, no redundancy) - Updated imports to use consolidated files
+from flext_observability.observability_models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
@@ -52,8 +52,8 @@ from flext_observability.entities import (
     flext_trace,
 )
 
-# Factory patterns (centralized entity creation)
-from flext_observability.factory import (
+# Factory patterns (centralized entity creation) - Updated imports to use consolidated files
+from flext_observability.observability_factory import (
     FlextObservabilityMasterFactory,
     alert,
     get_global_factory,
@@ -64,14 +64,14 @@ from flext_observability.factory import (
     trace,
 )
 
-# Monitor patterns (automation)
-from flext_observability.flext_monitor import (
+# Monitor patterns (automation) - Updated imports to use consolidated files
+from flext_observability.observability_monitor import (
     FlextObservabilityMonitor,
     flext_monitor_function,
 )
 
-# Simple API (convenience)
-from flext_observability.flext_simple import (
+# Simple API (convenience) - Updated imports to use consolidated files
+from flext_observability.observability_api import (
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,
@@ -79,8 +79,8 @@ from flext_observability.flext_simple import (
     flext_create_trace,
 )
 
-# Services (application layer)
-from flext_observability.services import (
+# Services (application layer) - Updated imports to use consolidated files
+from flext_observability.observability_services import (
     FlextAlertService,
     FlextHealthService,
     FlextLoggingService,
@@ -155,6 +155,8 @@ constants = _LegacyConstants()
 __all__: list[str] = [
     "FlextAlert",
     "FlextAlertService",
+    "FlextContainer",
+    "FlextConstants",
     "FlextHealthCheck",
     "FlextHealthService",
     "FlextLogEntry",
@@ -165,7 +167,9 @@ __all__: list[str] = [
     "FlextObservabilityMonitor",
     "FlextTrace",
     "FlextTracingService",
+    "__version__",
     "alert",
+    "annotations",
     "constants",
     "create_observability_platform",
     "flext_alert",

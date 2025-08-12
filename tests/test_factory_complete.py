@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 
 from flext_core import FlextContainer, FlextResult
 
-from flext_observability.factory import (
+from flext_observability.observability_factory import (
     FlextObservabilityMasterFactory,
     alert,
     get_global_factory,
