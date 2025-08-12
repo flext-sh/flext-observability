@@ -74,7 +74,7 @@ from typing import TYPE_CHECKING
 
 from flext_core import FlextIdGenerator, FlextResult
 
-from flext_observability.entities import (
+from flext_observability.observability_models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
@@ -179,7 +179,7 @@ def flext_create_metric(
 
     """
     # Import locally to avoid circular dependency
-    from flext_observability.entities import flext_metric
+    from flext_observability.observability_models import flext_metric
 
     # Smart metric type inference based on naming conventions and units
     metric_type = "gauge"  # default
@@ -204,8 +204,8 @@ def flext_create_metric(
         value=value,
         unit=unit,
         metric_type=metric_type,
-        tags=tags,
-        timestamp=timestamp,
+        tags=tags or {},
+        timestamp=timestamp or _generate_utc_datetime(),
     )
 
 
@@ -250,7 +250,7 @@ def flext_create_trace(
     to avoid code duplication. Single source of truth for trace creation.
     """
     # Import locally to avoid circular dependency
-    from flext_observability.entities import flext_trace
+    from flext_observability.observability_models import flext_trace
 
     config = config or {}
 
@@ -261,7 +261,7 @@ def flext_create_trace(
         span_id=str(config.get("span_id", f"{trace_id}-span")),
         duration_ms=int(str(config.get("duration_ms", 0))),
         status=str(config.get("status", "pending")),
-        timestamp=timestamp,
+        timestamp=timestamp or _generate_utc_datetime(),
         id=FlextIdGenerator.generate_uuid(),
     )
 

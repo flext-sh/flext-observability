@@ -8,8 +8,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_observability.flext_simple import flext_create_metric
-from flext_observability.services import FlextMetricsService
+from flext_observability.observability_api import flext_create_metric
+from flext_observability.observability_services import FlextMetricsService
 
 
 class TestServicesFocused:

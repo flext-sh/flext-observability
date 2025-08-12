@@ -12,14 +12,14 @@ from unittest.mock import Mock, PropertyMock, patch
 
 from flext_core import FlextContainer
 
-from flext_observability.flext_simple import (
+from flext_observability.observability_api import (
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,
     flext_create_metric,
     flext_create_trace,
 )
-from flext_observability.services import (
+from flext_observability.observability_services import (
     FlextAlertService,
     FlextHealthService,
     FlextLoggingService,

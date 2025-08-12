@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 from flext_core import FlextContainer, FlextResult
 
-from flext_observability.flext_monitor import (
+from flext_observability.observability_monitor import (
     FlextObservabilityMonitor,
     flext_monitor_function,
 )

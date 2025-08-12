@@ -2,7 +2,7 @@
 
 from unittest.mock import Mock, patch
 
-from flext_observability.flext_simple import (
+from flext_observability.observability_api import (
     _generate_utc_datetime,
     flext_create_alert,
     flext_create_health_check,

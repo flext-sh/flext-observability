@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from flext_observability.entities import (
+from flext_observability.observability_models import (
     flext_alert,
     flext_health_check,
     flext_metric,

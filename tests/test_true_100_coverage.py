@@ -7,8 +7,8 @@ from unittest.mock import patch
 
 import pytest
 
-from flext_observability.entities import FlextMetric
-from flext_observability.factory import FlextObservabilityMasterFactory
+from flext_observability.observability_factory import FlextObservabilityMasterFactory
+from flext_observability.observability_models import FlextMetric
 
 
 class TestTrue100Coverage:
@@ -66,7 +66,7 @@ class TestTrue100Coverage:
 
     def test_flext_metrics_service_import(self) -> None:
         """Test basic import of metrics service."""
-        from flext_observability.services import FlextMetricsService
+        from flext_observability.observability_services import FlextMetricsService
 
         # Verify service imports successfully
         assert FlextMetricsService is not None

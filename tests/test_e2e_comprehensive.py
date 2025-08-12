@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 from flext_core import FlextContainer
 
-from flext_observability.factory import (
+from flext_observability.observability_factory import (
     FlextObservabilityMasterFactory,
     alert,
     health_check,
