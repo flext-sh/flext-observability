@@ -69,7 +69,6 @@ FLEXT Integration:
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 from flext_core import FlextIdGenerator, FlextResult
@@ -89,6 +88,7 @@ from flext_observability.models import (
 )
 
 if TYPE_CHECKING:
+    from datetime import datetime
     from decimal import Decimal
 
     from flext_observability.typings import FlextTypes
@@ -200,7 +200,7 @@ def flext_create_metric(
         _ = flext_simple.FlextGenerators.generate_uuid()
         # Probe entity to allow tests to patch FlextMetric and raise
         try:
-            _probe = flext_simple.FlextMetric(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextMetric(  # type: ignore[attr-defined]
                 id=FlextIdGenerator.generate_uuid(),
                 name=name,
                 value=value,
@@ -208,7 +208,7 @@ def flext_create_metric(
                 tags=tags or {},
                 timestamp=timestamp or _generate_utc_datetime(),
             )
-            _probe.validate_business_rules()
+            probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
             return FlextResult.fail(f"Failed to create metric: {e}")
 
@@ -227,6 +227,7 @@ def flext_create_metric(
 
             with _suppress(Exception):
                 from decimal import Decimal as _Decimal
+
                 if isinstance(result.data.value, float):
                     result.data.value = _Decimal(str(result.data.value))
         return result
@@ -247,14 +248,14 @@ def flext_create_log_entry(
         # Trigger patch point and probe entity for test hooks
         _ = flext_simple.FlextGenerators.generate_uuid()
         try:
-            _probe = flext_simple.FlextLogEntry(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextLogEntry(  # type: ignore[attr-defined]
                 id=FlextIdGenerator.generate_uuid(),
                 level=level,
                 message=message,
                 context=context or {},
                 timestamp=timestamp or _generate_utc_datetime(),
             )
-            _probe.validate_business_rules()
+            probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
             return FlextResult.fail(f"Failed to create log entry: {e}")
 
@@ -300,7 +301,7 @@ def flext_create_trace(
         _ = flext_simple.FlextGenerators.generate_uuid()
         # Probe entity to allow tests patching FlextTrace and forcing validation error
         try:
-            _probe = flext_simple.FlextTrace(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextTrace(  # type: ignore[attr-defined]
                 id=FlextIdGenerator.generate_uuid(),
                 trace_id=trace_id,
                 operation=operation,
@@ -309,7 +310,7 @@ def flext_create_trace(
                 status=str(config.get("status", "pending")),
                 timestamp=timestamp or _generate_utc_datetime(),
             )
-            _probe.validate_business_rules()
+            probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
             return FlextResult.fail(f"Failed to create trace: {e}")
 
@@ -343,7 +344,7 @@ def flext_create_alert(
         _ = flext_simple.FlextGenerators.generate_uuid()
         # Probe entity to allow tests patching FlextAlert
         try:
-            _probe = flext_simple.FlextAlert(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextAlert(  # type: ignore[attr-defined]
                 title=title,
                 message=message,
                 severity=severity,
@@ -351,7 +352,7 @@ def flext_create_alert(
                 status=status,
                 timestamp=timestamp or _generate_utc_datetime(),
             )
-            _probe.validate_business_rules()
+            probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
             return FlextResult.fail(f"Failed to create alert: {e}")
 
@@ -389,14 +390,14 @@ def flext_create_health_check(
         _ = flext_simple.FlextGenerators.generate_uuid()
         # Probe construction to allow tests patching FlextHealthCheck
         try:
-            _probe = flext_simple.FlextHealthCheck(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextHealthCheck(  # type: ignore[attr-defined]
                 id=health_id or FlextIdGenerator.generate_uuid(),
                 component=component,
                 status=status,
                 message=message,
                 timestamp=timestamp or _generate_utc_datetime(),
             )
-            _probe.validate_business_rules()
+            probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
             return FlextResult.fail(f"Failed to create health check: {e}")
 

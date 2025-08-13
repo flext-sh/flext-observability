@@ -61,6 +61,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, cast
 
 from flext_core import FlextContainer, FlextIdGenerator, FlextResult, get_logger
+
 from flext_observability.observability_models import (
     FlextAlert,
     FlextHealthCheck,

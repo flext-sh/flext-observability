@@ -36,7 +36,8 @@ class TestSimpleApiExceptions:
         """Test flext_create_metric with Decimal conversion error."""
         # Test with actual invalid number that will cause Decimal error
         flext_create_metric(
-            "test_metric", float("inf"),
+            "test_metric",
+            float("inf"),
         )  # Infinity causes Decimal issues
         # Should either succeed (handled) or fail gracefully
         # The exact behavior depends on implementation
@@ -88,7 +89,9 @@ class TestSimpleApiExceptions:
         with patch("flext_observability.flext_simple.int") as mock_int:
             mock_int.side_effect = ValueError("Invalid int conversion")
             result = flext_create_trace(
-                "trace_123", "test_operation", config=invalid_config,
+                "trace_123",
+                "test_operation",
+                config=invalid_config,
             )
             assert result.is_failure
             assert "Failed to create trace" in result.error

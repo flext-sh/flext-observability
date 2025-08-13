@@ -322,7 +322,9 @@ class FlextObservabilityMonitor:
                 return FlextResult.fail("Metric creation returned None")
             record_result = self._metrics_service.record_metric(metric_result.data)
             if record_result.is_failure:
-                return FlextResult.fail(record_result.error or "Failed to record metric")
+                return FlextResult.fail(
+                    record_result.error or "Failed to record metric",
+                )
             return FlextResult.ok(None)
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult.fail(f"Failed to record metric: {e}")

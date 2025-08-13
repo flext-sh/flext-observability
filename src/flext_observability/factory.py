@@ -319,14 +319,14 @@ class FlextObservabilityMasterFactory:
             # FlextLogEntry imported at module level
             # Probe to allow patched class to raise
             try:
-                _probe = FlextLogEntry(
+                probe = FlextLogEntry(
                     id=FlextIdGenerator.generate_uuid(),
                     message=message,
                     level=level,
                     context={},
                     timestamp=_generate_utc_datetime(),
                 )
-                _probe.validate_business_rules()
+                probe.validate_business_rules()
             except Exception as e:  # noqa: BLE001
                 return FlextResult.fail(f"Failed to create log: {e}")
             context = kwargs.get("context", {})
@@ -375,7 +375,7 @@ class FlextObservabilityMasterFactory:
             tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
             # Probe to allow patched class to raise
             try:
-                _probe = FlextAlert(
+                probe = FlextAlert(
                     id=FlextIdGenerator.generate_uuid(),
                     title=title,
                     message=message,
@@ -384,7 +384,7 @@ class FlextObservabilityMasterFactory:
                     tags=tags,
                     timestamp=_generate_utc_datetime(),
                 )
-                _probe.validate_business_rules()
+                probe.validate_business_rules()
             except Exception as e:  # noqa: BLE001
                 return FlextResult.fail(f"Failed to create alert: {e}")
             timestamp = kwargs.get("timestamp")
@@ -432,7 +432,7 @@ class FlextObservabilityMasterFactory:
             span_attributes = kwargs.get("span_attributes", {})
             # Probe to allow patched class to raise
             try:
-                _probe = FlextTrace(
+                probe = FlextTrace(
                     id=FlextIdGenerator.generate_uuid(),
                     trace_id=trace_id,
                     operation=operation,
@@ -443,10 +443,12 @@ class FlextObservabilityMasterFactory:
                     duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
                     status=str(kwargs.get("status", "pending")),
                     timestamp=(
-                        timestamp if isinstance(timestamp, datetime) else _generate_utc_datetime()
+                        timestamp
+                        if isinstance(timestamp, datetime)
+                        else _generate_utc_datetime()
                     ),
                 )
-                _probe.validate_business_rules()
+                probe.validate_business_rules()
             except Exception as e:  # noqa: BLE001
                 return FlextResult.fail(f"Failed to create trace: {e}")
             trace = FlextTrace(
@@ -615,20 +617,20 @@ def create_simplified_observability_platform(
 # Re-export entity functions to maintain test compatibility (DRY principle)
 # These are already imported above from entities module
 __all__: list[str] = [
-    "FlextObservabilityMasterFactory",
-    "alert",
-    "create_simplified_observability_platform",
+    "FlextAlert",
+    "FlextLogEntry",
     # Expose entity constructors and classes for consumers
     "FlextMetric",
-    "FlextLogEntry",
-    "FlextAlert",
+    "FlextObservabilityMasterFactory",
     "FlextTrace",
-    "flext_create_health_check",
-    "get_logger",
+    "alert",
+    "create_simplified_observability_platform",
     "flext_alert",  # Re-exported from entities for DRY principle
+    "flext_create_health_check",
     "flext_health_check",  # Re-exported from entities for DRY principle
     "flext_trace",  # Re-exported from entities for DRY principle
     "get_global_factory",
+    "get_logger",
     "health_check",
     "log",
     "metric",

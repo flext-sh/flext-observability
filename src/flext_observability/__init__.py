@@ -120,7 +120,8 @@ def create_observability_platform(
 ) -> FlextObservabilityMasterFactory:
     """Create master factory (deprecated; use FlextObservabilityMasterFactory)."""
     _deprecated_warning(
-        "create_observability_platform", "FlextObservabilityMasterFactory",
+        "create_observability_platform",
+        "FlextObservabilityMasterFactory",
     )
     container_typed = container if isinstance(container, FlextContainer) else None
     return FlextObservabilityMasterFactory(container_typed)
