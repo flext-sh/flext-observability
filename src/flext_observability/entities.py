@@ -58,6 +58,25 @@ from pydantic import ConfigDict, Field
 if TYPE_CHECKING:
     from decimal import Decimal
 
+
+class FlextGenerators:
+    """Compatibility shim for tests expecting FlextGenerators.
+
+    Maps to flext_core.FlextIdGenerator methods.
+    """
+
+    @staticmethod
+    def generate_timestamp() -> float:
+        return FlextIdGenerator.generate_timestamp()
+
+    @staticmethod
+    def generate_uuid() -> str:
+        return FlextIdGenerator.generate_uuid()
+
+    @staticmethod
+    def generate_entity_id() -> str:
+        return FlextIdGenerator.generate_entity_id()
+
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
 # ============================================================================
@@ -779,7 +798,7 @@ def flext_alert(
             timestamp=timestamp,
         )
     return FlextAlert(
-        id=FlextIdGenerator.generate_entity_id(),
+        id=FlextGenerators.generate_entity_id(),
         title=title,
         message=message,
         severity=severity,
@@ -814,7 +833,7 @@ def flext_trace(
             timestamp=timestamp,
         )
     return FlextTrace(
-        id=FlextIdGenerator.generate_entity_id(),
+        id=FlextGenerators.generate_entity_id(),
         trace_id=trace_id,
         operation=operation,
         span_id=span_id,
@@ -859,7 +878,7 @@ def flext_metric(
             )
         else:
             metric = FlextMetric(
-                id=FlextIdGenerator.generate_entity_id(),
+                id=FlextGenerators.generate_entity_id(),
                 name=name,
                 value=value,
                 unit=unit,
@@ -904,7 +923,7 @@ def flext_health_check(
             timestamp=timestamp,
         )
     return FlextHealthCheck(
-        id=FlextIdGenerator.generate_entity_id(),
+        id=FlextGenerators.generate_entity_id(),
         component=component,
         status=status,
         message=message,

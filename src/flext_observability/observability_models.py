@@ -58,7 +58,7 @@ from pydantic import ConfigDict, Field
 if TYPE_CHECKING:
     from decimal import Decimal
 
-# Keep TYPE_CHECKING section minimal; Decimal is imported at runtime above
+# Decimal is imported at runtime above; keep TYPE_CHECKING minimal
 
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation

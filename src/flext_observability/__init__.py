@@ -35,6 +35,7 @@ import warnings
 # Remove unused TYPE_CHECKING - not needed
 
 __version__ = "0.9.0"
+__version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 
 # Import get_logger from flext_core
 from flext_core import FlextContainer, get_logger
@@ -161,6 +162,7 @@ __all__: list[str] = [
     "FlextTrace",
     "FlextTracingService",
     "__version__",
+    "__version_info__",
     "alert",
     "annotations",
     "constants",

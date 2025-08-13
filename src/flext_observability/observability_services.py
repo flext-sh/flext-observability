@@ -68,6 +68,9 @@ from flext_core import (
     get_logger,
 )
 
+if TYPE_CHECKING:
+    from flext_observability.typings import FlextTypes
+
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
 # Health check constants
@@ -88,7 +91,7 @@ if TYPE_CHECKING:
         FlextMetric,
         FlextTrace,
     )
-    from flext_observability.typings import FlextTypes
+
 
 # ============================================================================
 # CORE SERVICES - Simplified using flext-core patterns

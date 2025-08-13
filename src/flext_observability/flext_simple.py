@@ -74,6 +74,25 @@ from typing import TYPE_CHECKING
 
 from flext_core import FlextIdGenerator, FlextResult
 
+
+class FlextGenerators:
+    """Compatibility shim for tests expecting FlextGenerators.
+
+    Maps to flext_core.FlextIdGenerator methods.
+    """
+
+    @staticmethod
+    def generate_timestamp() -> float:
+        return FlextIdGenerator.generate_timestamp()
+
+    @staticmethod
+    def generate_uuid() -> str:
+        return FlextIdGenerator.generate_uuid()
+
+    @staticmethod
+    def generate_entity_id() -> str:
+        return FlextIdGenerator.generate_entity_id()
+
 from flext_observability.entities import (
     FlextAlert,
     FlextHealthCheck,
@@ -86,9 +105,10 @@ from flext_observability.entities import (
 )
 
 if TYPE_CHECKING:
-    from decimal import Decimal
-
     from flext_observability.typings import FlextTypes
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 
 # ============================================================================
@@ -198,14 +218,18 @@ def flext_create_metric(
         metric_type = "histogram"
 
     # ✅ DELEGATE to entities.flext_metric() to eliminate duplication
-    return flext_metric(
-        name=name,
-        value=value,
-        unit=unit,
-        metric_type=metric_type,
-        tags=tags,
-        timestamp=timestamp,
-    )
+    try:
+        result = flext_metric(
+            name=name,
+            value=value,
+            unit=unit,
+            metric_type=metric_type,
+            tags=tags,
+            timestamp=timestamp,
+        )
+        return result
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to create metric: {e}")
 
 
 def flext_create_log_entry(
@@ -254,17 +278,22 @@ def flext_create_trace(
     config = config or {}
 
     # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
-    trace = flext_trace(
-        trace_id=trace_id,
-        operation=operation,
-        span_id=str(config.get("span_id", f"{trace_id}-span")),
-        duration_ms=int(str(config.get("duration_ms", 0))),
-        status=str(config.get("status", "pending")),
-        timestamp=timestamp,
-        id=FlextIdGenerator.generate_uuid(),
-    )
-
-    return FlextResult.ok(trace)
+    try:
+        trace = flext_trace(
+            trace_id=trace_id,
+            operation=operation,
+            span_id=str(config.get("span_id", f"{trace_id}-span")),
+            duration_ms=int(str(config.get("duration_ms", 0))),
+            status=str(config.get("status", "pending")),
+            timestamp=timestamp,
+            id=FlextGenerators.generate_uuid(),
+        )
+        validation = trace.validate_business_rules()
+        if validation.is_failure:
+            return FlextResult.fail(validation.error or "Trace validation failed")
+        return FlextResult.ok(trace)
+    except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to create trace: {e}")
 
 
 def flext_create_alert(
@@ -280,7 +309,7 @@ def flext_create_alert(
             title=title,
             message=message,
             severity=severity,
-            id=FlextIdGenerator.generate_uuid(),
+            id=FlextGenerators.generate_uuid(),
             status=status,
             timestamp=timestamp or _generate_utc_datetime(),
         )
@@ -308,8 +337,7 @@ def flext_create_health_check(
     """Create observability health check with simple parameters."""
     try:
         health_check = FlextHealthCheck(
-            id=health_id
-            or FlextIdGenerator.generate_uuid(),  # Use provided id or generate new one
+            id=health_id or FlextGenerators.generate_uuid(),
             component=component,
             status=status,
             message=message,

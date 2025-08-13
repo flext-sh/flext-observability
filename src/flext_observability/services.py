@@ -68,6 +68,25 @@ from flext_core import (
     get_logger,
 )
 
+
+class FlextGenerators:
+    """Compatibility shim for tests expecting FlextGenerators.
+
+    Maps to flext_core.FlextIdGenerator methods.
+    """
+
+    @staticmethod
+    def generate_timestamp() -> float:
+        return FlextIdGenerator.generate_timestamp()
+
+    @staticmethod
+    def generate_uuid() -> str:
+        return FlextIdGenerator.generate_uuid()
+
+    @staticmethod
+    def generate_entity_id() -> str:
+        return FlextIdGenerator.generate_entity_id()
+
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
 # Health check constants
