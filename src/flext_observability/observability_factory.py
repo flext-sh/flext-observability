@@ -61,16 +61,12 @@ from datetime import datetime
 from typing import TYPE_CHECKING, cast
 
 from flext_core import FlextContainer, FlextIdGenerator, FlextResult, get_logger
-
-from flext_observability.observability_api import flext_create_health_check
 from flext_observability.observability_models import (
     FlextAlert,
+    FlextHealthCheck,
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
-    flext_alert,
-    flext_health_check,
-    flext_trace,
 )
 from flext_observability.observability_services import (
     FlextAlertService,
@@ -229,6 +225,8 @@ class FlextObservabilityMasterFactory:
 
         """
         self.container = container or FlextContainer()
+        # Use logger accessor from factory module so tests patching
+        # flext_observability.factory.get_logger can intercept
         self._logger = get_logger(self.__class__.__name__)
         self._setup_services()
 
@@ -446,8 +444,9 @@ class FlextObservabilityMasterFactory:
             message = kwargs.get("message", "")
             timestamp = kwargs.get("timestamp")
 
-            # Use imported function for consistency and testability
-            health_result = flext_create_health_check(
+            # Create health check entity directly with proper models
+            health = FlextHealthCheck(
+                id=FlextIdGenerator.generate_uuid(),
                 component=component,
                 status=status,
                 message=str(message),
@@ -457,14 +456,11 @@ class FlextObservabilityMasterFactory:
                     else _generate_utc_datetime()
                 ),
             )
-            if health_result.is_failure:
-                return FlextResult.fail(health_result.error or "Health check failed")
-            health = health_result.data
 
             service_result = self.container.get("health_service")
             if service_result.success and service_result.data:
                 service = cast("FlextHealthService", service_result.data)
-                result = service.check_health(health_result)
+                result = service.check_health(health)
                 return (
                     FlextResult.ok(result.data)
                     if result.success

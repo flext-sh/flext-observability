@@ -42,7 +42,7 @@ from flext_core import FlextContainer, get_logger
 from flext_core.constants import FlextConstants
 
 # Core entities (minimal, no redundancy) - Updated imports to use consolidated files
-from flext_observability.observability_models import (
+from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,

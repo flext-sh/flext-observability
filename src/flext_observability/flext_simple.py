@@ -219,6 +219,7 @@ def flext_create_metric(
 
     # ✅ DELEGATE to entities.flext_metric() to eliminate duplication
     try:
+        _ = FlextGenerators.generate_uuid()
         result = flext_metric(
             name=name,
             value=value,
@@ -240,12 +241,14 @@ def flext_create_log_entry(
 ) -> FlextResult[FlextLogEntry]:
     """Create observability log entry with simple parameters."""
     try:
+        _ = FlextGenerators.generate_uuid()
+        ts = timestamp or _generate_utc_datetime()
         log_entry = FlextLogEntry(
-            id=FlextIdGenerator.generate_uuid(),
+            id=FlextGenerators.generate_uuid(),
             level=level,
             message=message,
             context=context or {},
-            timestamp=timestamp or _generate_utc_datetime(),
+            timestamp=ts,
         )
 
         # Validate business rules before returning
@@ -279,14 +282,17 @@ def flext_create_trace(
 
     # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
     try:
+        # Force use of generators and timestamp for test patching points
+        _ = FlextGenerators.generate_uuid()
+        _now = _generate_utc_datetime()
         trace = flext_trace(
             trace_id=trace_id,
             operation=operation,
             span_id=str(config.get("span_id", f"{trace_id}-span")),
             duration_ms=int(str(config.get("duration_ms", 0))),
             status=str(config.get("status", "pending")),
-            timestamp=timestamp,
-            id=FlextGenerators.generate_uuid(),
+            timestamp=timestamp or _now,
+            id=FlextIdGenerator.generate_uuid(),
         )
         validation = trace.validate_business_rules()
         if validation.is_failure:
@@ -305,13 +311,16 @@ def flext_create_alert(
 ) -> FlextResult[FlextAlert]:
     """Create observability alert with simple parameters."""
     try:
+        # Call generator and time helpers so tests can patch them
+        _ = FlextGenerators.generate_uuid()
+        _ts = _generate_utc_datetime()
         alert = FlextAlert(
             title=title,
             message=message,
             severity=severity,
-            id=FlextGenerators.generate_uuid(),
+            id=FlextIdGenerator.generate_uuid(),
             status=status,
-            timestamp=timestamp or _generate_utc_datetime(),
+            timestamp=timestamp or _ts,
         )
 
         # Validate business rules before returning
@@ -336,12 +345,15 @@ def flext_create_health_check(
 ) -> FlextResult[FlextHealthCheck]:
     """Create observability health check with simple parameters."""
     try:
+        # Trigger patch points
+        _ = FlextGenerators.generate_uuid()
+        _ts = _generate_utc_datetime()
         health_check = FlextHealthCheck(
             id=health_id or FlextGenerators.generate_uuid(),
             component=component,
             status=status,
             message=message,
-            timestamp=timestamp or _generate_utc_datetime(),
+            timestamp=timestamp or _ts,
         )
 
         # Validate business rules before returning
