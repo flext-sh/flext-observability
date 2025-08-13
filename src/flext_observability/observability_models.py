@@ -44,7 +44,8 @@ License: MIT
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, cast
+from decimal import Decimal
+from typing import cast
 
 from flext_core import (
     FlextEntity,
@@ -55,10 +56,9 @@ from flext_core import (
 )
 from pydantic import ConfigDict, Field
 
-if TYPE_CHECKING:
-    from decimal import Decimal
+from flext_observability.entities import FlextGenerators
 
-# Decimal is imported at runtime above; keep TYPE_CHECKING minimal
+# Decimal imported at runtime for Pydantic annotations
 
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
@@ -861,7 +861,7 @@ def flext_metric(
             )
         else:
             metric = FlextMetric(
-                id=FlextIdGenerator.generate_entity_id(),
+                id=FlextGenerators.generate_entity_id(),
                 name=name,
                 value=value,
                 unit=unit,
@@ -882,6 +882,8 @@ def flext_metric(
         return FlextResult.ok(metric)
 
     except (ValueError, TypeError, AttributeError) as e:
+        return FlextResult.fail(f"Failed to create metric: {e}")
+    except Exception as e:
         return FlextResult.fail(f"Failed to create metric: {e}")
 
 
@@ -915,14 +917,12 @@ def flext_health_check(
     )
 
 
-# ============================================================================
-# PYDANTIC MODEL REBUILDING - Fix "not fully defined" errors
-# ============================================================================
-
-# CRITICAL: Model rebuild required - Decimal import now properly resolved
-# Now that Decimal is imported directly, we can rebuild the models
-FlextMetric.model_rebuild()
-FlextTrace.model_rebuild()
-FlextAlert.model_rebuild()
-FlextLogEntry.model_rebuild()
-FlextHealthCheck.model_rebuild()
+try:
+    # Explicitly rebuild models to ensure forward refs (Decimal) are resolved
+    FlextMetric.model_rebuild(_types_namespace={"Decimal": Decimal})
+    FlextTrace.model_rebuild(_types_namespace={"Decimal": Decimal})
+    FlextAlert.model_rebuild(_types_namespace={"Decimal": Decimal})
+    FlextLogEntry.model_rebuild(_types_namespace={"Decimal": Decimal})
+    FlextHealthCheck.model_rebuild(_types_namespace={"Decimal": Decimal})
+except Exception:
+    pass

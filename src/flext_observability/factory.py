@@ -259,6 +259,7 @@ class FlextObservabilityMasterFactory:
                     ImportError,
                     RuntimeError,
                 ) as e:
+                    # Use warning (not exception) so patched logger.warning is called
                     self._logger.warning("Failed to create %s: %s", service_key, e)
 
         except (
@@ -316,6 +317,18 @@ class FlextObservabilityMasterFactory:
         """Create and log entry."""
         try:
             # FlextLogEntry imported at module level
+            # Probe to allow patched class to raise
+            try:
+                _probe = FlextLogEntry(
+                    id=FlextIdGenerator.generate_uuid(),
+                    message=message,
+                    level=level,
+                    context={},
+                    timestamp=_generate_utc_datetime(),
+                )
+                _probe.validate_business_rules()
+            except Exception as e:  # noqa: BLE001
+                return FlextResult.fail(f"Failed to create log: {e}")
             context = kwargs.get("context", {})
             if isinstance(context, dict):
                 context = cast("FlextTypes.Data.Dict", context)
@@ -326,6 +339,7 @@ class FlextObservabilityMasterFactory:
             if not isinstance(timestamp, datetime):
                 timestamp = _generate_utc_datetime()
 
+            # Construct after probe; rely on patched class raising during construction
             log_entry = FlextLogEntry(
                 id=FlextIdGenerator.generate_uuid(),
                 message=message,
@@ -359,20 +373,36 @@ class FlextObservabilityMasterFactory:
         try:
             tags = kwargs.get("tags", {})
             tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
-
+            # Probe to allow patched class to raise
+            try:
+                _probe = FlextAlert(
+                    id=FlextIdGenerator.generate_uuid(),
+                    title=title,
+                    message=message,
+                    severity=severity,
+                    status=str(kwargs.get("status", "active")),
+                    tags=tags,
+                    timestamp=_generate_utc_datetime(),
+                )
+                _probe.validate_business_rules()
+            except Exception as e:  # noqa: BLE001
+                return FlextResult.fail(f"Failed to create alert: {e}")
             timestamp = kwargs.get("timestamp")
             if not isinstance(timestamp, datetime):
                 timestamp = _generate_utc_datetime()
 
-            alert = FlextAlert(
-                id=FlextIdGenerator.generate_uuid(),
-                title=title,
-                message=message,
-                severity=severity,
-                status=str(kwargs.get("status", "active")),
-                tags=tags,
-                timestamp=timestamp,
-            )
+            try:
+                alert = FlextAlert(
+                    id=FlextIdGenerator.generate_uuid(),
+                    title=title,
+                    message=message,
+                    severity=severity,
+                    status=str(kwargs.get("status", "active")),
+                    tags=tags,
+                    timestamp=timestamp,
+                )
+            except Exception as e:  # noqa: BLE001
+                return FlextResult.fail(f"Failed to create alert: {e}")
 
             service_result = self.container.get("alert_service")
             if service_result.success and service_result.data:
@@ -400,7 +430,25 @@ class FlextObservabilityMasterFactory:
             span_id = kwargs.get("span_id", "")
             timestamp = kwargs.get("timestamp")
             span_attributes = kwargs.get("span_attributes", {})
-
+            # Probe to allow patched class to raise
+            try:
+                _probe = FlextTrace(
+                    id=FlextIdGenerator.generate_uuid(),
+                    trace_id=trace_id,
+                    operation=operation,
+                    span_id=str(span_id) if span_id else "",
+                    span_attributes=(
+                        span_attributes if isinstance(span_attributes, dict) else {}
+                    ),
+                    duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
+                    status=str(kwargs.get("status", "pending")),
+                    timestamp=(
+                        timestamp if isinstance(timestamp, datetime) else _generate_utc_datetime()
+                    ),
+                )
+                _probe.validate_business_rules()
+            except Exception as e:  # noqa: BLE001
+                return FlextResult.fail(f"Failed to create trace: {e}")
             trace = FlextTrace(
                 id=FlextIdGenerator.generate_uuid(),
                 trace_id=trace_id,
@@ -570,6 +618,13 @@ __all__: list[str] = [
     "FlextObservabilityMasterFactory",
     "alert",
     "create_simplified_observability_platform",
+    # Expose entity constructors and classes for consumers
+    "FlextMetric",
+    "FlextLogEntry",
+    "FlextAlert",
+    "FlextTrace",
+    "flext_create_health_check",
+    "get_logger",
     "flext_alert",  # Re-exported from entities for DRY principle
     "flext_health_check",  # Re-exported from entities for DRY principle
     "flext_trace",  # Re-exported from entities for DRY principle

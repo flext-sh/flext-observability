@@ -102,6 +102,9 @@ flext-observability = "flext_observability.cli:main"
 [tool.poetry]
 packages = [{ include = "flext_observability", from = "src" }]
 
+[tool.poetry.group.dev.dependencies]
+types-psutil = "^7.0.0.20250801"
+
 [tool.bandit]
 extend = "../.bandit-shared.toml"
 

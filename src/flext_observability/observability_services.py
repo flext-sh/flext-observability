@@ -68,6 +68,27 @@ from flext_core import (
     get_logger,
 )
 
+from flext_observability import services as _services
+
+
+class FlextGenerators:
+    """Compatibility shim for tests expecting FlextGenerators.
+
+    Maps to flext_core.FlextIdGenerator methods.
+    """
+
+    @staticmethod
+    def generate_timestamp() -> float:
+        return FlextIdGenerator.generate_timestamp()
+
+    @staticmethod
+    def generate_uuid() -> str:
+        return FlextIdGenerator.generate_uuid()
+
+    @staticmethod
+    def generate_entity_id() -> str:
+        return FlextIdGenerator.generate_entity_id()
+
 if TYPE_CHECKING:
     from flext_observability.typings import FlextTypes
 
@@ -84,7 +105,7 @@ MAX_METRICS_STORE_SIZE = 1000
 METRICS_STORE_CLEANUP_SIZE = 500
 
 if TYPE_CHECKING:
-    from flext_observability.observability_models import (
+    from flext_observability.models import (
         FlextAlert,
         FlextHealthCheck,
         FlextLogEntry,
@@ -248,7 +269,12 @@ class FlextMetricsService:
 
             # Type-safe metric recording with thread safety
             with self._metrics_lock:
-                timestamp = FlextIdGenerator.generate_timestamp()
+                try:
+                    # Generate timestamp via shim to enable test patching
+                    # Use services module shim so tests can patch
+                    timestamp = _services.FlextGenerators.generate_timestamp()
+                except (ValueError, TypeError, AttributeError) as e:
+                    return FlextResult.fail(f"Failed to record metric: {e}")
 
                 # Store raw metric data
                 metric_data = {

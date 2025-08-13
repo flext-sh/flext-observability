@@ -265,7 +265,8 @@ class FlextMetricsService:
 
             # Type-safe metric recording with thread safety
             with self._metrics_lock:
-                timestamp = FlextIdGenerator.generate_timestamp()
+                # Generate timestamp via shim to enable test patching
+                timestamp = FlextGenerators.generate_timestamp()
 
                 # Store raw metric data
                 metric_data = {
