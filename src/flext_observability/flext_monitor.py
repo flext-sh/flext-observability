@@ -63,7 +63,7 @@ from typing import cast
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
-from flext_observability.entities import flext_alert, flext_metric
+import flext_observability.entities as _entities
 from flext_observability.services import (
     FlextAlertService,
     FlextHealthService,
@@ -71,7 +71,6 @@ from flext_observability.services import (
     FlextMetricsService,
     FlextTracingService,
 )
-import flext_observability.entities as _entities
 
 # Function type aliases - avoiding Callable[..., T] to prevent explicit-any errors
 MonitorableReturnType = str | int | float | bool | None

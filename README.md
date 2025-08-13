@@ -240,5 +240,3 @@ MIT License - See [LICENSE](LICENSE) file for details.
 - **[Documentation](docs/)**: Complete documentation
 
 ---
-
- 

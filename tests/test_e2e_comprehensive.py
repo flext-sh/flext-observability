@@ -315,7 +315,10 @@ class TestE2EComprehensiveObservability:
 
         for name, value, unit in edge_cases:
             result = self.factory.metric(
-                name, value, unit=unit, timestamp=test_timestamp,
+                name,
+                value,
+                unit=unit,
+                timestamp=test_timestamp,
             )
             assert result.success
 

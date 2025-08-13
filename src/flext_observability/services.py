@@ -87,6 +87,7 @@ class FlextGenerators:
     def generate_entity_id() -> str:
         return FlextIdGenerator.generate_entity_id()
 
+
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
 # Health check constants

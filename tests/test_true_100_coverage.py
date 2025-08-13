@@ -103,7 +103,9 @@ class TestTrue100Coverage:
 
         # Force invalid value and validate
         object.__setattr__(
-            metric, "value", [1, 2, 3],
+            metric,
+            "value",
+            [1, 2, 3],
         )  # List can't be converted to float
         result = metric.validate_business_rules()
         assert result.is_failure

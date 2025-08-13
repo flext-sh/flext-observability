@@ -93,6 +93,7 @@ class FlextGenerators:
     def generate_entity_id() -> str:
         return FlextIdGenerator.generate_entity_id()
 
+
 from flext_observability.entities import (
     FlextAlert,
     FlextHealthCheck,
@@ -220,7 +221,7 @@ def flext_create_metric(
     # ✅ DELEGATE to entities.flext_metric() to eliminate duplication
     try:
         _ = FlextGenerators.generate_uuid()
-        result = flext_metric(
+        return flext_metric(
             name=name,
             value=value,
             unit=unit,
@@ -228,7 +229,6 @@ def flext_create_metric(
             tags=tags,
             timestamp=timestamp,
         )
-        return result
     except (ValueError, TypeError, AttributeError) as e:
         return FlextResult.fail(f"Failed to create metric: {e}")
 
@@ -284,14 +284,14 @@ def flext_create_trace(
     try:
         # Force use of generators and timestamp for test patching points
         _ = FlextGenerators.generate_uuid()
-        _now = _generate_utc_datetime()
+        now = _generate_utc_datetime()
         trace = flext_trace(
             trace_id=trace_id,
             operation=operation,
             span_id=str(config.get("span_id", f"{trace_id}-span")),
             duration_ms=int(str(config.get("duration_ms", 0))),
             status=str(config.get("status", "pending")),
-            timestamp=timestamp or _now,
+            timestamp=timestamp or now,
             id=FlextIdGenerator.generate_uuid(),
         )
         validation = trace.validate_business_rules()
@@ -313,14 +313,14 @@ def flext_create_alert(
     try:
         # Call generator and time helpers so tests can patch them
         _ = FlextGenerators.generate_uuid()
-        _ts = _generate_utc_datetime()
+        ts = _generate_utc_datetime()
         alert = FlextAlert(
             title=title,
             message=message,
             severity=severity,
             id=FlextIdGenerator.generate_uuid(),
             status=status,
-            timestamp=timestamp or _ts,
+            timestamp=timestamp or ts,
         )
 
         # Validate business rules before returning
@@ -347,13 +347,13 @@ def flext_create_health_check(
     try:
         # Trigger patch points
         _ = FlextGenerators.generate_uuid()
-        _ts = _generate_utc_datetime()
+        ts = _generate_utc_datetime()
         health_check = FlextHealthCheck(
             id=health_id or FlextGenerators.generate_uuid(),
             component=component,
             status=status,
             message=message,
-            timestamp=timestamp or _ts,
+            timestamp=timestamp or ts,
         )
 
         # Validate business rules before returning

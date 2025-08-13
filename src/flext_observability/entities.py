@@ -75,6 +75,7 @@ class FlextGenerators:
     def generate_entity_id() -> str:
         return FlextIdGenerator.generate_entity_id()
 
+
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
 # ============================================================================

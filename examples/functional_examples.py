@@ -154,7 +154,9 @@ class ECommerceOrderProcessor:
 
             # Step 4: Send confirmation
             confirmation_result = self._send_confirmation(
-                order_id, user_id, bound_logger,
+                order_id,
+                user_id,
+                bound_logger,
             )
             steps_results.append(("confirmation", confirmation_result.success))
 
@@ -264,7 +266,9 @@ class ECommerceOrderProcessor:
     ) -> FlextResult[bool]:
         """Process payment."""
         logger.flext_observability_info(
-            "Processing payment", step="payment", amount=amount,
+            "Processing payment",
+            step="payment",
+            amount=amount,
         )
 
         # Simulate payment processing (95% success rate)
@@ -273,14 +277,22 @@ class ECommerceOrderProcessor:
 
         if success:
             self.factory.metric(
-                "payment_processed", amount, unit="USD", tags={"status": "success"},
+                "payment_processed",
+                amount,
+                unit="USD",
+                tags={"status": "success"},
             )
             return FlextResult.ok(PAYMENT_SUCCESS)
         logger.flext_observability_error(
-            "Payment failed", step="payment", amount=amount,
+            "Payment failed",
+            step="payment",
+            amount=amount,
         )
         self.factory.metric(
-            "payment_processed", 0.0, unit="USD", tags={"status": "failed"},
+            "payment_processed",
+            0.0,
+            unit="USD",
+            tags={"status": "failed"},
         )
         return FlextResult.fail("Payment processing failed")
 
@@ -300,7 +312,8 @@ class ECommerceOrderProcessor:
             self.factory.metric("inventory_updated", 1.0, tags={"status": "success"})
             return FlextResult.ok(SUCCESS_STATUS)
         logger.flext_observability_error(
-            "Inventory update failed", step="inventory_update",
+            "Inventory update failed",
+            step="inventory_update",
         )
         self.factory.metric("inventory_updated", 1.0, tags={"status": "failed"})
         return FlextResult.fail("Inventory update failed")
@@ -313,7 +326,9 @@ class ECommerceOrderProcessor:
     ) -> FlextResult[bool]:
         """Send order confirmation."""
         logger.flext_observability_info(
-            "Sending confirmation", step="confirmation", user_id=user_id,
+            "Sending confirmation",
+            step="confirmation",
+            user_id=user_id,
         )
 
         # Simulate confirmation sending (99% success rate)
@@ -324,7 +339,8 @@ class ECommerceOrderProcessor:
             self.factory.metric("confirmation_sent", 1.0, tags={"status": "success"})
             return FlextResult.ok(SUCCESS_STATUS)
         logger.flext_observability_error(
-            "Confirmation sending failed", step="confirmation",
+            "Confirmation sending failed",
+            step="confirmation",
         )
         self.factory.metric("confirmation_sent", 1.0, tags={"status": "failed"})
         return FlextResult.fail("Confirmation sending failed")
@@ -596,12 +612,14 @@ class PerformanceAnalytics:
 
         # Analyze collected data
         analysis_results = self._perform_performance_analysis(
-            performance_data, bound_logger,
+            performance_data,
+            bound_logger,
         )
 
         # Generate recommendations
         recommendations = self._generate_performance_recommendations(
-            analysis_results, bound_logger,
+            analysis_results,
+            bound_logger,
         )
 
         # Create comprehensive report
@@ -676,7 +694,8 @@ class PerformanceAnalytics:
         return cpu_metrics
 
     def _collect_memory_metrics(
-        self, logger: FlextStructuredLogger,
+        self,
+        logger: FlextStructuredLogger,
     ) -> dict[str, float]:
         """Collect memory performance metrics."""
         logger.flext_observability_info("Collecting memory metrics")
@@ -709,7 +728,8 @@ class PerformanceAnalytics:
         return memory_metrics
 
     def _collect_network_metrics(
-        self, logger: FlextStructuredLogger,
+        self,
+        logger: FlextStructuredLogger,
     ) -> dict[str, float]:
         """Collect network performance metrics."""
         logger.flext_observability_info("Collecting network metrics")
@@ -732,7 +752,8 @@ class PerformanceAnalytics:
         return network_metrics
 
     def _collect_database_metrics(
-        self, logger: FlextStructuredLogger,
+        self,
+        logger: FlextStructuredLogger,
     ) -> dict[str, float]:
         """Collect database performance metrics."""
         logger.flext_observability_info("Collecting database metrics")
@@ -756,7 +777,8 @@ class PerformanceAnalytics:
         return db_metrics
 
     def _collect_application_performance_metrics(
-        self, logger: FlextStructuredLogger,
+        self,
+        logger: FlextStructuredLogger,
     ) -> dict[str, float]:
         """Collect application-specific performance metrics."""
         logger.flext_observability_info("Collecting application performance metrics")
@@ -790,7 +812,9 @@ class PerformanceAnalytics:
         }
 
     def _perform_performance_analysis(
-        self, performance_data: dict[str, object], logger: FlextStructuredLogger,
+        self,
+        performance_data: dict[str, object],
+        logger: FlextStructuredLogger,
     ) -> dict[str, object]:
         """Analyze collected performance data."""
         logger.flext_observability_info("Performing performance analysis")
@@ -846,7 +870,9 @@ class PerformanceAnalytics:
         }
 
     def _generate_performance_recommendations(
-        self, analysis_results: dict[str, object], logger: FlextStructuredLogger,
+        self,
+        analysis_results: dict[str, object],
+        logger: FlextStructuredLogger,
     ) -> list[str]:
         """Generate performance optimization recommendations."""
         logger.flext_observability_info("Generating performance recommendations")

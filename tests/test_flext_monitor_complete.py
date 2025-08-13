@@ -133,7 +133,9 @@ class TestFlextObservabilityMonitor:
         monitor._initialized = True
 
         with patch.object(
-            monitor._logger, "info", side_effect=ValueError("Logger error"),
+            monitor._logger,
+            "info",
+            side_effect=ValueError("Logger error"),
         ):
             result = monitor.flext_start_monitoring()
 
@@ -166,7 +168,9 @@ class TestFlextObservabilityMonitor:
         monitor._running = True
 
         with patch.object(
-            monitor._logger, "info", side_effect=ValueError("Logger error"),
+            monitor._logger,
+            "info",
+            side_effect=ValueError("Logger error"),
         ):
             result = monitor.flext_stop_monitoring()
 

@@ -89,6 +89,7 @@ class FlextGenerators:
     def generate_entity_id() -> str:
         return FlextIdGenerator.generate_entity_id()
 
+
 if TYPE_CHECKING:
     from flext_observability.typings import FlextTypes
 
