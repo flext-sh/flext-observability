@@ -86,7 +86,7 @@ from flext_observability.entities import (
 )
 
 if TYPE_CHECKING:
-    from flext_observability.typings import FlextTypes
+    pass
 
 if TYPE_CHECKING:
     from decimal import Decimal
