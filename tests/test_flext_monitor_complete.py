@@ -93,7 +93,7 @@ class TestFlextObservabilityMonitor:
             error = assert_failure_with_error(result)
             if "Observability initialization failed" not in error:
                 raise AssertionError(
-                    f"Expected {'Observability initialization failed'} in {error}"
+                    f"Expected {'Observability initialization failed'} in {error}",
                 )
 
     def test_start_monitoring_success(self) -> None:
@@ -133,7 +133,7 @@ class TestFlextObservabilityMonitor:
         monitor._initialized = True
 
         with patch.object(
-            monitor._logger, "info", side_effect=ValueError("Logger error")
+            monitor._logger, "info", side_effect=ValueError("Logger error"),
         ):
             result = monitor.flext_start_monitoring()
 
@@ -166,7 +166,7 @@ class TestFlextObservabilityMonitor:
         monitor._running = True
 
         with patch.object(
-            monitor._logger, "info", side_effect=ValueError("Logger error")
+            monitor._logger, "info", side_effect=ValueError("Logger error"),
         ):
             result = monitor.flext_stop_monitoring()
 
@@ -197,7 +197,7 @@ class TestFlextObservabilityMonitor:
         error = assert_failure_with_error(result)
         if "Health service not available" not in error:
             raise AssertionError(
-                f"Expected {'Health service not available'} in {error}"
+                f"Expected {'Health service not available'} in {error}",
             )
 
     def test_get_health_status_exception(self) -> None:

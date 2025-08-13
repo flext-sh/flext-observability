@@ -502,7 +502,7 @@ def get_global_factory(
     container: FlextContainer | None = None,
 ) -> FlextObservabilityMasterFactory:
     """Get global factory instance."""
-    global _global_factory
+    global _global_factory  # noqa: PLW0603 - Global state for singleton pattern
     if _global_factory is None:
         _global_factory = FlextObservabilityMasterFactory(container)
     return _global_factory
@@ -510,7 +510,7 @@ def get_global_factory(
 
 def reset_global_factory() -> None:
     """Reset global factory for testing."""
-    global _global_factory
+    global _global_factory  # noqa: PLW0603 - Global state for singleton pattern
     _global_factory = None
 
 

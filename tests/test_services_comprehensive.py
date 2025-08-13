@@ -397,7 +397,7 @@ class TestFlextAlertServiceComprehensive:
         mock_alert = Mock()
         # Make title property raise exception (this is what create_alert actually accesses)
         type(mock_alert).title = PropertyMock(
-            side_effect=ZeroDivisionError("Mock error")
+            side_effect=ZeroDivisionError("Mock error"),
         )
         mock_alert.severity = "HIGH"  # Set severity normally to isolate the title error
 
@@ -469,7 +469,7 @@ class TestServicesExceptionHandling:
         mock_metric.name = "test"
         # Make value property raise exception that's handled by the service
         type(mock_metric).value = PropertyMock(
-            side_effect=ValueError("Mock value error")
+            side_effect=ValueError("Mock value error"),
         )
 
         result = service.record_metric(mock_metric)
@@ -484,7 +484,7 @@ class TestServicesExceptionHandling:
 
         # Apply patch only during record_metric to avoid breaking container initialization
         with patch(
-            "flext_observability.services.FlextGenerators.generate_timestamp"
+            "flext_observability.services.FlextGenerators.generate_timestamp",
         ) as mock_timestamp:
             mock_timestamp.side_effect = ValueError("Timestamp error")
             # Should handle timestamp exception gracefully - expects failure

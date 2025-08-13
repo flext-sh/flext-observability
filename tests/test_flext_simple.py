@@ -149,7 +149,7 @@ class TestSimpleApiCreation:
         assert data.status == "healthy"
         if data.message != "All systems operational":
             raise AssertionError(
-                f"Expected {'All systems operational'}, got {data.message}"
+                f"Expected {'All systems operational'}, got {data.message}",
             )
 
 

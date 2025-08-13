@@ -193,8 +193,7 @@ def flext_create_metric(
     elif name.endswith(("_total", "_count")):
         metric_type = "counter"
     elif (
-        name.endswith(("_duration", "_time", "_seconds"))
-        or "histogram" in name.lower()
+        name.endswith(("_duration", "_time", "_seconds")) or "histogram" in name.lower()
     ):
         metric_type = "histogram"
 

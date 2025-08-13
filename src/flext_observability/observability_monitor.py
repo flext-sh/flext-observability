@@ -330,7 +330,7 @@ def flext_monitor_function(
     monitor: FlextObservabilityMonitor | None = None,
     metric_name: str | None = None,
 ) -> Callable[[MonitorableFunctionType], MonitorableFunctionType]:
-    """Simple function monitoring decorator with real metrics collection.
+    """Create function monitoring decorator with real metrics collection.
 
     SOLID compliant with reduced complexity version that provides real functionality
     while maintaining code quality standards and SOLID principles.

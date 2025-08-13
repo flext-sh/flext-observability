@@ -67,9 +67,10 @@ from flext_core import (
     FlextResult,
     get_logger,
 )
+from flext_observability.typings import FlextTypes
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes
+    pass
 
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 

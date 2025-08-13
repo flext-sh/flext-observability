@@ -155,10 +155,10 @@ export PROMETHEUS_PUSH_GATEWAY=http://localhost:9091
 
 ## Quality Standards
 
-### **Zero Tolerance Quality Gates**
+### **Quality Targets**
 
-- **Coverage**: 90% test coverage enforced (currently 93%)
-- **Type Safety**: Strict MyPy configuration
+- **Coverage**: 90% target (currently ~93%)
+- **Type Safety**: MyPy strict mode adoption
 - **Linting**: Ruff with comprehensive rules
 - **Security**: Bandit + pip-audit scanning
 

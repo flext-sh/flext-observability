@@ -59,7 +59,7 @@ class TestServicesMissingCoverage:
             operation="child_operation",
             span_id="child_span",
             span_attributes={
-                "parent_trace_id": "parent_trace_123"
+                "parent_trace_id": "parent_trace_123",
             },  # Use span_attributes instead
         )
 
