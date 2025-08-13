@@ -81,7 +81,7 @@ from flext_observability.observability_services import (
 )
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes
+    from flext_observability.typings import FlextTypes
 
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
