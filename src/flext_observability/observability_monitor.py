@@ -63,7 +63,7 @@ from typing import cast
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
-from flext_observability.observability_models import flext_alert, flext_metric
+from flext_observability.entities import flext_alert, flext_metric
 from flext_observability.observability_services import (
     FlextAlertService,
     FlextHealthService,
@@ -306,15 +306,14 @@ class FlextObservabilityMonitor:
         try:
             metric_result = flext_metric(name, value, metric_type=metric_type)
             if metric_result.is_failure:
-                return FlextResult.fail(
-                    metric_result.error or "Failed to create metric",
-                )
+                return FlextResult.fail(str(metric_result.error or "Failed to create metric"))
 
             if metric_result.data is None:
                 return FlextResult.fail("Metric creation returned None")
-            return self._metrics_service.record_metric(metric_result.data).map(
-                lambda _: None,
-            )
+            record_result = self._metrics_service.record_metric(metric_result.data)
+            if record_result.is_failure:
+                return FlextResult.fail(record_result.error or "Failed to record metric")
+            return FlextResult.ok(None)
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult.fail(f"Failed to record metric: {e}")
 

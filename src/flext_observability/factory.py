@@ -258,8 +258,8 @@ class FlextObservabilityMasterFactory:
                     AttributeError,
                     ImportError,
                     RuntimeError,
-                ):
-                    self._logger.exception("Failed to create %s", service_key)
+                ) as e:
+                    self._logger.warning("Failed to create %s: %s", service_key, e)
 
         except (
             ValueError,
@@ -299,11 +299,9 @@ class FlextObservabilityMasterFactory:
             if service_result.success and service_result.data:
                 service = cast("FlextMetricsService", service_result.data)
                 result = service.record_metric(metric)
-                return (
-                    FlextResult.ok(result.data)
-                    if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
-                )
+                if result.is_failure:
+                    return FlextResult.fail(result.error or "Unknown error")
+                return FlextResult.ok(result.data)
             return FlextResult.ok(metric)
 
         except (ValueError, TypeError, AttributeError) as e:
@@ -424,11 +422,9 @@ class FlextObservabilityMasterFactory:
             if service_result.success and service_result.data:
                 service = cast("FlextTracingService", service_result.data)
                 result = service.start_trace(trace)
-                return (
-                    FlextResult.ok(result.data)
-                    if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
-                )
+                if result.is_failure:
+                    return FlextResult.fail(result.error or "Unknown error")
+                return FlextResult.ok(result.data)
             return FlextResult.ok(trace)
 
         except (ValueError, TypeError, AttributeError) as e:
