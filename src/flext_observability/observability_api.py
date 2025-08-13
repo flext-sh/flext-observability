@@ -71,7 +71,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING
-from flext_observability.typings import FlextTypes
 
 from flext_core import FlextIdGenerator, FlextResult
 
@@ -85,6 +84,9 @@ from flext_observability.observability_models import (
     flext_health_check,  # Import for DRY principle - reuse existing function
     flext_trace,  # Import for DRY principle - reuse existing function
 )
+
+if TYPE_CHECKING:
+    from flext_observability.typings import FlextTypes
 
 if TYPE_CHECKING:
     from decimal import Decimal
