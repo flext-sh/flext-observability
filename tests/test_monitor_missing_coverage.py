@@ -22,7 +22,7 @@ class TestMonitorMissingCoverage:
 
         # Mock health service to return failure
         monitor._health_service.get_overall_health.return_value = FlextResult.fail(
-            "Health check failed"
+            "Health check failed",
         )
 
         result = monitor.flext_get_health_status()
@@ -94,7 +94,7 @@ class TestMonitorMissingCoverage:
         # Mock service to return success
         expected_summary = {"total_metrics": 5, "last_update": "2025-01-01"}
         monitor._metrics_service.get_metrics_summary.return_value = FlextResult.ok(
-            expected_summary
+            expected_summary,
         )
 
         result = monitor.flext_get_metrics_summary()

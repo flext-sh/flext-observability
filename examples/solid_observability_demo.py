@@ -96,7 +96,7 @@ def demo_distributed_tracing(monitor: FlextObservabilityMonitor) -> None:
 
     # Create and start a trace
     trace_result = flext_create_trace(
-        trace_id="demo_trace_001", operation="user_registration"
+        trace_id="demo_trace_001", operation="user_registration",
     )
 
     if trace_result.is_failure:
@@ -116,7 +116,7 @@ def demo_distributed_tracing(monitor: FlextObservabilityMonitor) -> None:
         )
 
         monitor._tracing_service.add_span_to_trace(
-            "demo_trace_001", "save_to_database", table="users", save_time_ms=120
+            "demo_trace_001", "save_to_database", table="users", save_time_ms=120,
         )
 
         print("  ✅ Added spans to trace")
@@ -126,7 +126,7 @@ def demo_distributed_tracing(monitor: FlextObservabilityMonitor) -> None:
 
         # Finish the trace
         finish_result = monitor._tracing_service.finish_trace(
-            "demo_trace_001", "completed"
+            "demo_trace_001", "completed",
         )
         if finish_result.success:
             print("  ✅ Completed distributed trace")
@@ -156,7 +156,7 @@ def demo_health_monitoring(monitor: FlextObservabilityMonitor) -> None:
 
     for component, status, message in components:
         health_result = flext_create_health_check(
-            component=component, status=status, message=message
+            component=component, status=status, message=message,
         )
 
         if health_result.success:
@@ -268,10 +268,10 @@ def show_health_status(monitor: FlextObservabilityMonitor) -> None:
     if monitor_metrics:
         print(
             f"  ⏱️ Monitor uptime: "
-            f"{monitor_metrics.get('monitor_uptime_seconds', 0):.1f}s"
+            f"{monitor_metrics.get('monitor_uptime_seconds', 0):.1f}s",
         )
         print(
-            f"  🔧 Functions monitored: {monitor_metrics.get('functions_monitored', 0)}"
+            f"  🔧 Functions monitored: {monitor_metrics.get('functions_monitored', 0)}",
         )
 
 

@@ -294,7 +294,7 @@ class TestFlextObservabilityMasterFactory:
         """Test successful health status retrieval."""
         mock_service = Mock()
         mock_service.get_overall_health.return_value = FlextResult.ok(
-            {"status": "healthy"}
+            {"status": "healthy"},
         )
 
         mock_container = Mock(spec=FlextContainer)

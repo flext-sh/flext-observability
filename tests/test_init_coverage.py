@@ -28,7 +28,7 @@ class TestInitCoverage:
             assert len(warning_list) == 1
             assert issubclass(warning_list[0].category, DeprecationWarning)
             assert "create_observability_platform is deprecated" in str(
-                warning_list[0].message
+                warning_list[0].message,
             )
 
         assert factory is not None
@@ -55,7 +55,7 @@ class TestInitCoverage:
             assert len(warning_list) == 1
             assert issubclass(warning_list[0].category, DeprecationWarning)
             assert "observability_platform is deprecated" in str(
-                warning_list[0].message
+                warning_list[0].message,
             )
 
         assert factory is not None
@@ -83,7 +83,7 @@ class TestInitCoverage:
             assert len(warning_list) == 1
             assert issubclass(warning_list[0].category, DeprecationWarning)
             assert "constants.DEFAULT_TIMEOUT is deprecated" in str(
-                warning_list[0].message
+                warning_list[0].message,
             )
 
         # Should return something (even if "UNKNOWN")

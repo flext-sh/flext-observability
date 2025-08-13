@@ -90,7 +90,7 @@ from flext_observability.observability_services import (
 
 
 def flext_health_status() -> dict[str, str]:
-    """Basic health status using flext-core patterns."""
+    """Return basic health status using flext-core patterns."""
     return {
         "status": "healthy",
         "service": "flext-observability",
@@ -117,12 +117,10 @@ def _deprecated_warning(old_name: str, new_name: str) -> None:
 def create_observability_platform(
     container: object | None = None,
 ) -> FlextObservabilityMasterFactory:
-    """DEPRECATED: Use FlextObservabilityMasterFactory directly."""
+    """Create master factory (deprecated; use FlextObservabilityMasterFactory)."""
     _deprecated_warning(
-        "create_observability_platform",
-        "FlextObservabilityMasterFactory",
+        "create_observability_platform", "FlextObservabilityMasterFactory",
     )
-    # Import moved to top-level to satisfy PLC0415
     container_typed = container if isinstance(container, FlextContainer) else None
     return FlextObservabilityMasterFactory(container_typed)
 
@@ -130,9 +128,8 @@ def create_observability_platform(
 def observability_platform(
     container: object | None = None,
 ) -> FlextObservabilityMasterFactory:
-    """DEPRECATED: Use FlextObservabilityMasterFactory instead."""
+    """Return master factory (deprecated; prefer FlextObservabilityMasterFactory)."""
     _deprecated_warning("observability_platform", "FlextObservabilityMasterFactory")
-    # Import moved to top-level to satisfy PLC0415
     container_typed = container if isinstance(container, FlextContainer) else None
     return FlextObservabilityMasterFactory(container_typed)
 
@@ -142,11 +139,7 @@ class _LegacyConstants:
     """DEPRECATED: Use flext_core.constants.FlextConstants instead."""
 
     def __getattr__(self, name: str) -> object:
-        _deprecated_warning(
-            f"constants.{name}",
-            "flext_core.constants.FlextConstants",
-        )
-        # Import moved to top-level to satisfy PLC0415
+        _deprecated_warning(f"constants.{name}", "flext_core.constants.FlextConstants")
         return getattr(FlextConstants, name, "UNKNOWN")
 
 

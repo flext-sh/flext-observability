@@ -44,8 +44,7 @@ License: MIT
 from __future__ import annotations
 
 from datetime import datetime
-from decimal import Decimal
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from flext_core import (
     FlextEntity,
@@ -55,6 +54,9 @@ from flext_core import (
     FlextValidation,
 )
 from pydantic import ConfigDict, Field
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
