@@ -59,7 +59,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING, cast
-from flext_observability.typings import FlextTypes
 
 from flext_core import FlextContainer, FlextIdGenerator, FlextResult, get_logger
 
@@ -82,7 +81,7 @@ from flext_observability.observability_services import (
 )
 
 if TYPE_CHECKING:
-    pass
+    from flext_observability.typings import FlextTypes
 
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
