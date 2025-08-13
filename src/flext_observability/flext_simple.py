@@ -84,10 +84,11 @@ from flext_observability.entities import (
     flext_health_check,  # Import for DRY principle - reuse existing function
     flext_trace,  # Import for DRY principle - reuse existing function
 )
-from flext_observability.typings import FlextTypes
 
 if TYPE_CHECKING:
     from decimal import Decimal
+
+    from flext_observability.typings import FlextTypes
 
 
 # ============================================================================
