@@ -90,6 +90,7 @@ if TYPE_CHECKING:
     )
     from flext_observability.typings import FlextTypes
 
+
 # ============================================================================
 # CORE SERVICES - Simplified using flext-core patterns
 # ============================================================================
