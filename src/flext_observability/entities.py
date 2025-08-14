@@ -53,6 +53,7 @@ from flext_core import (
     FlextResult,
     FlextTypes,
     FlextValidation,
+    get_logger,
 )
 from pydantic import ConfigDict, Field
 
@@ -937,6 +938,7 @@ def flext_health_check(
 # PYDANTIC MODEL REBUILDING - Fix "not fully defined" errors
 # ============================================================================
 
+_logger = get_logger(__name__)
 try:
     # Explicitly rebuild models to ensure forward refs (Decimal) are resolved
     FlextMetric.model_rebuild(_types_namespace={"Decimal": Decimal})
@@ -944,5 +946,8 @@ try:
     FlextAlert.model_rebuild(_types_namespace={"Decimal": Decimal})
     FlextLogEntry.model_rebuild(_types_namespace={"Decimal": Decimal})
     FlextHealthCheck.model_rebuild(_types_namespace={"Decimal": Decimal})
-except Exception:
-    pass
+except Exception as exc:  # Do not swallow errors silently
+    _logger.warning(
+        "Pydantic model_rebuild failed for flext-observability entities",
+        error=str(exc),
+    )
