@@ -106,7 +106,7 @@ MAX_METRICS_STORE_SIZE = 1000
 METRICS_STORE_CLEANUP_SIZE = 500
 
 if TYPE_CHECKING:
-    from flext_observability.models import (
+    from flext_observability.observability_models import (
         FlextAlert,
         FlextHealthCheck,
         FlextLogEntry,

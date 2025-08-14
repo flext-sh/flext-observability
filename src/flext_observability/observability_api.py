@@ -79,7 +79,7 @@ from flext_observability.entities import (
     flext_health_check,  # Import for DRY principle - reuse existing function
     flext_trace,  # Import for DRY principle - reuse existing function
 )
-from flext_observability.models import (
+from flext_observability.observability_models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
@@ -178,7 +178,7 @@ def flext_create_metric(
 
     """
     # Import locally to avoid circular dependency
-    from flext_observability.models import flext_metric
+    from flext_observability.observability_models import flext_metric
 
     # Smart metric type inference based on naming conventions and units
     metric_type = "gauge"  # default
@@ -292,7 +292,7 @@ def flext_create_trace(
     to avoid code duplication. Single source of truth for trace creation.
     """
     # Import locally to avoid circular dependency
-    from flext_observability.models import flext_trace
+    from flext_observability.observability_models import flext_trace
 
     config = config or {}
 
