@@ -74,6 +74,24 @@ from typing import TYPE_CHECKING
 
 from flext_core import FlextIdGenerator, FlextResult
 
+from flext_observability.entities import (
+    FlextAlert,
+    FlextHealthCheck,
+    FlextLogEntry,
+    FlextMetric,
+    FlextTrace,
+    flext_alert,  # Import for DRY principle - reuse existing function
+    flext_health_check,  # Import for DRY principle - reuse existing function
+    flext_metric,  # Import for DRY principle - reuse existing function
+    flext_trace,  # Import for DRY principle - reuse existing function
+)
+
+if TYPE_CHECKING:
+    from flext_observability.typings import FlextTypes
+
+if TYPE_CHECKING:
+    from decimal import Decimal
+
 
 class FlextGenerators:
     """Compatibility shim for tests expecting FlextGenerators.
@@ -92,24 +110,6 @@ class FlextGenerators:
     @staticmethod
     def generate_entity_id() -> str:
         return FlextIdGenerator.generate_entity_id()
-
-
-from flext_observability.entities import (
-    FlextAlert,
-    FlextHealthCheck,
-    FlextLogEntry,
-    FlextMetric,
-    FlextTrace,
-    flext_alert,  # Import for DRY principle - reuse existing function
-    flext_health_check,  # Import for DRY principle - reuse existing function
-    flext_trace,  # Import for DRY principle - reuse existing function
-)
-
-if TYPE_CHECKING:
-    from flext_observability.typings import FlextTypes
-
-if TYPE_CHECKING:
-    from decimal import Decimal
 
 
 # ============================================================================
@@ -199,9 +199,6 @@ def flext_create_metric(
         error messages for debugging and operational visibility.
 
     """
-    # Import locally to avoid circular dependency
-    from flext_observability.entities import flext_metric
-
     # Smart metric type inference based on naming conventions and units
     metric_type = "gauge"  # default
 
@@ -275,9 +272,6 @@ def flext_create_trace(
     ✅ ELIMINATED DUPLICATION: Delegates to entities.flext_trace()
     to avoid code duplication. Single source of truth for trace creation.
     """
-    # Import locally to avoid circular dependency
-    from flext_observability.entities import flext_trace
-
     config = config or {}
 
     # ✅ DELEGATE to entities.flext_trace() to eliminate duplication

@@ -43,6 +43,7 @@ License: MIT
 
 from __future__ import annotations
 
+import math
 from datetime import datetime
 from decimal import Decimal
 from typing import cast
@@ -55,7 +56,7 @@ from flext_core import (
     FlextValidation,
     get_logger,
 )
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, field_validator
 
 
 class FlextGenerators:
@@ -168,6 +169,41 @@ class FlextMetric(FlextEntity):
     tags: FlextTypes.Data.Dict = Field(default_factory=dict, description="Metric tags")
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
     metric_type: str = Field(default="gauge", description="Metric type")
+
+    @field_validator("name")
+    @classmethod
+    def validate_metric_name(cls, v: str) -> str:
+        """Validate metric name is non-empty and follows naming conventions."""
+        if not FlextValidation.is_non_empty_string(v):
+            msg = "Metric name cannot be empty"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("value")
+    @classmethod
+    def validate_metric_value(cls, v: float | Decimal) -> float | Decimal:
+        """Validate metric value is numeric and not NaN/infinite."""
+        # Try to convert to float to validate it's numeric
+        try:
+            float_val = float(v)
+            # Check for NaN and infinite values
+            if math.isnan(float_val) or math.isinf(float_val):
+                msg = "Metric value cannot be NaN or infinite"
+                raise ValueError(msg)
+        except (ValueError, TypeError) as e:
+            msg = "Metric value must be numeric"
+            raise ValueError(msg) from e
+        return v
+
+    @field_validator("metric_type")
+    @classmethod
+    def validate_metric_type(cls, v: str) -> str:
+        """Validate metric type is a valid classification."""
+        valid_types = {"gauge", "counter", "histogram", "summary"}
+        if v not in valid_types:
+            msg = f"Invalid metric type: {v}. Must be one of {valid_types}"
+            raise ValueError(msg)
+        return v
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate metric business rules and domain constraints.
@@ -305,6 +341,25 @@ class FlextLogEntry(FlextEntity):
         description="Log context",
     )
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
+
+    @field_validator("message")
+    @classmethod
+    def validate_log_message(cls, v: str) -> str:
+        """Validate log message is non-empty and meaningful."""
+        if not FlextValidation.is_non_empty_string(v):
+            msg = "Log message cannot be empty"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("level")
+    @classmethod
+    def validate_log_level(cls, v: str) -> str:
+        """Validate log level is a valid severity classification."""
+        valid_levels = {"debug", "info", "warning", "error", "critical"}
+        if v not in valid_levels:
+            msg = f"Invalid log level: {v}. Must be one of {valid_levels}"
+            raise ValueError(msg)
+        return v
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate structured logging business rules and domain constraints.
@@ -453,6 +508,52 @@ class FlextTrace(FlextEntity):
     status: str = Field(default="pending", description="Trace status")
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
 
+    @field_validator("trace_id")
+    @classmethod
+    def validate_trace_id(cls, v: str) -> str:
+        """Validate trace ID is non-empty for global correlation."""
+        if not FlextValidation.is_non_empty_string(v):
+            msg = "Trace ID cannot be empty"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("operation")
+    @classmethod
+    def validate_operation_name(cls, v: str) -> str:
+        """Validate operation name is meaningful and searchable."""
+        if not FlextValidation.is_non_empty_string(v):
+            msg = "Operation name cannot be empty"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("span_id")
+    @classmethod
+    def validate_span_id(cls, v: str) -> str:
+        """Validate span ID is non-empty for unique identification."""
+        if not FlextValidation.is_non_empty_string(v):
+            msg = "Span ID cannot be empty"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("duration_ms")
+    @classmethod
+    def validate_duration(cls, v: int) -> int:
+        """Validate duration is non-negative for timing consistency."""
+        if v < 0:
+            msg = "Duration must be non-negative"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("status")
+    @classmethod
+    def validate_trace_status(cls, v: str) -> str:
+        """Validate status is a valid lifecycle state."""
+        valid_statuses = {"pending", "completed", "error", "timeout"}
+        if v not in valid_statuses:
+            msg = f"Invalid trace status: {v}. Must be one of {valid_statuses}"
+            raise ValueError(msg)
+        return v
+
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate distributed tracing business rules and domain constraints.
 
@@ -588,6 +689,40 @@ class FlextAlert(FlextEntity):
     tags: FlextTypes.Data.Dict = Field(default_factory=dict, description="Alert tags")
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
 
+    @field_validator("title")
+    @classmethod
+    def validate_alert_title(cls, v: str) -> str:
+        """Validate alert title is non-empty and descriptive."""
+        if not FlextValidation.is_non_empty_string(v):
+            raise ValueError("Alert title cannot be empty")
+        return v
+
+    @field_validator("message")
+    @classmethod
+    def validate_alert_message(cls, v: str) -> str:
+        """Validate alert message provides sufficient detail."""
+        if not FlextValidation.is_non_empty_string(v):
+            raise ValueError("Alert message cannot be empty")
+        return v
+
+    @field_validator("severity")
+    @classmethod
+    def validate_alert_severity(cls, v: str) -> str:
+        """Validate alert severity is a valid classification level."""
+        valid_severities = {"low", "medium", "high", "critical", "emergency"}
+        if v not in valid_severities:
+            raise ValueError(f"Invalid alert severity: {v}. Must be one of {valid_severities}")
+        return v
+
+    @field_validator("status")
+    @classmethod
+    def validate_alert_status(cls, v: str) -> str:
+        """Validate alert status is a valid lifecycle state."""
+        valid_statuses = {"active", "acknowledged", "resolved", "suppressed"}
+        if v not in valid_statuses:
+            raise ValueError(f"Invalid alert status: {v}. Must be one of {valid_statuses}")
+        return v
+
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate alert management business rules and domain constraints.
 
@@ -722,6 +857,23 @@ class FlextHealthCheck(FlextEntity):
         description="Health metrics",
     )
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
+
+    @field_validator("component")
+    @classmethod
+    def validate_component_name(cls, v: str) -> str:
+        """Validate component name is non-empty and identifiable."""
+        if not FlextValidation.is_non_empty_string(v):
+            raise ValueError("Component name cannot be empty")
+        return v
+
+    @field_validator("status")
+    @classmethod
+    def validate_health_status(cls, v: str) -> str:
+        """Validate status is a valid health classification level."""
+        valid_statuses = {"healthy", "unhealthy", "degraded", "unknown"}
+        if v not in valid_statuses:
+            raise ValueError(f"Invalid health status: {v}. Must be one of {valid_statuses}")
+        return v
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate health monitoring business rules and domain constraints.

@@ -62,6 +62,11 @@ from typing import TYPE_CHECKING, cast
 
 from flext_core import FlextContainer, FlextIdGenerator, FlextResult, get_logger
 
+from flext_observability.entities import (
+    flext_alert,
+    flext_health_check,
+    flext_trace,
+)
 from flext_observability.observability_models import (
     FlextAlert,
     FlextHealthCheck,

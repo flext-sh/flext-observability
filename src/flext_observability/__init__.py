@@ -1,32 +1,4 @@
-"""FLEXT Observability - Production-Grade Foundation Library.
-
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-
-Production-grade observability library implementing docs/patterns/ foundation
-with SOLID principles, zero redundancy, and complete flext-core alignment.
-Provides minimal but comprehensive observability capabilities with legacy
-compatibility facades for ecosystem migration.
-
-Public API (docs/patterns/ aligned):
-    Core Entities: FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck, FlextLogEntry
-    Factory Pattern: FlextObservabilityMasterFactory (centralized entity creation)
-    Application Services: FlextMetricsService, FlextTracingService, etc.
-    Simple API: Convenience functions (flext_create_*)
-    Monitoring: @flext_monitor_function decorator
-
-Architecture (Clean Architecture + SOLID):
-    Domain Layer: entities.py (business entities with validate_business_rules)
-    Application Layer: services.py (business logic coordination)
-    Interface Adapters: factory.py (creation patterns)
-    Infrastructure: flext_simple.py, flext_monitor.py (utilities)
-
-Integration:
-    100% flext-core foundation patterns, FlextTypes.Data.Dict,
-    FlextResult railway-oriented programming, zero local duplication.
-
-Version: 0.9.0
-"""
+"""Production-grade observability library for FLEXT ecosystem."""
 
 from __future__ import annotations
 

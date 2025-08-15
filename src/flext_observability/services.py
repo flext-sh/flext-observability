@@ -60,7 +60,7 @@ import threading
 from collections import defaultdict
 from typing import TYPE_CHECKING, cast
 
-import psutil
+import psutil  # type: ignore[import-untyped]
 from flext_core import (
     FlextContainer,
     FlextIdGenerator,  # Add for boilerplate reduction
