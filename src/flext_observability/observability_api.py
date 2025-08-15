@@ -69,6 +69,8 @@ FLEXT Integration:
 
 from __future__ import annotations
 
+from contextlib import suppress
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from flext_core import FlextIdGenerator, FlextResult
@@ -77,7 +79,6 @@ from flext_observability import flext_simple
 from flext_observability.entities import (
     flext_alert,  # Import for DRY principle - reuse existing function
     flext_health_check,  # Import for DRY principle - reuse existing function
-    flext_trace,  # Import for DRY principle - reuse existing function
 )
 from flext_observability.observability_models import (
     FlextAlert,
@@ -85,11 +86,12 @@ from flext_observability.observability_models import (
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
+    flext_metric,  # Import for DRY principle - reuse existing function
+    flext_trace,  # Import for DRY principle - reuse existing function
 )
 
 if TYPE_CHECKING:
     from datetime import datetime
-    from decimal import Decimal
 
     from flext_observability.typings import FlextTypes
 
@@ -178,7 +180,6 @@ def flext_create_metric(
 
     """
     # Import locally to avoid circular dependency
-    from flext_observability.observability_models import flext_metric
 
     # Smart metric type inference based on naming conventions and units
     metric_type = "gauge"  # default
@@ -223,13 +224,9 @@ def flext_create_metric(
 
         # Ensure Decimal for float inputs to satisfy tests expecting Decimal
         if result.success and result.data is not None:
-            from contextlib import suppress as _suppress
-
-            with _suppress(Exception):
-                from decimal import Decimal as _Decimal
-
+            with suppress(Exception):
                 if isinstance(result.data.value, float):
-                    result.data.value = _Decimal(str(result.data.value))
+                    result.data.value = Decimal(str(result.data.value))
         return result
     except (ValueError, TypeError, AttributeError) as e:
         return FlextResult.fail(f"Failed to create metric: {e}")
@@ -291,9 +288,6 @@ def flext_create_trace(
     ✅ ELIMINATED DUPLICATION: Delegates to entities.flext_trace()
     to avoid code duplication. Single source of truth for trace creation.
     """
-    # Import locally to avoid circular dependency
-    from flext_observability.observability_models import flext_trace
-
     config = config or {}
 
     try:
