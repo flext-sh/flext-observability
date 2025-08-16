@@ -60,7 +60,7 @@ import threading
 from collections import defaultdict
 from typing import TYPE_CHECKING, cast
 
-import psutil  # type: ignore[import-untyped]
+import psutil
 from flext_core import (
     FlextContainer,
     FlextIdGenerator,  # Add for boilerplate reduction
@@ -69,6 +69,16 @@ from flext_core import (
 )
 
 from flext_observability import services as _services
+
+if TYPE_CHECKING:
+    from flext_observability.observability_models import (
+        FlextAlert,
+        FlextHealthCheck,
+        FlextLogEntry,
+        FlextMetric,
+        FlextTrace,
+    )
+    from flext_observability.typings import FlextTypes
 
 
 class FlextGenerators:
@@ -90,9 +100,6 @@ class FlextGenerators:
         return FlextIdGenerator.generate_entity_id()
 
 
-if TYPE_CHECKING:
-    from flext_observability.typings import FlextTypes
-
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
 
 # Health check constants
@@ -104,15 +111,6 @@ THREAD_WARNING_THRESHOLD = 50
 THREAD_CRITICAL_THRESHOLD = 100
 MAX_METRICS_STORE_SIZE = 1000
 METRICS_STORE_CLEANUP_SIZE = 500
-
-if TYPE_CHECKING:
-    from flext_observability.observability_models import (
-        FlextAlert,
-        FlextHealthCheck,
-        FlextLogEntry,
-        FlextMetric,
-        FlextTrace,
-    )
 
 
 # ============================================================================

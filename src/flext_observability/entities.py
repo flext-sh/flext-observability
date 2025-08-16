@@ -188,12 +188,17 @@ class FlextMetric(FlextEntity):
             float_val = float(v)
             # Check for NaN and infinite values
             if math.isnan(float_val) or math.isinf(float_val):
-                msg = "Metric value cannot be NaN or infinite"
-                raise ValueError(msg)
+                cls._raise_invalid_metric_value()
         except (ValueError, TypeError) as e:
             msg = "Metric value must be numeric"
             raise ValueError(msg) from e
         return v
+
+    @classmethod
+    def _raise_invalid_metric_value(cls) -> None:
+        """Helper to raise metric value error."""
+        msg = "Metric value cannot be NaN or infinite"
+        raise ValueError(msg)
 
     @field_validator("metric_type")
     @classmethod
@@ -694,7 +699,8 @@ class FlextAlert(FlextEntity):
     def validate_alert_title(cls, v: str) -> str:
         """Validate alert title is non-empty and descriptive."""
         if not FlextValidation.is_non_empty_string(v):
-            raise ValueError("Alert title cannot be empty")
+            msg = "Alert title cannot be empty"
+            raise ValueError(msg)
         return v
 
     @field_validator("message")
@@ -702,7 +708,8 @@ class FlextAlert(FlextEntity):
     def validate_alert_message(cls, v: str) -> str:
         """Validate alert message provides sufficient detail."""
         if not FlextValidation.is_non_empty_string(v):
-            raise ValueError("Alert message cannot be empty")
+            msg = "Alert message cannot be empty"
+            raise ValueError(msg)
         return v
 
     @field_validator("severity")
@@ -711,7 +718,8 @@ class FlextAlert(FlextEntity):
         """Validate alert severity is a valid classification level."""
         valid_severities = {"low", "medium", "high", "critical", "emergency"}
         if v not in valid_severities:
-            raise ValueError(f"Invalid alert severity: {v}. Must be one of {valid_severities}")
+            msg = f"Invalid alert severity: {v}. Must be one of {valid_severities}"
+            raise ValueError(msg)
         return v
 
     @field_validator("status")
@@ -720,7 +728,8 @@ class FlextAlert(FlextEntity):
         """Validate alert status is a valid lifecycle state."""
         valid_statuses = {"active", "acknowledged", "resolved", "suppressed"}
         if v not in valid_statuses:
-            raise ValueError(f"Invalid alert status: {v}. Must be one of {valid_statuses}")
+            msg = f"Invalid alert status: {v}. Must be one of {valid_statuses}"
+            raise ValueError(msg)
         return v
 
     def validate_business_rules(self) -> FlextResult[None]:
@@ -863,7 +872,8 @@ class FlextHealthCheck(FlextEntity):
     def validate_component_name(cls, v: str) -> str:
         """Validate component name is non-empty and identifiable."""
         if not FlextValidation.is_non_empty_string(v):
-            raise ValueError("Component name cannot be empty")
+            msg = "Component name cannot be empty"
+            raise ValueError(msg)
         return v
 
     @field_validator("status")
@@ -872,7 +882,8 @@ class FlextHealthCheck(FlextEntity):
         """Validate status is a valid health classification level."""
         valid_statuses = {"healthy", "unhealthy", "degraded", "unknown"}
         if v not in valid_statuses:
-            raise ValueError(f"Invalid health status: {v}. Must be one of {valid_statuses}")
+            msg = f"Invalid health status: {v}. Must be one of {valid_statuses}"
+            raise ValueError(msg)
         return v
 
     def validate_business_rules(self) -> FlextResult[None]:
