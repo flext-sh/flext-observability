@@ -1,5 +1,6 @@
 """Test flext_monitor.py missing coverage lines to reach 95% target."""
 
+from typing import Never
 from unittest.mock import Mock, patch
 
 import pytest
@@ -111,7 +112,7 @@ class TestMonitorMissingCoverage:
 
         # Create a function that will raise an exception
         @flext_monitor_function(monitor=monitor)
-        def failing_function():
+        def failing_function() -> Never:
             msg = "Test exception"
             raise ValueError(msg)
 
@@ -135,7 +136,7 @@ class TestMonitorMissingCoverage:
         monitor._functions_monitored = 0
 
         @flext_monitor_function(monitor=monitor)
-        def failing_function():
+        def failing_function() -> Never:
             msg = "Original error"
             raise RuntimeError(msg)
 

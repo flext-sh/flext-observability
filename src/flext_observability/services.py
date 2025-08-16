@@ -60,7 +60,7 @@ import threading
 from collections import defaultdict
 from typing import TYPE_CHECKING, cast
 
-import psutil  # type: ignore[import-untyped]
+import psutil
 from flext_core import (
     FlextContainer,
     FlextIdGenerator,  # Add for boilerplate reduction
@@ -100,6 +100,7 @@ THREAD_CRITICAL_THRESHOLD = 100
 MAX_METRICS_STORE_SIZE = 1000
 METRICS_STORE_CLEANUP_SIZE = 500
 
+
 if TYPE_CHECKING:
     from flext_observability.entities import (
         FlextAlert,
@@ -109,7 +110,6 @@ if TYPE_CHECKING:
         FlextTrace,
     )
     from flext_observability.typings import FlextTypes
-
 
 # ============================================================================
 # CORE SERVICES - Simplified using flext-core patterns
