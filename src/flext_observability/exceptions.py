@@ -11,7 +11,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
 
 from flext_core import FlextError
 from flext_core.exceptions import FlextErrorMixin
@@ -154,142 +153,142 @@ class FlextObservabilityExceptionFactory:
 
     @classmethod
     def invalid_metric(
-        cls,
-        metric_name: str,
-        *,
-        reason: str,
-        value: Any | None = None,
-        unit: str | None = None,
+      cls,
+      metric_name: str,
+      *,
+      reason: str,
+      value: object | None = None,
+      unit: str | None = None,
     ) -> FlextObservabilityInvalidMetricError:
-        """Create invalid metric exception with metric context."""
-        context = {"metric_name": metric_name, "reason": reason}
-        if value is not None:
-            context["value"] = str(value)
-        if unit is not None:
-            context["unit"] = unit
+      """Create invalid metric exception with metric context."""
+      context = {"metric_name": metric_name, "reason": reason}
+      if value is not None:
+          context["value"] = str(value)
+      if unit is not None:
+          context["unit"] = unit
 
-        return FlextObservabilityInvalidMetricError(
-            f"Invalid metric '{metric_name}': {reason}",
-            code=FlextObservabilityErrorCodes.INVALID_METRIC_NAME,
-            context=context,
-        )
+      return FlextObservabilityInvalidMetricError(
+          f"Invalid metric '{metric_name}': {reason}",
+          code=FlextObservabilityErrorCodes.INVALID_METRIC_NAME,
+          context=context,
+      )
 
     @classmethod
     def metric_collection_failed(
-        cls,
-        metric_name: str,
-        *,
-        error: str,
-        collector: str | None = None,
+      cls,
+      metric_name: str,
+      *,
+      error: str,
+      collector: str | None = None,
     ) -> FlextObservabilityMetricCollectionError:
-        """Create metric collection failure exception."""
-        context = {"metric_name": metric_name, "error": error}
-        if collector:
-            context["collector"] = collector
+      """Create metric collection failure exception."""
+      context = {"metric_name": metric_name, "error": error}
+      if collector:
+          context["collector"] = collector
 
-        return FlextObservabilityMetricCollectionError(
-            f"Metric collection failed for '{metric_name}': {error}",
-            code=FlextObservabilityErrorCodes.METRIC_COLLECTION_FAILED,
-            context=context,
-        )
+      return FlextObservabilityMetricCollectionError(
+          f"Metric collection failed for '{metric_name}': {error}",
+          code=FlextObservabilityErrorCodes.METRIC_COLLECTION_FAILED,
+          context=context,
+      )
 
     @classmethod
     def invalid_trace(
-        cls,
-        trace_name: str,
-        *,
-        reason: str,
-        operation: str | None = None,
+      cls,
+      trace_name: str,
+      *,
+      reason: str,
+      operation: str | None = None,
     ) -> FlextObservabilityInvalidTraceError:
-        """Create invalid trace exception with trace context."""
-        context = {"trace_name": trace_name, "reason": reason}
-        if operation:
-            context["operation"] = operation
+      """Create invalid trace exception with trace context."""
+      context = {"trace_name": trace_name, "reason": reason}
+      if operation:
+          context["operation"] = operation
 
-        return FlextObservabilityInvalidTraceError(
-            f"Invalid trace '{trace_name}': {reason}",
-            code=FlextObservabilityErrorCodes.INVALID_TRACE_NAME,
-            context=context,
-        )
+      return FlextObservabilityInvalidTraceError(
+          f"Invalid trace '{trace_name}': {reason}",
+          code=FlextObservabilityErrorCodes.INVALID_TRACE_NAME,
+          context=context,
+      )
 
     @classmethod
     def trace_export_failed(
-        cls,
-        trace_name: str,
-        *,
-        error: str,
-        exporter: str | None = None,
+      cls,
+      trace_name: str,
+      *,
+      error: str,
+      exporter: str | None = None,
     ) -> FlextObservabilityTraceExportError:
-        """Create trace export failure exception."""
-        context = {"trace_name": trace_name, "error": error}
-        if exporter:
-            context["exporter"] = exporter
+      """Create trace export failure exception."""
+      context = {"trace_name": trace_name, "error": error}
+      if exporter:
+          context["exporter"] = exporter
 
-        return FlextObservabilityTraceExportError(
-            f"Trace export failed for '{trace_name}': {error}",
-            code=FlextObservabilityErrorCodes.TRACE_EXPORT_FAILED,
-            context=context,
-        )
+      return FlextObservabilityTraceExportError(
+          f"Trace export failed for '{trace_name}': {error}",
+          code=FlextObservabilityErrorCodes.TRACE_EXPORT_FAILED,
+          context=context,
+      )
 
     @classmethod
     def invalid_alert(
-        cls,
-        alert_name: str,
-        *,
-        reason: str,
-        severity: str | None = None,
+      cls,
+      alert_name: str,
+      *,
+      reason: str,
+      severity: str | None = None,
     ) -> FlextObservabilityInvalidAlertError:
-        """Create invalid alert exception with alert context."""
-        context = {"alert_name": alert_name, "reason": reason}
-        if severity:
-            context["severity"] = severity
+      """Create invalid alert exception with alert context."""
+      context = {"alert_name": alert_name, "reason": reason}
+      if severity:
+          context["severity"] = severity
 
-        return FlextObservabilityInvalidAlertError(
-            f"Invalid alert '{alert_name}': {reason}",
-            code=FlextObservabilityErrorCodes.INVALID_ALERT_SEVERITY,
-            context=context,
-        )
+      return FlextObservabilityInvalidAlertError(
+          f"Invalid alert '{alert_name}': {reason}",
+          code=FlextObservabilityErrorCodes.INVALID_ALERT_SEVERITY,
+          context=context,
+      )
 
     @classmethod
     def health_check_failed(
-        cls,
-        check_name: str,
-        *,
-        error: str,
-        dependency: str | None = None,
-        timeout_seconds: int | None = None,
+      cls,
+      check_name: str,
+      *,
+      error: str,
+      dependency: str | None = None,
+      timeout_seconds: int | None = None,
     ) -> FlextObservabilityHealthCheckError:
-        """Create health check failure exception."""
-        context = {"check_name": check_name, "error": error}
-        if dependency:
-            context["dependency"] = dependency
-        if timeout_seconds:
-            context["timeout_seconds"] = timeout_seconds
+      """Create health check failure exception."""
+      context = {"check_name": check_name, "error": error}
+      if dependency:
+          context["dependency"] = dependency
+      if timeout_seconds:
+          context["timeout_seconds"] = timeout_seconds
 
-        return FlextObservabilityHealthCheckError(
-            f"Health check failed for '{check_name}': {error}",
-            code=FlextObservabilityErrorCodes.HEALTH_CHECK_FAILED,
-            context=context,
-        )
+      return FlextObservabilityHealthCheckError(
+          f"Health check failed for '{check_name}': {error}",
+          code=FlextObservabilityErrorCodes.HEALTH_CHECK_FAILED,
+          context=context,
+      )
 
     @classmethod
     def platform_initialization_failed(
-        cls,
-        component: str,
-        *,
-        error: str,
-        service: str | None = None,
+      cls,
+      component: str,
+      *,
+      error: str,
+      service: str | None = None,
     ) -> FlextObservabilityInitializationError:
-        """Create platform initialization failure exception."""
-        context = {"component": component, "error": error}
-        if service:
-            context["service"] = service
+      """Create platform initialization failure exception."""
+      context = {"component": component, "error": error}
+      if service:
+          context["service"] = service
 
-        return FlextObservabilityInitializationError(
-            f"Observability platform initialization failed for '{component}': {error}",
-            code=FlextObservabilityErrorCodes.OBSERVABILITY_PLATFORM_INIT_FAILED,
-            context=context,
-        )
+      return FlextObservabilityInitializationError(
+          f"Observability platform initialization failed for '{component}': {error}",
+          code=FlextObservabilityErrorCodes.OBSERVABILITY_PLATFORM_INIT_FAILED,
+          context=context,
+      )
 
 
 __all__ = [

@@ -58,9 +58,10 @@ FLEXT Integration:
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 from flext_core import FlextContainer, FlextIdGenerator, FlextResult, get_logger
+from flext_core.typings import FlextTypes
 
 from flext_observability.entities import (
     flext_alert,
@@ -82,11 +83,7 @@ from flext_observability.observability_services import (
     FlextTracingService,
 )
 
-if TYPE_CHECKING:
-    from flext_observability.typings import FlextTypes
-
 # Removed validation module - using FlextResult.fail() directly per docs/patterns/
-
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
 # ============================================================================
@@ -99,14 +96,14 @@ def _generate_utc_datetime() -> datetime:
     across the FLEXT ecosystem. Eliminates local boilerplate duplication.
 
     Returns:
-        datetime: Current UTC datetime with timezone information
+      datetime: Current UTC datetime with timezone information
 
     """
     # Use flext-core timestamp generation - direct float to datetime conversion
     timestamp_float = FlextIdGenerator.generate_timestamp()
     return datetime.fromtimestamp(
-        timestamp_float,
-        tz=datetime.now().astimezone().tzinfo,
+      timestamp_float,
+      tz=datetime.now().astimezone().tzinfo,
     )
 
 
@@ -129,368 +126,368 @@ class FlextObservabilityMasterFactory:
     services for entity processing and storage coordination.
 
     Responsibilities:
-        - Centralized entity creation with comprehensive validation
-        - Business rule enforcement during entity initialization
-        - Dependency injection container coordination
-        - Application service integration for entity processing
-        - Consistent error handling with railway-oriented programming
-        - Entity lifecycle management and coordination
+      - Centralized entity creation with comprehensive validation
+      - Business rule enforcement during entity initialization
+      - Dependency injection container coordination
+      - Application service integration for entity processing
+      - Consistent error handling with railway-oriented programming
+      - Entity lifecycle management and coordination
 
     Factory Patterns Implementation:
-        - Factory Method: Individual entity creation methods
-        - Abstract Factory: Consistent interface across entity types
-        - Dependency Injection: Service coordination via FlextContainer
-        - Template Method: Consistent validation and error handling patterns
+      - Factory Method: Individual entity creation methods
+      - Abstract Factory: Consistent interface across entity types
+      - Dependency Injection: Service coordination via FlextContainer
+      - Template Method: Consistent validation and error handling patterns
 
     Attributes:
-        container (FlextContainer): Dependency injection container for services
-        _logger: Structured logger for factory operations and diagnostics
-        _metrics_service: Metrics processing and storage service
-        _tracing_service: Distributed tracing coordination service
-        _alert_service: Alert processing and routing service
-        _health_service: Health monitoring and validation service
-        _logging_service: Structured logging management service
+      container (FlextContainer): Dependency injection container for services
+      _logger: Structured logger for factory operations and diagnostics
+      _metrics_service: Metrics processing and storage service
+      _tracing_service: Distributed tracing coordination service
+      _alert_service: Alert processing and routing service
+      _health_service: Health monitoring and validation service
+      _logging_service: Structured logging management service
 
     Entity Creation Methods:
-        - create_metric(): FlextMetric creation with validation
-        - create_trace(): FlextTrace creation with correlation support
-        - create_alert(): FlextAlert creation with severity validation
-        - create_health_check(): FlextHealthCheck creation with dependency validation
-        - create_log_entry(): FlextLogEntry creation with context enrichment
+      - create_metric(): FlextMetric creation with validation
+      - create_trace(): FlextTrace creation with correlation support
+      - create_alert(): FlextAlert creation with severity validation
+      - create_health_check(): FlextHealthCheck creation with dependency validation
+      - create_log_entry(): FlextLogEntry creation with context enrichment
 
     Example:
-        Comprehensive entity creation with business validation:
+      Comprehensive entity creation with business validation:
 
-        >>> from flext_observability.factory import FlextObservabilityMasterFactory
-        >>> from flext_core import FlextContainer
-        >>>
-        >>> container = FlextContainer()
-        >>> factory = FlextObservabilityMasterFactory(container)
-        >>>
-        >>> # Create performance metric with automatic validation
-        >>> metric_result = factory.create_metric(
-        ...     name="api_response_time",
-        ...     value=150.5,
-        ...     unit="milliseconds",
-        ...     tags={"service": "user-api", "endpoint": "/users"},
-        ... )
-        >>> if metric_result.success:
-        ...     metric = metric_result.data
-        ...     print(f"Created metric: {metric.name}")
+      >>> from flext_observability.factory import FlextObservabilityMasterFactory
+      >>> from flext_core import FlextContainer
+      >>>
+      >>> container = FlextContainer()
+      >>> factory = FlextObservabilityMasterFactory(container)
+      >>>
+      >>> # Create performance metric with automatic validation
+      >>> metric_result = factory.create_metric(
+      ...     name="api_response_time",
+      ...     value=150.5,
+      ...     unit="milliseconds",
+      ...     tags={"service": "user-api", "endpoint": "/users"},
+      ... )
+      >>> if metric_result.success:
+      ...     metric = metric_result.data
+      ...     print(f"Created metric: {metric.name}")
 
-        >>> # Create distributed trace with correlation
-        >>> trace_result = factory.create_trace(
-        ...     operation_name="user_authentication",
-        ...     service_name="auth-service",
-        ...     context={"user_id": "12345", "request_id": "req_abc"},
-        ... )
+      >>> # Create distributed trace with correlation
+      >>> trace_result = factory.create_trace(
+      ...     operation_name="user_authentication",
+      ...     service_name="auth-service",
+      ...     context={"user_id": "12345", "request_id": "req_abc"},
+      ... )
 
-        >>> # Create critical alert with routing
-        >>> alert_result = factory.create_alert(
-        ...     title="Database Connection Failure",
-        ...     message="Production database unavailable",
-        ...     severity="critical",
-        ...     tags={"service": "database", "environment": "production"},
-        ... )
+      >>> # Create critical alert with routing
+      >>> alert_result = factory.create_alert(
+      ...     title="Database Connection Failure",
+      ...     message="Production database unavailable",
+      ...     severity="critical",
+      ...     tags={"service": "database", "environment": "production"},
+      ... )
 
     Validation and Error Handling:
-        All entity creation methods implement comprehensive validation including:
-        - Domain rule enforcement (entity.validate_business_rules())
-        - Business constraint validation
-        - Type safety verification
-        - Railway-oriented programming with FlextResult
-        - Detailed error messages for debugging and monitoring
+      All entity creation methods implement comprehensive validation including:
+      - Domain rule enforcement (entity.validate_business_rules())
+      - Business constraint validation
+      - Type safety verification
+      - Railway-oriented programming with FlextResult
+      - Detailed error messages for debugging and monitoring
 
     Service Integration:
-        Factory coordinates with application services for entity processing:
-        - Metrics automatically recorded via FlextMetricsService
-        - Traces coordinated via FlextTracingService
-        - Alerts processed via FlextAlertService
-        - Health checks validated via FlextHealthService
-        - Log entries enriched via FlextLoggingService
+      Factory coordinates with application services for entity processing:
+      - Metrics automatically recorded via FlextMetricsService
+      - Traces coordinated via FlextTracingService
+      - Alerts processed via FlextAlertService
+      - Health checks validated via FlextHealthService
+      - Log entries enriched via FlextLoggingService
 
     Thread Safety:
-        Factory operations are thread-safe through service coordination,
-        supporting concurrent entity creation from multiple threads without
-        data corruption or validation inconsistencies.
+      Factory operations are thread-safe through service coordination,
+      supporting concurrent entity creation from multiple threads without
+      data corruption or validation inconsistencies.
 
     Architecture:
-        Interface Adapters layer factory coordinating domain entities with
-        application services. Implements Factory patterns while maintaining
-        Clean Architecture boundaries and dependency inversion principles.
+      Interface Adapters layer factory coordinating domain entities with
+      application services. Implements Factory patterns while maintaining
+      Clean Architecture boundaries and dependency inversion principles.
 
     """
 
     def __init__(self, container: FlextContainer | None = None) -> None:
-        """Initialize master factory with dependency injection and service coordination.
+      """Initialize master factory with dependency injection and service coordination.
 
-        Args:
-            container: Dependency injection container for service coordination.
-                Defaults to new FlextContainer if not provided. Services are
-                automatically initialized and configured for entity processing.
+      Args:
+          container: Dependency injection container for service coordination.
+              Defaults to new FlextContainer if not provided. Services are
+              automatically initialized and configured for entity processing.
 
-        """
-        self.container = container or FlextContainer()
-        # Use logger accessor from factory module so tests patching
-        # flext_observability.factory.get_logger can intercept
-        self._logger = get_logger(self.__class__.__name__)
-        self._setup_services()
+      """
+      self.container = container or FlextContainer()
+      # Use logger accessor from factory module so tests patching
+      # flext_observability.factory.get_logger can intercept
+      self._logger = get_logger(self.__class__.__name__)
+      self._setup_services()
 
     def _setup_services(self) -> None:
-        """Set up all services automatically."""
-        try:
-            services = [
-                ("metrics_service", FlextMetricsService),
-                ("logging_service", FlextLoggingService),
-                ("tracing_service", FlextTracingService),
-                ("alert_service", FlextAlertService),
-                ("health_service", FlextHealthService),
-            ]
+      """Set up all services automatically."""
+      try:
+          services = [
+              ("metrics_service", FlextMetricsService),
+              ("logging_service", FlextLoggingService),
+              ("tracing_service", FlextTracingService),
+              ("alert_service", FlextAlertService),
+              ("health_service", FlextHealthService),
+          ]
 
-            for service_key, service_class in services:
-                try:
-                    service = service_class(self.container)
-                    register_result = self.container.register(service_key, service)
-                    if register_result.is_failure:
-                        error_message = (
-                            f"Failed to register {service_key}: {register_result.error}"
-                        )
-                        self._logger.warning(error_message)
-                except (
-                    ValueError,
-                    TypeError,
-                    AttributeError,
-                    ImportError,
-                    RuntimeError,
-                ):
-                    self._logger.exception("Failed to create %s", service_key)
+          for service_key, service_class in services:
+              try:
+                  service = service_class(self.container)
+                  register_result = self.container.register(service_key, service)
+                  if register_result.is_failure:
+                      error_message = (
+                          f"Failed to register {service_key}: {register_result.error}"
+                      )
+                      self._logger.warning(error_message)
+              except (
+                  ValueError,
+                  TypeError,
+                  AttributeError,
+                  ImportError,
+                  RuntimeError,
+              ):
+                  self._logger.exception("Failed to create %s", service_key)
 
-        except (
-            ValueError,
-            TypeError,
-            AttributeError,
-            ImportError,
-            RuntimeError,
-        ):
-            self._logger.exception("Service setup error occurred")
+      except (
+          ValueError,
+          TypeError,
+          AttributeError,
+          ImportError,
+          RuntimeError,
+      ):
+          self._logger.exception("Service setup error occurred")
 
     def metric(
-        self,
-        name: str,
-        value: float,
-        **kwargs: object,
+      self,
+      name: str,
+      value: float,
+      **kwargs: object,
     ) -> FlextResult[object]:
-        """Create and record metric."""
-        try:
-            # FlextMetric imported at module level
-            tags = kwargs.get("tags", {})
-            tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
+      """Create and record metric."""
+      try:
+          # FlextMetric imported at module level
+          tags = kwargs.get("tags", {})
+          tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
 
-            timestamp = kwargs.get("timestamp")
-            if not isinstance(timestamp, datetime):
-                timestamp = _generate_utc_datetime()
+          timestamp = kwargs.get("timestamp")
+          if not isinstance(timestamp, datetime):
+              timestamp = _generate_utc_datetime()
 
-            metric = FlextMetric(
-                id=FlextIdGenerator.generate_uuid(),
-                name=name,
-                value=value,
-                unit=str(kwargs.get("unit", "")),
-                tags=tags,
-                timestamp=timestamp,
-            )
+          metric = FlextMetric(
+              id=FlextIdGenerator.generate_uuid(),
+              name=name,
+              value=value,
+              unit=str(kwargs.get("unit", "")),
+              tags=tags,
+              timestamp=timestamp,
+          )
 
-            service_result = self.container.get("metrics_service")
-            if service_result.success and service_result.data:
-                service = cast("FlextMetricsService", service_result.data)
-                result = service.record_metric(metric)
-                return (
-                    FlextResult.ok(result.data)
-                    if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
-                )
-            return FlextResult.ok(metric)
+          service_result = self.container.get("metrics_service")
+          if service_result.success and service_result.data:
+              service = cast("FlextMetricsService", service_result.data)
+              result = service.record_metric(metric)
+              return (
+                  FlextResult.ok(result.data)
+                  if result.success
+                  else FlextResult.fail(result.error or "Unknown error")
+              )
+          return FlextResult.ok(metric)
 
-        except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create metric: {e}")
+      except (ValueError, TypeError, AttributeError) as e:
+          return FlextResult.fail(f"Failed to create metric: {e}")
 
     def log(
-        self,
-        message: str,
-        level: str = "info",
-        **kwargs: object,
+      self,
+      message: str,
+      level: str = "info",
+      **kwargs: object,
     ) -> FlextResult[object]:
-        """Create and log entry."""
-        try:
-            # FlextLogEntry imported at module level
-            context = kwargs.get("context", {})
-            if isinstance(context, dict):
-                context = cast("FlextTypes.Data.Dict", context)
-            else:
-                context = {}
+      """Create and log entry."""
+      try:
+          # FlextLogEntry imported at module level
+          context = kwargs.get("context", {})
+          if isinstance(context, dict):
+              context = cast("FlextTypes.Data.Dict", context)
+          else:
+              context = {}
 
-            timestamp = kwargs.get("timestamp")
-            if not isinstance(timestamp, datetime):
-                timestamp = _generate_utc_datetime()
+          timestamp = kwargs.get("timestamp")
+          if not isinstance(timestamp, datetime):
+              timestamp = _generate_utc_datetime()
 
-            log_entry = FlextLogEntry(
-                id=FlextIdGenerator.generate_uuid(),
-                message=message,
-                level=level,
-                context=context,
-                timestamp=timestamp,
-            )
+          log_entry = FlextLogEntry(
+              id=FlextIdGenerator.generate_uuid(),
+              message=message,
+              level=level,
+              context=context,
+              timestamp=timestamp,
+          )
 
-            service_result = self.container.get("logging_service")
-            if service_result.success and service_result.data:
-                service = cast("FlextLoggingService", service_result.data)
-                result = service.log_entry(log_entry)
-                return (
-                    FlextResult.ok(result.data)
-                    if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
-                )
-            return FlextResult.ok(log_entry)
+          service_result = self.container.get("logging_service")
+          if service_result.success and service_result.data:
+              service = cast("FlextLoggingService", service_result.data)
+              result = service.log_entry(log_entry)
+              return (
+                  FlextResult.ok(result.data)
+                  if result.success
+                  else FlextResult.fail(result.error or "Unknown error")
+              )
+          return FlextResult.ok(log_entry)
 
-        except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create log: {e}")
+      except (ValueError, TypeError, AttributeError) as e:
+          return FlextResult.fail(f"Failed to create log: {e}")
 
     def alert(
-        self,
-        title: str,
-        message: str,
-        severity: str = "low",
-        **kwargs: object,
+      self,
+      title: str,
+      message: str,
+      severity: str = "low",
+      **kwargs: object,
     ) -> FlextResult[object]:
-        """Create alert."""
-        try:
-            tags = kwargs.get("tags", {})
-            tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
+      """Create alert."""
+      try:
+          tags = kwargs.get("tags", {})
+          tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
 
-            timestamp = kwargs.get("timestamp")
-            if not isinstance(timestamp, datetime):
-                timestamp = _generate_utc_datetime()
+          timestamp = kwargs.get("timestamp")
+          if not isinstance(timestamp, datetime):
+              timestamp = _generate_utc_datetime()
 
-            alert = FlextAlert(
-                id=FlextIdGenerator.generate_uuid(),
-                title=title,
-                message=message,
-                severity=severity,
-                status=str(kwargs.get("status", "active")),
-                tags=tags,
-                timestamp=timestamp,
-            )
+          alert = FlextAlert(
+              id=FlextIdGenerator.generate_uuid(),
+              title=title,
+              message=message,
+              severity=severity,
+              status=str(kwargs.get("status", "active")),
+              tags=tags,
+              timestamp=timestamp,
+          )
 
-            service_result = self.container.get("alert_service")
-            if service_result.success and service_result.data:
-                service = cast("FlextAlertService", service_result.data)
-                result = service.create_alert(alert)
-                return (
-                    FlextResult.ok(result.data)
-                    if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
-                )
-            return FlextResult.ok(alert)
+          service_result = self.container.get("alert_service")
+          if service_result.success and service_result.data:
+              service = cast("FlextAlertService", service_result.data)
+              result = service.create_alert(alert)
+              return (
+                  FlextResult.ok(result.data)
+                  if result.success
+                  else FlextResult.fail(result.error or "Unknown error")
+              )
+          return FlextResult.ok(alert)
 
-        except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create alert: {e}")
+      except (ValueError, TypeError, AttributeError) as e:
+          return FlextResult.fail(f"Failed to create alert: {e}")
 
     def trace(
-        self,
-        trace_id: str,
-        operation: str,
-        **kwargs: object,
+      self,
+      trace_id: str,
+      operation: str,
+      **kwargs: object,
     ) -> FlextResult[object]:
-        """Start trace."""
-        try:
-            # Extract known parameters from kwargs
-            span_id = kwargs.get("span_id", "")
-            timestamp = kwargs.get("timestamp")
-            span_attributes = kwargs.get("span_attributes", {})
+      """Start trace."""
+      try:
+          # Extract known parameters from kwargs
+          span_id = kwargs.get("span_id", "")
+          timestamp = kwargs.get("timestamp")
+          span_attributes = kwargs.get("span_attributes", {})
 
-            trace = FlextTrace(
-                id=FlextIdGenerator.generate_uuid(),
-                trace_id=trace_id,
-                operation=operation,
-                span_id=str(span_id) if span_id else "",
-                span_attributes=(
-                    span_attributes if isinstance(span_attributes, dict) else {}
-                ),
-                duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
-                status=str(kwargs.get("status", "pending")),
-                timestamp=(
-                    timestamp
-                    if isinstance(timestamp, datetime)
-                    else _generate_utc_datetime()
-                ),
-            )
+          trace = FlextTrace(
+              id=FlextIdGenerator.generate_uuid(),
+              trace_id=trace_id,
+              operation=operation,
+              span_id=str(span_id) if span_id else "",
+              span_attributes=(
+                  span_attributes if isinstance(span_attributes, dict) else {}
+              ),
+              duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
+              status=str(kwargs.get("status", "pending")),
+              timestamp=(
+                  timestamp
+                  if isinstance(timestamp, datetime)
+                  else _generate_utc_datetime()
+              ),
+          )
 
-            service_result = self.container.get("tracing_service")
-            if service_result.success and service_result.data:
-                service = cast("FlextTracingService", service_result.data)
-                result = service.start_trace(trace)
-                return (
-                    FlextResult.ok(result.data)
-                    if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
-                )
-            return FlextResult.ok(trace)
+          service_result = self.container.get("tracing_service")
+          if service_result.success and service_result.data:
+              service = cast("FlextTracingService", service_result.data)
+              result = service.start_trace(trace)
+              return (
+                  FlextResult.ok(result.data)
+                  if result.success
+                  else FlextResult.fail(result.error or "Unknown error")
+              )
+          return FlextResult.ok(trace)
 
-        except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create trace: {e}")
+      except (ValueError, TypeError, AttributeError) as e:
+          return FlextResult.fail(f"Failed to create trace: {e}")
 
     def health_check(
-        self,
-        component: str,
-        status: str = "unknown",
-        **kwargs: object,
+      self,
+      component: str,
+      status: str = "unknown",
+      **kwargs: object,
     ) -> FlextResult[object]:
-        """Create health check."""
-        try:
-            # Extract known parameters from kwargs
-            message = kwargs.get("message", "")
-            timestamp = kwargs.get("timestamp")
+      """Create health check."""
+      try:
+          # Extract known parameters from kwargs
+          message = kwargs.get("message", "")
+          timestamp = kwargs.get("timestamp")
 
-            # Create health check entity directly with proper models
-            health = FlextHealthCheck(
-                id=FlextIdGenerator.generate_uuid(),
-                component=component,
-                status=status,
-                message=str(message),
-                timestamp=(
-                    timestamp
-                    if isinstance(timestamp, datetime)
-                    else _generate_utc_datetime()
-                ),
-            )
+          # Create health check entity directly with proper models
+          health = FlextHealthCheck(
+              id=FlextIdGenerator.generate_uuid(),
+              component=component,
+              status=status,
+              message=str(message),
+              timestamp=(
+                  timestamp
+                  if isinstance(timestamp, datetime)
+                  else _generate_utc_datetime()
+              ),
+          )
 
-            service_result = self.container.get("health_service")
-            if service_result.success and service_result.data:
-                service = cast("FlextHealthService", service_result.data)
-                result = service.check_health(health)
-                return (
-                    FlextResult.ok(result.data)
-                    if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
-                )
-            return FlextResult.ok(health)
+          service_result = self.container.get("health_service")
+          if service_result.success and service_result.data:
+              service = cast("FlextHealthService", service_result.data)
+              result = service.check_health(health)
+              return (
+                  FlextResult.ok(result.data)
+                  if result.success
+                  else FlextResult.fail(result.error or "Unknown error")
+              )
+          return FlextResult.ok(health)
 
-        except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create health check: {e}")
+      except (ValueError, TypeError, AttributeError) as e:
+          return FlextResult.fail(f"Failed to create health check: {e}")
 
     def health_status(self) -> FlextResult[FlextTypes.Data.Dict]:
-        """Get overall health status."""
-        try:
-            service_result = self.container.get("health_service")
-            if service_result.success and service_result.data:
-                service = cast("FlextHealthService", service_result.data)
-                return service.get_overall_health()
+      """Get overall health status."""
+      try:
+          service_result = self.container.get("health_service")
+          if service_result.success and service_result.data:
+              service = cast("FlextHealthService", service_result.data)
+              return service.get_overall_health()
 
-            return FlextResult.ok(
-                cast("FlextTypes.Data.Dict", {"status": "healthy", "mode": "fallback"}),
-            )
+          return FlextResult.ok(
+              cast("FlextTypes.Data.Dict", {"status": "healthy", "mode": "fallback"}),
+          )
 
-        except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Health status check failed: {e}")
+      except (ValueError, TypeError, AttributeError) as e:
+          return FlextResult.fail(f"Health status check failed: {e}")
 
 
 # ============================================================================
@@ -506,7 +503,7 @@ def get_global_factory(
     """Get global factory instance."""
     global _global_factory  # noqa: PLW0603 - Global state for singleton pattern
     if _global_factory is None:
-        _global_factory = FlextObservabilityMasterFactory(container)
+      _global_factory = FlextObservabilityMasterFactory(container)
     return _global_factory
 
 
@@ -557,10 +554,10 @@ def create_simplified_observability_platform(
     """Create observability platform using factory pattern.
 
     Args:
-        container: Optional dependency injection container
+      container: Optional dependency injection container
 
     Returns:
-        FlextObservabilityMasterFactory: Configured factory instance
+      FlextObservabilityMasterFactory: Configured factory instance
 
     """
     return FlextObservabilityMasterFactory(container)

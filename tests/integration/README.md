@@ -52,7 +52,7 @@ def test_metrics_service_with_factory_integration():
 ```python
 def test_flext_core_container_integration():
     """Test integration with flext-core dependency injection."""
-    from flext_core import FlextContainer
+from flext_core import FlextContainer
 
     container = FlextContainer()
     # Test that observability services integrate properly
