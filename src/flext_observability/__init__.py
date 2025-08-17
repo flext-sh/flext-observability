@@ -65,9 +65,9 @@ from flext_observability.observability_services import (
 def flext_health_status() -> dict[str, str]:
     """Return basic health status using flext-core patterns."""
     return {
-        "status": "healthy",
-        "service": "flext-observability",
-        "version": "0.9.0",
+      "status": "healthy",
+      "service": "flext-observability",
+      "version": "0.9.0",
     }
 
 
@@ -79,10 +79,10 @@ def flext_health_status() -> dict[str, str]:
 def _deprecated_warning(old_name: str, new_name: str) -> None:
     """Issue deprecation warning for legacy interfaces."""
     warnings.warn(
-        f"{old_name} is deprecated. Use {new_name} instead. "
-        f"Will be removed in v1.0.0. See docs/patterns/ for migration guide.",
-        DeprecationWarning,
-        stacklevel=3,
+      f"{old_name} is deprecated. Use {new_name} instead. "
+      f"Will be removed in v1.0.0. See docs/patterns/ for migration guide.",
+      DeprecationWarning,
+      stacklevel=3,
     )
 
 
@@ -92,8 +92,8 @@ def create_observability_platform(
 ) -> FlextObservabilityMasterFactory:
     """Create master factory (deprecated; use FlextObservabilityMasterFactory)."""
     _deprecated_warning(
-        "create_observability_platform",
-        "FlextObservabilityMasterFactory",
+      "create_observability_platform",
+      "FlextObservabilityMasterFactory",
     )
     container_typed = container if isinstance(container, FlextContainer) else None
     return FlextObservabilityMasterFactory(container_typed)
@@ -113,8 +113,8 @@ class _LegacyConstants:
     """DEPRECATED: Use flext_core.constants.FlextConstants instead."""
 
     def __getattr__(self, name: str) -> object:
-        _deprecated_warning(f"constants.{name}", "flext_core.constants.FlextConstants")
-        return getattr(FlextConstants, name, "UNKNOWN")
+      _deprecated_warning(f"constants.{name}", "flext_core.constants.FlextConstants")
+      return getattr(FlextConstants, name, "UNKNOWN")
 
 
 constants = _LegacyConstants()

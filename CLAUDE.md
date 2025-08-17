@@ -4,172 +4,116 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FLEXT Observability is a production-ready foundation library within the FLEXT ecosystem providing comprehensive monitoring, metrics, tracing, and health check capabilities. Built with Python 3.13+ and implementing Clean Architecture patterns, it delivers enterprise-grade observability infrastructure with 93% test coverage and battle-tested reliability.
+FLEXT Observability is a foundation library within the FLEXT ecosystem providing monitoring, metrics, tracing, and health check capabilities. Built with Python 3.13+ implementing Clean Architecture patterns, it serves as the centralized observability layer for all FLEXT ecosystem components.
 
-This project serves as the centralized observability layer for all FLEXT ecosystem components, providing consistent monitoring patterns and telemetry collection across the entire distributed data integration platform with zero-tolerance quality gates.
+**Current Status**: Core observability patterns are functional but the project has dependency issues preventing normal operations (Poetry/requests import errors).
 
 ## Core Architecture
 
-### Domain Structure
-
-- **Entities**: Core observability models (FlextMetric, FlextTrace, FlextAlert, FlextLogEntry, FlextHealthCheck)
-- **Services**: Business logic for metrics, tracing, logging, alerting, and health monitoring
-- **Factories**: Creation patterns for observability components with dependency injection
-- **Monitors**: Decorators and utilities for automatic monitoring integration
-- **Platform**: Unified observability platform orchestrating all monitoring components
-
 ### Key Components
 
-- **FlextObservabilityPlatformV2**: Main platform orchestrating all observability services
 - **FlextObservabilityMasterFactory**: Central factory for creating observability entities
-- **FlextObservabilityMonitor**: Function decorators for automatic monitoring
-- **Simple API**: Easy-to-use functions for quick observability integration
+- **FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck**: Core observability domain entities  
+- **FlextMetricsService, FlextTracingService, FlextAlertService**: Application services with business logic
+- **Simple API**: Easy-to-use factory functions (flext_create_metric, flext_create_trace)
+- **Monitoring Decorators**: @flext_monitor_function for automatic instrumentation
+
+### Module Organization
+
+- `src/flext_observability/observability_models.py` - Core domain entities
+- `src/flext_observability/observability_services.py` - Application services
+- `src/flext_observability/observability_factory.py` - Factory patterns
+- `src/flext_observability/observability_api.py` - Simple API functions
+- `src/flext_observability/observability_monitor.py` - Monitoring decorators
 
 ### Dependencies
 
-- **flext-core**: Foundation library providing FlextEntity, FlextResult, FlextContainer patterns
+- **flext-core**: Foundation library (FlextEntity, FlextResult, FlextContainer patterns)
 - **OpenTelemetry**: Distributed tracing and metrics collection
-- **Prometheus**: Metrics storage and alerting
-- **Structured Logging**: JSON-structured logging with correlation IDs
+- **Prometheus**: Metrics client library
+- **Pydantic**: Runtime validation and type safety
 
 ## Development Commands
 
-### Essential Commands
+**⚠️ Critical Issue**: All Poetry-based commands currently fail due to requests library import errors. Direct Python execution may work for some operations.
+
+### Essential Commands (Currently Broken)
 
 ```bash
-# Quick quality check (run before committing)
-make check                   # Lint + type check + test
+# These commands are defined but fail due to dependency issues:
+make check                  # Lint + type check (FAILS - Poetry error)
+make validate               # Complete validation (FAILS - Poetry error)  
+make test                   # Run tests with coverage (FAILS - Poetry error)
+make lint                   # Ruff linting (FAILS - Poetry error)
+make type-check             # MyPy type checking (FAILS - Poetry error)
 
-# Complete validation (zero tolerance)
-make validate               # Lint + type + security + test (90% coverage minimum)
-
-# Individual quality gates
-make lint                   # Ruff linting (ALL rules enabled)
-make type-check             # MyPy strict mode (zero errors tolerated)
-make test                   # Pytest with 90% coverage requirement
-make security               # Bandit + pip-audit + secrets scan
+# Direct alternatives when Poetry is broken:
+python -m ruff check src tests               # Direct linting
+python -m mypy src --strict                  # Direct type checking  
+python -m pytest tests/test_simple.py -v    # Direct test execution
 ```
 
-### Testing Commands
+### Working Commands
 
 ```bash
-# Run specific test types
+# Information and diagnostics
+make help                   # Show available commands
+make info                   # Show project information
+make clean                  # Clean build artifacts
+
+# Build operations (if Poetry works)
+make build                  # Build package
+```
+
+### Testing Strategy
+
+When dependency issues are resolved:
+
+```bash
+# Test categories available
 make test-unit              # Unit tests only
 make test-integration       # Integration tests only
-make test-monitoring        # Monitoring-specific tests
+make test-fast              # Tests without coverage
+make coverage-html          # HTML coverage report
 
-# Coverage reporting
-make coverage-html          # Generate HTML coverage report
-
-# Test specific components
-pytest tests/test_entities_simple.py -v        # Test entities
-pytest tests/test_services_simple.py -v        # Test services
-pytest tests/test_factory_complete.py -v       # Test factory patterns
-```
-
-### Development Setup
-
-```bash
-# Complete development setup
-make setup                  # Install dependencies + pre-commit hooks
-make install-dev           # Development environment setup
-make install               # Install dependencies only
-
-# Development tools
-make format                # Format code with ruff
-make fix                   # Auto-fix all issues (format + lint)
-```
-
-### Currently Working Commands
-
-**✅ These commands are verified to work:**
-
-```bash
-# Essential workflow (all tested and working)
-make check                 # ✅ Quick health check (lint + type-check)
-make test                  # ✅ Run tests with 90% coverage requirement
-make validate              # ✅ Complete validation (lint + type + security + test)
-
-# Development tools (all working)
-make setup                 # ✅ Complete project setup
-make install-dev           # ✅ Install development dependencies
-make install               # ✅ Install dependencies only
-make format                # ✅ Format code with ruff
-make fix                   # ✅ Auto-fix all issues
-make lint                  # ✅ Run linting
-make type-check            # ✅ Run type checking
-make security              # ✅ Run security scanning
-
-# Testing (all working)
-make test-unit             # ✅ Run unit tests
-make test-integration      # ✅ Run integration tests
-make test-fast             # ✅ Run tests without coverage
-make coverage-html         # ✅ Generate HTML coverage report
-
-# Utilities (all working)
-make clean                 # ✅ Clean build artifacts
-make diagnose              # ✅ Project diagnostics
-make doctor                # ✅ Health check alias
-make help                  # ✅ Show all available commands
-```
-
-### Advanced Commands (Makefile Exists But Implementation Missing)
-
-**⚠️ Important**: The following commands are defined in the Makefile but will fail because the underlying implementation functions do not exist yet:
-
-```bash
-# Monitoring stack setup (FAILS - functions not implemented)
-make setup-prometheus      # ERROR: setup_prometheus function does not exist
-make setup-grafana         # ERROR: setup_grafana function does not exist
-make setup-monitoring      # ERROR: depends on above functions
-
-# Stack operations (FAILS - docker-compose file missing)
-make start-monitoring      # ERROR: docker-compose.monitoring.yml does not exist
-make stop-monitoring       # ERROR: docker-compose.monitoring.yml does not exist
-make monitoring-status     # ERROR: monitoring check functions not implemented
-
-# Test execution (WORKS)
-make test-unit             # ✅ Works - runs unit tests
-make test-integration      # ✅ Works - runs integration tests
-make test-fast             # ✅ Works - runs tests without coverage
-
-# Specialized test marks (DEFINED but no tests marked)
-make test-monitoring       # Defined but no @pytest.mark.monitoring tests exist
-```
-
-### Health & Diagnostics
-
-```bash
-# System diagnostics (available)
-make diagnose              # Complete system diagnostics
-make health-check          # Comprehensive health check
-make doctor                # Health check alias
-
-# Note: Advanced performance testing commands not yet implemented
+# Direct test execution
+python -m pytest tests/test_entities_simple.py -v
+python -m pytest tests/test_factory_complete.py -v
+python -m pytest tests/test_services_comprehensive.py -v
 ```
 
 ## Architecture Patterns
 
-### Entity Creation
-
-Use factory functions for consistent entity creation:
+### Simple API Usage (Primary Interface)
 
 ```python
-# Simple API (recommended for basic usage)
+# Basic metric creation
 from flext_observability import flext_create_metric, flext_create_trace
 
 metric_result = flext_create_metric("cpu_usage", 85.2, "percent")
 trace_result = flext_create_trace("user_request", "processing_order")
 
-# Factory pattern (for advanced usage)
-from flext_observability import get_global_factory
+# Check results using FlextResult pattern
+if metric_result.success:
+    print(f"Metric created: {metric_result.data.name}")
+```
+
+### Factory Pattern (Advanced Usage)
+
+```python
+from flext_observability import get_global_factory, FlextObservabilityMasterFactory
+from flext_core import FlextContainer
+
+# Use global factory
 factory = get_global_factory()
 metric_result = factory.create_metric("memory_usage", 1024, "MB")
+
+# Or create custom factory with dependency injection
+container = FlextContainer()
+custom_factory = FlextObservabilityMasterFactory(container)
 ```
 
 ### Service Integration
-
-Services follow flext-core patterns with FlextResult:
 
 ```python
 from flext_observability import FlextMetricsService
@@ -182,195 +126,92 @@ metrics_service = FlextMetricsService(container)
 # All operations return FlextResult
 result = metrics_service.record_metric(metric)
 if result.success:
-    print(f"Recorded: {result.value.name}")
+    print(f"Recorded: {result.data.name}")
 ```
 
 ### Monitoring Decorators
-
-Use `@flext_monitor_function` for automatic function monitoring:
 
 ```python
 from flext_observability import flext_monitor_function
 
 @flext_monitor_function("data_processing")
 def process_data(data):
-    # Function automatically monitored for:
-    # - Execution time metrics
-    # - Success/failure traces
-    # - Structured logging
+    # Automatically monitored with execution metrics and tracing
     return processed_data
 ```
 
-## Testing Strategy
+## Testing Organization
 
-### Test Organization
+The test suite is organized in `/tests/` with comprehensive coverage:
 
-- **Unit Tests**: `/tests/unit/` - Test individual components in isolation
-- **Integration Tests**: `/tests/integration/` - Test service interactions
-- **E2E Tests**: `/tests/e2e/` - Test complete observability workflows
-- **Coverage Tests**: Multiple coverage test files ensuring 90%+ coverage
+- **Test Files**: Multiple test files covering entities, services, factories, and API functions
+- **Coverage Target**: 90% minimum coverage (when tests can run)
+- **Test Fixtures**: `conftest.py` provides OpenTelemetry and Prometheus setup
+- **Test Types**: Unit tests for individual components, integration tests for service interactions
 
-### Test Fixtures
+### Key Test Files
 
-The `conftest.py` provides comprehensive fixtures:
+- `test_entities_simple.py` - Core entity validation
+- `test_services_comprehensive.py` - Service layer business logic  
+- `test_factory_complete.py` - Factory pattern verification
+- `test_flext_simple.py` - Simple API functionality
+- `test_true_100_coverage.py` - Comprehensive coverage validation
 
-- OpenTelemetry tracing setup with in-memory exporters
-- Prometheus metrics registry
-- Health checkers and metrics collectors
-- Async test utilities
+## Quality Standards
 
-### Coverage Requirements
+- **Type Safety**: Python 3.13 with strict MyPy configuration
+- **Linting**: Ruff with comprehensive rule sets
+- **Security**: Bandit security scanning
+- **Validation**: Pydantic models for runtime type checking
 
-- **Minimum**: 90% test coverage (enforced by `make test`)
-- **Target**: 95%+ coverage for critical observability components
-- **Reports**: HTML coverage reports generated in `htmlcov/`
+## FLEXT Ecosystem Integration
 
-## Code Quality Standards
+### Role in Architecture
 
-### Zero Tolerance Quality Gates
+This library provides observability foundation for all FLEXT ecosystem components:
 
-All code must pass strict quality gates:
+- **Services**: FlexCore (Go), FLEXT Service (Python), web interfaces
+- **Infrastructure**: Oracle, LDAP, gRPC, monitoring integration
+- **Singer Ecosystem**: Taps, targets, and DBT transformers monitoring
 
-- **Ruff**: ALL rule categories enabled (17+ categories)
-- **MyPy**: Strict mode with zero errors tolerated
-- **Bandit**: Security scanning for vulnerabilities
-- **Pre-commit**: Automated hooks prevent bad commits
+### Integration Patterns
 
-### Type Safety
+```python
+# Basic integration in FLEXT services
+from flext_observability import flext_create_metric, flext_monitor_function
 
-- Python 3.13 with full type hints
-- Strict MyPy configuration (no `Any` types allowed)
-- Pydantic models for runtime type validation
-- Generic types for FlextResult patterns
-
-## Integration with FLEXT Ecosystem
-
-### Dependency Flow
-
-- **Depends on**: `flext-core` (foundation patterns)
-- **Used by**: All FLEXT services and applications
-- **Provides**: Centralized observability for the entire ecosystem
-
-### Telemetry Standards
-
-- **Metrics**: Prometheus-compatible metrics with consistent naming
-- **Tracing**: OpenTelemetry spans with correlation IDs
-- **Logging**: Structured JSON logs with contextual information
-- **Health**: Standardized health check endpoints
-
-## Common Workflows
-
-### Adding New Observability Entities
-
-1. Define entity in `src/flext_observability/entities.py`
-2. Extend base `FlextEntity` from flext-core
-3. Implement `validate_business_rules()` method
-4. Add factory methods to `factory.py`
-5. Create corresponding service in `services.py`
-6. Add comprehensive tests with 90%+ coverage
-
-### Integrating Observability in FLEXT Services
-
-1. Import observability components: `from flext_observability import ...`
-2. Use simple API for quick integration: `flext_create_metric()`
-3. Use services for advanced scenarios: `FlextMetricsService`
-4. Apply monitoring decorators: `@flext_monitor_function`
-5. Test telemetry integration thoroughly
-
-### Debugging Observability Issues
-
-1. Check service health: `make health-check`
-2. Validate telemetry: `make validate-telemetry`
-3. Run diagnostics: `make diagnose`
-4. Check monitoring stack: `make monitoring-status`
-5. Review logs and metrics in Grafana/Prometheus
-
-## Environment Configuration
-
-### Required Environment Variables
-
-```bash
-# OpenTelemetry settings
-export OTEL_SERVICE_NAME=flext-observability
-export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
-
-# Prometheus settings
-export PROMETHEUS_ENDPOINT=http://localhost:9090
-export PROMETHEUS_PUSH_GATEWAY=http://localhost:9091
-
-# Jaeger settings
-export JAEGER_COLLECTOR_ENDPOINT=http://localhost:14268/api/traces
+@flext_monitor_function("service_operation")
+def service_function():
+    # Automatically instrumented
+    result = do_work()
+    flext_create_metric("operation_count", 1, "count")
+    return result
 ```
 
-### Docker Integration
+## Known Issues & Troubleshooting
 
-- **Base Image**: Python:3.13-slim
-- **Exposed Port**: 9090 (metrics endpoint)
-- **Health Check**: Built-in metrics endpoint health check
-- **Security**: Non-root user execution
+### Critical Dependency Issue
 
-## Troubleshooting
+**Issue**: Poetry and pytest fail with requests library import errors
+**Impact**: All Poetry-based commands (make check, make test, etc.) are currently broken
+**Workaround**: Use direct Python execution when possible
 
-### Common Issues
+### Monitoring Stack Integration
 
-- **Import Errors**: Ensure `flext-core` dependency is installed
-- **Type Errors**: Run `make type-check` for detailed MyPy output
-- **Test Failures**: Check coverage with `make coverage-html`
-- **Monitoring Stack**: Verify Docker Compose services are running
+The Makefile includes monitoring stack commands but implementation is incomplete:
+- `make setup-prometheus`, `make setup-grafana` - Show placeholder messages
+- `make start-monitoring` - Requires `docker-compose.monitoring.yml` (not exists)
+- Monitoring stack integration needs to be implemented
 
-### Performance Optimization
+### Architecture Gaps
 
-- Use efficient metric collection patterns
-- Implement sampling for high-volume tracing
-- Optimize logging levels for production
-- Monitor observability overhead with built-in benchmarks
+1. **Cross-Service Tracing**: Distributed tracing between Go and Python services not implemented
+2. **Metrics Standardization**: Ecosystem-wide metric naming conventions not defined  
+3. **Monitoring Integration**: Full monitoring stack not integrated with FLEXT workspace
 
-## TODO: GAPS DE ARQUITETURA IDENTIFICADOS - PRIORIDADE ALTA
+### Development Notes
 
-### 🚨 GAP 1: Monitoring Stack Integration Gap
-
-**Status**: ALTO - Stack de monitoramento não integrado com deployment ecosystem
-**Problema**:
-
-- Prometheus, Grafana, Jaeger setup manual não integrado com Docker Compose workspace
-- Monitoring stack não configurado automaticamente para todos os 32 services
-- Dashboards não auto-gerados para ecosystem services
-
-**TODO**:
-
-- [ ] Integrar monitoring stack com workspace Docker Compose
-- [ ] Criar auto-discovery de services para monitoring
-- [ ] Implementar dashboard templates para cada tipo de service FLEXT
-- [ ] Documentar monitoring integration patterns para novos services
-
-### 🚨 GAP 2: Cross-Service Correlation Missing
-
-**Status**: ALTO - Correlation IDs não propagados entre services
-**Problema**:
-
-- Correlation IDs mencionados mas sem cross-service propagation
-- Distributed tracing não conecta FlexCore (Go) ↔ FLEXT (Python) ↔ outros services
-- Request tracking não end-to-end
-
-**TODO**:
-
-- [ ] Implementar correlation ID propagation via HTTP headers
-- [ ] Criar tracing integration entre Go e Python services
-- [ ] Documentar distributed tracing patterns para ecosystem
-- [ ] Implementar request flow visualization tools
-
-### 🚨 GAP 3: Metrics Standardization Inconsistent
-
-**Status**: ALTO - Métricas não padronizadas entre services
-**Problema**:
-
-- Naming conventions não definidas para ecosystem metrics
-- Business metrics não diferenciadas de system metrics
-- SLA/SLO tracking não implementado
-
-**TODO**:
-
-- [ ] Definir metric naming conventions para ecosystem
-- [ ] Criar business metrics framework
-- [ ] Implementar SLA/SLO tracking e alerting
-- [ ] Documentar metrics best practices para development teams
+- Core observability patterns are functional when dependencies work
+- Test coverage is comprehensive when tests can execute
+- Focus on fixing dependency issues before major feature development
+- Consider using direct tool execution until Poetry issues resolved

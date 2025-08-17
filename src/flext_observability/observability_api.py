@@ -70,6 +70,7 @@ FLEXT Integration:
 from __future__ import annotations
 
 from contextlib import suppress
+from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -91,10 +92,7 @@ from flext_observability.observability_models import (
 )
 
 if TYPE_CHECKING:
-    from datetime import datetime
-
-    from flext_observability.typings import FlextTypes
-
+    from flext_core.typings import FlextTypes
 
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
@@ -108,7 +106,7 @@ def _generate_utc_datetime() -> datetime:
     across the FLEXT ecosystem. Eliminates local boilerplate duplication.
 
     Returns:
-        datetime: Current UTC datetime with timezone information
+      datetime: Current UTC datetime with timezone information
 
     """
     # Delegate to flext_simple helper so tests can patch
@@ -133,50 +131,50 @@ def flext_create_metric(
     to avoid code duplication. Single source of truth for metric creation.
 
     Args:
-        name (str): Metric name following observability naming conventions.
-        value (float | Decimal): Numeric metric value with high precision support.
-            Supports both float and Decimal types for financial and precision-critical
-            measurements. Must be finite and valid numeric value.
-        unit (str, optional): Measurement unit for metric value interpretation.
-            Common units: "count", "milliseconds", "seconds", "bytes", "percent".
-            Used for type inference and dashboard display formatting.
-        tags (Dict[str, str], optional): Metadata tags for metric categorization
-            and filtering. Used for grouping, alerting rules, and dashboard filtering.
-            Examples: {"service": "api", "environment": "production"}.
-        timestamp (datetime, optional): Metric creation timestamp. Defaults to
-            current UTC time if not provided. Should use timezone-aware datetime.
+      name (str): Metric name following observability naming conventions.
+      value (float | Decimal): Numeric metric value with high precision support.
+          Supports both float and Decimal types for financial and precision-critical
+          measurements. Must be finite and valid numeric value.
+      unit (str, optional): Measurement unit for metric value interpretation.
+          Common units: "count", "milliseconds", "seconds", "bytes", "percent".
+          Used for type inference and dashboard display formatting.
+      tags (Dict[str, str], optional): Metadata tags for metric categorization
+          and filtering. Used for grouping, alerting rules, and dashboard filtering.
+          Examples: {"service": "api", "environment": "production"}.
+      timestamp (datetime, optional): Metric creation timestamp. Defaults to
+          current UTC time if not provided. Should use timezone-aware datetime.
 
     Returns:
-        FlextResult[FlextMetric]: Success with created metric entity,
-        or failure with detailed error message for debugging and monitoring.
+      FlextResult[FlextMetric]: Success with created metric entity,
+      or failure with detailed error message for debugging and monitoring.
 
     Type Inference:
-        Automatically determines metric type based on intelligent heuristics:
-        - "count"/"counts" units → counter type for cumulative metrics
-        - "histogram" in unit → histogram type for distribution analysis
-        - Default → gauge type for instantaneous measurements
+      Automatically determines metric type based on intelligent heuristics:
+      - "count"/"counts" units → counter type for cumulative metrics
+      - "histogram" in unit → histogram type for distribution analysis
+      - Default → gauge type for instantaneous measurements
 
     Example:
-        Create various metric types with automatic inference:
+      Create various metric types with automatic inference:
 
-        >>> # Counter metric (inferred from unit)
-        >>> requests = flext_create_metric("api_requests", 42, "count")
-        >>>
-        >>> # Gauge metric (default type)
-        >>> cpu_usage = flext_create_metric("cpu_usage", 75.5, "percent")
-        >>>
-        >>> # Business metric with tags
-        >>> revenue = flext_create_metric(
-        ...     name="daily_revenue",
-        ...     value=15420.50,
-        ...     unit="dollars",
-        ...     tags={"region": "us-east", "product": "premium"},
-        ... )
+      >>> # Counter metric (inferred from unit)
+      >>> requests = flext_create_metric("api_requests", 42, "count")
+      >>>
+      >>> # Gauge metric (default type)
+      >>> cpu_usage = flext_create_metric("cpu_usage", 75.5, "percent")
+      >>>
+      >>> # Business metric with tags
+      >>> revenue = flext_create_metric(
+      ...     name="daily_revenue",
+      ...     value=15420.50,
+      ...     unit="dollars",
+      ...     tags={"region": "us-east", "product": "premium"},
+      ... )
 
     Validation:
-        Comprehensive validation including metric naming conventions,
-        value constraints, and business rule enforcement with detailed
-        error messages for debugging and operational visibility.
+      Comprehensive validation including metric naming conventions,
+      value constraints, and business rule enforcement with detailed
+      error messages for debugging and operational visibility.
 
     """
     # Import locally to avoid circular dependency
@@ -186,52 +184,52 @@ def flext_create_metric(
 
     # Infer from unit
     if unit in {"count", "counts"}:
-        metric_type = "counter"
+      metric_type = "counter"
     elif "histogram" in unit.lower():
-        metric_type = "histogram"
+      metric_type = "histogram"
     # Infer from name patterns (common Prometheus conventions)
     elif name.endswith(("_total", "_count")):
-        metric_type = "counter"
+      metric_type = "counter"
     elif (
-        name.endswith(("_duration", "_time", "_seconds")) or "histogram" in name.lower()
+      name.endswith(("_duration", "_time", "_seconds")) or "histogram" in name.lower()
     ):
-        metric_type = "histogram"
+      metric_type = "histogram"
 
     try:
-        _ = flext_simple.FlextGenerators.generate_uuid()
-        # Probe entity to allow tests to patch FlextMetric and raise
-        try:
-            probe = flext_simple.FlextMetric(  # type: ignore[attr-defined]
-                id=FlextIdGenerator.generate_uuid(),
-                name=name,
-                value=value,
-                unit=unit,
-                tags=tags or {},
-                timestamp=timestamp or _generate_utc_datetime(),
-            )
-            probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create metric: {e}")
+      _ = flext_simple.FlextGenerators.generate_uuid()
+      # Probe entity to allow tests to patch FlextMetric and raise
+      try:
+          probe = flext_simple.FlextMetric(  # type: ignore[attr-defined]
+              id=FlextIdGenerator.generate_uuid(),
+              name=name,
+              value=value,
+              unit=unit,
+              tags=tags or {},
+              timestamp=timestamp or _generate_utc_datetime(),
+          )
+          probe.validate_business_rules()
+      except Exception as e:  # noqa: BLE001
+          return FlextResult.fail(f"Failed to create metric: {e}")
 
-        result = flext_metric(
-            name=name,
-            value=value,
-            unit=unit,
-            metric_type=metric_type,
-            tags=tags or {},
-            timestamp=timestamp or _generate_utc_datetime(),
-        )
+      result = flext_metric(
+          name=name,
+          value=value,
+          unit=unit,
+          metric_type=metric_type,
+          tags=tags or {},
+          timestamp=timestamp or _generate_utc_datetime(),
+      )
 
-        # Ensure Decimal for float inputs to satisfy tests expecting Decimal
-        if result.success and result.data is not None:
-            with suppress(Exception):
-                if isinstance(result.data.value, float):
-                    result.data.value = Decimal(str(result.data.value))
-        return result
+      # Ensure Decimal for float inputs to satisfy tests expecting Decimal
+      if result.success and result.data is not None:
+          with suppress(Exception):
+              if isinstance(result.data.value, float):
+                  result.data.value = Decimal(str(result.data.value))
+      return result
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create metric: {e}")
+      return FlextResult.fail(f"Failed to create metric: {e}")
     except Exception as e:  # Ensure broad capture for forced exceptions in tests
-        return FlextResult.fail(f"Failed to create metric: {e}")
+      return FlextResult.fail(f"Failed to create metric: {e}")
 
 
 def flext_create_log_entry(
@@ -242,38 +240,38 @@ def flext_create_log_entry(
 ) -> FlextResult[FlextLogEntry]:
     """Create observability log entry with simple parameters."""
     try:
-        # Trigger patch point and probe entity for test hooks
-        _ = flext_simple.FlextGenerators.generate_uuid()
-        try:
-            probe = flext_simple.FlextLogEntry(  # type: ignore[attr-defined]
-                id=FlextIdGenerator.generate_uuid(),
-                level=level,
-                message=message,
-                context=context or {},
-                timestamp=timestamp or _generate_utc_datetime(),
-            )
-            probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create log entry: {e}")
+      # Trigger patch point and probe entity for test hooks
+      _ = flext_simple.FlextGenerators.generate_uuid()
+      try:
+          probe = flext_simple.FlextLogEntry(  # type: ignore[attr-defined]
+              id=FlextIdGenerator.generate_uuid(),
+              level=level,
+              message=message,
+              context=context or {},
+              timestamp=timestamp or _generate_utc_datetime(),
+          )
+          probe.validate_business_rules()
+      except Exception as e:  # noqa: BLE001
+          return FlextResult.fail(f"Failed to create log entry: {e}")
 
-        log_entry = FlextLogEntry(
-            id=FlextIdGenerator.generate_uuid(),
-            level=level,
-            message=message,
-            context=context or {},
-            timestamp=timestamp or _generate_utc_datetime(),
-        )
+      log_entry = FlextLogEntry(
+          id=FlextIdGenerator.generate_uuid(),
+          level=level,
+          message=message,
+          context=context or {},
+          timestamp=timestamp or _generate_utc_datetime(),
+      )
 
-        # Validate business rules before returning
-        validation_result = log_entry.validate_business_rules()
-        if validation_result.is_failure:
-            return FlextResult.fail(
-                validation_result.error or "Log entry validation failed",
-            )
+      # Validate business rules before returning
+      validation_result = log_entry.validate_business_rules()
+      if validation_result.is_failure:
+          return FlextResult.fail(
+              validation_result.error or "Log entry validation failed",
+          )
 
-        return FlextResult.ok(log_entry)
+      return FlextResult.ok(log_entry)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create log entry: {e}")
+      return FlextResult.fail(f"Failed to create log entry: {e}")
 
 
 def flext_create_trace(
@@ -291,39 +289,39 @@ def flext_create_trace(
     config = config or {}
 
     try:
-        # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
-        _ = flext_simple.FlextGenerators.generate_uuid()
-        # Probe entity to allow tests patching FlextTrace and forcing validation error
-        try:
-            probe = flext_simple.FlextTrace(  # type: ignore[attr-defined]
-                id=FlextIdGenerator.generate_uuid(),
-                trace_id=trace_id,
-                operation=operation,
-                span_id=str(config.get("span_id", f"{trace_id}-span")),
-                duration_ms=int(str(config.get("duration_ms", 0))),
-                status=str(config.get("status", "pending")),
-                timestamp=timestamp or _generate_utc_datetime(),
-            )
-            probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create trace: {e}")
+      # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
+      _ = flext_simple.FlextGenerators.generate_uuid()
+      # Probe entity to allow tests patching FlextTrace and forcing validation error
+      try:
+          probe = flext_simple.FlextTrace(  # type: ignore[attr-defined]
+              id=FlextIdGenerator.generate_uuid(),
+              trace_id=trace_id,
+              operation=operation,
+              span_id=str(config.get("span_id", f"{trace_id}-span")),
+              duration_ms=int(str(config.get("duration_ms", 0))),
+              status=str(config.get("status", "pending")),
+              timestamp=timestamp or _generate_utc_datetime(),
+          )
+          probe.validate_business_rules()
+      except Exception as e:  # noqa: BLE001
+          return FlextResult.fail(f"Failed to create trace: {e}")
 
-        trace = flext_trace(
-            trace_id=trace_id,
-            operation=operation,
-            span_id=str(config.get("span_id", f"{trace_id}-span")),
-            duration_ms=int(str(config.get("duration_ms", 0))),
-            status=str(config.get("status", "pending")),
-            timestamp=timestamp or _generate_utc_datetime(),
-            id=FlextIdGenerator.generate_uuid(),
-        )
-        # Validate
-        validation = trace.validate_business_rules()
-        if validation.is_failure:
-            return FlextResult.fail(validation.error or "Trace validation failed")
-        return FlextResult.ok(trace)
+      trace = flext_trace(
+          trace_id=trace_id,
+          operation=operation,
+          span_id=str(config.get("span_id", f"{trace_id}-span")),
+          duration_ms=int(str(config.get("duration_ms", 0))),
+          status=str(config.get("status", "pending")),
+          timestamp=timestamp or _generate_utc_datetime(),
+          id=FlextIdGenerator.generate_uuid(),
+      )
+      # Validate
+      validation = trace.validate_business_rules()
+      if validation.is_failure:
+          return FlextResult.fail(validation.error or "Trace validation failed")
+      return FlextResult.ok(trace)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create trace: {e}")
+      return FlextResult.fail(f"Failed to create trace: {e}")
 
 
 def flext_create_alert(
@@ -335,40 +333,40 @@ def flext_create_alert(
 ) -> FlextResult[FlextAlert]:
     """Create observability alert with simple parameters."""
     try:
-        _ = flext_simple.FlextGenerators.generate_uuid()
-        # Probe entity to allow tests patching FlextAlert
-        try:
-            probe = flext_simple.FlextAlert(  # type: ignore[attr-defined]
-                title=title,
-                message=message,
-                severity=severity,
-                id=FlextIdGenerator.generate_uuid(),
-                status=status,
-                timestamp=timestamp or _generate_utc_datetime(),
-            )
-            probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create alert: {e}")
+      _ = flext_simple.FlextGenerators.generate_uuid()
+      # Probe entity to allow tests patching FlextAlert
+      try:
+          probe = flext_simple.FlextAlert(  # type: ignore[attr-defined]
+              title=title,
+              message=message,
+              severity=severity,
+              id=FlextIdGenerator.generate_uuid(),
+              status=status,
+              timestamp=timestamp or _generate_utc_datetime(),
+          )
+          probe.validate_business_rules()
+      except Exception as e:  # noqa: BLE001
+          return FlextResult.fail(f"Failed to create alert: {e}")
 
-        alert = FlextAlert(
-            title=title,
-            message=message,
-            severity=severity,
-            id=FlextIdGenerator.generate_uuid(),
-            status=status,
-            timestamp=timestamp or _generate_utc_datetime(),
-        )
+      alert = FlextAlert(
+          title=title,
+          message=message,
+          severity=severity,
+          id=FlextIdGenerator.generate_uuid(),
+          status=status,
+          timestamp=timestamp or _generate_utc_datetime(),
+      )
 
-        # Validate business rules before returning
-        validation_result = alert.validate_business_rules()
-        if validation_result.is_failure:
-            return FlextResult.fail(
-                validation_result.error or "Alert validation failed",
-            )
+      # Validate business rules before returning
+      validation_result = alert.validate_business_rules()
+      if validation_result.is_failure:
+          return FlextResult.fail(
+              validation_result.error or "Alert validation failed",
+          )
 
-        return FlextResult.ok(alert)
+      return FlextResult.ok(alert)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create alert: {e}")
+      return FlextResult.fail(f"Failed to create alert: {e}")
 
 
 def flext_create_health_check(
@@ -381,39 +379,39 @@ def flext_create_health_check(
 ) -> FlextResult[FlextHealthCheck]:
     """Create observability health check with simple parameters."""
     try:
-        _ = flext_simple.FlextGenerators.generate_uuid()
-        # Probe construction to allow tests patching FlextHealthCheck
-        try:
-            probe = flext_simple.FlextHealthCheck(  # type: ignore[attr-defined]
-                id=health_id or FlextIdGenerator.generate_uuid(),
-                component=component,
-                status=status,
-                message=message,
-                timestamp=timestamp or _generate_utc_datetime(),
-            )
-            probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create health check: {e}")
+      _ = flext_simple.FlextGenerators.generate_uuid()
+      # Probe construction to allow tests patching FlextHealthCheck
+      try:
+          probe = flext_simple.FlextHealthCheck(  # type: ignore[attr-defined]
+              id=health_id or FlextIdGenerator.generate_uuid(),
+              component=component,
+              status=status,
+              message=message,
+              timestamp=timestamp or _generate_utc_datetime(),
+          )
+          probe.validate_business_rules()
+      except Exception as e:  # noqa: BLE001
+          return FlextResult.fail(f"Failed to create health check: {e}")
 
-        health_check = FlextHealthCheck(
-            id=health_id
-            or FlextIdGenerator.generate_uuid(),  # Use provided id or generate new one
-            component=component,
-            status=status,
-            message=message,
-            timestamp=timestamp or _generate_utc_datetime(),
-        )
+      health_check = FlextHealthCheck(
+          id=health_id
+          or FlextIdGenerator.generate_uuid(),  # Use provided id or generate new one
+          component=component,
+          status=status,
+          message=message,
+          timestamp=timestamp or _generate_utc_datetime(),
+      )
 
-        # Validate business rules before returning
-        validation_result = health_check.validate_business_rules()
-        if validation_result.is_failure:
-            return FlextResult.fail(
-                validation_result.error or "Health check validation failed",
-            )
+      # Validate business rules before returning
+      validation_result = health_check.validate_business_rules()
+      if validation_result.is_failure:
+          return FlextResult.fail(
+              validation_result.error or "Health check validation failed",
+          )
 
-        return FlextResult.ok(health_check)
+      return FlextResult.ok(health_check)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create health check: {e}")
+      return FlextResult.fail(f"Failed to create health check: {e}")
 
 
 __all__: list[str] = [
