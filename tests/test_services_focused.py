@@ -15,66 +15,66 @@ class TestServicesFocused:
     """Focused tests to reach 90%+ coverage."""
 
     def test_metrics_service_reset_metrics(self) -> None:
-      """Test reset_metrics method (covers lines 226-241)."""
-      service = FlextMetricsService()
+        """Test reset_metrics method (covers lines 226-241)."""
+        service = FlextMetricsService()
 
-      # Record some metrics first
-      metric_result = flext_create_metric("test_metric", 100.0)
-      assert metric_result.success
-      service.record_metric(metric_result.data)
+        # Record some metrics first
+        metric_result = flext_create_metric("test_metric", 100.0)
+        assert metric_result.success
+        service.record_metric(metric_result.data)
 
-      # Reset metrics
-      result = service.reset_metrics()
+        # Reset metrics
+        result = service.reset_metrics()
 
-      assert result.success
+        assert result.success
 
     def test_metrics_service_export_prometheus_simple(self) -> None:
-      """Test export_prometheus_format method (covers lines 193-224)."""
-      service = FlextMetricsService()
+        """Test export_prometheus_format method (covers lines 193-224)."""
+        service = FlextMetricsService()
 
-      # Record a simple metric
-      metric_result = flext_create_metric("simple_metric", 42.0)
-      assert metric_result.success
-      service.record_metric(metric_result.data)
+        # Record a simple metric
+        metric_result = flext_create_metric("simple_metric", 42.0)
+        assert metric_result.success
+        service.record_metric(metric_result.data)
 
-      # Export in Prometheus format
-      result = service.export_prometheus_format()
+        # Export in Prometheus format
+        result = service.export_prometheus_format()
 
-      assert result.success
-      prometheus_output = result.data
-      assert "simple_metric" in prometheus_output
+        assert result.success
+        prometheus_output = result.data
+        assert "simple_metric" in prometheus_output
 
     def test_metrics_service_get_value_paths(self) -> None:
-      """Test get_metric_value method paths (covers lines 140-162)."""
-      service = FlextMetricsService()
+        """Test get_metric_value method paths (covers lines 140-162)."""
+        service = FlextMetricsService()
 
-      # Test with recorded metric
-      metric_result = flext_create_metric("test_gauge", 75.0)
-      assert metric_result.success
-      service.record_metric(metric_result.data)
+        # Test with recorded metric
+        metric_result = flext_create_metric("test_gauge", 75.0)
+        assert metric_result.success
+        service.record_metric(metric_result.data)
 
-      # Get metric value
-      result = service.get_metric_value("test_gauge")
-      assert result.success
+        # Get metric value
+        result = service.get_metric_value("test_gauge")
+        assert result.success
 
-      # Test with non-existent metric
-      result = service.get_metric_value("nonexistent")
-      assert result.is_failure
+        # Test with non-existent metric
+        result = service.get_metric_value("nonexistent")
+        assert result.is_failure
 
     def test_metrics_service_summary_with_data(self) -> None:
-      """Test get_metrics_summary with actual data (covers lines 164-191)."""
-      service = FlextMetricsService()
+        """Test get_metrics_summary with actual data (covers lines 164-191)."""
+        service = FlextMetricsService()
 
-      # Record multiple metrics
-      for i in range(3):
-          metric_result = flext_create_metric(f"metric_{i}", float(i * 10))
-          assert metric_result.success
-          service.record_metric(metric_result.data)
+        # Record multiple metrics
+        for i in range(3):
+            metric_result = flext_create_metric(f"metric_{i}", float(i * 10))
+            assert metric_result.success
+            service.record_metric(metric_result.data)
 
-      # Get summary
-      result = service.get_metrics_summary()
+        # Get summary
+        result = service.get_metrics_summary()
 
-      assert result.success
-      summary = result.data
-      assert "service_info" in summary
-      assert summary["service_info"]["metrics_recorded"] == 3
+        assert result.success
+        summary = result.data
+        assert "service_info" in summary
+        assert summary["service_info"]["metrics_recorded"] == 3

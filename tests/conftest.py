@@ -28,49 +28,49 @@ def pytest_configure(config: Config) -> None:
     """Configure pytest with custom markers."""
     # Register custom markers
     config.addinivalue_line(
-      "markers",
-      "unit: Unit tests that don't require external dependencies",
+        "markers",
+        "unit: Unit tests that don't require external dependencies",
     )
     config.addinivalue_line(
-      "markers",
-      "integration: Integration tests that may require external services",
+        "markers",
+        "integration: Integration tests that may require external services",
     )
     config.addinivalue_line(
-      "markers",
-      "slow: Tests that take more than 1 second to run",
+        "markers",
+        "slow: Tests that take more than 1 second to run",
     )
     config.addinivalue_line(
-      "markers",
-      "smoke: Quick smoke tests for CI/CD",
+        "markers",
+        "smoke: Quick smoke tests for CI/CD",
     )
     config.addinivalue_line(
-      "markers",
-      "e2e: End-to-end tests",
+        "markers",
+        "e2e: End-to-end tests",
     )
     config.addinivalue_line(
-      "markers",
-      "metrics: Metrics-related tests",
+        "markers",
+        "metrics: Metrics-related tests",
     )
     config.addinivalue_line(
-      "markers",
-      "tracing: Tracing-related tests",
+        "markers",
+        "tracing: Tracing-related tests",
     )
     config.addinivalue_line(
-      "markers",
-      "logging: Logging-related tests",
+        "markers",
+        "logging: Logging-related tests",
     )
 
 
-def pytest_collection_modifyitems(config: Config, items: list[Item]) -> None:
+def pytest_collection_modifyitems(_config: Config, items: list[Item]) -> None:
     """Auto-mark tests based on their location."""
     for item in items:
-      # Auto-mark based on test location
-      if "unit" in str(item.fspath):
-          item.add_marker(pytest.mark.unit)
-      elif "integration" in str(item.fspath):
-          item.add_marker(pytest.mark.integration)
-      elif "e2e" in str(item.fspath):
-          item.add_marker(pytest.mark.e2e)
+        # Auto-mark based on test location
+        if "unit" in str(item.fspath):
+            item.add_marker(pytest.mark.unit)
+        elif "integration" in str(item.fspath):
+            item.add_marker(pytest.mark.integration)
+        elif "e2e" in str(item.fspath):
+            item.add_marker(pytest.mark.e2e)
 
 
 # ============================================================================
@@ -117,10 +117,10 @@ def metrics_collector(metrics_registry: CollectorRegistry) -> dict[str, object]:
 def counter_metric(metrics_registry: CollectorRegistry) -> object:
     """Create a counter metric for testing."""
     return Counter(
-      "test_counter",
-      "Test counter for unit tests",
-      ["label1", "label2"],
-      registry=metrics_registry,
+        "test_counter",
+        "Test counter for unit tests",
+        ["label1", "label2"],
+        registry=metrics_registry,
     )
 
 
@@ -128,11 +128,11 @@ def counter_metric(metrics_registry: CollectorRegistry) -> object:
 def histogram_metric(metrics_registry: CollectorRegistry) -> object:
     """Create a histogram metric for testing."""
     return Histogram(
-      "test_histogram",
-      "Test histogram for unit tests",
-      ["method", "endpoint"],
-      buckets=(0.1, 0.5, 1.0, 2.0, 5.0),
-      registry=metrics_registry,
+        "test_histogram",
+        "Test histogram for unit tests",
+        ["method", "endpoint"],
+        buckets=(0.1, 0.5, 1.0, 2.0, 5.0),
+        registry=metrics_registry,
     )
 
 
@@ -169,9 +169,9 @@ def tracer(tracer_provider: object) -> object:
 def span_context() -> object:
     """Create a span context for testing."""
     return trace.SpanContext(
-      trace_id=0x123456789ABCDEF0123456789ABCDEF0,
-      span_id=0x123456789ABCDEF0,
-      is_remote=False,
+        trace_id=0x123456789ABCDEF0123456789ABCDEF0,
+        span_id=0x123456789ABCDEF0,
+        is_remote=False,
     )
 
 
@@ -190,10 +190,10 @@ def structured_logger() -> object:
 def log_context() -> dict[str, str]:
     """Create log context for testing."""
     return {
-      "user_id": "test-user-123",
-      "request_id": "req-456",
-      "environment": "test",
-      "service": "test-service",
+        "user_id": "test-user-123",
+        "request_id": "req-456",
+        "environment": "test",
+        "service": "test-service",
     }
 
 
@@ -212,24 +212,24 @@ async def health_checker() -> AsyncIterator[dict[str, object]]:
 def health_check_config() -> dict[str, object]:
     """Create health check configuration for testing."""
     return {
-      "checks": {
-          "database": {
-              "enabled": True,
-              "timeout": 5.0,
-              "critical": True,
-          },
-          "redis": {
-              "enabled": True,
-              "timeout": 3.0,
-              "critical": False,
-          },
-          "external_api": {
-              "enabled": True,
-              "timeout": 10.0,
-              "critical": False,
-          },
-      },
-      "interval": 30,
+        "checks": {
+            "database": {
+                "enabled": True,
+                "timeout": 5.0,
+                "critical": True,
+            },
+            "redis": {
+                "enabled": True,
+                "timeout": 3.0,
+                "critical": False,
+            },
+            "external_api": {
+                "enabled": True,
+                "timeout": 10.0,
+                "critical": False,
+            },
+        },
+        "interval": 30,
     }
 
 
@@ -263,14 +263,14 @@ def mock_otel_exporter(mocker: MockerFixture) -> object:
 def sample_metric_data() -> dict[str, object]:
     """Sample metric data for testing."""
     return {
-      "name": "http_requests_total",
-      "value": 42,
-      "labels": {
-          "method": "GET",
-          "endpoint": "/api/health",
-          "status": "200",
-      },
-      "timestamp": 1234567890,
+        "name": "http_requests_total",
+        "value": 42,
+        "labels": {
+            "method": "GET",
+            "endpoint": "/api/health",
+            "status": "200",
+        },
+        "timestamp": 1234567890,
     }
 
 
@@ -278,13 +278,13 @@ def sample_metric_data() -> dict[str, object]:
 def sample_trace_data() -> dict[str, object]:
     """Sample trace data for testing."""
     return {
-      "trace_id": "123456789abcdef0123456789abcdef0",
-      "span_id": "123456789abcdef0",
-      "operation": "process_request",
-      "attributes": {
-          "http.method": "POST",
-          "http.url": "/api/pipelines",
-          "http.status_code": 201,
-      },
-      "duration_ms": 125.5,
+        "trace_id": "123456789abcdef0123456789abcdef0",
+        "span_id": "123456789abcdef0",
+        "operation": "process_request",
+        "attributes": {
+            "http.method": "POST",
+            "http.url": "/api/pipelines",
+            "http.status_code": 201,
+        },
+        "duration_ms": 125.5,
     }

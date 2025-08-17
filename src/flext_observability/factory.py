@@ -100,8 +100,8 @@ def _generate_utc_datetime() -> datetime:
     # Use flext-core timestamp generation - direct float to datetime conversion
     timestamp_float = FlextIdGenerator.generate_timestamp()
     return datetime.fromtimestamp(
-      timestamp_float,
-      tz=datetime.now().astimezone().tzinfo,
+        timestamp_float,
+        tz=datetime.now().astimezone().tzinfo,
     )
 
 
@@ -217,321 +217,321 @@ class FlextObservabilityMasterFactory:
     """
 
     def __init__(self, container: FlextContainer | None = None) -> None:
-      """Initialize master factory with dependency injection and service coordination.
+        """Initialize master factory with dependency injection and service coordination.
 
-      Args:
-          container: Dependency injection container for service coordination.
-              Defaults to new FlextContainer if not provided. Services are
-              automatically initialized and configured for entity processing.
+        Args:
+            container: Dependency injection container for service coordination.
+                Defaults to new FlextContainer if not provided. Services are
+                automatically initialized and configured for entity processing.
 
-      """
-      self.container = container or FlextContainer()
-      self._logger = get_logger(self.__class__.__name__)
-      self._setup_services()
+        """
+        self.container = container or FlextContainer()
+        self._logger = get_logger(self.__class__.__name__)
+        self._setup_services()
 
     def _setup_services(self) -> None:
-      """Set up all services automatically."""
-      try:
-          services = [
-              ("metrics_service", FlextMetricsService),
-              ("logging_service", FlextLoggingService),
-              ("tracing_service", FlextTracingService),
-              ("alert_service", FlextAlertService),
-              ("health_service", FlextHealthService),
-          ]
+        """Set up all services automatically."""
+        try:
+            services = [
+                ("metrics_service", FlextMetricsService),
+                ("logging_service", FlextLoggingService),
+                ("tracing_service", FlextTracingService),
+                ("alert_service", FlextAlertService),
+                ("health_service", FlextHealthService),
+            ]
 
-          for service_key, service_class in services:
-              try:
-                  service = service_class(self.container)
-                  register_result = self.container.register(service_key, service)
-                  if register_result.is_failure:
-                      error_message = (
-                          f"Failed to register {service_key}: {register_result.error}"
-                      )
-                      self._logger.warning(error_message)
-              except (
-                  ValueError,
-                  TypeError,
-                  AttributeError,
-                  ImportError,
-                  RuntimeError,
-              ) as e:
-                  # Use warning (not exception) so patched logger.warning is called
-                  self._logger.warning("Failed to create %s: %s", service_key, e)
+            for service_key, service_class in services:
+                try:
+                    service = service_class(self.container)
+                    register_result = self.container.register(service_key, service)
+                    if register_result.is_failure:
+                        error_message = (
+                            f"Failed to register {service_key}: {register_result.error}"
+                        )
+                        self._logger.warning(error_message)
+                except (
+                    ValueError,
+                    TypeError,
+                    AttributeError,
+                    ImportError,
+                    RuntimeError,
+                ) as e:
+                    # Use warning (not exception) so patched logger.warning is called
+                    self._logger.warning("Failed to create %s: %s", service_key, e)
 
-      except (
-          ValueError,
-          TypeError,
-          AttributeError,
-          ImportError,
-          RuntimeError,
-      ):
-          self._logger.exception("Service setup error occurred")
+        except (
+            ValueError,
+            TypeError,
+            AttributeError,
+            ImportError,
+            RuntimeError,
+        ):
+            self._logger.exception("Service setup error occurred")
 
     def metric(
-      self,
-      name: str,
-      value: float,
-      **kwargs: object,
+        self,
+        name: str,
+        value: float,
+        **kwargs: object,
     ) -> FlextResult[object]:
-      """Create and record metric."""
-      try:
-          # FlextMetric imported at module level
-          tags = kwargs.get("tags", {})
-          tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
+        """Create and record metric."""
+        try:
+            # FlextMetric imported at module level
+            tags = kwargs.get("tags", {})
+            tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
 
-          timestamp = kwargs.get("timestamp")
-          if not isinstance(timestamp, datetime):
-              timestamp = _generate_utc_datetime()
+            timestamp = kwargs.get("timestamp")
+            if not isinstance(timestamp, datetime):
+                timestamp = _generate_utc_datetime()
 
-          metric = FlextMetric(
-              id=FlextIdGenerator.generate_uuid(),
-              name=name,
-              value=value,
-              unit=str(kwargs.get("unit", "")),
-              tags=tags,
-              timestamp=timestamp,
-          )
+            metric = FlextMetric(
+                id=FlextIdGenerator.generate_uuid(),
+                name=name,
+                value=value,
+                unit=str(kwargs.get("unit", "")),
+                tags=tags,
+                timestamp=timestamp,
+            )
 
-          service_result = self.container.get("metrics_service")
-          if service_result.success and service_result.data:
-              service = cast("FlextMetricsService", service_result.data)
-              result = service.record_metric(metric)
-              if result.is_failure:
-                  return FlextResult.fail(result.error or "Unknown error")
-              return FlextResult.ok(result.data)
-          return FlextResult.ok(metric)
+            service_result = self.container.get("metrics_service")
+            if service_result.success and service_result.data:
+                service = cast("FlextMetricsService", service_result.data)
+                result = service.record_metric(metric)
+                if result.is_failure:
+                    return FlextResult.fail(result.error or "Unknown error")
+                return FlextResult.ok(result.data)
+            return FlextResult.ok(metric)
 
-      except (ValueError, TypeError, AttributeError) as e:
-          return FlextResult.fail(f"Failed to create metric: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Failed to create metric: {e}")
 
     def log(
-      self,
-      message: str,
-      level: str = "info",
-      **kwargs: object,
+        self,
+        message: str,
+        level: str = "info",
+        **kwargs: object,
     ) -> FlextResult[object]:
-      """Create and log entry."""
-      try:
-          # FlextLogEntry imported at module level
-          # Probe to allow patched class to raise
-          try:
-              probe = FlextLogEntry(
-                  id=FlextIdGenerator.generate_uuid(),
-                  message=message,
-                  level=level,
-                  context={},
-                  timestamp=_generate_utc_datetime(),
-              )
-              probe.validate_business_rules()
-          except Exception as e:  # noqa: BLE001
-              return FlextResult.fail(f"Failed to create log: {e}")
-          context = kwargs.get("context", {})
-          if isinstance(context, dict):
-              context = cast("FlextTypes.Data.Dict", context)
-          else:
-              context = {}
+        """Create and log entry."""
+        try:
+            # FlextLogEntry imported at module level
+            # Probe to allow patched class to raise
+            try:
+                probe = FlextLogEntry(
+                    id=FlextIdGenerator.generate_uuid(),
+                    message=message,
+                    level=level,
+                    context={},
+                    timestamp=_generate_utc_datetime(),
+                )
+                probe.validate_business_rules()
+            except Exception as e:  # noqa: BLE001
+                return FlextResult.fail(f"Failed to create log: {e}")
+            context = kwargs.get("context", {})
+            if isinstance(context, dict):
+                context = cast("FlextTypes.Data.Dict", context)
+            else:
+                context = {}
 
-          timestamp = kwargs.get("timestamp")
-          if not isinstance(timestamp, datetime):
-              timestamp = _generate_utc_datetime()
+            timestamp = kwargs.get("timestamp")
+            if not isinstance(timestamp, datetime):
+                timestamp = _generate_utc_datetime()
 
-          # Construct after probe; rely on patched class raising during construction
-          log_entry = FlextLogEntry(
-              id=FlextIdGenerator.generate_uuid(),
-              message=message,
-              level=level,
-              context=context,
-              timestamp=timestamp,
-          )
+            # Construct after probe; rely on patched class raising during construction
+            log_entry = FlextLogEntry(
+                id=FlextIdGenerator.generate_uuid(),
+                message=message,
+                level=level,
+                context=context,
+                timestamp=timestamp,
+            )
 
-          service_result = self.container.get("logging_service")
-          if service_result.success and service_result.data:
-              service = cast("FlextLoggingService", service_result.data)
-              result = service.log_entry(log_entry)
-              return (
-                  FlextResult.ok(result.data)
-                  if result.success
-                  else FlextResult.fail(result.error or "Unknown error")
-              )
-          return FlextResult.ok(log_entry)
+            service_result = self.container.get("logging_service")
+            if service_result.success and service_result.data:
+                service = cast("FlextLoggingService", service_result.data)
+                result = service.log_entry(log_entry)
+                return (
+                    FlextResult.ok(result.data)
+                    if result.success
+                    else FlextResult.fail(result.error or "Unknown error")
+                )
+            return FlextResult.ok(log_entry)
 
-      except (ValueError, TypeError, AttributeError) as e:
-          return FlextResult.fail(f"Failed to create log: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Failed to create log: {e}")
 
     def alert(
-      self,
-      title: str,
-      message: str,
-      severity: str = "low",
-      **kwargs: object,
+        self,
+        title: str,
+        message: str,
+        severity: str = "low",
+        **kwargs: object,
     ) -> FlextResult[object]:
-      """Create alert."""
-      try:
-          tags = kwargs.get("tags", {})
-          tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
-          # Probe to allow patched class to raise
-          try:
-              probe = FlextAlert(
-                  id=FlextIdGenerator.generate_uuid(),
-                  title=title,
-                  message=message,
-                  severity=severity,
-                  status=str(kwargs.get("status", "active")),
-                  tags=tags,
-                  timestamp=_generate_utc_datetime(),
-              )
-              probe.validate_business_rules()
-          except Exception as e:  # noqa: BLE001
-              return FlextResult.fail(f"Failed to create alert: {e}")
-          timestamp = kwargs.get("timestamp")
-          if not isinstance(timestamp, datetime):
-              timestamp = _generate_utc_datetime()
+        """Create alert."""
+        try:
+            tags = kwargs.get("tags", {})
+            tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
+            # Probe to allow patched class to raise
+            try:
+                probe = FlextAlert(
+                    id=FlextIdGenerator.generate_uuid(),
+                    title=title,
+                    message=message,
+                    severity=severity,
+                    status=str(kwargs.get("status", "active")),
+                    tags=tags,
+                    timestamp=_generate_utc_datetime(),
+                )
+                probe.validate_business_rules()
+            except Exception as e:  # noqa: BLE001
+                return FlextResult.fail(f"Failed to create alert: {e}")
+            timestamp = kwargs.get("timestamp")
+            if not isinstance(timestamp, datetime):
+                timestamp = _generate_utc_datetime()
 
-          try:
-              alert = FlextAlert(
-                  id=FlextIdGenerator.generate_uuid(),
-                  title=title,
-                  message=message,
-                  severity=severity,
-                  status=str(kwargs.get("status", "active")),
-                  tags=tags,
-                  timestamp=timestamp,
-              )
-          except Exception as e:  # noqa: BLE001
-              return FlextResult.fail(f"Failed to create alert: {e}")
+            try:
+                alert = FlextAlert(
+                    id=FlextIdGenerator.generate_uuid(),
+                    title=title,
+                    message=message,
+                    severity=severity,
+                    status=str(kwargs.get("status", "active")),
+                    tags=tags,
+                    timestamp=timestamp,
+                )
+            except Exception as e:  # noqa: BLE001
+                return FlextResult.fail(f"Failed to create alert: {e}")
 
-          service_result = self.container.get("alert_service")
-          if service_result.success and service_result.data:
-              service = cast("FlextAlertService", service_result.data)
-              result = service.create_alert(alert)
-              return (
-                  FlextResult.ok(result.data)
-                  if result.success
-                  else FlextResult.fail(result.error or "Unknown error")
-              )
-          return FlextResult.ok(alert)
+            service_result = self.container.get("alert_service")
+            if service_result.success and service_result.data:
+                service = cast("FlextAlertService", service_result.data)
+                result = service.create_alert(alert)
+                return (
+                    FlextResult.ok(result.data)
+                    if result.success
+                    else FlextResult.fail(result.error or "Unknown error")
+                )
+            return FlextResult.ok(alert)
 
-      except (ValueError, TypeError, AttributeError) as e:
-          return FlextResult.fail(f"Failed to create alert: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Failed to create alert: {e}")
 
     def trace(
-      self,
-      trace_id: str,
-      operation: str,
-      **kwargs: object,
+        self,
+        trace_id: str,
+        operation: str,
+        **kwargs: object,
     ) -> FlextResult[object]:
-      """Start trace."""
-      try:
-          # Extract known parameters from kwargs
-          span_id = kwargs.get("span_id", "")
-          timestamp = kwargs.get("timestamp")
-          span_attributes = kwargs.get("span_attributes", {})
-          # Probe to allow patched class to raise
-          try:
-              probe = FlextTrace(
-                  id=FlextIdGenerator.generate_uuid(),
-                  trace_id=trace_id,
-                  operation=operation,
-                  span_id=str(span_id) if span_id else "",
-                  span_attributes=(
-                      span_attributes if isinstance(span_attributes, dict) else {}
-                  ),
-                  duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
-                  status=str(kwargs.get("status", "pending")),
-                  timestamp=(
-                      timestamp
-                      if isinstance(timestamp, datetime)
-                      else _generate_utc_datetime()
-                  ),
-              )
-              probe.validate_business_rules()
-          except Exception as e:  # noqa: BLE001
-              return FlextResult.fail(f"Failed to create trace: {e}")
-          trace = FlextTrace(
-              id=FlextIdGenerator.generate_uuid(),
-              trace_id=trace_id,
-              operation=operation,
-              span_id=str(span_id) if span_id else "",
-              span_attributes=(
-                  span_attributes if isinstance(span_attributes, dict) else {}
-              ),
-              duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
-              status=str(kwargs.get("status", "pending")),
-              timestamp=(
-                  timestamp
-                  if isinstance(timestamp, datetime)
-                  else _generate_utc_datetime()
-              ),
-          )
+        """Start trace."""
+        try:
+            # Extract known parameters from kwargs
+            span_id = kwargs.get("span_id", "")
+            timestamp = kwargs.get("timestamp")
+            span_attributes = kwargs.get("span_attributes", {})
+            # Probe to allow patched class to raise
+            try:
+                probe = FlextTrace(
+                    id=FlextIdGenerator.generate_uuid(),
+                    trace_id=trace_id,
+                    operation=operation,
+                    span_id=str(span_id) if span_id else "",
+                    span_attributes=(
+                        span_attributes if isinstance(span_attributes, dict) else {}
+                    ),
+                    duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
+                    status=str(kwargs.get("status", "pending")),
+                    timestamp=(
+                        timestamp
+                        if isinstance(timestamp, datetime)
+                        else _generate_utc_datetime()
+                    ),
+                )
+                probe.validate_business_rules()
+            except Exception as e:  # noqa: BLE001
+                return FlextResult.fail(f"Failed to create trace: {e}")
+            trace = FlextTrace(
+                id=FlextIdGenerator.generate_uuid(),
+                trace_id=trace_id,
+                operation=operation,
+                span_id=str(span_id) if span_id else "",
+                span_attributes=(
+                    span_attributes if isinstance(span_attributes, dict) else {}
+                ),
+                duration_ms=int(str(kwargs.get("duration_ms", 0)) or "0"),
+                status=str(kwargs.get("status", "pending")),
+                timestamp=(
+                    timestamp
+                    if isinstance(timestamp, datetime)
+                    else _generate_utc_datetime()
+                ),
+            )
 
-          service_result = self.container.get("tracing_service")
-          if service_result.success and service_result.data:
-              service = cast("FlextTracingService", service_result.data)
-              result = service.start_trace(trace)
-              if result.is_failure:
-                  return FlextResult.fail(result.error or "Unknown error")
-              return FlextResult.ok(result.data)
-          return FlextResult.ok(trace)
+            service_result = self.container.get("tracing_service")
+            if service_result.success and service_result.data:
+                service = cast("FlextTracingService", service_result.data)
+                result = service.start_trace(trace)
+                if result.is_failure:
+                    return FlextResult.fail(result.error or "Unknown error")
+                return FlextResult.ok(result.data)
+            return FlextResult.ok(trace)
 
-      except (ValueError, TypeError, AttributeError) as e:
-          return FlextResult.fail(f"Failed to create trace: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Failed to create trace: {e}")
 
     def health_check(
-      self,
-      component: str,
-      status: str = "unknown",
-      **kwargs: object,
+        self,
+        component: str,
+        status: str = "unknown",
+        **kwargs: object,
     ) -> FlextResult[object]:
-      """Create health check."""
-      try:
-          # Extract known parameters from kwargs
-          message = kwargs.get("message", "")
-          timestamp = kwargs.get("timestamp")
+        """Create health check."""
+        try:
+            # Extract known parameters from kwargs
+            message = kwargs.get("message", "")
+            timestamp = kwargs.get("timestamp")
 
-          # Use imported function for consistency and testability
-          health_result = flext_create_health_check(
-              component=component,
-              status=status,
-              message=str(message),
-              timestamp=(
-                  timestamp
-                  if isinstance(timestamp, datetime)
-                  else _generate_utc_datetime()
-              ),
-          )
-          if health_result.is_failure:
-              return FlextResult.fail(health_result.error or "Health check failed")
-          health = health_result.data
+            # Use imported function for consistency and testability
+            health_result = flext_create_health_check(
+                component=component,
+                status=status,
+                message=str(message),
+                timestamp=(
+                    timestamp
+                    if isinstance(timestamp, datetime)
+                    else _generate_utc_datetime()
+                ),
+            )
+            if health_result.is_failure:
+                return FlextResult.fail(health_result.error or "Health check failed")
+            health = health_result.data
 
-          service_result = self.container.get("health_service")
-          if service_result.success and service_result.data:
-              service = cast("FlextHealthService", service_result.data)
-              result = service.check_health(health_result)
-              return (
-                  FlextResult.ok(result.data)
-                  if result.success
-                  else FlextResult.fail(result.error or "Unknown error")
-              )
-          return FlextResult.ok(health)
+            service_result = self.container.get("health_service")
+            if service_result.success and service_result.data:
+                service = cast("FlextHealthService", service_result.data)
+                result = service.check_health(health_result)
+                return (
+                    FlextResult.ok(result.data)
+                    if result.success
+                    else FlextResult.fail(result.error or "Unknown error")
+                )
+            return FlextResult.ok(health)
 
-      except (ValueError, TypeError, AttributeError) as e:
-          return FlextResult.fail(f"Failed to create health check: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Failed to create health check: {e}")
 
     def health_status(self) -> FlextResult[FlextTypes.Data.Dict]:
-      """Get overall health status."""
-      try:
-          service_result = self.container.get("health_service")
-          if service_result.success and service_result.data:
-              service = cast("FlextHealthService", service_result.data)
-              return service.get_overall_health()
+        """Get overall health status."""
+        try:
+            service_result = self.container.get("health_service")
+            if service_result.success and service_result.data:
+                service = cast("FlextHealthService", service_result.data)
+                return service.get_overall_health()
 
-          return FlextResult.ok(
-              cast("FlextTypes.Data.Dict", {"status": "healthy", "mode": "fallback"}),
-          )
+            return FlextResult.ok(
+                cast("FlextTypes.Data.Dict", {"status": "healthy", "mode": "fallback"}),
+            )
 
-      except (ValueError, TypeError, AttributeError) as e:
-          return FlextResult.fail(f"Health status check failed: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            return FlextResult.fail(f"Health status check failed: {e}")
 
 
 # ============================================================================
@@ -547,7 +547,7 @@ def get_global_factory(
     """Get global factory instance."""
     global _global_factory  # noqa: PLW0603 - Global state for singleton pattern
     if _global_factory is None:
-      _global_factory = FlextObservabilityMasterFactory(container)
+        _global_factory = FlextObservabilityMasterFactory(container)
     return _global_factory
 
 
