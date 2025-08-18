@@ -72,14 +72,14 @@ from __future__ import annotations
 from contextlib import suppress
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING
 
 from flext_core import FlextIdGenerator, FlextResult
+from flext_core.typings import FlextTypes
 
 from flext_observability import flext_simple
 from flext_observability.entities import (
-    flext_alert,  # Import for DRY principle - reuse existing function
-    flext_health_check,  # Import for DRY principle - reuse existing function
+    flext_alert,
+    flext_health_check,
 )
 from flext_observability.observability_models import (
     FlextAlert,
@@ -87,12 +87,9 @@ from flext_observability.observability_models import (
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
-    flext_metric,  # Import for DRY principle - reuse existing function
-    flext_trace,  # Import for DRY principle - reuse existing function
+    flext_metric,
+    flext_trace,
 )
-
-if TYPE_CHECKING:
-    from flext_core.typings import FlextTypes
 
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
@@ -199,7 +196,7 @@ def flext_create_metric(
         _ = flext_simple.FlextGenerators.generate_uuid()
         # Probe entity to allow tests to patch FlextMetric and raise
         try:
-            probe = flext_simple.FlextMetric(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextMetric(
                 id=FlextIdGenerator.generate_uuid(),
                 name=name,
                 value=value,
@@ -243,7 +240,7 @@ def flext_create_log_entry(
         # Trigger patch point and probe entity for test hooks
         _ = flext_simple.FlextGenerators.generate_uuid()
         try:
-            probe = flext_simple.FlextLogEntry(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextLogEntry(
                 id=FlextIdGenerator.generate_uuid(),
                 level=level,
                 message=message,
@@ -293,7 +290,7 @@ def flext_create_trace(
         _ = flext_simple.FlextGenerators.generate_uuid()
         # Probe entity to allow tests patching FlextTrace and forcing validation error
         try:
-            probe = flext_simple.FlextTrace(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextTrace(
                 id=FlextIdGenerator.generate_uuid(),
                 trace_id=trace_id,
                 operation=operation,
@@ -336,7 +333,7 @@ def flext_create_alert(
         _ = flext_simple.FlextGenerators.generate_uuid()
         # Probe entity to allow tests patching FlextAlert
         try:
-            probe = flext_simple.FlextAlert(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextAlert(
                 title=title,
                 message=message,
                 severity=severity,
@@ -382,7 +379,7 @@ def flext_create_health_check(
         _ = flext_simple.FlextGenerators.generate_uuid()
         # Probe construction to allow tests patching FlextHealthCheck
         try:
-            probe = flext_simple.FlextHealthCheck(  # type: ignore[attr-defined]
+            probe = flext_simple.FlextHealthCheck(
                 id=health_id or FlextIdGenerator.generate_uuid(),
                 component=component,
                 status=status,

@@ -8,7 +8,7 @@ from __future__ import annotations
 import asyncio
 from collections.abc import AsyncIterator
 
-# Keep only stdlib inside TYPE_CHECKING; promote the rest
+# Direct imports - following flext-core standardization pattern
 import pytest
 import pytest_asyncio
 from opentelemetry import trace
@@ -24,7 +24,7 @@ from flext_observability import get_logger
 # ============================================================================
 
 
-def pytest_configure(config: Config) -> None:
+def pytest_configure(config: object) -> None:
     """Configure pytest with custom markers."""
     # Register custom markers
     config.addinivalue_line(
@@ -61,7 +61,7 @@ def pytest_configure(config: Config) -> None:
     )
 
 
-def pytest_collection_modifyitems(_config: Config, items: list[Item]) -> None:
+def pytest_collection_modifyitems(_config: object, items: list[object]) -> None:
     """Auto-mark tests based on their location."""
     for item in items:
         # Auto-mark based on test location
@@ -239,7 +239,7 @@ def health_check_config() -> dict[str, object]:
 
 
 @pytest.fixture
-def mock_prometheus_client(mocker: MockerFixture) -> object:
+def mock_prometheus_client(mocker: object) -> object:
     """Mock Prometheus client for testing."""
     mock = mocker.Mock()
     mock.push_to_gateway.return_value = None
@@ -247,7 +247,7 @@ def mock_prometheus_client(mocker: MockerFixture) -> object:
 
 
 @pytest.fixture
-def mock_otel_exporter(mocker: MockerFixture) -> object:
+def mock_otel_exporter(mocker: object) -> object:
     """Mock OpenTelemetry exporter for testing."""
     mock = mocker.Mock()
     mock.export.return_value = mocker.Mock(success=True)
