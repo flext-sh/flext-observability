@@ -58,21 +58,21 @@ from __future__ import annotations
 import shutil
 import threading
 from collections import defaultdict
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 import psutil
 from flext_core import FlextContainer, FlextResult, get_logger
 from flext_core.typings import FlextTypes
 from flext_core.utilities import FlextIdGenerator
 
-if TYPE_CHECKING:
-    from flext_observability.observability_models import (
-        FlextAlert,
-        FlextHealthCheck,
-        FlextLogEntry,
-        FlextMetric,
-        FlextTrace,
-    )
+# Direct imports - eliminando TYPE_CHECKING conforme padrão flext-core
+from flext_observability.observability_models import (
+    FlextAlert,
+    FlextHealthCheck,
+    FlextLogEntry,
+    FlextMetric,
+    FlextTrace,
+)
 
 
 class FlextGenerators:

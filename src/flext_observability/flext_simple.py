@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING
 
 from flext_core import FlextGenerators, FlextIdGenerator, FlextResult
+from flext_core.typings import FlextTypes
 
 from flext_observability.entities import (
     FlextAlert,
@@ -19,15 +19,13 @@ from flext_observability.entities import (
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
-    flext_alert,  # Import for DRY principle - reuse existing function
-    flext_health_check,  # Import for DRY principle - reuse existing function
-    flext_metric,  # Import for DRY principle - reuse existing function
-    flext_trace,  # Import for DRY principle - reuse existing function
+    flext_alert,
+    flext_health_check,
+    flext_metric,
+    flext_trace,
 )
 
-if TYPE_CHECKING:
-    from flext_core.typings import FlextTypes
-
+# ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
 # ============================================================================
 
