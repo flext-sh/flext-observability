@@ -47,14 +47,15 @@ class TestFactoryMissingCoverage:
         """Test log when context is not a dict - covers line 324."""
         factory = FlextObservabilityMasterFactory()
 
-        # Pass context that is not a dict (should be converted to empty dict)
+        # Pass extra_data that is not a dict (should be converted to empty dict)
         result = factory.log(
             message="test message",
-            context="not_a_dict",  # This should trigger line 324
+            service="test_service",
+            extra_data="not_a_dict",  # This should trigger line 324
         )
 
         assert result.success
-        assert result.data.context == {}  # Should be converted to empty dict
+        assert result.data.extra_data == {}  # Should be converted to empty dict
 
     def test_log_timestamp_not_datetime(self) -> None:
         """Test log when timestamp is not datetime - covers related lines."""
@@ -70,40 +71,40 @@ class TestFactoryMissingCoverage:
         assert isinstance(result.data.timestamp, datetime)
 
     def test_trace_span_attributes_not_dict(self) -> None:
-        """Test trace when span_attributes is not a dict - covers line 347."""
+        """Test trace when tags is not a dict - covers line 347."""
         factory = FlextObservabilityMasterFactory()
 
         result = factory.trace(
             trace_id="test_trace",
             operation="test_op",
             span_id="test_span",
-            span_attributes="not_a_dict",  # This should trigger conversion
+            tags="not_a_dict",  # This should trigger conversion
         )
 
         assert result.success
-        assert result.data.span_attributes == {}
+        assert result.data.tags == {}
 
     def test_trace_timestamp_not_datetime(self) -> None:
-        """Test trace when timestamp is not datetime - covers related lines."""
+        """Test trace when start_time is not datetime - covers related lines."""
         factory = FlextObservabilityMasterFactory()
 
         result = factory.trace(
             trace_id="test_trace",
             operation="test_op",
             span_id="test_span",
-            timestamp="not_a_datetime",  # This should trigger conversion
+            start_time="not_a_datetime",  # This should trigger conversion
         )
 
         assert result.success
-        assert isinstance(result.data.timestamp, datetime)
+        assert isinstance(result.data.start_time, datetime)
 
     def test_alert_tags_not_dict(self) -> None:
         """Test alert when tags is not a dict - covers line 387."""
         factory = FlextObservabilityMasterFactory()
 
         result = factory.alert(
-            title="Test Alert",
-            message="Test message",
+            message="Test Alert",
+            service="test_service",
             tags="not_a_dict",  # This should trigger conversion
         )
 
@@ -115,8 +116,8 @@ class TestFactoryMissingCoverage:
         factory = FlextObservabilityMasterFactory()
 
         result = factory.alert(
-            title="Test Alert",
-            message="Test message",
+            message="Test Alert",
+            service="test_service",
             timestamp="not_a_datetime",  # This should trigger conversion
         )
 
@@ -128,19 +129,19 @@ class TestFactoryMissingCoverage:
         factory = FlextObservabilityMasterFactory()
 
         result = factory.health_check(
-            component="test_component",
-            metrics="not_a_dict",  # This should trigger conversion
+            service_name="test_component",
+            details="not_a_dict",  # This should trigger conversion
         )
 
         assert result.success
-        assert result.data.metrics == {}
+        assert result.data.details == {}
 
     def test_health_check_timestamp_not_datetime(self) -> None:
         """Test health_check when timestamp is not datetime - covers line 460."""
         factory = FlextObservabilityMasterFactory()
 
         result = factory.health_check(
-            component="test_component",
+            service_name="test_component",
             timestamp="not_a_datetime",  # This should trigger conversion
         )
 
@@ -205,22 +206,22 @@ class TestFactoryMissingCoverage:
         assert result.success
         assert result.data.tags == {}
 
-        # Test log with invalid context
-        result = factory.log("test", context=123)
+        # Test log with invalid extra_data
+        result = factory.log("test", service="test_service", extra_data=123)
         assert result.success
-        assert result.data.context == {}
+        assert result.data.extra_data == {}
 
-        # Test trace with invalid span_attributes
-        result = factory.trace("id", "op", span_attributes=123)
-        assert result.success
-        assert result.data.span_attributes == {}
-
-        # Test alert with invalid tags
-        result = factory.alert("title", "msg", tags=123)
+        # Test trace with invalid tags
+        result = factory.trace("id", "op", tags=123)
         assert result.success
         assert result.data.tags == {}
 
-        # Test health_check with invalid metrics
-        result = factory.health_check("comp", metrics=123)
+        # Test alert with invalid tags
+        result = factory.alert("msg", "test_service", tags=123)
         assert result.success
-        assert result.data.metrics == {}
+        assert result.data.tags == {}
+
+        # Test health_check with invalid details
+        result = factory.health_check("comp", details=123)
+        assert result.success
+        assert result.data.details == {}

@@ -46,14 +46,16 @@ from __future__ import annotations
 import math
 from datetime import datetime
 from decimal import Decimal
-from typing import cast
+from typing import cast, override
 
 from flext_core import (
     FlextEntity,
+    FlextEntityId,
     FlextIdGenerator,
     FlextResult,
     FlextTypes,
     FlextValidation,
+    FlextVersion,
     get_logger,
 )
 from pydantic import ConfigDict, Field, field_validator
@@ -74,8 +76,8 @@ class FlextGenerators:
         return FlextIdGenerator.generate_uuid()
 
     @staticmethod
-    def generate_entity_id() -> str:
-        return FlextIdGenerator.generate_entity_id()
+    def generate_entity_id() -> FlextEntityId:
+        return FlextEntityId(FlextIdGenerator.generate_entity_id())
 
 
 # ============================================================================
@@ -210,6 +212,7 @@ class FlextMetric(FlextEntity):
             raise ValueError(msg)
         return v
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate metric business rules and domain constraints.
 
@@ -366,6 +369,7 @@ class FlextLogEntry(FlextEntity):
             raise ValueError(msg)
         return v
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate structured logging business rules and domain constraints.
 
@@ -559,6 +563,7 @@ class FlextTrace(FlextEntity):
             raise ValueError(msg)
         return v
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate distributed tracing business rules and domain constraints.
 
@@ -732,6 +737,7 @@ class FlextAlert(FlextEntity):
             raise ValueError(msg)
         return v
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate alert management business rules and domain constraints.
 
@@ -886,6 +892,7 @@ class FlextHealthCheck(FlextEntity):
             raise ValueError(msg)
         return v
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate health monitoring business rules and domain constraints.
 
@@ -941,8 +948,8 @@ def flext_alert(
     # Create with explicit kwargs for better type safety
     if "id" in kwargs and "version" in kwargs:
         return FlextAlert(
-            id=cast("str", kwargs["id"]),
-            version=cast("int", kwargs["version"]),
+            id=FlextEntityId(cast("str", kwargs["id"])),
+            version=FlextVersion(cast("int", kwargs["version"])),
             title=title,
             message=message,
             severity=severity,
@@ -952,7 +959,7 @@ def flext_alert(
         )
     if "id" in kwargs:
         return FlextAlert(
-            id=cast("str", kwargs["id"]),
+            id=FlextEntityId(cast("str", kwargs["id"])),
             title=title,
             message=message,
             severity=severity,
@@ -986,7 +993,7 @@ def flext_trace(
     # Create with explicit kwargs for better type safety
     if "id" in kwargs:
         return FlextTrace(
-            id=cast("str", kwargs["id"]),
+            id=FlextEntityId(cast("str", kwargs["id"])),
             trace_id=trace_id,
             operation=operation,
             span_id=span_id,
@@ -1022,8 +1029,8 @@ def flext_metric(
         # Create with explicit kwargs for better type safety
         if "id" in kwargs and "version" in kwargs:
             metric = FlextMetric(
-                id=cast("str", kwargs["id"]),
-                version=cast("int", kwargs["version"]),
+                id=FlextEntityId(cast("str", kwargs["id"])),
+                version=FlextVersion(cast("int", kwargs["version"])),
                 name=name,
                 value=value,
                 unit=unit,
@@ -1032,7 +1039,7 @@ def flext_metric(
             )
         elif "id" in kwargs:
             metric = FlextMetric(
-                id=cast("str", kwargs["id"]),
+                id=FlextEntityId(cast("str", kwargs["id"])),
                 name=name,
                 value=value,
                 unit=unit,
@@ -1055,16 +1062,16 @@ def flext_metric(
         # Validate business rules
         validation_result = metric.validate_business_rules()
         if validation_result.is_failure:
-            return FlextResult[None].fail(
+            return FlextResult[FlextMetric].fail(
                 validation_result.error or "Metric validation failed",
             )
 
-        return FlextResult[None].ok(metric)
+        return FlextResult[FlextMetric].ok(metric)
 
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult[None].fail(f"Failed to create metric: {e}")
+        return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
     except Exception as e:  # Ensure forced errors are captured for tests
-        return FlextResult[None].fail(f"Failed to create metric: {e}")
+        return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
 
 
 def flext_health_check(
@@ -1080,7 +1087,7 @@ def flext_health_check(
     # Create with explicit kwargs for better type safety
     if "id" in kwargs:
         return FlextHealthCheck(
-            id=cast("str", kwargs["id"]),
+            id=FlextEntityId(cast("str", kwargs["id"])),
             component=component,
             status=status,
             message=message,

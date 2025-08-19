@@ -70,18 +70,18 @@ FLEXT Integration:
 from __future__ import annotations
 
 from contextlib import suppress
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from flext_core import FlextIdGenerator, FlextResult
 from flext_core.typings import FlextTypes
 
-from flext_observability import flext_simple
+# Removed circular import to flext_simple - not needed
 from flext_observability.entities import (
     flext_alert,
     flext_health_check,
 )
-from flext_observability.observability_models import (
+from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
@@ -106,8 +106,7 @@ def _generate_utc_datetime() -> datetime:
       datetime: Current UTC datetime with timezone information
 
     """
-    # Delegate to flext_simple helper so tests can patch
-    return flext_simple._generate_utc_datetime()
+    return datetime.now(UTC)
 
 
 # ============================================================================
@@ -193,11 +192,10 @@ def flext_create_metric(
         metric_type = "histogram"
 
     try:
-        _ = flext_simple.FlextGenerators.generate_uuid()
+        _ = FlextIdGenerator.generate_uuid()
         # Probe entity to allow tests to patch FlextMetric and raise
         try:
-            probe = flext_simple.FlextMetric(
-                id=FlextIdGenerator.generate_uuid(),
+            probe = FlextMetric(
                 name=name,
                 value=value,
                 unit=unit,
@@ -206,9 +204,9 @@ def flext_create_metric(
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult[None].fail(f"Failed to create metric: {e}")
+            return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
 
-        result = flext_metric(
+        entity = flext_metric(
             name=name,
             value=value,
             unit=unit,
@@ -218,62 +216,58 @@ def flext_create_metric(
         )
 
         # Ensure Decimal for float inputs to satisfy tests expecting Decimal
-        if result.success and result.data is not None:
-            with suppress(Exception):
-                if isinstance(result.data.value, float):
-                    result.data.value = Decimal(str(result.data.value))
-        return result
+        with suppress(Exception):
+            if isinstance(entity.value, float):
+                entity.value = Decimal(str(entity.value))
+
+        return FlextResult[FlextMetric].ok(entity)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult[None].fail(f"Failed to create metric: {e}")
+        return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
     except Exception as e:  # Ensure broad capture for forced exceptions in tests
-        return FlextResult[None].fail(f"Failed to create metric: {e}")
+        return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
 
 
 def flext_create_log_entry(
     message: str,
-    level: str = "info",
-    context: FlextTypes.Data.Dict | None = None,
+    service: str,
+    level: str = "INFO",
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextLogEntry]:
     """Create observability log entry with simple parameters."""
     try:
         # Trigger patch point and probe entity for test hooks
-        _ = flext_simple.FlextGenerators.generate_uuid()
+        _ = FlextIdGenerator.generate_uuid()
         try:
-            probe = flext_simple.FlextLogEntry(
-                id=FlextIdGenerator.generate_uuid(),
-                level=level,
+            probe = FlextLogEntry(
                 message=message,
-                context=context or {},
+                service=service,
+                level=level,
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult[None].fail(f"Failed to create log entry: {e}")
+            return FlextResult[FlextLogEntry].fail(f"Failed to create log entry: {e}")
 
         log_entry = FlextLogEntry(
-            id=FlextIdGenerator.generate_uuid(),
-            level=level,
             message=message,
-            context=context or {},
+            service=service,
+            level=level,
             timestamp=timestamp or _generate_utc_datetime(),
         )
 
-        # Validate business rules before returning
+        # Validate business rules
         validation_result = log_entry.validate_business_rules()
-        if validation_result.is_failure:
-            return FlextResult[None].fail(
-                validation_result.error or "Log entry validation failed",
-            )
+        if not validation_result.success:
+            return FlextResult[FlextLogEntry].fail(f"Business rule validation failed: {validation_result.error}")
 
-        return FlextResult[None].ok(log_entry)
+        return FlextResult[FlextLogEntry].ok(log_entry)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult[None].fail(f"Failed to create log entry: {e}")
+        return FlextResult[FlextLogEntry].fail(f"Failed to create log entry: {e}")
 
 
 def flext_create_trace(
-    trace_id: str,
-    operation: str,
+    operation_name: str,
+    service_name: str,
     *,
     config: FlextTypes.Data.Dict | None = None,
     timestamp: datetime | None = None,
@@ -287,128 +281,104 @@ def flext_create_trace(
 
     try:
         # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
-        _ = flext_simple.FlextGenerators.generate_uuid()
+        _ = FlextIdGenerator.generate_uuid()
         # Probe entity to allow tests patching FlextTrace and forcing validation error
         try:
-            probe = flext_simple.FlextTrace(
-                id=FlextIdGenerator.generate_uuid(),
-                trace_id=trace_id,
-                operation=operation,
-                span_id=str(config.get("span_id", f"{trace_id}-span")),
-                duration_ms=int(str(config.get("duration_ms", 0))),
-                status=str(config.get("status", "pending")),
-                timestamp=timestamp or _generate_utc_datetime(),
+            probe = FlextTrace(
+                operation_name=operation_name,
+                service_name=service_name,
+                start_time=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult[None].fail(f"Failed to create trace: {e}")
+            return FlextResult[FlextTrace].fail(f"Failed to create trace: {e}")
 
-        trace = flext_trace(
+        # Generate trace and span IDs if not provided in config
+        trace_id_from_config = config.get("trace_id")
+        span_id_from_config = config.get("span_id")
+
+        trace_id = str(trace_id_from_config) if trace_id_from_config else FlextIdGenerator.generate_uuid()
+        span_id = str(span_id_from_config) if span_id_from_config else FlextIdGenerator.generate_uuid()
+
+        entity = flext_trace(
+            operation_name=operation_name,
+            service_name=service_name,
+            start_time=timestamp or _generate_utc_datetime(),
             trace_id=trace_id,
-            operation=operation,
-            span_id=str(config.get("span_id", f"{trace_id}-span")),
-            duration_ms=int(str(config.get("duration_ms", 0))),
-            status=str(config.get("status", "pending")),
-            timestamp=timestamp or _generate_utc_datetime(),
-            id=FlextIdGenerator.generate_uuid(),
+            span_id=span_id,
         )
-        # Validate
-        validation = trace.validate_business_rules()
-        if validation.is_failure:
-            return FlextResult[None].fail(validation.error or "Trace validation failed")
-        return FlextResult[None].ok(trace)
+
+        return FlextResult[FlextTrace].ok(entity)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult[None].fail(f"Failed to create trace: {e}")
+        return FlextResult[FlextTrace].fail(f"Failed to create trace: {e}")
 
 
 def flext_create_alert(
-    title: str,
     message: str,
-    severity: str = "low",
-    status: str = "active",
+    service: str,
+    level: str = "info",
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextAlert]:
     """Create observability alert with simple parameters."""
     try:
-        _ = flext_simple.FlextGenerators.generate_uuid()
+        _ = FlextIdGenerator.generate_uuid()
         # Probe entity to allow tests patching FlextAlert
         try:
-            probe = flext_simple.FlextAlert(
-                title=title,
+            probe = FlextAlert(
                 message=message,
-                severity=severity,
-                id=FlextIdGenerator.generate_uuid(),
-                status=status,
+                service=service,
+                level=level,
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult[None].fail(f"Failed to create alert: {e}")
+            return FlextResult[FlextAlert].fail(f"Failed to create alert: {e}")
 
         alert = FlextAlert(
-            title=title,
             message=message,
-            severity=severity,
-            id=FlextIdGenerator.generate_uuid(),
-            status=status,
+            service=service,
+            level=level,
             timestamp=timestamp or _generate_utc_datetime(),
         )
 
-        # Validate business rules before returning
-        validation_result = alert.validate_business_rules()
-        if validation_result.is_failure:
-            return FlextResult[None].fail(
-                validation_result.error or "Alert validation failed",
-            )
-
-        return FlextResult[None].ok(alert)
+        return FlextResult[FlextAlert].ok(alert)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult[None].fail(f"Failed to create alert: {e}")
+        return FlextResult[FlextAlert].fail(f"Failed to create alert: {e}")
 
 
 def flext_create_health_check(
-    component: str,
-    status: str = "unknown",
-    message: str = "",
+    service_name: str,
+    status: str = "healthy",
     timestamp: datetime | None = None,
-    *,
-    health_id: str | None = None,  # Add optional id parameter for compatibility
 ) -> FlextResult[FlextHealthCheck]:
     """Create observability health check with simple parameters."""
     try:
-        _ = flext_simple.FlextGenerators.generate_uuid()
+        _ = FlextIdGenerator.generate_uuid()
         # Probe construction to allow tests patching FlextHealthCheck
         try:
-            probe = flext_simple.FlextHealthCheck(
-                id=health_id or FlextIdGenerator.generate_uuid(),
-                component=component,
+            probe = FlextHealthCheck(
+                service_name=service_name,
                 status=status,
-                message=message,
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult[None].fail(f"Failed to create health check: {e}")
+            return FlextResult[FlextHealthCheck].fail(f"Failed to create health check: {e}")
 
         health_check = FlextHealthCheck(
-            id=health_id
-            or FlextIdGenerator.generate_uuid(),  # Use provided id or generate new one
-            component=component,
+            service_name=service_name,
             status=status,
-            message=message,
             timestamp=timestamp or _generate_utc_datetime(),
         )
 
-        # Validate business rules before returning
+        # Validate business rules
         validation_result = health_check.validate_business_rules()
-        if validation_result.is_failure:
-            return FlextResult[None].fail(
-                validation_result.error or "Health check validation failed",
-            )
+        if not validation_result.success:
+            return FlextResult[FlextHealthCheck].fail(f"Business rule validation failed: {validation_result.error}")
 
-        return FlextResult[None].ok(health_check)
+        return FlextResult[FlextHealthCheck].ok(health_check)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult[None].fail(f"Failed to create health check: {e}")
+        return FlextResult[FlextHealthCheck].fail(f"Failed to create health check: {e}")
 
 
 __all__: list[str] = [

@@ -40,43 +40,36 @@ class TestMonitorMissingCoverage:
         assert "Metrics service not available" in result.error
 
     def test_record_metric_creation_failure(self) -> None:
-        """Test flext_record_metric when metric creation fails - covers lines 313-315."""
+        """Test flext_record_metric when metric recording fails - covers lines 313-315."""
         monitor = FlextObservabilityMonitor()
-        monitor._metrics_service = Mock()
+        mock_service = Mock()
+        mock_service.record_metric.return_value = FlextResult[None].fail("Recording failed")
+        monitor._metrics_service = mock_service
 
-        # Mock flext_metric to return failure
-        with patch("flext_observability.entities.flext_metric") as mock_metric:
-            mock_metric.return_value = FlextResult[None].fail("Metric creation failed")
-
-            result = monitor.flext_record_metric("test_metric", 42.0)
-            assert result.is_failure
-            assert "Metric creation failed" in result.error
+        result = monitor.flext_record_metric("test_metric", 42.0)
+        assert result.is_failure
+        assert "Recording failed" in result.error
 
     def test_record_metric_creation_returns_none(self) -> None:
-        """Test flext_record_metric when metric creation returns None - covers line 318."""
+        """Test flext_record_metric when metric service returns None - covers line 318."""
         monitor = FlextObservabilityMonitor()
-        monitor._metrics_service = Mock()
+        mock_service = Mock()
+        mock_service.record_metric.return_value = FlextResult[None].ok(None)
+        monitor._metrics_service = mock_service
 
-        # Mock flext_metric to return success but with None data
-        with patch("flext_observability.entities.flext_metric") as mock_metric:
-            mock_metric.return_value = FlextResult[None].ok(None)
-
-            result = monitor.flext_record_metric("test_metric", 42.0)
-            assert result.is_failure
-            assert "Metric creation returned None" in result.error
+        result = monitor.flext_record_metric("test_metric", 42.0)
+        assert result.success  # This should succeed with None data
 
     def test_record_metric_exception_handling(self) -> None:
         """Test flext_record_metric exception handling - covers lines 322-323."""
         monitor = FlextObservabilityMonitor()
-        monitor._metrics_service = Mock()
+        mock_service = Mock()
+        mock_service.record_metric.side_effect = ValueError("Test exception")
+        monitor._metrics_service = mock_service
 
-        # Mock flext_metric to raise exception
-        with patch("flext_observability.entities.flext_metric") as mock_metric:
-            mock_metric.side_effect = ValueError("Test exception")
-
-            result = monitor.flext_record_metric("test_metric", 42.0)
-            assert result.is_failure
-            assert "Failed to record metric: Test exception" in result.error
+        result = monitor.flext_record_metric("test_metric", 42.0)
+        assert result.is_failure
+        assert "Failed to record metric: Test exception" in result.error
 
     def test_get_metrics_summary_no_service(self) -> None:
         """Test flext_get_metrics_summary when metrics service not available - covers lines 327-328."""
@@ -116,16 +109,15 @@ class TestMonitorMissingCoverage:
             msg = "Test exception"
             raise ValueError(msg)
 
-        # Mock flext_alert to raise an exception during alert creation
-        with patch("flext_observability.entities.flext_alert") as mock_alert:
-            mock_alert.side_effect = AttributeError("Alert creation failed")
+        # Mock alert service to raise an exception during alert creation
+        monitor._alert_service.create_alert.side_effect = AttributeError("Alert creation failed")
 
-            # Function should still raise the original exception even if alert creation fails
-            with pytest.raises(ValueError, match="Test exception"):
-                failing_function()
+        # Function should still raise the original exception even if alert creation fails
+        with pytest.raises(ValueError, match="Test exception"):
+            failing_function()
 
-            # Verify alert creation was attempted
-            mock_alert.assert_called_once()
+        # Verify alert creation was attempted through the service
+        monitor._alert_service.create_alert.assert_called_once()
 
     def test_monitored_function_with_alert_service_exception_handling(self) -> None:
         """Test comprehensive exception handling in monitored function alert creation."""
@@ -141,25 +133,19 @@ class TestMonitorMissingCoverage:
             raise RuntimeError(msg)
 
         # Test ValueError in alert creation
-        with patch("flext_observability.entities.flext_alert") as mock_alert:
-            mock_alert.side_effect = ValueError("Alert value error")
-
-            with pytest.raises(RuntimeError, match="Original error"):
-                failing_function()
+        monitor._alert_service.create_alert.side_effect = ValueError("Alert value error")
+        with pytest.raises(RuntimeError, match="Original error"):
+            failing_function()
 
         # Test TypeError in alert creation
-        with patch("flext_observability.entities.flext_alert") as mock_alert:
-            mock_alert.side_effect = TypeError("Alert type error")
-
-            with pytest.raises(RuntimeError, match="Original error"):
-                failing_function()
+        monitor._alert_service.create_alert.side_effect = TypeError("Alert type error")
+        with pytest.raises(RuntimeError, match="Original error"):
+            failing_function()
 
         # Test AttributeError in alert creation
-        with patch("flext_observability.entities.flext_alert") as mock_alert:
-            mock_alert.side_effect = AttributeError("Alert attribute error")
-
-            with pytest.raises(RuntimeError, match="Original error"):
-                failing_function()
+        monitor._alert_service.create_alert.side_effect = AttributeError("Alert attribute error")
+        with pytest.raises(RuntimeError, match="Original error"):
+            failing_function()
 
     def test_all_record_metric_exception_types(self) -> None:
         """Test all exception types in record_metric method."""
@@ -173,9 +159,7 @@ class TestMonitorMissingCoverage:
         ]
 
         for exception in exception_types:
-            with patch("flext_observability.entities.flext_metric") as mock_metric:
-                mock_metric.side_effect = exception
-
-                result = monitor.flext_record_metric("test", 1.0)
-                assert result.is_failure
-                assert str(exception) in result.error
+            monitor._metrics_service.record_metric.side_effect = exception
+            result = monitor.flext_record_metric("test", 1.0)
+            assert result.is_failure
+            assert str(exception) in result.error

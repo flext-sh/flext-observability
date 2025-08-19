@@ -391,13 +391,13 @@ class TestFlextAlertServiceComprehensive:
         """Test create_alert exception handling."""
         service = FlextAlertService()
 
-        # Create mock alert that will cause exception when title is accessed
+        # Create mock alert that will cause exception when message is accessed
         mock_alert = Mock()
-        # Make title property raise exception (this is what create_alert actually accesses)
-        type(mock_alert).title = PropertyMock(
+        # Make message property raise exception (this is what create_alert actually accesses)
+        type(mock_alert).message = PropertyMock(
             side_effect=ZeroDivisionError("Mock error"),
         )
-        mock_alert.severity = "HIGH"  # Set severity normally to isolate the title error
+        mock_alert.level = "HIGH"  # Set level normally to isolate the message error
 
         result = service.create_alert(mock_alert)
 

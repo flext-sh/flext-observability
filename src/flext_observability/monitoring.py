@@ -34,7 +34,7 @@ Integration:
 Example:
     Automatic function monitoring with minimal setup:
 
-    >>> from flext_observability.observability_monitor import flext_monitor_function
+    >>> from flext_observability.monitoring import flext_monitor_function
     >>>
     >>> @flext_monitor_function("user_authentication")
     >>> def authenticate_user(credentials: dict) -> dict:
@@ -63,8 +63,8 @@ from typing import cast
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
-import flext_observability.entities as _entities
-from flext_observability import entities as _entities_module
+import flext_observability.models as _models
+from flext_observability import models as _models_module
 from flext_observability.services import (
     FlextAlertService,
     FlextHealthService,
@@ -268,12 +268,12 @@ class FlextObservabilityMonitor:
         """Get comprehensive health status with real metrics."""
         try:
             if not self._health_service:
-                return FlextResult[None].fail("Health service not available")
+                return FlextResult[dict[str, object]].fail("Health service not available")
 
             # Get overall health and add monitor-specific metrics
             health_result = self._health_service.get_overall_health()
             if health_result.is_failure:
-                return FlextResult[None].fail(health_result.error or "Health service failure")
+                return FlextResult[dict[str, object]].fail(health_result.error or "Health service failure")
 
             health_data = health_result.data or {}
 
@@ -288,10 +288,10 @@ class FlextObservabilityMonitor:
             if isinstance(health_data, dict):
                 health_data["monitor_metrics"] = monitor_health
 
-            return FlextResult[None].ok(health_data)
+            return FlextResult[dict[str, object]].ok(health_data)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult[None].fail(f"Health status check failed: {e}")
+            return FlextResult[dict[str, object]].fail(f"Health status check failed: {e}")
 
     def flext_is_monitoring_active(self) -> bool:
         """Check if real monitoring is active and operational."""
@@ -308,19 +308,8 @@ class FlextObservabilityMonitor:
             return FlextResult[None].fail("Metrics service not available")
 
         try:
-            metric_result = _entities.flext_metric(name, value, metric_type=metric_type)
-            if metric_result.is_failure:
-                # Ensure error is str for test assertions
-                error_message = metric_result.error
-                if not isinstance(error_message, str):
-                    error_message = str(error_message)
-                if not error_message:
-                    error_message = "Failed to create metric"
-                return FlextResult[None].fail(error_message)
-
-            if metric_result.data is None:
-                return FlextResult[None].fail("Metric creation returned None")
-            record_result = self._metrics_service.record_metric(metric_result.data)
+            metric = _models.flext_metric(name, value, metric_type=metric_type)
+            record_result = self._metrics_service.record_metric(metric)
             if record_result.is_failure:
                 return FlextResult[None].fail(
                     record_result.error or "Failed to record metric",
@@ -332,7 +321,7 @@ class FlextObservabilityMonitor:
     def flext_get_metrics_summary(self) -> FlextResult[dict[str, object]]:
         """Get comprehensive metrics summary."""
         if not self._metrics_service:
-            return FlextResult[None].fail("Metrics service not available")
+            return FlextResult[dict[str, object]].fail("Metrics service not available")
 
         return self._metrics_service.get_metrics_summary()
 
@@ -430,11 +419,10 @@ def _execute_monitored_function(
         if monitor._alert_service:
             try:
                 # Use module import so tests can patch flext_alert
-                alert = _entities_module.flext_alert(
-                    title=f"Function execution error: {function_name}",
-                    message=f"Function failed with {type(e).__name__}",
-                    severity="error",
-                    source="function_monitor",
+                alert = _models_module.flext_alert(
+                    message=f"Function execution error: {function_name} failed with {type(e).__name__}",
+                    service="function_monitor",
+                    level="error",
                 )
                 monitor._alert_service.create_alert(alert)
             except (ValueError, TypeError, AttributeError) as e:

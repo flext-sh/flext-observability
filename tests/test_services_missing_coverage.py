@@ -2,6 +2,8 @@
 
 from unittest.mock import patch
 
+from flext_core import FlextResult
+
 from flext_observability import (
     FlextAlert,
     FlextAlertService,
@@ -124,7 +126,7 @@ class TestServicesMissingCoverage:
         service = FlextHealthService()
 
         # Test with FlextResult failure
-        from flext_core import FlextResult
+        # FlextResult imported at top level
 
         failure_result = FlextResult[None].fail("Health check creation failed")
 
@@ -136,7 +138,7 @@ class TestServicesMissingCoverage:
         """Test _extract_actual_health with None data."""
         service = FlextHealthService()
 
-        from flext_core import FlextResult
+        # FlextResult imported at top level
 
         none_result = FlextResult[None].ok(None)
 
@@ -150,10 +152,8 @@ class TestServicesMissingCoverage:
 
         # Create unhealthy health check
         unhealthy_check = FlextHealthCheck(
-            id="test_id",
-            component="failing_component",
+            service_name="failing_component",
             status="unhealthy",
-            message="Component failing",
         )
 
         # Record multiple unhealthy checks to trigger warning
@@ -172,8 +172,7 @@ class TestServicesMissingCoverage:
             mock_extract.side_effect = AttributeError("Extract error")
 
             health_check = FlextHealthCheck(
-                id="test_id",
-                component="test_component",
+                service_name="test_component",
                 status="healthy",
             )
             result = service.check_health(health_check)
@@ -185,24 +184,23 @@ class TestServicesMissingCoverage:
         service = FlextHealthService()
 
         health_check = FlextHealthCheck(
-            id="test_id",
-            component="test_component",
+            service_name="test_component",
             status="healthy",
         )
 
-        from flext_core import FlextResult
+        # FlextResult imported at top level
 
         health_result = FlextResult[None].ok(health_check)
 
         result = service.check_health(health_result)
         assert result.success
-        assert result.data.component == "test_component"
+        assert result.data.service_name == "test_component"
 
     def test_health_service_check_health_with_flext_result_failure(self) -> None:
         """Test check_health with failed FlextResult input."""
         service = FlextHealthService()
 
-        from flext_core import FlextResult
+        # FlextResult imported at top level
 
         health_result = FlextResult[None].fail("Health check failed")
 
@@ -220,8 +218,7 @@ class TestServicesMissingCoverage:
 
             # Use a regular health check that would normally work
             health_check = FlextHealthCheck(
-                id="test_id",
-                component="test_component",
+                service_name="test_component",
                 status="healthy",
             )
 
@@ -278,9 +275,9 @@ class TestServicesMissingCoverage:
         service = FlextAlertService()
 
         alert = FlextAlert(
-            id="test_id",
-            title="Test Alert",
-            message="Test message",
+            message="Test Alert",
+            service="test_service",
+            level="info",
         )
 
         with patch.object(service, "logger") as mock_logger:

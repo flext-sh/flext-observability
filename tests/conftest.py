@@ -11,13 +11,12 @@ from collections.abc import AsyncIterator
 # Direct imports - following flext-core standardization pattern
 import pytest
 import pytest_asyncio
+from flext_core import get_logger
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from prometheus_client import CollectorRegistry, Counter, Histogram
-
-from flext_observability import get_logger
 
 # ============================================================================
 # Pytest Configuration
@@ -61,7 +60,7 @@ def pytest_configure(config: object) -> None:
     )
 
 
-def pytest_collection_modifyitems(_config: object, items: list[object]) -> None:
+def pytest_collection_modifyitems(config: object, items: list[object]) -> None:  # noqa: ARG001
     """Auto-mark tests based on their location."""
     for item in items:
         # Auto-mark based on test location

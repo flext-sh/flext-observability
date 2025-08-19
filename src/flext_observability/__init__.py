@@ -13,8 +13,8 @@ __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 from flext_core import FlextContainer, get_logger
 from flext_core.constants import FlextConstants
 
-# Core entities (minimal, no redundancy) - Updated imports to use consolidated files
-from flext_observability.observability_models import (
+# Core entities from models module
+from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
@@ -22,11 +22,12 @@ from flext_observability.observability_models import (
     FlextTrace,
     flext_alert,
     flext_health_check,
+    flext_metric,
     flext_trace,
 )
 
-# Factory patterns (centralized entity creation) - Updated imports to use consolidated files
-from flext_observability.observability_factory import (
+# Factory patterns from factories module
+from flext_observability.factories import (
     FlextObservabilityMasterFactory,
     alert,
     get_global_factory,
@@ -37,14 +38,14 @@ from flext_observability.observability_factory import (
     trace,
 )
 
-# Monitor patterns (automation) - Updated imports to use consolidated files
-from flext_observability.observability_monitor import (
+# Monitor patterns from monitoring module
+from flext_observability.monitoring import (
     FlextObservabilityMonitor,
     flext_monitor_function,
 )
 
-# Simple API (convenience) - Updated imports to use consolidated files
-from flext_observability.observability_api import (
+# Simple API from api module
+from flext_observability.api import (
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,
@@ -52,8 +53,8 @@ from flext_observability.observability_api import (
     flext_create_trace,
 )
 
-# Services (application layer) - Updated imports to use consolidated files
-from flext_observability.observability_services import (
+# Services from services module
+from flext_observability.services import (
     FlextAlertService,
     FlextHealthService,
     FlextLoggingService,
@@ -80,7 +81,7 @@ def _deprecated_warning(old_name: str, new_name: str) -> None:
     """Issue deprecation warning for legacy interfaces."""
     warnings.warn(
         f"{old_name} is deprecated. Use {new_name} instead. "
-        f"Will be removed in v1.0.0. See docs/patterns/ for migration guide.",
+        + "Will be removed in v1.0.0. See docs/patterns/ for migration guide.",
         DeprecationWarning,
         stacklevel=3,
     )
