@@ -70,7 +70,7 @@ class TestFlextObservabilityMonitor:
     def test_initialize_observability_registration_failure(self) -> None:
         """Test initialization with service registration failure."""
         mock_container = Mock(spec=FlextContainer)
-        mock_container.register.return_value = FlextResult.fail("Registration failed")
+        mock_container.register.return_value = FlextResult[None].fail("Registration failed")
 
         monitor = FlextObservabilityMonitor(mock_container)
         result = monitor.flext_initialize_observability()

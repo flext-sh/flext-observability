@@ -186,7 +186,7 @@ All modules follow FLEXT ecosystem standards:
 @flext_monitor_function("api_endpoint")
 def handle_user_request(request: dict) -> FlextResult[dict]:
     # Automatic metrics, tracing, and logging
-    return FlextResult.ok({"status": "processed"})
+    return FlextResult[None].ok({"status": "processed"})
 ```
 
 ## Quality Standards

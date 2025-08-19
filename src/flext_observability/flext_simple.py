@@ -140,7 +140,7 @@ def flext_create_metric(
             timestamp=timestamp,
         )
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create metric: {e}")
+        return FlextResult[None].fail(f"Failed to create metric: {e}")
 
 
 def flext_create_log_entry(
@@ -164,13 +164,13 @@ def flext_create_log_entry(
         # Validate business rules before returning
         validation_result = log_entry.validate_business_rules()
         if validation_result.is_failure:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 validation_result.error or "Log entry validation failed",
             )
 
-        return FlextResult.ok(log_entry)
+        return FlextResult[None].ok(log_entry)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create log entry: {e}")
+        return FlextResult[None].fail(f"Failed to create log entry: {e}")
 
 
 def flext_create_trace(
@@ -203,10 +203,10 @@ def flext_create_trace(
         )
         validation = trace.validate_business_rules()
         if validation.is_failure:
-            return FlextResult.fail(validation.error or "Trace validation failed")
-        return FlextResult.ok(trace)
+            return FlextResult[None].fail(validation.error or "Trace validation failed")
+        return FlextResult[None].ok(trace)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create trace: {e}")
+        return FlextResult[None].fail(f"Failed to create trace: {e}")
 
 
 def flext_create_alert(
@@ -233,13 +233,13 @@ def flext_create_alert(
         # Validate business rules before returning
         validation_result = alert.validate_business_rules()
         if validation_result.is_failure:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 validation_result.error or "Alert validation failed",
             )
 
-        return FlextResult.ok(alert)
+        return FlextResult[None].ok(alert)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create alert: {e}")
+        return FlextResult[None].fail(f"Failed to create alert: {e}")
 
 
 def flext_create_health_check(
@@ -266,13 +266,13 @@ def flext_create_health_check(
         # Validate business rules before returning
         validation_result = health_check.validate_business_rules()
         if validation_result.is_failure:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 validation_result.error or "Health check validation failed",
             )
 
-        return FlextResult.ok(health_check)
+        return FlextResult[None].ok(health_check)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create health check: {e}")
+        return FlextResult[None].fail(f"Failed to create health check: {e}")
 
 
 __all__: list[str] = [

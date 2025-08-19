@@ -85,7 +85,7 @@ class UserService:
             self.metrics.record_metric(metric_result.data)
 
         # Business logic here
-        return FlextResult.ok({"user_id": "user123", "status": "created"})
+        return FlextResult[None].ok({"user_id": "user123", "status": "created"})
 ```
 
 ### Monitoring Decorator Patterns
@@ -118,7 +118,7 @@ def process_order(order_data: dict) -> dict:
 def process_payment(amount: float, currency: str) -> FlextResult[dict]:
     """Process payment with error handling and monitoring."""
     if amount <= 0:
-        return FlextResult.fail("Invalid payment amount")
+        return FlextResult[None].fail("Invalid payment amount")
 
     # Payment processing logic
     transaction = {
@@ -128,7 +128,7 @@ def process_payment(amount: float, currency: str) -> FlextResult[dict]:
         "status": "completed"
     }
 
-    return FlextResult.ok(transaction)
+    return FlextResult[None].ok(transaction)
 ```
 
 ### Health Monitoring Patterns
@@ -202,7 +202,7 @@ def process_user_workflow(user_id: str) -> FlextResult[dict]:
     if processing_result.is_failure:
         return processing_result
 
-    return FlextResult.ok({
+    return FlextResult[None].ok({
         "user_id": user_id,
         "trace_id": parent_trace.id,
         "status": "completed"
@@ -223,7 +223,7 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[dict]:
         return child_trace_result
 
     # Validation logic here
-    return FlextResult.ok({
+    return FlextResult[None].ok({
         "status": "valid",
         "trace_id": child_trace_result.data.id
     })

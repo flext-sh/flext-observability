@@ -22,7 +22,7 @@ class TestMonitorMissingCoverage:
         monitor._health_service = Mock()
 
         # Mock health service to return failure
-        monitor._health_service.get_overall_health.return_value = FlextResult.fail(
+        monitor._health_service.get_overall_health.return_value = FlextResult[None].fail(
             "Health check failed",
         )
 
@@ -46,7 +46,7 @@ class TestMonitorMissingCoverage:
 
         # Mock flext_metric to return failure
         with patch("flext_observability.entities.flext_metric") as mock_metric:
-            mock_metric.return_value = FlextResult.fail("Metric creation failed")
+            mock_metric.return_value = FlextResult[None].fail("Metric creation failed")
 
             result = monitor.flext_record_metric("test_metric", 42.0)
             assert result.is_failure
@@ -59,7 +59,7 @@ class TestMonitorMissingCoverage:
 
         # Mock flext_metric to return success but with None data
         with patch("flext_observability.entities.flext_metric") as mock_metric:
-            mock_metric.return_value = FlextResult.ok(None)
+            mock_metric.return_value = FlextResult[None].ok(None)
 
             result = monitor.flext_record_metric("test_metric", 42.0)
             assert result.is_failure
@@ -94,7 +94,7 @@ class TestMonitorMissingCoverage:
 
         # Mock service to return success
         expected_summary = {"total_metrics": 5, "last_update": "2025-01-01"}
-        monitor._metrics_service.get_metrics_summary.return_value = FlextResult.ok(
+        monitor._metrics_service.get_metrics_summary.return_value = FlextResult[None].ok(
             expected_summary,
         )
 

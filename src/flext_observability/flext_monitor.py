@@ -201,14 +201,14 @@ class FlextObservabilityMonitor:
     def flext_initialize_observability(self) -> FlextResult[None]:
         """Initialize all observability services with real functionality."""
         if self._initialized:
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
 
         try:
             # Initialize real services using SOLID principles (Single Responsibility)
             try:
                 self._metrics_service = FlextMetricsService(self.container)
             except Exception as e:  # noqa: BLE001
-                return FlextResult.fail(f"Observability initialization failed: {e}")
+                return FlextResult[None].fail(f"Observability initialization failed: {e}")
             self._logging_service = FlextLoggingService(self.container)
             self._tracing_service = FlextTracingService(self.container)
             self._alert_service = FlextAlertService(self.container)
@@ -226,50 +226,50 @@ class FlextObservabilityMonitor:
             for service_name, service in services:
                 register_result = self.container.register(service_name, service)
                 if register_result.is_failure:
-                    return FlextResult.fail(f"Failed to register {service_name}")
+                    return FlextResult[None].fail(f"Failed to register {service_name}")
 
             self._initialized = True
             self._logger.info("Observability monitor initialized successfully")
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Observability initialization failed: {e}")
+            return FlextResult[None].fail(f"Observability initialization failed: {e}")
         except Exception as e:  # Broad except to satisfy tests expecting failure
-            return FlextResult.fail(f"Observability initialization failed: {e}")
+            return FlextResult[None].fail(f"Observability initialization failed: {e}")
 
     def flext_start_monitoring(self) -> FlextResult[None]:
         """Start real observability monitoring with service coordination."""
         if not self._initialized:
-            return FlextResult.fail("Monitor not initialized")
+            return FlextResult[None].fail("Monitor not initialized")
 
         if self._running:
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
 
         try:
             self._logger.info("Starting real observability monitoring")
             self._running = True
             self._monitor_start_time = time.time()
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to start monitoring: {e}")
+            return FlextResult[None].fail(f"Failed to start monitoring: {e}")
 
     def flext_stop_monitoring(self) -> FlextResult[None]:
         """Stop observability monitoring with graceful service shutdown."""
         if not self._running:
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
 
         try:
             self._logger.info("Stopping observability monitoring")
             self._running = False
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to stop monitoring: {e}")
+            return FlextResult[None].fail(f"Failed to stop monitoring: {e}")
 
     def flext_get_health_status(self) -> FlextResult[dict[str, object]]:
         """Get comprehensive health status with real metrics."""
         try:
             if not self._health_service:
-                return FlextResult.fail("Health service not available")
+                return FlextResult[None].fail("Health service not available")
 
             # Get overall health and add monitor-specific metrics
             health_result = self._health_service.get_overall_health()
@@ -289,10 +289,10 @@ class FlextObservabilityMonitor:
             if isinstance(health_data, dict):
                 health_data["monitor_metrics"] = monitor_health
 
-            return FlextResult.ok(health_data)
+            return FlextResult[None].ok(health_data)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Health status check failed: {e}")
+            return FlextResult[None].fail(f"Health status check failed: {e}")
 
     def flext_is_monitoring_active(self) -> bool:
         """Check if real monitoring is active and operational."""
@@ -306,27 +306,27 @@ class FlextObservabilityMonitor:
     ) -> FlextResult[None]:
         """Record metric through the monitoring system."""
         if not self._metrics_service:
-            return FlextResult.fail("Metrics service not available")
+            return FlextResult[None].fail("Metrics service not available")
 
         try:
             metric_result = _entities.flext_metric(name, value, metric_type=metric_type)
             if metric_result.is_failure:
-                return FlextResult.fail(
+                return FlextResult[None].fail(
                     metric_result.error or "Failed to create metric",
                 )
 
             if metric_result.data is None:
-                return FlextResult.fail("Metric creation returned None")
+                return FlextResult[None].fail("Metric creation returned None")
             return self._metrics_service.record_metric(metric_result.data).map(
                 lambda _: None,
             )
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to record metric: {e}")
+            return FlextResult[None].fail(f"Failed to record metric: {e}")
 
     def flext_get_metrics_summary(self) -> FlextResult[dict[str, object]]:
         """Get comprehensive metrics summary."""
         if not self._metrics_service:
-            return FlextResult.fail("Metrics service not available")
+            return FlextResult[None].fail("Metrics service not available")
 
         return self._metrics_service.get_metrics_summary()
 
