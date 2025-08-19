@@ -181,7 +181,7 @@ class ECommerceOrderProcessor:
                     metrics={"orders_processed": 1, "success_rate": 100.0},
                 )
 
-                return FlextResult.ok(
+                return FlextResult[None].ok(
                     {
                         "order_id": order_id,
                         "status": "completed",
@@ -213,7 +213,7 @@ class ECommerceOrderProcessor:
                 tags={"status": "failed", "user_id": user_id},
             )
 
-            return FlextResult.fail(f"Order processing failed: {steps_results}")
+            return FlextResult[None].fail(f"Order processing failed: {steps_results}")
 
         except (RuntimeError, ValueError, TypeError) as e:
             # Log exception
@@ -231,7 +231,7 @@ class ECommerceOrderProcessor:
                 status="active",
             )
 
-            return FlextResult.fail(f"Order processing exception: {e}")
+            return FlextResult[None].fail(f"Order processing exception: {e}")
 
     def _validate_inventory(
         self,
@@ -247,10 +247,10 @@ class ECommerceOrderProcessor:
 
         if success:
             self.factory.metric("inventory_check", 1.0, tags={"status": "available"})
-            return FlextResult.ok(INVENTORY_AVAILABLE)
+            return FlextResult[None].ok(INVENTORY_AVAILABLE)
         logger.flext_observability_error("Inventory unavailable", step="inventory")
         self.factory.metric("inventory_check", 1.0, tags={"status": "unavailable"})
-        return FlextResult.fail("Inventory unavailable")
+        return FlextResult[None].fail("Inventory unavailable")
 
     def _process_payment(
         self,
@@ -276,7 +276,7 @@ class ECommerceOrderProcessor:
                 unit="USD",
                 tags={"status": "success"},
             )
-            return FlextResult.ok(PAYMENT_SUCCESS)
+            return FlextResult[None].ok(PAYMENT_SUCCESS)
         logger.flext_observability_error(
             "Payment failed",
             step="payment",
@@ -288,7 +288,7 @@ class ECommerceOrderProcessor:
             unit="USD",
             tags={"status": "failed"},
         )
-        return FlextResult.fail("Payment processing failed")
+        return FlextResult[None].fail("Payment processing failed")
 
     def _update_inventory(
         self,
@@ -304,13 +304,13 @@ class ECommerceOrderProcessor:
 
         if success:
             self.factory.metric("inventory_updated", 1.0, tags={"status": "success"})
-            return FlextResult.ok(SUCCESS_STATUS)
+            return FlextResult[None].ok(SUCCESS_STATUS)
         logger.flext_observability_error(
             "Inventory update failed",
             step="inventory_update",
         )
         self.factory.metric("inventory_updated", 1.0, tags={"status": "failed"})
-        return FlextResult.fail("Inventory update failed")
+        return FlextResult[None].fail("Inventory update failed")
 
     def _send_confirmation(
         self,
@@ -331,13 +331,13 @@ class ECommerceOrderProcessor:
 
         if success:
             self.factory.metric("confirmation_sent", 1.0, tags={"status": "success"})
-            return FlextResult.ok(SUCCESS_STATUS)
+            return FlextResult[None].ok(SUCCESS_STATUS)
         logger.flext_observability_error(
             "Confirmation sending failed",
             step="confirmation",
         )
         self.factory.metric("confirmation_sent", 1.0, tags={"status": "failed"})
-        return FlextResult.fail("Confirmation sending failed")
+        return FlextResult[None].fail("Confirmation sending failed")
 
     def _calculate_processing_time(self) -> float:
         """Calculate simulated processing time."""
@@ -482,7 +482,7 @@ class MicroservicesHealthMonitor:
             },
         )
 
-        return FlextResult.ok(health_summary)
+        return FlextResult[None].ok(health_summary)
 
     def _check_service_health(
         self,
@@ -536,7 +536,7 @@ class MicroservicesHealthMonitor:
                     response_time_ms=response_time,
                 )
 
-            return FlextResult.ok(
+            return FlextResult[None].ok(
                 {
                     "status": status,
                     "message": message,
@@ -551,7 +551,7 @@ class MicroservicesHealthMonitor:
                 service=service,
                 error=str(e),
             )
-            return FlextResult.fail(f"Health check exception: {e}")
+            return FlextResult[None].fail(f"Health check exception: {e}")
 
     def _determine_overall_status(self, health_percentage: float) -> str:
         """Determine overall system status based on health percentage."""
@@ -653,7 +653,7 @@ class PerformanceAnalytics:
                 tags={"analysis_id": flext_get_correlation_id().data},
             )
 
-        return FlextResult.ok(performance_report)
+        return FlextResult[None].ok(performance_report)
 
     def _collect_cpu_metrics(self, logger: FlextStructuredLogger) -> dict[str, float]:
         """Collect CPU performance metrics."""

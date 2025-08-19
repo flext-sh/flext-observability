@@ -66,12 +66,12 @@ class FlextMetric(FlextEntity):
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate metric domain rules."""
         if not self.name or not isinstance(self.name, str):
-            return FlextResult.fail("Invalid metric name")
+            return FlextResult[None].fail("Invalid metric name")
         try:
             float(self.value)
         except (ValueError, TypeError):
-            return FlextResult.fail("Invalid metric value")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Invalid metric value")
+        return FlextResult[None].ok(None)
 ```
 
 ### **Application Services Layer**
@@ -102,15 +102,15 @@ class FlextMetricsService:
         """Record metric with business validation."""
         validation_result = metric.validate_business_rules()
         if validation_result.is_failure:
-            return FlextResult.fail(f"Metric validation failed: {validation_result.error}")
+            return FlextResult[None].fail(f"Metric validation failed: {validation_result.error}")
 
         self._metrics_store[metric.id] = metric
-        return FlextResult.ok(metric)
+        return FlextResult[None].ok(metric)
 
     def export_prometheus_format(self) -> FlextResult[str]:
         """Export metrics in Prometheus format."""
         # Business logic for Prometheus export
-        return FlextResult.ok(prometheus_output)
+        return FlextResult[None].ok(prometheus_output)
 ```
 
 ### **Factory & Creation Layer**
@@ -144,9 +144,9 @@ class FlextObservabilityMasterFactory:
             if validation_result.is_failure:
                 return validation_result
 
-            return FlextResult.ok(metric)
+            return FlextResult[None].ok(metric)
         except Exception as e:
-            return FlextResult.fail(f"Metric creation failed: {str(e)}")
+            return FlextResult[None].fail(f"Metric creation failed: {str(e)}")
 
     def create_trace(self, operation_name: str, service_name: str) -> FlextResult[FlextTrace]:
         """Create validated trace span."""
@@ -156,9 +156,9 @@ class FlextObservabilityMasterFactory:
                 service_name=service_name,
                 start_time=datetime.now(UTC)
             )
-            return FlextResult.ok(trace)
+            return FlextResult[None].ok(trace)
         except Exception as e:
-            return FlextResult.fail(f"Trace creation failed: {str(e)}")
+            return FlextResult[None].fail(f"Trace creation failed: {str(e)}")
 ```
 
 ### **Interface Adapters Layer**
@@ -233,10 +233,10 @@ class FlextObservabilityRepository:
     def store_metric(self, metric: FlextMetric) -> FlextResult[None]:
         """Store metric with validation."""
         if not metric.id:
-            return FlextResult.fail("Metric must have ID")
+            return FlextResult[None].fail("Metric must have ID")
 
         self._metrics[metric.id] = metric
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def find_metrics_by_name(self, name: str) -> FlextResult[list[FlextMetric]]:
         """Find metrics by name pattern."""
@@ -244,7 +244,7 @@ class FlextObservabilityRepository:
             metric for metric in self._metrics.values()
             if metric.name == name
         ]
-        return FlextResult.ok(matching_metrics)
+        return FlextResult[None].ok(matching_metrics)
 ```
 
 ---
@@ -343,7 +343,7 @@ def process_order(order_data: dict) -> FlextResult[dict]:
     flext_create_metric("orders_processed", 1, "count")
 
     # Business logic here
-    return FlextResult.ok({"status": "processed"})
+    return FlextResult[None].ok({"status": "processed"})
 ```
 
 #### **2. Service Integration Pattern (For FLEXT Services)**
@@ -412,7 +412,7 @@ class DatabaseConnectionService:
                 tags={"database": "postgresql", "host": self.host}
             )
 
-            return FlextResult.ok({"status": "healthy", "metrics": [metric_result.data]})
+            return FlextResult[None].ok({"status": "healthy", "metrics": [metric_result.data]})
 
         except Exception as e:
             # Create failure health check
@@ -421,7 +421,7 @@ class DatabaseConnectionService:
                 status="unhealthy",
                 message=f"Connection failed: {str(e)}"
             )
-            return FlextResult.fail(f"Database health check failed: {str(e)}")
+            return FlextResult[None].fail(f"Database health check failed: {str(e)}")
 ```
 
 ### **Anti-Patterns (Forbidden)**
@@ -501,7 +501,7 @@ def process_payment(payment_data: dict) -> FlextResult[dict]:
     # - Structured logging with correlation ID
     # - Error capture and categorization
 
-    return FlextResult.ok({"status": "processed", "correlation_id": correlation_id})
+    return FlextResult[None].ok({"status": "processed", "correlation_id": correlation_id})
 ```
 
 ---
@@ -553,9 +553,9 @@ def create_validated_metric(name: str, value: float) -> FlextResult[None]:
             message=f"Failed to create metric {name}: {metric_result.error}",
             context={"metric_name": name, "metric_value": str(value)}
         )
-        return FlextResult.fail(f"Metric creation failed: {metric_result.error}")
+        return FlextResult[None].fail(f"Metric creation failed: {metric_result.error}")
 
-    return FlextResult.ok(None)
+    return FlextResult[None].ok(None)
 ```
 
 ### **Distributed Tracing Patterns**
@@ -581,7 +581,7 @@ def process_order_with_tracing(order_data: dict) -> FlextResult[dict]:
     if payment_result.is_failure:
         return payment_result
 
-    return FlextResult.ok({"order_id": "order123", "trace_id": parent_trace.id})
+    return FlextResult[None].ok({"order_id": "order123", "trace_id": parent_trace.id})
 
 def validate_order_with_trace(order_data: dict, parent_trace_id: str) -> FlextResult[dict]:
     """Validate order with child trace."""
@@ -595,7 +595,7 @@ def validate_order_with_trace(order_data: dict, parent_trace_id: str) -> FlextRe
         return child_trace_result
 
     # Validation logic with trace context
-    return FlextResult.ok({"status": "valid", "trace_id": child_trace_result.data.id})
+    return FlextResult[None].ok({"status": "valid", "trace_id": child_trace_result.data.id})
 ```
 
 ### **Health Monitoring Patterns**
@@ -635,7 +635,7 @@ def monitor_service_health() -> FlextResult[dict]:
         tags={"service": "order-service"}
     )
 
-    return FlextResult.ok({
+    return FlextResult[None].ok({
         "overall_status": overall_status,
         "checks": health_checks,
         "health_score": health_metric.data if health_metric.success else None
@@ -677,7 +677,7 @@ def create_business_alert(metric_name: str, current_value: float, threshold: flo
     """Create business rule alert based on metric thresholds."""
 
     if current_value <= threshold:
-        return FlextResult.ok(None)  # No alert needed
+        return FlextResult[None].ok(None)  # No alert needed
 
     # Determine severity based on threshold breach
     severity_ratio = current_value / threshold
@@ -703,7 +703,7 @@ def create_business_alert(metric_name: str, current_value: float, threshold: flo
     )
 
     if alert_result.is_failure:
-        return FlextResult.fail(f"Failed to create alert: {alert_result.error}")
+        return FlextResult[None].fail(f"Failed to create alert: {alert_result.error}")
 
     # Create alert metric for monitoring
     alert_metric_result = flext_create_metric(
@@ -714,7 +714,7 @@ def create_business_alert(metric_name: str, current_value: float, threshold: flo
         metric_type="counter"
     )
 
-    return FlextResult.ok(None)
+    return FlextResult[None].ok(None)
 
 # Alert escalation patterns
 def escalate_alert_if_needed(alert: FlextAlert, duration_minutes: int) -> FlextResult[None]:
@@ -743,7 +743,7 @@ def escalate_alert_if_needed(alert: FlextAlert, duration_minutes: int) -> FlextR
 
         return escalated_alert_result.map(lambda _: None)
 
-    return FlextResult.ok(None)
+    return FlextResult[None].ok(None)
 ```
 
 ---
@@ -1064,8 +1064,8 @@ def map_observability_result(
 ) -> FlextResult[U]:
     """Generic result mapping for observability operations."""
     if result.success:
-        return FlextResult.ok(func(result.data))
-    return FlextResult.fail(result.error)
+        return FlextResult[None].ok(func(result.data))
+    return FlextResult[None].fail(result.error)
 
 # ✅ Protocol definitions for observability interfaces
 from typing import Protocol
@@ -1096,13 +1096,13 @@ def create_comprehensive_observability(operation: str) -> FlextResult[dict[str, 
     # Chain observability operations with proper error handling
     metric_result = flext_create_metric(f"{operation}_requests", 1, "count")
     if metric_result.is_failure:
-        return FlextResult.fail(f"Failed to create metric: {metric_result.error}")
+        return FlextResult[None].fail(f"Failed to create metric: {metric_result.error}")
 
     trace_result = flext_create_trace(operation, "main-service")
     if trace_result.is_failure:
-        return FlextResult.fail(f"Failed to create trace: {trace_result.error}")
+        return FlextResult[None].fail(f"Failed to create trace: {trace_result.error}")
 
-    return FlextResult.ok({
+    return FlextResult[None].ok({
         "metric": metric_result.data,
         "trace": trace_result.data,
         "correlation_id": trace_result.data.id
@@ -1203,7 +1203,7 @@ def create_business_observability_dashboard(
             )
 
             if metric_result.is_failure:
-                return FlextResult.fail(f"Failed to create metric {metric_name}: {metric_result.error}")
+                return FlextResult[None].fail(f"Failed to create metric {metric_name}: {metric_result.error}")
 
             dashboard_config["metrics"].append(metric_result.data)
 
@@ -1215,14 +1215,14 @@ def create_business_observability_dashboard(
         )
 
         if trace_result.is_failure:
-            return FlextResult.fail(f"Failed to create trace setup: {trace_result.error}")
+            return FlextResult[None].fail(f"Failed to create trace setup: {trace_result.error}")
 
         dashboard_config["traces"].append(trace_result.data)
 
-        return FlextResult.ok(dashboard_config)
+        return FlextResult[None].ok(dashboard_config)
 
     except Exception as e:
-        return FlextResult.fail(f"Unexpected error creating observability dashboard: {str(e)}")
+        return FlextResult[None].fail(f"Unexpected error creating observability dashboard: {str(e)}")
 ```
 
 ---
@@ -1292,7 +1292,7 @@ def sync_user_between_services(user_id: str) -> FlextResult[dict]:
     flext_create_metric("user_sync_completed", 1, "count",
                        tags={"correlation_id": trace_id})
 
-    return FlextResult.ok({
+    return FlextResult[None].ok({
         "user_id": user_id,
         "correlation_id": trace_id,
         "status": "synchronized"

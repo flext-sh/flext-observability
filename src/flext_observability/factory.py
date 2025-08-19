@@ -81,7 +81,7 @@ from flext_observability.services import (
     FlextTracingService,
 )
 
-# Removed validation module - using FlextResult.fail() directly per docs/patterns/
+# Removed validation module - using FlextResult[None].fail() directly per docs/patterns/
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
 # ============================================================================
@@ -298,12 +298,12 @@ class FlextObservabilityMasterFactory:
                 service = cast("FlextMetricsService", service_result.data)
                 result = service.record_metric(metric)
                 if result.is_failure:
-                    return FlextResult.fail(result.error or "Unknown error")
-                return FlextResult.ok(result.data)
-            return FlextResult.ok(metric)
+                    return FlextResult[None].fail(result.error or "Unknown error")
+                return FlextResult[None].ok(result.data)
+            return FlextResult[None].ok(metric)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create metric: {e}")
+            return FlextResult[None].fail(f"Failed to create metric: {e}")
 
     def log(
         self,
@@ -325,7 +325,7 @@ class FlextObservabilityMasterFactory:
                 )
                 probe.validate_business_rules()
             except Exception as e:  # noqa: BLE001
-                return FlextResult.fail(f"Failed to create log: {e}")
+                return FlextResult[None].fail(f"Failed to create log: {e}")
             context = kwargs.get("context", {})
             if isinstance(context, dict):
                 context = cast("FlextTypes.Data.Dict", context)
@@ -350,14 +350,14 @@ class FlextObservabilityMasterFactory:
                 service = cast("FlextLoggingService", service_result.data)
                 result = service.log_entry(log_entry)
                 return (
-                    FlextResult.ok(result.data)
+                    FlextResult[None].ok(result.data)
                     if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
+                    else FlextResult[None].fail(result.error or "Unknown error")
                 )
-            return FlextResult.ok(log_entry)
+            return FlextResult[None].ok(log_entry)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create log: {e}")
+            return FlextResult[None].fail(f"Failed to create log: {e}")
 
     def alert(
         self,
@@ -383,7 +383,7 @@ class FlextObservabilityMasterFactory:
                 )
                 probe.validate_business_rules()
             except Exception as e:  # noqa: BLE001
-                return FlextResult.fail(f"Failed to create alert: {e}")
+                return FlextResult[None].fail(f"Failed to create alert: {e}")
             timestamp = kwargs.get("timestamp")
             if not isinstance(timestamp, datetime):
                 timestamp = _generate_utc_datetime()
@@ -399,21 +399,21 @@ class FlextObservabilityMasterFactory:
                     timestamp=timestamp,
                 )
             except Exception as e:  # noqa: BLE001
-                return FlextResult.fail(f"Failed to create alert: {e}")
+                return FlextResult[None].fail(f"Failed to create alert: {e}")
 
             service_result = self.container.get("alert_service")
             if service_result.success and service_result.data:
                 service = cast("FlextAlertService", service_result.data)
                 result = service.create_alert(alert)
                 return (
-                    FlextResult.ok(result.data)
+                    FlextResult[None].ok(result.data)
                     if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
+                    else FlextResult[None].fail(result.error or "Unknown error")
                 )
-            return FlextResult.ok(alert)
+            return FlextResult[None].ok(alert)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create alert: {e}")
+            return FlextResult[None].fail(f"Failed to create alert: {e}")
 
     def trace(
         self,
@@ -447,7 +447,7 @@ class FlextObservabilityMasterFactory:
                 )
                 probe.validate_business_rules()
             except Exception as e:  # noqa: BLE001
-                return FlextResult.fail(f"Failed to create trace: {e}")
+                return FlextResult[None].fail(f"Failed to create trace: {e}")
             trace = FlextTrace(
                 id=FlextIdGenerator.generate_uuid(),
                 trace_id=trace_id,
@@ -470,12 +470,12 @@ class FlextObservabilityMasterFactory:
                 service = cast("FlextTracingService", service_result.data)
                 result = service.start_trace(trace)
                 if result.is_failure:
-                    return FlextResult.fail(result.error or "Unknown error")
-                return FlextResult.ok(result.data)
-            return FlextResult.ok(trace)
+                    return FlextResult[None].fail(result.error or "Unknown error")
+                return FlextResult[None].ok(result.data)
+            return FlextResult[None].ok(trace)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create trace: {e}")
+            return FlextResult[None].fail(f"Failed to create trace: {e}")
 
     def health_check(
         self,
@@ -501,7 +501,7 @@ class FlextObservabilityMasterFactory:
                 ),
             )
             if health_result.is_failure:
-                return FlextResult.fail(health_result.error or "Health check failed")
+                return FlextResult[None].fail(health_result.error or "Health check failed")
             health = health_result.data
 
             service_result = self.container.get("health_service")
@@ -509,14 +509,14 @@ class FlextObservabilityMasterFactory:
                 service = cast("FlextHealthService", service_result.data)
                 result = service.check_health(health_result)
                 return (
-                    FlextResult.ok(result.data)
+                    FlextResult[None].ok(result.data)
                     if result.success
-                    else FlextResult.fail(result.error or "Unknown error")
+                    else FlextResult[None].fail(result.error or "Unknown error")
                 )
-            return FlextResult.ok(health)
+            return FlextResult[None].ok(health)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to create health check: {e}")
+            return FlextResult[None].fail(f"Failed to create health check: {e}")
 
     def health_status(self) -> FlextResult[FlextTypes.Data.Dict]:
         """Get overall health status."""
@@ -526,12 +526,12 @@ class FlextObservabilityMasterFactory:
                 service = cast("FlextHealthService", service_result.data)
                 return service.get_overall_health()
 
-            return FlextResult.ok(
+            return FlextResult[None].ok(
                 cast("FlextTypes.Data.Dict", {"status": "healthy", "mode": "fallback"}),
             )
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Health status check failed: {e}")
+            return FlextResult[None].fail(f"Health status check failed: {e}")
 
 
 # ============================================================================

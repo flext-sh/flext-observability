@@ -60,7 +60,7 @@ def sample_trace() -> FlextTrace:
 def mock_metrics_service() -> Mock:
     """Mock metrics service for testing."""
     mock_service = Mock(spec=FlextMetricsService)
-    mock_service.record_metric.return_value = FlextResult.ok(sample_metric())
+    mock_service.record_metric.return_value = FlextResult[None].ok(sample_metric())
     return mock_service
 
 @pytest.fixture

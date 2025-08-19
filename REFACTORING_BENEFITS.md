@@ -59,16 +59,16 @@ class FlextMetric(FlextEntity):
     def validate_business_rules(self) -> FlextResult[None]:
         # 30+ linhas de validação manual repetitiva
         if not ObservabilityValidators.is_valid_metric_name(self.name):
-            return FlextResult.fail("Invalid metric name format")
+            return FlextResult[None].fail("Invalid metric name format")
 
         if not ObservabilityValidators.is_valid_metric_value(self.value):
-            return FlextResult.fail(f"Invalid metric value: {self.value}")
+            return FlextResult[None].fail(f"Invalid metric value: {self.value}")
 
         if self.value < 0 and self.metric_type == MetricType.COUNTER.value:
-            return FlextResult.fail("Counter metrics cannot have negative values")
+            return FlextResult[None].fail("Counter metrics cannot have negative values")
 
         # Mais 20+ linhas de validação...
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def add_tag(self, key: str, value: str) -> None:
         # Validação manual sem error handling

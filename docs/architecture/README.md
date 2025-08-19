@@ -137,7 +137,7 @@ FlextResult[T] Response
 ```
 Domain Validation Error
        ↓
-FlextResult.fail()
+FlextResult[None].fail()
        ↓
 Service Layer Handling
        ↓
@@ -211,7 +211,7 @@ class FlextObservabilityMasterFactory:
         # Domain validation
         # Entity creation
         # FlextResult wrapping
-        return FlextResult.ok(metric)
+        return FlextResult[None].ok(metric)
 ```
 
 ### Service Layer Pattern
@@ -229,7 +229,7 @@ class FlextMetricsService:
         # Business validation
         # Storage operations
         # Event publication
-        return FlextResult.ok(metric)
+        return FlextResult[None].ok(metric)
 ```
 
 ### Repository Pattern (Future Implementation)

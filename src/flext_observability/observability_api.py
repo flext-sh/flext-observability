@@ -206,7 +206,7 @@ def flext_create_metric(
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create metric: {e}")
+            return FlextResult[None].fail(f"Failed to create metric: {e}")
 
         result = flext_metric(
             name=name,
@@ -224,9 +224,9 @@ def flext_create_metric(
                     result.data.value = Decimal(str(result.data.value))
         return result
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create metric: {e}")
+        return FlextResult[None].fail(f"Failed to create metric: {e}")
     except Exception as e:  # Ensure broad capture for forced exceptions in tests
-        return FlextResult.fail(f"Failed to create metric: {e}")
+        return FlextResult[None].fail(f"Failed to create metric: {e}")
 
 
 def flext_create_log_entry(
@@ -249,7 +249,7 @@ def flext_create_log_entry(
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create log entry: {e}")
+            return FlextResult[None].fail(f"Failed to create log entry: {e}")
 
         log_entry = FlextLogEntry(
             id=FlextIdGenerator.generate_uuid(),
@@ -262,13 +262,13 @@ def flext_create_log_entry(
         # Validate business rules before returning
         validation_result = log_entry.validate_business_rules()
         if validation_result.is_failure:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 validation_result.error or "Log entry validation failed",
             )
 
-        return FlextResult.ok(log_entry)
+        return FlextResult[None].ok(log_entry)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create log entry: {e}")
+        return FlextResult[None].fail(f"Failed to create log entry: {e}")
 
 
 def flext_create_trace(
@@ -301,7 +301,7 @@ def flext_create_trace(
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create trace: {e}")
+            return FlextResult[None].fail(f"Failed to create trace: {e}")
 
         trace = flext_trace(
             trace_id=trace_id,
@@ -315,10 +315,10 @@ def flext_create_trace(
         # Validate
         validation = trace.validate_business_rules()
         if validation.is_failure:
-            return FlextResult.fail(validation.error or "Trace validation failed")
-        return FlextResult.ok(trace)
+            return FlextResult[None].fail(validation.error or "Trace validation failed")
+        return FlextResult[None].ok(trace)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create trace: {e}")
+        return FlextResult[None].fail(f"Failed to create trace: {e}")
 
 
 def flext_create_alert(
@@ -343,7 +343,7 @@ def flext_create_alert(
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create alert: {e}")
+            return FlextResult[None].fail(f"Failed to create alert: {e}")
 
         alert = FlextAlert(
             title=title,
@@ -357,13 +357,13 @@ def flext_create_alert(
         # Validate business rules before returning
         validation_result = alert.validate_business_rules()
         if validation_result.is_failure:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 validation_result.error or "Alert validation failed",
             )
 
-        return FlextResult.ok(alert)
+        return FlextResult[None].ok(alert)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create alert: {e}")
+        return FlextResult[None].fail(f"Failed to create alert: {e}")
 
 
 def flext_create_health_check(
@@ -388,7 +388,7 @@ def flext_create_health_check(
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult.fail(f"Failed to create health check: {e}")
+            return FlextResult[None].fail(f"Failed to create health check: {e}")
 
         health_check = FlextHealthCheck(
             id=health_id
@@ -402,13 +402,13 @@ def flext_create_health_check(
         # Validate business rules before returning
         validation_result = health_check.validate_business_rules()
         if validation_result.is_failure:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 validation_result.error or "Health check validation failed",
             )
 
-        return FlextResult.ok(health_check)
+        return FlextResult[None].ok(health_check)
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create health check: {e}")
+        return FlextResult[None].fail(f"Failed to create health check: {e}")
 
 
 __all__: list[str] = [

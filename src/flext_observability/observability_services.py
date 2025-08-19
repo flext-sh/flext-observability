@@ -91,7 +91,7 @@ class FlextGenerators:
         return FlextIdGenerator.generate_entity_id()
 
 
-# Removed validation module - using FlextResult.fail() directly per docs/patterns/
+# Removed validation module - using FlextResult[None].fail() directly per docs/patterns/
 # Health check constants
 MEMORY_WARNING_THRESHOLD = 80
 MEMORY_CRITICAL_THRESHOLD = 95
@@ -227,12 +227,12 @@ class FlextMetricsService:
     def _validate_metric_input(self, metric: object) -> FlextResult[None]:
         """Validate metric input data."""
         if not metric or not hasattr(metric, "name") or not hasattr(metric, "value"):
-            return FlextResult.fail("Invalid metric: missing name or value")
+            return FlextResult[None].fail("Invalid metric: missing name or value")
 
         if not metric.name or not isinstance(metric.name, str):
-            return FlextResult.fail("Metric name must be a non-empty string")
+            return FlextResult[None].fail("Metric name must be a non-empty string")
 
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def _update_metric_aggregates(
         self,
@@ -254,7 +254,7 @@ class FlextMetricsService:
             # Input validation (defensive programming)
             validation_result = self._validate_metric_input(metric)
             if validation_result.is_failure:
-                return FlextResult.fail(validation_result.error or "Validation failed")
+                return FlextResult[None].fail(validation_result.error or "Validation failed")
 
             # Type-safe metric recording with thread safety
             with self._metrics_lock:
@@ -263,7 +263,7 @@ class FlextMetricsService:
                     # Use services module shim so tests can patch
                     timestamp = FlextGenerators.generate_timestamp()
                 except (ValueError, TypeError, AttributeError) as e:
-                    return FlextResult.fail(f"Failed to record metric: {e}")
+                    return FlextResult[None].fail(f"Failed to record metric: {e}")
 
                 # Store raw metric data
                 metric_data = {
@@ -303,10 +303,10 @@ class FlextMetricsService:
                 timestamp=timestamp,
             )
 
-            return FlextResult.ok(metric)
+            return FlextResult[object].ok(metric)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to record metric: {e}")
+            return FlextResult[None].fail(f"Failed to record metric: {e}")
 
     def get_metric_value(self, metric_name: str) -> FlextResult[float]:
         """Get current metric value with type-safe retrieval."""
@@ -316,12 +316,12 @@ class FlextMetricsService:
                 if metric_name in self._metric_gauges:
                     gauge_value = self._metric_gauges[metric_name]
                     # Ensure type safety: convert to float if possible
-                    return FlextResult.ok(float(gauge_value))
+                    return FlextResult[float].ok(float(gauge_value))
 
                 # Try counter - with type safety
                 if metric_name in self._metric_counters:
                     counter_value = self._metric_counters[metric_name]
-                    return FlextResult.ok(float(counter_value))
+                    return FlextResult[float].ok(float(counter_value))
 
                 # Try histogram (return mean) - with type safety
                 if metric_name in self._metric_histograms:
@@ -330,12 +330,12 @@ class FlextMetricsService:
                         # Ensure all values are numeric before calculation
                         numeric_values = [float(v) for v in values]
                         mean_value = sum(numeric_values) / len(numeric_values)
-                        return FlextResult.ok(mean_value)
+                        return FlextResult[float].ok(mean_value)
 
-                return FlextResult.fail(f"Metric '{metric_name}' not found")
+                return FlextResult[None].fail(f"Metric '{metric_name}' not found")
 
         except (ValueError, TypeError, ArithmeticError) as e:
-            return FlextResult.fail(f"Failed to retrieve metric '{metric_name}': {e}")
+            return FlextResult[None].fail(f"Failed to retrieve metric '{metric_name}': {e}")
 
     def get_metrics_summary(self) -> FlextResult[FlextTypes.Data.Dict]:
         """Get comprehensive metrics summary with statistics."""
@@ -362,10 +362,10 @@ class FlextMetricsService:
                     },
                 }
 
-                return FlextResult.ok(summary)
+                return FlextResult[dict[str, object]].ok(summary)
 
         except (ValueError, TypeError, ArithmeticError) as e:
-            return FlextResult.fail(f"Failed to generate metrics summary: {e}")
+            return FlextResult[None].fail(f"Failed to generate metrics summary: {e}")
 
     def export_prometheus_format(self) -> FlextResult[str]:
         """Export metrics in Prometheus format for real integration."""
@@ -395,10 +395,10 @@ class FlextMetricsService:
                         )
 
                 prometheus_output = "\n".join(prometheus_lines)
-                return FlextResult.ok(prometheus_output)
+                return FlextResult[str].ok(prometheus_output)
 
         except (ValueError, TypeError, ArithmeticError) as e:
-            return FlextResult.fail(f"Failed to export Prometheus format: {e}")
+            return FlextResult[None].fail(f"Failed to export Prometheus format: {e}")
 
     def reset_metrics(self) -> FlextResult[None]:
         """Reset all metrics (useful for testing and cleanup)."""
@@ -412,10 +412,10 @@ class FlextMetricsService:
                 self._start_time = FlextIdGenerator.generate_timestamp()
 
             self.logger.info("All metrics reset successfully")
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to reset metrics: {e}")
+            return FlextResult[None].fail(f"Failed to reset metrics: {e}")
 
 
 class FlextLoggingService:
@@ -487,9 +487,9 @@ class FlextLoggingService:
         try:
             level_method = getattr(self.logger, entry.level.lower(), self.logger.info)
             level_method(f"{entry.message} | Context: {entry.context}")
-            return FlextResult.ok(entry)
+            return FlextResult[object].ok(entry)
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to log entry: {e}")
+            return FlextResult[None].fail(f"Failed to log entry: {e}")
 
 
 class FlextTracingService:
@@ -613,10 +613,10 @@ class FlextTracingService:
                 or not hasattr(trace, "trace_id")
                 or not hasattr(trace, "operation")
             ):
-                return FlextResult.fail("Invalid trace: missing trace_id or operation")
+                return FlextResult[None].fail("Invalid trace: missing trace_id or operation")
 
             if not trace.trace_id or not isinstance(trace.trace_id, str):
-                return FlextResult.fail("Trace ID must be a non-empty string")
+                return FlextResult[None].fail("Trace ID must be a non-empty string")
 
             # Real trace management with thread safety
             with self._traces_lock:
@@ -659,10 +659,10 @@ class FlextTracingService:
                 start_time=start_time,
             )
 
-            return FlextResult.ok(trace)
+            return FlextResult[None].ok(trace)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"Failed to start trace: {e}")
+            return FlextResult[None].fail(f"Failed to start trace: {e}")
 
     def add_span_to_trace(
         self,
@@ -674,7 +674,7 @@ class FlextTracingService:
         try:
             with self._traces_lock:
                 if trace_id not in self._active_traces:
-                    return FlextResult.fail(
+                    return FlextResult[None].fail(
                         f"Trace '{trace_id}' not found or not active",
                     )
 
@@ -699,10 +699,10 @@ class FlextTracingService:
                 if isinstance(spans_list, list):
                     cast("list[str]", spans_list).append(span_id)
 
-                return FlextResult.ok(span)
+                return FlextResult[None].ok(span)
 
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult.fail(f"Failed to add span to trace '{trace_id}': {e}")
+            return FlextResult[None].fail(f"Failed to add span to trace '{trace_id}': {e}")
 
     def finish_trace(
         self,
@@ -713,7 +713,7 @@ class FlextTracingService:
         try:
             with self._traces_lock:
                 if trace_id not in self._active_traces:
-                    return FlextResult.fail(
+                    return FlextResult[None].fail(
                         f"Trace '{trace_id}' not found or not active",
                     )
 
@@ -750,10 +750,10 @@ class FlextTracingService:
                     status=status,
                 )
 
-                return FlextResult.ok(trace_context)
+                return FlextResult[None].ok(trace_context)
 
         except (ValueError, TypeError, KeyError, ArithmeticError) as e:
-            return FlextResult.fail(f"Failed to finish trace '{trace_id}': {e}")
+            return FlextResult[None].fail(f"Failed to finish trace '{trace_id}': {e}")
 
     def get_trace_info(self, trace_id: str) -> FlextResult[FlextTypes.Data.Dict]:
         """Get comprehensive trace information including spans."""
@@ -764,19 +764,19 @@ class FlextTracingService:
                     trace_info = self._active_traces[trace_id].copy()
                     trace_info["trace_spans"] = self._trace_spans.get(trace_id, [])
                     trace_info["child_traces"] = self._trace_hierarchy.get(trace_id, [])
-                    return FlextResult.ok(trace_info)
+                    return FlextResult[None].ok(trace_info)
 
                 # Check completed traces
                 if trace_id in self._completed_traces:
                     trace_info = self._completed_traces[trace_id].copy()
                     trace_info["trace_spans"] = self._trace_spans.get(trace_id, [])
                     trace_info["child_traces"] = self._trace_hierarchy.get(trace_id, [])
-                    return FlextResult.ok(trace_info)
+                    return FlextResult[None].ok(trace_info)
 
-                return FlextResult.fail(f"Trace '{trace_id}' not found")
+                return FlextResult[None].fail(f"Trace '{trace_id}' not found")
 
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult.fail(f"Failed to get trace info for '{trace_id}': {e}")
+            return FlextResult[None].fail(f"Failed to get trace info for '{trace_id}': {e}")
 
     def export_jaeger_format(self, trace_id: str) -> FlextResult[FlextTypes.Data.Dict]:
         """Export trace in Jaeger-compatible format for real integration."""
@@ -787,7 +787,7 @@ class FlextTracingService:
 
             trace_info = trace_info_result.data
             if trace_info is None:
-                return FlextResult.fail(f"No trace data found for '{trace_id}'")
+                return FlextResult[None].fail(f"No trace data found for '{trace_id}'")
 
             # Create Jaeger-compatible format
             jaeger_trace = {
@@ -839,10 +839,10 @@ class FlextTracingService:
                 },
             }
 
-            return FlextResult.ok(cast("FlextTypes.Data.Dict", jaeger_trace))
+            return FlextResult[None].ok(cast("FlextTypes.Data.Dict", jaeger_trace))
 
         except (ValueError, TypeError, KeyError, ArithmeticError) as e:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 f"Failed to export Jaeger format for trace '{trace_id}': {e}",
             )
 
@@ -877,10 +877,10 @@ class FlextTracingService:
                     },
                 }
 
-                return FlextResult.ok(summary)
+                return FlextResult[dict[str, object]].ok(summary)
 
         except (ValueError, TypeError, ArithmeticError) as e:
-            return FlextResult.fail(f"Failed to generate tracing summary: {e}")
+            return FlextResult[None].fail(f"Failed to generate tracing summary: {e}")
 
 
 class FlextAlertService:
@@ -948,16 +948,16 @@ class FlextAlertService:
         try:
             # Input validation first
             if alert is None:
-                return FlextResult.fail("Alert cannot be None")
+                return FlextResult[None].fail("Alert cannot be None")
 
             self.logger.warning(
                 "Alert created: %s | Severity: %s",
                 alert.title,
                 alert.severity,
             )
-            return FlextResult.ok(alert)
+            return FlextResult[None].ok(alert)
         except (ValueError, TypeError, AttributeError, ArithmeticError) as e:
-            return FlextResult.fail(f"Failed to create alert: {e}")
+            return FlextResult[None].fail(f"Failed to create alert: {e}")
 
 
 class FlextHealthService:
@@ -1067,11 +1067,11 @@ class FlextHealthService:
         """Extract actual health check from various input types."""
         if isinstance(health, FlextResult):
             if health.is_failure:
-                return FlextResult.fail(health.error or "Health check creation failed")
+                return FlextResult[None].fail(health.error or "Health check creation failed")
             if health.data is None:
-                return FlextResult.fail("Health check data is None")
-            return FlextResult.ok(health.data)
-        return FlextResult.ok(health)
+                return FlextResult[None].fail("Health check data is None")
+            return FlextResult[None].ok(health.data)
+        return FlextResult[None].ok(health)
 
     def _create_health_record(
         self,
@@ -1136,7 +1136,7 @@ class FlextHealthService:
 
             # Input validation (defensive programming)
             if not actual_health or not hasattr(actual_health, "component"):
-                return FlextResult.fail("Invalid health check: missing component")
+                return FlextResult[None].fail("Invalid health check: missing component")
 
             component_name = actual_health.component
             health_status = getattr(actual_health, "status", "unknown")
@@ -1174,7 +1174,7 @@ class FlextHealthService:
                 total_checks=self._total_health_checks,
             )
 
-            return FlextResult.ok(actual_health)
+            return FlextResult[None].ok(actual_health)
 
         except (ValueError, TypeError, AttributeError) as e:
             # Safe access to health data for error reporting
@@ -1192,7 +1192,7 @@ class FlextHealthService:
                 logger.warning(f"Health status extraction failed, using defaults: {ae}")
                 # Use defaults
 
-            return FlextResult.fail(f"Failed to check health: {e}")
+            return FlextResult[None].fail(f"Failed to check health: {e}")
 
     def get_overall_health(self) -> FlextResult[FlextTypes.Data.Dict]:
         """Get comprehensive overall system health with detailed component status."""
@@ -1239,10 +1239,10 @@ class FlextHealthService:
                     },
                 }
 
-                return FlextResult.ok(health_summary)
+                return FlextResult[None].ok(health_summary)
 
         except (ValueError, TypeError, AttributeError, ArithmeticError) as e:
-            return FlextResult.fail(f"Failed to get overall health: {e}")
+            return FlextResult[None].fail(f"Failed to get overall health: {e}")
 
     def get_component_health_history(
         self,
@@ -1253,13 +1253,13 @@ class FlextHealthService:
             with self._health_lock:
                 # Return empty list if no history exists (not a failure)
                 if component_name not in self._health_history:
-                    return FlextResult.ok([])
+                    return FlextResult[None].ok([])
 
                 history = self._health_history[component_name].copy()
-                return FlextResult.ok(history)
+                return FlextResult[None].ok(history)
 
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 f"Failed to get health history for '{component_name}': {e}",
             )
 
@@ -1327,7 +1327,7 @@ class FlextHealthService:
                 "total_health_checks": self._total_health_checks,
             }
 
-            return FlextResult.ok(cast("FlextTypes.Data.Dict", system_checks))
+            return FlextResult[None].ok(cast("FlextTypes.Data.Dict", system_checks))
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult.fail(f"System health check failed: {e}")
+            return FlextResult[None].fail(f"System health check failed: {e}")

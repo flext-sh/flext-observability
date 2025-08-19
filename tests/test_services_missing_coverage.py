@@ -126,7 +126,7 @@ class TestServicesMissingCoverage:
         # Test with FlextResult failure
         from flext_core import FlextResult
 
-        failure_result = FlextResult.fail("Health check creation failed")
+        failure_result = FlextResult[None].fail("Health check creation failed")
 
         result = service._extract_actual_health(failure_result)
         assert result.is_failure
@@ -138,7 +138,7 @@ class TestServicesMissingCoverage:
 
         from flext_core import FlextResult
 
-        none_result = FlextResult.ok(None)
+        none_result = FlextResult[None].ok(None)
 
         result = service._extract_actual_health(none_result)
         assert result.is_failure
@@ -192,7 +192,7 @@ class TestServicesMissingCoverage:
 
         from flext_core import FlextResult
 
-        health_result = FlextResult.ok(health_check)
+        health_result = FlextResult[None].ok(health_check)
 
         result = service.check_health(health_result)
         assert result.success
@@ -204,7 +204,7 @@ class TestServicesMissingCoverage:
 
         from flext_core import FlextResult
 
-        health_result = FlextResult.fail("Health check failed")
+        health_result = FlextResult[None].fail("Health check failed")
 
         result = service.check_health(health_result)
         assert result.is_failure

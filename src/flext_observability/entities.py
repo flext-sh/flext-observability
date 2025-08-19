@@ -240,15 +240,15 @@ class FlextMetric(FlextEntity):
         """
         # Use FlextValidation for standardized validation
         if not FlextValidation.is_non_empty_string(self.name):
-            return FlextResult.fail("Invalid metric name")
+            return FlextResult[None].fail("Invalid metric name")
 
         # Type validation for metric value using FlextValidation numeric validation
         if not isinstance(self.value, (int, float)):
             try:
                 float(self.value)  # Test if it can be converted to float
             except (ValueError, TypeError):
-                return FlextResult.fail("Invalid metric value")
-        return FlextResult.ok(None)
+                return FlextResult[None].fail("Invalid metric value")
+        return FlextResult[None].ok(None)
 
 
 class FlextLogEntry(FlextEntity):
@@ -396,10 +396,10 @@ class FlextLogEntry(FlextEntity):
         """
         # Use FlextValidation for standardized validation
         if not FlextValidation.is_non_empty_string(self.message):
-            return FlextResult.fail("Invalid log message")
+            return FlextResult[None].fail("Invalid log message")
         if self.level not in {"debug", "info", "warning", "error", "critical"}:
-            return FlextResult.fail("Invalid log level")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Invalid log level")
+        return FlextResult[None].ok(None)
 
 
 class FlextTrace(FlextEntity):
@@ -589,10 +589,10 @@ class FlextTrace(FlextEntity):
         """
         # Use FlextValidation for standardized validation
         if not FlextValidation.is_non_empty_string(self.trace_id):
-            return FlextResult.fail("Invalid trace ID")
+            return FlextResult[None].fail("Invalid trace ID")
         if not FlextValidation.is_non_empty_string(self.operation):
-            return FlextResult.fail("Invalid operation name")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Invalid operation name")
+        return FlextResult[None].ok(None)
 
 
 class FlextAlert(FlextEntity):
@@ -762,12 +762,12 @@ class FlextAlert(FlextEntity):
         """
         # Use FlextValidation for standardized validation
         if not FlextValidation.is_non_empty_string(self.title):
-            return FlextResult.fail("Invalid alert title")
+            return FlextResult[None].fail("Invalid alert title")
         if not FlextValidation.is_non_empty_string(self.message):
-            return FlextResult.fail("Invalid alert message")
+            return FlextResult[None].fail("Invalid alert message")
         if self.severity not in {"low", "medium", "high", "critical", "emergency"}:
-            return FlextResult.fail("Invalid alert severity")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Invalid alert severity")
+        return FlextResult[None].ok(None)
 
 
 class FlextHealthCheck(FlextEntity):
@@ -916,10 +916,10 @@ class FlextHealthCheck(FlextEntity):
         """
         # Use FlextValidation for standardized validation
         if not FlextValidation.is_non_empty_string(self.component):
-            return FlextResult.fail("Invalid component name")
+            return FlextResult[None].fail("Invalid component name")
         if self.status not in {"healthy", "unhealthy", "degraded", "unknown"}:
-            return FlextResult.fail("Invalid health status")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Invalid health status")
+        return FlextResult[None].ok(None)
 
 
 # ============================================================================
@@ -1055,16 +1055,16 @@ def flext_metric(
         # Validate business rules
         validation_result = metric.validate_business_rules()
         if validation_result.is_failure:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 validation_result.error or "Metric validation failed",
             )
 
-        return FlextResult.ok(metric)
+        return FlextResult[None].ok(metric)
 
     except (ValueError, TypeError, AttributeError) as e:
-        return FlextResult.fail(f"Failed to create metric: {e}")
+        return FlextResult[None].fail(f"Failed to create metric: {e}")
     except Exception as e:  # Ensure forced errors are captured for tests
-        return FlextResult.fail(f"Failed to create metric: {e}")
+        return FlextResult[None].fail(f"Failed to create metric: {e}")
 
 
 def flext_health_check(
