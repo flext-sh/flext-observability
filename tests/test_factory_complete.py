@@ -55,7 +55,7 @@ class TestFlextObservabilityMasterFactory:
         mock_container = Mock(spec=FlextContainer)
         mock_container.register.return_value = FlextResult[None].fail("Registration failed")
 
-        with patch("flext_observability.factory.get_logger") as mock_logger:
+        with patch("flext_observability.factories.get_logger") as mock_logger:
             FlextObservabilityMasterFactory(mock_container)
             mock_logger.return_value.warning.assert_called()
 
@@ -144,7 +144,7 @@ class TestFlextObservabilityMasterFactory:
         """Test log creation with exception."""
         # Mock to raise exception during entity creation
         with patch(
-            "flext_observability.factory.FlextLogEntry",
+            "flext_observability.factories.FlextLogEntry",
             side_effect=ValueError("Test error"),
         ):
             factory = FlextObservabilityMasterFactory()
@@ -161,9 +161,9 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory()
 
         result = factory.alert(
-            "Test Alert",
-            "Alert message",
-            severity="high",
+            message="Test Alert",
+            service="test_service",
+            level="high",
             status="active",
             tags={"team": "ops"},
             timestamp=datetime.now(UTC),
@@ -181,18 +181,18 @@ class TestFlextObservabilityMasterFactory:
         mock_container.get.return_value = FlextResult[None].ok(mock_service)
 
         factory = FlextObservabilityMasterFactory(mock_container)
-        result = factory.alert("title", "message")
+        result = factory.alert(message="message", service="test_service")
 
         assert result.success
 
     def test_alert_creation_exception(self) -> None:
         """Test alert creation with exception."""
         with patch(
-            "flext_observability.factory.FlextAlert",
+            "flext_observability.factories.FlextAlert",
             side_effect=ValueError("Test error"),
         ):
             factory = FlextObservabilityMasterFactory()
-            result = factory.alert("title", "message")
+            result = factory.alert(message="message", service="test_service")
 
             assert result.is_failure
             assert result.error is not None
@@ -233,7 +233,7 @@ class TestFlextObservabilityMasterFactory:
     def test_trace_creation_exception(self) -> None:
         """Test trace creation with exception."""
         with patch(
-            "flext_observability.factory.FlextTrace",
+            "flext_observability.factories.FlextTrace",
             side_effect=ValueError("Test error"),
         ):
             factory = FlextObservabilityMasterFactory()
@@ -250,7 +250,7 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory()
 
         result = factory.health_check(
-            "database",
+            service_name="database",
             status="healthy",
             message="Connection OK",
             metrics={"response_time": 50},
@@ -269,18 +269,18 @@ class TestFlextObservabilityMasterFactory:
         mock_container.get.return_value = FlextResult[None].ok(mock_service)
 
         factory = FlextObservabilityMasterFactory(mock_container)
-        result = factory.health_check("component")
+        result = factory.health_check(service_name="component")
 
         assert result.success
 
     def test_health_check_creation_exception(self) -> None:
         """Test health check creation with exception."""
         with patch(
-            "flext_observability.factory.flext_create_health_check",
+            "flext_observability.factories.FlextHealthCheck",
             side_effect=ValueError("Test error"),
         ):
             factory = FlextObservabilityMasterFactory()
-            result = factory.health_check("component")
+            result = factory.health_check(service_name="component")
 
             assert result.is_failure
             assert result.error is not None

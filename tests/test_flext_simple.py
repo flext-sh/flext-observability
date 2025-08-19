@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TypeVar
 
+from flext_core import FlextResult
+
 from flext_observability import (
     flext_create_alert,
     flext_create_health_check,
@@ -53,91 +55,86 @@ class TestSimpleApiCreation:
 
     def test_create_log_entry_success(self) -> None:
         """Test successful log entry creation."""
-        result = flext_create_log_entry("Test message")
+        result = flext_create_log_entry("Test message", "test_service")
         data = assert_success_with_data(result)
         if data.message != "Test message":
             raise AssertionError(f"Expected {'Test message'}, got {data.message}")
-        assert data.level == "info"
+        assert data.level == "INFO"
 
     def test_create_log_entry_with_context(self) -> None:
         """Test log entry creation with context."""
         result = flext_create_log_entry(
             "Error occurred",
-            level="error",
-            context={"user_id": "123", "action": "login"},
+            "test_service",
+            level="ERROR",
         )
         data = assert_success_with_data(result)
-        if data.level != "error":
-            raise AssertionError(f"Expected {'error'}, got {data.level}")
-        # Context might be stored differently, just check it exists
-        assert hasattr(data, "context")
+        if data.level != "ERROR":
+            raise AssertionError(f"Expected {'ERROR'}, got {data.level}")
+        # Check that extra_data field exists (our version of context)
+        assert hasattr(data, "extra_data")
 
     def test_create_trace_success(self) -> None:
         """Test successful trace creation."""
-        result = flext_create_trace("trace-123", "user_login")
+        result = flext_create_trace("user_login", "trace-123", config={"trace_id": "trace-123"})
         data = assert_success_with_data(result)
         if data.trace_id != "trace-123":
             raise AssertionError(f"Expected {'trace-123'}, got {data.trace_id}")
-        assert data.operation == "user_login"
+        assert data.operation_name == "user_login"
 
     def test_create_trace_with_config(self) -> None:
         """Test trace creation with configuration."""
         config = {
             "span_id": "span-456",
-            "status": "completed",
-            "duration_ms": 150,
+            "trace_id": "trace-789"
         }
-        result = flext_create_trace("trace-789", "data_processing", config=config)
+        result = flext_create_trace("data_processing", "trace-789", config=config)
         data = assert_success_with_data(result)
         if data.span_id != "span-456":
             raise AssertionError(f"Expected {'span-456'}, got {data.span_id}")
 
     def test_create_alert_success(self) -> None:
         """Test successful alert creation."""
-        result = flext_create_alert("System Alert", "High CPU usage detected")
+        result = flext_create_alert("High CPU usage detected", "system_monitor")
         data = assert_success_with_data(result)
-        if data.title != "System Alert":
-            raise AssertionError(f"Expected {'System Alert'}, got {data.title}")
-        assert data.message == "High CPU usage detected"
-        if data.severity != "low":  # default
-            raise AssertionError(f"Expected {'low'}, got {data.severity}")
+        if data.message != "High CPU usage detected":
+            raise AssertionError(f"Expected {'High CPU usage detected'}, got {data.message}")
+        assert data.service == "system_monitor"
+        if data.level != "info":  # default
+            raise AssertionError(f"Expected {'info'}, got {data.level}")
 
     def test_create_alert_high_severity(self) -> None:
         """Test alert creation with high severity."""
         result = flext_create_alert(
-            "Critical Error",
             "Database connection failed",
-            severity="critical",
-            status="active",
+            "database_service",
+            level="critical",
         )
         data = assert_success_with_data(result)
-        if data.severity != "critical":
-            raise AssertionError(f"Expected {'critical'}, got {data.severity}")
-        assert data.status == "active"
+        if data.level != "critical":
+            raise AssertionError(f"Expected {'critical'}, got {data.level}")
+        assert data.service == "database_service"
 
     def test_create_health_check_success(self) -> None:
         """Test successful health check creation."""
         result = flext_create_health_check("database")
         data = assert_success_with_data(result)
-        if data.component != "database":
-            raise AssertionError(f"Expected {'database'}, got {data.component}")
-        assert data.status == "unknown"  # default
+        if data.service_name != "database":
+            raise AssertionError(f"Expected {'database'}, got {data.service_name}")
+        assert data.status == "healthy"  # default
 
     def test_create_health_check_with_status(self) -> None:
         """Test health check creation with specific status."""
         result = flext_create_health_check(
             "api_server",
-            status="healthy",
-            message="All systems operational",
+            status="degraded",
         )
         data = assert_success_with_data(result)
-        if data.component != "api_server":
-            raise AssertionError(f"Expected {'api_server'}, got {data.component}")
-        assert data.status == "healthy"
-        if data.message != "All systems operational":
-            raise AssertionError(
-                f"Expected {'All systems operational'}, got {data.message}",
-            )
+        if data.service_name != "api_server":
+            raise AssertionError(f"Expected {'api_server'}, got {data.service_name}")
+        assert data.status == "degraded"
+        # Check that details field exists
+        assert hasattr(data, "details")
 
 
 class TestSimpleApiErrorHandling:

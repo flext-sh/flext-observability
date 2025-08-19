@@ -38,7 +38,7 @@ class TestServicesBasic:
         assert service is not None
 
         # Test with valid log entry
-        log_result = flext_create_log_entry("test message")
+        log_result = flext_create_log_entry("test message", "test_service")
         if log_result.success and log_result.data is not None:
             service_result = service.log_entry(log_result.data)
             assert service_result.success
@@ -49,7 +49,7 @@ class TestServicesBasic:
         assert service is not None
 
         # Test with valid trace
-        trace_result = flext_create_trace("trace-123", "test_op")
+        trace_result = flext_create_trace("test_op", "trace-123")
         if trace_result.success and trace_result.data is not None:
             service_result = service.start_trace(trace_result.data)
             assert service_result.success
@@ -60,7 +60,7 @@ class TestServicesBasic:
         assert service is not None
 
         # Test with valid alert
-        alert_result = flext_create_alert("Test", "Message")
+        alert_result = flext_create_alert("Test Message", "test_service")
         if alert_result.success and alert_result.data is not None:
             service_result = service.create_alert(alert_result.data)
             assert service_result.success

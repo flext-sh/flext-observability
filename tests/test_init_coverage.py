@@ -4,14 +4,21 @@ import warnings
 
 from flext_core import FlextContainer
 
+import flext_observability
+from flext_observability import (
+    _deprecated_warning,
+    constants,
+    create_observability_platform,
+    flext_health_status,
+    observability_platform,
+)
+
 
 class TestInitCoverage:
     """Test coverage for __init__.py legacy facades and API functions."""
 
     def test_flext_health_status_function(self) -> None:
         """Test flext_health_status function coverage."""
-        from flext_observability import flext_health_status
-
         result = flext_health_status()
         assert result["status"] == "healthy"
         assert result["service"] == "flext-observability"
@@ -19,7 +26,7 @@ class TestInitCoverage:
 
     def test_legacy_create_observability_platform(self) -> None:
         """Test legacy create_observability_platform function with deprecation warning."""
-        from flext_observability import create_observability_platform
+        # create_observability_platform imported at top level
 
         # Capture deprecation warning
         with warnings.catch_warnings(record=True) as warning_list:
@@ -35,7 +42,7 @@ class TestInitCoverage:
 
     def test_legacy_create_observability_platform_with_container(self) -> None:
         """Test legacy create_observability_platform with container parameter."""
-        from flext_observability import create_observability_platform
+        # create_observability_platform imported at top level
 
         container = FlextContainer()
 
@@ -47,7 +54,7 @@ class TestInitCoverage:
 
     def test_legacy_observability_platform(self) -> None:
         """Test legacy observability_platform function with deprecation warning."""
-        from flext_observability import observability_platform
+        # observability_platform imported at top level
 
         with warnings.catch_warnings(record=True) as warning_list:
             warnings.simplefilter("always")
@@ -62,7 +69,7 @@ class TestInitCoverage:
 
     def test_legacy_observability_platform_with_container(self) -> None:
         """Test legacy observability_platform with container parameter."""
-        from flext_observability import observability_platform
+        # observability_platform imported at top level
 
         container = FlextContainer()
 
@@ -74,7 +81,7 @@ class TestInitCoverage:
 
     def test_legacy_constants_facade(self) -> None:
         """Test legacy constants facade with deprecation warning."""
-        from flext_observability import constants
+        # constants imported at top level
 
         with warnings.catch_warnings(record=True) as warning_list:
             warnings.simplefilter("always")
@@ -91,7 +98,7 @@ class TestInitCoverage:
 
     def test_legacy_constants_unknown_attribute(self) -> None:
         """Test legacy constants facade with unknown attribute."""
-        from flext_observability import constants
+        # constants imported at top level
 
         with warnings.catch_warnings(record=True):
             warnings.simplefilter("always")
@@ -100,7 +107,7 @@ class TestInitCoverage:
 
     def test_deprecated_warning_function(self) -> None:
         """Test _deprecated_warning function directly."""
-        from flext_observability import _deprecated_warning
+        # _deprecated_warning imported at top level
 
         with warnings.catch_warnings(record=True) as warning_list:
             warnings.simplefilter("always")
@@ -113,7 +120,7 @@ class TestInitCoverage:
 
     def test_all_public_api_imports(self) -> None:
         """Test that all __all__ exports can be imported successfully."""
-        import flext_observability
+        # flext_observability imported at top level
 
         # Test all exports from __all__ list can be imported
         for export_name in flext_observability.__all__:
