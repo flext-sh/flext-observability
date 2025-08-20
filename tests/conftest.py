@@ -10,10 +10,18 @@ from collections.abc import AsyncIterator
 
 # Direct imports - following flext-core standardization pattern
 import pytest
+from _pytest.config import Config
+from _pytest.nodes import Item
 import pytest_asyncio
-from flext_core import get_logger
+import logging
+
+def get_logger(name: str) -> logging.Logger:
+    """Simple logger for tests."""
+    return logging.getLogger(name)
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
+from pytest_mock import MockerFixture
+from unittest.mock import Mock
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from prometheus_client import CollectorRegistry, Counter, Histogram
@@ -23,7 +31,7 @@ from prometheus_client import CollectorRegistry, Counter, Histogram
 # ============================================================================
 
 
-def pytest_configure(config: object) -> None:
+def pytest_configure(config: Config) -> None:
     """Configure pytest with custom markers."""
     # Register custom markers
     config.addinivalue_line(
@@ -60,7 +68,7 @@ def pytest_configure(config: object) -> None:
     )
 
 
-def pytest_collection_modifyitems(config: object, items: list[object]) -> None:  # noqa: ARG001
+def pytest_collection_modifyitems(config: Config, items: list[Item]) -> None:  # noqa: ARG001
     """Auto-mark tests based on their location."""
     for item in items:
         # Auto-mark based on test location
@@ -159,13 +167,13 @@ async def tracer_provider() -> AsyncIterator[TracerProvider]:
 
 
 @pytest.fixture
-def tracer(tracer_provider: object) -> object:
+def tracer(tracer_provider: TracerProvider) -> trace.Tracer:
     """Create a tracer for testing."""
     return tracer_provider.get_tracer("test-tracer")
 
 
 @pytest.fixture
-def span_context() -> object:
+def span_context() -> trace.SpanContext:
     """Create a span context for testing."""
     return trace.SpanContext(
         trace_id=0x123456789ABCDEF0123456789ABCDEF0,
@@ -238,7 +246,7 @@ def health_check_config() -> dict[str, object]:
 
 
 @pytest.fixture
-def mock_prometheus_client(mocker: object) -> object:
+def mock_prometheus_client(mocker: MockerFixture) -> Mock:
     """Mock Prometheus client for testing."""
     mock = mocker.Mock()
     mock.push_to_gateway.return_value = None
@@ -246,7 +254,7 @@ def mock_prometheus_client(mocker: object) -> object:
 
 
 @pytest.fixture
-def mock_otel_exporter(mocker: object) -> object:
+def mock_otel_exporter(mocker: MockerFixture) -> Mock:
     """Mock OpenTelemetry exporter for testing."""
     mock = mocker.Mock()
     mock.export.return_value = mocker.Mock(success=True)

@@ -83,7 +83,7 @@ class TestFlextObservabilityMonitor:
     def test_initialize_observability_exception(self) -> None:
         """Test initialization with exception."""
         with patch(
-            "flext_observability.flext_monitor.FlextMetricsService",
+            "flext_observability.monitoring.FlextMetricsService",
             side_effect=ValueError("Service error"),
         ):
             monitor = FlextObservabilityMonitor()

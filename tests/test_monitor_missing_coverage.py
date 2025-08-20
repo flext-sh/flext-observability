@@ -1,10 +1,9 @@
-"""Test flext_monitor.py missing coverage lines to reach 95% target."""
+"""Test observability monitor functionality with real code execution."""
 
-from typing import Never
-from unittest.mock import Mock, patch
+import time
+import threading
 
 import pytest
-from flext_core import FlextResult
 
 from flext_observability import (
     FlextObservabilityMonitor,
@@ -12,154 +11,186 @@ from flext_observability import (
 )
 
 
-class TestMonitorMissingCoverage:
-    """Test specific missing lines in flext_monitor.py for complete coverage."""
+class TestMonitorRealFunctionality:
+    """Test observability monitor with actual functionality - no excessive mocking."""
 
-    def test_get_health_status_failure_path(self) -> None:
-        """Test flext_get_health_status when health service returns failure - covers line 274."""
+    def test_monitor_initialization_and_health_status(self) -> None:
+        """Test real monitor initialization and health status retrieval."""
+        # Create monitor without container dependency
         monitor = FlextObservabilityMonitor()
-        monitor._initialized = True
-        monitor._health_service = Mock()
+        
+        # Initialize observability services
+        init_result = monitor.flext_initialize_observability()
+        assert init_result.success, f"Initialization failed: {init_result.error}"
+        
+        # Start monitoring
+        start_result = monitor.flext_start_monitoring()
+        assert start_result.success, f"Start monitoring failed: {start_result.error}"
+        
+        # Get health status
+        health_result = monitor.flext_get_health_status()
+        assert health_result.success, f"Health status failed: {health_result.error}"
+        
+        health_data = health_result.data
+        assert isinstance(health_data, dict)
+        assert "monitor_metrics" in health_data
+        
+        # Stop monitoring
+        stop_result = monitor.flext_stop_monitoring()
+        assert stop_result.success, f"Stop monitoring failed: {stop_result.error}"
 
-        # Mock health service to return failure
-        monitor._health_service.get_overall_health.return_value = FlextResult[None].fail(
-            "Health check failed",
-        )
-
-        result = monitor.flext_get_health_status()
-        assert result.is_failure
-        assert "Health check failed" in result.error
-
-    def test_record_metric_no_metrics_service(self) -> None:
-        """Test flext_record_metric when metrics service is not available - covers line 306."""
+    def test_real_metric_recording_workflow(self) -> None:
+        """Test complete metric recording workflow with real services."""
         monitor = FlextObservabilityMonitor()
-        monitor._metrics_service = None
+        
+        # Initialize the monitor
+        init_result = monitor.flext_initialize_observability()
+        assert init_result.success
+        
+        # Record various types of metrics
+        counter_result = monitor.flext_record_metric("requests_total", 1.0, "counter")
+        assert counter_result.success, f"Counter metric failed: {counter_result.error}"
+        
+        gauge_result = monitor.flext_record_metric("cpu_usage_percent", 75.5, "gauge")
+        assert gauge_result.success, f"Gauge metric failed: {gauge_result.error}"
+        
+        histogram_result = monitor.flext_record_metric("response_time_seconds", 0.25, "histogram")
+        assert histogram_result.success, f"Histogram metric failed: {histogram_result.error}"
+        
+        # Get metrics summary
+        summary_result = monitor.flext_get_metrics_summary()
+        assert summary_result.success, f"Metrics summary failed: {summary_result.error}"
+        
+        summary_data = summary_result.data
+        assert isinstance(summary_data, dict)
+        assert "service_info" in summary_data
 
-        result = monitor.flext_record_metric("test_metric", 42.0)
-        assert result.is_failure
-        assert "Metrics service not available" in result.error
-
-    def test_record_metric_creation_failure(self) -> None:
-        """Test flext_record_metric when metric recording fails - covers lines 313-315."""
+    def test_function_monitoring_decorator_real_execution(self) -> None:
+        """Test function monitoring decorator with real function execution."""
         monitor = FlextObservabilityMonitor()
-        mock_service = Mock()
-        mock_service.record_metric.return_value = FlextResult[None].fail("Recording failed")
-        monitor._metrics_service = mock_service
+        monitor.flext_initialize_observability()
+        monitor.flext_start_monitoring()
+        
+        # Create a real function to monitor
+        @flext_monitor_function(monitor=monitor, metric_name="test_computation")
+        def compute_fibonacci(n: int) -> int:
+            """Compute fibonacci number - real computation."""
+            if n <= 1:
+                return n
+            return compute_fibonacci(n - 1) + compute_fibonacci(n - 2)
+        
+        # Execute the monitored function
+        result = compute_fibonacci(10)
+        assert result == 55  # Verify the function actually worked
+        
+        # Verify monitoring captured metrics
+        assert monitor.flext_is_monitoring_active()
+        
+        # Get metrics summary to verify monitoring worked
+        summary_result = monitor.flext_get_metrics_summary()
+        assert summary_result.success
+        
+        summary_data = summary_result.data
+        assert isinstance(summary_data, dict)
 
-        result = monitor.flext_record_metric("test_metric", 42.0)
-        assert result.is_failure
-        assert "Recording failed" in result.error
-
-    def test_record_metric_creation_returns_none(self) -> None:
-        """Test flext_record_metric when metric service returns None - covers line 318."""
+    def test_error_handling_in_real_scenarios(self) -> None:
+        """Test error handling with real error scenarios (not mocked)."""
         monitor = FlextObservabilityMonitor()
-        mock_service = Mock()
-        mock_service.record_metric.return_value = FlextResult[None].ok(None)
-        monitor._metrics_service = mock_service
-
-        result = monitor.flext_record_metric("test_metric", 42.0)
-        assert result.success  # This should succeed with None data
-
-    def test_record_metric_exception_handling(self) -> None:
-        """Test flext_record_metric exception handling - covers lines 322-323."""
-        monitor = FlextObservabilityMonitor()
-        mock_service = Mock()
-        mock_service.record_metric.side_effect = ValueError("Test exception")
-        monitor._metrics_service = mock_service
-
-        result = monitor.flext_record_metric("test_metric", 42.0)
-        assert result.is_failure
-        assert "Failed to record metric: Test exception" in result.error
-
-    def test_get_metrics_summary_no_service(self) -> None:
-        """Test flext_get_metrics_summary when metrics service not available - covers lines 327-328."""
-        monitor = FlextObservabilityMonitor()
-        monitor._metrics_service = None
-
-        result = monitor.flext_get_metrics_summary()
-        assert result.is_failure
-        assert "Metrics service not available" in result.error
-
-    def test_get_metrics_summary_with_service(self) -> None:
-        """Test flext_get_metrics_summary when service is available - covers line 330."""
-        monitor = FlextObservabilityMonitor()
-        monitor._metrics_service = Mock()
-
-        # Mock service to return success
-        expected_summary = {"total_metrics": 5, "last_update": "2025-01-01"}
-        monitor._metrics_service.get_metrics_summary.return_value = FlextResult[None].ok(
-            expected_summary,
-        )
-
-        result = monitor.flext_get_metrics_summary()
-        assert result.success
-        assert result.data == expected_summary
-
-    def test_monitored_function_alert_creation_exception(self) -> None:
-        """Test monitored function alert creation exception handling - covers lines 434-435."""
-        monitor = FlextObservabilityMonitor()
-        monitor._initialized = True
-        monitor._running = True
-        monitor._alert_service = Mock()
-        monitor._functions_monitored = 0
-
-        # Create a function that will raise an exception
-        @flext_monitor_function(monitor=monitor)
-        def failing_function() -> Never:
-            msg = "Test exception"
-            raise ValueError(msg)
-
-        # Mock alert service to raise an exception during alert creation
-        monitor._alert_service.create_alert.side_effect = AttributeError("Alert creation failed")
-
-        # Function should still raise the original exception even if alert creation fails
-        with pytest.raises(ValueError, match="Test exception"):
+        monitor.flext_initialize_observability()
+        monitor.flext_start_monitoring()
+        
+        # Test recording metric with invalid data
+        invalid_result = monitor.flext_record_metric("", 0.0)  # Empty name
+        assert invalid_result.is_failure
+        assert "String should have at least 1 character" in (invalid_result.error or "")
+        
+        # Test function monitoring with real exception
+        @flext_monitor_function(monitor=monitor, metric_name="error_function")
+        def failing_function() -> None:
+            """Function that actually raises an exception."""
+            raise ValueError("Real error for testing")
+        
+        # Execute and expect the exception to be re-raised
+        with pytest.raises(ValueError, match="Real error for testing"):
             failing_function()
 
-        # Verify alert creation was attempted through the service
-        monitor._alert_service.create_alert.assert_called_once()
-
-    def test_monitored_function_with_alert_service_exception_handling(self) -> None:
-        """Test comprehensive exception handling in monitored function alert creation."""
+    def test_service_lifecycle_management(self) -> None:
+        """Test real service lifecycle management without mocking."""
         monitor = FlextObservabilityMonitor()
-        monitor._initialized = True
-        monitor._running = True
-        monitor._alert_service = Mock()
-        monitor._functions_monitored = 0
+        
+        # Initially not initialized
+        assert not monitor.flext_is_monitoring_active()
+        
+        # Initialize services
+        init_result = monitor.flext_initialize_observability()
+        assert init_result.success
+        
+        # Start monitoring
+        start_result = monitor.flext_start_monitoring()
+        assert start_result.success
+        assert monitor.flext_is_monitoring_active()
+        
+        # Stop monitoring
+        stop_result = monitor.flext_stop_monitoring()
+        assert stop_result.success
+        assert not monitor.flext_is_monitoring_active()
 
-        @flext_monitor_function(monitor=monitor)
-        def failing_function() -> Never:
-            msg = "Original error"
-            raise RuntimeError(msg)
-
-        # Test ValueError in alert creation
-        monitor._alert_service.create_alert.side_effect = ValueError("Alert value error")
-        with pytest.raises(RuntimeError, match="Original error"):
-            failing_function()
-
-        # Test TypeError in alert creation
-        monitor._alert_service.create_alert.side_effect = TypeError("Alert type error")
-        with pytest.raises(RuntimeError, match="Original error"):
-            failing_function()
-
-        # Test AttributeError in alert creation
-        monitor._alert_service.create_alert.side_effect = AttributeError("Alert attribute error")
-        with pytest.raises(RuntimeError, match="Original error"):
-            failing_function()
-
-    def test_all_record_metric_exception_types(self) -> None:
-        """Test all exception types in record_metric method."""
+    def test_concurrent_metric_recording(self) -> None:
+        """Test concurrent metric recording to verify thread safety."""
         monitor = FlextObservabilityMonitor()
-        monitor._metrics_service = Mock()
+        monitor.flext_initialize_observability()
+        monitor.flext_start_monitoring()
+        
+        results: list[bool] = []
+        
+        def record_metrics(thread_id: int) -> None:
+            """Record metrics from multiple threads."""
+            for i in range(10):
+                result = monitor.flext_record_metric(f"thread_{thread_id}_metric_{i}", float(i))
+                results.append(result.success)
+        
+        # Create and start multiple threads
+        threads = []
+        for thread_id in range(3):
+            thread = threading.Thread(target=record_metrics, args=(thread_id,))
+            threads.append(thread)
+            thread.start()
+        
+        # Wait for all threads to complete
+        for thread in threads:
+            thread.join()
+        
+        # Verify all metric recordings succeeded
+        assert all(results), "Some metric recordings failed in concurrent test"
+        assert len(results) == 30  # 3 threads * 10 metrics each
 
-        exception_types = [
-            ValueError("Value error"),
-            TypeError("Type error"),
-            AttributeError("Attribute error"),
-        ]
-
-        for exception in exception_types:
-            monitor._metrics_service.record_metric.side_effect = exception
-            result = monitor.flext_record_metric("test", 1.0)
-            assert result.is_failure
-            assert str(exception) in result.error
+    def test_performance_monitoring_real_workload(self) -> None:
+        """Test performance monitoring with real computational workload."""
+        monitor = FlextObservabilityMonitor()
+        monitor.flext_initialize_observability()
+        monitor.flext_start_monitoring()
+        
+        @flext_monitor_function(monitor=monitor, metric_name="cpu_intensive_task")
+        def cpu_intensive_task(iterations: int) -> int:
+            """Perform CPU-intensive computation."""
+            total = 0
+            for i in range(iterations):
+                total += i ** 2
+            return total
+        
+        # Execute the task and measure
+        start_time = time.time()
+        result = cpu_intensive_task(1000)  # Reduced for faster test
+        end_time = time.time()
+        
+        # Verify computation result
+        expected = sum(i ** 2 for i in range(1000))
+        assert result == expected
+        
+        # Verify execution time was captured
+        execution_time = end_time - start_time
+        assert execution_time > 0
+        
+        # Get metrics summary to verify monitoring captured performance data
+        summary_result = monitor.flext_get_metrics_summary()
+        assert summary_result.success

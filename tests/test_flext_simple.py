@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TypeVar
+from typing import TypeVar, cast
 
 from flext_core import FlextResult
+from flext_core.typings import FlextTypes
 
 from flext_observability import (
     flext_create_alert,
@@ -88,7 +89,7 @@ class TestSimpleApiCreation:
             "span_id": "span-456",
             "trace_id": "trace-789"
         }
-        result = flext_create_trace("data_processing", "trace-789", config=config)
+        result = flext_create_trace("data_processing", "trace-789", config=cast("FlextTypes.Data.Dict", config))
         data = assert_success_with_data(result)
         if data.span_id != "span-456":
             raise AssertionError(f"Expected {'span-456'}, got {data.span_id}")
@@ -146,7 +147,7 @@ class TestSimpleApiErrorHandling:
         exception_occurred = False
         result_obtained = False
         try:
-            result = flext_create_metric("test", "invalid")
+            result = flext_create_metric("test", cast("float", "invalid"))
             # Function should handle this gracefully
             result_obtained = True
             assert result.success or result.is_failure
@@ -168,7 +169,7 @@ class TestSimpleApiErrorHandling:
             errors_caught += 1
         # Log test
         try:
-            log_result = flext_create_log_entry("test", timestamp=None)
+            log_result = flext_create_log_entry("test", "test_service", timestamp=None)
             assert log_result.success or log_result.is_failure
         except (RuntimeError, ValueError, TypeError):
             errors_caught += 1

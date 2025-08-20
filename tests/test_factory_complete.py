@@ -1,6 +1,7 @@
 """Comprehensive tests for FlextObservabilityMasterFactory."""
 
 from datetime import UTC, datetime
+from typing import cast
 from unittest.mock import Mock, patch
 
 from flext_core import FlextContainer, FlextResult
@@ -77,10 +78,10 @@ class TestFlextObservabilityMasterFactory:
     def test_metric_creation_with_service(self) -> None:
         """Test metric creation with working service."""
         mock_service = Mock()
-        mock_service.record_metric.return_value = FlextResult[None].ok("recorded")
+        mock_service.record_metric.return_value = FlextResult[None].ok(None)
 
         mock_container = Mock(spec=FlextContainer)
-        mock_container.get.return_value = FlextResult[None].ok(mock_service)
+        mock_container.get.return_value = FlextResult[object].ok(mock_service)
 
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.metric("test", 1.0)
@@ -93,7 +94,7 @@ class TestFlextObservabilityMasterFactory:
         mock_service.record_metric.return_value = FlextResult[None].fail("Service error")
 
         mock_container = Mock(spec=FlextContainer)
-        mock_container.get.return_value = FlextResult[None].ok(mock_service)
+        mock_container.get.return_value = FlextResult[object].ok(mock_service)
 
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.metric("test", 1.0)
@@ -105,7 +106,7 @@ class TestFlextObservabilityMasterFactory:
         factory = FlextObservabilityMasterFactory()
 
         # Pass invalid value type to trigger exception
-        result = factory.metric("test", "invalid_value")
+        result = factory.metric("test", cast("float", "invalid_value"))
 
         assert result.is_failure
         assert result.error is not None
@@ -130,10 +131,10 @@ class TestFlextObservabilityMasterFactory:
     def test_log_creation_with_service(self) -> None:
         """Test log creation with working service."""
         mock_service = Mock()
-        mock_service.log_entry.return_value = FlextResult[None].ok("logged")
+        mock_service.log_entry.return_value = FlextResult[None].ok(None)
 
         mock_container = Mock(spec=FlextContainer)
-        mock_container.get.return_value = FlextResult[None].ok(mock_service)
+        mock_container.get.return_value = FlextResult[object].ok(mock_service)
 
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.log("test message")
@@ -175,10 +176,10 @@ class TestFlextObservabilityMasterFactory:
     def test_alert_creation_with_service(self) -> None:
         """Test alert creation with working service."""
         mock_service = Mock()
-        mock_service.create_alert.return_value = FlextResult[None].ok("created")
+        mock_service.create_alert.return_value = FlextResult[None].ok(None)
 
         mock_container = Mock(spec=FlextContainer)
-        mock_container.get.return_value = FlextResult[None].ok(mock_service)
+        mock_container.get.return_value = FlextResult[object].ok(mock_service)
 
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.alert(message="message", service="test_service")
@@ -220,10 +221,10 @@ class TestFlextObservabilityMasterFactory:
     def test_trace_creation_with_service(self) -> None:
         """Test trace creation with working service."""
         mock_service = Mock()
-        mock_service.start_trace.return_value = FlextResult[None].ok("started")
+        mock_service.start_trace.return_value = FlextResult[None].ok(None)
 
         mock_container = Mock(spec=FlextContainer)
-        mock_container.get.return_value = FlextResult[None].ok(mock_service)
+        mock_container.get.return_value = FlextResult[object].ok(mock_service)
 
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.trace("trace-id", "operation")
@@ -263,10 +264,10 @@ class TestFlextObservabilityMasterFactory:
     def test_health_check_creation_with_service(self) -> None:
         """Test health check creation with working service."""
         mock_service = Mock()
-        mock_service.check_health.return_value = FlextResult[None].ok("checked")
+        mock_service.check_health.return_value = FlextResult[None].ok(None)
 
         mock_container = Mock(spec=FlextContainer)
-        mock_container.get.return_value = FlextResult[None].ok(mock_service)
+        mock_container.get.return_value = FlextResult[object].ok(mock_service)
 
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.health_check(service_name="component")
@@ -293,12 +294,12 @@ class TestFlextObservabilityMasterFactory:
     def test_health_status_success(self) -> None:
         """Test successful health status retrieval."""
         mock_service = Mock()
-        mock_service.get_overall_health.return_value = FlextResult[None].ok(
+        mock_service.get_overall_health.return_value = FlextResult[dict[str, object]].ok(
             {"status": "healthy"},
         )
 
         mock_container = Mock(spec=FlextContainer)
-        mock_container.get.return_value = FlextResult[None].ok(mock_service)
+        mock_container.get.return_value = FlextResult[object].ok(mock_service)
 
         factory = FlextObservabilityMasterFactory(mock_container)
         result = factory.health_status()

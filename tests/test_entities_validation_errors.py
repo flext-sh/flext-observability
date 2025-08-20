@@ -35,7 +35,7 @@ class TestEntityValidationErrors:
         object.__setattr__(metric, "value", -10.0)
         result = metric.validate_business_rules()
         assert result.is_failure
-        assert "Metric value cannot be negative" in result.error
+        assert result.error and "Metric value cannot be negative" in result.error
 
     def test_log_entry_invalid_message_validation(self) -> None:
         """Test FlextLogEntry with invalid message (empty string)."""
@@ -55,7 +55,7 @@ class TestEntityValidationErrors:
         )
         result = log_entry.validate_business_rules()
         assert result.is_failure
-        assert "Invalid log level" in result.error
+        assert result.error and "Invalid log level" in result.error
 
     def test_trace_invalid_trace_id_validation(self) -> None:
         """Test FlextTrace service_name validation (empty string)."""
@@ -97,7 +97,7 @@ class TestEntityValidationErrors:
         object.__setattr__(alert, "message", "")
         result = alert.validate_business_rules()
         assert result.is_failure
-        assert "Alert message cannot be empty" in result.error
+        assert result.error and "Alert message cannot be empty" in result.error
 
     def test_alert_invalid_severity_validation(self) -> None:
         """Test FlextAlert with invalid level."""
@@ -108,7 +108,7 @@ class TestEntityValidationErrors:
         )
         result = alert.validate_business_rules()
         assert result.is_failure
-        assert "Invalid alert level" in result.error
+        assert result.error and "Invalid alert level" in result.error
 
     def test_health_check_invalid_component_validation(self) -> None:
         """Test FlextHealthCheck with invalid service_name (empty string)."""
@@ -126,4 +126,4 @@ class TestEntityValidationErrors:
         )
         result = health_check.validate_business_rules()
         assert result.is_failure
-        assert "Invalid health status" in result.error
+        assert result.error and "Invalid health status" in result.error

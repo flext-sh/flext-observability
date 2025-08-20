@@ -229,7 +229,8 @@ class FlextMetricsService:
         if not metric or not hasattr(metric, "name") or not hasattr(metric, "value"):
             return FlextResult[None].fail("Invalid metric: missing name or value")
 
-        if not metric.name or not isinstance(metric.name, str):
+        metric_name = getattr(metric, "name", None)
+        if not metric_name or not isinstance(metric_name, str):
             return FlextResult[None].fail("Metric name must be a non-empty string")
 
         return FlextResult[None].ok(None)
@@ -266,7 +267,7 @@ class FlextMetricsService:
                     return FlextResult[FlextMetric].fail(f"Failed to record metric: {e}")
 
                 # Store raw metric data
-                metric_data = {
+                metric_data: dict[str, object] = {
                     "name": metric.name,
                     "value": metric.value,
                     "timestamp": timestamp,
@@ -341,7 +342,7 @@ class FlextMetricsService:
         """Get comprehensive metrics summary with statistics."""
         try:
             with self._metrics_lock:
-                summary = {
+                summary: dict[str, object] = {
                     "service_info": {
                         "uptime_seconds": FlextIdGenerator.generate_timestamp()
                         - self._start_time,
@@ -682,7 +683,7 @@ class FlextTracingService:
                 span_start_time = FlextIdGenerator.generate_timestamp()
 
                 # Create comprehensive span
-                span = {
+                span: dict[str, object] = {
                     "span_id": span_id,
                     "trace_id": trace_id,
                     "name": span_name,
@@ -788,7 +789,7 @@ class FlextTracingService:
             trace_info = trace_info_result.data
 
             # Create Jaeger-compatible format
-            jaeger_trace = {
+            jaeger_trace: dict[str, object] = {
                 "traceID": trace_id,
                 "spans": [
                     {
@@ -851,7 +852,7 @@ class FlextTracingService:
                 current_time = FlextIdGenerator.generate_timestamp()
                 uptime = current_time - self._service_start_time
 
-                summary = {
+                summary: dict[str, object] = {
                     "service_info": {
                         "uptime_seconds": uptime,
                         "traces_started": self._traces_started,
@@ -1060,12 +1061,14 @@ class FlextHealthService:
 
     def _extract_actual_health(
         self,
-        health: FlextHealthCheck | FlextResult[FlextHealthCheck],
+        health: FlextHealthCheck | FlextResult[FlextHealthCheck | None],
     ) -> FlextResult[FlextHealthCheck]:
         """Extract actual health check from various input types."""
         if isinstance(health, FlextResult):
             if health.is_failure:
                 return FlextResult[FlextHealthCheck].fail(health.error or "Health check creation failed")
+            if health.data is None:
+                return FlextResult[FlextHealthCheck].fail("Health check data is None")
             return FlextResult[FlextHealthCheck].ok(health.data)
         return FlextResult[FlextHealthCheck].ok(health)
 
@@ -1119,7 +1122,7 @@ class FlextHealthService:
 
     def check_health(
         self,
-        health: FlextHealthCheck | FlextResult[FlextHealthCheck],
+        health: FlextHealthCheck | FlextResult[FlextHealthCheck | None],
     ) -> FlextResult[FlextHealthCheck]:
         """Perform comprehensive health check with real monitoring and history."""
         try:
@@ -1213,7 +1216,7 @@ class FlextHealthService:
                     overall_status = "unhealthy"
 
                 # Create comprehensive health summary
-                health_summary = {
+                health_summary: dict[str, object] = {
                     "overall_status": overall_status,
                     "timestamp": current_time,
                     "uptime_seconds": uptime,
