@@ -80,8 +80,7 @@ def flext_health_status() -> dict[str, str]:
 def _deprecated_warning(old_name: str, new_name: str) -> None:
     """Issue deprecation warning for legacy interfaces."""
     warnings.warn(
-        f"{old_name} is deprecated. Use {new_name} instead. "
-        + "Will be removed in v1.0.0. See docs/patterns/ for migration guide.",
+        f"{old_name} is deprecated. Use {new_name} instead. Will be removed in v1.0.0. See docs/patterns/ for migration guide.",
         DeprecationWarning,
         stacklevel=3,
     )
@@ -149,6 +148,7 @@ __all__: list[str] = [
     "flext_create_trace",
     "flext_health_check",
     "flext_health_status",
+    "flext_metric",
     "flext_monitor_function",
     "flext_trace",
     "get_global_factory",

@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import cast
 from unittest.mock import Mock, PropertyMock, patch
 
 from flext_core import FlextContainer
@@ -24,6 +25,7 @@ from flext_observability import (
     flext_create_metric,
     flext_create_trace,
 )
+from flext_observability.models import FlextHealthCheck, FlextMetric, FlextTrace
 
 
 class TestFlextMetricsServiceComprehensive:
@@ -33,10 +35,10 @@ class TestFlextMetricsServiceComprehensive:
         """Test record_metric with None metric (line 81)."""
         service = FlextMetricsService()
 
-        result = service.record_metric(None)
+        result = service.record_metric(cast(FlextMetric, None))
 
         assert result.is_failure
-        assert "Invalid metric: missing name or value" in result.error
+        assert result.error and "Invalid metric: missing name or value" in result.error
 
     def test_record_metric_invalid_metric_no_name(self) -> None:
         """Test record_metric with metric without name (line 84)."""
@@ -50,7 +52,7 @@ class TestFlextMetricsServiceComprehensive:
         result = service.record_metric(mock_metric)
 
         assert result.is_failure
-        assert "Metric name must be a non-empty string" in result.error
+        assert result.error and "Metric name must be a non-empty string" in result.error
 
     def test_record_metric_memory_cleanup(self) -> None:
         """Test record_metric memory cleanup (line 114)."""
@@ -129,19 +131,19 @@ class TestFlextMetricsServiceComprehensive:
         result = service.get_metric_value("nonexistent_metric")
 
         assert result.is_failure
-        assert "Metric 'nonexistent_metric' not found" in result.error
+        assert result.error and "Metric 'nonexistent_metric' not found" in result.error
 
     def test_get_metric_value_exception(self) -> None:
         """Test get_metric_value exception handling (line 162)."""
         service = FlextMetricsService()
 
         # Force exception by corrupting internal state
-        service._metric_gauges["bad_metric"] = "not_a_number"
+        service._metric_gauges["bad_metric"] = cast(float, "not_a_number")
 
         result = service.get_metric_value("bad_metric")
 
         assert result.is_failure
-        assert "Failed to retrieve metric 'bad_metric'" in result.error
+        assert result.error and "Failed to retrieve metric 'bad_metric'" in result.error
 
     def test_get_metrics_summary_success(self) -> None:
         """Test get_metrics_summary success path (lines 166-188)."""
@@ -164,23 +166,26 @@ class TestFlextMetricsServiceComprehensive:
 
         assert result.success
         summary = result.data
+        assert isinstance(summary, dict)
         assert "service_info" in summary
         assert "counters" in summary
         assert "gauges" in summary
         assert "histograms" in summary
-        assert summary["service_info"]["metrics_recorded"] == 3
+        service_info = summary["service_info"]
+        assert isinstance(service_info, dict)
+        assert service_info["metrics_recorded"] == 3
 
     def test_get_metrics_summary_exception(self) -> None:
         """Test get_metrics_summary exception handling (line 191)."""
         service = FlextMetricsService()
 
         # Force exception by corrupting internal state
-        service._metric_histograms["bad"] = ["not", "numbers"]
+        service._metric_histograms["bad"] = cast("list[float]", ["not", "numbers"])
 
         result = service.get_metrics_summary()
 
         assert result.is_failure
-        assert "Failed to generate metrics summary" in result.error
+        assert result.error and "Failed to generate metrics summary" in result.error
 
     def test_export_prometheus_format_success(self) -> None:
         """Test export_prometheus_format success path (lines 195-224)."""
@@ -227,10 +232,10 @@ class TestFlextTracingServiceComprehensive:
         """Test start_trace with invalid trace (line 307)."""
         service = FlextTracingService()
 
-        result = service.start_trace(None)
+        result = service.start_trace(cast(FlextTrace, None))
 
         assert result.is_failure
-        assert "Invalid trace: missing trace_id or operation" in result.error
+        assert result.error and "Invalid trace: missing trace_id or operation" in result.error
 
     def test_start_trace_invalid_trace_id(self) -> None:
         """Test start_trace with invalid trace ID (line 310)."""
@@ -244,7 +249,7 @@ class TestFlextTracingServiceComprehensive:
         result = service.start_trace(mock_trace)
 
         assert result.is_failure
-        assert "Trace ID must be a non-empty string" in result.error
+        assert result.error and "Trace ID must be a non-empty string" in result.error
 
     def test_finish_trace_success(self) -> None:
         """Test finish_trace success path."""
@@ -422,7 +427,7 @@ class TestFlextHealthServiceComprehensive:
         """Test check_health with invalid health check."""
         service = FlextHealthService()
 
-        result = service.check_health(None)
+        result = service.check_health(cast(FlextHealthCheck, None))
 
         assert result.is_failure
 

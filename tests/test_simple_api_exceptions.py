@@ -51,7 +51,7 @@ class TestSimpleApiExceptions:
             mock_uuid.side_effect = AttributeError("UUID generation error")
             result = flext_create_metric("test_metric", 42.0)
             assert result.is_failure
-            assert "Failed to create metric" in result.error
+            assert result.error and "Failed to create metric" in result.error
 
     def test_create_log_entry_flext_generators_error(self) -> None:
         """Test flext_create_log_entry with FlextGenerators error."""
@@ -61,7 +61,7 @@ class TestSimpleApiExceptions:
             mock_uuid.side_effect = TypeError("UUID type error")
             result = flext_create_log_entry("test message", "test_service")
             assert result.is_failure
-            assert "Failed to create log entry" in result.error
+            assert result.error and "Failed to create log entry" in result.error
 
     def test_create_log_entry_timestamp_generation_error(self) -> None:
         """Test flext_create_log_entry with timestamp generation error."""
@@ -71,7 +71,7 @@ class TestSimpleApiExceptions:
             mock_time.side_effect = ValueError("Time generation error")
             result = flext_create_log_entry("test message", "test_service")
             assert result.is_failure
-            assert "Failed to create log entry" in result.error
+            assert result.error and "Failed to create log entry" in result.error
 
     def test_create_trace_flext_generators_error(self) -> None:
         """Test flext_create_trace with FlextGenerators error."""
@@ -81,7 +81,7 @@ class TestSimpleApiExceptions:
             mock_uuid.side_effect = AttributeError("UUID error")
             result = flext_create_trace("test_operation", "test_service")
             assert result.is_failure
-            assert "Failed to create trace" in result.error
+            assert result.error and "Failed to create trace" in result.error
 
     def test_create_trace_config_processing_error(self) -> None:
         """Test flext_create_trace with flext_trace function error."""
@@ -93,7 +93,7 @@ class TestSimpleApiExceptions:
                 "test_service",
             )
             assert result.is_failure
-            assert "Failed to create trace" in result.error
+            assert result.error and "Failed to create trace" in result.error
 
     def test_create_alert_flext_generators_error(self) -> None:
         """Test flext_create_alert with FlextGenerators error."""
@@ -103,7 +103,7 @@ class TestSimpleApiExceptions:
             mock_uuid.side_effect = TypeError("UUID type error")
             result = flext_create_alert("Test message", "test_service")
             assert result.is_failure
-            assert "Failed to create alert" in result.error
+            assert result.error and "Failed to create alert" in result.error
 
     def test_create_alert_timestamp_generation_error(self) -> None:
         """Test flext_create_alert with timestamp generation error."""
@@ -113,7 +113,7 @@ class TestSimpleApiExceptions:
             mock_time.side_effect = AttributeError("Time attribute error")
             result = flext_create_alert("Test message", "test_service")
             assert result.is_failure
-            assert "Failed to create alert" in result.error
+            assert result.error and "Failed to create alert" in result.error
 
     def test_create_health_check_flext_generators_error(self) -> None:
         """Test flext_create_health_check with FlextGenerators error."""
@@ -123,7 +123,7 @@ class TestSimpleApiExceptions:
             mock_uuid.side_effect = ValueError("UUID value error")
             result = flext_create_health_check("test_service")
             assert result.is_failure
-            assert "Failed to create health check" in result.error
+            assert result.error and "Failed to create health check" in result.error
 
     def test_create_health_check_timestamp_generation_error(self) -> None:
         """Test flext_create_health_check with timestamp generation error."""
@@ -133,7 +133,7 @@ class TestSimpleApiExceptions:
             mock_time.side_effect = TypeError("Time type error")
             result = flext_create_health_check("test_service")
             assert result.is_failure
-            assert "Failed to create health check" in result.error
+            assert result.error and "Failed to create health check" in result.error
 
     def test_create_health_check_with_custom_id_error(self) -> None:
         """Test flext_create_health_check with custom health_id causing error."""
@@ -142,7 +142,7 @@ class TestSimpleApiExceptions:
             mock_health.side_effect = AttributeError("Health check construction error")
             result = flext_create_health_check("test_service")  # health_id parameter no longer exists
             assert result.is_failure
-            assert "Failed to create health check" in result.error
+            assert result.error and "Failed to create health check" in result.error
 
     def test_all_functions_with_attribute_errors(self) -> None:
         """Test all creation functions with AttributeError scenarios."""

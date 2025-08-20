@@ -63,6 +63,7 @@ from typing import cast
 from flext_core import FlextContainer, FlextIdGenerator, FlextResult, get_logger
 from flext_core.typings import FlextTypes
 
+# Type checking imports if needed in future
 from flext_observability.entities import (
     flext_alert,
     flext_health_check,
@@ -236,7 +237,7 @@ class FlextObservabilityMasterFactory:
     def _setup_services(self) -> None:
         """Set up all services automatically."""
         try:
-            services = [
+            services: list[tuple[str, type[FlextMetricsService | FlextLoggingService | FlextTracingService | FlextAlertService | FlextHealthService]]] = [
                 ("metrics_service", FlextMetricsService),
                 ("logging_service", FlextLoggingService),
                 ("tracing_service", FlextTracingService),
@@ -399,7 +400,16 @@ class FlextObservabilityMasterFactory:
             # Extract known parameters from kwargs
             span_id = kwargs.get("span_id", "")
             timestamp = kwargs.get("timestamp")
-            span_attributes = kwargs.get("span_attributes", {})
+            span_attributes_raw = kwargs.get("span_attributes", {})
+            # Ensure proper typing for span_attributes
+            if isinstance(span_attributes_raw, dict):
+                # Cast to avoid Unknown types in comprehension
+                raw_dict = cast("dict[str, object]", span_attributes_raw)
+                span_attributes: dict[str, object] = {
+                    str(k): v for k, v in raw_dict.items()
+                }
+            else:
+                span_attributes = {}
 
             trace = FlextTrace(
                 operation_name=operation,
@@ -412,9 +422,7 @@ class FlextObservabilityMasterFactory:
                     if isinstance(timestamp, datetime)
                     else _generate_utc_datetime()
                 ),
-                tags=(
-                    span_attributes if isinstance(span_attributes, dict) else {}
-                ),
+                tags=span_attributes,
             )
 
             service_result = self.container.get("tracing_service")

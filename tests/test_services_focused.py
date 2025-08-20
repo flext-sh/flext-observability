@@ -76,5 +76,8 @@ class TestServicesFocused:
 
         assert result.success
         summary = result.data
+        assert isinstance(summary, dict)
         assert "service_info" in summary
-        assert summary["service_info"]["metrics_recorded"] == 3
+        service_info = summary["service_info"]
+        assert isinstance(service_info, dict)
+        assert service_info["metrics_recorded"] == 3

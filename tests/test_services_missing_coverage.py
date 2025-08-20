@@ -3,6 +3,7 @@
 from unittest.mock import patch
 
 from flext_core import FlextResult
+from flext_core.root_models import FlextEntityId
 
 from flext_observability import (
     FlextAlert,
@@ -29,14 +30,14 @@ class TestServicesMissingCoverage:
             mock_lock.__enter__.side_effect = ValueError("Lock error")
             result = service.export_prometheus_format()
             assert result.is_failure
-            assert "Failed to export Prometheus format" in result.error
+            assert result.error and "Failed to export Prometheus format" in result.error
 
         # Test reset_metrics exception path
         with patch.object(service, "_metrics_lock") as mock_lock:
             mock_lock.__enter__.side_effect = AttributeError("Lock error")
             result = service.reset_metrics()
             assert result.is_failure
-            assert "Failed to reset metrics" in result.error
+            assert result.error and "Failed to reset metrics" in result.error
 
     def test_tracing_service_hierarchy_with_parent(self) -> None:
         """Test tracing service with parent trace hierarchy."""
@@ -44,9 +45,10 @@ class TestServicesMissingCoverage:
 
         # Start parent trace first
         parent_trace = FlextTrace(
-            id="parent_id",
+            id=FlextEntityId("parent_id"),
             trace_id="parent_trace_123",
-            operation="parent_operation",
+            operation_name="parent_operation",
+            service_name="parent_service",
             span_id="parent_span",
         )
         parent_result = service.start_trace(parent_trace)
@@ -54,13 +56,14 @@ class TestServicesMissingCoverage:
 
         # Create child trace with span_attributes containing parent info
         child_trace = FlextTrace(
-            id="child_id",
+            id=FlextEntityId("child_id"),
             trace_id="child_trace_456",
-            operation="child_operation",
+            operation_name="child_operation",
+            service_name="child_service",
             span_id="child_span",
-            span_attributes={
+            tags={
                 "parent_trace_id": "parent_trace_123",
-            },  # Use span_attributes instead
+            },  # Use tags instead of span_attributes
         )
 
         child_result = service.start_trace(child_trace)
@@ -79,7 +82,7 @@ class TestServicesMissingCoverage:
             mock_lock.__enter__.side_effect = KeyError("Lock error")
             result = service.add_span_to_trace("nonexistent", "test_span")
             assert result.is_failure
-            assert "Failed to add span to trace" in result.error
+            assert result.error and "Failed to add span to trace" in result.error
 
     def test_tracing_service_finish_trace_exception_path(self) -> None:
         """Test finish_trace exception handling."""
@@ -89,7 +92,7 @@ class TestServicesMissingCoverage:
             mock_lock.__enter__.side_effect = ArithmeticError("Calculation error")
             result = service.finish_trace("test_trace")
             assert result.is_failure
-            assert "Failed to finish trace" in result.error
+            assert result.error and "Failed to finish trace" in result.error
 
     def test_tracing_service_get_trace_info_exception_path(self) -> None:
         """Test get_trace_info exception handling."""
@@ -99,7 +102,7 @@ class TestServicesMissingCoverage:
             mock_lock.__enter__.side_effect = TypeError("Type error")
             result = service.get_trace_info("test_trace")
             assert result.is_failure
-            assert "Failed to get trace info" in result.error
+            assert result.error and "Failed to get trace info" in result.error
 
     def test_tracing_service_export_jaeger_exception_path(self) -> None:
         """Test export_jaeger_format exception handling."""
@@ -109,7 +112,7 @@ class TestServicesMissingCoverage:
             mock_get_trace.side_effect = ValueError("Trace error")
             result = service.export_jaeger_format("test_trace")
             assert result.is_failure
-            assert "Failed to export Jaeger format" in result.error
+            assert result.error and "Failed to export Jaeger format" in result.error
 
     def test_tracing_service_summary_exception_path(self) -> None:
         """Test get_tracing_summary exception handling."""
@@ -119,7 +122,7 @@ class TestServicesMissingCoverage:
             mock_lock.__enter__.side_effect = ArithmeticError("Math error")
             result = service.get_tracing_summary()
             assert result.is_failure
-            assert "Failed to generate tracing summary" in result.error
+            assert result.error and "Failed to generate tracing summary" in result.error
 
     def test_health_service_extract_health_failure_path(self) -> None:
         """Test _extract_actual_health with failure result."""
@@ -128,11 +131,11 @@ class TestServicesMissingCoverage:
         # Test with FlextResult failure
         # FlextResult imported at top level
 
-        failure_result = FlextResult[None].fail("Health check creation failed")
+        failure_result = FlextResult[FlextHealthCheck | None].fail("Health check creation failed")
 
         result = service._extract_actual_health(failure_result)
         assert result.is_failure
-        assert "Health check creation failed" in result.error
+        assert result.error and "Health check creation failed" in result.error
 
     def test_health_service_extract_health_none_data(self) -> None:
         """Test _extract_actual_health with None data."""
@@ -140,11 +143,11 @@ class TestServicesMissingCoverage:
 
         # FlextResult imported at top level
 
-        none_result = FlextResult[None].ok(None)
+        none_result = FlextResult[FlextHealthCheck | None].ok(None)
 
         result = service._extract_actual_health(none_result)
         assert result.is_failure
-        assert "Health check data is None" in result.error
+        assert result.error and "Health check data is None" in result.error
 
     def test_health_service_persistent_unhealthy_warning(self) -> None:
         """Test persistent unhealthy component warning."""
@@ -177,7 +180,7 @@ class TestServicesMissingCoverage:
             )
             result = service.check_health(health_check)
             assert result.is_failure
-            assert "Failed to check health" in result.error
+            assert result.error and "Failed to check health" in result.error
 
     def test_health_service_check_health_with_flext_result_success(self) -> None:
         """Test check_health with successful FlextResult input."""
@@ -190,7 +193,7 @@ class TestServicesMissingCoverage:
 
         # FlextResult imported at top level
 
-        health_result = FlextResult[None].ok(health_check)
+        health_result = FlextResult[FlextHealthCheck | None].ok(health_check)
 
         result = service.check_health(health_result)
         assert result.success
@@ -202,11 +205,11 @@ class TestServicesMissingCoverage:
 
         # FlextResult imported at top level
 
-        health_result = FlextResult[None].fail("Health check failed")
+        health_result = FlextResult[FlextHealthCheck | None].fail("Health check failed")
 
         result = service.check_health(health_result)
         assert result.is_failure
-        assert "Health check failed" in result.error
+        assert result.error and "Health check failed" in result.error
 
     def test_health_service_check_health_error_handling_attribute_error(self) -> None:
         """Test check_health error handling with safe attribute access."""
@@ -224,7 +227,7 @@ class TestServicesMissingCoverage:
 
             result = service.check_health(health_check)
             assert result.is_failure
-            assert "Failed to check health" in result.error
+            assert result.error and "Failed to check health" in result.error
 
     def test_health_service_overall_health_exception_path(self) -> None:
         """Test get_overall_health exception handling."""
@@ -234,7 +237,7 @@ class TestServicesMissingCoverage:
             mock_lock.__enter__.side_effect = ArithmeticError("Math error")
             result = service.get_overall_health()
             assert result.is_failure
-            assert "Failed to get overall health" in result.error
+            assert result.error and "Failed to get overall health" in result.error
 
     def test_health_service_component_history_exception_path(self) -> None:
         """Test get_component_health_history exception handling."""
@@ -244,7 +247,7 @@ class TestServicesMissingCoverage:
             mock_lock.__enter__.side_effect = KeyError("Key error")
             result = service.get_component_health_history("test_component")
             assert result.is_failure
-            assert "Failed to get health history" in result.error
+            assert result.error and "Failed to get health history" in result.error
 
     def test_health_service_system_health_check_disk_failure(self) -> None:
         """Test perform_system_health_check with disk check failure."""
@@ -257,8 +260,11 @@ class TestServicesMissingCoverage:
 
             # Should handle disk error gracefully
             system_checks = result.data
-            assert system_checks["disk"]["status"] == "unknown"
-            assert "disk check failed" in system_checks["disk"]["error"]
+            assert isinstance(system_checks, dict)
+            disk_check = system_checks["disk"]
+            assert isinstance(disk_check, dict)
+            assert disk_check["status"] == "unknown"
+            assert "disk check failed" in disk_check["error"]
 
     def test_health_service_system_health_check_exception_path(self) -> None:
         """Test perform_system_health_check exception handling."""
@@ -268,7 +274,7 @@ class TestServicesMissingCoverage:
             mock_memory.side_effect = AttributeError("Memory error")
             result = service.perform_system_health_check()
             assert result.is_failure
-            assert "System health check failed" in result.error
+            assert result.error and "System health check failed" in result.error
 
     def test_alert_service_create_alert_exception_path(self) -> None:
         """Test create_alert exception handling."""
@@ -284,20 +290,21 @@ class TestServicesMissingCoverage:
             mock_logger.warning.side_effect = ArithmeticError("Log error")
             result = service.create_alert(alert)
             assert result.is_failure
-            assert "Failed to create alert" in result.error
+            assert result.error and "Failed to create alert" in result.error
 
     def test_logging_service_exception_path(self) -> None:
         """Test log_entry exception handling."""
         service = FlextLoggingService()
 
         log_entry = FlextLogEntry(
-            id="test_id",
+            id=FlextEntityId("test_id"),
             message="Test message",
             level="info",
+            service="test_service",
         )
 
         with patch.object(service, "logger") as mock_logger:
             mock_logger.info.side_effect = AttributeError("Logger error")
             result = service.log_entry(log_entry)
             assert result.is_failure
-            assert "Failed to log entry" in result.error
+            assert result.error and "Failed to log entry" in result.error

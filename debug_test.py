@@ -23,7 +23,7 @@ def test_debug() -> None:
 
     # Create mock repository
     mock_repository = Mock()
-    mock_repository.save.return_value = FlextResult[None].ok(sample_metric)
+    mock_repository.save.return_value = FlextResult[None].ok(None)
 
     # Register repository
     container.register("metrics_repository", mock_repository)

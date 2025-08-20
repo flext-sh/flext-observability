@@ -3,9 +3,11 @@
 import sys
 import typing
 from datetime import UTC, datetime
+from typing import Never
 from unittest.mock import patch
 
 import pytest
+from flext_core.root_models import FlextEntityId
 
 from flext_observability import (
     FlextMetric,
@@ -48,27 +50,28 @@ class TestTrue100Coverage:
         """Cover entities.py lines 43-44 - float validation exception in validate()."""
         # Create a metric with a mock name that will fail during strip()
         class FailingName:
-            def strip(self):
-                raise ValueError("Name strip failed")
-            def __str__(self):
+            def strip(self) -> Never:
+                error_msg = "Name strip failed"
+                raise ValueError(error_msg)
+            def __str__(self) -> str:
                 return "failing_name"
-        
+
         # Create metric with problematic name
         metric = FlextMetric(
-            id="test",
+            id=FlextEntityId("test"),
             name="test_metric",
             value=42.0,
             unit="count",
             tags={},
             timestamp=datetime.now(UTC),
         )
-        
+
         # Replace name with failing object
-        object.__setattr__(metric, 'name', FailingName())
-        
+        object.__setattr__(metric, "name", FailingName())
+
         result = metric.validate_business_rules()
         assert result.is_failure
-        assert "Validation error:" in result.error
+        assert result.error and "Validation error:" in result.error
 
     def test_flext_metrics_service_import(self) -> None:
         """Test basic import of metrics service."""
@@ -99,7 +102,7 @@ class TestTrue100Coverage:
         # 3. Entities validation exception (lines 43-44)
 
         metric = FlextMetric(
-            id="final",
+            id=FlextEntityId("final"),
             name="final_metric",
             value=1.0,
             unit="test",
@@ -109,12 +112,13 @@ class TestTrue100Coverage:
 
         # Force validation exception using failing name object
         class FailingName:
-            def strip(self):
-                raise ValueError("Validation forced failure")
-            def __str__(self):
+            def strip(self) -> Never:
+                error_msg = "Validation forced failure"
+                raise ValueError(error_msg)
+            def __str__(self) -> str:
                 return "failing_comprehensive"
-        
-        object.__setattr__(metric, 'name', FailingName())
+
+        object.__setattr__(metric, "name", FailingName())
         result = metric.validate_business_rules()
         assert result.is_failure
 
@@ -122,11 +126,17 @@ class TestTrue100Coverage:
         if "flext_observability.flext_metrics" in sys.modules:
             del sys.modules["flext_observability.flext_metrics"]
 
-        def force_psutil_error(name: str, *args: object, **kwargs: object) -> object:
+        def force_psutil_error(
+            name: str,
+            globals_dict: dict[str, object] | None = None,
+            locals_dict: dict[str, object] | None = None,
+            fromlist: list[str] = (),
+            level: int = 0
+        ) -> object:
             if name == "psutil":
                 msg = "Forced psutil error for coverage"
                 raise ImportError(msg)
-            return __import__(name, *args, **kwargs)
+            return __import__(name, globals_dict, locals_dict, fromlist, level)
 
         with patch("builtins.__import__", side_effect=force_psutil_error):
             pass

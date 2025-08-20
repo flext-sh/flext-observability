@@ -225,7 +225,7 @@ class TestE2EComprehensiveObservability:
 
     def test_e2e_factory_resilience_with_service_failures(self) -> None:
         """E2E test: Factory continues working even when services fail."""
-        with patch("flext_observability.factory.FlextMetricsService") as mock_metrics:
+        with patch("flext_observability.factories.FlextMetricsService") as mock_metrics:
             # Simulate service failure
             mock_metrics.side_effect = RuntimeError("Metrics service down")
 

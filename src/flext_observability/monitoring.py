@@ -59,7 +59,9 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import cast
+
+# Function type aliases - flexible approach for Python 3.13+
+from typing import TypeVar
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
@@ -73,19 +75,8 @@ from flext_observability.services import (
     FlextTracingService,
 )
 
-# Function type aliases - avoiding Callable[..., T] to prevent explicit-any errors
-MonitorableReturnType = str | int | float | bool | None
-
-# Specific function signatures to avoid varargs which trigger explicit-any
-SimpleFunction = Callable[[object], MonitorableReturnType]
-BinaryFunction = Callable[[object, object], MonitorableReturnType]
-TernaryFunction = Callable[[object, object, object], MonitorableReturnType]
-NullaryFunction = Callable[[], MonitorableReturnType]
-
-# Union of supported function types
-MonitorableFunctionType = (
-    SimpleFunction | BinaryFunction | TernaryFunction | NullaryFunction
-)
+# TypeVar for any callable bound to Callable
+F = TypeVar("F", bound=Callable[..., object])
 
 # ============================================================================
 # OBSERVABILITY MONITORING ORCHESTRATION - Real Implementation with SOLID
@@ -216,7 +207,7 @@ class FlextObservabilityMonitor:
             self._health_service = FlextHealthService(self.container)
 
             # Register services in container (Dependency Inversion)
-            services = [
+            services: list[tuple[str, object]] = [
                 ("flext_metrics_service", self._metrics_service),
                 ("flext_logging_service", self._logging_service),
                 ("flext_tracing_service", self._tracing_service),
@@ -278,7 +269,7 @@ class FlextObservabilityMonitor:
             health_data = health_result.data or {}
 
             # Add monitor-specific health information
-            monitor_health = {
+            monitor_health: dict[str, object] = {
                 "monitor_uptime_seconds": time.time() - self._monitor_start_time,
                 "functions_monitored": self._functions_monitored,
                 "services_initialized": self._initialized,
@@ -325,19 +316,27 @@ class FlextObservabilityMonitor:
 
         return self._metrics_service.get_metrics_summary()
 
+    def increment_functions_monitored(self) -> None:
+        """Public method to increment functions monitored counter."""
+        self._functions_monitored += 1
+
+    def get_alert_service(self) -> "FlextAlertService | None":
+        """Public method to get alert service."""
+        return self._alert_service
+
 
 def flext_monitor_function(
     monitor: FlextObservabilityMonitor | None = None,
     metric_name: str | None = None,
-) -> Callable[[MonitorableFunctionType], MonitorableFunctionType]:
+) -> Callable[[F], F]:
     """Create function monitoring decorator with real metrics collection.
 
     SOLID compliant with reduced complexity version that provides real functionality
     while maintaining code quality standards and SOLID principles.
     """
 
-    def decorator(func: MonitorableFunctionType) -> MonitorableFunctionType:
-        def wrapper(*args: object, **kwargs: object) -> MonitorableReturnType:
+    def decorator(func: F) -> F:
+        def wrapper(*args: object, **kwargs: object) -> object:
             # Get or create monitor instance
             active_monitor = monitor
             if not active_monitor:
@@ -362,18 +361,19 @@ def flext_monitor_function(
         wrapper.__doc__ = getattr(func, "__doc__", wrapper.__doc__)
         wrapper.__module__ = getattr(func, "__module__", __name__)
 
-        return cast("MonitorableFunctionType", wrapper)
+        # Return wrapper with preserved metadata
+        return wrapper  # type: ignore[return-value]
 
     return decorator
 
 
 def _execute_monitored_function(
-    func: MonitorableFunctionType,
+    func: Callable[..., object],
     args: tuple[object, ...],
     kwargs: dict[str, object],
     monitor: FlextObservabilityMonitor,
     metric_name: str | None,
-) -> MonitorableReturnType:
+) -> object:
     """Execute function with monitoring (extracted for complexity reduction)."""
     function_name = getattr(func, "__name__", "unknown_function")
     actual_metric_name = metric_name or f"function_execution_{function_name}"
@@ -397,7 +397,7 @@ def _execute_monitored_function(
         )
 
         # Update monitor statistics
-        monitor._functions_monitored += 1
+        monitor.increment_functions_monitored()
 
         return result
 
@@ -416,7 +416,8 @@ def _execute_monitored_function(
         )
 
         # Create alert if alert service is available
-        if monitor._alert_service:
+        alert_service = monitor.get_alert_service()
+        if alert_service:
             try:
                 # Use module import so tests can patch flext_alert
                 alert = _models_module.flext_alert(
@@ -424,7 +425,7 @@ def _execute_monitored_function(
                     service="function_monitor",
                     level="error",
                 )
-                monitor._alert_service.create_alert(alert)
+                alert_service.create_alert(alert)
             except (ValueError, TypeError, AttributeError) as e:
                 logger = get_logger(__name__)
                 logger.warning(f"Alert creation failed during exception handling: {e}")
