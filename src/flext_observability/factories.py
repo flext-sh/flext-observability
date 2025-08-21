@@ -237,7 +237,18 @@ class FlextObservabilityMasterFactory:
     def _setup_services(self) -> None:
         """Set up all services automatically."""
         try:
-            services: list[tuple[str, type[FlextMetricsService | FlextLoggingService | FlextTracingService | FlextAlertService | FlextHealthService]]] = [
+            services: list[
+                tuple[
+                    str,
+                    type[
+                        FlextMetricsService
+                        | FlextLoggingService
+                        | FlextTracingService
+                        | FlextAlertService
+                        | FlextHealthService
+                    ],
+                ]
+            ] = [
                 ("metrics_service", FlextMetricsService),
                 ("logging_service", FlextLoggingService),
                 ("tracing_service", FlextTracingService),
@@ -490,10 +501,14 @@ class FlextObservabilityMasterFactory:
             )
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult[FlextTypes.Data.Dict].fail(f"Health status check failed: {e}")
+            return FlextResult[FlextTypes.Data.Dict].fail(
+                f"Health status check failed: {e}"
+            )
 
     # Create methods for test compatibility
-    def create_metric(self, name: str, value: float, unit: str = "", **kwargs: object) -> FlextResult[FlextMetric]:
+    def create_metric(
+        self, name: str, value: float, unit: str = "", **kwargs: object
+    ) -> FlextResult[FlextMetric]:
         """Create metric (compatibility method for tests)."""
         kwargs["unit"] = unit
         result = self.metric(name, value, **kwargs)
@@ -501,16 +516,24 @@ class FlextObservabilityMasterFactory:
             return FlextResult[FlextMetric].ok(result.data)
         return FlextResult[FlextMetric].fail(result.error or "Failed to create metric")
 
-    def create_trace(self, operation_name: str, service_name: str, **kwargs: object) -> FlextResult[FlextTrace]:
+    def create_trace(
+        self, operation_name: str, service_name: str, **kwargs: object
+    ) -> FlextResult[FlextTrace]:
         """Create trace (compatibility method for tests)."""
         # Use operation_name as the operation parameter
         kwargs["service_name"] = service_name
-        result = self.trace(trace_id=FlextIdGenerator.generate_uuid(), operation=operation_name, **kwargs)
+        result = self.trace(
+            trace_id=FlextIdGenerator.generate_uuid(),
+            operation=operation_name,
+            **kwargs,
+        )
         if result.success and isinstance(result.data, FlextTrace):
             return FlextResult[FlextTrace].ok(result.data)
         return FlextResult[FlextTrace].fail(result.error or "Failed to create trace")
 
-    def create_alert(self, message: str, service: str, level: str = "info", **kwargs: object) -> FlextResult[FlextAlert]:
+    def create_alert(
+        self, message: str, service: str, level: str = "info", **kwargs: object
+    ) -> FlextResult[FlextAlert]:
         """Create alert (compatibility method for tests)."""
         # Map parameters to match the alert() method signature
         result = self.alert(message=message, service=service, level=level, **kwargs)
@@ -518,20 +541,28 @@ class FlextObservabilityMasterFactory:
             return FlextResult[FlextAlert].ok(result.data)
         return FlextResult[FlextAlert].fail(result.error or "Failed to create alert")
 
-    def create_health_check(self, service_name: str, status: str = "healthy", **kwargs: object) -> FlextResult[FlextHealthCheck]:
+    def create_health_check(
+        self, service_name: str, status: str = "healthy", **kwargs: object
+    ) -> FlextResult[FlextHealthCheck]:
         """Create health check (compatibility method for tests)."""
         result = self.health_check(service_name=service_name, status=status, **kwargs)
         if result.success and isinstance(result.data, FlextHealthCheck):
             return FlextResult[FlextHealthCheck].ok(result.data)
-        return FlextResult[FlextHealthCheck].fail(result.error or "Failed to create health check")
+        return FlextResult[FlextHealthCheck].fail(
+            result.error or "Failed to create health check"
+        )
 
-    def create_log_entry(self, message: str, service: str, level: str = "INFO", **kwargs: object) -> FlextResult[FlextLogEntry]:
+    def create_log_entry(
+        self, message: str, service: str, level: str = "INFO", **kwargs: object
+    ) -> FlextResult[FlextLogEntry]:
         """Create log entry (compatibility method for tests)."""
         kwargs["service"] = service
         result = self.log(message, level, **kwargs)
         if result.success and isinstance(result.data, FlextLogEntry):
             return FlextResult[FlextLogEntry].ok(result.data)
-        return FlextResult[FlextLogEntry].fail(result.error or "Failed to create log entry")
+        return FlextResult[FlextLogEntry].fail(
+            result.error or "Failed to create log entry"
+        )
 
 
 # ============================================================================

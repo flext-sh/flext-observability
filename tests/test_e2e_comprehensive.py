@@ -47,7 +47,7 @@ class TestE2EComprehensiveObservability:
 
     def test_e2e_logging_with_context(self) -> None:
         """E2E test: Create logs with rich context, validate structure."""
-        contexts = [
+        contexts: list[dict[str, object]] = [
             {"user_id": "12345", "session": "abc-def", "ip": "192.168.1.1"},
             {"trace_id": "trace-123", "span_id": "span-456", "operation": "db_query"},
             {"error_code": 500, "stack_trace": "Error in line 42", "component": "auth"},
@@ -119,7 +119,7 @@ class TestE2EComprehensiveObservability:
         assert parent_result.success
 
         # Child spans
-        child_operations = [
+        child_operations: list[tuple[str, int, dict[str, object]]] = [
             ("auth_validation", 25, {"user_id": "12345", "auth_method": "jwt"}),
             ("database_query", 180, {"query": "SELECT * FROM users", "rows": 1}),
             ("response_formatting", 45, {"format": "json", "size_bytes": 1024}),
@@ -139,7 +139,7 @@ class TestE2EComprehensiveObservability:
 
     def test_e2e_health_monitoring_comprehensive(self) -> None:
         """E2E test: Health monitoring across multiple components."""
-        components = [
+        components: list[tuple[str, str, str, dict[str, object]]] = [
             (
                 "database",
                 "healthy",

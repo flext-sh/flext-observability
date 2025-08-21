@@ -6,25 +6,27 @@ Modern test configuration for observability with metrics, tracing, and logging.
 from __future__ import annotations
 
 import asyncio
+import logging
 from collections.abc import AsyncIterator
+from unittest.mock import Mock
 
 # Direct imports - following flext-core standardization pattern
 import pytest
+import pytest_asyncio
 from _pytest.config import Config
 from _pytest.nodes import Item
-import pytest_asyncio
-import logging
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+from prometheus_client import CollectorRegistry, Counter, Histogram
+from pytest_mock import MockerFixture
+
 
 def get_logger(name: str) -> logging.Logger:
     """Simple logger for tests."""
     return logging.getLogger(name)
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from pytest_mock import MockerFixture
-from unittest.mock import Mock
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
-from prometheus_client import CollectorRegistry, Counter, Histogram
+
 
 # ============================================================================
 # Pytest Configuration

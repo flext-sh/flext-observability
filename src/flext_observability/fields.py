@@ -34,8 +34,16 @@ class MetricUnitField:
     """Field for metric units with validation."""
 
     valid_units: ClassVar[set[str]] = {
-        "count", "percent", "bytes", "seconds", "milliseconds",
-        "requests", "errors", "connections", "memory", "cpu"
+        "count",
+        "percent",
+        "bytes",
+        "seconds",
+        "milliseconds",
+        "requests",
+        "errors",
+        "connections",
+        "memory",
+        "cpu",
     }
 
     @field_validator("unit")
@@ -107,8 +115,12 @@ class HealthStatusField:
 # Convenience field definitions
 metric_name_field = Field(min_length=1, max_length=255, description="Metric name")
 metric_value_field = Field(ge=0.0, description="Metric value (non-negative)")
-metric_unit_field = Field(default=ObservabilityConstants.DEFAULT_METRIC_UNIT, description="Metric unit")
-trace_name_field = Field(min_length=1, max_length=255, description="Trace operation name")
+metric_unit_field = Field(
+    default=ObservabilityConstants.DEFAULT_METRIC_UNIT, description="Metric unit"
+)
+trace_name_field = Field(
+    min_length=1, max_length=255, description="Trace operation name"
+)
 alert_message_field = Field(min_length=1, max_length=1000, description="Alert message")
 timestamp_field = Field(default_factory=datetime.utcnow, description="Timestamp")
 

@@ -17,7 +17,9 @@ class TestEntityValidationErrors:
 
     def test_metric_invalid_name_validation(self) -> None:
         """Test FlextMetric with invalid name (empty string)."""
-        with pytest.raises(ValidationError, match="String should have at least 1 character"):
+        with pytest.raises(
+            ValidationError, match="String should have at least 1 character"
+        ):
             FlextMetric(
                 name="",  # Empty name should fail Pydantic validation
                 value=42.0,
@@ -35,11 +37,14 @@ class TestEntityValidationErrors:
         object.__setattr__(metric, "value", -10.0)
         result = metric.validate_business_rules()
         assert result.is_failure
-        assert result.error and "Metric value cannot be negative" in result.error
+        assert result.error is not None
+        assert "Metric value cannot be negative" in result.error
 
     def test_log_entry_invalid_message_validation(self) -> None:
         """Test FlextLogEntry with invalid message (empty string)."""
-        with pytest.raises(ValidationError, match="String should have at least 1 character"):
+        with pytest.raises(
+            ValidationError, match="String should have at least 1 character"
+        ):
             FlextLogEntry(
                 message="",  # Empty message should fail Pydantic validation
                 service="test_service",
@@ -55,11 +60,14 @@ class TestEntityValidationErrors:
         )
         result = log_entry.validate_business_rules()
         assert result.is_failure
-        assert result.error and "Invalid log level" in result.error
+        assert result.error is not None
+        assert "Invalid log level" in result.error
 
     def test_trace_invalid_trace_id_validation(self) -> None:
         """Test FlextTrace service_name validation (empty string)."""
-        with pytest.raises(ValidationError, match="String should have at least 1 character"):
+        with pytest.raises(
+            ValidationError, match="String should have at least 1 character"
+        ):
             FlextTrace(
                 operation_name="test_operation",
                 service_name="",  # Empty service_name should fail Pydantic validation
@@ -69,7 +77,9 @@ class TestEntityValidationErrors:
 
     def test_trace_invalid_operation_validation(self) -> None:
         """Test FlextTrace with invalid operation (empty string)."""
-        with pytest.raises(ValidationError, match="String should have at least 1 character"):
+        with pytest.raises(
+            ValidationError, match="String should have at least 1 character"
+        ):
             FlextTrace(
                 operation_name="",  # Empty operation should fail Pydantic validation
                 service_name="test_service",
@@ -79,7 +89,9 @@ class TestEntityValidationErrors:
 
     def test_alert_invalid_title_validation(self) -> None:
         """Test FlextAlert with invalid message (empty string)."""
-        with pytest.raises(ValidationError, match="String should have at least 1 character"):
+        with pytest.raises(
+            ValidationError, match="String should have at least 1 character"
+        ):
             FlextAlert(
                 message="",  # Empty message should fail Pydantic validation
                 service="test_service",
@@ -97,7 +109,8 @@ class TestEntityValidationErrors:
         object.__setattr__(alert, "message", "")
         result = alert.validate_business_rules()
         assert result.is_failure
-        assert result.error and "Alert message cannot be empty" in result.error
+        assert result.error is not None
+        assert "Alert message cannot be empty" in result.error
 
     def test_alert_invalid_severity_validation(self) -> None:
         """Test FlextAlert with invalid level."""
@@ -108,11 +121,14 @@ class TestEntityValidationErrors:
         )
         result = alert.validate_business_rules()
         assert result.is_failure
-        assert result.error and "Invalid alert level" in result.error
+        assert result.error is not None
+        assert "Invalid alert level" in result.error
 
     def test_health_check_invalid_component_validation(self) -> None:
         """Test FlextHealthCheck with invalid service_name (empty string)."""
-        with pytest.raises(ValidationError, match="String should have at least 1 character"):
+        with pytest.raises(
+            ValidationError, match="String should have at least 1 character"
+        ):
             FlextHealthCheck(
                 service_name="",  # Empty service_name should fail Pydantic validation
                 status="healthy",
@@ -126,4 +142,5 @@ class TestEntityValidationErrors:
         )
         result = health_check.validate_business_rules()
         assert result.is_failure
-        assert result.error and "Invalid health status" in result.error
+        assert result.error is not None
+        assert "Invalid health status" in result.error
