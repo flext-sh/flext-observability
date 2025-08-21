@@ -45,7 +45,9 @@ class FlextMetric(FlextEntity):
         validate_assignment=True,
     )
 
-    id: FlextEntityId = Field(default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id()))
+    id: FlextEntityId = Field(
+        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+    )
     name: str = metric_name_field
     value: float | Decimal = metric_value_field
     unit: str = metric_unit_field
@@ -78,7 +80,9 @@ class FlextTrace(FlextEntity):
         validate_assignment=True,
     )
 
-    id: FlextEntityId = Field(default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id()))
+    id: FlextEntityId = Field(
+        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+    )
     operation_name: str = trace_name_field
     service_name: str = Field(min_length=1, max_length=255)
     span_id: str = Field(default="")
@@ -117,7 +121,9 @@ class FlextAlert(FlextEntity):
         validate_assignment=True,
     )
 
-    id: FlextEntityId = Field(default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id()))
+    id: FlextEntityId = Field(
+        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+    )
     message: str = alert_message_field
     level: str = Field(default=ObservabilityConstants.ALERT_LEVEL_INFO)
     service: str = Field(min_length=1, max_length=255)
@@ -159,7 +165,9 @@ class FlextHealthCheck(FlextEntity):
         validate_assignment=True,
     )
 
-    id: FlextEntityId = Field(default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id()))
+    id: FlextEntityId = Field(
+        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+    )
     service_name: str = Field(min_length=1, max_length=255)
     status: str = Field(default=ObservabilityConstants.HEALTH_STATUS_HEALTHY)
     timestamp: datetime = timestamp_field
@@ -196,7 +204,9 @@ class FlextLogEntry(FlextEntity):
         validate_assignment=True,
     )
 
-    id: FlextEntityId = Field(default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id()))
+    id: FlextEntityId = Field(
+        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+    )
     message: str = Field(min_length=1, max_length=2000)
     level: str = Field(default="INFO")
     service: str = Field(min_length=1, max_length=255)

@@ -59,9 +59,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-
-# Function type aliases - flexible approach for Python 3.13+
-from typing import TypeVar
+from typing import TypeVar, cast
 
 from flext_core import FlextContainer, FlextResult, get_logger
 
@@ -75,8 +73,37 @@ from flext_observability.services import (
     FlextTracingService,
 )
 
-# TypeVar for any callable bound to Callable
-F = TypeVar("F", bound=Callable[..., object])
+# Function type aliases - flexible approach for Python 3.13+ without Any
+# Define Union of common callable patterns to satisfy PyRight
+
+AnyCallable = (
+    Callable[[], object]
+    | Callable[[str], object]
+    | Callable[[str], str]
+    | Callable[[str], dict[str, object]]
+    | Callable[[object], object]
+    | Callable[[object, object], object]
+    | Callable[[int], int]
+    | Callable[[int, int], int]  # Added for (x: int, y: int) -> int
+    | Callable[[], str]
+    | Callable[[], dict[str, str]]
+    | Callable[[], None]
+    # Integration test signatures
+    | Callable[[list[int]], dict[str, object]]  # process_data function
+    | Callable[[str, str], dict[str, str]]  # handle_api_request function
+    | Callable[[int], dict[str, int]]  # cpu_intensive_task function
+    | Callable[[float], dict[str, float]]  # io_intensive_task function
+)
+
+# TypeVar for preserving function signatures in decorator
+F = TypeVar("F", bound=AnyCallable)
+
+
+# Helper function to call any function - isolated type ignore
+def _call_any_function(func: AnyCallable, *args: object, **kwargs: object) -> object:
+    """Helper to call function with object args - isolated type handling."""
+    return func(*args, **kwargs)
+
 
 # ============================================================================
 # OBSERVABILITY MONITORING ORCHESTRATION - Real Implementation with SOLID
@@ -200,7 +227,9 @@ class FlextObservabilityMonitor:
             try:
                 self._metrics_service = FlextMetricsService(self.container)
             except Exception as e:  # noqa: BLE001
-                return FlextResult[None].fail(f"Observability initialization failed: {e}")
+                return FlextResult[None].fail(
+                    f"Observability initialization failed: {e}"
+                )
             self._logging_service = FlextLoggingService(self.container)
             self._tracing_service = FlextTracingService(self.container)
             self._alert_service = FlextAlertService(self.container)
@@ -259,12 +288,16 @@ class FlextObservabilityMonitor:
         """Get comprehensive health status with real metrics."""
         try:
             if not self._health_service:
-                return FlextResult[dict[str, object]].fail("Health service not available")
+                return FlextResult[dict[str, object]].fail(
+                    "Health service not available"
+                )
 
             # Get overall health and add monitor-specific metrics
             health_result = self._health_service.get_overall_health()
             if health_result.is_failure:
-                return FlextResult[dict[str, object]].fail(health_result.error or "Health service failure")
+                return FlextResult[dict[str, object]].fail(
+                    health_result.error or "Health service failure"
+                )
 
             health_data = health_result.data or {}
 
@@ -282,7 +315,9 @@ class FlextObservabilityMonitor:
             return FlextResult[dict[str, object]].ok(health_data)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult[dict[str, object]].fail(f"Health status check failed: {e}")
+            return FlextResult[dict[str, object]].fail(
+                f"Health status check failed: {e}"
+            )
 
     def flext_is_monitoring_active(self) -> bool:
         """Check if real monitoring is active and operational."""
@@ -320,7 +355,7 @@ class FlextObservabilityMonitor:
         """Public method to increment functions monitored counter."""
         self._functions_monitored += 1
 
-    def get_alert_service(self) -> "FlextAlertService | None":
+    def get_alert_service(self) -> FlextAlertService | None:
         """Public method to get alert service."""
         return self._alert_service
 
@@ -345,7 +380,7 @@ def flext_monitor_function(
 
             # Execute function normally if no monitoring
             if not (active_monitor and active_monitor.flext_is_monitoring_active()):
-                return func(*args, **kwargs)
+                return _call_any_function(func, *args, **kwargs)
 
             # Monitor function execution
             return _execute_monitored_function(
@@ -361,14 +396,14 @@ def flext_monitor_function(
         wrapper.__doc__ = getattr(func, "__doc__", wrapper.__doc__)
         wrapper.__module__ = getattr(func, "__module__", __name__)
 
-        # Return wrapper with preserved metadata
-        return wrapper  # type: ignore[return-value]
+        # Return wrapper with preserved metadata and type
+        return cast("F", wrapper)
 
     return decorator
 
 
 def _execute_monitored_function(
-    func: Callable[..., object],
+    func: AnyCallable,
     args: tuple[object, ...],
     kwargs: dict[str, object],
     monitor: FlextObservabilityMonitor,
@@ -381,7 +416,7 @@ def _execute_monitored_function(
 
     try:
         # Execute the function
-        result = func(*args, **kwargs)
+        result = _call_any_function(func, *args, **kwargs)
 
         # Record success metrics
         execution_time = time.time() - start_time

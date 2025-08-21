@@ -7,7 +7,7 @@ from typing import Never
 from unittest.mock import patch
 
 import pytest
-from flext_core.root_models import FlextEntityId
+from flext_core import FlextEntityId
 
 from flext_observability import (
     FlextMetric,
@@ -48,11 +48,13 @@ class TestTrue100Coverage:
 
     def test_entities_lines_43_44_metric_validation_error(self) -> None:
         """Cover entities.py lines 43-44 - float validation exception in validate()."""
+
         # Create a metric with a mock name that will fail during strip()
         class FailingName:
             def strip(self) -> Never:
                 error_msg = "Name strip failed"
                 raise ValueError(error_msg)
+
             def __str__(self) -> str:
                 return "failing_name"
 
@@ -71,7 +73,8 @@ class TestTrue100Coverage:
 
         result = metric.validate_business_rules()
         assert result.is_failure
-        assert result.error and "Validation error:" in result.error
+        assert result.error is not None
+        assert "Validation error:" in result.error
 
     def test_flext_metrics_service_import(self) -> None:
         """Test basic import of metrics service."""
@@ -115,6 +118,7 @@ class TestTrue100Coverage:
             def strip(self) -> Never:
                 error_msg = "Validation forced failure"
                 raise ValueError(error_msg)
+
             def __str__(self) -> str:
                 return "failing_comprehensive"
 
@@ -130,13 +134,13 @@ class TestTrue100Coverage:
             name: str,
             globals_dict: dict[str, object] | None = None,
             locals_dict: dict[str, object] | None = None,
-            fromlist: list[str] = (),
-            level: int = 0
+            fromlist: list[str] | None = None,
+            level: int = 0,
         ) -> object:
             if name == "psutil":
                 msg = "Forced psutil error for coverage"
                 raise ImportError(msg)
-            return __import__(name, globals_dict, locals_dict, fromlist, level)
+            return __import__(name, globals_dict, locals_dict, fromlist or [], level)
 
         with patch("builtins.__import__", side_effect=force_psutil_error):
             pass

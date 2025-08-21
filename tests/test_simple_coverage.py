@@ -65,52 +65,63 @@ class TestSimpleCoverage:
         """Test metric creation with validation failure."""
         result = flext_create_metric("", 42.0)  # Empty name
         assert result.is_failure
-        assert result.error and "String should have at least 1 character" in result.error
+        assert result.error is not None
+        assert "String should have at least 1 character" in result.error
 
     def test_create_log_entry_validation_failure(self) -> None:
         """Test log entry creation with validation failure."""
         result = flext_create_log_entry("", "test_service")  # Empty message
         assert result.is_failure
-        assert result.error and "String should have at least 1 character" in result.error
+        assert result.error is not None
+        assert "String should have at least 1 character" in result.error
 
     def test_create_log_entry_invalid_level(self) -> None:
         """Test log entry creation with invalid level."""
-        result = flext_create_log_entry("Test message", "test_service", level="INVALID_LEVEL")
+        result = flext_create_log_entry(
+            "Test message", "test_service", level="INVALID_LEVEL"
+        )
         assert result.is_failure
-        assert result.error and "Invalid log level" in result.error
+        assert result.error is not None
+        assert "Invalid log level" in result.error
 
     def test_create_trace_validation_failure(self) -> None:
         """Test trace creation with validation failure."""
         result = flext_create_trace("", "test_service")  # Empty operation_name
         assert result.is_failure
-        assert result.error and "String should have at least 1 character" in result.error
+        assert result.error is not None
+        assert "String should have at least 1 character" in result.error
 
     def test_create_trace_invalid_operation(self) -> None:
         """Test trace creation with invalid operation."""
         result = flext_create_trace("test_operation", "")  # Empty service_name
         assert result.is_failure
-        assert result.error and "String should have at least 1 character" in result.error
+        assert result.error is not None
+        assert "String should have at least 1 character" in result.error
 
     def test_create_alert_validation_failure(self) -> None:
         """Test alert creation with validation failure."""
         result = flext_create_alert("", "test_service")  # Empty message
         assert result.is_failure
-        assert result.error and "String should have at least 1 character" in result.error
+        assert result.error is not None
+        assert "String should have at least 1 character" in result.error
 
     def test_create_alert_invalid_message(self) -> None:
         """Test alert creation with invalid message."""
         result = flext_create_alert("Test message", "")  # Empty service
         assert result.is_failure
-        assert result.error and "String should have at least 1 character" in result.error
+        assert result.error is not None
+        assert "String should have at least 1 character" in result.error
 
     def test_create_health_check_validation_failure(self) -> None:
         """Test health check creation with validation failure."""
         result = flext_create_health_check("")  # Empty service_name
         assert result.is_failure
-        assert result.error and "String should have at least 1 character" in result.error
+        assert result.error is not None
+        assert "String should have at least 1 character" in result.error
 
     def test_create_health_check_invalid_status(self) -> None:
         """Test health check creation with invalid status."""
         result = flext_create_health_check("test_component", status="invalid_status")
         assert result.is_failure
-        assert result.error and "Invalid health status" in result.error
+        assert result.error is not None
+        assert "Invalid health status" in result.error

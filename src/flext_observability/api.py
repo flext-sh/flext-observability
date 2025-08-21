@@ -258,7 +258,9 @@ def flext_create_log_entry(
         # Validate business rules
         validation_result = log_entry.validate_business_rules()
         if not validation_result.success:
-            return FlextResult[FlextLogEntry].fail(f"Business rule validation failed: {validation_result.error}")
+            return FlextResult[FlextLogEntry].fail(
+                f"Business rule validation failed: {validation_result.error}"
+            )
 
         return FlextResult[FlextLogEntry].ok(log_entry)
     except (ValueError, TypeError, AttributeError) as e:
@@ -297,8 +299,16 @@ def flext_create_trace(
         trace_id_from_config = config.get("trace_id")
         span_id_from_config = config.get("span_id")
 
-        trace_id = str(trace_id_from_config) if trace_id_from_config else FlextIdGenerator.generate_uuid()
-        span_id = str(span_id_from_config) if span_id_from_config else FlextIdGenerator.generate_uuid()
+        trace_id = (
+            str(trace_id_from_config)
+            if trace_id_from_config
+            else FlextIdGenerator.generate_uuid()
+        )
+        span_id = (
+            str(span_id_from_config)
+            if span_id_from_config
+            else FlextIdGenerator.generate_uuid()
+        )
 
         entity = flext_trace(
             operation_name=operation_name,
@@ -363,7 +373,9 @@ def flext_create_health_check(
             )
             probe.validate_business_rules()
         except Exception as e:  # noqa: BLE001
-            return FlextResult[FlextHealthCheck].fail(f"Failed to create health check: {e}")
+            return FlextResult[FlextHealthCheck].fail(
+                f"Failed to create health check: {e}"
+            )
 
         health_check = FlextHealthCheck(
             service_name=service_name,
@@ -374,7 +386,9 @@ def flext_create_health_check(
         # Validate business rules
         validation_result = health_check.validate_business_rules()
         if not validation_result.success:
-            return FlextResult[FlextHealthCheck].fail(f"Business rule validation failed: {validation_result.error}")
+            return FlextResult[FlextHealthCheck].fail(
+                f"Business rule validation failed: {validation_result.error}"
+            )
 
         return FlextResult[FlextHealthCheck].ok(health_check)
     except (ValueError, TypeError, AttributeError) as e:

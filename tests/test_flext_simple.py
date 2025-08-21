@@ -77,7 +77,9 @@ class TestSimpleApiCreation:
 
     def test_create_trace_success(self) -> None:
         """Test successful trace creation."""
-        result = flext_create_trace("user_login", "trace-123", config={"trace_id": "trace-123"})
+        result = flext_create_trace(
+            "user_login", "trace-123", config={"trace_id": "trace-123"}
+        )
         data = assert_success_with_data(result)
         if data.trace_id != "trace-123":
             raise AssertionError(f"Expected {'trace-123'}, got {data.trace_id}")
@@ -85,11 +87,10 @@ class TestSimpleApiCreation:
 
     def test_create_trace_with_config(self) -> None:
         """Test trace creation with configuration."""
-        config = {
-            "span_id": "span-456",
-            "trace_id": "trace-789"
-        }
-        result = flext_create_trace("data_processing", "trace-789", config=cast("FlextTypes.Data.Dict", config))
+        config = {"span_id": "span-456", "trace_id": "trace-789"}
+        result = flext_create_trace(
+            "data_processing", "trace-789", config=cast("FlextTypes.Data.Dict", config)
+        )
         data = assert_success_with_data(result)
         if data.span_id != "span-456":
             raise AssertionError(f"Expected {'span-456'}, got {data.span_id}")
@@ -99,7 +100,9 @@ class TestSimpleApiCreation:
         result = flext_create_alert("High CPU usage detected", "system_monitor")
         data = assert_success_with_data(result)
         if data.message != "High CPU usage detected":
-            raise AssertionError(f"Expected {'High CPU usage detected'}, got {data.message}")
+            raise AssertionError(
+                f"Expected {'High CPU usage detected'}, got {data.message}"
+            )
         assert data.service == "system_monitor"
         if data.level != "info":  # default
             raise AssertionError(f"Expected {'info'}, got {data.level}")

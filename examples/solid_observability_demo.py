@@ -7,9 +7,9 @@ and function monitoring capabilities.
 """
 
 import time
+from typing import Any
 
 from flext_core import FlextContainer, FlextResult
-from flext_observability.models import FlextAlert, FlextHealthCheck, FlextMetric, FlextTrace
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -19,6 +19,12 @@ from flext_observability import (
     flext_create_trace,
     flext_monitor_function,
     get_global_factory,
+)
+from flext_observability.models import (
+    FlextAlert,
+    FlextHealthCheck,
+    FlextMetric,
+    FlextTrace,
 )
 
 
@@ -57,15 +63,21 @@ def demonstrate_solid_design() -> None:
     print("✅ Open/Closed: Extensible via factory pattern")
 
     # Liskov Substitution: All entities implement the same base interface
-    results = [metric_result, trace_result, alert_result, health_result]
-    entities: list[FlextMetric | FlextTrace | FlextAlert | FlextHealthCheck] = []
-    for result in results:
-        if result.success and result.data:
-            entities.append(result.data)
+    results: list[FlextResult[Any]] = [
+        metric_result,
+        trace_result,
+        alert_result,
+        health_result,
+    ]
+    entities: list[FlextMetric | FlextTrace | FlextAlert | FlextHealthCheck] = [
+        result.data for result in results if result.success and result.data
+    ]
     for entity in entities:
         if hasattr(entity, "validate_business_rules"):
             validation = entity.validate_business_rules()
-            print(f"✅ Liskov Substitution: {type(entity).__name__} validates correctly - {validation.success}")
+            print(
+                f"✅ Liskov Substitution: {type(entity).__name__} validates correctly - {validation.success}"
+            )
 
     # Interface Segregation: Clean interfaces for different concerns
     print("✅ Interface Segregation: Separate interfaces for metrics, traces, alerts")
@@ -127,7 +139,9 @@ def demonstrate_health_monitoring() -> None:
     for service, status in services_health:
         result = flext_create_health_check(service, status)
         if result.success:
-            icon = "✅" if status == "healthy" else "⚠️" if status == "degraded" else "❌"
+            icon = (
+                "✅" if status == "healthy" else "⚠️" if status == "degraded" else "❌"
+            )
             print(f"{icon} {service}: {status}")
 
 
@@ -145,7 +159,12 @@ def demonstrate_alerting_system() -> None:
     for level, message, service in alerts:
         result = flext_create_alert(message, service, level)
         if result.success:
-            icons = {"info": "[INFO]", "warning": "[WARN]", "error": "[ERROR]", "critical": "[CRIT]"}
+            icons = {
+                "info": "[INFO]",
+                "warning": "[WARN]",
+                "error": "[ERROR]",
+                "critical": "[CRIT]",
+            }
             icon = icons[level]
             print(f"{icon} [{level.upper()}] {message}")
 
@@ -178,7 +197,9 @@ def demonstrate_factory_patterns() -> None:
     container = FlextContainer()
     custom_factory = FlextObservabilityMasterFactory(container)
     metric2 = custom_factory.create_metric("custom_metric", 24.0, "count")
-    print(f"✅ Custom factory: Dependency injection for flexibility - {metric2.success}")
+    print(
+        f"✅ Custom factory: Dependency injection for flexibility - {metric2.success}"
+    )
     print("✅ Custom factory: Dependency injection for flexibility")
 
 
@@ -187,7 +208,12 @@ def demonstrate_validation() -> None:
     print("\n✅ Validation Demo")
 
     # Create various entities and validate them
-    entities_to_validate: list[FlextResult[FlextMetric] | FlextResult[FlextTrace] | FlextResult[FlextAlert] | FlextResult[FlextHealthCheck]] = [
+    entities_to_validate: list[
+        FlextResult[FlextMetric]
+        | FlextResult[FlextTrace]
+        | FlextResult[FlextAlert]
+        | FlextResult[FlextHealthCheck]
+    ] = [
         flext_create_metric("valid_metric", 100.0, "count"),
         flext_create_trace("valid_operation", "valid_service"),
         flext_create_alert("Valid alert", "system", "info"),

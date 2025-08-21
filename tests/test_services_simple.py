@@ -28,7 +28,7 @@ class TestServicesBasic:
 
         # Test with valid metric
         metric_result = flext_create_metric("test", 1.0)
-        if metric_result.success and metric_result.data is not None:
+        if metric_result.success:
             record_result = service.record_metric(metric_result.data)
             assert record_result.success
 
@@ -39,7 +39,7 @@ class TestServicesBasic:
 
         # Test with valid log entry
         log_result = flext_create_log_entry("test message", "test_service")
-        if log_result.success and log_result.data is not None:
+        if log_result.success:
             service_result = service.log_entry(log_result.data)
             assert service_result.success
 
@@ -50,7 +50,7 @@ class TestServicesBasic:
 
         # Test with valid trace
         trace_result = flext_create_trace("test_op", "trace-123")
-        if trace_result.success and trace_result.data is not None:
+        if trace_result.success:
             service_result = service.start_trace(trace_result.data)
             assert service_result.success
 
@@ -61,7 +61,7 @@ class TestServicesBasic:
 
         # Test with valid alert
         alert_result = flext_create_alert("Test Message", "test_service")
-        if alert_result.success and alert_result.data is not None:
+        if alert_result.success:
             service_result = service.create_alert(alert_result.data)
             assert service_result.success
 
@@ -76,7 +76,7 @@ class TestServicesBasic:
 
         # Test with valid health check
         check_result = flext_create_health_check("test_component")
-        if check_result.success and check_result.data is not None:
+        if check_result.success:
             service_result = service.check_health(check_result.data)
             assert service_result.success
 

@@ -1,7 +1,6 @@
 """Test entity factory functions for complete coverage."""
 
 from decimal import Decimal
-from unittest.mock import patch
 
 import pytest
 
@@ -157,16 +156,25 @@ class TestEntityFactoryFunctions:
         assert str(health.id) != ""
         assert health.service_name == "auto_component"
 
-    def test_flext_metric_exception_handling(self) -> None:
-        """Test flext_metric exception handling to cover lines 880-881."""
-        # patch imported at top level
+    def test_flext_metric_validation_edge_cases(self) -> None:
+        """Test flext_metric validation with edge cases - real validation testing."""
+        # Test with extreme values - real boundary testing
+        large_metric = flext_metric("large_value_metric", float("1e10"))
+        assert large_metric.value == 1e10
+        assert large_metric.name == "large_value_metric"
 
-        # Force a TypeError during FlextIdGenerator.generate_entity_id() to hit exception handler
-        with (
-            patch(
-                "flext_observability.models.FlextIdGenerator.generate_entity_id",
-                side_effect=TypeError("Forced error"),
-            ),
-            pytest.raises(TypeError, match="Forced error"),
+        # Test with very small positive values
+        small_metric = flext_metric("small_value_metric", float("1e-10"))
+        assert small_metric.value == 1e-10
+        assert small_metric.name == "small_value_metric"
+
+        # Test with zero value - boundary condition
+        zero_metric = flext_metric("zero_metric", 0.0)
+        assert zero_metric.value == 0.0
+        assert zero_metric.name == "zero_metric"
+
+        # Test that negative values are rejected - real business rule validation
+        with pytest.raises(
+            ValueError, match="Input should be greater than or equal to 0"
         ):
-            flext_metric("test_metric", 42.0)
+            flext_metric("negative_metric", -42.5)

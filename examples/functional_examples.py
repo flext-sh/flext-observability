@@ -34,25 +34,37 @@ def demonstrate_simple_api() -> None:
     # Create metrics
     metric_result = flext_create_metric("api_requests", 150.0, "count")
     if metric_result.success:
-        print(f"✅ Created metric: {metric_result.data.name} = {metric_result.data.value}")
+        print(
+            f"✅ Created metric: {metric_result.data.name} = {metric_result.data.value}"
+        )
 
     # Create traces
     trace_result = flext_create_trace("user_registration", "auth-service")
     if trace_result.success:
-        print(f"✅ Created trace: {trace_result.data.operation_name} on {trace_result.data.service_name}")
+        print(
+            f"✅ Created trace: {trace_result.data.operation_name} on {trace_result.data.service_name}"
+        )
 
     # Create alerts
-    alert_result = flext_create_alert("High CPU usage detected", "monitoring", "warning")
+    alert_result = flext_create_alert(
+        "High CPU usage detected", "monitoring", "warning"
+    )
     if alert_result.success:
-        print(f"✅ Created alert: {alert_result.data.message} (level: {alert_result.data.level})")
+        print(
+            f"✅ Created alert: {alert_result.data.message} (level: {alert_result.data.level})"
+        )
 
     # Create health checks
     health_result = flext_create_health_check("database", "healthy")
     if health_result.success:
-        print(f"✅ Created health check: {health_result.data.service_name} is {health_result.data.status}")
+        print(
+            f"✅ Created health check: {health_result.data.service_name} is {health_result.data.status}"
+        )
 
     # Create log entries
-    log_result = flext_create_log_entry("User authentication successful", "auth-service", "INFO")
+    log_result = flext_create_log_entry(
+        "User authentication successful", "auth-service", "INFO"
+    )
     if log_result.success:
         print(f"✅ Created log entry: {log_result.data.message}")
 
@@ -105,7 +117,9 @@ def demonstrate_validation() -> None:
         invalid_metric_result = flext_create_metric("invalid_metric", -10.0, "count")
         if invalid_metric_result.success:
             validation = invalid_metric_result.data.validate_business_rules()
-            print(f"❌ Invalid metric validation: {'passed' if validation.success else 'failed'}")
+            print(
+                f"❌ Invalid metric validation: {'passed' if validation.success else 'failed'}"
+            )
     except Exception as e:
         print(f"✅ Caught validation error as expected: {type(e).__name__}")
 
@@ -120,8 +134,12 @@ def demonstrate_health_monitoring() -> None:
     for service, status in zip(services, statuses, strict=False):
         health_result = flext_create_health_check(service, status)
         if health_result.success:
-            icon = "✅" if status == "healthy" else "⚠️" if status == "degraded" else "❌"
-            print(f"{icon} {health_result.data.service_name}: {health_result.data.status}")
+            icon = (
+                "✅" if status == "healthy" else "⚠️" if status == "degraded" else "❌"
+            )
+            print(
+                f"{icon} {health_result.data.service_name}: {health_result.data.status}"
+            )
 
 
 def demonstrate_alerting_scenario() -> None:
@@ -138,7 +156,12 @@ def demonstrate_alerting_scenario() -> None:
     for level, message, service in alert_scenarios:
         alert_result = flext_create_alert(message, service, level)
         if alert_result.success:
-            icons = {"info": "[INFO]", "warning": "[WARN]", "error": "[ERROR]", "critical": "[CRIT]"}
+            icons = {
+                "info": "[INFO]",
+                "warning": "[WARN]",
+                "error": "[ERROR]",
+                "critical": "[CRIT]",
+            }
             icon = icons.get(level, "[UNKNOWN]")
             print(f"{icon} [{level.upper()}] {alert_result.data.message}")
 
