@@ -13,7 +13,7 @@ from typing import override
 from flext_core import (
     FlextEntity,
     FlextEntityId,
-    FlextIdGenerator,
+    FlextUtilities,
     FlextResult,
     FlextTypes,
     get_logger,
@@ -46,12 +46,12 @@ class FlextMetric(FlextEntity):
     )
 
     id: FlextEntityId = Field(
-        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+        default_factory=lambda: FlextEntityId(FlextUtilities.generate_id())
     )
     name: str = metric_name_field
     value: float | Decimal = metric_value_field
     unit: str = metric_unit_field
-    tags: FlextTypes.Data.Dict = Field(default_factory=dict)
+    tags: dict[str, object] = Field(default_factory=dict)
     timestamp: datetime = timestamp_field
     metric_type: str = Field(default="gauge")
 
@@ -81,7 +81,7 @@ class FlextTrace(FlextEntity):
     )
 
     id: FlextEntityId = Field(
-        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+        default_factory=lambda: FlextEntityId(FlextUtilities.generate_id())
     )
     operation_name: str = trace_name_field
     service_name: str = Field(min_length=1, max_length=255)
@@ -91,7 +91,7 @@ class FlextTrace(FlextEntity):
     start_time: datetime = timestamp_field
     end_time: datetime | None = Field(default=None)
     status: str = Field(default=ObservabilityConstants.TRACE_STATUS_STARTED)
-    tags: FlextTypes.Data.Dict = Field(default_factory=dict)
+    tags: dict[str, object] = Field(default_factory=dict)
 
     @override
     def validate_business_rules(self) -> FlextResult[None]:
@@ -122,14 +122,14 @@ class FlextAlert(FlextEntity):
     )
 
     id: FlextEntityId = Field(
-        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+        default_factory=lambda: FlextEntityId(FlextUtilities.generate_id())
     )
     message: str = alert_message_field
     level: str = Field(default=ObservabilityConstants.ALERT_LEVEL_INFO)
     service: str = Field(min_length=1, max_length=255)
     timestamp: datetime = timestamp_field
     resolved: bool = Field(default=False)
-    tags: FlextTypes.Data.Dict = Field(default_factory=dict)
+    tags: dict[str, object] = Field(default_factory=dict)
 
     @override
     def validate_business_rules(self) -> FlextResult[None]:
@@ -166,12 +166,12 @@ class FlextHealthCheck(FlextEntity):
     )
 
     id: FlextEntityId = Field(
-        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+        default_factory=lambda: FlextEntityId(FlextUtilities.generate_id())
     )
     service_name: str = Field(min_length=1, max_length=255)
     status: str = Field(default=ObservabilityConstants.HEALTH_STATUS_HEALTHY)
     timestamp: datetime = timestamp_field
-    details: FlextTypes.Data.Dict = Field(default_factory=dict)
+    details: dict[str, object] = Field(default_factory=dict)
     dependencies: list[str] = Field(default_factory=list)
 
     @override
@@ -205,14 +205,14 @@ class FlextLogEntry(FlextEntity):
     )
 
     id: FlextEntityId = Field(
-        default_factory=lambda: FlextEntityId(FlextIdGenerator.generate_entity_id())
+        default_factory=lambda: FlextEntityId(FlextUtilities.generate_id())
     )
     message: str = Field(min_length=1, max_length=2000)
     level: str = Field(default="INFO")
     service: str = Field(min_length=1, max_length=255)
     timestamp: datetime = timestamp_field
     correlation_id: str | None = Field(default=None)
-    extra_data: FlextTypes.Data.Dict = Field(default_factory=dict)
+    extra_data: dict[str, object] = Field(default_factory=dict)
 
     @override
     def validate_business_rules(self) -> FlextResult[None]:
@@ -240,7 +240,7 @@ def flext_metric(
     value: float | Decimal,
     unit: str = ObservabilityConstants.DEFAULT_METRIC_UNIT,
     *,
-    tags: FlextTypes.Data.Dict | None = None,
+    tags: dict[str, object] | None = None,
     timestamp: datetime | None = None,
     metric_type: str | None = None,
 ) -> FlextMetric:
@@ -260,7 +260,7 @@ def flext_trace(
     service_name: str,
     *,
     start_time: datetime | None = None,
-    tags: FlextTypes.Data.Dict | None = None,
+    tags: dict[str, object] | None = None,
     span_id: str | None = None,
     trace_id: str | None = None,
 ) -> FlextTrace:
@@ -281,7 +281,7 @@ def flext_alert(
     level: str = ObservabilityConstants.ALERT_LEVEL_INFO,
     *,
     timestamp: datetime | None = None,
-    tags: FlextTypes.Data.Dict | None = None,
+    tags: dict[str, object] | None = None,
     resolved: bool = False,
 ) -> FlextAlert:
     """Create a FlextAlert entity."""
@@ -300,7 +300,7 @@ def flext_health_check(
     status: str = ObservabilityConstants.HEALTH_STATUS_HEALTHY,
     *,
     timestamp: datetime | None = None,
-    details: FlextTypes.Data.Dict | None = None,
+    details: dict[str, object] | None = None,
     dependencies: list[str] | None = None,
 ) -> FlextHealthCheck:
     """Create a FlextHealthCheck entity."""
@@ -320,7 +320,7 @@ def flext_log_entry(
     *,
     timestamp: datetime | None = None,
     correlation_id: str | None = None,
-    extra_data: FlextTypes.Data.Dict | None = None,
+    extra_data: dict[str, object] | None = None,
 ) -> FlextLogEntry:
     """Create a FlextLogEntry entity."""
     return FlextLogEntry(

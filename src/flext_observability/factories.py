@@ -60,7 +60,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import cast
 
-from flext_core import FlextContainer, FlextIdGenerator, FlextResult, get_logger
+from flext_core import FlextContainer, FlextUtilities, FlextResult, get_logger
 from flext_core.typings import FlextTypes
 
 # Type checking imports if needed in future
@@ -101,7 +101,7 @@ def _generate_utc_datetime() -> datetime:
 
     """
     # Use flext-core timestamp generation - direct float to datetime conversion
-    timestamp_float = FlextIdGenerator.generate_timestamp()
+    timestamp_float = FlextUtilities.generate_timestamp()
     return datetime.fromtimestamp(
         timestamp_float,
         tz=datetime.now().astimezone().tzinfo,
@@ -523,7 +523,7 @@ class FlextObservabilityMasterFactory:
         # Use operation_name as the operation parameter
         kwargs["service_name"] = service_name
         result = self.trace(
-            trace_id=FlextIdGenerator.generate_uuid(),
+            trace_id=FlextUtilities.generate_uuid(),
             operation=operation_name,
             **kwargs,
         )
