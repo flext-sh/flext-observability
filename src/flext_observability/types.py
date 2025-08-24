@@ -9,7 +9,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Protocol
 
-from flext_core.typings import E, F, FlextTypes as CoreFlextTypes, P, R, T, U, V
+from flext_core import E, F, FlextTypes as CoreFlextTypes, P, R, T, U, V
 
 # Observability-specific type aliases
 MetricValue = float | int | Decimal

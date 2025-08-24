@@ -10,8 +10,7 @@ __version__ = "0.9.0"
 __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 
 # Import get_logger from flext_core
-from flext_core import FlextContainer, get_logger
-from flext_core.constants import FlextConstants
+from flext_core import FlextContainer, get_logger, FlextConstants
 
 # Core entities from models module
 from flext_observability.models import (

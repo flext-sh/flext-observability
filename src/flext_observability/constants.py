@@ -6,7 +6,7 @@ trace statuses, and configuration defaults.
 
 from __future__ import annotations
 
-from flext_core.constants import FlextConstants
+from flext_core import FlextConstants
 
 
 class ObservabilityConstants(FlextConstants):

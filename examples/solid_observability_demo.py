@@ -44,23 +44,16 @@ def process_api_request(endpoint: str) -> dict[str, object]:
 
 def demonstrate_solid_design() -> None:
     """Demonstrate SOLID design principles in action."""
-    print("🏗️ SOLID Design Principles in Action")
-
     # Single Responsibility: Each entity has one clear purpose
     metric_result = flext_create_metric("cpu_usage", 75.5, "percent")
     trace_result = flext_create_trace("user_login", "auth-service")
     alert_result = flext_create_alert("High CPU usage", "monitoring", "warning")
     health_result = flext_create_health_check("database", "healthy")
 
-    print("✅ Single Responsibility: Each entity handles one concern")
-
     # Open/Closed: Extensible without modification
     container = FlextContainer()
     factory = FlextObservabilityMasterFactory(container)
-    extended_metric = factory.create_metric("custom_metric", 100.0, "units")
-    print(f"✅ Open/Closed: Extended metric created - {extended_metric.success}")
-
-    print("✅ Open/Closed: Extensible via factory pattern")
+    factory.create_metric("custom_metric", 100.0, "units")
 
     # Liskov Substitution: All entities implement the same base interface
     results: list[FlextResult[Any]] = [
@@ -74,22 +67,15 @@ def demonstrate_solid_design() -> None:
     ]
     for entity in entities:
         if hasattr(entity, "validate_business_rules"):
-            validation = entity.validate_business_rules()
-            print(
-                f"✅ Liskov Substitution: {type(entity).__name__} validates correctly - {validation.success}"
-            )
+            entity.validate_business_rules()
 
     # Interface Segregation: Clean interfaces for different concerns
-    print("✅ Interface Segregation: Separate interfaces for metrics, traces, alerts")
 
     # Dependency Inversion: High-level modules depend on abstractions
-    print("✅ Dependency Inversion: Factory uses DI container abstraction")
 
 
 def demonstrate_metrics_collection() -> None:
     """Demonstrate comprehensive metrics collection."""
-    print("\n📊 Metrics Collection Demo")
-
     metrics = [
         ("api_requests_total", 1500.0, "count"),
         ("response_time_avg", 85.2, "milliseconds"),
@@ -101,13 +87,11 @@ def demonstrate_metrics_collection() -> None:
     for name, value, unit in metrics:
         result = flext_create_metric(name, value, unit)
         if result.success:
-            print(f"📈 {name}: {value} {unit}")
+            pass
 
 
 def demonstrate_distributed_tracing() -> None:
     """Demonstrate distributed tracing across services."""
-    print("\n🔍 Distributed Tracing Demo")
-
     # Simulate a distributed request flow
     services = [
         ("api_gateway", "request_routing"),
@@ -120,13 +104,11 @@ def demonstrate_distributed_tracing() -> None:
     for service, operation in services:
         result = flext_create_trace(operation, service)
         if result.success:
-            print(f"🔗 {service}: {operation}")
+            pass
 
 
 def demonstrate_health_monitoring() -> None:
     """Demonstrate comprehensive health monitoring."""
-    print("\n💚 Health Monitoring Demo")
-
     services_health = [
         ("api_gateway", "healthy"),
         ("auth_service", "healthy"),
@@ -139,16 +121,11 @@ def demonstrate_health_monitoring() -> None:
     for service, status in services_health:
         result = flext_create_health_check(service, status)
         if result.success:
-            icon = (
-                "✅" if status == "healthy" else "⚠️" if status == "degraded" else "❌"
-            )
-            print(f"{icon} {service}: {status}")
+            pass
 
 
 def demonstrate_alerting_system() -> None:
     """Demonstrate comprehensive alerting."""
-    print("\n🚨 Alerting System Demo")
-
     alerts = [
         ("info", "System maintenance scheduled", "system"),
         ("warning", "Database response time increased", "database"),
@@ -165,48 +142,31 @@ def demonstrate_alerting_system() -> None:
                 "error": "[ERROR]",
                 "critical": "[CRIT]",
             }
-            icon = icons[level]
-            print(f"{icon} [{level.upper()}] {message}")
+            icons[level]
 
 
 def demonstrate_function_monitoring() -> None:
     """Demonstrate automatic function monitoring."""
-    print("\n📊 Function Monitoring Demo")
-
     # Execute monitored functions
-    db_result = database_query("SELECT * FROM users WHERE active = true")
-    print(f"🗃️ Database query result: {db_result['rows']} rows")
+    database_query("SELECT * FROM users WHERE active = true")
 
-    api_result = process_api_request("/api/v1/users")
-    print(f"🌐 API request result: {api_result['status']}")
-
-    print("✅ Functions automatically monitored with timing and context")
+    process_api_request("/api/v1/users")
 
 
 def demonstrate_factory_patterns() -> None:
     """Demonstrate factory pattern usage."""
-    print("\n🏭 Factory Pattern Demo")
-
     # Global factory
     global_factory = get_global_factory()
-    metric1 = global_factory.create_metric("global_metric", 42.0, "count")
-    print(f"✅ Global factory: Singleton pattern for shared state - {metric1.success}")
-    print("✅ Global factory: Singleton pattern for shared state")
+    global_factory.create_metric("global_metric", 42.0, "count")
 
     # Custom factory with DI container
     container = FlextContainer()
     custom_factory = FlextObservabilityMasterFactory(container)
-    metric2 = custom_factory.create_metric("custom_metric", 24.0, "count")
-    print(
-        f"✅ Custom factory: Dependency injection for flexibility - {metric2.success}"
-    )
-    print("✅ Custom factory: Dependency injection for flexibility")
+    custom_factory.create_metric("custom_metric", 24.0, "count")
 
 
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
-    print("\n✅ Validation Demo")
-
     # Create various entities and validate them
     entities_to_validate: list[
         FlextResult[FlextMetric]
@@ -222,17 +182,12 @@ def demonstrate_validation() -> None:
 
     for result in entities_to_validate:
         if result.success and result.data:
-            validation = result.data.validate_business_rules()
-            entity_type = type(result.data).__name__
-            status = "✅ passed" if validation.success else "❌ failed"
-            print(f"{entity_type} validation: {status}")
+            result.data.validate_business_rules()
+            type(result.data).__name__
 
 
 def main() -> None:
     """Run the comprehensive SOLID observability demo."""
-    print("🔧 FLEXT Observability - SOLID Implementation Demo")
-    print("=" * 60)
-
     try:
         demonstrate_solid_design()
         demonstrate_metrics_collection()
@@ -243,12 +198,7 @@ def main() -> None:
         demonstrate_factory_patterns()
         demonstrate_validation()
 
-        print("\n" + "=" * 60)
-        print("✅ SOLID Observability Demo completed successfully!")
-        print("📝 All SOLID principles demonstrated with real functionality")
-
-    except Exception as e:
-        print(f"\n❌ Demo failed: {e}")
+    except Exception:
         raise
 
 

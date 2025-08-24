@@ -73,8 +73,7 @@ from contextlib import suppress
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from flext_core import FlextIdGenerator, FlextResult
-from flext_core.typings import FlextTypes
+from flext_core import FlextResult, FlextTypes, generate_uuid
 
 # Removed circular import to flext_simple - not needed
 from flext_observability.entities import (
@@ -118,7 +117,7 @@ def flext_create_metric(
     name: str,
     value: float | Decimal,
     unit: str = "",
-    tags: FlextTypes.Data.Dict | None = None,
+    tags: FlextTypes.Core.Dict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
     """Create observability metric with simplified API.
@@ -192,7 +191,7 @@ def flext_create_metric(
         metric_type = "histogram"
 
     try:
-        _ = FlextIdGenerator.generate_uuid()
+        _ = generate_uuid()
         # Probe entity to allow tests to patch FlextMetric and raise
         try:
             probe = FlextMetric(
@@ -203,7 +202,7 @@ def flext_create_metric(
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
 
         entity = flext_metric(
@@ -236,7 +235,7 @@ def flext_create_log_entry(
     """Create observability log entry with simple parameters."""
     try:
         # Trigger patch point and probe entity for test hooks
-        _ = FlextIdGenerator.generate_uuid()
+        _ = generate_uuid()
         try:
             probe = FlextLogEntry(
                 message=message,
@@ -245,7 +244,7 @@ def flext_create_log_entry(
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             return FlextResult[FlextLogEntry].fail(f"Failed to create log entry: {e}")
 
         log_entry = FlextLogEntry(
@@ -271,7 +270,7 @@ def flext_create_trace(
     operation_name: str,
     service_name: str,
     *,
-    config: FlextTypes.Data.Dict | None = None,
+    config: FlextTypes.Core.Dict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextTrace]:
     """Create observability trace with simple parameters.
@@ -283,7 +282,7 @@ def flext_create_trace(
 
     try:
         # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
-        _ = FlextIdGenerator.generate_uuid()
+        _ = generate_uuid()
         # Probe entity to allow tests patching FlextTrace and forcing validation error
         try:
             probe = FlextTrace(
@@ -292,7 +291,7 @@ def flext_create_trace(
                 start_time=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             return FlextResult[FlextTrace].fail(f"Failed to create trace: {e}")
 
         # Generate trace and span IDs if not provided in config
@@ -300,15 +299,9 @@ def flext_create_trace(
         span_id_from_config = config.get("span_id")
 
         trace_id = (
-            str(trace_id_from_config)
-            if trace_id_from_config
-            else FlextIdGenerator.generate_uuid()
+            str(trace_id_from_config) if trace_id_from_config else generate_uuid()
         )
-        span_id = (
-            str(span_id_from_config)
-            if span_id_from_config
-            else FlextIdGenerator.generate_uuid()
-        )
+        span_id = str(span_id_from_config) if span_id_from_config else generate_uuid()
 
         entity = flext_trace(
             operation_name=operation_name,
@@ -331,7 +324,7 @@ def flext_create_alert(
 ) -> FlextResult[FlextAlert]:
     """Create observability alert with simple parameters."""
     try:
-        _ = FlextIdGenerator.generate_uuid()
+        _ = generate_uuid()
         # Probe entity to allow tests patching FlextAlert
         try:
             probe = FlextAlert(
@@ -341,7 +334,7 @@ def flext_create_alert(
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             return FlextResult[FlextAlert].fail(f"Failed to create alert: {e}")
 
         alert = FlextAlert(
@@ -363,7 +356,7 @@ def flext_create_health_check(
 ) -> FlextResult[FlextHealthCheck]:
     """Create observability health check with simple parameters."""
     try:
-        _ = FlextIdGenerator.generate_uuid()
+        _ = generate_uuid()
         # Probe construction to allow tests patching FlextHealthCheck
         try:
             probe = FlextHealthCheck(
@@ -372,7 +365,7 @@ def flext_create_health_check(
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             return FlextResult[FlextHealthCheck].fail(
                 f"Failed to create health check: {e}"
             )

@@ -102,7 +102,7 @@ F = TypeVar("F", bound=AnyCallable)
 # Helper function to call any function - isolated type ignore
 def _call_any_function(func: AnyCallable, *args: object, **kwargs: object) -> object:
     """Helper to call function with object args - isolated type handling."""
-    return func(*args, **kwargs)
+    return func(*args, **kwargs)  # type: ignore[arg-type]
 
 
 # ============================================================================
@@ -226,7 +226,7 @@ class FlextObservabilityMonitor:
             # Initialize real services using SOLID principles (Single Responsibility)
             try:
                 self._metrics_service = FlextMetricsService(self.container)
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:
                 return FlextResult[None].fail(
                     f"Observability initialization failed: {e}"
                 )
