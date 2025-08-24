@@ -13,9 +13,8 @@ from typing import override
 from flext_core import (
     FlextEntity,
     FlextEntityId,
-    FlextUtilities,
     FlextResult,
-    FlextTypes,
+    FlextUtilities,
     get_logger,
 )
 from pydantic import ConfigDict, Field

@@ -29,50 +29,38 @@ from flext_observability import (
 
 def demonstrate_simple_api() -> None:
     """Demonstrate the simple API for creating observability entities."""
-    print("🔍 Demonstrating Simple API")
-
     # Create metrics
     metric_result = flext_create_metric("api_requests", 150.0, "count")
     if metric_result.success:
-        print(
-            f"✅ Created metric: {metric_result.data.name} = {metric_result.data.value}"
-        )
+        pass
 
     # Create traces
     trace_result = flext_create_trace("user_registration", "auth-service")
     if trace_result.success:
-        print(
-            f"✅ Created trace: {trace_result.data.operation_name} on {trace_result.data.service_name}"
-        )
+        pass
 
     # Create alerts
     alert_result = flext_create_alert(
         "High CPU usage detected", "monitoring", "warning"
     )
     if alert_result.success:
-        print(
-            f"✅ Created alert: {alert_result.data.message} (level: {alert_result.data.level})"
-        )
+        pass
 
     # Create health checks
     health_result = flext_create_health_check("database", "healthy")
     if health_result.success:
-        print(
-            f"✅ Created health check: {health_result.data.service_name} is {health_result.data.status}"
-        )
+        pass
 
     # Create log entries
     log_result = flext_create_log_entry(
         "User authentication successful", "auth-service", "INFO"
     )
     if log_result.success:
-        print(f"✅ Created log entry: {log_result.data.message}")
+        pass
 
 
 def demonstrate_factory_pattern() -> None:
     """Demonstrate the factory pattern for advanced usage."""
-    print("\n🏭 Demonstrating Factory Pattern")
-
     # Create factory with container
     container = FlextContainer()
     factory = FlextObservabilityMasterFactory(container)
@@ -80,11 +68,11 @@ def demonstrate_factory_pattern() -> None:
     # Create entities via factory
     metric_result = factory.create_metric("response_time", 45.2, "milliseconds")
     if metric_result.success:
-        print(f"✅ Factory created metric: {metric_result.data.name}")
+        pass
 
     trace_result = factory.create_trace("payment_processing", "payment-service")
     if trace_result.success:
-        print(f"✅ Factory created trace: {trace_result.data.operation_name}")
+        pass
 
 
 @flext_monitor_function(metric_name="example_processing")
@@ -96,56 +84,38 @@ def monitored_function(data: str) -> str:
 
 def demonstrate_monitoring() -> None:
     """Demonstrate automatic function monitoring."""
-    print("\n📊 Demonstrating Function Monitoring")
-
-    result = monitored_function("sample data")
-    print(f"✅ Monitored function result: {result}")
+    monitored_function("sample data")
 
 
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
-    print("\n✅ Demonstrating Entity Validation")
-
     # Valid metric
     metric_result = flext_create_metric("valid_metric", 100.0, "count")
     if metric_result.success:
-        validation = metric_result.data.validate_business_rules()
-        print(f"✅ Metric validation: {'passed' if validation.success else 'failed'}")
+        metric_result.data.validate_business_rules()
 
     # Invalid metric (negative value should be caught by pydantic or business rules)
     try:
         invalid_metric_result = flext_create_metric("invalid_metric", -10.0, "count")
         if invalid_metric_result.success:
-            validation = invalid_metric_result.data.validate_business_rules()
-            print(
-                f"❌ Invalid metric validation: {'passed' if validation.success else 'failed'}"
-            )
-    except Exception as e:
-        print(f"✅ Caught validation error as expected: {type(e).__name__}")
+            invalid_metric_result.data.validate_business_rules()
+    except Exception:
+        pass
 
 
 def demonstrate_health_monitoring() -> None:
     """Demonstrate health monitoring scenario."""
-    print("\n💚 Demonstrating Health Monitoring")
-
     services = ["database", "cache", "message-queue", "auth-service"]
     statuses = ["healthy", "healthy", "degraded", "healthy"]
 
     for service, status in zip(services, statuses, strict=False):
         health_result = flext_create_health_check(service, status)
         if health_result.success:
-            icon = (
-                "✅" if status == "healthy" else "⚠️" if status == "degraded" else "❌"
-            )
-            print(
-                f"{icon} {health_result.data.service_name}: {health_result.data.status}"
-            )
+            pass
 
 
 def demonstrate_alerting_scenario() -> None:
     """Demonstrate alerting in different scenarios."""
-    print("\n🚨 Demonstrating Alerting Scenarios")
-
     alert_scenarios = [
         ("info", "System started successfully", "system"),
         ("warning", "High memory usage: 85%", "monitoring"),
@@ -162,14 +132,11 @@ def demonstrate_alerting_scenario() -> None:
                 "error": "[ERROR]",
                 "critical": "[CRIT]",
             }
-            icon = icons.get(level, "[UNKNOWN]")
-            print(f"{icon} [{level.upper()}] {alert_result.data.message}")
+            icons.get(level, "[UNKNOWN]")
 
 
 def demonstrate_global_factory() -> None:
     """Demonstrate global factory usage."""
-    print("\n🌍 Demonstrating Global Factory")
-
     # Reset to ensure clean state
     reset_global_factory()
 
@@ -179,14 +146,11 @@ def demonstrate_global_factory() -> None:
     # Use global factory
     metric_result = factory.create_metric("global_metric", 42.0, "count")
     if metric_result.success:
-        print(f"✅ Global factory created: {metric_result.data.name}")
+        pass
 
 
 def main() -> None:
     """Run all functional examples."""
-    print("🚀 FLEXT Observability - Functional Examples")
-    print("=" * 50)
-
     try:
         demonstrate_simple_api()
         demonstrate_factory_pattern()
@@ -196,11 +160,7 @@ def main() -> None:
         demonstrate_alerting_scenario()
         demonstrate_global_factory()
 
-        print("\n" + "=" * 50)
-        print("✅ All examples completed successfully!")
-
-    except Exception as e:
-        print(f"\n❌ Example failed: {e}")
+    except Exception:
         raise
 
 

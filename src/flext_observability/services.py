@@ -57,13 +57,19 @@ from __future__ import annotations
 
 import shutil
 import threading
+import time
 from collections import defaultdict
 from typing import cast
 
 import psutil
-from flext_core import FlextContainer, FlextResult, get_logger
-from flext_core.typings import FlextTypes
-from flext_core.utilities import FlextIdGenerator
+from flext_core import (
+    FlextContainer,
+    FlextResult,
+    FlextTypes,
+    generate_id,
+    generate_uuid,
+    get_logger,
+)
 
 # Direct imports - eliminando TYPE_CHECKING conforme padrão flext-core
 from flext_observability.models import (
@@ -76,19 +82,19 @@ from flext_observability.models import (
 
 
 class FlextGenerators:
-    """Compatibility shim mapping to FlextIdGenerator."""
+    """Compatibility shim mapping to flext_core functions."""
 
     @staticmethod
     def generate_timestamp() -> float:
-        return FlextIdGenerator.generate_timestamp()
+        return time.time()
 
     @staticmethod
     def generate_uuid() -> str:
-        return FlextIdGenerator.generate_uuid()
+        return generate_uuid()
 
     @staticmethod
     def generate_entity_id() -> str:
-        return FlextIdGenerator.generate_entity_id()
+        return generate_id()
 
 
 # Removed validation module - using FlextResult[None].fail() directly per docs/patterns/
@@ -212,7 +218,7 @@ class FlextMetricsService:
         self.logger = get_logger(self.__class__.__name__)
 
         # Real metrics storage with thread safety (Single Responsibility)
-        self._metrics_store: dict[str, list[FlextTypes.Data.Dict]] = defaultdict(list)
+        self._metrics_store: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
         self._metrics_lock = threading.RLock()
         self._metric_counters: dict[str, float] = defaultdict(float)
         self._metric_gauges: dict[str, float] = {}
@@ -221,7 +227,7 @@ class FlextMetricsService:
         )  # Keep as-is, specific numeric type
 
         # Service health tracking - use flext-core facilities
-        self._start_time = FlextIdGenerator.generate_timestamp()
+        self._start_time = time.time()
         self._metrics_recorded = 0
 
     def _validate_metric_input(self, metric: object) -> FlextResult[None]:
@@ -344,13 +350,13 @@ class FlextMetricsService:
                 f"Failed to retrieve metric '{metric_name}': {e}"
             )
 
-    def get_metrics_summary(self) -> FlextResult[FlextTypes.Data.Dict]:
+    def get_metrics_summary(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive metrics summary with statistics."""
         try:
             with self._metrics_lock:
                 summary: dict[str, object] = {
                     "service_info": {
-                        "uptime_seconds": FlextIdGenerator.generate_timestamp()
+                        "uptime_seconds": time.time()
                         - self._start_time,
                         "metrics_recorded": self._metrics_recorded,
                         "unique_metrics": len(self._metrics_store),
@@ -418,7 +424,7 @@ class FlextMetricsService:
                 self._metric_gauges.clear()
                 self._metric_histograms.clear()
                 self._metrics_recorded = 0
-                self._start_time = FlextIdGenerator.generate_timestamp()
+                self._start_time = time.time()
 
             self.logger.info("All metrics reset successfully")
             return FlextResult[None].ok(None)
@@ -597,9 +603,9 @@ class FlextTracingService:
         self.logger = get_logger(self.__class__.__name__)
 
         # Real trace storage with thread safety (Single Responsibility)
-        self._active_traces: dict[str, FlextTypes.Data.Dict] = {}
-        self._completed_traces: dict[str, FlextTypes.Data.Dict] = {}
-        self._trace_spans: dict[str, list[FlextTypes.Data.Dict]] = defaultdict(list)
+        self._active_traces: dict[str, FlextTypes.Core.Dict] = {}
+        self._completed_traces: dict[str, FlextTypes.Core.Dict] = {}
+        self._trace_spans: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
         self._traces_lock = threading.RLock()
 
         # Correlation tracking for distributed tracing
@@ -611,7 +617,7 @@ class FlextTracingService:
         # Service metrics - use flext-core facilities
         self._traces_started = 0
         self._traces_completed = 0
-        self._service_start_time = FlextIdGenerator.generate_timestamp()
+        self._service_start_time = time.time()
 
     def start_trace(self, trace: FlextTrace) -> FlextResult[FlextTrace]:
         """Start distributed trace with real span tracking and correlation."""
@@ -633,10 +639,10 @@ class FlextTracingService:
 
             # Real trace management with thread safety
             with self._traces_lock:
-                start_time = FlextIdGenerator.generate_timestamp()
+                start_time = time.time()
 
                 # Create comprehensive trace context
-                trace_context: FlextTypes.Data.Dict = {
+                trace_context: FlextTypes.Core.Dict = {
                     "trace_id": trace.trace_id,
                     "operation": trace.operation_name,
                     "start_time": start_time,
@@ -682,7 +688,7 @@ class FlextTracingService:
         trace_id: str,
         span_name: str,
         **span_attributes: object,
-    ) -> FlextResult[FlextTypes.Data.Dict]:
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Add span to existing trace with real span tracking."""
         try:
             with self._traces_lock:
@@ -692,7 +698,7 @@ class FlextTracingService:
                     )
 
                 span_id = f"{trace_id}_{len(self._trace_spans[trace_id])}"
-                span_start_time = FlextIdGenerator.generate_timestamp()
+                span_start_time = time.time()
 
                 # Create comprehensive span
                 span: dict[str, object] = {
@@ -723,7 +729,7 @@ class FlextTracingService:
         self,
         trace_id: str,
         status: str = "completed",
-    ) -> FlextResult[FlextTypes.Data.Dict]:
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Finish trace with comprehensive context and timing."""
         try:
             with self._traces_lock:
@@ -734,7 +740,7 @@ class FlextTracingService:
 
                 # Complete the trace
                 trace_context = self._active_traces[trace_id]
-                end_time = FlextIdGenerator.generate_timestamp()
+                end_time = time.time()
                 start_time = trace_context["start_time"]
                 duration = end_time - (
                     start_time if isinstance(start_time, (int, float)) else 0
@@ -772,7 +778,7 @@ class FlextTracingService:
                 f"Failed to finish trace '{trace_id}': {e}"
             )
 
-    def get_trace_info(self, trace_id: str) -> FlextResult[FlextTypes.Data.Dict]:
+    def get_trace_info(self, trace_id: str) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive trace information including spans."""
         try:
             with self._traces_lock:
@@ -799,7 +805,7 @@ class FlextTracingService:
                 f"Failed to get trace info for '{trace_id}': {e}"
             )
 
-    def export_jaeger_format(self, trace_id: str) -> FlextResult[FlextTypes.Data.Dict]:
+    def export_jaeger_format(self, trace_id: str) -> FlextResult[FlextTypes.Core.Dict]:
         """Export trace in Jaeger-compatible format for real integration."""
         try:
             trace_info_result = self.get_trace_info(trace_id)
@@ -829,7 +835,7 @@ class FlextTracingService:
                         "tags": [
                             {"key": k, "value": str(v)}
                             for k, v in cast(
-                                "FlextTypes.Data.Dict",
+                                "FlextTypes.Core.Dict",
                                 span.get("attributes") or {},
                             ).items()
                         ],
@@ -842,7 +848,7 @@ class FlextTracingService:
                         },
                     }
                     for span in cast(
-                        "list[FlextTypes.Data.Dict]",
+                        "list[FlextTypes.Core.Dict]",
                         trace_info.get("trace_spans") or [],
                     )
                     if isinstance(span, dict)
@@ -865,11 +871,11 @@ class FlextTracingService:
                 f"Failed to export Jaeger format for trace '{trace_id}': {e}",
             )
 
-    def get_tracing_summary(self) -> FlextResult[FlextTypes.Data.Dict]:
+    def get_tracing_summary(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive tracing service summary with statistics."""
         try:
             with self._traces_lock:
-                current_time = FlextIdGenerator.generate_timestamp()
+                current_time = time.time()
                 uptime = current_time - self._service_start_time
 
                 summary: dict[str, object] = {
@@ -1066,8 +1072,8 @@ class FlextHealthService:
         self.logger = get_logger(self.__class__.__name__)
 
         # Real health monitoring with thread safety (Single Responsibility)
-        self._component_health: dict[str, FlextTypes.Data.Dict] = {}
-        self._health_history: dict[str, list[FlextTypes.Data.Dict]] = defaultdict(list)
+        self._component_health: dict[str, FlextTypes.Core.Dict] = {}
+        self._health_history: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
         self._health_lock = threading.RLock()
 
         # Health monitoring configuration
@@ -1079,7 +1085,7 @@ class FlextHealthService:
         self._total_health_checks = 0
         self._healthy_components: set[str] = set()
         self._unhealthy_components: set[str] = set()
-        self._service_start_time = FlextIdGenerator.generate_timestamp()
+        self._service_start_time = time.time()
 
     def _extract_actual_health(
         self,
@@ -1100,7 +1106,7 @@ class FlextHealthService:
         self,
         actual_health: FlextHealthCheck,
         check_time: float,
-    ) -> FlextTypes.Data.Dict:
+    ) -> FlextTypes.Core.Dict:
         """Create comprehensive health record."""
         return {
             "component": actual_health.service_name,
@@ -1168,7 +1174,7 @@ class FlextHealthService:
 
             # Real health monitoring with thread safety
             with self._health_lock:
-                check_time = FlextIdGenerator.generate_timestamp()
+                check_time = time.time()
 
                 # Create and store health record
                 health_record = self._create_health_record(actual_health, check_time)
@@ -1219,11 +1225,11 @@ class FlextHealthService:
 
             return FlextResult[FlextHealthCheck].fail(f"Failed to check health: {e}")
 
-    def get_overall_health(self) -> FlextResult[FlextTypes.Data.Dict]:
+    def get_overall_health(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive overall system health with detailed component status."""
         try:
             with self._health_lock:
-                current_time = FlextIdGenerator.generate_timestamp()
+                current_time = time.time()
                 uptime = current_time - self._service_start_time
 
                 # Calculate overall health status
@@ -1274,7 +1280,7 @@ class FlextHealthService:
     def get_component_health_history(
         self,
         component_name: str,
-    ) -> FlextResult[list[FlextTypes.Data.Dict]]:
+    ) -> FlextResult[list[FlextTypes.Core.Dict]]:
         """Get health history for a specific component."""
         try:
             with self._health_lock:
@@ -1290,7 +1296,7 @@ class FlextHealthService:
                 f"Failed to get health history for '{component_name}': {e}",
             )
 
-    def perform_system_health_check(self) -> FlextResult[FlextTypes.Data.Dict]:
+    def perform_system_health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform comprehensive system health checks including infrastructure."""
         try:
             system_checks = {}
@@ -1349,13 +1355,13 @@ class FlextHealthService:
             # Service availability check
             system_checks["observability_service"] = {
                 "status": "healthy",
-                "uptime_seconds": FlextIdGenerator.generate_timestamp()
+                "uptime_seconds": time.time()
                 - self._service_start_time,
                 "total_health_checks": self._total_health_checks,
             }
 
             return FlextResult[dict[str, object]].ok(
-                cast("FlextTypes.Data.Dict", system_checks)
+                cast("FlextTypes.Core.Dict", system_checks)
             )
 
         except (ValueError, TypeError, AttributeError) as e:

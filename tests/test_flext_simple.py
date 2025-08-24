@@ -5,8 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TypeVar, cast
 
-from flext_core import FlextResult
-from flext_core.typings import FlextTypes
+from flext_core import FlextResult, FlextTypes
 
 from flext_observability import (
     flext_create_alert,

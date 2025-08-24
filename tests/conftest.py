@@ -70,7 +70,7 @@ def pytest_configure(config: Config) -> None:
     )
 
 
-def pytest_collection_modifyitems(config: Config, items: list[Item]) -> None:  # noqa: ARG001
+def pytest_collection_modifyitems(config: Config, items: list[Item]) -> None:
     """Auto-mark tests based on their location."""
     for item in items:
         # Auto-mark based on test location
