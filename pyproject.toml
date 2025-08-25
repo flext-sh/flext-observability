@@ -229,7 +229,7 @@ warn_untyped_fields = true
 extend = "../.pytest-ini-options-shared.toml"
 
 [tool.ruff]
-extend = "../.config/tools/.ruff-shared.toml"
+extend = "../ruff-shared.toml"
 lint.isort.known-first-party = ["flext_observability"]
 
 [tool.vulture]
