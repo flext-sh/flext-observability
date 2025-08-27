@@ -1310,9 +1310,9 @@ class OracleTrace:  # Use FlextTrace instead
 
 ```python
 # ✅ Extend observability configuration patterns
-from flext_core import FlextSettings
+from flext_core import FlextConfig
 
-class ObservabilitySettings(FlextSettings):
+class ObservabilitySettings(FlextConfig):
     """Observability configuration extending core patterns."""
     metrics_enabled: bool = True
     tracing_enabled: bool = True
@@ -1322,7 +1322,7 @@ class ObservabilitySettings(FlextSettings):
     class Config:
         env_prefix = "OBSERVABILITY_"
 
-class UserServiceSettings(FlextSettings):
+class UserServiceSettings(FlextConfig):
     """User service configuration with observability."""
     service_name: str = "user-service"
     database_url: str = "postgresql://localhost/users"
