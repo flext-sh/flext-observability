@@ -73,7 +73,7 @@ from flext_observability.services import (
     FlextTracingService,
 )
 
-# Function type aliases - flexible approach for Python 3.13+ without Any
+# Function type aliases - flexible approach for Python 3.13+ without object
 # Define Union of common callable patterns to satisfy PyRight
 
 AnyCallable = (
@@ -102,7 +102,7 @@ F = TypeVar("F", bound=AnyCallable)
 # Helper function to call any function - isolated type ignore
 def _call_any_function(func: AnyCallable, *args: object, **kwargs: object) -> object:
     """Helper to call function with object args - isolated type handling."""
-    return func(*args, **kwargs)  # type: ignore[arg-type]
+    return func(*args, **kwargs)
 
 
 # ============================================================================
