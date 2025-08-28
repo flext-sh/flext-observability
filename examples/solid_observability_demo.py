@@ -7,7 +7,8 @@ and function monitoring capabilities.
 """
 
 import time
-from typing import Any
+
+object
 
 from flext_core import FlextContainer, FlextResult
 
@@ -56,7 +57,7 @@ def demonstrate_solid_design() -> None:
     factory.create_metric("custom_metric", 100.0, "units")
 
     # Liskov Substitution: All entities implement the same base interface
-    results: list[FlextResult[Any]] = [
+    results: list[FlextResult[object]] = [
         metric_result,
         trace_result,
         alert_result,

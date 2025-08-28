@@ -1090,7 +1090,7 @@ def create_metric(name, value, unit):  # Missing types
 
 ```python
 # ✅ Always use FlextResult for observability error handling
-def create_comprehensive_observability(operation: str) -> FlextResult[dict[str, Any]]:
+def create_comprehensive_observability(operation: str) -> FlextResult[dict[str, object]]:
     """Create comprehensive observability data with error handling."""
 
     # Chain observability operations with proper error handling
@@ -1136,9 +1136,9 @@ def create_metric_bad(name: str, value: float) -> FlextMetric:
 ```python
 def create_business_observability_dashboard(
     service_name: str,
-    metrics_config: dict[str, Any],
-    trace_config: dict[str, Any]
-) -> FlextResult[dict[str, Any]]:
+    metrics_config: dict[str, object],
+    trace_config: dict[str, object]
+) -> FlextResult[dict[str, object]]:
     """
     Create comprehensive business observability dashboard.
 
@@ -1164,7 +1164,7 @@ def create_business_observability_dashboard(
             }
 
     Returns:
-        FlextResult[dict[str, Any]]: Success contains dashboard configuration
+        FlextResult[dict[str, object]]: Success contains dashboard configuration
         with metric definitions, trace setup, and health check configuration.
         Failure contains detailed error message explaining setup failure.
 

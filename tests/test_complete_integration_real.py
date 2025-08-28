@@ -2,7 +2,8 @@
 
 import threading
 import time
-from typing import Any
+
+object
 
 from flext_core import FlextContainer
 
@@ -169,7 +170,7 @@ class TestCompleteIntegrationReal:
 
         # Create monitored functions
         @flext_monitor_function(monitor=self.monitor, metric_name="data_processing")
-        def process_data(data: list[int]) -> dict[str, Any]:
+        def process_data(data: list[int]) -> dict[str, object]:
             """Real data processing function."""
             # Simulate real processing
             time.sleep(0.1)
