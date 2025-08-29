@@ -176,7 +176,7 @@ All modules follow FLEXT ecosystem standards:
 
 - **FlextResult[T]** for railway-oriented programming
 - **FlextContainer** for dependency injection
-- **FlextEntity** base patterns for domain entities
+- **FlextModels.Entity** base patterns for domain entities
 - **Type safety** with comprehensive annotations
 
 ### Cross-Service Observability

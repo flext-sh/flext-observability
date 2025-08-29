@@ -25,7 +25,7 @@ FLEXT Observability follows Uncle Bob's Clean Architecture with distinct, decoup
 │  FlextMetric | FlextTrace | FlextAlert | Business Rules    │
 ├═════════════════════════════════════════════════════════════┤
 │                   FLEXT-CORE FOUNDATION                    │
-│   FlextResult[T] | FlextContainer | FlextEntity Patterns   │
+│   FlextResult[T] | FlextContainer | FlextModels.Entity Patterns   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -74,7 +74,7 @@ src/flext_observability/
 
 **Patterns**:
 
-- All entities extend `FlextEntity` from flext-core
+- All entities extend `FlextModels.Entity` from flext-core
 - Domain validation via `validate_business_rules()` method
 - Immutable value objects for measurements and timestamps
 - Business rule enforcement at entity level
@@ -156,7 +156,7 @@ FLEXT Observability integrates with the ecosystem through standardized patterns:
 
 ```python
 # All services use flext-core patterns
-from flext_core import FlextResult, FlextContainer, FlextEntity
+from flext_core import FlextResult, FlextContainer, FlextModels.Entity
 from flext_observability import FlextMetricsService
 
 container = FlextContainer()

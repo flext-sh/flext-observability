@@ -64,11 +64,11 @@ from typing import cast
 import psutil
 from flext_core import (
     FlextContainer,
+    FlextLogger,
     FlextResult,
     FlextTypes,
     generate_id,
     generate_uuid,
-    get_logger,
 )
 
 # Direct imports - eliminando TYPE_CHECKING conforme padrão flext-core
@@ -215,7 +215,7 @@ class FlextMetricsService:
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize metrics service with real storage and aggregation."""
         self.container = container or FlextContainer()
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = FlextLogger(self.__class__.__name__)
 
         # Real metrics storage with thread safety (Single Responsibility)
         self._metrics_store: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
@@ -356,8 +356,7 @@ class FlextMetricsService:
             with self._metrics_lock:
                 summary: dict[str, object] = {
                     "service_info": {
-                        "uptime_seconds": time.time()
-                        - self._start_time,
+                        "uptime_seconds": time.time() - self._start_time,
                         "metrics_recorded": self._metrics_recorded,
                         "unique_metrics": len(self._metrics_store),
                     },
@@ -495,7 +494,7 @@ class FlextLoggingService:
 
         """
         self.container = container or FlextContainer()
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = FlextLogger(self.__class__.__name__)
 
     def log_entry(self, entry: FlextLogEntry) -> FlextResult[FlextLogEntry]:
         """Log entry using flext-core patterns."""
@@ -600,7 +599,7 @@ class FlextTracingService:
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize tracing service with real span tracking and correlation."""
         self.container = container or FlextContainer()
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = FlextLogger(self.__class__.__name__)
 
         # Real trace storage with thread safety (Single Responsibility)
         self._active_traces: dict[str, FlextTypes.Core.Dict] = {}
@@ -968,7 +967,7 @@ class FlextAlertService:
 
         """
         self.container = container or FlextContainer()
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = FlextLogger(self.__class__.__name__)
 
     def create_alert(self, alert: FlextAlert | None) -> FlextResult[FlextAlert]:
         """Create alert using flext-core patterns."""
@@ -1069,7 +1068,7 @@ class FlextHealthService:
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize health service with real monitoring and alerting."""
         self.container = container or FlextContainer()
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = FlextLogger(self.__class__.__name__)
 
         # Real health monitoring with thread safety (Single Responsibility)
         self._component_health: dict[str, FlextTypes.Core.Dict] = {}
@@ -1219,7 +1218,7 @@ class FlextHealthService:
                     component_name = health.service_name
                     health_status = health.status
             except (AttributeError, TypeError) as ae:
-                logger = get_logger(__name__)
+                logger = FlextLogger(__name__)
                 logger.warning(f"Health status extraction failed, using defaults: {ae}")
                 # Use defaults
 
@@ -1355,8 +1354,7 @@ class FlextHealthService:
             # Service availability check
             system_checks["observability_service"] = {
                 "status": "healthy",
-                "uptime_seconds": time.time()
-                - self._service_start_time,
+                "uptime_seconds": time.time() - self._service_start_time,
                 "total_health_checks": self._total_health_checks,
             }
 

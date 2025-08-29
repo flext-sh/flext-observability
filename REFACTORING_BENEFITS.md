@@ -55,7 +55,7 @@ class FlextMetricsService(FlextObservabilityService[FlextMetric, str]):
 **ANTES:**
 
 ```python
-class FlextMetric(FlextEntity):
+class FlextMetric(FlextModels.Entity):
     def validate_business_rules(self) -> FlextResult[None]:
         # 30+ linhas de validação manual repetitiva
         if not ObservabilityValidators.is_valid_metric_name(self.name):
@@ -80,7 +80,7 @@ class FlextMetric(FlextEntity):
 **DEPOIS:**
 
 ```python
-class FlextMetric(FlextEntity, ObservabilityValidationMixin, MetricsMixin, TagsMixin):
+class FlextMetric(FlextModels.Entity, ObservabilityValidationMixin, MetricsMixin, TagsMixin):
     def get_entity_type(self) -> str:
         return "Metric"
 

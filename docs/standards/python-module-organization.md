@@ -52,10 +52,10 @@ from flext_observability import FlextMetric, FlextTrace, flext_create_metric
 **Entity Architecture**:
 
 ```python
-from flext_core import FlextEntity, FlextResult
+from flext_core import FlextModels.Entity, FlextResult
 from flext_observability.entities import FlextMetric, FlextTrace
 
-class FlextMetric(FlextEntity):
+class FlextMetric(FlextModels.Entity):
     """Observability metric with domain validation."""
     name: str
     value: float | Decimal

@@ -7,7 +7,7 @@ from typing import Never
 from unittest.mock import patch
 
 import pytest
-from flext_core import FlextEntityId
+from flext_core import FlextModels
 
 from flext_observability import (
     FlextMetric,
@@ -60,7 +60,7 @@ class TestTrue100Coverage:
 
         # Create metric with problematic name
         metric = FlextMetric(
-            id=FlextEntityId("test"),
+            id=FlextModels.EntityId("test"),
             name="test_metric",
             value=42.0,
             unit="count",
@@ -105,7 +105,7 @@ class TestTrue100Coverage:
         # 3. Entities validation exception (lines 43-44)
 
         metric = FlextMetric(
-            id=FlextEntityId("final"),
+            id=FlextModels.EntityId("final"),
             name="final_metric",
             value=1.0,
             unit="test",

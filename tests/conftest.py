@@ -23,7 +23,7 @@ from prometheus_client import CollectorRegistry, Counter, Histogram
 from pytest_mock import MockerFixture
 
 
-def get_logger(name: str) -> logging.Logger:
+def FlextLogger(name: str) -> logging.Logger:
     """Simple logger for tests."""
     return logging.getLogger(name)
 
@@ -192,7 +192,7 @@ def span_context() -> trace.SpanContext:
 @pytest.fixture
 def structured_logger() -> object:
     """Create a structured logger for testing."""
-    return get_logger("test-logger")
+    return FlextLogger("test-logger")
 
 
 @pytest.fixture
