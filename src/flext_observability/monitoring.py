@@ -61,7 +61,7 @@ import time
 from collections.abc import Callable
 from typing import TypeVar, cast
 
-from flext_core import FlextContainer, FlextResult, get_logger
+from flext_core import FlextContainer, FlextLogger, FlextResult
 
 import flext_observability.models as _models
 from flext_observability import models as _models_module
@@ -202,7 +202,7 @@ class FlextObservabilityMonitor:
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and integration."""
         self.container = container or FlextContainer()
-        self._logger = get_logger(self.__class__.__name__)
+        self._logger = FlextLogger(self.__class__.__name__)
         self._initialized = False
         self._running = False
 
@@ -462,7 +462,7 @@ def _execute_monitored_function(
                 )
                 alert_service.create_alert(alert)
             except (ValueError, TypeError, AttributeError) as e:
-                logger = get_logger(__name__)
+                logger = FlextLogger(__name__)
                 logger.warning(f"Alert creation failed during exception handling: {e}")
                 # Continue with exception propagation
 

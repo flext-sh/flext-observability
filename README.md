@@ -75,7 +75,7 @@ FLEXT Observability provides observability patterns for all ecosystem services:
 ### **FLEXT Core Integration**
 
 - **FlextResult Pattern**: Type-safe error handling for all operations
-- **FlextEntity**: Domain entities with business logic validation
+- **FlextModels.Entity**: Domain entities with business logic validation
 - **FlextContainer**: Dependency injection for service management
 
 ## Installation & Usage

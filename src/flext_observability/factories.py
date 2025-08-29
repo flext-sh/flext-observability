@@ -62,10 +62,10 @@ from typing import cast
 
 from flext_core import (
     FlextContainer,
+    FlextLogger,
     FlextResult,
     FlextTypes,
     FlextUtilities,
-    get_logger,
 )
 
 # Type checking imports if needed in future
@@ -235,8 +235,8 @@ class FlextObservabilityMasterFactory:
         """
         self.container = container or FlextContainer()
         # Use logger accessor from factory module so tests patching
-        # flext_observability.factory.get_logger can intercept
-        self._logger = get_logger(self.__class__.__name__)
+        # flext_observability.factory.FlextLogger can intercept
+        self._logger = FlextLogger(self.__class__.__name__)
         self._setup_services()
 
     def _setup_services(self) -> None:

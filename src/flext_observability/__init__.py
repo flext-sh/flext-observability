@@ -9,8 +9,8 @@ import warnings
 __version__ = "0.9.0"
 __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 
-# Import get_logger from flext_core
-from flext_core import FlextContainer, get_logger, FlextConstants
+# Import FlextLogger from flext_core
+from flext_core import FlextContainer, FlextLogger, FlextConstants
 
 # Core entities from models module
 from flext_observability.models import (
@@ -151,7 +151,7 @@ __all__: list[str] = [
     "flext_monitor_function",
     "flext_trace",
     "get_global_factory",
-    "get_logger",
+    "FlextLogger",
     "health_check",
     "log",
     "metric",
