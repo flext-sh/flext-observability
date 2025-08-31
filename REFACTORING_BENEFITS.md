@@ -123,7 +123,7 @@ class FlextObservabilityPlatform:
             return result.data
         # Error handling manual
         msg: str = f"Failed to get metrics service: {result.error}"
-        raise FlextProcessingError(msg)
+        raise FlextExceptions.ProcessingError(msg)
 ```
 
 **DEPOIS:**
