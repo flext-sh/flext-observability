@@ -64,11 +64,10 @@ from typing import cast
 import psutil
 from flext_core import (
     FlextContainer,
+    FlextIdentification,
     FlextLogger,
     FlextResult,
     FlextTypes,
-    generate_id,
-    generate_uuid,
 )
 
 # Direct imports - eliminando TYPE_CHECKING conforme padrão flext-core
@@ -90,11 +89,11 @@ class FlextGenerators:
 
     @staticmethod
     def generate_uuid() -> str:
-        return generate_uuid()
+        return FlextIdentification.generate_entity_id()
 
     @staticmethod
     def generate_entity_id() -> str:
-        return generate_id()
+        return FlextIdentification.generate_entity_id()
 
 
 # Removed validation module - using FlextResult[None].fail() directly per docs/patterns/

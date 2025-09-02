@@ -50,13 +50,12 @@ from decimal import Decimal
 from typing import cast, override
 
 from flext_core import (
+    FlextIdentification,
     FlextLogger,
     FlextModels,
     FlextResult,
     FlextTypes,
     FlextValidations,
-    generate_id,
-    generate_uuid,
 )
 from pydantic import ConfigDict, Field, field_validator
 
@@ -73,11 +72,11 @@ class FlextGenerators:
 
     @staticmethod
     def generate_uuid() -> str:
-        return generate_uuid()
+        return FlextIdentification.generate_entity_id()
 
     @staticmethod
-    def generate_entity_id() -> FlextModels:
-        return FlextModels(generate_id())
+    def generate_entity_id() -> str:
+        return FlextIdentification.generate_entity_id()
 
 
 # ============================================================================
