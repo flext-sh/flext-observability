@@ -60,7 +60,7 @@ class TestTrue100Coverage:
 
         # Create metric with problematic name
         metric = FlextMetric(
-            id=FlextModels.EntityId("test"),
+            id=FlextModels("test"),
             name="test_metric",
             value=42.0,
             unit="count",
@@ -105,7 +105,7 @@ class TestTrue100Coverage:
         # 3. Entities validation exception (lines 43-44)
 
         metric = FlextMetric(
-            id=FlextModels.EntityId("final"),
+            id=FlextModels("final"),
             name="final_metric",
             value=1.0,
             unit="test",

@@ -270,9 +270,9 @@ class TestFlextObservabilityMasterFactoryReal:
                 entity, "timestamp", getattr(entity, "created_at", None)
             )
             if timestamp_attr:
-                # Handle both FlextModels.Timestamp and datetime objects
+                # Handle both FlextModels and datetime objects
                 if hasattr(timestamp_attr, "root"):
-                    # FlextModels.Timestamp object with .root attribute
+                    # FlextModels object with .root attribute
                     assert isinstance(timestamp_attr.root, datetime)
                 else:
                     # Direct datetime object

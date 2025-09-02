@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 Core observability domain entities implementing Clean Architecture and
 Domain-Driven Design
 patterns for metrics, tracing, alerts, health checks, and structured logging within the
-FLEXT ecosystem. All entities extend flext-core FlextModels.Entity patterns with comprehensive
+FLEXT ecosystem. All entities extend flext-core FlextModels patterns with comprehensive
 domain validation and railway-oriented programming error handling.
 
 Key Components:
@@ -17,7 +17,7 @@ Key Components:
     - FlextLogEntry: Structured logging entity with correlation ID support
 
 Architecture:
-    Built on flext-core FlextModels.Entity foundation with domain rule validation,
+    Built on flext-core FlextModels foundation with domain rule validation,
     type safety, and FlextResult error handling patterns. Implements DDD
     entity patterns with business logic encapsulation.
 
@@ -30,7 +30,7 @@ Example:
     ...     print(f"Valid metric: {metric.name}")
 
 Integration:
-    - Built on flext-core FlextModels.Entity patterns
+    - Built on flext-core FlextModels patterns
     - Integrates with FlextObservabilityMasterFactory for creation
     - Used by FlextObservabilityServices for business logic
     - Supports ecosystem-wide observability standardization
@@ -50,15 +50,13 @@ from decimal import Decimal
 from typing import cast, override
 
 from flext_core import (
-    FlextModels.Entity,
-    FlextModels.EntityId,
+    FlextLogger,
+    FlextModels,
     FlextResult,
     FlextTypes,
     FlextValidations,
-    FlextModels.Version,
     generate_id,
     generate_uuid,
-    FlextLogger,
 )
 from pydantic import ConfigDict, Field, field_validator
 
@@ -78,8 +76,8 @@ class FlextGenerators:
         return generate_uuid()
 
     @staticmethod
-    def generate_entity_id() -> FlextModels.EntityId:
-        return FlextModels.EntityId(generate_id())
+    def generate_entity_id() -> FlextModels:
+        return FlextModels(generate_id())
 
 
 # ============================================================================
@@ -110,7 +108,7 @@ def _generate_utc_datetime() -> datetime:
 # ============================================================================
 
 
-class FlextMetric(FlextModels.Entity):
+class FlextMetric(FlextModels):
     """Observability metric entity for collecting and validating measurement data.
 
     Core domain entity representing a single metric measurement with comprehensive
@@ -256,7 +254,7 @@ class FlextMetric(FlextModels.Entity):
         return FlextResult[None].ok(None)
 
 
-class FlextLogEntry(FlextModels.Entity):
+class FlextLogEntry(FlextModels):
     """Structured Logging Entity for FLEXT Ecosystem.
 
     Enterprise-grade structured logging entity implementing comprehensive logging
@@ -337,7 +335,7 @@ class FlextLogEntry(FlextModels.Entity):
       collection and Infrastructure Layer for log aggregation system export.
 
     FLEXT Integration:
-      - Built on flext-core FlextModels.Entity foundation with validation patterns
+      - Built on flext-core FlextModels foundation with validation patterns
       - Processed by FlextLoggingService for collection and enrichment
       - Integrates with correlation ID management for request tracing
       - Compatible with FlextResult error handling throughout the platform
@@ -408,7 +406,7 @@ class FlextLogEntry(FlextModels.Entity):
         return FlextResult[None].ok(None)
 
 
-class FlextTrace(FlextModels.Entity):
+class FlextTrace(FlextModels):
     """Distributed Tracing Span Entity for FLEXT Ecosystem.
 
     Enterprise-grade distributed tracing entity implementing OpenTelemetry-compatible
@@ -501,7 +499,7 @@ class FlextTrace(FlextModels.Entity):
       collection and Infrastructure Layer for tracing system export.
 
     FLEXT Integration:
-      - Built on flext-core FlextModels.Entity foundation with validation patterns
+      - Built on flext-core FlextModels foundation with validation patterns
       - Processed by FlextTracingService for collection and correlation
       - Supports FLEXT ecosystem service identification and topology mapping
       - Compatible with FlextResult error handling throughout the platform
@@ -602,7 +600,7 @@ class FlextTrace(FlextModels.Entity):
         return FlextResult[None].ok(None)
 
 
-class FlextAlert(FlextModels.Entity):
+class FlextAlert(FlextModels):
     """Alert Management Entity for FLEXT Ecosystem Monitoring.
 
     Enterprise-grade alert entity implementing comprehensive alerting semantics
@@ -687,7 +685,7 @@ class FlextAlert(FlextModels.Entity):
       and Infrastructure Layer for notification delivery.
 
     FLEXT Integration:
-      - Built on flext-core FlextModels.Entity foundation with validation patterns
+      - Built on flext-core FlextModels foundation with validation patterns
       - Processed by FlextAlertService for routing and lifecycle management
       - Integrates with FlextMetricsService for threshold-based alerting
       - Compatible with FlextResult error handling throughout the platform
@@ -778,7 +776,7 @@ class FlextAlert(FlextModels.Entity):
         return FlextResult[None].ok(None)
 
 
-class FlextHealthCheck(FlextModels.Entity):
+class FlextHealthCheck(FlextModels):
     """Health Monitoring Entity for FLEXT Ecosystem Components.
 
     Enterprise-grade health check entity implementing comprehensive service health
@@ -859,7 +857,7 @@ class FlextHealthCheck(FlextModels.Entity):
       health collection and Infrastructure Layer for monitoring system export.
 
     FLEXT Integration:
-      - Built on flext-core FlextModels.Entity foundation with validation patterns
+      - Built on flext-core FlextModels foundation with validation patterns
       - Processed by FlextHealthService for aggregation and correlation
       - Integrates with FlextMetricsService for health metrics collection
       - Compatible with FlextResult error handling throughout the platform
@@ -950,8 +948,8 @@ def flext_alert(
     # Create with explicit kwargs for better type safety
     if "id" in kwargs and "version" in kwargs:
         return FlextAlert(
-            id=FlextModels.EntityId(cast("str", kwargs["id"])),
-            version=FlextModels.Version(cast("int", kwargs["version"])),
+            id=FlextModels(cast("str", kwargs["id"])),
+            version=FlextModels(cast("int", kwargs["version"])),
             title=title,
             message=message,
             severity=severity,
@@ -961,7 +959,7 @@ def flext_alert(
         )
     if "id" in kwargs:
         return FlextAlert(
-            id=FlextModels.EntityId(cast("str", kwargs["id"])),
+            id=FlextModels(cast("str", kwargs["id"])),
             title=title,
             message=message,
             severity=severity,
@@ -995,7 +993,7 @@ def flext_trace(
     # Create with explicit kwargs for better type safety
     if "id" in kwargs:
         return FlextTrace(
-            id=FlextModels.EntityId(cast("str", kwargs["id"])),
+            id=FlextModels(cast("str", kwargs["id"])),
             trace_id=trace_id,
             operation=operation,
             span_id=span_id,
@@ -1031,8 +1029,8 @@ def flext_metric(
         # Create with explicit kwargs for better type safety
         if "id" in kwargs and "version" in kwargs:
             metric = FlextMetric(
-                id=FlextModels.EntityId(cast("str", kwargs["id"])),
-                version=FlextModels.Version(cast("int", kwargs["version"])),
+                id=FlextModels(cast("str", kwargs["id"])),
+                version=FlextModels(cast("int", kwargs["version"])),
                 name=name,
                 value=value,
                 unit=unit,
@@ -1041,7 +1039,7 @@ def flext_metric(
             )
         elif "id" in kwargs:
             metric = FlextMetric(
-                id=FlextModels.EntityId(cast("str", kwargs["id"])),
+                id=FlextModels(cast("str", kwargs["id"])),
                 name=name,
                 value=value,
                 unit=unit,
@@ -1089,7 +1087,7 @@ def flext_health_check(
     # Create with explicit kwargs for better type safety
     if "id" in kwargs:
         return FlextHealthCheck(
-            id=FlextModels.EntityId(cast("str", kwargs["id"])),
+            id=FlextModels(cast("str", kwargs["id"])),
             component=component,
             status=status,
             message=message,
