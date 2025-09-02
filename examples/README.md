@@ -6,7 +6,7 @@ This directory contains practical examples showing how to integrate FLEXT Observ
 
 ## Example Files
 
-### [functional_examples.py](functional_examples.py) - Core Functionality
+### [01_functional.py](01_functional.py) - Core Functionality
 
 Comprehensive demonstration of core observability functionality including:
 
@@ -17,7 +17,7 @@ Comprehensive demonstration of core observability functionality including:
 - **Error Handling**: Railway-oriented programming with FlextResult
 - **Real-world Scenarios**: Business logic with observability integration
 
-### [solid_observability_demo.py](solid_observability_demo.py) - SOLID Principles
+### [02_solid_observability_demo.py](02_solid_observability_demo.py) - SOLID Principles
 
 Advanced demonstration of SOLID principles applied to observability:
 
@@ -32,7 +32,7 @@ Advanced demonstration of SOLID principles applied to observability:
 ### Basic Observability Integration
 
 ```python
-# Example from functional_examples.py
+# Example from 01_functional.py
 from flext_observability import flext_create_metric, flext_create_trace
 
 def create_business_metrics():
@@ -316,14 +316,14 @@ class FlextAPIService:
 ```bash
 # Run functional examples
 cd examples/
-python functional_examples.py
+python 01_functional.py
 
 # Run SOLID principles demo
-python solid_observability_demo.py
+python 02_solid_observability_demo.py
 
 # Run with different scenarios
-python functional_examples.py --scenario=metrics
-python functional_examples.py --scenario=tracing
+python 01_functional.py --scenario=metrics
+python 01_functional.py --scenario=tracing
 ```
 
 ### Integration Testing
