@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import override
 
 from flext_core import (
     FlextLogger,
@@ -31,7 +30,7 @@ from flext_observability.fields import (
 logger = FlextLogger(__name__)
 
 
-class FlextMetric(FlextModels):
+class FlextMetric(FlextModels.Entity):
     """Domain entity for metrics collection and validation.
 
     Represents a single metric measurement with business rules and validation.
@@ -43,8 +42,8 @@ class FlextMetric(FlextModels):
         validate_assignment=True,
     )
 
-    id: FlextModels = Field(
-        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
+    id: str = Field(
+        default_factory=FlextUtilities.generate_id
     )
     name: str = metric_name_field
     value: float | Decimal = metric_value_field
@@ -53,7 +52,6 @@ class FlextMetric(FlextModels):
     timestamp: datetime = timestamp_field
     metric_type: str = Field(default="gauge")
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate metric business rules."""
         try:
@@ -69,7 +67,7 @@ class FlextMetric(FlextModels):
             return FlextResult[None].fail(f"Validation error: {e}")
 
 
-class FlextTrace(FlextModels):
+class FlextTrace(FlextModels.Entity):
     """Domain entity for distributed tracing spans."""
 
     model_config = ConfigDict(
@@ -78,8 +76,8 @@ class FlextTrace(FlextModels):
         validate_assignment=True,
     )
 
-    id: FlextModels = Field(
-        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
+    id: str = Field(
+        default_factory=FlextUtilities.generate_id
     )
     operation_name: str = trace_name_field
     service_name: str = Field(min_length=1, max_length=255)
@@ -91,7 +89,6 @@ class FlextTrace(FlextModels):
     status: str = Field(default=ObservabilityConstants.TRACE_STATUS_STARTED)
     tags: dict[str, object] = Field(default_factory=dict)
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate trace business rules."""
         try:
@@ -110,7 +107,7 @@ class FlextTrace(FlextModels):
             return FlextResult[None].fail(f"Validation error: {e}")
 
 
-class FlextAlert(FlextModels):
+class FlextAlert(FlextModels.Entity):
     """Domain entity for alert management."""
 
     model_config = ConfigDict(
@@ -119,8 +116,8 @@ class FlextAlert(FlextModels):
         validate_assignment=True,
     )
 
-    id: FlextModels = Field(
-        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
+    id: str = Field(
+        default_factory=FlextUtilities.generate_id
     )
     message: str = alert_message_field
     level: str = Field(default=ObservabilityConstants.ALERT_LEVEL_INFO)
@@ -129,7 +126,6 @@ class FlextAlert(FlextModels):
     resolved: bool = Field(default=False)
     tags: dict[str, object] = Field(default_factory=dict)
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate alert business rules."""
         try:
@@ -154,7 +150,7 @@ class FlextAlert(FlextModels):
             return FlextResult[None].fail(f"Validation error: {e}")
 
 
-class FlextHealthCheck(FlextModels):
+class FlextHealthCheck(FlextModels.Entity):
     """Domain entity for health check monitoring."""
 
     model_config = ConfigDict(
@@ -163,8 +159,8 @@ class FlextHealthCheck(FlextModels):
         validate_assignment=True,
     )
 
-    id: FlextModels = Field(
-        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
+    id: str = Field(
+        default_factory=FlextUtilities.generate_id
     )
     service_name: str = Field(min_length=1, max_length=255)
     status: str = Field(default=ObservabilityConstants.HEALTH_STATUS_HEALTHY)
@@ -172,7 +168,6 @@ class FlextHealthCheck(FlextModels):
     details: dict[str, object] = Field(default_factory=dict)
     dependencies: list[str] = Field(default_factory=list)
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate health check business rules."""
         try:
@@ -193,7 +188,7 @@ class FlextHealthCheck(FlextModels):
             return FlextResult[None].fail(f"Validation error: {e}")
 
 
-class FlextLogEntry(FlextModels):
+class FlextLogEntry(FlextModels.Entity):
     """Domain entity for structured logging."""
 
     model_config = ConfigDict(
@@ -202,8 +197,8 @@ class FlextLogEntry(FlextModels):
         validate_assignment=True,
     )
 
-    id: FlextModels = Field(
-        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
+    id: str = Field(
+        default_factory=FlextUtilities.generate_id
     )
     message: str = Field(min_length=1, max_length=2000)
     level: str = Field(default="INFO")
@@ -212,7 +207,6 @@ class FlextLogEntry(FlextModels):
     correlation_id: str | None = Field(default=None)
     extra_data: dict[str, object] = Field(default_factory=dict)
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate log entry business rules."""
         try:

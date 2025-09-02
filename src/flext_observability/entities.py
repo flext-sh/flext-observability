@@ -47,7 +47,7 @@ import math
 import time
 from datetime import datetime
 from decimal import Decimal
-from typing import cast, override
+from typing import cast
 
 from flext_core import (
     FlextIdentification,
@@ -107,7 +107,7 @@ def _generate_utc_datetime() -> datetime:
 # ============================================================================
 
 
-class FlextMetric(FlextModels):
+class FlextMetric(FlextModels.Entity):
     """Observability metric entity for collecting and validating measurement data.
 
     Core domain entity representing a single metric measurement with comprehensive
@@ -175,7 +175,7 @@ class FlextMetric(FlextModels):
     @classmethod
     def validate_metric_name(cls, v: str) -> str:
         """Validate metric name is non-empty and follows naming conventions."""
-        if not FlextValidations.is_non_empty_string(v):
+        if not FlextValidations.validate_non_empty_string_func(v):
             msg = "Metric name cannot be empty"
             raise ValueError(msg)
         return v
@@ -211,7 +211,6 @@ class FlextMetric(FlextModels):
             raise ValueError(msg)
         return v
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate metric business rules and domain constraints.
 
@@ -241,7 +240,7 @@ class FlextMetric(FlextModels):
 
         """
         # Use FlextValidations for standardized validation
-        if not FlextValidations.is_non_empty_string(self.name):
+        if not FlextValidations.validate_non_empty_string_func(self.name):
             return FlextResult[None].fail("Invalid metric name")
 
         # Type validation for metric value using FlextValidations numeric validation
@@ -253,7 +252,7 @@ class FlextMetric(FlextModels):
         return FlextResult[None].ok(None)
 
 
-class FlextLogEntry(FlextModels):
+class FlextLogEntry(FlextModels.Entity):
     """Structured Logging Entity for FLEXT Ecosystem.
 
     Enterprise-grade structured logging entity implementing comprehensive logging
@@ -353,7 +352,7 @@ class FlextLogEntry(FlextModels):
     @classmethod
     def validate_log_message(cls, v: str) -> str:
         """Validate log message is non-empty and meaningful."""
-        if not FlextValidations.is_non_empty_string(v):
+        if not FlextValidations.validate_non_empty_string_func(v):
             msg = "Log message cannot be empty"
             raise ValueError(msg)
         return v
@@ -368,7 +367,6 @@ class FlextLogEntry(FlextModels):
             raise ValueError(msg)
         return v
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate structured logging business rules and domain constraints.
 
@@ -398,14 +396,14 @@ class FlextLogEntry(FlextModels):
 
         """
         # Use FlextValidations for standardized validation
-        if not FlextValidations.is_non_empty_string(self.message):
+        if not FlextValidations.validate_non_empty_string_func(self.message):
             return FlextResult[None].fail("Invalid log message")
         if self.level not in {"debug", "info", "warning", "error", "critical"}:
             return FlextResult[None].fail("Invalid log level")
         return FlextResult[None].ok(None)
 
 
-class FlextTrace(FlextModels):
+class FlextTrace(FlextModels.Entity):
     """Distributed Tracing Span Entity for FLEXT Ecosystem.
 
     Enterprise-grade distributed tracing entity implementing OpenTelemetry-compatible
@@ -520,7 +518,7 @@ class FlextTrace(FlextModels):
     @classmethod
     def validate_trace_id(cls, v: str) -> str:
         """Validate trace ID is non-empty for global correlation."""
-        if not FlextValidations.is_non_empty_string(v):
+        if not FlextValidations.validate_non_empty_string_func(v):
             msg = "Trace ID cannot be empty"
             raise ValueError(msg)
         return v
@@ -529,7 +527,7 @@ class FlextTrace(FlextModels):
     @classmethod
     def validate_operation_name(cls, v: str) -> str:
         """Validate operation name is meaningful and searchable."""
-        if not FlextValidations.is_non_empty_string(v):
+        if not FlextValidations.validate_non_empty_string_func(v):
             msg = "Operation name cannot be empty"
             raise ValueError(msg)
         return v
@@ -538,7 +536,7 @@ class FlextTrace(FlextModels):
     @classmethod
     def validate_span_id(cls, v: str) -> str:
         """Validate span ID is non-empty for unique identification."""
-        if not FlextValidations.is_non_empty_string(v):
+        if not FlextValidations.validate_non_empty_string_func(v):
             msg = "Span ID cannot be empty"
             raise ValueError(msg)
         return v
@@ -562,7 +560,6 @@ class FlextTrace(FlextModels):
             raise ValueError(msg)
         return v
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate distributed tracing business rules and domain constraints.
 
@@ -592,14 +589,14 @@ class FlextTrace(FlextModels):
 
         """
         # Use FlextValidations for standardized validation
-        if not FlextValidations.is_non_empty_string(self.trace_id):
+        if not FlextValidations.validate_non_empty_string_func(self.trace_id):
             return FlextResult[None].fail("Invalid trace ID")
-        if not FlextValidations.is_non_empty_string(self.operation):
+        if not FlextValidations.validate_non_empty_string_func(self.operation):
             return FlextResult[None].fail("Invalid operation name")
         return FlextResult[None].ok(None)
 
 
-class FlextAlert(FlextModels):
+class FlextAlert(FlextModels.Entity):
     """Alert Management Entity for FLEXT Ecosystem Monitoring.
 
     Enterprise-grade alert entity implementing comprehensive alerting semantics
@@ -702,7 +699,7 @@ class FlextAlert(FlextModels):
     @classmethod
     def validate_alert_title(cls, v: str) -> str:
         """Validate alert title is non-empty and descriptive."""
-        if not FlextValidations.is_non_empty_string(v):
+        if not FlextValidations.validate_non_empty_string_func(v):
             msg = "Alert title cannot be empty"
             raise ValueError(msg)
         return v
@@ -711,7 +708,7 @@ class FlextAlert(FlextModels):
     @classmethod
     def validate_alert_message(cls, v: str) -> str:
         """Validate alert message provides sufficient detail."""
-        if not FlextValidations.is_non_empty_string(v):
+        if not FlextValidations.validate_non_empty_string_func(v):
             msg = "Alert message cannot be empty"
             raise ValueError(msg)
         return v
@@ -736,7 +733,6 @@ class FlextAlert(FlextModels):
             raise ValueError(msg)
         return v
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate alert management business rules and domain constraints.
 
@@ -766,16 +762,16 @@ class FlextAlert(FlextModels):
 
         """
         # Use FlextValidations for standardized validation
-        if not FlextValidations.is_non_empty_string(self.title):
+        if not FlextValidations.validate_non_empty_string_func(self.title):
             return FlextResult[None].fail("Invalid alert title")
-        if not FlextValidations.is_non_empty_string(self.message):
+        if not FlextValidations.validate_non_empty_string_func(self.message):
             return FlextResult[None].fail("Invalid alert message")
         if self.severity not in {"low", "medium", "high", "critical", "emergency"}:
             return FlextResult[None].fail("Invalid alert severity")
         return FlextResult[None].ok(None)
 
 
-class FlextHealthCheck(FlextModels):
+class FlextHealthCheck(FlextModels.Entity):
     """Health Monitoring Entity for FLEXT Ecosystem Components.
 
     Enterprise-grade health check entity implementing comprehensive service health
@@ -876,7 +872,7 @@ class FlextHealthCheck(FlextModels):
     @classmethod
     def validate_component_name(cls, v: str) -> str:
         """Validate component name is non-empty and identifiable."""
-        if not FlextValidations.is_non_empty_string(v):
+        if not FlextValidations.validate_non_empty_string_func(v):
             msg = "Component name cannot be empty"
             raise ValueError(msg)
         return v
@@ -891,7 +887,6 @@ class FlextHealthCheck(FlextModels):
             raise ValueError(msg)
         return v
 
-    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate health monitoring business rules and domain constraints.
 
@@ -921,7 +916,7 @@ class FlextHealthCheck(FlextModels):
 
         """
         # Use FlextValidations for standardized validation
-        if not FlextValidations.is_non_empty_string(self.component):
+        if not FlextValidations.validate_non_empty_string_func(self.component):
             return FlextResult[None].fail("Invalid component name")
         if self.status not in {"healthy", "unhealthy", "degraded", "unknown"}:
             return FlextResult[None].fail("Invalid health status")
@@ -947,8 +942,8 @@ def flext_alert(
     # Create with explicit kwargs for better type safety
     if "id" in kwargs and "version" in kwargs:
         return FlextAlert(
-            id=FlextModels(cast("str", kwargs["id"])),
-            version=FlextModels(cast("int", kwargs["version"])),
+            id=cast("str", kwargs["id"]),
+            version=cast("int", kwargs["version"]),
             title=title,
             message=message,
             severity=severity,
@@ -958,7 +953,7 @@ def flext_alert(
         )
     if "id" in kwargs:
         return FlextAlert(
-            id=FlextModels(cast("str", kwargs["id"])),
+            id=cast("str", kwargs["id"]),
             title=title,
             message=message,
             severity=severity,
@@ -992,7 +987,7 @@ def flext_trace(
     # Create with explicit kwargs for better type safety
     if "id" in kwargs:
         return FlextTrace(
-            id=FlextModels(cast("str", kwargs["id"])),
+            id=cast("str", kwargs["id"]),
             trace_id=trace_id,
             operation=operation,
             span_id=span_id,
@@ -1028,8 +1023,8 @@ def flext_metric(
         # Create with explicit kwargs for better type safety
         if "id" in kwargs and "version" in kwargs:
             metric = FlextMetric(
-                id=FlextModels(cast("str", kwargs["id"])),
-                version=FlextModels(cast("int", kwargs["version"])),
+                id=cast("str", kwargs["id"]),
+                version=cast("int", kwargs["version"]),
                 name=name,
                 value=value,
                 unit=unit,
@@ -1038,7 +1033,7 @@ def flext_metric(
             )
         elif "id" in kwargs:
             metric = FlextMetric(
-                id=FlextModels(cast("str", kwargs["id"])),
+                id=cast("str", kwargs["id"]),
                 name=name,
                 value=value,
                 unit=unit,
@@ -1086,7 +1081,7 @@ def flext_health_check(
     # Create with explicit kwargs for better type safety
     if "id" in kwargs:
         return FlextHealthCheck(
-            id=FlextModels(cast("str", kwargs["id"])),
+            id=cast("str", kwargs["id"]),
             component=component,
             status=status,
             message=message,
