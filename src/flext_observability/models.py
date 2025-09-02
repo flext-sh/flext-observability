@@ -11,11 +11,10 @@ from decimal import Decimal
 from typing import override
 
 from flext_core import (
-    FlextModels.Entity,
-    FlextModels.EntityId,
+    FlextLogger,
+    FlextModels,
     FlextResult,
     FlextUtilities,
-    FlextLogger,
 )
 from pydantic import ConfigDict, Field
 
@@ -32,7 +31,7 @@ from flext_observability.fields import (
 logger = FlextLogger(__name__)
 
 
-class FlextMetric(FlextModels.Entity):
+class FlextMetric(FlextModels):
     """Domain entity for metrics collection and validation.
 
     Represents a single metric measurement with business rules and validation.
@@ -44,8 +43,8 @@ class FlextMetric(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: FlextModels.EntityId = Field(
-        default_factory=lambda: FlextModels.EntityId(FlextUtilities.generate_id())
+    id: FlextModels = Field(
+        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
     )
     name: str = metric_name_field
     value: float | Decimal = metric_value_field
@@ -70,7 +69,7 @@ class FlextMetric(FlextModels.Entity):
             return FlextResult[None].fail(f"Validation error: {e}")
 
 
-class FlextTrace(FlextModels.Entity):
+class FlextTrace(FlextModels):
     """Domain entity for distributed tracing spans."""
 
     model_config = ConfigDict(
@@ -79,8 +78,8 @@ class FlextTrace(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: FlextModels.EntityId = Field(
-        default_factory=lambda: FlextModels.EntityId(FlextUtilities.generate_id())
+    id: FlextModels = Field(
+        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
     )
     operation_name: str = trace_name_field
     service_name: str = Field(min_length=1, max_length=255)
@@ -111,7 +110,7 @@ class FlextTrace(FlextModels.Entity):
             return FlextResult[None].fail(f"Validation error: {e}")
 
 
-class FlextAlert(FlextModels.Entity):
+class FlextAlert(FlextModels):
     """Domain entity for alert management."""
 
     model_config = ConfigDict(
@@ -120,8 +119,8 @@ class FlextAlert(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: FlextModels.EntityId = Field(
-        default_factory=lambda: FlextModels.EntityId(FlextUtilities.generate_id())
+    id: FlextModels = Field(
+        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
     )
     message: str = alert_message_field
     level: str = Field(default=ObservabilityConstants.ALERT_LEVEL_INFO)
@@ -155,7 +154,7 @@ class FlextAlert(FlextModels.Entity):
             return FlextResult[None].fail(f"Validation error: {e}")
 
 
-class FlextHealthCheck(FlextModels.Entity):
+class FlextHealthCheck(FlextModels):
     """Domain entity for health check monitoring."""
 
     model_config = ConfigDict(
@@ -164,8 +163,8 @@ class FlextHealthCheck(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: FlextModels.EntityId = Field(
-        default_factory=lambda: FlextModels.EntityId(FlextUtilities.generate_id())
+    id: FlextModels = Field(
+        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
     )
     service_name: str = Field(min_length=1, max_length=255)
     status: str = Field(default=ObservabilityConstants.HEALTH_STATUS_HEALTHY)
@@ -194,7 +193,7 @@ class FlextHealthCheck(FlextModels.Entity):
             return FlextResult[None].fail(f"Validation error: {e}")
 
 
-class FlextLogEntry(FlextModels.Entity):
+class FlextLogEntry(FlextModels):
     """Domain entity for structured logging."""
 
     model_config = ConfigDict(
@@ -203,8 +202,8 @@ class FlextLogEntry(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: FlextModels.EntityId = Field(
-        default_factory=lambda: FlextModels.EntityId(FlextUtilities.generate_id())
+    id: FlextModels = Field(
+        default_factory=lambda: FlextModels(FlextUtilities.generate_id())
     )
     message: str = Field(min_length=1, max_length=2000)
     level: str = Field(default="INFO")

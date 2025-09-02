@@ -3,8 +3,6 @@
 import threading
 import time
 
-object
-
 from flext_core import FlextContainer
 
 from flext_observability import (

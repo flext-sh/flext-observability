@@ -8,8 +8,6 @@ and function monitoring capabilities.
 
 import time
 
-object
-
 from flext_core import FlextContainer, FlextResult
 
 from flext_observability import (
