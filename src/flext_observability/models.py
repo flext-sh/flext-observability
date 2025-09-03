@@ -42,9 +42,7 @@ class FlextMetric(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: str = Field(
-        default_factory=FlextUtilities.generate_id
-    )
+    id: str = Field(default_factory=FlextUtilities.generate_id)
     name: str = metric_name_field
     value: float | Decimal = metric_value_field
     unit: str = metric_unit_field
@@ -76,9 +74,7 @@ class FlextTrace(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: str = Field(
-        default_factory=FlextUtilities.generate_id
-    )
+    id: str = Field(default_factory=FlextUtilities.generate_id)
     operation_name: str = trace_name_field
     service_name: str = Field(min_length=1, max_length=255)
     span_id: str = Field(default="")
@@ -116,9 +112,7 @@ class FlextAlert(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: str = Field(
-        default_factory=FlextUtilities.generate_id
-    )
+    id: str = Field(default_factory=FlextUtilities.generate_id)
     message: str = alert_message_field
     level: str = Field(default=ObservabilityConstants.ALERT_LEVEL_INFO)
     service: str = Field(min_length=1, max_length=255)
@@ -159,9 +153,7 @@ class FlextHealthCheck(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: str = Field(
-        default_factory=FlextUtilities.generate_id
-    )
+    id: str = Field(default_factory=FlextUtilities.generate_id)
     service_name: str = Field(min_length=1, max_length=255)
     status: str = Field(default=ObservabilityConstants.HEALTH_STATUS_HEALTHY)
     timestamp: datetime = timestamp_field
@@ -197,9 +189,7 @@ class FlextLogEntry(FlextModels.Entity):
         validate_assignment=True,
     )
 
-    id: str = Field(
-        default_factory=FlextUtilities.generate_id
-    )
+    id: str = Field(default_factory=FlextUtilities.generate_id)
     message: str = Field(min_length=1, max_length=2000)
     level: str = Field(default="INFO")
     service: str = Field(min_length=1, max_length=255)

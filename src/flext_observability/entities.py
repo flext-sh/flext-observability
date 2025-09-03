@@ -50,8 +50,8 @@ from decimal import Decimal
 from typing import cast
 
 from flext_core import (
-    FlextIdentification,
     FlextLogger,
+    FlextMixins,
     FlextModels,
     FlextResult,
     FlextTypes,
@@ -72,11 +72,11 @@ class FlextGenerators:
 
     @staticmethod
     def generate_uuid() -> str:
-        return FlextIdentification.generate_entity_id()
+        return FlextMixins.generate_entity_id()
 
     @staticmethod
     def generate_entity_id() -> str:
-        return FlextIdentification.generate_entity_id()
+        return FlextMixins.generate_entity_id()
 
 
 # ============================================================================

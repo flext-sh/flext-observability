@@ -64,8 +64,8 @@ from typing import cast
 import psutil
 from flext_core import (
     FlextContainer,
-    FlextIdentification,
     FlextLogger,
+    FlextMixins,
     FlextResult,
     FlextTypes,
 )
@@ -89,11 +89,11 @@ class FlextGenerators:
 
     @staticmethod
     def generate_uuid() -> str:
-        return FlextIdentification.generate_entity_id()
+        return FlextMixins.generate_entity_id()
 
     @staticmethod
     def generate_entity_id() -> str:
-        return FlextIdentification.generate_entity_id()
+        return FlextMixins.generate_entity_id()
 
 
 # Removed validation module - using FlextResult[None].fail() directly per docs/patterns/
