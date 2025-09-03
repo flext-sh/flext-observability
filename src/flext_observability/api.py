@@ -73,7 +73,7 @@ from contextlib import suppress
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from flext_core import FlextIdentification, FlextResult, FlextTypes
+from flext_core import FlextMixins, FlextResult, FlextTypes
 
 # Removed circular import to flext_simple - not needed
 from flext_observability.entities import (
@@ -191,7 +191,7 @@ def flext_create_metric(
         metric_type = "histogram"
 
     try:
-        _ = FlextIdentification.generate_entity_id()
+        _ = FlextMixins.generate_entity_id()
         # Probe entity to allow tests to patch FlextMetric and raise
         try:
             probe = FlextMetric(
@@ -235,7 +235,7 @@ def flext_create_log_entry(
     """Create observability log entry with simple parameters."""
     try:
         # Trigger patch point and probe entity for test hooks
-        _ = FlextIdentification.generate_entity_id()
+        _ = FlextMixins.generate_entity_id()
         try:
             probe = FlextLogEntry(
                 message=message,
@@ -282,7 +282,7 @@ def flext_create_trace(
 
     try:
         # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
-        _ = FlextIdentification.generate_entity_id()
+        _ = FlextMixins.generate_entity_id()
         # Probe entity to allow tests patching FlextTrace and forcing validation error
         try:
             probe = FlextTrace(
@@ -299,9 +299,15 @@ def flext_create_trace(
         span_id_from_config = config.get("span_id")
 
         trace_id = (
-            str(trace_id_from_config) if trace_id_from_config else FlextIdentification.generate_entity_id()
+            str(trace_id_from_config)
+            if trace_id_from_config
+            else FlextMixins.generate_entity_id()
         )
-        span_id = str(span_id_from_config) if span_id_from_config else FlextIdentification.generate_entity_id()
+        span_id = (
+            str(span_id_from_config)
+            if span_id_from_config
+            else FlextMixins.generate_entity_id()
+        )
 
         entity = flext_trace(
             operation_name=operation_name,
@@ -324,7 +330,7 @@ def flext_create_alert(
 ) -> FlextResult[FlextAlert]:
     """Create observability alert with simple parameters."""
     try:
-        _ = FlextIdentification.generate_entity_id()
+        _ = FlextMixins.generate_entity_id()
         # Probe entity to allow tests patching FlextAlert
         try:
             probe = FlextAlert(
@@ -356,7 +362,7 @@ def flext_create_health_check(
 ) -> FlextResult[FlextHealthCheck]:
     """Create observability health check with simple parameters."""
     try:
-        _ = FlextIdentification.generate_entity_id()
+        _ = FlextMixins.generate_entity_id()
         # Probe construction to allow tests patching FlextHealthCheck
         try:
             probe = FlextHealthCheck(
