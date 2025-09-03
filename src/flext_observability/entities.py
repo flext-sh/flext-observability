@@ -54,7 +54,6 @@ from flext_core import (
     FlextMixins,
     FlextModels,
     FlextResult,
-    FlextTypes,
     FlextValidations,
 )
 from pydantic import ConfigDict, Field, field_validator
@@ -167,7 +166,7 @@ class FlextMetric(FlextModels.Entity):
     name: str = Field(..., description="Metric name")
     value: float | Decimal = Field(..., description="Metric value")
     unit: str = Field(default="", description="Metric unit")
-    tags: FlextTypes.Core.Dict = Field(default_factory=dict, description="Metric tags")
+    tags: dict[str, object] = Field(default_factory=dict, description="Metric tags")
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
     metric_type: str = Field(default="gauge", description="Metric type")
 
@@ -342,7 +341,7 @@ class FlextLogEntry(FlextModels.Entity):
 
     message: str = Field(..., description="Log message")
     level: str = Field(default="info", description="Log level")
-    context: FlextTypes.Core.Dict = Field(
+    context: dict[str, object] = Field(
         default_factory=dict,
         description="Log context",
     )
@@ -506,7 +505,7 @@ class FlextTrace(FlextModels.Entity):
     trace_id: str = Field(..., description="Trace ID")
     operation: str = Field(..., description="Operation name")
     span_id: str = Field(..., description="Span ID")
-    span_attributes: FlextTypes.Core.Dict = Field(
+    span_attributes: dict[str, object] = Field(
         default_factory=dict,
         description="Span attributes",
     )
@@ -692,7 +691,7 @@ class FlextAlert(FlextModels.Entity):
     message: str = Field(..., description="Alert message")
     severity: str = Field(default="low", description="Alert severity")
     status: str = Field(default="active", description="Alert status")
-    tags: FlextTypes.Core.Dict = Field(default_factory=dict, description="Alert tags")
+    tags: dict[str, object] = Field(default_factory=dict, description="Alert tags")
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
 
     @field_validator("title")
@@ -862,7 +861,7 @@ class FlextHealthCheck(FlextModels.Entity):
     component: str = Field(..., description="Component name")
     status: str = Field(default="unknown", description="Health status")
     message: str = Field(default="", description="Health message")
-    metrics: FlextTypes.Core.Dict = Field(
+    metrics: dict[str, object] = Field(
         default_factory=dict,
         description="Health metrics",
     )
@@ -936,7 +935,7 @@ def flext_alert(
     **kwargs: object,
 ) -> FlextAlert:
     """Create a FlextAlert entity with proper validation."""
-    tags = cast("FlextTypes.Core.Dict", kwargs.get("tags", {}))
+    tags = cast("dict[str, object]", kwargs.get("tags", {}))
     timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
     # Create with explicit kwargs for better type safety
@@ -980,7 +979,7 @@ def flext_trace(
     **kwargs: object,
 ) -> FlextTrace:
     """Create a FlextTrace entity with proper validation."""
-    span_attributes = cast("FlextTypes.Core.Dict", kwargs.get("span_attributes", {}))
+    span_attributes = cast("dict[str, object]", kwargs.get("span_attributes", {}))
     duration_ms = cast("int", kwargs.get("duration_ms", 0))
     timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
@@ -1017,7 +1016,7 @@ def flext_metric(
 ) -> FlextResult[FlextMetric]:
     """Create a FlextMetric entity with proper validation and type safety."""
     try:
-        tags = cast("FlextTypes.Core.Dict", kwargs.get("tags", {}))
+        tags = cast("dict[str, object]", kwargs.get("tags", {}))
         timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
         # Create with explicit kwargs for better type safety
@@ -1075,7 +1074,7 @@ def flext_health_check(
     **kwargs: object,
 ) -> FlextHealthCheck:
     """Create a FlextHealthCheck entity with proper validation."""
-    metrics = cast("FlextTypes.Core.Dict", kwargs.get("metrics", {}))
+    metrics = cast("dict[str, object]", kwargs.get("metrics", {}))
     timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
     # Create with explicit kwargs for better type safety
