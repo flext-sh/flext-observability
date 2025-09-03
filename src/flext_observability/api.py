@@ -73,7 +73,7 @@ from contextlib import suppress
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from flext_core import FlextMixins, FlextResult, FlextTypes
+from flext_core import FlextMixins, FlextResult
 
 # Removed circular import to flext_simple - not needed
 from flext_observability.entities import (
@@ -117,7 +117,7 @@ def flext_create_metric(
     name: str,
     value: float | Decimal,
     unit: str = "",
-    tags: FlextTypes.Core.Dict | None = None,
+    tags: dict[str, object] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
     """Create observability metric with simplified API.
@@ -270,7 +270,7 @@ def flext_create_trace(
     operation_name: str,
     service_name: str,
     *,
-    config: FlextTypes.Core.Dict | None = None,
+    config: dict[str, object] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextTrace]:
     """Create observability trace with simple parameters.
