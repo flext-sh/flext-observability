@@ -376,7 +376,15 @@ def flext_monitor_function(
             active_monitor = monitor
             if not active_monitor:
                 # No factory dependency - simple monitoring only
-                pass
+                # Use a basic monitor instance for simple monitoring
+                active_monitor = FlextObservabilityMonitor()
+
+            # Initialize monitor if not already initialized
+            if active_monitor and not active_monitor._initialized:
+                init_result = active_monitor.flext_initialize_observability()
+                if init_result.is_failure:
+                    # If initialization fails, execute function without monitoring
+                    return _call_any_function(func, *args, **kwargs)
 
             # Execute function normally if no monitoring
             if not (active_monitor and active_monitor.flext_is_monitoring_active()):
