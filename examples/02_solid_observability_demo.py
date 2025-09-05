@@ -182,23 +182,20 @@ def demonstrate_validation() -> None:
     for result in entities_to_validate:
         if result.success and result.data:
             result.data.validate_business_rules()
-            type(result.data).__name__
+            result_type = type(result.data).__name__
+            print(f"Validation successful for {result_type}")
 
 
 def main() -> None:
     """Run the comprehensive SOLID observability demo."""
-    try:
-        demonstrate_solid_design()
-        demonstrate_metrics_collection()
-        demonstrate_distributed_tracing()
-        demonstrate_health_monitoring()
-        demonstrate_alerting_system()
-        demonstrate_function_monitoring()
-        demonstrate_factory_patterns()
-        demonstrate_validation()
-
-    except Exception:
-        raise
+    demonstrate_solid_design()
+    demonstrate_metrics_collection()
+    demonstrate_distributed_tracing()
+    demonstrate_health_monitoring()
+    demonstrate_alerting_system()
+    demonstrate_function_monitoring()
+    demonstrate_factory_patterns()
+    demonstrate_validation()
 
 
 if __name__ == "__main__":

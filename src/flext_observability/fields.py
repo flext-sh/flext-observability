@@ -6,7 +6,7 @@ extending pydantic patterns from flext-core.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import ClassVar
 
 # from flext_core.fields import FlextBaseField  # Not available, using object as base
@@ -122,7 +122,9 @@ trace_name_field = Field(
     min_length=1, max_length=255, description="Trace operation name"
 )
 alert_message_field = Field(min_length=1, max_length=1000, description="Alert message")
-timestamp_field = Field(default_factory=datetime.utcnow, description="Timestamp")
+timestamp_field = Field(
+    default_factory=lambda: datetime.now(UTC), description="Timestamp"
+)
 
 
 __all__ = [

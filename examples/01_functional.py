@@ -99,8 +99,8 @@ def demonstrate_validation() -> None:
         invalid_metric_result = flext_create_metric("invalid_metric", -10.0, "count")
         if invalid_metric_result.success:
             invalid_metric_result.data.validate_business_rules()
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Validation error (expected): {e}")
 
 
 def demonstrate_health_monitoring() -> None:
@@ -151,17 +151,13 @@ def demonstrate_global_factory() -> None:
 
 def main() -> None:
     """Run all functional examples."""
-    try:
-        demonstrate_simple_api()
-        demonstrate_factory_pattern()
-        demonstrate_monitoring()
-        demonstrate_validation()
-        demonstrate_health_monitoring()
-        demonstrate_alerting_scenario()
-        demonstrate_global_factory()
-
-    except Exception:
-        raise
+    demonstrate_simple_api()
+    demonstrate_factory_pattern()
+    demonstrate_monitoring()
+    demonstrate_validation()
+    demonstrate_health_monitoring()
+    demonstrate_alerting_scenario()
+    demonstrate_global_factory()
 
 
 if __name__ == "__main__":

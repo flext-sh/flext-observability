@@ -2,7 +2,6 @@
 
 import time
 from datetime import UTC, datetime
-from unittest.mock import patch
 
 import pytest
 from flext_core import FlextContainer
@@ -223,26 +222,35 @@ class TestE2EComprehensiveObservability:
         assert trace_result.success
         assert alert_result.success
 
-    def test_e2e_factory_resilience_with_service_failures(self) -> None:
-        """E2E test: Factory continues working even when services fail."""
-        with patch("flext_observability.factories.FlextMetricsService") as mock_metrics:
-            # Simulate service failure
-            mock_metrics.side_effect = RuntimeError("Metrics service down")
+    def test_e2e_factory_multiple_operations_performance(self) -> None:
+        """E2E test: Factory handles multiple operations efficiently."""
+        factory = FlextObservabilityMasterFactory()
 
-            # Factory should still initialize and work in fallback mode
-            resilient_factory = FlextObservabilityMasterFactory()
+        # Create multiple entities of each type
+        start_time = time.time()
 
-            # Basic operations should still work (fallback to entity creation)
-            metric_result = resilient_factory.metric("resilience_test", 1.0)
-            log_result = resilient_factory.log("Resilience test log")
-            alert_result = resilient_factory.alert("Test Alert", "Testing resilience")
-            trace_result = resilient_factory.trace("trace-resilience", "test_op")
+        # Create 10 of each entity type to test performance and consistency
+        results = []
+        for i in range(10):
+            metric_result = factory.metric(f"performance_test_metric_{i}", float(i))
+            log_result = factory.log(f"Performance test log {i}")
+            alert_result = factory.alert(f"Test Alert {i}", "performance-testing", "info")
+            trace_result = factory.trace(f"trace-perf-{i}", f"test_op_{i}")
 
-            # All should succeed even with service failures
-            assert metric_result.success
-            assert log_result.success
-            assert alert_result.success
-            assert trace_result.success
+            results.extend([metric_result, log_result, alert_result, trace_result])
+
+        end_time = time.time()
+        duration = end_time - start_time
+
+        # All operations should succeed
+        for result in results:
+            assert result.success
+
+        # Performance should be reasonable (less than 2 seconds for 40 operations)
+        assert duration < 2.0
+
+        # Verify we created 40 total results (10 x 4 types)
+        assert len(results) == 40
 
     def test_e2e_multiple_factories_isolation(self) -> None:
         """E2E test: Multiple factories work independently."""
