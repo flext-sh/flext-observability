@@ -99,10 +99,27 @@ AnyCallable = (
 F = TypeVar("F", bound=AnyCallable)
 
 
-# Helper function to call any function - isolated type ignore
+# Constants for argument length checks
+_NO_ARGS = 0
+_ONE_ARG = 1
+_TWO_ARGS = 2
+
+
+# Helper function to call any function - specific type handling
 def _call_any_function(func: AnyCallable, *args: object, **kwargs: object) -> object:
-    """Helper to call function with object args - isolated type handling."""
-    return func(*args, **kwargs)
+    """Helper to call function with object args - specific type handling."""
+    # Use cast to match the expected signature
+    args_len = len(args)
+    kwargs_len = len(kwargs)
+
+    if args_len == _NO_ARGS and kwargs_len == _NO_ARGS:
+        return cast("Callable[[], object]", func)()
+    if args_len == _ONE_ARG and kwargs_len == _NO_ARGS:
+        return cast("Callable[[object], object]", func)(args[0])
+    if args_len == _TWO_ARGS and kwargs_len == _NO_ARGS:
+        return cast("Callable[[object, object], object]", func)(args[0], args[1])
+    # Fallback for complex signatures - cast to generic callable
+    return cast("Callable[[object], object]", func)(*args, **kwargs)
 
 
 # ============================================================================

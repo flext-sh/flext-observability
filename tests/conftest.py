@@ -8,22 +8,21 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import AsyncIterator
-from unittest.mock import Mock
 
 # Direct imports - following flext-core standardization pattern
 import pytest
 import pytest_asyncio
 from _pytest.config import Config
 from _pytest.nodes import Item
+from flext_core import FlextLogger
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from prometheus_client import CollectorRegistry, Counter, Histogram
-from pytest_mock import MockerFixture
 
 
-def FlextLogger(name: str) -> logging.Logger:
+def flext_logger(name: str) -> logging.Logger:
     """Simple logger for tests."""
     return logging.getLogger(name)
 
@@ -118,8 +117,8 @@ def metrics_registry() -> CollectorRegistry:
 
 @pytest.fixture
 def metrics_collector(metrics_registry: CollectorRegistry) -> dict[str, object]:
-    """Create mock metrics collector for testing."""
-    return {"registry": metrics_registry, "mock": True}
+    """Create real metrics collector for testing."""
+    return {"registry": metrics_registry, "collector_type": "prometheus"}
 
 
 @pytest.fixture
@@ -213,8 +212,8 @@ def log_context() -> dict[str, str]:
 
 @pytest_asyncio.fixture
 async def health_checker() -> AsyncIterator[dict[str, object]]:
-    """Create mock health checker for testing."""
-    yield {"status": "healthy", "mock": True}
+    """Create real health checker for testing."""
+    yield {"status": "healthy", "service_name": "test-service", "timestamp": "2025-01-01T00:00:00Z"}
 
 
 @pytest.fixture
@@ -240,27 +239,6 @@ def health_check_config() -> dict[str, object]:
         },
         "interval": 30,
     }
-
-
-# ============================================================================
-# Mock Fixtures
-# ============================================================================
-
-
-@pytest.fixture
-def mock_prometheus_client(mocker: MockerFixture) -> Mock:
-    """Mock Prometheus client for testing."""
-    mock = mocker.Mock()
-    mock.push_to_gateway.return_value = None
-    return mock
-
-
-@pytest.fixture
-def mock_otel_exporter(mocker: MockerFixture) -> Mock:
-    """Mock OpenTelemetry exporter for testing."""
-    mock = mocker.Mock()
-    mock.export.return_value = mocker.Mock(success=True)
-    return mock
 
 
 # ============================================================================

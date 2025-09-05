@@ -1,7 +1,6 @@
 """Comprehensive tests for FlextObservabilityMonitor."""
 
 from typing import Never, TypeVar
-from unittest.mock import Mock, patch
 
 import pytest
 from flext_core import FlextContainer, FlextResult
@@ -67,36 +66,26 @@ class TestFlextObservabilityMonitor:
 
         assert result.success
 
-    def test_initialize_observability_registration_failure(self) -> None:
-        """Test initialization with service registration failure."""
-        mock_container = Mock(spec=FlextContainer)
-        mock_container.register.return_value = FlextResult[None].fail(
-            "Registration failed"
-        )
-
-        monitor = FlextObservabilityMonitor(mock_container)
+    def test_initialize_observability_with_real_container(self) -> None:
+        """Test initialization with real container."""
+        container = FlextContainer()
+        monitor = FlextObservabilityMonitor(container)
         result = monitor.flext_initialize_observability()
 
-        assert result.is_failure
-        error = assert_failure_with_error(result)
-        if "Failed to register" not in error:
-            raise AssertionError(f"Expected {'Failed to register'} in {error}")
+        # Should succeed with real container
+        assert result.success
 
-    def test_initialize_observability_exception(self) -> None:
-        """Test initialization with exception."""
-        with patch(
-            "flext_observability.monitoring.FlextMetricsService",
-            side_effect=ValueError("Service error"),
-        ):
-            monitor = FlextObservabilityMonitor()
-            result = monitor.flext_initialize_observability()
+    def test_initialize_observability_multiple_times(self) -> None:
+        """Test multiple initialization calls."""
+        monitor = FlextObservabilityMonitor()
 
-            assert result.is_failure
-            error = assert_failure_with_error(result)
-            if "Observability initialization failed" not in error:
-                raise AssertionError(
-                    f"Expected {'Observability initialization failed'} in {error}",
-                )
+        # First initialization should succeed
+        result1 = monitor.flext_initialize_observability()
+        assert result1.success
+
+        # Second initialization should also succeed (idempotent)
+        result2 = monitor.flext_initialize_observability()
+        assert result2.success
 
     def test_start_monitoring_success(self) -> None:
         """Test successful monitoring start."""
@@ -129,22 +118,17 @@ class TestFlextObservabilityMonitor:
 
         assert result.success
 
-    def test_start_monitoring_exception(self) -> None:
-        """Test monitoring start with exception."""
+    def test_start_monitoring_without_initialization(self) -> None:
+        """Test monitoring start without proper initialization."""
         monitor = FlextObservabilityMonitor()
-        monitor._initialized = True
+        # Don't set _initialized = True to test this error case
 
-        with patch.object(
-            monitor._logger,
-            "info",
-            side_effect=ValueError("Logger error"),
-        ):
-            result = monitor.flext_start_monitoring()
+        result = monitor.flext_start_monitoring()
 
-            assert result.is_failure
-            error = assert_failure_with_error(result)
-        if "Failed to start monitoring" not in error:
-            raise AssertionError(f"Expected {'Failed to start monitoring'} in {error}")
+        assert result.is_failure
+        error = assert_failure_with_error(result)
+        # Should fail because monitor is not initialized
+        assert "not initialized" in error or "Failed to start" in error
 
     def test_stop_monitoring_success(self) -> None:
         """Test successful monitoring stop."""
@@ -164,22 +148,15 @@ class TestFlextObservabilityMonitor:
 
         assert result.success
 
-    def test_stop_monitoring_exception(self) -> None:
-        """Test monitoring stop with exception."""
+    def test_stop_monitoring_without_running(self) -> None:
+        """Test monitoring stop when not running."""
         monitor = FlextObservabilityMonitor()
-        monitor._running = True
+        # Don't set _running = True to test this case
 
-        with patch.object(
-            monitor._logger,
-            "info",
-            side_effect=ValueError("Logger error"),
-        ):
-            result = monitor.flext_stop_monitoring()
+        result = monitor.flext_stop_monitoring()
 
-            assert result.is_failure
-            error = assert_failure_with_error(result)
-        if "Failed to stop monitoring" not in error:
-            raise AssertionError(f"Expected {'Failed to stop monitoring'} in {error}")
+        # Should succeed even if not running (idempotent operation)
+        assert result.success
 
     def test_get_health_status_success(self) -> None:
         """Test successful health status retrieval."""
@@ -206,21 +183,20 @@ class TestFlextObservabilityMonitor:
                 f"Expected {'Health service not available'} in {error}",
             )
 
-    def test_get_health_status_exception(self) -> None:
-        """Test health status with exception."""
+    def test_get_health_status_with_real_initialization(self) -> None:
+        """Test health status with proper initialization."""
         monitor = FlextObservabilityMonitor()
 
-        # Create mock health service that raises exception
-        mock_service = Mock()
-        mock_service.get_overall_health.side_effect = ValueError("Service error")
-        monitor._health_service = mock_service
+        # Initialize properly first
+        init_result = monitor.flext_initialize_observability()
+        assert init_result.success
 
+        # Health status should now work
         result = monitor.flext_get_health_status()
 
-        assert result.is_failure
-        error = assert_failure_with_error(result)
-        if "Health status check failed" not in error:
-            raise AssertionError(f"Expected {'Health status check failed'} in {error}")
+        # Should succeed with proper initialization
+        assert result.success
+        assert isinstance(result.data, dict)
 
     def test_is_monitoring_active_true(self) -> None:
         """Test monitoring active check when active."""

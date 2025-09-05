@@ -105,12 +105,9 @@ def _generate_utc_datetime() -> datetime:
       datetime: Current UTC datetime with timezone information
 
     """
-    # Use flext-core timestamp generation - direct float to datetime conversion
-    timestamp_float = FlextUtilities.generate_timestamp()
-    return datetime.fromtimestamp(
-        timestamp_float,
-        tz=datetime.now().astimezone().tzinfo,
-    )
+    # Use flext-core timestamp generation - parse ISO timestamp string to datetime
+    timestamp_str = FlextUtilities.generate_timestamp()
+    return datetime.fromisoformat(timestamp_str)
 
 
 # ============================================================================
@@ -298,7 +295,7 @@ class FlextObservabilityMasterFactory:
         try:
             # FlextMetric imported at module level
             tags = kwargs.get("tags", {})
-            tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
+            tags = cast("FlextTypes.Core.Dict", tags) if isinstance(tags, dict) else {}
 
             timestamp = kwargs.get("timestamp")
             if not isinstance(timestamp, datetime):
@@ -337,7 +334,7 @@ class FlextObservabilityMasterFactory:
             # FlextLogEntry imported at module level
             context = kwargs.get("context", {})
             if isinstance(context, dict):
-                context = cast("FlextTypes.Data.Dict", context)
+                context = cast("FlextTypes.Core.Dict", context)
             else:
                 context = {}
 
@@ -377,7 +374,7 @@ class FlextObservabilityMasterFactory:
         """Create alert."""
         try:
             tags = kwargs.get("tags", {})
-            tags = cast("FlextTypes.Data.Dict", tags) if isinstance(tags, dict) else {}
+            tags = cast("FlextTypes.Core.Dict", tags) if isinstance(tags, dict) else {}
 
             timestamp = kwargs.get("timestamp")
             if not isinstance(timestamp, datetime):
@@ -493,7 +490,7 @@ class FlextObservabilityMasterFactory:
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[object].fail(f"Failed to create health check: {e}")
 
-    def health_status(self) -> FlextResult[FlextTypes.Data.Dict]:
+    def health_status(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Get overall health status."""
         try:
             service_result = self.container.get("health_service")
@@ -501,12 +498,12 @@ class FlextObservabilityMasterFactory:
                 service = cast("FlextHealthService", service_result.data)
                 return service.get_overall_health()
 
-            return FlextResult[FlextTypes.Data.Dict].ok(
-                cast("FlextTypes.Data.Dict", {"status": "healthy", "mode": "fallback"}),
+            return FlextResult[FlextTypes.Core.Dict].ok(
+                cast("FlextTypes.Core.Dict", {"status": "healthy", "mode": "fallback"}),
             )
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult[FlextTypes.Data.Dict].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Health status check failed: {e}"
             )
 
@@ -571,26 +568,43 @@ class FlextObservabilityMasterFactory:
 
 
 # ============================================================================
-# GLOBAL FACTORY INSTANCE - Single Point of Truth
+# GLOBAL FACTORY INSTANCE - Proper singleton pattern
 # ============================================================================
 
-_global_factory: FlextObservabilityMasterFactory | None = None
+
+class _GlobalFactorySingleton:
+    """Singleton class to manage global factory instance."""
+
+    def __init__(self) -> None:
+        self._factory: FlextObservabilityMasterFactory | None = None
+
+    def get_factory(
+        self, container: FlextContainer | None = None
+    ) -> FlextObservabilityMasterFactory:
+        """Get global factory instance."""
+        if self._factory is None:
+            self._factory = FlextObservabilityMasterFactory(container)
+        return self._factory
+
+    def reset_factory(self) -> None:
+        """Reset global factory for testing."""
+        self._factory = None
+
+
+# Singleton instance
+_global_factory_singleton = _GlobalFactorySingleton()
 
 
 def get_global_factory(
     container: FlextContainer | None = None,
 ) -> FlextObservabilityMasterFactory:
     """Get global factory instance."""
-    global _global_factory
-    if _global_factory is None:
-        _global_factory = FlextObservabilityMasterFactory(container)
-    return _global_factory
+    return _global_factory_singleton.get_factory(container)
 
 
 def reset_global_factory() -> None:
     """Reset global factory for testing."""
-    global _global_factory
-    _global_factory = None
+    _global_factory_singleton.reset_factory()
 
 
 # Convenience functions using global factory

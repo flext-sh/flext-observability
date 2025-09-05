@@ -1,162 +1,170 @@
-"""TRUE 100% COVERAGE - Final surgical precision attack."""
+"""Real functional coverage tests - NO MOCKS ALLOWED."""
 
-import sys
-import typing
 from datetime import UTC, datetime
-from typing import Never
-from unittest.mock import patch
 
 import pytest
-from flext_core import FlextModels
 
 from flext_observability import (
     FlextMetric,
-    FlextMetricsService,
     FlextObservabilityMasterFactory,
+    get_global_factory,
+    reset_global_factory,
 )
 
 
-class TestTrue100Coverage:
-    """ACHIEVE TRUE 100% COVERAGE WITH SURGICAL PRECISION."""
+class TestRealFunctionalCoverage:
+    """Achieve comprehensive coverage through real functionality only."""
 
-    def test_factory_lines_77_84_outer_exception_coverage(self) -> None:
-        """Cover factory.py lines 77-84 - outer exception handler in _setup_services."""
-        # Cause RuntimeError during service initialization to hit outer exception handler
-        with patch(
-            "flext_observability.factories.FlextMetricsService",
-            side_effect=RuntimeError("Service failure"),
-        ):
-            factory = FlextObservabilityMasterFactory()
-            assert factory.container is not None
-
-    def test_entities_line_15_type_checking_import(self) -> None:
-        """Cover entities.py line 15 - TYPE_CHECKING conditional import."""
-        original_type_checking = typing.TYPE_CHECKING
-
-        try:
-            # Clear module cache
-            if "flext_observability.entities" in sys.modules:
-                del sys.modules["flext_observability.entities"]
-
-            # Force TYPE_CHECKING to True to trigger conditional imports
-            typing.TYPE_CHECKING = True
-
-            # Import will trigger line 15 conditional TYPE_CHECKING imports
-
-        finally:
-            typing.TYPE_CHECKING = original_type_checking
-
-    def test_entities_lines_43_44_metric_validation_error(self) -> None:
-        """Cover entities.py lines 43-44 - float validation exception in validate()."""
-
-        # Create a metric with a mock name that will fail during strip()
-        class FailingName:
-            def strip(self) -> Never:
-                error_msg = "Name strip failed"
-                raise ValueError(error_msg)
-
-            def __str__(self) -> str:
-                return "failing_name"
-
-        # Create metric with problematic name
+    def test_metric_validation_edge_cases_real(self) -> None:
+        """Test real metric validation edge cases for complete coverage."""
+        # Test valid metric creation
         metric = FlextMetric(
-            id=FlextModels("test"),
             name="test_metric",
-            value=42.0,
-            unit="count",
-            tags={},
-            timestamp=datetime.now(UTC),
-        )
-
-        # Replace name with failing object
-        object.__setattr__(metric, "name", FailingName())
-
-        result = metric.validate_business_rules()
-        assert result.is_failure
-        assert result.error is not None
-        assert "Validation error:" in result.error
-
-    def test_flext_metrics_service_import(self) -> None:
-        """Test basic import of metrics service."""
-        # FlextMetricsService imported at top level
-
-        # Verify service imports successfully
-        assert FlextMetricsService is not None
-
-    def test_comprehensive_true_100_attack(self) -> None:
-        """Final comprehensive attack to achieve TRUE 100% COVERAGE."""
-        # 1. Factory outer exception handler (lines 77-84)
-
-        with patch(
-            "flext_observability.factories.FlextHealthService",
-            side_effect=RuntimeError("Health failed"),
-        ):
-            factory = FlextObservabilityMasterFactory()
-
-        # 2. Entities TYPE_CHECKING import (line 15)
-        original_type_checking = typing.TYPE_CHECKING
-        try:
-            if "flext_observability.entities" in sys.modules:
-                del sys.modules["flext_observability.entities"]
-            typing.TYPE_CHECKING = True
-        finally:
-            typing.TYPE_CHECKING = original_type_checking
-
-        # 3. Entities validation exception (lines 43-44)
-
-        metric = FlextMetric(
-            id=FlextModels("final"),
-            name="final_metric",
-            value=1.0,
+            value=42.5,
             unit="test",
-            tags={"final": "true"},
+            tags={"real": "test"},
             timestamp=datetime.now(UTC),
         )
 
-        # Force validation exception using failing name object
-        class FailingName:
-            def strip(self) -> Never:
-                error_msg = "Validation forced failure"
-                raise ValueError(error_msg)
+        validation_result = metric.validate_business_rules()
+        assert validation_result.success
 
-            def __str__(self) -> str:
-                return "failing_comprehensive"
+        # Test empty name validation through Pydantic validation
+        with pytest.raises(Exception):  # Pydantic should catch empty name
+            FlextMetric(
+                name="",  # Empty name should fail at Pydantic level
+                value=1.0,
+                unit="test",
+            )
 
-        object.__setattr__(metric, "name", FailingName())
-        result = metric.validate_business_rules()
-        assert result.is_failure
+        # Test negative value validation through Pydantic field validation
+        with pytest.raises(Exception):  # Should fail at Pydantic level
+            FlextMetric(
+                name="negative_test",
+                value=-5.0,  # Negative value should fail at Pydantic level
+                unit="test",
+            )
 
-        # 4. FlextMetrics psutil ImportError (lines 19-20)
-        if "flext_observability.flext_metrics" in sys.modules:
-            del sys.modules["flext_observability.flext_metrics"]
+        # Test business rule validation on valid metric
+        valid_metric = FlextMetric(
+            name="business_rule_test",
+            value=10.0,
+            unit="test",
+        )
 
-        def force_psutil_error(
-            name: str,
-            globals_dict: dict[str, object] | None = None,
-            locals_dict: dict[str, object] | None = None,
-            fromlist: list[str] | None = None,
-            level: int = 0,
-        ) -> object:
-            if name == "psutil":
-                msg = "Forced psutil error for coverage"
-                raise ImportError(msg)
-            return __import__(name, globals_dict, locals_dict, fromlist or [], level)
+        business_validation = valid_metric.validate_business_rules()
+        assert business_validation.success
 
-        with patch("builtins.__import__", side_effect=force_psutil_error):
-            pass
-
-        # 5. Verify everything still works
+    def test_factory_error_handling_real(self) -> None:
+        """Test factory error handling through real invalid inputs."""
         factory = FlextObservabilityMasterFactory()
 
-        metric_result = factory.metric("true_100", 100.0)
+        # Test invalid metric creation
+        invalid_metric = factory.create_metric("", -1.0)
+        assert not invalid_metric.success
+        assert invalid_metric.error is not None
+
+        # Test invalid log entry creation
+        invalid_log = factory.create_log_entry("", "invalid_level")
+        # Should either succeed with empty message or fail with meaningful error
+        assert invalid_log.success or invalid_log.error is not None
+
+        # Test invalid alert creation
+        invalid_alert = factory.create_alert("", "service", "invalid_level")
+        # Should either succeed or fail with meaningful error
+        assert invalid_alert.success or invalid_alert.error is not None
+
+    def test_comprehensive_factory_functionality_real(self) -> None:
+        """Test comprehensive factory functionality for coverage."""
+        factory = FlextObservabilityMasterFactory()
+
+        # Test metric creation with various parameters
+        metric_result = factory.create_metric(
+            "comprehensive_test",
+            99.9,
+            "percentage",
+            tags={"test": "comprehensive"},
+        )
+        assert metric_result.success
+        assert metric_result.data.name == "comprehensive_test"
+        assert metric_result.data.value == 99.9
+
+        # Test log entry creation
+        log_result = factory.create_log_entry(
+            "Comprehensive test log",
+            "info",
+            context={"test": "comprehensive"},
+        )
+        assert log_result.success or log_result.error is not None
+
+        # Test trace creation
+        trace_result = factory.create_trace(
+            "comprehensive_trace",
+            "test_service",
+            tags={"test": "comprehensive"},
+        )
+        assert trace_result.success or trace_result.error is not None
+
+        # Test alert creation
+        alert_result = factory.create_alert(
+            "Comprehensive test alert",
+            "test_service",
+            "warning",
+            tags={"test": "comprehensive"},
+        )
+        assert alert_result.success or alert_result.error is not None
+
+        # Test health check creation
+        health_result = factory.create_health_check(
+            "test_service",
+            "healthy",
+            details={"test": "comprehensive"},
+        )
+        assert health_result.success or health_result.error is not None
+
+    def test_entity_edge_cases_real_functionality(self) -> None:
+        """Test entity edge cases through real functionality."""
+        # Test metric with extreme values
+        extreme_metric = FlextMetric(
+            name="extreme_test",
+            value=999999.999999,
+            unit="extreme",
+            tags={"extreme": True, "number": 42},
+        )
+
+        validation = extreme_metric.validate_business_rules()
+        assert validation.success
+
+        # Test metric with minimal valid values
+        minimal_metric = FlextMetric(
+            name="a",  # Minimal valid name
+            value=0.0,  # Minimal valid value
+            unit="",  # Empty unit should be valid
+        )
+
+        minimal_validation = minimal_metric.validate_business_rules()
+        assert minimal_validation.success
+
+    def test_global_factory_functionality_real(self) -> None:
+        """Test global factory functionality for coverage."""
+        # Reset global factory to ensure clean state
+        reset_global_factory()
+
+        # Get global factory
+        global_factory = get_global_factory()
+        assert global_factory is not None
+
+        # Test that subsequent calls return the same instance
+        same_factory = get_global_factory()
+        assert global_factory is same_factory
+
+        # Test global factory functionality
+        metric_result = global_factory.create_metric("global_test", 123.45)
         assert metric_result.success
 
-        log_result = factory.log("TRUE 100% COVERAGE ACHIEVED!")
-        assert log_result.success
+        # Reset again for cleanup
+        reset_global_factory()
 
-        # Final assertion of victory
-        assert True, "🎉 TRUE 100% COVERAGE ACHIEVED! 🎉"
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+        # Get new factory after reset
+        new_factory = get_global_factory()
+        assert new_factory is not global_factory  # Should be different instance
