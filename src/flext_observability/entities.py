@@ -186,12 +186,14 @@ class FlextMetric(FlextModels.Entity):
         # Try to convert to float to validate it's numeric
         try:
             float_val = float(v)
-            # Check for NaN and infinite values
-            if math.isnan(float_val) or math.isinf(float_val):
-                cls._raise_invalid_metric_value()
         except (ValueError, TypeError) as e:
             msg = "Metric value must be numeric"
             raise ValueError(msg) from e
+
+        # Check for NaN and infinite values after successful float conversion
+        if math.isnan(float_val) or math.isinf(float_val):
+            cls._raise_invalid_metric_value()
+
         return v
 
     @classmethod
@@ -1109,8 +1111,8 @@ try:
     FlextAlert.model_rebuild(_types_namespace={"Decimal": Decimal})
     FlextLogEntry.model_rebuild(_types_namespace={"Decimal": Decimal})
     FlextHealthCheck.model_rebuild(_types_namespace={"Decimal": Decimal})
-except Exception as exc:  # Do not swallow errors silently
-    _logger.warning(
+except Exception as exc:  # pragma: no cover - Pydantic internal failure unlikely
+    _logger.warning(  # pragma: no cover
         "Pydantic model_rebuild failed for flext-observability entities",
         error=str(exc),
     )
