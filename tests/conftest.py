@@ -1,6 +1,10 @@
 """Pytest configuration and shared fixtures for FLEXT-Observability.
 
 Modern test configuration for observability with metrics, tracing, and logging.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -14,7 +18,7 @@ import pytest
 import pytest_asyncio
 from _pytest.config import Config
 from _pytest.nodes import Item
-from flext_core import FlextLogger
+from flext_core import FlextLogger, FlextTypes
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
@@ -116,7 +120,7 @@ def metrics_registry() -> CollectorRegistry:
 
 
 @pytest.fixture
-def metrics_collector(metrics_registry: CollectorRegistry) -> dict[str, object]:
+def metrics_collector(metrics_registry: CollectorRegistry) -> FlextTypes.Core.Dict:
     """Create real metrics collector for testing."""
     return {"registry": metrics_registry, "collector_type": "prometheus"}
 
@@ -195,7 +199,7 @@ def structured_logger() -> object:
 
 
 @pytest.fixture
-def log_context() -> dict[str, str]:
+def log_context() -> FlextTypes.Core.Headers:
     """Create log context for testing."""
     return {
         "user_id": "test-user-123",
@@ -211,13 +215,17 @@ def log_context() -> dict[str, str]:
 
 
 @pytest_asyncio.fixture
-async def health_checker() -> AsyncIterator[dict[str, object]]:
+async def health_checker() -> AsyncIterator[FlextTypes.Core.Dict]:
     """Create real health checker for testing."""
-    yield {"status": "healthy", "service_name": "test-service", "timestamp": "2025-01-01T00:00:00Z"}
+    yield {
+        "status": "healthy",
+        "service_name": "test-service",
+        "timestamp": "2025-01-01T00:00:00Z",
+    }
 
 
 @pytest.fixture
-def health_check_config() -> dict[str, object]:
+def health_check_config() -> FlextTypes.Core.Dict:
     """Create health check configuration for testing."""
     return {
         "checks": {
@@ -247,7 +255,7 @@ def health_check_config() -> dict[str, object]:
 
 
 @pytest.fixture
-def sample_metric_data() -> dict[str, object]:
+def sample_metric_data() -> FlextTypes.Core.Dict:
     """Sample metric data for testing."""
     return {
         "name": "http_requests_total",
@@ -262,7 +270,7 @@ def sample_metric_data() -> dict[str, object]:
 
 
 @pytest.fixture
-def sample_trace_data() -> dict[str, object]:
+def sample_trace_data() -> FlextTypes.Core.Dict:
     """Sample trace data for testing."""
     return {
         "trace_id": "123456789abcdef0123456789abcdef0",

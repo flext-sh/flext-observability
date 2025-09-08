@@ -1,4 +1,8 @@
-"""Test __init__.py coverage for public API exports."""
+"""Test __init__.py coverage for public API exports.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import flext_observability
 from flext_observability import (

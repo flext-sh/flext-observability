@@ -1,4 +1,8 @@
-"""Comprehensive tests for FlextObservabilityMonitor."""
+"""Comprehensive tests for FlextObservabilityMonitor.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from typing import Never, TypeVar
 
@@ -334,7 +338,7 @@ class TestFlextMonitorFunction:
             return "test"
 
         @flext_monitor_function(monitor)
-        def return_dict() -> dict[str, str]:
+        def return_dict() -> FlextTypes.Core.Headers:
             return {"key": "value"}
 
         @flext_monitor_function(monitor)

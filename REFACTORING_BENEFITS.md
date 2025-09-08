@@ -130,7 +130,7 @@ class FlextObservabilityPlatform:
 
 ```python
 class FlextObservabilityPlatformV2(FlextPlatform):
-    def __init__(self, config: dict[str, object] | None = None, container: FlextContainer | None = None):
+    def __init__(self, config: FlextTypes.Core.Dict | None = None, container: FlextContainer | None = None):
         # Configuração automatizada via base platform
         merged_config = {**DEFAULT_OBSERVABILITY_CONFIG, **(config or {})}
         super().__init__(name=ObservabilityConstants.NAME, version=ObservabilityConstants.VERSION,

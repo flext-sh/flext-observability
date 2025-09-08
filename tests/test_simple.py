@@ -1,4 +1,8 @@
-"""Test flext_simple.py coverage for conditional paths using flext_tests."""
+"""Test flext_simple.py coverage for conditional paths using flext_tests.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import math
 import time

@@ -1,56 +1,12 @@
 """FLEXT Observability Application Services.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-
 Application layer services implementing comprehensive observability business logic
 for the FLEXT ecosystem. These services coordinate domain entities, enforce business
 rules, and orchestrate observability workflows across metrics collection, distributed
 tracing, alert management, health monitoring, and structured logging.
 
-Built following Clean Architecture and Domain-Driven Design principles with SOLID
-patterns, these services provide the core business logic layer between domain entities
-and external interfaces. Each service maintains single responsibility while supporting
-comprehensive observability operations with enterprise-grade reliability and
-performance.
-
-Key Components:
-    - FlextMetricsService: Metrics collection, aggregation, and Prometheus compatibility
-    - FlextTracingService: Distributed tracing coordination and span management
-    - FlextAlertService: Alert processing, routing, and lifecycle management
-    - FlextHealthService: Health check coordination and dependency monitoring
-    - FlextLoggingService: Structured logging management and context enrichment
-
-Architecture:
-    Application layer services in Clean Architecture, coordinating domain entities
-    and business workflows. Services depend on FlextContainer for dependency injection
-    and implement railway-oriented programming with FlextResult error handling.
-
-Integration:
-    - Built on flext-core foundation patterns (FlextContainer, FlextResult)
-    - Coordinates flext-observability domain entities
-    - Provides business logic for external interfaces and API layers
-    - Supports comprehensive observability across FLEXT ecosystem
-
-Example:
-    Service initialization and usage with dependency injection:
-
-    >>> from flext_observability.services import FlextMetricsService
-    >>> from flext_core import FlextContainer
-    >>> container = FlextContainer()
-    >>> metrics_service = FlextMetricsService(container)
-    >>>
-    >>> # Record metric with business logic
-    >>> metric = FlextMetric(name="api_requests", value=1, unit="count")
-    >>> result = metrics_service.record_metric(metric)
-    >>> if result.success:
-    ...     print(f"Recorded: {result.data.name}")
-
-FLEXT Integration:
-    These services form the core business logic for observability across all 33 FLEXT
-    ecosystem projects, providing consistent patterns for metrics, tracing, alerting,
-    health monitoring, and logging throughout the distributed data integration platform.
-
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -67,9 +23,9 @@ from flext_core import (
     FlextLogger,
     FlextMixins,
     FlextResult,
+    FlextTypes,
 )
 
-# Direct imports - eliminando TYPE_CHECKING conforme padrão flext-core
 from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
@@ -208,6 +164,9 @@ class FlextMetricsService:
       (FlextMetric) with infrastructure concerns (storage, export) while enforcing
       business rules and maintaining service boundaries.
 
+    Returns:
+            float:: Description of return value.
+
     """
 
     def __init__(self, container: FlextContainer | None = None) -> None:
@@ -216,7 +175,7 @@ class FlextMetricsService:
         self.logger = FlextLogger(self.__class__.__name__)
 
         # Real metrics storage with thread safety (Single Responsibility)
-        self._metrics_store: dict[str, list[dict[str, object]]] = defaultdict(list)
+        self._metrics_store: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
         self._metrics_lock = threading.RLock()
         self._metric_counters: dict[str, float] = defaultdict(float)
         self._metric_gauges: dict[str, float] = {}
@@ -275,7 +234,7 @@ class FlextMetricsService:
                     )
 
                 # Store raw metric data
-                metric_data: dict[str, object] = {
+                metric_data: FlextTypes.Core.Dict = {
                     "name": metric.name,
                     "value": metric.value,
                     "timestamp": timestamp,
@@ -348,11 +307,11 @@ class FlextMetricsService:
                 f"Failed to retrieve metric '{metric_name}': {e}"
             )
 
-    def get_metrics_summary(self) -> FlextResult[dict[str, object]]:
+    def get_metrics_summary(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive metrics summary with statistics."""
         try:
             with self._metrics_lock:
-                summary: dict[str, object] = {
+                summary: FlextTypes.Core.Dict = {
                     "service_info": {
                         "uptime_seconds": time.time() - self._start_time,
                         "metrics_recorded": self._metrics_recorded,
@@ -372,10 +331,10 @@ class FlextMetricsService:
                     },
                 }
 
-                return FlextResult[dict[str, object]].ok(summary)
+                return FlextResult[FlextTypes.Core.Dict].ok(summary)
 
         except (ValueError, TypeError, ArithmeticError) as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to generate metrics summary: {e}"
             )
 
@@ -383,7 +342,7 @@ class FlextMetricsService:
         """Export metrics in Prometheus format for real integration."""
         try:
             with self._metrics_lock:
-                prometheus_lines: list[str] = []
+                prometheus_lines: FlextTypes.Core.StringList = []
 
                 # Export counters
                 for name, value in self._metric_counters.items():
@@ -489,6 +448,9 @@ class FlextLoggingService:
         Args:
             container: Dependency injection container for service coordination.
                 Defaults to new FlextContainer if not provided.
+
+        Returns:
+            object: Description of return value.
 
         """
         self.container = container or FlextContainer()
@@ -600,16 +562,16 @@ class FlextTracingService:
         self.logger = FlextLogger(self.__class__.__name__)
 
         # Real trace storage with thread safety (Single Responsibility)
-        self._active_traces: dict[str, dict[str, object]] = {}
-        self._completed_traces: dict[str, dict[str, object]] = {}
-        self._trace_spans: dict[str, list[dict[str, object]]] = defaultdict(list)
+        self._active_traces: dict[str, FlextTypes.Core.Dict] = {}
+        self._completed_traces: dict[str, FlextTypes.Core.Dict] = {}
+        self._trace_spans: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
         self._traces_lock = threading.RLock()
 
         # Correlation tracking for distributed tracing
-        self._trace_hierarchy: dict[str, list[str]] = defaultdict(
+        self._trace_hierarchy: dict[str, FlextTypes.Core.StringList] = defaultdict(
             list,
         )  # Keep as-is, string specific
-        self._span_relationships: dict[str, str] = {}  # Keep as-is, string specific
+        self._span_relationships: FlextTypes.Core.Headers = {}  # Keep as-is, string specific
 
         # Service metrics - use flext-core facilities
         self._traces_started = 0
@@ -639,7 +601,7 @@ class FlextTracingService:
                 start_time = time.time()
 
                 # Create comprehensive trace context
-                trace_context: dict[str, object] = {
+                trace_context: FlextTypes.Core.Dict = {
                     "trace_id": trace.trace_id,
                     "operation": trace.operation_name,
                     "start_time": start_time,
@@ -685,12 +647,12 @@ class FlextTracingService:
         trace_id: str,
         span_name: str,
         **span_attributes: object,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Add span to existing trace with real span tracking."""
         try:
             with self._traces_lock:
                 if trace_id not in self._active_traces:
-                    return FlextResult[dict[str, object]].fail(
+                    return FlextResult[FlextTypes.Core.Dict].fail(
                         f"Trace '{trace_id}' not found or not active",
                     )
 
@@ -698,7 +660,7 @@ class FlextTracingService:
                 span_start_time = time.time()
 
                 # Create comprehensive span
-                span: dict[str, object] = {
+                span: FlextTypes.Core.Dict = {
                     "span_id": span_id,
                     "trace_id": trace_id,
                     "name": span_name,
@@ -713,12 +675,12 @@ class FlextTracingService:
                 self._trace_spans[trace_id].append(span)
                 spans_list = self._active_traces[trace_id]["spans"]
                 if isinstance(spans_list, list):
-                    cast("list[str]", spans_list).append(span_id)
+                    cast("FlextTypes.Core.StringList", spans_list).append(span_id)
 
-                return FlextResult[dict[str, object]].ok(span)
+                return FlextResult[FlextTypes.Core.Dict].ok(span)
 
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to add span to trace '{trace_id}': {e}"
             )
 
@@ -726,12 +688,12 @@ class FlextTracingService:
         self,
         trace_id: str,
         status: str = "completed",
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Finish trace with comprehensive context and timing."""
         try:
             with self._traces_lock:
                 if trace_id not in self._active_traces:
-                    return FlextResult[dict[str, object]].fail(
+                    return FlextResult[FlextTypes.Core.Dict].fail(
                         f"Trace '{trace_id}' not found or not active",
                     )
 
@@ -768,14 +730,14 @@ class FlextTracingService:
                     status=status,
                 )
 
-                return FlextResult[dict[str, object]].ok(trace_context)
+                return FlextResult[FlextTypes.Core.Dict].ok(trace_context)
 
         except (ValueError, TypeError, KeyError, ArithmeticError) as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to finish trace '{trace_id}': {e}"
             )
 
-    def get_trace_info(self, trace_id: str) -> FlextResult[dict[str, object]]:
+    def get_trace_info(self, trace_id: str) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive trace information including spans."""
         try:
             with self._traces_lock:
@@ -784,25 +746,25 @@ class FlextTracingService:
                     trace_info = self._active_traces[trace_id].copy()
                     trace_info["trace_spans"] = self._trace_spans.get(trace_id, [])
                     trace_info["child_traces"] = self._trace_hierarchy.get(trace_id, [])
-                    return FlextResult[dict[str, object]].ok(trace_info)
+                    return FlextResult[FlextTypes.Core.Dict].ok(trace_info)
 
                 # Check completed traces
                 if trace_id in self._completed_traces:
                     trace_info = self._completed_traces[trace_id].copy()
                     trace_info["trace_spans"] = self._trace_spans.get(trace_id, [])
                     trace_info["child_traces"] = self._trace_hierarchy.get(trace_id, [])
-                    return FlextResult[dict[str, object]].ok(trace_info)
+                    return FlextResult[FlextTypes.Core.Dict].ok(trace_info)
 
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Core.Dict].fail(
                     f"Trace '{trace_id}' not found"
                 )
 
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to get trace info for '{trace_id}': {e}"
             )
 
-    def export_jaeger_format(self, trace_id: str) -> FlextResult[dict[str, object]]:
+    def export_jaeger_format(self, trace_id: str) -> FlextResult[FlextTypes.Core.Dict]:
         """Export trace in Jaeger-compatible format for real integration."""
         try:
             trace_info_result = self.get_trace_info(trace_id)
@@ -812,7 +774,7 @@ class FlextTracingService:
             trace_info = trace_info_result.data
 
             # Create Jaeger-compatible format
-            jaeger_trace: dict[str, object] = {
+            jaeger_trace: FlextTypes.Core.Dict = {
                 "traceID": trace_id,
                 "spans": [
                     {
@@ -832,7 +794,7 @@ class FlextTracingService:
                         "tags": [
                             {"key": k, "value": str(v)}
                             for k, v in cast(
-                                "dict[str, object]",
+                                "FlextTypes.Core.Dict",
                                 span.get("attributes") or {},
                             ).items()
                         ],
@@ -845,7 +807,7 @@ class FlextTracingService:
                         },
                     }
                     for span in cast(
-                        "list[dict[str, object]]",
+                        "list[FlextTypes.Core.Dict]",
                         trace_info.get("trace_spans") or [],
                     )
                     if isinstance(span, dict)
@@ -861,21 +823,21 @@ class FlextTracingService:
                 },
             }
 
-            return FlextResult[dict[str, object]].ok(jaeger_trace)
+            return FlextResult[FlextTypes.Core.Dict].ok(jaeger_trace)
 
         except (ValueError, TypeError, KeyError, ArithmeticError) as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to export Jaeger format for trace '{trace_id}': {e}",
             )
 
-    def get_tracing_summary(self) -> FlextResult[dict[str, object]]:
+    def get_tracing_summary(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive tracing service summary with statistics."""
         try:
             with self._traces_lock:
                 current_time = time.time()
                 uptime = current_time - self._service_start_time
 
-                summary: dict[str, object] = {
+                summary: FlextTypes.Core.Dict = {
                     "service_info": {
                         "uptime_seconds": uptime,
                         "traces_started": self._traces_started,
@@ -899,10 +861,10 @@ class FlextTracingService:
                     },
                 }
 
-                return FlextResult[dict[str, object]].ok(summary)
+                return FlextResult[FlextTypes.Core.Dict].ok(summary)
 
         except (ValueError, TypeError, ArithmeticError) as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to generate tracing summary: {e}"
             )
 
@@ -962,6 +924,9 @@ class FlextAlertService:
         Args:
             container: Dependency injection container for service coordination.
                 Defaults to new FlextContainer if not provided.
+
+        Returns:
+            object: Description of return value.
 
         """
         self.container = container or FlextContainer()
@@ -1069,8 +1034,8 @@ class FlextHealthService:
         self.logger = FlextLogger(self.__class__.__name__)
 
         # Real health monitoring with thread safety (Single Responsibility)
-        self._component_health: dict[str, dict[str, object]] = {}
-        self._health_history: dict[str, list[dict[str, object]]] = defaultdict(list)
+        self._component_health: dict[str, FlextTypes.Core.Dict] = {}
+        self._health_history: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
         self._health_lock = threading.RLock()
 
         # Health monitoring configuration
@@ -1103,7 +1068,7 @@ class FlextHealthService:
         self,
         actual_health: FlextHealthCheck,
         check_time: float,
-    ) -> dict[str, object]:
+    ) -> FlextTypes.Core.Dict:
         """Create comprehensive health record."""
         return {
             "component": actual_health.service_name,
@@ -1222,7 +1187,7 @@ class FlextHealthService:
 
             return FlextResult[FlextHealthCheck].fail(f"Failed to check health: {e}")
 
-    def get_overall_health(self) -> FlextResult[dict[str, object]]:
+    def get_overall_health(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive overall system health with detailed component status."""
         try:
             with self._health_lock:
@@ -1245,7 +1210,7 @@ class FlextHealthService:
                     overall_status = "unhealthy"
 
                 # Create comprehensive health summary
-                health_summary: dict[str, object] = {
+                health_summary: FlextTypes.Core.Dict = {
                     "overall_status": overall_status,
                     "timestamp": current_time,
                     "uptime_seconds": uptime,
@@ -1267,33 +1232,33 @@ class FlextHealthService:
                     },
                 }
 
-                return FlextResult[dict[str, object]].ok(health_summary)
+                return FlextResult[FlextTypes.Core.Dict].ok(health_summary)
 
         except (ValueError, TypeError, AttributeError, ArithmeticError) as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to get overall health: {e}"
             )
 
     def get_component_health_history(
         self,
         component_name: str,
-    ) -> FlextResult[list[dict[str, object]]]:
+    ) -> FlextResult[list[FlextTypes.Core.Dict]]:
         """Get health history for a specific component."""
         try:
             with self._health_lock:
                 # Return empty list if no history exists (not a failure)
                 if component_name not in self._health_history:
-                    return FlextResult[list[dict[str, object]]].ok([])
+                    return FlextResult[list[FlextTypes.Core.Dict]].ok([])
 
                 history = self._health_history[component_name].copy()
-                return FlextResult[list[dict[str, object]]].ok(history)
+                return FlextResult[list[FlextTypes.Core.Dict]].ok(history)
 
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[list[dict[str, object]]].fail(
+            return FlextResult[list[FlextTypes.Core.Dict]].fail(
                 f"Failed to get health history for '{component_name}': {e}",
             )
 
-    def perform_system_health_check(self) -> FlextResult[dict[str, object]]:
+    def perform_system_health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform comprehensive system health checks including infrastructure."""
         try:
             system_checks = {}
@@ -1356,11 +1321,11 @@ class FlextHealthService:
                 "total_health_checks": self._total_health_checks,
             }
 
-            return FlextResult[dict[str, object]].ok(
-                cast("dict[str, object]", system_checks)
+            return FlextResult[FlextTypes.Core.Dict].ok(
+                cast("FlextTypes.Core.Dict", system_checks)
             )
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"System health check failed: {e}"
             )

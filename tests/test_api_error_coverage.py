@@ -1,4 +1,8 @@
-"""Test coverage for API module error handling and edge cases."""
+"""Test coverage for API module error handling and edge cases.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import math
 from datetime import UTC, datetime

@@ -24,7 +24,7 @@ def flext_create_metric(
     name: str,
     value: float | Decimal,
     unit: str = "",
-    tags: dict[str, str] | None = None,
+    tags: FlextTypes.Core.Headers | None = None,
     metric_type: str = "gauge"
 ) -> FlextResult[FlextMetric]
 ```
@@ -34,7 +34,7 @@ def flext_create_metric(
 - **`name`** (str, required): Metric identifier following naming conventions
 - **`value`** (float | Decimal, required): Numeric measurement value
 - **`unit`** (str, optional): Unit of measurement (e.g., "seconds", "bytes", "count")
-- **`tags`** (dict[str, str], optional): Key-value pairs for metric categorization
+- **`tags`** (FlextTypes.Core.Headers, optional): Key-value pairs for metric categorization
 - **`metric_type`** (str, optional): Metric type ("gauge", "counter", "histogram")
 
 #### Returns
@@ -94,7 +94,7 @@ Create distributed tracing spans for request correlation and performance analysi
 def flext_create_trace(
     operation_name: str,
     service_name: str,
-    context: dict[str, str] | None = None,
+    context: FlextTypes.Core.Headers | None = None,
     parent_trace_id: str | None = None
 ) -> FlextResult[FlextTrace]
 ```
@@ -103,7 +103,7 @@ def flext_create_trace(
 
 - **`operation_name`** (str, required): Name of the operation being traced
 - **`service_name`** (str, required): Name of the service performing the operation
-- **`context`** (dict[str, str], optional): Additional context information
+- **`context`** (FlextTypes.Core.Headers, optional): Additional context information
 - **`parent_trace_id`** (str, optional): Parent trace ID for span correlation
 
 #### Returns
@@ -153,7 +153,7 @@ def flext_create_alert(
     name: str,
     severity: str,
     message: str,
-    details: dict[str, str] | None = None
+    details: FlextTypes.Core.Headers | None = None
 ) -> FlextResult[FlextAlert]
 ```
 
@@ -162,7 +162,7 @@ def flext_create_alert(
 - **`name`** (str, required): Alert identifier/name
 - **`severity`** (str, required): Alert severity ("info", "warning", "error", "critical")
 - **`message`** (str, required): Human-readable alert description
-- **`details`** (dict[str, str], optional): Additional alert context
+- **`details`** (FlextTypes.Core.Headers, optional): Additional alert context
 
 #### Returns
 
@@ -217,7 +217,7 @@ def flext_create_health_check(
     name: str,
     status: str,
     message: str = "",
-    details: dict[str, str] | None = None
+    details: FlextTypes.Core.Headers | None = None
 ) -> FlextResult[FlextHealthCheck]
 ```
 
@@ -226,7 +226,7 @@ def flext_create_health_check(
 - **`name`** (str, required): Health check identifier
 - **`status`** (str, required): Health status ("healthy", "unhealthy", "degraded")
 - **`message`** (str, optional): Status description
-- **`details`** (dict[str, str], optional): Additional health information
+- **`details`** (FlextTypes.Core.Headers, optional): Additional health information
 
 #### Returns
 
@@ -279,7 +279,7 @@ Create structured log entries with correlation ID support.
 def flext_create_log_entry(
     level: str,
     message: str,
-    context: dict[str, str] | None = None,
+    context: FlextTypes.Core.Headers | None = None,
     correlation_id: str | None = None
 ) -> FlextResult[FlextLogEntry]
 ```
@@ -288,7 +288,7 @@ def flext_create_log_entry(
 
 - **`level`** (str, required): Log level ("debug", "info", "warning", "error", "critical")
 - **`message`** (str, required): Log message content
-- **`context`** (dict[str, str], optional): Additional context information
+- **`context`** (FlextTypes.Core.Headers, optional): Additional context information
 - **`correlation_id`** (str, optional): Request correlation ID for distributed tracing
 
 #### Returns

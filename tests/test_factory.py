@@ -1,4 +1,8 @@
-"""Real functionality tests for FlextObservabilityMasterFactory - NO MOCKS."""
+"""Real functionality tests for FlextObservabilityMasterFactory - NO MOCKS.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from datetime import datetime
 
