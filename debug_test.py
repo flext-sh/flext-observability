@@ -1,4 +1,11 @@
-#!/usr/bin/env python3
+"""FLEXT - Enterprise Data Integration Platform.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+
+# !/usr/bin/env python3
 
 """Debug script to understand test failure."""
 

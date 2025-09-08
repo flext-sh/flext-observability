@@ -10,7 +10,7 @@ import time
 
 from flext_core import FlextContainer, FlextResult
 
-from flext_observability import (
+from ..flext_observability import (
     FlextObservabilityMasterFactory,
     flext_create_alert,
     flext_create_health_check,
@@ -28,14 +28,14 @@ from flext_observability.models import (
 
 
 @flext_monitor_function(metric_name="database_operation")
-def database_query(query: str) -> dict[str, object]:
+def database_query(query: str) -> FlextTypes.Core.Dict:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)  # Simulate database latency
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
 @flext_monitor_function(metric_name="api_request")
-def process_api_request(endpoint: str) -> dict[str, object]:
+def process_api_request(endpoint: str) -> FlextTypes.Core.Dict:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)  # Simulate processing time
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}

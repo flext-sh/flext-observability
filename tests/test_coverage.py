@@ -1,4 +1,8 @@
-"""Real functional coverage tests - NO MOCKS ALLOWED."""
+"""Real functional coverage tests - NO MOCKS ALLOWED.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from datetime import UTC, datetime
 

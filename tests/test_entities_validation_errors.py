@@ -1,4 +1,8 @@
-"""Test entity validation error paths for complete coverage."""
+"""Test entity validation error paths for complete coverage.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import pytest
 from pydantic import ValidationError

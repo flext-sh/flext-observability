@@ -2,7 +2,9 @@
 
 Target specific uncovered lines to reach 90%+ total coverage.
 
-Copyright (c) 2025 FLEXT Contributors
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 

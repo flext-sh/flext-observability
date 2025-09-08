@@ -1,58 +1,13 @@
 """FLEXT Observability Monitoring Orchestration.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-
 Monitoring orchestration and function decoration capabilities implementing comprehensive
 observability automation across the FLEXT ecosystem. Provides decorator patterns for
 automatic function monitoring, service orchestration for observability workflows,
 and centralized coordination of metric collection, distributed tracing, health checks,
 and alerting across all FLEXT services.
 
-This module implements the Decorator pattern and Service Orchestrator patterns to
-provide seamless observability integration with minimal code changes. Functions can
-be automatically monitored for performance, errors, and business metrics through
-simple decorator application, while maintaining enterprise-grade reliability.
-
-Key Components:
-    - FlextObservabilityMonitor: Central orchestrator for all observability services
-    - @flext_monitor_function: Decorator for automatic function monitoring
-    - Service coordination for metrics, tracing, health checks, and alerting
-    - Automatic performance tracking and error correlation
-
-Architecture:
-    Interface Adapters layer providing monitoring automation and service orchestration.
-    Coordinates multiple application services (metrics, tracing, alerts, health) while
-    maintaining Clean Architecture boundaries and dependency inversion principles.
-
-Integration:
-    - Built on flext-core foundation patterns (FlextContainer, FlextResult)
-    - Coordinates all observability application services
-    - Provides automatic monitoring for external functions and services
-    - Supports comprehensive observability across FLEXT ecosystem
-
-Example:
-    Automatic function monitoring with minimal setup:
-
-    >>> from flext_observability.monitoring import flext_monitor_function
-    >>>
-    >>> @flext_monitor_function("user_authentication")
-    >>> def authenticate_user(credentials: dict) -> dict:
-    ...     # Function automatically monitored for:
-    ...     # - Execution time metrics
-    ...     # - Success/failure tracking
-    ...     # - Distributed tracing spans
-    ...     # - Error alerting
-    ...     return process_authentication(credentials)
-    >>>
-    >>> # Usage remains identical - monitoring is transparent
-    >>> result = authenticate_user({"username": "user", "password": "pass"})
-
-FLEXT Integration:
-    Provides seamless monitoring integration across all 33 FLEXT ecosystem projects,
-    enabling automatic observability with consistent patterns and minimal
-    learning curve.
-
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -61,7 +16,7 @@ import time
 from collections.abc import Callable
 from typing import TypeVar, cast
 
-from flext_core import FlextContainer, FlextLogger, FlextResult
+from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes
 
 import flext_observability.models as _models
 from flext_observability import models as _models_module
@@ -80,17 +35,17 @@ AnyCallable = (
     Callable[[], object]
     | Callable[[str], object]
     | Callable[[str], str]
-    | Callable[[str], dict[str, object]]
+    | Callable[[str], FlextTypes.Core.Dict]
     | Callable[[object], object]
     | Callable[[object, object], object]
     | Callable[[int], int]
     | Callable[[int, int], int]  # Added for (x: int, y: int) -> int
     | Callable[[], str]
-    | Callable[[], dict[str, str]]
+    | Callable[[], FlextTypes.Core.Headers]
     | Callable[[], None]
     # Integration test signatures
-    | Callable[[list[int]], dict[str, object]]  # process_data function
-    | Callable[[str, str], dict[str, str]]  # handle_api_request function
+    | Callable[[list[int]], FlextTypes.Core.Dict]  # process_data function
+    | Callable[[str, str], FlextTypes.Core.Headers]  # handle_api_request function
     | Callable[[int], dict[str, int]]  # cpu_intensive_task function
     | Callable[[float], dict[str, float]]  # io_intensive_task function
 )
@@ -301,25 +256,25 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[None].fail(f"Failed to stop monitoring: {e}")
 
-    def flext_get_health_status(self) -> FlextResult[dict[str, object]]:
+    def flext_get_health_status(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive health status with real metrics."""
         try:
             if not self._health_service:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Core.Dict].fail(
                     "Health service not available"
                 )
 
             # Get overall health and add monitor-specific metrics
             health_result = self._health_service.get_overall_health()
             if health_result.is_failure:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Core.Dict].fail(
                     health_result.error or "Health service failure"
                 )
 
             health_data = health_result.data or {}
 
             # Add monitor-specific health information
-            monitor_health: dict[str, object] = {
+            monitor_health: FlextTypes.Core.Dict = {
                 "monitor_uptime_seconds": time.time() - self._monitor_start_time,
                 "functions_monitored": self._functions_monitored,
                 "services_initialized": self._initialized,
@@ -329,10 +284,10 @@ class FlextObservabilityMonitor:
             if isinstance(health_data, dict):
                 health_data["monitor_metrics"] = monitor_health
 
-            return FlextResult[dict[str, object]].ok(health_data)
+            return FlextResult[FlextTypes.Core.Dict].ok(health_data)
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Health status check failed: {e}"
             )
 
@@ -361,10 +316,12 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[None].fail(f"Failed to record metric: {e}")
 
-    def flext_get_metrics_summary(self) -> FlextResult[dict[str, object]]:
+    def flext_get_metrics_summary(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive metrics summary."""
         if not self._metrics_service:
-            return FlextResult[dict[str, object]].fail("Metrics service not available")
+            return FlextResult[FlextTypes.Core.Dict].fail(
+                "Metrics service not available"
+            )
 
         return self._metrics_service.get_metrics_summary()
 
@@ -430,7 +387,7 @@ def flext_monitor_function(
 def _execute_monitored_function(
     func: AnyCallable,
     args: tuple[object, ...],
-    kwargs: dict[str, object],
+    kwargs: FlextTypes.Core.Dict,
     monitor: FlextObservabilityMonitor,
     metric_name: str | None,
 ) -> object:
@@ -495,7 +452,7 @@ def _execute_monitored_function(
         raise
 
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "FlextObservabilityMonitor",
     "flext_monitor_function",
 ]

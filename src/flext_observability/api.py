@@ -1,3 +1,11 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """FLEXT Observability Simple API.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -67,7 +75,6 @@ FLEXT Integration:
 
 """
 
-from __future__ import annotations
 
 from contextlib import suppress
 from datetime import UTC, datetime
@@ -117,7 +124,7 @@ def flext_create_metric(
     name: str,
     value: float | Decimal,
     unit: str = "",
-    tags: dict[str, object] | None = None,
+    tags: FlextTypes.Core.Dict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
     """Create observability metric with simplified API.
@@ -270,7 +277,7 @@ def flext_create_trace(
     operation_name: str,
     service_name: str,
     *,
-    config: dict[str, object] | None = None,
+    config: FlextTypes.Core.Dict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextTrace]:
     """Create observability trace with simple parameters.
@@ -394,7 +401,7 @@ def flext_create_health_check(
         return FlextResult[FlextHealthCheck].fail(f"Failed to create health check: {e}")
 
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "flext_alert",  # Re-expose from entities for DRY principle
     "flext_create_alert",
     "flext_create_health_check",

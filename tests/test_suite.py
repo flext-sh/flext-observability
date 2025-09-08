@@ -1,4 +1,8 @@
-"""Complete integration tests with REAL production workflows - NO MOCKS."""
+"""Complete integration tests with REAL production workflows - NO MOCKS.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import threading
 import time
@@ -102,7 +106,7 @@ class TestCompleteIntegrationReal:
         assert start_result.success
 
         results: list[bool] = []
-        errors: list[str] = []
+        errors: FlextTypes.Core.StringList = []
 
         def worker_function(worker_id: int) -> None:
             """Worker function that performs real observability operations."""
@@ -168,7 +172,7 @@ class TestCompleteIntegrationReal:
 
         # Create monitored functions
         @flext_monitor_function(monitor=self.monitor, metric_name="data_processing")
-        def process_data(data: list[int]) -> dict[str, object]:
+        def process_data(data: list[int]) -> FlextTypes.Core.Dict:
             """Real data processing function."""
             # Simulate real processing
             time.sleep(0.1)
@@ -181,7 +185,7 @@ class TestCompleteIntegrationReal:
             }
 
         @flext_monitor_function(monitor=self.monitor, metric_name="api_request")
-        def handle_api_request(endpoint: str, method: str) -> dict[str, str]:
+        def handle_api_request(endpoint: str, method: str) -> FlextTypes.Core.Headers:
             """Real API request handler."""
             time.sleep(0.05)
             return {

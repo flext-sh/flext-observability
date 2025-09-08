@@ -1,6 +1,17 @@
-"""Production-grade observability library for FLEXT ecosystem."""
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
 
 from __future__ import annotations
+from flext_core import FlextTypes
+
+
+"""Production-grade observability library for FLEXT ecosystem.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 # Remove unused TYPE_CHECKING - not needed
 
@@ -60,7 +71,7 @@ from flext_observability.services import (
 )
 
 
-def flext_health_status() -> dict[str, str]:
+def flext_health_status() -> FlextTypes.Core.Headers:
     """Return basic health status using flext-core patterns."""
     return {
         "status": "healthy",
@@ -71,7 +82,7 @@ def flext_health_status() -> dict[str, str]:
 
 # Legacy facades removed - use direct imports from flext-core and factory classes
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     # Core entities
     "FlextAlert",
     "FlextHealthCheck",

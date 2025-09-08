@@ -2,6 +2,10 @@
 
 Core domain entities for metrics, traces, alerts, health checks, and logging.
 Built on flext-core patterns with proper separation of concerns.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -13,6 +17,7 @@ from flext_core import (
     FlextLogger,
     FlextModels,
     FlextResult,
+    FlextTypes,
     FlextUtilities,
 )
 from pydantic import ConfigDict, Field
@@ -46,7 +51,7 @@ class FlextMetric(FlextModels.Entity):
     name: str = metric_name_field
     value: float | Decimal = metric_value_field
     unit: str = metric_unit_field
-    tags: dict[str, object] = Field(default_factory=dict)
+    tags: FlextTypes.Core.Dict = Field(default_factory=dict)
     timestamp: datetime = timestamp_field
     metric_type: str = Field(default="gauge")
 
@@ -83,7 +88,7 @@ class FlextTrace(FlextModels.Entity):
     start_time: datetime = timestamp_field
     end_time: datetime | None = Field(default=None)
     status: str = Field(default=ObservabilityConstants.TRACE_STATUS_STARTED)
-    tags: dict[str, object] = Field(default_factory=dict)
+    tags: FlextTypes.Core.Dict = Field(default_factory=dict)
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate trace business rules."""
@@ -118,7 +123,7 @@ class FlextAlert(FlextModels.Entity):
     service: str = Field(min_length=1, max_length=255)
     timestamp: datetime = timestamp_field
     resolved: bool = Field(default=False)
-    tags: dict[str, object] = Field(default_factory=dict)
+    tags: FlextTypes.Core.Dict = Field(default_factory=dict)
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate alert business rules."""
@@ -157,8 +162,8 @@ class FlextHealthCheck(FlextModels.Entity):
     service_name: str = Field(min_length=1, max_length=255)
     status: str = Field(default=ObservabilityConstants.HEALTH_STATUS_HEALTHY)
     timestamp: datetime = timestamp_field
-    details: dict[str, object] = Field(default_factory=dict)
-    dependencies: list[str] = Field(default_factory=list)
+    details: FlextTypes.Core.Dict = Field(default_factory=dict)
+    dependencies: FlextTypes.Core.StringList = Field(default_factory=list)
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate health check business rules."""
@@ -195,7 +200,7 @@ class FlextLogEntry(FlextModels.Entity):
     service: str = Field(min_length=1, max_length=255)
     timestamp: datetime = timestamp_field
     correlation_id: str | None = Field(default=None)
-    extra_data: dict[str, object] = Field(default_factory=dict)
+    extra_data: FlextTypes.Core.Dict = Field(default_factory=dict)
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate log entry business rules."""
@@ -222,11 +227,11 @@ def flext_metric(
     value: float | Decimal,
     unit: str = ObservabilityConstants.DEFAULT_METRIC_UNIT,
     *,
-    tags: dict[str, object] | None = None,
+    tags: FlextTypes.Core.Dict | None = None,
     timestamp: datetime | None = None,
     metric_type: str | None = None,
 ) -> FlextMetric:
-    """Create a FlextMetric entity."""
+    """Creates a FlextMetric entity."""
     return FlextMetric(
         name=name,
         value=value,
@@ -242,7 +247,7 @@ def flext_trace(
     service_name: str,
     *,
     start_time: datetime | None = None,
-    tags: dict[str, object] | None = None,
+    tags: FlextTypes.Core.Dict | None = None,
     span_id: str | None = None,
     trace_id: str | None = None,
 ) -> FlextTrace:
@@ -263,7 +268,7 @@ def flext_alert(
     level: str = ObservabilityConstants.ALERT_LEVEL_INFO,
     *,
     timestamp: datetime | None = None,
-    tags: dict[str, object] | None = None,
+    tags: FlextTypes.Core.Dict | None = None,
     resolved: bool = False,
 ) -> FlextAlert:
     """Create a FlextAlert entity."""
@@ -282,8 +287,8 @@ def flext_health_check(
     status: str = ObservabilityConstants.HEALTH_STATUS_HEALTHY,
     *,
     timestamp: datetime | None = None,
-    details: dict[str, object] | None = None,
-    dependencies: list[str] | None = None,
+    details: FlextTypes.Core.Dict | None = None,
+    dependencies: FlextTypes.Core.StringList | None = None,
 ) -> FlextHealthCheck:
     """Create a FlextHealthCheck entity."""
     return FlextHealthCheck(
@@ -302,7 +307,7 @@ def flext_log_entry(
     *,
     timestamp: datetime | None = None,
     correlation_id: str | None = None,
-    extra_data: dict[str, object] | None = None,
+    extra_data: FlextTypes.Core.Dict | None = None,
 ) -> FlextLogEntry:
     """Create a FlextLogEntry entity."""
     return FlextLogEntry(

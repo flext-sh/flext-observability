@@ -1,58 +1,13 @@
 """FLEXT Observability Entity Factory.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-
 Factory patterns implementing centralized entity creation with comprehensive
 validation, dependency injection, and business rule enforcement for observability
 entities. Provides unified access point for creating FlextMetric, FlextTrace,
 FlextAlert, FlextHealthCheck, and FlextLogEntry entities with consistent
 validation and initialization patterns.
 
-Built following Factory Method and Abstract Factory patterns with dependency
-injection support, this module eliminates code duplication while ensuring
-consistent entity creation across the FLEXT ecosystem. All factory methods
-implement railway-oriented programming with FlextResult error handling.
-
-Key Components:
-    - FlextObservabilityMasterFactory: Central factory for all observability entities
-    - Entity creation methods with validation and business rule enforcement
-    - Service coordination for entity processing and storage
-    - Dependency injection container integration
-
-Architecture:
-    Interface Adapters layer in Clean Architecture, coordinating domain entity
-    creation with application services. Implements Factory patterns with
-    comprehensive validation and error handling for enterprise reliability.
-
-Integration:
-    - Built on flext-core foundation patterns (FlextContainer, FlextResult)
-    - Coordinates observability domain entities and application services
-    - Provides consistent API for external interfaces and client integration
-    - Supports comprehensive observability across FLEXT ecosystem
-
-Example:
-    Centralized entity creation with validation:
-
-    >>> from flext_observability.factory import FlextObservabilityMasterFactory
-    >>> from flext_core import FlextContainer
-    >>>
-    >>> container = FlextContainer()
-    >>> factory = FlextObservabilityMasterFactory(container)
-    >>>
-    >>> # Create metric with automatic validation
-    >>> metric_result = factory.create_metric("api_requests", 42, "count")
-    >>> if metric_result.success:
-    ...     print(f"Created: {metric_result.data.name}")
-    >>>
-    >>> # Create trace with business context
-    >>> trace_result = factory.create_trace("user_login", "auth-service")
-
-FLEXT Integration:
-    Provides centralized factory services for observability entity creation
-    across all 33 FLEXT ecosystem projects, ensuring consistent patterns and
-    validation for metrics, tracing, alerting, health monitoring, and logging.
-
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -228,6 +183,9 @@ class FlextObservabilityMasterFactory:
             container: Dependency injection container for service coordination.
                 Defaults to new FlextContainer if not provided. Services are
                 automatically initialized and configured for entity processing.
+
+        Returns:
+            object: Description of return value.
 
         """
         self.container = container or FlextContainer()
@@ -417,8 +375,8 @@ class FlextObservabilityMasterFactory:
             # Ensure proper typing for span_attributes
             if isinstance(span_attributes_raw, dict):
                 # Cast to avoid Unknown types in comprehension
-                raw_dict = cast("dict[str, object]", span_attributes_raw)
-                span_attributes: dict[str, object] = {
+                raw_dict = cast("FlextTypes.Core.Dict", span_attributes_raw)
+                span_attributes: FlextTypes.Core.Dict = {
                     str(k): v for k, v in raw_dict.items()
                 }
             else:
@@ -663,7 +621,7 @@ def create_simplified_observability_platform(
 
 # Re-export entity functions to maintain test compatibility (DRY principle)
 # These are already imported above from entities module
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "FlextObservabilityMasterFactory",
     "alert",
     "create_simplified_observability_platform",
