@@ -3,8 +3,8 @@ SPDX-License-Identifier: MIT.
 """
 
 from __future__ import annotations
-from flext_core import FlextTypes
 
+from flext_core import FlextTypes
 
 """Production-grade observability library for FLEXT ecosystem.
 
@@ -19,19 +19,15 @@ __version__ = "0.9.0"
 __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 
 # Import FlextLogger from flext_core
-from flext_core import FlextContainer, FlextLogger, FlextConstants
+from flext_core import FlextConstants, FlextContainer, FlextLogger
 
-# Core entities from models module
-from flext_observability.models import (
-    FlextAlert,
-    FlextHealthCheck,
-    FlextLogEntry,
-    FlextMetric,
-    FlextTrace,
-    flext_alert,
-    flext_health_check,
-    flext_metric,
-    flext_trace,
+# Simple API from api module
+from flext_observability.api import (
+    flext_create_alert,
+    flext_create_health_check,
+    flext_create_log_entry,
+    flext_create_metric,
+    flext_create_trace,
 )
 
 # Factory patterns from factories module
@@ -46,19 +42,23 @@ from flext_observability.factories import (
     trace,
 )
 
+# Core entities from models module
+from flext_observability.models import (
+    FlextAlert,
+    FlextHealthCheck,
+    FlextLogEntry,
+    FlextMetric,
+    FlextTrace,
+    flext_alert,
+    flext_health_check,
+    flext_metric,
+    flext_trace,
+)
+
 # Monitor patterns from monitoring module
 from flext_observability.monitoring import (
     FlextObservabilityMonitor,
     flext_monitor_function,
-)
-
-# Simple API from api module
-from flext_observability.api import (
-    flext_create_alert,
-    flext_create_health_check,
-    flext_create_log_entry,
-    flext_create_metric,
-    flext_create_trace,
 )
 
 # Services from services module
@@ -85,46 +85,46 @@ def flext_health_status() -> FlextTypes.Core.Headers:
 __all__: FlextTypes.Core.StringList = [
     # Core entities
     "FlextAlert",
-    "FlextHealthCheck",
-    "FlextLogEntry",
-    "FlextMetric",
-    "FlextTrace",
-    # Entity factory functions
-    "flext_alert",
-    "flext_health_check",
-    "flext_metric",
-    "flext_trace",
     # Services
     "FlextAlertService",
+    "FlextConstants",
+    # flext-core re-exports
+    "FlextContainer",
+    "FlextHealthCheck",
     "FlextHealthService",
+    "FlextLogEntry",
+    "FlextLogger",
     "FlextLoggingService",
+    "FlextMetric",
     "FlextMetricsService",
-    "FlextTracingService",
     # Factory
     "FlextObservabilityMasterFactory",
-    "get_global_factory",
-    "reset_global_factory",
     # Monitoring
     "FlextObservabilityMonitor",
-    "flext_monitor_function",
+    "FlextTrace",
+    "FlextTracingService",
+    # Version info
+    "__version__",
+    "__version_info__",
+    # Global convenience functions
+    "alert",
+    # Entity factory functions
+    "flext_alert",
     "flext_create_alert",
     "flext_create_health_check",
     "flext_create_log_entry",
     "flext_create_metric",
     "flext_create_trace",
-    # Global convenience functions
-    "alert",
+    "flext_health_check",
+    # Health check
+    "flext_health_status",
+    "flext_metric",
+    "flext_monitor_function",
+    "flext_trace",
+    "get_global_factory",
     "health_check",
     "log",
     "metric",
+    "reset_global_factory",
     "trace",
-    # Health check
-    "flext_health_status",
-    # Version info
-    "__version__",
-    "__version_info__",
-    # flext-core re-exports
-    "FlextContainer",
-    "FlextConstants",
-    "FlextLogger",
 ]
