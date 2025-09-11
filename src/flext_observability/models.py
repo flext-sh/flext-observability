@@ -1,4 +1,4 @@
-"""Observability domain models
+"""Observability domain models.
 
 Core domain entities for metrics, traces, alerts, health checks, and logging.
 Built on flext-core patterns with proper separation of concerns.

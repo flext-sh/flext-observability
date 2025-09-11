@@ -9,7 +9,6 @@ for the flext-observability module, showcasing 100% functional integration.
 """
 
 from __future__ import annotations
-from flext_core import FlextTypes
 
 import time
 
