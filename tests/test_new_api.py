@@ -1,6 +1,6 @@
 """Tests for the new observability API structure.
 
-Tests the refactored modules following SOLID principles.
+Tests the refactored modules
 
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
