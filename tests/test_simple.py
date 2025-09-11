@@ -8,11 +8,6 @@ import math
 import time
 from decimal import Decimal
 
-from flext_tests import (
-    FlextResultFactory,
-    PerformanceProfiler,
-)
-
 from flext_observability import (
     flext_create_alert,
     flext_create_health_check,
@@ -345,7 +340,7 @@ class TestFlextMixinsCoverage:
 
     def test_flext_tests_performance_integration(self) -> None:
         """Test using flext_tests PerformanceProfiler for real performance measurement."""
-        profiler = PerformanceProfiler()
+        profiler = FlextTestsPerformance.PerformanceProfiler()
 
         # Teste performance real das funções de criação
         results = []
@@ -367,11 +362,13 @@ class TestFlextMixinsCoverage:
     def test_flext_result_factory_real_usage(self) -> None:
         """Test using FlextResultFactory from flext_tests for result validation."""
         # Usar FlextResultFactory para validar padrões de resultado
-        test_result = FlextResultFactory.create_success("test_data")
+        test_result = FlextTestsFactories.FlextResultFactory.create_success("test_data")
         assert test_result.success
         assert test_result.data == "test_data"
 
-        failure_result = FlextResultFactory.create_failure("test_error")
+        failure_result = FlextTestsFactories.FlextResultFactory.create_failure(
+            "test_error"
+        )
         assert failure_result.is_failure
         assert failure_result.error == "test_error"
 
