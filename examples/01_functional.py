@@ -15,7 +15,7 @@ import time
 
 from flext_core import FlextContainer
 
-from ..flext_observability import (
+from flext_observability import (
     FlextObservabilityMasterFactory,
     flext_create_alert,
     flext_create_health_check,

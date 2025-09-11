@@ -251,7 +251,6 @@ class FlextMetric(FlextModels.Entity):
         if not FlextValidations.validate_non_empty_string_func(self.name):
             return FlextResult[None].fail("Invalid metric name")
 
-        # Type validation for metric value using FlextValidations numeric validation
         if not isinstance(self.value, (int, float)):
             try:
                 float(self.value)  # Test if it can be converted to float

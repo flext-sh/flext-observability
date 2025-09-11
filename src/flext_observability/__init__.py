@@ -107,7 +107,6 @@ __all__: FlextTypes.Core.StringList = [
     # Monitoring
     "FlextObservabilityMonitor",
     "flext_monitor_function",
-    # Simple API
     "flext_create_alert",
     "flext_create_health_check",
     "flext_create_log_entry",

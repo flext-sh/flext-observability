@@ -615,10 +615,6 @@ def create_simplified_observability_platform(
     return FlextObservabilityMasterFactory(container)
 
 
-# =============================================================================
-# DRY RE-EXPORTS - Expose entity functions for test compatibility
-# =============================================================================
-
 # Re-export entity functions to maintain test compatibility (DRY principle)
 # These are already imported above from entities module
 __all__: FlextTypes.Core.StringList = [

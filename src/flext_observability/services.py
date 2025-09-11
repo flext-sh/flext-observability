@@ -222,7 +222,6 @@ class FlextMetricsService:
                     validation_result.error or "Validation failed"
                 )
 
-            # Type-safe metric recording with thread safety
             with self._metrics_lock:
                 try:
                     # Generate timestamp via shim to enable test patching
