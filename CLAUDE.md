@@ -16,8 +16,9 @@
 **CRITICAL ROLE**: flext-observability is the enterprise-grade observability, monitoring, and metrics foundation for the entire FLEXT ecosystem. This is a PRODUCTION mission-critical system providing comprehensive monitoring, distributed tracing, metrics collection, alerting, and health monitoring with ZERO TOLERANCE for custom observability implementations.
 
 **OBSERVABILITY & MONITORING FOUNDATION RESPONSIBILITIES**:
+
 - ✅ **Enterprise Observability Integration**: Production-grade metrics, tracing, alerting with OpenTelemetry and Prometheus
-- ✅ **FLEXT Ecosystem Integration**: MANDATORY use of flext-core foundation exclusively  
+- ✅ **FLEXT Ecosystem Integration**: MANDATORY use of flext-core foundation exclusively
 - ✅ **Distributed Monitoring**: Complete cross-service tracing, performance monitoring, and system health tracking
 - ✅ **Metrics Collection**: Comprehensive metrics aggregation, analysis, and visualization integration
 - ✅ **Alert Management**: Production alerting systems with escalation and notification management
@@ -25,6 +26,7 @@
 - ✅ **Production Quality**: Zero errors across all quality gates with comprehensive observability testing
 
 **FLEXT ECOSYSTEM IMPACT** (OBSERVABILITY FOUNDATION AUTHORITY):
+
 - **All 32+ FLEXT Projects**: Observability foundation for entire ecosystem - NO custom monitoring implementations
 - **Production Monitoring**: Enterprise monitoring dashboards, alerting, and system health management
 - **Enterprise Observability**: Comprehensive metrics collection, distributed tracing, and performance monitoring
@@ -32,6 +34,7 @@
 - **Cross-Service Visibility**: Unified monitoring across Go, Python, Oracle, gRPC, and web services
 
 **OBSERVABILITY QUALITY IMPERATIVES** (ZERO TOLERANCE ENFORCEMENT):
+
 - 🔴 **ZERO custom monitoring implementations** - ALL observability operations through flext-observability foundation
 - 🔴 **ZERO direct OpenTelemetry/Prometheus imports** outside flext-observability
 - 🟢 **90%+ test coverage** - Complete observability functionality testing with real monitoring systems
@@ -41,9 +44,10 @@
 
 ## 🛑 ZERO TOLERANCE ENFORCEMENT (OBSERVABILITY & MONITORING FOUNDATION)
 
-### ⛔ ABSOLUTELY FORBIDDEN OBSERVABILITY VIOLATIONS:
+### ⛔ ABSOLUTELY FORBIDDEN OBSERVABILITY VIOLATIONS
 
-#### 1. **DIRECT OBSERVABILITY LIBRARY IMPORTS (ECOSYSTEM VIOLATION)**:
+#### 1. **DIRECT OBSERVABILITY LIBRARY IMPORTS (ECOSYSTEM VIOLATION)**
+
 ```python
 # ❌ ABSOLUTELY FORBIDDEN - Direct observability library imports
 import opentelemetry.trace              # VIOLATION: Use flext-observability foundation
@@ -58,20 +62,22 @@ from flext_observability import FlextObservabilityMasterFactory, flext_monitor_f
 from flext_core import FlextResult, FlextLogger, get_logger
 ```
 
-#### 2. **CUSTOM OBSERVABILITY IMPLEMENTATIONS (ARCHITECTURE VIOLATION)**:
+#### 2. **CUSTOM OBSERVABILITY IMPLEMENTATIONS (ARCHITECTURE VIOLATION)**
+
 - **FORBIDDEN**: Custom metrics implementations outside flext-observability patterns
 - **FORBIDDEN**: Direct OpenTelemetry tracing setup - Use FlextTracingService
 - **FORBIDDEN**: Custom Prometheus metrics collectors - Use FlextMetricsService
 - **FORBIDDEN**: Manual logging implementations - Use FlextLogger from flext-core
 - **FORBIDDEN**: Custom observability error handling - Use FlextResult[T] railway pattern
 
-#### 3. **MONITORING CONFIGURATION VIOLATIONS**:
+#### 3. **MONITORING CONFIGURATION VIOLATIONS**
+
 - **FORBIDDEN**: Direct OpenTelemetry configuration without flext-observability validation
 - **FORBIDDEN**: Prometheus metrics registration outside flext-observability management
 - **FORBIDDEN**: Custom health check implementations bypassing FlextHealthService
 - **FORBIDDEN**: Alert configurations without flext-observability alert management
 
-### ⛔ PRODUCTION OBSERVABILITY STANDARDS (ZERO DEVIATION):
+### ⛔ PRODUCTION OBSERVABILITY STANDARDS (ZERO DEVIATION)
 
 1. **ALL observability operations** through flext-observability foundation exclusively
 2. **ALL metrics collection** via FlextMetricsService and FlextMetric entities
@@ -83,6 +89,7 @@ from flext_core import FlextResult, FlextLogger, get_logger
 ## 🚀 ENTERPRISE DEVELOPMENT COMMANDS (PRODUCTION OBSERVABILITY FOUNDATION)
 
 ### 🔴 MANDATORY QUALITY GATES (ZERO ERRORS TOLERANCE)
+
 ```bash
 # MANDATORY before ANY commit - Complete observability validation pipeline
 make validate                 # Runs: lint + type-check + security + test + observability-validate
@@ -96,12 +103,13 @@ make format                  # Auto-format with Ruff (enterprise standards)
 
 # Quality status shortcuts (production efficiency)
 make l                       # Alias for lint
-make t                       # Alias for test  
+make t                       # Alias for test
 make tc                      # Alias for type-check
 make v                       # Alias for validate
 ```
 
 ### 📊 OBSERVABILITY FOUNDATION OPERATIONS
+
 ```bash
 # Core observability infrastructure lifecycle
 make observability-init      # Initialize observability stack with FLEXT standards
@@ -123,6 +131,7 @@ make alertmanager-config   # Configure alert manager integration
 ```
 
 ### 🧪 ENTERPRISE TESTING STANDARDS (REAL OBSERVABILITY VALIDATION)
+
 ```bash
 # Comprehensive observability testing (NO MOCKS - Real monitoring systems)
 make test                    # Full suite: 90%+ coverage with real observability integration
@@ -158,17 +167,20 @@ LEVEL 1: flext-core (abstract foundation)
 ### 🔧 ENTERPRISE OBSERVABILITY ARCHITECTURE PRINCIPLES (ZERO DEVIATION)
 
 **1. Railway-Oriented Programming (MANDATORY)**:
+
 - ALL observability operations return `FlextResult[T]` for type-safe error handling
 - NO try/except fallbacks - explicit error handling through FlextResult pattern
 - ALL monitoring interactions wrapped in FlextResult chains
 
 **2. Clean Architecture + Domain-Driven Design (ENTERPRISE STANDARD)**:
+
 - **Domain Layer**: FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck entities
 - **Application Layer**: FlextMetricsService, FlextTracingService, FlextAlertService
 - **Infrastructure Layer**: OpenTelemetry/Prometheus abstraction, monitoring systems
 - **Interface Layer**: FlextObservabilityMasterFactory, monitoring decorators, simple API
 
 **3. SOLID Principles Enforcement (PRODUCTION QUALITY)**:
+
 - **Single Responsibility**: Each service handles ONE observability concern
 - **Open/Closed**: Extensions through observability plugins, closed for modification
 - **Liskov Substitution**: All metrics/traces/alerts interchangeable
@@ -176,6 +188,7 @@ LEVEL 1: flext-core (abstract foundation)
 - **Dependency Inversion**: Depend on FlextResult abstractions, not implementations
 
 **4. Real Observability Integration (100% PRODUCTION READINESS)**:
+
 - ZERO mocks in production code - ALL tests use real OpenTelemetry/Prometheus APIs
 - Complete monitoring stack integration through abstractions
 - Actual metrics collection with real monitoring systems
@@ -184,6 +197,7 @@ LEVEL 1: flext-core (abstract foundation)
 ### 🏭 ENTERPRISE OBSERVABILITY MODULE ARCHITECTURE
 
 **FOUNDATION LAYER** (Observability Core Infrastructure):
+
 ```python
 src/flext_observability/
 ├── __init__.py              # Complete module exports and FLEXT ecosystem integration
@@ -193,6 +207,7 @@ src/flext_observability/
 ```
 
 **SERVICE LAYER** (Observability Business Logic):
+
 ```python
 ├── services.py              # FlextMetricsService, FlextTracingService, FlextAlertService
 ├── factories.py             # FlextObservabilityMasterFactory (monitoring creation)
@@ -200,6 +215,7 @@ src/flext_observability/
 ```
 
 **INTEGRATION LAYER** (Observability API):
+
 ```python
 ├── api.py                   # Simple API (flext_create_metric, flext_create_trace)
 └── config.py                # FlextObservabilityConfig (monitoring configuration)
@@ -210,6 +226,7 @@ src/flext_observability/
 ### ✅ MANDATORY OBSERVABILITY IMPORT PATTERNS (ZERO TOLERANCE ENFORCEMENT)
 
 **CORRECT - FLEXT Ecosystem Foundation Imports Only:**
+
 ```python
 # ✅ FLEXT-OBSERVABILITY Foundation Imports (MANDATORY)
 from flext_observability import FlextMetricsService, FlextTracingService
@@ -226,6 +243,7 @@ from flext_cli import CLICommand, FlextCliApi
 ### ❌ ABSOLUTELY FORBIDDEN OBSERVABILITY IMPORTS (ECOSYSTEM VIOLATION)
 
 **PROHIBITED - Direct Observability Library Imports:**
+
 ```python
 # ❌ ZERO TOLERANCE VIOLATIONS - Direct observability library imports
 import opentelemetry                    # FORBIDDEN: Use flext-observability foundation
@@ -246,16 +264,19 @@ from flext_core.internal.logging import Logger              # WRONG: Internal mo
 **ALLOWED Dependencies (Level 1 Foundation Only):**
 
 **MANDATORY FLEXT Ecosystem Dependencies:**
+
 - `flext-core>=0.9.0` - Foundation patterns, FlextResult, service base classes, logging
 - `flext-cli>=0.9.0` - CLI patterns, command processing, and user interface
 
 **EXTERNAL Observability Dependencies (Abstracted Through FLEXT):**
+
 - `opentelemetry-api>=1.20.0` - OpenTelemetry tracing (INTERNAL USE ONLY - wrapped by FlextTracingService)
 - `opentelemetry-sdk>=1.20.0` - OpenTelemetry SDK (INTERNAL USE ONLY - wrapped by observability services)
 - `prometheus-client>=0.19.0` - Prometheus metrics (INTERNAL USE ONLY - wrapped by FlextMetricsService)
 - `pydantic>=2.0.0` - Data validation and modeling for observability configurations
 
 **ABSOLUTELY PROHIBITED Dependencies:**
+
 - ❌ Same level (other Level 2) or higher level modules
 - ❌ Direct OpenTelemetry/Prometheus usage for observability operations
 - ❌ Custom logging implementations bypassing flext-core patterns
@@ -266,6 +287,7 @@ from flext_core.internal.logging import Logger              # WRONG: Internal mo
 ### 🔧 OBSERVABILITY TYPE SAFETY REQUIREMENTS (PRODUCTION CRITICAL)
 
 **MANDATORY Type Safety Standards:**
+
 - **MyPy Strict Mode**: ALL source code must pass `mypy src --strict` with ZERO errors
 - **PyRight Validation**: Complete PyRight compliance for IDE integration
 - **Python 3.13+**: Modern Python features, Union types, generic type annotations
@@ -274,6 +296,7 @@ from flext_core.internal.logging import Logger              # WRONG: Internal mo
 - **Monitoring Type Validation**: Typed monitoring configurations and observability results
 
 **Observability-Specific Type Requirements:**
+
 ```python
 # ✅ CORRECT - Observability type annotations
 from typing import Dict, List, Optional, Union
@@ -295,6 +318,7 @@ def monitor_service(service, metrics):  # Missing types
 ### 📋 OBSERVABILITY LINTING STANDARDS (ZERO TOLERANCE ENFORCEMENT)
 
 **MANDATORY Linting Configuration:**
+
 - **Ruff**: ALL rules enabled with observability-specific configurations
 - **Complexity Limits**: Observability functions with complexity >10 require refactoring
 - **Parameter Limits**: Observability functions with >5 parameters need restructuring
@@ -306,12 +330,14 @@ def monitor_service(service, metrics):  # Missing types
 **PRODUCTION TESTING STANDARDS:**
 
 **1. Real Observability API Integration (100% Production Readiness):**
+
 - ZERO mocks for observability operations - ALL tests use real OpenTelemetry/Prometheus APIs
 - Complete monitoring stack integration testing with actual metrics collection
 - Real distributed tracing validation with actual trace propagation
 - Production observability configuration testing
 
 **2. Observability Coverage Requirements (Evidence-Based Quality):**
+
 - **90% minimum coverage** with meaningful observability functionality tests
 - **Real monitoring system testing** with actual metrics collection and tracing
 - **Distributed tracing validation** with actual trace correlation
@@ -334,15 +360,15 @@ import asyncio
 async def enterprise_metrics_collection(service_name: str, metrics_config: Dict[str, Any]) -> FlextResult[List[FlextMetric]]:
     """Enterprise metrics collection with proper error handling - NO try/except fallbacks."""
     logger = get_logger("observability_operations")
-    
+
     # Input validation with early return
     if not service_name or not metrics_config:
         return FlextResult[List[FlextMetric]].fail("Invalid metrics collection configuration")
-        
+
     # Use flext-observability exclusively for metrics operations - NO custom implementations
     metrics_service = FlextMetricsService()
     collected_metrics = []
-    
+
     # Collect metrics through flext-observability foundation
     for metric_name, metric_config in metrics_config.items():
         from flext_observability import flext_create_metric
@@ -353,16 +379,16 @@ async def enterprise_metrics_collection(service_name: str, metrics_config: Dict[
         )
         if metric_result.is_failure:
             return FlextResult[List[FlextMetric]].fail(f"Metric creation failed: {metric_result.error}")
-            
+
         metric = metric_result.unwrap()
-        
+
         # Record metric through flext-observability
         record_result = await metrics_service.record_metric(metric)
         if record_result.is_failure:
             return FlextResult[List[FlextMetric]].fail(f"Metric recording failed: {record_result.error}")
-            
+
         collected_metrics.append(metric)
-        
+
     return FlextResult[List[FlextMetric]].ok(collected_metrics)
 
 # ❌ ABSOLUTELY FORBIDDEN - Custom observability implementations in ecosystem projects
@@ -383,16 +409,16 @@ from typing import Dict, Any, List
 
 class EnterpriseObservabilityService(FlextDomainService):
     """Enterprise observability service using FLEXT foundation - NO custom implementations."""
-    
+
     def __init__(self, service_name: str) -> None:
         super().__init__()
         self._logger = get_logger("enterprise_observability")
         self._service_name = service_name
         self._tracing_service = FlextTracingService()
-        
+
     async def create_distributed_trace(self, operation_name: str, trace_context: Dict[str, Any]) -> FlextResult[FlextTrace]:
         """Create distributed trace using flext-observability foundation exclusively."""
-        
+
         # Distributed tracing through flext-observability
         try:
             trace_result = flext_create_trace(
@@ -402,33 +428,33 @@ class EnterpriseObservabilityService(FlextDomainService):
             )
             if trace_result.is_failure:
                 return FlextResult[FlextTrace].fail(f"Trace creation failed: {trace_result.error}")
-                
+
             trace = trace_result.unwrap()
-            
+
             # Start tracing through flext-observability patterns
             start_result = await self._tracing_service.start_trace(trace)
             if start_result.is_failure:
                 return FlextResult[FlextTrace].fail(f"Trace start failed: {start_result.error}")
-                
+
             return FlextResult[FlextTrace].ok(trace)
         except Exception as e:
             return FlextResult[FlextTrace].fail(f"Distributed tracing creation failed: {e}")
-    
+
     @flext_monitor_function("service_processing")
     async def process_monitored_operation(self, operation_data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
         """Process operation with automatic monitoring using flext-observability patterns."""
-        
+
         # Create trace for operation
         trace_result = await self.create_distributed_trace("process_operation", operation_data)
         if trace_result.is_failure:
             return FlextResult[Dict[str, Any]].fail(f"Trace creation failed: {trace_result.error}")
-            
+
         trace = trace_result.unwrap()
-        
+
         try:
             # Business logic with distributed tracing
             processing_result = await self._process_business_logic(operation_data)
-            
+
             # Record metrics through flext-observability
             from flext_observability import flext_create_metric
             metric_result = flext_create_metric(
@@ -439,12 +465,12 @@ class EnterpriseObservabilityService(FlextDomainService):
             if metric_result.is_success:
                 metric = metric_result.unwrap()
                 await FlextMetricsService().record_metric(metric)
-            
+
             # Complete trace through flext-observability
             complete_result = await self._tracing_service.complete_trace(trace)
             if complete_result.is_failure:
                 self._logger.warning(f"Trace completion failed: {complete_result.error}")
-                
+
             return FlextResult[Dict[str, Any]].ok({
                 "operation": operation_data.get("operation", "unknown"),
                 "result": processing_result,
@@ -456,9 +482,9 @@ class EnterpriseObservabilityService(FlextDomainService):
             error_result = await self._tracing_service.error_trace(trace, str(e))
             if error_result.is_failure:
                 self._logger.warning(f"Error trace failed: {error_result.error}")
-                
+
             return FlextResult[Dict[str, Any]].fail(f"Monitored operation failed: {e}")
-    
+
     async def _process_business_logic(self, data: Dict[str, Any]) -> Any:
         """Business logic processing."""
         # Simulate processing
@@ -482,15 +508,15 @@ from typing import Dict, List, Optional
 
 class EnterpriseAlertingService:
     """Enterprise alerting service using flext-observability alerting foundation."""
-    
+
     def __init__(self) -> None:
         self._logger = get_logger("enterprise_alerting")
         self._alert_service = FlextAlertService()
         self._health_service = FlextHealthService()
-        
+
     async def create_system_alert(self, alert_config: Dict[str, Any]) -> FlextResult[FlextAlert]:
         """Create system alert using flext-observability alerting patterns."""
-        
+
         try:
             # Use flext-observability alerting factory - NO direct alerting systems
             alert_result = flext_create_alert(
@@ -501,23 +527,23 @@ class EnterpriseAlertingService:
             )
             if alert_result.is_failure:
                 return FlextResult[FlextAlert].fail(f"Alert creation failed: {alert_result.error}")
-                
+
             alert = alert_result.unwrap()
-            
+
             return FlextResult[FlextAlert].ok(alert)
         except Exception as e:
             return FlextResult[FlextAlert].fail(f"System alert creation failed: {e}")
-    
+
     async def monitor_system_health(self, health_checks: List[str]) -> FlextResult[List[FlextHealthCheck]]:
         """Monitor system health using flext-observability health patterns."""
-        
+
         health_results = []
-        
+
         try:
             # Start health monitoring through flext-observability
             for check_name in health_checks:
                 from flext_observability import flext_create_health_check
-                
+
                 health_result = flext_create_health_check(
                     name=check_name,
                     status="healthy",
@@ -526,33 +552,33 @@ class EnterpriseAlertingService:
                 if health_result.is_failure:
                     self._logger.warning(f"Health check creation failed: {health_result.error}")
                     continue
-                    
+
                 health_check = health_result.unwrap()
-                
+
                 # Execute health check through flext-observability
                 check_result = await self._health_service.execute_health_check(health_check)
                 if check_result.is_failure:
                     self._logger.warning(f"Health check execution failed: {check_result.error}")
                     continue
-                    
+
                 executed_check = check_result.unwrap()
                 health_results.append(executed_check)
-            
+
             return FlextResult[List[FlextHealthCheck]].ok(health_results)
         except Exception as e:
             return FlextResult[List[FlextHealthCheck]].fail(f"System health monitoring failed: {e}")
-    
+
     async def process_alert_escalation(self, alert: FlextAlert, escalation_config: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
         """Process alert escalation using flext-observability alert management."""
-        
+
         try:
             # Process alert through flext-observability
             process_result = await self._alert_service.process_alert(alert)
             if process_result.is_failure:
                 return FlextResult[Dict[str, Any]].fail(f"Alert processing failed: {process_result.error}")
-                
+
             processed_alert = process_result.unwrap()
-            
+
             # Handle escalation through flext-observability patterns
             escalation_result = await self._alert_service.escalate_alert(
                 processed_alert,
@@ -560,9 +586,9 @@ class EnterpriseAlertingService:
             )
             if escalation_result.is_failure:
                 return FlextResult[Dict[str, Any]].fail(f"Alert escalation failed: {escalation_result.error}")
-                
+
             escalated_alert = escalation_result.unwrap()
-            
+
             return FlextResult[Dict[str, Any]].ok({
                 "alert_id": alert.alert_id,
                 "escalated": True,
@@ -577,7 +603,7 @@ class EnterpriseAlertingService:
 async def create_enterprise_alerting_service() -> FlextResult[EnterpriseAlertingService]:
     """Create enterprise alerting service using flext-observability patterns."""
     alerting_service = EnterpriseAlertingService()
-    
+
     return FlextResult[EnterpriseAlertingService].ok(alerting_service)
 
 # ❌ ABSOLUTELY FORBIDDEN - Custom alerting implementations bypassing flext-observability
@@ -591,6 +617,7 @@ async def create_enterprise_alerting_service() -> FlextResult[EnterpriseAlerting
 ### 🔍 PRE-DEVELOPMENT VALIDATION (MANDATORY FIRST STEPS)
 
 **1. Observability Ecosystem Status Check:**
+
 ```bash
 # MANDATORY - Verify current observability foundation status
 make check                    # Quick validation (lint + type + observability-config)
@@ -599,6 +626,7 @@ make test-fast               # Observability functionality verification without 
 ```
 
 **2. Enterprise Observability Architecture Understanding:**
+
 ```bash
 # Review FLEXT ecosystem observability dependencies
 grep -r "from flext_" src/ --include="*.py" | sort | uniq
@@ -614,6 +642,7 @@ cat src/flext_observability/factories.py | head -50
 ```
 
 **3. Production Observability Environment Verification:**
+
 ```bash
 # Verify monitoring stack components
 docker ps | grep -E "(prometheus|grafana|jaeger)"  # Check running monitoring services
@@ -628,35 +657,36 @@ make test-observability      # Observability stack validation
 ### ⚡ DURING OBSERVABILITY DEVELOPMENT (PRODUCTION PATTERNS)
 
 **1. FlextResult Observability Pattern Compliance (MANDATORY):**
+
 ```python
 # ✅ CORRECT - ALL observability operations use FlextResult pattern
 from flext_core import FlextResult
 from flext_observability import FlextMetricsService, FlextTracingService
 
 async def collect_monitor_alert(
-    service_name: str, 
-    metrics_config: Dict[str, Any], 
+    service_name: str,
+    metrics_config: Dict[str, Any],
     alert_thresholds: Dict[str, float]
 ) -> FlextResult[Dict[str, Any]]:
     """Complete observability pipeline with railway-oriented programming."""
     metrics_service = FlextMetricsService()
     tracing_service = FlextTracingService()
-    
+
     # Metrics collection phase with FlextResult chaining
     metrics_result = await metrics_service.collect_metrics(service_name, metrics_config)
     if metrics_result.is_failure:
         return FlextResult[Dict[str, Any]].fail(f"Metrics collection failed: {metrics_result.error}")
-    
-    # Distributed tracing phase with FlextResult chaining  
+
+    # Distributed tracing phase with FlextResult chaining
     tracing_result = await tracing_service.start_trace(f"{service_name}_monitoring")
     if tracing_result.is_failure:
         return FlextResult[Dict[str, Any]].fail(f"Tracing failed: {tracing_result.error}")
-    
+
     # Alert evaluation phase with FlextResult chaining
     alert_result = await evaluate_alert_thresholds(metrics_result.unwrap(), alert_thresholds)
     if alert_result.is_failure:
         return FlextResult[Dict[str, Any]].fail(f"Alert evaluation failed: {alert_result.error}")
-    
+
     return FlextResult[Dict[str, Any]].ok({
         "collected_metrics": metrics_result.unwrap(),
         "trace_id": tracing_result.unwrap(),
@@ -671,6 +701,7 @@ except Exception as e:
 ```
 
 **2. Real Observability Integration (PRODUCTION REQUIREMENT):**
+
 ```python
 # ✅ CORRECT - Direct observability integration through FLEXT abstractions
 from flext_observability import FlextMetricsService, FlextTracingService, flext_monitor_function
@@ -679,12 +710,12 @@ from flext_observability import FlextMetricsService, FlextTracingService, flext_
 async def monitored_business_operation(operation_data: Dict[str, Any]) -> FlextResult[Any]:
     """Business operation with comprehensive observability."""
     metrics_service = FlextMetricsService()
-    
+
     # Real observability operations
     await metrics_service.record_metric("operation_start", 1.0, "count")
     result = await execute_business_logic(operation_data)
     await metrics_service.record_metric("operation_success", 1.0, "count")
-    
+
     return FlextResult[Any].ok(result)
 
 # ❌ WRONG - Mocked observability operations
@@ -693,6 +724,7 @@ def test_fake_monitoring(): pass
 ```
 
 **3. Incremental Observability Quality Validation:**
+
 ```bash
 # Run after each significant change
 make lint                     # Ruff validation with observability-specific rules
@@ -821,21 +853,25 @@ curl http://localhost:16686/api/services          # Jaeger health
 **MANDATORY Reading for Observability Development:**
 
 **Foundation Architecture:**
+
 - `src/flext_observability/__init__.py` - Complete module exports and FLEXT ecosystem integration
 - `src/flext_observability/services.py` - FlextMetricsService, FlextTracingService, FlextAlertService
 - `src/flext_observability/models.py` - FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck entities
 
 **Observability Implementations:**
+
 - `src/flext_observability/factories.py` - FlextObservabilityMasterFactory (monitoring creation)
 - `src/flext_observability/monitoring.py` - FlextObservabilityMonitor, flext_monitor_function
 - `src/flext_observability/api.py` - Simple API (flext_create_metric, flext_create_trace)
 
 **Production Testing:**
+
 - `tests/test_*_complete.py` - Comprehensive real observability API tests
 - `tests/integration/` - Integration tests with real OpenTelemetry/Prometheus operations
 - `tests/e2e/` - End-to-end observability stack testing
 
 **Monitoring Configuration:**
+
 - `docker-compose.monitoring.yml` - Complete monitoring stack (Prometheus, Grafana, Jaeger)
 - `grafana/dashboards/` - Production Grafana dashboards for FLEXT ecosystem
 - `prometheus/prometheus.yml` - Prometheus configuration for FLEXT services

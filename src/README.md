@@ -22,7 +22,7 @@ src/flext_observability/
 ├── entities.py              # Domain entities (FlextMetric, FlextTrace, etc.)
 ├── services.py              # Application services (business logic)
 ├── factory.py               # Factory patterns for entity creation
-├── flext_simple.py        
+├── flext_simple.py
 ├── flext_monitor.py         # Monitoring decorators and utilities
 ├── obs_platform.py          # Platform orchestration services
 ├── validation.py            # Domain validation logic

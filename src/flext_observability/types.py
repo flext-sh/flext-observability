@@ -1,21 +1,9 @@
-"""Type definitions for observability domain.
+"""FLEXT Module.
 
-Extends flext-core types with observability-specific type aliases and protocols.
-
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
+Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-
-from flext_core import FlextTypes
-
-"""
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
-
 
 from datetime import datetime
 from decimal import Decimal
