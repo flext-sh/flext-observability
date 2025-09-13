@@ -6,7 +6,13 @@ SPDX-License-Identifier: MIT
 
 import math
 import time
+from datetime import datetime
 from decimal import Decimal
+
+import pytest
+from pydantic import ValidationError
+
+import flext_tests
 
 from flext_observability import (
     flext_create_alert,
@@ -17,6 +23,7 @@ from flext_observability import (
 )
 from flext_observability.entities import (
     FlextGenerators,
+    FlextLogEntry,
     FlextMetric,
     FlextMixins,
     _generate_utc_datetime,
@@ -198,8 +205,6 @@ class TestFlextMixinsCoverage:
 
     def test_generate_utc_datetime_coverage(self) -> None:
         """Test _generate_utc_datetime function - covers lines 97-98."""
-        from datetime import datetime
-
         dt1 = _generate_utc_datetime()
         time.sleep(0.001)  # Small delay to ensure different timestamps
         dt2 = _generate_utc_datetime()
@@ -212,9 +217,6 @@ class TestFlextMixinsCoverage:
 
     def test_metric_name_validation_error_coverage(self) -> None:
         """Test FlextMetric name validation error - covers lines 177-180."""
-        import pytest
-        from pydantic import ValidationError
-
         # Test empty name validation error
         with pytest.raises(ValidationError) as exc_info:
             FlextMetric(id="test-id", name="", value=42.0)
@@ -234,9 +236,6 @@ class TestFlextMixinsCoverage:
 
     def test_metric_value_validation_nan_coverage(self) -> None:
         """Test FlextMetric value validation with NaN - covers lines 194-195, 200-202."""
-        import pytest
-        from pydantic import ValidationError
-
         # Test NaN validation error (goes through isnan path after bug fix)
         with pytest.raises(ValidationError) as exc_info:
             FlextMetric(id="test-id", name="test", value=float("nan"))
@@ -246,9 +245,6 @@ class TestFlextMixinsCoverage:
 
     def test_metric_value_validation_inf_coverage(self) -> None:
         """Test FlextMetric value validation with infinity - covers lines 194-195, 200-202."""
-        import pytest
-        from pydantic import ValidationError
-
         # Test infinity validation error (goes through isinf path after bug fix)
         with pytest.raises(ValidationError) as exc_info:
             FlextMetric(id="test-id", name="test", value=float("inf"))
@@ -258,9 +254,6 @@ class TestFlextMixinsCoverage:
 
     def test_metric_value_validation_non_numeric_coverage(self) -> None:
         """Test FlextMetric value validation with non-numeric - testing Pydantic validation."""
-        import pytest
-        from pydantic import ValidationError
-
         # Test that Pydantic correctly rejects non-numeric strings
         with pytest.raises(ValidationError) as exc_info:
             FlextMetric(id="test-id", name="test", value="not_a_number")
@@ -289,9 +282,6 @@ class TestFlextMixinsCoverage:
 
     def test_metric_value_validation_decimal_nan_coverage(self) -> None:
         """Test FlextMetric value validation with Decimal NaN - covers lines 191, 200-201."""
-        import pytest
-        from pydantic import ValidationError
-
         # Test Decimal NaN validation error (goes through isnan path)
         with pytest.raises(ValidationError) as exc_info:
             FlextMetric(id="test-id", name="test", value=Decimal("nan"))
@@ -301,9 +291,6 @@ class TestFlextMixinsCoverage:
 
     def test_metric_value_validation_decimal_inf_coverage(self) -> None:
         """Test FlextMetric value validation with Decimal infinity - covers lines 191, 200-201."""
-        import pytest
-        from pydantic import ValidationError
-
         # Test Decimal infinity validation error (goes through isinf path)
         with pytest.raises(ValidationError) as exc_info:
             FlextMetric(id="test-id", name="test", value=Decimal("inf"))
@@ -313,9 +300,6 @@ class TestFlextMixinsCoverage:
 
     def test_metric_type_validation_error_coverage(self) -> None:
         """Test FlextMetric metric_type validation error - covers lines 211-212."""
-        import pytest
-        from pydantic import ValidationError
-
         # Test invalid metric_type validation error
         with pytest.raises(ValidationError) as exc_info:
             FlextMetric(
@@ -440,11 +424,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_log_entry_message_validation_error_coverage(self) -> None:
         """Test FlextLogEntry message field validation error - covers lines 356-359."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextLogEntry
-
         # Test empty message validation error (line 357-358)
         with pytest.raises(ValidationError) as exc_info:
             FlextLogEntry(
@@ -457,8 +436,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_log_entry_message_validation_success_coverage(self) -> None:
         """Test FlextLogEntry message field validation success - covers line 359."""
-        from flext_observability.entities import FlextLogEntry
-
         # Test successful message validation (line 359)
         log_entry = FlextLogEntry(id="test-log-id", message="Valid log message")
 
@@ -468,11 +445,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_log_entry_level_validation_error_coverage(self) -> None:
         """Test FlextLogEntry level field validation error - covers lines 365-369."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextLogEntry
-
         # Test invalid level validation error (line 366-368)
         with pytest.raises(ValidationError) as exc_info:
             FlextLogEntry(
@@ -487,8 +459,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_log_entry_level_validation_success_coverage(self) -> None:
         """Test FlextLogEntry level field validation success - covers line 369."""
-        from flext_observability.entities import FlextLogEntry
-
         # Test all valid levels (line 369 success path)
         valid_levels = ["debug", "info", "warning", "error", "critical"]
 
@@ -505,8 +475,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_log_entry_validate_business_rules_success_coverage(self) -> None:
         """Test FlextLogEntry.validate_business_rules() method success path - covers lines 400-404."""
-        from flext_observability.entities import FlextLogEntry
-
         # Test successful validation path (line 404)
         log_entry = FlextLogEntry(
             id="test-log-id", message="Valid log message", level="info"
@@ -521,8 +489,6 @@ class TestFlextMixinsCoverage:
         self,
     ) -> None:
         """Test FlextLogEntry.validate_business_rules() method message validation failure - covers lines 400-401."""
-        from flext_observability.entities import FlextLogEntry
-
         # Create log entry with valid message first
         log_entry = FlextLogEntry(
             id="test-log-id", message="Valid message", level="info"
@@ -543,8 +509,6 @@ class TestFlextMixinsCoverage:
         self,
     ) -> None:
         """Test FlextLogEntry.validate_business_rules() method level validation failure - covers lines 402-403."""
-        from flext_observability.entities import FlextLogEntry
-
         # Create log entry with valid data first
         log_entry = FlextLogEntry(
             id="test-log-id", message="Valid message", level="info"
@@ -561,11 +525,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_trace_id_validation_error_coverage(self) -> None:
         """Test FlextTrace trace_id field validation error - covers lines 522-525."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextTrace
-
         # Test empty trace_id validation error (line 523-524)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
@@ -580,8 +539,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_trace_id_validation_success_coverage(self) -> None:
         """Test FlextTrace trace_id field validation success - covers line 525."""
-        from flext_observability.entities import FlextTrace
-
         # Test successful trace_id validation (line 525)
         trace = FlextTrace(
             id="test-trace-id",
@@ -596,11 +553,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_operation_validation_error_coverage(self) -> None:
         """Test FlextTrace operation field validation error - covers lines 531-534."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextTrace
-
         # Test empty operation validation error (line 532-533)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
@@ -615,8 +567,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_operation_validation_success_coverage(self) -> None:
         """Test FlextTrace operation field validation success - covers line 534."""
-        from flext_observability.entities import FlextTrace
-
         # Test successful operation validation (line 534)
         trace = FlextTrace(
             id="test-trace-id",
@@ -631,11 +581,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_span_id_validation_error_coverage(self) -> None:
         """Test FlextTrace span_id field validation error - covers lines 540-543."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextTrace
-
         # Test empty span_id validation error (line 541-542)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
@@ -650,8 +595,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_span_id_validation_success_coverage(self) -> None:
         """Test FlextTrace span_id field validation success - covers line 543."""
-        from flext_observability.entities import FlextTrace
-
         # Test successful span_id validation (line 543)
         trace = FlextTrace(
             id="test-trace-id",
@@ -666,11 +609,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_duration_validation_error_coverage(self) -> None:
         """Test FlextTrace duration_ms field validation error - covers lines 549-552."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextTrace
-
         # Test negative duration validation error (line 550-551)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
@@ -686,8 +624,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_duration_validation_success_coverage(self) -> None:
         """Test FlextTrace duration_ms field validation success - covers line 552."""
-        from flext_observability.entities import FlextTrace
-
         # Test successful duration validation (line 552) with zero and positive values
         valid_durations = [0, 100, 5000]
 
@@ -706,11 +642,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_status_validation_error_coverage(self) -> None:
         """Test FlextTrace status field validation error - covers lines 558-562."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextTrace
-
         # Test invalid status validation error (line 559-561)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
@@ -727,8 +658,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_status_validation_success_coverage(self) -> None:
         """Test FlextTrace status field validation success - covers line 562."""
-        from flext_observability.entities import FlextTrace
-
         # Test all valid statuses (line 562 success path)
         valid_statuses = ["pending", "completed", "error", "timeout"]
 
@@ -747,8 +676,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_validate_business_rules_success_coverage(self) -> None:
         """Test FlextTrace.validate_business_rules() method success path - covers lines 593-597."""
-        from flext_observability.entities import FlextTrace
-
         # Test successful validation path (line 597)
         trace = FlextTrace(
             id="test-trace-id",
@@ -766,8 +693,6 @@ class TestFlextMixinsCoverage:
         self,
     ) -> None:
         """Test FlextTrace.validate_business_rules() method trace_id validation failure - covers lines 593-594."""
-        from flext_observability.entities import FlextTrace
-
         # Create trace with valid data first
         trace = FlextTrace(
             id="test-trace-id",
@@ -789,8 +714,6 @@ class TestFlextMixinsCoverage:
         self,
     ) -> None:
         """Test FlextTrace.validate_business_rules() method operation validation failure - covers lines 595-596."""
-        from flext_observability.entities import FlextTrace
-
         # Create trace with valid data first
         trace = FlextTrace(
             id="test-trace-id",
@@ -810,11 +733,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_title_validation_error_coverage(self) -> None:
         """Test FlextAlert title field validation error - covers lines 703-706."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextAlert
-
         # Test empty title validation error (line 704-705)
         with pytest.raises(ValidationError) as exc_info:
             FlextAlert(
@@ -828,8 +746,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_title_validation_success_coverage(self) -> None:
         """Test FlextAlert title field validation success - covers line 706."""
-        from flext_observability.entities import FlextAlert
-
         # Test successful title validation (line 706)
         alert = FlextAlert(
             id="test-alert-id", title="Valid Alert Title", message="Test alert message"
@@ -841,11 +757,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_message_validation_error_coverage(self) -> None:
         """Test FlextAlert message field validation error - covers lines 712-715."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextAlert
-
         # Test empty message validation error (line 713-714)
         with pytest.raises(ValidationError) as exc_info:
             FlextAlert(
@@ -859,8 +770,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_message_validation_success_coverage(self) -> None:
         """Test FlextAlert message field validation success - covers line 715."""
-        from flext_observability.entities import FlextAlert
-
         # Test successful message validation (line 715)
         alert = FlextAlert(
             id="test-alert-id",
@@ -874,11 +783,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_severity_validation_error_coverage(self) -> None:
         """Test FlextAlert severity field validation error - covers lines 721-725."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextAlert
-
         # Test invalid severity validation error (line 722-724)
         with pytest.raises(ValidationError) as exc_info:
             FlextAlert(
@@ -894,8 +798,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_severity_validation_success_coverage(self) -> None:
         """Test FlextAlert severity field validation success - covers line 725."""
-        from flext_observability.entities import FlextAlert
-
         # Test all valid severities (line 725 success path)
         valid_severities = ["low", "medium", "high", "critical", "emergency"]
 
@@ -913,11 +815,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_status_validation_error_coverage(self) -> None:
         """Test FlextAlert status field validation error - covers lines 731-735."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextAlert
-
         # Test invalid status validation error (line 732-734)
         with pytest.raises(ValidationError) as exc_info:
             FlextAlert(
@@ -933,8 +830,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_status_validation_success_coverage(self) -> None:
         """Test FlextAlert status field validation success - covers line 735."""
-        from flext_observability.entities import FlextAlert
-
         # Test all valid statuses (line 735 success path)
         valid_statuses = ["active", "acknowledged", "resolved", "suppressed"]
 
@@ -952,8 +847,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_validate_business_rules_success_coverage(self) -> None:
         """Test FlextAlert.validate_business_rules() method success path - covers lines 766-772."""
-        from flext_observability.entities import FlextAlert
-
         # Test successful validation path (line 772)
         alert = FlextAlert(
             id="test-alert-id",
@@ -969,8 +862,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_validate_business_rules_title_failure_coverage(self) -> None:
         """Test FlextAlert.validate_business_rules() method title validation failure - covers lines 766-767."""
-        from flext_observability.entities import FlextAlert
-
         # Create alert with valid data first
         alert = FlextAlert(
             id="test-alert-id",
@@ -990,8 +881,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_validate_business_rules_message_failure_coverage(self) -> None:
         """Test FlextAlert.validate_business_rules() method message validation failure - covers lines 768-769."""
-        from flext_observability.entities import FlextAlert
-
         # Create alert with valid data first
         alert = FlextAlert(
             id="test-alert-id",
@@ -1013,8 +902,6 @@ class TestFlextMixinsCoverage:
         self,
     ) -> None:
         """Test FlextAlert.validate_business_rules() method severity validation failure - covers lines 770-771."""
-        from flext_observability.entities import FlextAlert
-
         # Create alert with valid data first
         alert = FlextAlert(
             id="test-alert-id",
@@ -1034,11 +921,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_health_check_component_validation_error_coverage(self) -> None:
         """Test FlextHealthCheck component field validation error - covers lines 876-879."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextHealthCheck
-
         # Test empty component validation error (line 877-878)
         with pytest.raises(ValidationError) as exc_info:
             FlextHealthCheck(
@@ -1051,8 +933,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_health_check_component_validation_success_coverage(self) -> None:
         """Test FlextHealthCheck component field validation success - covers line 879."""
-        from flext_observability.entities import FlextHealthCheck
-
         # Test successful component validation (line 879)
         health_check = FlextHealthCheck(
             id="test-health-check-id", component="valid_component_name"
@@ -1064,11 +944,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_health_check_status_validation_error_coverage(self) -> None:
         """Test FlextHealthCheck status field validation error - covers lines 885-889."""
-        import pytest
-        from pydantic import ValidationError
-
-        from flext_observability.entities import FlextHealthCheck
-
         # Test invalid status validation error (line 886-888)
         with pytest.raises(ValidationError) as exc_info:
             FlextHealthCheck(
@@ -1083,8 +958,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_health_check_status_validation_success_coverage(self) -> None:
         """Test FlextHealthCheck status field validation success - covers line 889."""
-        from flext_observability.entities import FlextHealthCheck
-
         # Test all valid statuses (line 889 success path)
         valid_statuses = ["healthy", "unhealthy", "degraded", "unknown"]
 
@@ -1103,8 +976,6 @@ class TestFlextMixinsCoverage:
         self,
     ) -> None:
         """Test FlextHealthCheck validate_business_rules with invalid component - covers lines 920-921."""
-        from flext_observability.entities import FlextGenerators, FlextHealthCheck
-
         # Create a valid health check first, then modify component to bypass field validation
         health = FlextHealthCheck.model_construct(
             id=FlextGenerators.generate_uuid(),
@@ -1127,8 +998,6 @@ class TestFlextMixinsCoverage:
         self,
     ) -> None:
         """Test FlextHealthCheck validate_business_rules with invalid status - covers lines 922-923."""
-        from flext_observability.entities import FlextGenerators, FlextHealthCheck
-
         # Create health check with invalid status using model_construct to bypass field validation
         health = FlextHealthCheck.model_construct(
             id=FlextGenerators.generate_uuid(),
@@ -1149,8 +1018,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_health_check_validate_business_rules_success_coverage(self) -> None:
         """Test FlextHealthCheck validate_business_rules with valid data - covers line 924."""
-        from flext_observability.entities import FlextGenerators, FlextHealthCheck
-
         # Create health check with valid component and status
         health = FlextHealthCheck(
             id=FlextGenerators.generate_uuid(),
@@ -1171,8 +1038,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_health_check_all_valid_statuses_coverage(self) -> None:
         """Test FlextHealthCheck validate_business_rules with all valid statuses - covers line 924."""
-        from flext_observability.entities import FlextGenerators, FlextHealthCheck
-
         # Test all valid status values
         valid_statuses = ["healthy", "unhealthy", "degraded", "unknown"]
 
@@ -1194,10 +1059,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_factory_with_id_and_version_coverage(self) -> None:
         """Test flext_alert factory function with id and version - covers lines 944-954."""
-        from datetime import datetime
-
-        from flext_observability.entities import FlextGenerators, flext_alert
-
         # Test with both id and version in kwargs (triggers lines 944-954)
         custom_id = FlextGenerators.generate_uuid()
         custom_version = 2
@@ -1226,10 +1087,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_factory_with_id_only_coverage(self) -> None:
         """Test flext_alert factory function with id but no version - covers lines 955-964."""
-        from datetime import datetime
-
-        from flext_observability.entities import FlextGenerators, flext_alert
-
         # Test with id but no version in kwargs (triggers lines 955-964)
         custom_id = FlextGenerators.generate_uuid()
         FlextGenerators.generate_timestamp()
@@ -1253,10 +1110,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_alert_factory_default_generation_coverage(self) -> None:
         """Test flext_alert factory function with default id generation - covers line 965."""
-        from datetime import datetime
-
-        from flext_observability.entities import flext_alert
-
         # Test with no id or version (triggers line 965 - default path)
         alert = flext_alert(
             title="Default Alert", message="Alert with auto-generated ID"
@@ -1275,10 +1128,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_factory_with_id_coverage(self) -> None:
         """Test flext_trace factory function with custom id - covers lines 989-999."""
-        from datetime import datetime
-
-        from flext_observability.entities import FlextGenerators, flext_trace
-
         # Test with custom id in kwargs (triggers lines 989-999)
         custom_id = FlextGenerators.generate_uuid()
         custom_span_attrs = {"http.method": "GET", "http.status": 200}
@@ -1308,10 +1157,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_trace_factory_default_generation_coverage(self) -> None:
         """Test flext_trace factory function with default id generation - covers lines 1000-1008."""
-        from datetime import datetime
-
-        from flext_observability.entities import flext_trace
-
         # Test with no id (triggers lines 1000-1008 - default path)
         trace = flext_trace(
             trace_id="trace-default", operation="db.query", span_id="span-default"
@@ -1330,8 +1175,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_metric_with_id_and_version_coverage(self) -> None:
         """Test flext_metric factory with id and version - covers lines 1025-1034."""
-        from flext_observability.entities import FlextGenerators, flext_metric
-
         # Test with both id and version in kwargs (triggers lines 1025-1034)
         custom_id = FlextGenerators.generate_uuid()
         custom_version = 3
@@ -1361,8 +1204,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_metric_with_id_only_coverage(self) -> None:
         """Test flext_metric factory with id only - covers lines 1035-1043."""
-        from flext_observability.entities import FlextGenerators, flext_metric
-
         # Test with id but no version (triggers lines 1035-1043)
         custom_id = FlextGenerators.generate_uuid()
 
@@ -1379,8 +1220,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_metric_default_generation_coverage(self) -> None:
         """Test flext_metric factory with default id - covers lines 1044-1052."""
-        from flext_observability.entities import flext_metric
-
         # Test with no id (triggers lines 1044-1052)
         result = flext_metric(name="requests.total", value=1000)
 
@@ -1395,8 +1234,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_metric_validation_failure_coverage(self) -> None:
         """Test flext_metric with validation failure - covers lines 1058-1062."""
-        from flext_observability.entities import flext_metric
-
         # Test with empty name to trigger validation failure
         result = flext_metric(
             name="",  # Empty name will fail validation
@@ -1410,8 +1247,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_metric_exception_handling_coverage(self) -> None:
         """Test flext_metric exception handling - covers lines 1066-1069."""
-        from flext_observability.entities import flext_metric
-
         # Test with NaN value to trigger exception
         result = flext_metric(
             name="bad.metric",
@@ -1425,10 +1260,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_health_check_factory_with_id_coverage(self) -> None:
         """Test flext_health_check factory function with custom id - covers lines 1083-1091."""
-        from datetime import datetime
-
-        from flext_observability.entities import FlextGenerators, flext_health_check
-
         # Test with custom id in kwargs (triggers lines 1083-1091)
         custom_id = FlextGenerators.generate_uuid()
         custom_metrics = {"cpu": 75.5, "memory": 2048, "disk": 80.0}
@@ -1453,10 +1284,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_health_check_factory_default_generation_coverage(self) -> None:
         """Test flext_health_check factory function with default id - covers lines 1092-1099."""
-        from datetime import datetime
-
-        from flext_observability.entities import flext_health_check
-
         # Test with no id (triggers lines 1092-1099 - default path)
         health = flext_health_check(
             component="api-service", status="degraded", message="High latency detected"
@@ -1473,12 +1300,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_metric_business_rule_validation_failure_coverage(self) -> None:
         """Test flext_metric with business rule validation failure - covers line 1060."""
-        from unittest.mock import patch
-
-        from flext_core import FlextResult
-
-        from flext_observability.entities import FlextMetric, flext_metric
-
         # Mock validate_business_rules to return failure
         with patch.object(FlextMetric, "validate_business_rules") as mock_validate:
             mock_validate.return_value = FlextResult[None].fail(
@@ -1493,10 +1314,6 @@ class TestFlextMixinsCoverage:
 
     def test_flext_metric_type_error_exception_coverage(self) -> None:
         """Test flext_metric with general Exception - covers lines 1068-1069."""
-        from unittest.mock import patch
-
-        import flext_observability.entities as entities_module
-
         # Mock the FlextMetric class constructor to raise a general exception
         # This will trigger the general Exception handler at lines 1068-1069
         with patch.object(entities_module, "FlextMetric") as mock_metric_class:

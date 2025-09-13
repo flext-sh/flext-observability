@@ -1,13 +1,32 @@
 """Copyright (c) 2025 FLEXT Team. All rights reserved.
+
 SPDX-License-Identifier: MIT.
 """
 
 from __future__ import annotations
 
-from flext_core import FlextTypes
+from contextlib import suppress
+from datetime import UTC, datetime
+from decimal import Decimal
 
-"""FLEXT Observability Simple API.
+from flext_core import FlextMixins, FlextResult, FlextTypes
 
+# Removed circular import to flext_simple - not needed
+from flext_observability.entities import (
+    flext_alert,
+    flext_health_check,
+)
+from flext_observability.models import (
+    FlextAlert,
+    FlextHealthCheck,
+    FlextLogEntry,
+    FlextMetric,
+    FlextTrace,
+    flext_metric,
+    flext_trace,
+)
+
+"""
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
@@ -76,26 +95,7 @@ FLEXT Integration:
 """
 
 
-from contextlib import suppress
-from datetime import UTC, datetime
-from decimal import Decimal
-
-from flext_core import FlextMixins, FlextResult
-
 # Removed circular import to flext_simple - not needed
-from flext_observability.entities import (
-    flext_alert,
-    flext_health_check,
-)
-from flext_observability.models import (
-    FlextAlert,
-    FlextHealthCheck,
-    FlextLogEntry,
-    FlextMetric,
-    FlextTrace,
-    flext_metric,
-    flext_trace,
-)
 
 # ============================================================================
 # TIMESTAMP UTILITIES - Use flext-core centralized generation
@@ -124,7 +124,7 @@ def flext_create_metric(
     name: str,
     value: float | Decimal,
     unit: str = "",
-    tags: FlextTypes.Core.Dict | None = None,
+    tags: dict[str, str] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
     """Create observability metric with simplified API.
@@ -277,7 +277,7 @@ def flext_create_trace(
     operation_name: str,
     service_name: str,
     *,
-    config: FlextTypes.Core.Dict | None = None,
+    config: dict[str, str] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextTrace]:
     """Create observability trace with simple parameters.

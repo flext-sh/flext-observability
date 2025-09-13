@@ -1,10 +1,4 @@
-"""FLEXT Observability Entity Factory.
-
-Factory patterns implementing centralized entity creation with comprehensive
-validation, dependency injection, and business rule enforcement for observability
-entities. Provides unified access point for creating FlextMetric, FlextTrace,
-FlextAlert, FlextHealthCheck, and FlextLogEntry entities with consistent
-validation and initialization patterns.
+"""Observability factory classes for centralized entity creation.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -25,16 +19,14 @@ from flext_core import (
 
 # Type checking imports if needed in future
 from flext_observability.entities import (
-    flext_alert,
-    flext_health_check,
-    flext_trace,
-)
-from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
+    flext_alert,
+    flext_health_check,
+    flext_trace,
 )
 from flext_observability.services import (
     FlextAlertService,
@@ -534,6 +526,7 @@ class _GlobalFactorySingleton:
     """Singleton class to manage global factory instance."""
 
     def __init__(self) -> None:
+        """Initialize the instance."""
         self._factory: FlextObservabilityMasterFactory | None = None
 
     def get_factory(

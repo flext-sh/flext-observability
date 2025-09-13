@@ -1,9 +1,4 @@
-"""FLEXT Observability Application Services.
-
-Application layer services implementing comprehensive observability business logic
-for the FLEXT ecosystem. These services coordinate domain entities, enforce business
-rules, and orchestrate observability workflows across metrics collection, distributed
-tracing, alert management, health monitoring, and structured logging.
+"""Observability services implementation following flext-core patterns.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -14,6 +9,7 @@ from __future__ import annotations
 import shutil
 import threading
 import time
+import uuid
 from collections import defaultdict
 from typing import cast
 
@@ -21,7 +17,6 @@ import psutil
 from flext_core import (
     FlextContainer,
     FlextLogger,
-    FlextMixins,
     FlextResult,
     FlextTypes,
 )
@@ -40,15 +35,18 @@ class FlextGenerators:
 
     @staticmethod
     def generate_timestamp() -> float:
+        """Generate a timestamp."""
         return time.time()
 
     @staticmethod
     def generate_uuid() -> str:
-        return FlextMixins.generate_entity_id()
+        """Generate a UUID string."""
+        return str(uuid.uuid4())
 
     @staticmethod
     def generate_entity_id() -> str:
-        return FlextMixins.generate_entity_id()
+        """Generate an entity ID."""
+        return str(uuid.uuid4())
 
 
 # Removed validation module - using FlextResult[None].fail() directly per docs/patterns/
@@ -801,13 +799,15 @@ class FlextTracingService:
                             "serviceName": trace_info.get(
                                 "service_name",
                                 "flext-observability",
-                            ),
+                            )
+                            if trace_info
+                            else "flext-observability",
                             "tags": [],
                         },
                     }
                     for span in cast(
                         "list[FlextTypes.Core.Dict]",
-                        trace_info.get("trace_spans") or [],
+                        trace_info.get("trace_spans") or [] if trace_info else [],
                     )
                     if isinstance(span, dict)
                 ],
@@ -816,7 +816,9 @@ class FlextTracingService:
                         "serviceName": trace_info.get(
                             "service_name",
                             "flext-observability",
-                        ),
+                        )
+                        if trace_info
+                        else "flext-observability",
                         "tags": [],
                     },
                 },

@@ -23,7 +23,7 @@ unit/
 ├── test_services_unit.py        # Service layer unit tests
 ├── test_factory_unit.py         # Factory pattern unit tests
 ├── test_validation_unit.py      # Domain validation unit tests
-├── test_simple_api_unit.py    
+├── test_simple_api_unit.py
 └── test_utilities_unit.py       # Utility function unit tests
 ```
 

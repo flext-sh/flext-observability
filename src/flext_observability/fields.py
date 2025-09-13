@@ -1,25 +1,13 @@
-"""Pydantic field definitions for observability entities.
+"""FLEXT Module.
 
-Custom field types and validators for observability domain entities,
-extending pydantic patterns from flext-core.
-
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
+Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-"""
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
-
-
 from datetime import UTC, datetime
 from typing import ClassVar
 
-# from flext_core.fields import FlextBaseField  # Not available, using object as base
 from pydantic import Field, field_validator
 
 from flext_observability.constants import ObservabilityConstants

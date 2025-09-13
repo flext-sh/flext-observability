@@ -1,10 +1,4 @@
-"""FLEXT Observability Monitoring Orchestration.
-
-Monitoring orchestration and function decoration capabilities implementing comprehensive
-observability automation across the FLEXT ecosystem. Provides decorator patterns for
-automatic function monitoring, service orchestration for observability workflows,
-and centralized coordination of metric collection, distributed tracing, health checks,
-and alerting across all FLEXT services.
+"""Observability monitoring and orchestration services.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
