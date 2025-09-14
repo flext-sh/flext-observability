@@ -2,7 +2,7 @@
 
 **Foundation library source code implementing observability patterns for the FLEXT ecosystem.**
 
-This directory contains the complete implementation of FLEXT Observability, organized following Clean Architecture and Domain-Driven Design principles. All modules implement enterprise-grade observability patterns with comprehensive type safety, domain validation, and railway-oriented programming error handling.
+This directory contains the complete implementation of FLEXT Observability, organized following Clean Architecture and Domain-Driven Design principles. All modules implement observability patterns with type safety, domain validation, and railway-oriented programming error handling.
 
 ## Module Organization
 

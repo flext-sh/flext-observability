@@ -35,10 +35,11 @@ class TestInitCoverage:
 
     def test_flext_health_status_function(self) -> None:
         """Test flext_health_status function coverage."""
-        result = flext_health_status()
-        assert result["status"] == "healthy"
-        assert result["service"] == "flext-observability"
-        assert result["version"] == "0.9.0"
+        result = flext_health_status("flext-observability", "healthy")
+        assert result.success
+        health_check = result.unwrap()
+        assert health_check.status == "healthy"
+        assert health_check.component == "flext-observability"
 
     def test_all_public_api_imports(self) -> None:
         """Test that all __all__ exports can be imported successfully."""

@@ -2,7 +2,7 @@
 
 **Core observability implementation providing monitoring, metrics, tracing, and health check capabilities for the FLEXT ecosystem.**
 
-This package implements Clean Architecture and Domain-Driven Design patterns specifically for observability concerns, delivering enterprise-grade monitoring solutions that integrate seamlessly across all 33 FLEXT ecosystem projects.
+This package implements Clean Architecture and Domain-Driven Design patterns specifically for observability concerns, delivering monitoring solutions that integrate seamlessly across all 33 FLEXT ecosystem projects.
 
 ## Package Architecture
 

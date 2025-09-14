@@ -300,7 +300,12 @@ class FlextObservabilityMonitor:
             return FlextResult[None].fail("Metrics service not available")
 
         try:
-            metric = _models.flext_metric(name, value, metric_type=metric_type)
+            metric_result = _models.flext_metric(name, value, metric_type=metric_type)
+            if metric_result.is_failure:
+                return FlextResult[None].fail(
+                    metric_result.error or "Failed to create metric"
+                )
+            metric = metric_result.unwrap()
             record_result = self._metrics_service.record_metric(metric)
             if record_result.is_failure:
                 return FlextResult[None].fail(
@@ -432,9 +437,9 @@ def _execute_monitored_function(
             try:
                 # Use module import so tests can patch flext_alert
                 alert = _models_module.flext_alert(
-                    message=f"Function execution error: {function_name} failed with {type(e).__name__}",
-                    service="function_monitor",
-                    level="error",
+                    title=f"Function execution error: {function_name}",
+                    message=f"Function {function_name} failed with {type(e).__name__}",
+                    severity="high",
                 )
                 alert_service.create_alert(alert)
             except (ValueError, TypeError, AttributeError) as e:

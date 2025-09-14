@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import time
 from datetime import datetime
 from typing import cast
 
@@ -14,19 +15,20 @@ from flext_core import (
     FlextLogger,
     FlextResult,
     FlextTypes,
-    FlextUtilities,
 )
 
-# Type checking imports if needed in future
 from flext_observability.entities import (
+    FlextUtilitiesGenerators,
+    flext_alert,
+    flext_health_check,
+    flext_trace,
+)
+from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
-    flext_alert,
-    flext_health_check,
-    flext_trace,
 )
 from flext_observability.services import (
     FlextAlertService,
@@ -53,7 +55,8 @@ def _generate_utc_datetime() -> datetime:
 
     """
     # Use flext-core timestamp generation - parse ISO timestamp string to datetime
-    timestamp_str = FlextUtilities.generate_timestamp()
+
+    timestamp_str = FlextUtilitiesGenerators.generate_iso_timestamp()
     return datetime.fromisoformat(timestamp_str)
 
 
@@ -245,7 +248,7 @@ class FlextObservabilityMasterFactory:
         try:
             # FlextMetric imported at module level
             tags = kwargs.get("tags", {})
-            tags = cast("FlextTypes.Core.Dict", tags) if isinstance(tags, dict) else {}
+            tags = cast("dict[str, str]", tags) if isinstance(tags, dict) else {}
 
             timestamp = kwargs.get("timestamp")
             if not isinstance(timestamp, datetime):
@@ -255,7 +258,7 @@ class FlextObservabilityMasterFactory:
                 name=name,
                 value=value,
                 unit=str(kwargs.get("unit", "")),
-                tags=tags,
+                tags=dict(tags) if tags else {},
                 timestamp=timestamp,
             )
 
@@ -295,9 +298,8 @@ class FlextObservabilityMasterFactory:
             log_entry = FlextLogEntry(
                 message=message,
                 level=level,
-                service=str(kwargs.get("service", "unknown")),
+                context=context,
                 timestamp=timestamp,
-                extra_data=context,
             )
 
             service_result = self.container.get("logging_service")
@@ -318,24 +320,24 @@ class FlextObservabilityMasterFactory:
         self,
         message: str,
         service: str,
-        level: str = "info",
+        severity: str = "low",
         **kwargs: object,
     ) -> FlextResult[object]:
         """Create alert."""
         try:
             tags = kwargs.get("tags", {})
-            tags = cast("FlextTypes.Core.Dict", tags) if isinstance(tags, dict) else {}
+            tags = cast("dict[str, str]", tags) if isinstance(tags, dict) else {}
 
             timestamp = kwargs.get("timestamp")
             if not isinstance(timestamp, datetime):
                 timestamp = _generate_utc_datetime()
 
             alert = FlextAlert(
+                title=f"Alert from {service}",
                 message=message,
-                level=level,
-                service=service,
+                severity=severity,
                 timestamp=timestamp,
-                tags=tags,
+                tags=dict(tags) if tags else {},
             )
 
             service_result = self.container.get("alert_service")
@@ -362,6 +364,9 @@ class FlextObservabilityMasterFactory:
         try:
             # Extract known parameters from kwargs
             span_id = kwargs.get("span_id", "")
+            if not span_id:
+                # Generate a unique span_id if not provided
+                span_id = f"span-{trace_id}-{int(time.time() * 1000)}"
             timestamp = kwargs.get("timestamp")
             span_attributes_raw = kwargs.get("span_attributes", {})
             # Ensure proper typing for span_attributes
@@ -375,17 +380,16 @@ class FlextObservabilityMasterFactory:
                 span_attributes = {}
 
             trace = FlextTrace(
-                operation_name=operation,
-                service_name=str(kwargs.get("service_name", "unknown")),
+                operation=operation,
                 trace_id=trace_id,
                 span_id=str(span_id) if span_id else "",
-                status=str(kwargs.get("status", "started")),
-                start_time=(
+                status=str(kwargs.get("status", "pending")),
+                timestamp=(
                     timestamp
                     if isinstance(timestamp, datetime)
                     else _generate_utc_datetime()
                 ),
-                tags=span_attributes,
+                span_attributes=span_attributes,
             )
 
             service_result = self.container.get("tracing_service")
@@ -416,14 +420,14 @@ class FlextObservabilityMasterFactory:
 
             # Create health check entity directly with proper models
             health = FlextHealthCheck(
-                service_name=service_name,
+                component=service_name,
                 status=status,
                 timestamp=(
                     timestamp
                     if isinstance(timestamp, datetime)
                     else _generate_utc_datetime()
                 ),
-                details={"message": str(message)} if message else {},
+                message=str(message) if message else "",
             )
 
             service_result = self.container.get("health_service")
@@ -475,7 +479,7 @@ class FlextObservabilityMasterFactory:
         # Use operation_name as the operation parameter
         kwargs["service_name"] = service_name
         result = self.trace(
-            trace_id=FlextUtilities.generate_uuid(),
+            trace_id=FlextUtilitiesGenerators.generate_uuid(),
             operation=operation_name,
             **kwargs,
         )
@@ -488,7 +492,7 @@ class FlextObservabilityMasterFactory:
     ) -> FlextResult[FlextAlert]:
         """Create alert (compatibility method for tests)."""
         # Map parameters to match the alert() method signature
-        result = self.alert(message=message, service=service, level=level, **kwargs)
+        result = self.alert(message=message, service=service, severity=level, **kwargs)
         if result.success and isinstance(result.data, FlextAlert):
             return FlextResult[FlextAlert].ok(result.data)
         return FlextResult[FlextAlert].fail(result.error or "Failed to create alert")
@@ -572,11 +576,11 @@ def log(message: str, level: str = "info", **kwargs: object) -> FlextResult[obje
 def alert(
     message: str,
     service: str,
-    level: str = "info",
+    severity: str = "low",
     **kwargs: object,
 ) -> FlextResult[object]:
     """Global alert function."""
-    return get_global_factory().alert(message, service, level, **kwargs)
+    return get_global_factory().alert(message, service, severity, **kwargs)
 
 
 def trace(trace_id: str, operation: str, **kwargs: object) -> FlextResult[object]:

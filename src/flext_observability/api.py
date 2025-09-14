@@ -5,14 +5,15 @@ SPDX-License-Identifier: MIT.
 
 from __future__ import annotations
 
-from contextlib import suppress
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import cast
 
-from flext_core import FlextMixins, FlextResult, FlextTypes
+from flext_core import FlextResult, FlextTypes
 
 # Removed circular import to flext_simple - not needed
 from flext_observability.entities import (
+    FlextUtilitiesGenerators,
     flext_alert,
     flext_health_check,
 )
@@ -124,7 +125,7 @@ def flext_create_metric(
     name: str,
     value: float | Decimal,
     unit: str = "",
-    tags: dict[str, str] | None = None,
+    tags: dict[str, object] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
     """Create observability metric with simplified API.
@@ -198,35 +199,29 @@ def flext_create_metric(
         metric_type = "histogram"
 
     try:
-        _ = FlextMixins.generate_entity_id()
         # Probe entity to allow tests to patch FlextMetric and raise
         try:
             probe = FlextMetric(
                 name=name,
                 value=value,
                 unit=unit,
-                tags=tags or {},
+                tags=cast("dict[str, str]", tags) if tags is not None else {},
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
         except Exception as e:
             return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
 
-        entity = flext_metric(
+        return flext_metric(
             name=name,
             value=value,
             unit=unit,
             metric_type=metric_type,
-            tags=tags or {},
+            tags=dict(tags) if tags is not None else {},
             timestamp=timestamp or _generate_utc_datetime(),
         )
 
-        # Ensure Decimal for float inputs to satisfy tests expecting Decimal
-        with suppress(Exception):
-            if isinstance(entity.value, float):
-                entity.value = Decimal(str(entity.value))
-
-        return FlextResult[FlextMetric].ok(entity)
+        # Entity is created with correct type - return the result directly
     except (ValueError, TypeError, AttributeError) as e:
         return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
     except Exception as e:  # Ensure broad capture for forced exceptions in tests
@@ -235,18 +230,16 @@ def flext_create_metric(
 
 def flext_create_log_entry(
     message: str,
-    service: str,
-    level: str = "INFO",
+    service: str = "default",
+    level: str = "info",
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextLogEntry]:
     """Create observability log entry with simple parameters."""
     try:
         # Trigger patch point and probe entity for test hooks
-        _ = FlextMixins.generate_entity_id()
         try:
             probe = FlextLogEntry(
-                message=message,
-                service=service,
+                message=f"[{service}] {message}",
                 level=level,
                 timestamp=timestamp or _generate_utc_datetime(),
             )
@@ -255,8 +248,7 @@ def flext_create_log_entry(
             return FlextResult[FlextLogEntry].fail(f"Failed to create log entry: {e}")
 
         log_entry = FlextLogEntry(
-            message=message,
-            service=service,
+            message=f"[{service}] {message}",
             level=level,
             timestamp=timestamp or _generate_utc_datetime(),
         )
@@ -275,8 +267,7 @@ def flext_create_log_entry(
 
 def flext_create_trace(
     operation_name: str,
-    service_name: str,
-    *,
+    service_name: str = "default",
     config: dict[str, str] | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextTrace]:
@@ -289,13 +280,14 @@ def flext_create_trace(
 
     try:
         # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
-        _ = FlextMixins.generate_entity_id()
+        _ = FlextUtilitiesGenerators.generate_entity_id()
         # Probe entity to allow tests patching FlextTrace and forcing validation error
         try:
             probe = FlextTrace(
-                operation_name=operation_name,
-                service_name=service_name,
-                start_time=timestamp or _generate_utc_datetime(),
+                operation=operation_name,
+                trace_id="probe_trace_id",
+                span_id="probe_span_id",
+                timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
         except Exception as e:
@@ -308,20 +300,19 @@ def flext_create_trace(
         trace_id = (
             str(trace_id_from_config)
             if trace_id_from_config
-            else FlextMixins.generate_entity_id()
+            else "trace_" + str(hash(operation_name))
         )
         span_id = (
             str(span_id_from_config)
             if span_id_from_config
-            else FlextMixins.generate_entity_id()
+            else "span_" + str(hash(operation_name))
         )
 
         entity = flext_trace(
-            operation_name=operation_name,
-            service_name=service_name,
-            start_time=timestamp or _generate_utc_datetime(),
             trace_id=trace_id,
+            operation=operation_name,
             span_id=span_id,
+            timestamp=timestamp or _generate_utc_datetime(),
         )
 
         return FlextResult[FlextTrace].ok(entity)
@@ -330,20 +321,19 @@ def flext_create_trace(
 
 
 def flext_create_alert(
+    title: str,
     message: str,
-    service: str,
-    level: str = "info",
+    severity: str = "low",
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextAlert]:
     """Create observability alert with simple parameters."""
     try:
-        _ = FlextMixins.generate_entity_id()
         # Probe entity to allow tests patching FlextAlert
         try:
             probe = FlextAlert(
+                title=title,
                 message=message,
-                service=service,
-                level=level,
+                severity=severity,
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
@@ -351,9 +341,9 @@ def flext_create_alert(
             return FlextResult[FlextAlert].fail(f"Failed to create alert: {e}")
 
         alert = FlextAlert(
+            title=title,
             message=message,
-            service=service,
-            level=level,
+            severity=severity,
             timestamp=timestamp or _generate_utc_datetime(),
         )
 
@@ -363,17 +353,16 @@ def flext_create_alert(
 
 
 def flext_create_health_check(
-    service_name: str,
+    component: str,
     status: str = "healthy",
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextHealthCheck]:
     """Create observability health check with simple parameters."""
     try:
-        _ = FlextMixins.generate_entity_id()
         # Probe construction to allow tests patching FlextHealthCheck
         try:
             probe = FlextHealthCheck(
-                service_name=service_name,
+                component=component,
                 status=status,
                 timestamp=timestamp or _generate_utc_datetime(),
             )
@@ -384,7 +373,7 @@ def flext_create_health_check(
             )
 
         health_check = FlextHealthCheck(
-            service_name=service_name,
+            component=component,
             status=status,
             timestamp=timestamp or _generate_utc_datetime(),
         )

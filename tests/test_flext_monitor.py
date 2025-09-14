@@ -4,10 +4,10 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-from typing import Never, TypeVar
+from typing import Never
 
 import pytest
-from flext_core import FlextContainer, FlextResult
+from flext_core import FlextContainer, FlextResult, FlextTypes
 
 from flext_observability import (
     FlextObservabilityMonitor,
@@ -17,8 +17,6 @@ from flext_observability import (
 # Constants
 EXPECTED_BULK_SIZE = 2
 EXPECTED_DATA_COUNT = 3
-
-T = TypeVar("T")
 
 
 def assert_failure_with_error[T](result: FlextResult[T]) -> str:

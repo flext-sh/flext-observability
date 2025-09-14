@@ -111,6 +111,7 @@ class HealthStatusField:
 
 
 # Convenience field definitions
+
 metric_name_field = Field(min_length=1, max_length=255, description="Metric name")
 metric_value_field = Field(ge=0.0, description="Metric value (non-negative)")
 metric_unit_field = Field(

@@ -30,7 +30,7 @@ from flext_observability.models import (
 )
 
 
-class FlextGenerators:
+class FlextUtilitiesGenerators:
     """Compatibility shim mapping to flext_core functions."""
 
     @staticmethod
@@ -49,16 +49,20 @@ class FlextGenerators:
         return str(uuid.uuid4())
 
 
-# Removed validation module - using FlextResult[None].fail() directly per docs/patterns/
-# Health check constants
-MEMORY_WARNING_THRESHOLD = 80
-MEMORY_CRITICAL_THRESHOLD = 95
-DISK_WARNING_THRESHOLD = 80
-DISK_CRITICAL_THRESHOLD = 95
-THREAD_WARNING_THRESHOLD = 50
-THREAD_CRITICAL_THRESHOLD = 100
-MAX_METRICS_STORE_SIZE = 1000
-METRICS_STORE_CLEANUP_SIZE = 500
+class FlextObservabilityConstants:
+    """Constants for flext-observability operations."""
+
+    # Health check thresholds
+    MEMORY_WARNING_THRESHOLD = 80
+    MEMORY_CRITICAL_THRESHOLD = 95
+    DISK_WARNING_THRESHOLD = 80
+    DISK_CRITICAL_THRESHOLD = 95
+    THREAD_WARNING_THRESHOLD = 50
+    THREAD_CRITICAL_THRESHOLD = 100
+
+    # Metrics storage limits
+    MAX_METRICS_STORE_SIZE = 1000
+    METRICS_STORE_CLEANUP_SIZE = 500
 
 
 # ============================================================================
@@ -224,7 +228,7 @@ class FlextMetricsService:
                 try:
                     # Generate timestamp via shim to enable test patching
                     # Use services module shim so tests can patch
-                    timestamp = FlextGenerators.generate_timestamp()
+                    timestamp = FlextUtilitiesGenerators.generate_timestamp()
                 except (ValueError, TypeError, AttributeError) as e:
                     return FlextResult[FlextMetric].fail(
                         f"Failed to record metric: {e}"
@@ -252,9 +256,9 @@ class FlextMetricsService:
                 )
 
                 # Maintain metrics store size (prevent memory leaks)
-                if len(self._metrics_store[metric.name]) > MAX_METRICS_STORE_SIZE:
+                if len(self._metrics_store[metric.name]) > FlextObservabilityConstants.MAX_METRICS_STORE_SIZE:
                     self._metrics_store[metric.name] = self._metrics_store[metric.name][
-                        -METRICS_STORE_CLEANUP_SIZE:
+                        -FlextObservabilityConstants.METRICS_STORE_CLEANUP_SIZE:
                     ]
 
                 self._metrics_recorded += 1
@@ -457,7 +461,7 @@ class FlextLoggingService:
         """Log entry using flext-core patterns."""
         try:
             level_method = getattr(self.logger, entry.level.lower(), self.logger.info)
-            level_method(f"{entry.message} | Extra data: {entry.extra_data}")
+            level_method(f"{entry.message} | Context: {entry.context}")
             return FlextResult[FlextLogEntry].ok(entry)
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[FlextLogEntry].fail(f"Failed to log entry: {e}")
@@ -582,7 +586,7 @@ class FlextTracingService:
             if (
                 not trace
                 or not hasattr(trace, "trace_id")
-                or not hasattr(trace, "operation_name")
+                or not hasattr(trace, "operation")
             ):
                 return FlextResult[FlextTrace].fail(
                     "Invalid trace: missing trace_id or operation"
@@ -600,7 +604,7 @@ class FlextTracingService:
                 # Create comprehensive trace context
                 trace_context: FlextTypes.Core.Dict = {
                     "trace_id": trace.trace_id,
-                    "operation": trace.operation_name,
+                    "operation": trace.operation,
                     "start_time": start_time,
                     "status": "active",
                     "service_name": getattr(
@@ -628,7 +632,7 @@ class FlextTracingService:
             self.logger.info(
                 "Distributed trace started successfully",
                 trace_id=trace.trace_id,
-                operation=trace.operation_name,
+                operation=trace.operation,
                 parent_trace_id=parent_trace_id,
                 correlation_id=trace_context["correlation_id"],
                 start_time=start_time,
@@ -941,9 +945,9 @@ class FlextAlertService:
                 return FlextResult[FlextAlert].fail("Alert cannot be None")
 
             self.logger.warning(
-                "Alert created: %s | Level: %s",
+                "Alert created: %s | Severity: %s",
                 alert.message,
-                alert.level,
+                alert.severity,
             )
             return FlextResult[FlextAlert].ok(alert)
         except (ValueError, TypeError, AttributeError, ArithmeticError) as e:
@@ -1072,7 +1076,7 @@ class FlextHealthService:
     ) -> FlextTypes.Core.Dict:
         """Create comprehensive health record."""
         return {
-            "component": actual_health.service_name,
+            "component": actual_health.component,
             "status": getattr(actual_health, "status", "unknown"),
             "check_time": check_time,
             "details": getattr(actual_health, "details", {}),
@@ -1127,12 +1131,12 @@ class FlextHealthService:
             actual_health = actual_health_result.data
 
             # Input validation (defensive programming)
-            if not actual_health or not hasattr(actual_health, "service_name"):
+            if not actual_health or not hasattr(actual_health, "component"):
                 return FlextResult[FlextHealthCheck].fail(
                     "Invalid health check: missing component"
                 )
 
-            component_name = actual_health.service_name
+            component_name = actual_health.component
             health_status = getattr(actual_health, "status", "unknown")
 
             # Real health monitoring with thread safety
@@ -1176,10 +1180,10 @@ class FlextHealthService:
             health_status = "unknown"
             try:
                 if isinstance(health, FlextResult) and health.success and health.data:
-                    component_name = health.data.service_name
+                    component_name = health.data.component
                     health_status = health.data.status
                 elif not isinstance(health, FlextResult):
-                    component_name = health.service_name
+                    component_name = health.component
                     health_status = health.status
             except (AttributeError, TypeError) as ae:
                 logger = FlextLogger(__name__)
@@ -1268,9 +1272,9 @@ class FlextHealthService:
             memory = psutil.virtual_memory()
             memory_status = (
                 "healthy"
-                if memory.percent < MEMORY_WARNING_THRESHOLD
+                if memory.percent < FlextObservabilityConstants.MEMORY_WARNING_THRESHOLD
                 else "warning"
-                if memory.percent < MEMORY_CRITICAL_THRESHOLD
+                if memory.percent < FlextObservabilityConstants.MEMORY_CRITICAL_THRESHOLD
                 else "critical"
             )
             system_checks["memory"] = {
@@ -1285,9 +1289,9 @@ class FlextHealthService:
                 used_percent = (disk_usage.used / disk_usage.total) * 100
                 disk_status = (
                     "healthy"
-                    if used_percent < DISK_WARNING_THRESHOLD
+                    if used_percent < FlextObservabilityConstants.DISK_WARNING_THRESHOLD
                     else "warning"
-                    if used_percent < DISK_CRITICAL_THRESHOLD
+                    if used_percent < FlextObservabilityConstants.DISK_CRITICAL_THRESHOLD
                     else "critical"
                 )
                 system_checks["disk"] = {
@@ -1305,9 +1309,9 @@ class FlextHealthService:
             thread_count = threading.active_count()
             thread_status = (
                 "healthy"
-                if thread_count < THREAD_WARNING_THRESHOLD
+                if thread_count < FlextObservabilityConstants.THREAD_WARNING_THRESHOLD
                 else "warning"
-                if thread_count < THREAD_CRITICAL_THRESHOLD
+                if thread_count < FlextObservabilityConstants.THREAD_CRITICAL_THRESHOLD
                 else "critical"
             )
             system_checks["threads"] = {
