@@ -92,7 +92,6 @@ class TestSimpleCoverage:
 
     def test_metric_with_decimal_value(self) -> None:
         """Test metric creation with Decimal value."""
-        from decimal import Decimal
         result = flext_create_metric("precise_value", Decimal("123.456789"))
         assert result.success
         assert result.data is not None
@@ -278,11 +277,9 @@ class TestFlextMixinsCoverage:
         # Test that Pydantic correctly rejects non-numeric strings
         # Use model_validate to test validation without MyPy type checking
         with pytest.raises(ValidationError) as exc_info:
-            FlextMetric.model_validate({
-                "id": "test-id",
-                "name": "test",
-                "value": "not_a_number"
-            })
+            FlextMetric.model_validate(
+                {"id": "test-id", "name": "test", "value": "not_a_number"}
+            )
 
         # Verify it's a Pydantic validation error (occurs before our field validator)
         assert "Input should be a valid number" in str(
@@ -1013,7 +1010,10 @@ class TestFlextMixinsCoverage:
             component="",  # Empty component triggers line 920-921
             status="healthy",
             message="Test message",
-            timestamp=datetime.fromtimestamp(FlextUtilitiesGenerators.generate_timestamp(), tz=datetime.now().astimezone().tzinfo),
+            timestamp=datetime.fromtimestamp(
+                FlextUtilitiesGenerators.generate_timestamp(),
+                tz=datetime.now().astimezone().tzinfo,
+            ),
             metrics={},
         )
 
@@ -1035,7 +1035,10 @@ class TestFlextMixinsCoverage:
             component="database",
             status="invalid_status",  # Invalid status triggers line 922-923
             message="Test message",
-            timestamp=datetime.fromtimestamp(FlextUtilitiesGenerators.generate_timestamp(), tz=datetime.now().astimezone().tzinfo),
+            timestamp=datetime.fromtimestamp(
+                FlextUtilitiesGenerators.generate_timestamp(),
+                tz=datetime.now().astimezone().tzinfo,
+            ),
             metrics={},
         )
 
@@ -1055,7 +1058,10 @@ class TestFlextMixinsCoverage:
             component="database",
             status="healthy",  # Valid status
             message="Database is operational",
-            timestamp=datetime.fromtimestamp(FlextUtilitiesGenerators.generate_timestamp(), tz=datetime.now().astimezone().tzinfo),
+            timestamp=datetime.fromtimestamp(
+                FlextUtilitiesGenerators.generate_timestamp(),
+                tz=datetime.now().astimezone().tzinfo,
+            ),
             metrics={},
         )
 
@@ -1078,7 +1084,10 @@ class TestFlextMixinsCoverage:
                 component="test-component",
                 status=status,
                 message=f"Testing status: {status}",
-                timestamp=datetime.fromtimestamp(FlextUtilitiesGenerators.generate_timestamp(), tz=datetime.now().astimezone().tzinfo),
+                timestamp=datetime.fromtimestamp(
+                    FlextUtilitiesGenerators.generate_timestamp(),
+                    tz=datetime.now().astimezone().tzinfo,
+                ),
                 metrics={},
             )
 

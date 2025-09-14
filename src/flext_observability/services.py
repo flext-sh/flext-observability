@@ -256,9 +256,12 @@ class FlextMetricsService:
                 )
 
                 # Maintain metrics store size (prevent memory leaks)
-                if len(self._metrics_store[metric.name]) > FlextObservabilityConstants.MAX_METRICS_STORE_SIZE:
+                if (
+                    len(self._metrics_store[metric.name])
+                    > FlextObservabilityConstants.MAX_METRICS_STORE_SIZE
+                ):
                     self._metrics_store[metric.name] = self._metrics_store[metric.name][
-                        -FlextObservabilityConstants.METRICS_STORE_CLEANUP_SIZE:
+                        -FlextObservabilityConstants.METRICS_STORE_CLEANUP_SIZE :
                     ]
 
                 self._metrics_recorded += 1
@@ -1274,7 +1277,8 @@ class FlextHealthService:
                 "healthy"
                 if memory.percent < FlextObservabilityConstants.MEMORY_WARNING_THRESHOLD
                 else "warning"
-                if memory.percent < FlextObservabilityConstants.MEMORY_CRITICAL_THRESHOLD
+                if memory.percent
+                < FlextObservabilityConstants.MEMORY_CRITICAL_THRESHOLD
                 else "critical"
             )
             system_checks["memory"] = {
@@ -1291,7 +1295,8 @@ class FlextHealthService:
                     "healthy"
                     if used_percent < FlextObservabilityConstants.DISK_WARNING_THRESHOLD
                     else "warning"
-                    if used_percent < FlextObservabilityConstants.DISK_CRITICAL_THRESHOLD
+                    if used_percent
+                    < FlextObservabilityConstants.DISK_CRITICAL_THRESHOLD
                     else "critical"
                 )
                 system_checks["disk"] = {

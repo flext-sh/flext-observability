@@ -45,9 +45,7 @@ class TestEntityValidationErrors:
 
     def test_log_entry_invalid_message_validation(self) -> None:
         """Test FlextLogEntry with invalid message (empty string)."""
-        with pytest.raises(
-            ValidationError, match="Log message cannot be empty"
-        ):
+        with pytest.raises(ValidationError, match="Log message cannot be empty"):
             FlextLogEntry(
                 message="",  # Empty message should fail Pydantic validation
                 level="info",
@@ -66,9 +64,7 @@ class TestEntityValidationErrors:
 
     def test_trace_invalid_trace_id_validation(self) -> None:
         """Test FlextTrace trace_id validation (empty string)."""
-        with pytest.raises(
-            ValidationError, match="Trace ID cannot be empty"
-        ):
+        with pytest.raises(ValidationError, match="Trace ID cannot be empty"):
             FlextTrace(
                 operation="test_operation",
                 trace_id="",  # Empty trace_id should fail validation
@@ -77,9 +73,7 @@ class TestEntityValidationErrors:
 
     def test_trace_invalid_operation_validation(self) -> None:
         """Test FlextTrace with invalid operation (empty string)."""
-        with pytest.raises(
-            ValidationError, match="Operation name cannot be empty"
-        ):
+        with pytest.raises(ValidationError, match="Operation name cannot be empty"):
             FlextTrace(
                 operation="",  # Empty operation should fail Pydantic validation
                 trace_id="trace_123",
@@ -88,9 +82,7 @@ class TestEntityValidationErrors:
 
     def test_alert_invalid_title_validation(self) -> None:
         """Test FlextAlert with invalid message (empty string)."""
-        with pytest.raises(
-            ValidationError, match="Alert message cannot be empty"
-        ):
+        with pytest.raises(ValidationError, match="Alert message cannot be empty"):
             FlextAlert(
                 title="Test Alert",
                 message="",  # Empty message should fail Pydantic validation
@@ -125,9 +117,7 @@ class TestEntityValidationErrors:
 
     def test_health_check_invalid_component_validation(self) -> None:
         """Test FlextHealthCheck with invalid service_name (empty string)."""
-        with pytest.raises(
-            ValidationError, match="Component name cannot be empty"
-        ):
+        with pytest.raises(ValidationError, match="Component name cannot be empty"):
             FlextHealthCheck(
                 component="",  # Empty component should fail Pydantic validation
                 status="healthy",

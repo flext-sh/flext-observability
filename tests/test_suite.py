@@ -282,9 +282,7 @@ class TestCompleteIntegrationReal:
         assert trace_validation.success
 
         # Valid alert
-        alert_result = self.factory.create_alert(
-            "System alert", "monitoring", "high"
-        )
+        alert_result = self.factory.create_alert("System alert", "monitoring", "high")
         assert alert_result.success
         alert = alert_result.unwrap()
         alert_validation = alert.validate_business_rules()

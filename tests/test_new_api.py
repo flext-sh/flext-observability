@@ -121,7 +121,9 @@ class TestEntityValidation:
         """Test metric validation with empty name."""
         result = flext_create_metric("", 50.0, "count")
         # Should be caught by pydantic validation
-        assert not result.success or not result.unwrap().validate_business_rules().success
+        assert (
+            not result.success or not result.unwrap().validate_business_rules().success
+        )
 
     def test_trace_validation_success(self) -> None:
         """Test successful trace validation."""

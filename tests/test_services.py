@@ -281,7 +281,9 @@ class TestAlertServiceRealFunctionality:
         alert_levels = ["low", "medium", "high", "critical"]
 
         for level in alert_levels:
-            alert = flext_create_alert(f"Test {level} alert", f"Test {level} alert message", level)
+            alert = flext_create_alert(
+                f"Test {level} alert", f"Test {level} alert message", level
+            )
             assert alert.success
 
             result = service.create_alert(alert.unwrap())

@@ -60,7 +60,9 @@ class TestSimpleApiCreation:
         result = flext_create_log_entry("Test message", "test_service")
         data = assert_success_with_data(result)
         if data.message != "[test_service] Test message":
-            raise AssertionError(f"Expected {'[test_service] Test message'}, got {data.message}")
+            raise AssertionError(
+                f"Expected {'[test_service] Test message'}, got {data.message}"
+            )
         assert data.level == "info"
 
     def test_create_log_entry_with_context(self) -> None:

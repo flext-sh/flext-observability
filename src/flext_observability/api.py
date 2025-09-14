@@ -313,6 +313,7 @@ def flext_create_trace(
             operation=operation_name,
             span_id=span_id,
             timestamp=timestamp or _generate_utc_datetime(),
+            service_name=service_name,  # Pass service_name through kwargs
         )
 
         return FlextResult[FlextTrace].ok(entity)
