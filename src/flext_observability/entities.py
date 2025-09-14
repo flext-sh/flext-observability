@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import math
 import time
-from datetime import datetime
+import uuid
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import cast
 
@@ -20,51 +21,9 @@ from flext_core import (
 )
 from pydantic import ConfigDict, Field, field_validator
 
-"""
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
 
-Core observability domain entities implementing Clean Architecture and
-Domain-Driven Design
-patterns for metrics, tracing, alerts, health checks, and structured logging within the
-FLEXT ecosystem. All entities extend flext-core FlextModels patterns with comprehensive
-domain validation and railway-oriented programming error handling.
-
-Key Components:
-    - FlextMetric: Metrics collection entity with domain validation
-    - FlextTrace: Distributed tracing span entity with context propagation
-    - FlextAlert: Alert management entity with severity handling
-    - FlextHealthCheck: Health monitoring entity with dependency validation
-    - FlextLogEntry: Structured logging entity with correlation ID support
-
-Architecture:
-    Built on flext-core FlextModels foundation with domain rule validation,
-    type safety, and FlextResult error handling patterns. Implements DDD
-    entity patterns with business logic encapsulation.
-
-Example:
-    Basic entity creation and validation:
-
-    >>> metric = FlextMetric(name="api_requests", value=42.0, unit="count")
-    >>> validation_result = metric.validate_business_rules()
-    >>> if validation_result.success:
-    ...     print(f"Valid metric: {metric.name}")
-
-Integration:
-    - Built on flext-core FlextModels patterns
-    - Integrates with FlextObservabilityMasterFactory for creation
-    - Used by FlextObservabilityServices for business logic
-    - Supports ecosystem-wide observability standardization
-
-Author: FLEXT Development Team
-Version: 0.9.0
-License: MIT
-
-"""
-
-
-class FlextGenerators:
-    """Compatibility shim for tests expecting FlextGenerators.
+class FlextUtilitiesGenerators:
+    """Compatibility shim for tests expecting FlextUtilities.Generators.
 
     Maps to flext_core functions.
     """
@@ -77,12 +36,22 @@ class FlextGenerators:
     @staticmethod
     def generate_uuid() -> str:
         """Generate a UUID string."""
-        return FlextMixins.generate_entity_id()
+        return str(uuid.uuid4())
 
     @staticmethod
     def generate_entity_id() -> str:
         """Generate an entity ID."""
-        return FlextMixins.generate_entity_id()
+        return str(uuid.uuid4())
+
+    @staticmethod
+    def generate_correlation_id() -> str:
+        """Generate a correlation ID."""
+        return str(uuid.uuid4())
+
+    @staticmethod
+    def generate_iso_timestamp() -> str:
+        """Generate an ISO timestamp string."""
+        return datetime.now(tz=UTC).isoformat()
 
 
 # ============================================================================
@@ -969,7 +938,7 @@ def flext_alert(
             timestamp=timestamp,
         )
     return FlextAlert(
-        id=FlextGenerators.generate_entity_id(),
+        id=FlextUtilitiesGenerators.generate_entity_id(),
         title=title,
         message=message,
         severity=severity,
@@ -1004,7 +973,7 @@ def flext_trace(
             timestamp=timestamp,
         )
     return FlextTrace(
-        id=FlextGenerators.generate_entity_id(),
+        id=FlextUtilitiesGenerators.generate_entity_id(),
         trace_id=trace_id,
         operation=operation,
         span_id=span_id,
@@ -1049,7 +1018,7 @@ def flext_metric(
             )
         else:
             metric = FlextMetric(
-                id=FlextGenerators.generate_entity_id(),
+                id=FlextUtilitiesGenerators.generate_entity_id(),
                 name=name,
                 value=value,
                 unit=unit,
@@ -1096,7 +1065,7 @@ def flext_health_check(
             timestamp=timestamp,
         )
     return FlextHealthCheck(
-        id=FlextGenerators.generate_entity_id(),
+        id=FlextUtilitiesGenerators.generate_entity_id(),
         component=component,
         status=status,
         message=message,
@@ -1122,3 +1091,14 @@ except Exception as exc:  # pragma: no cover - Pydantic internal failure unlikel
         "Pydantic model_rebuild failed for flext-observability entities",
         error=str(exc),
     )
+
+__all__ = [
+    "FlextAlert",
+    "FlextHealthCheck",
+    "FlextLogEntry",
+    "FlextMetric",
+    "FlextMixins",
+    "FlextTrace",
+    "FlextUtilitiesGenerators",
+    "_generate_utc_datetime",
+]

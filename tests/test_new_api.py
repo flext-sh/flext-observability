@@ -47,22 +47,21 @@ class TestSimpleAPI:
 
     def test_create_trace_success(self) -> None:
         """Test successful trace creation."""
-        result = flext_create_trace("test_operation", "test_service")
+        result = flext_create_trace("test_operation")
 
         assert result.success
         assert isinstance(result.data, FlextTrace)
-        assert result.data.operation_name == "test_operation"
-        assert result.data.service_name == "test_service"
+        assert result.data.operation == "test_operation"
 
     def test_create_alert_success(self) -> None:
         """Test successful alert creation."""
-        result = flext_create_alert("Test alert", "test_service", "warning")
+        result = flext_create_alert("Test Alert", "Test alert message", "medium")
 
         assert result.success
         assert isinstance(result.data, FlextAlert)
-        assert result.data.message == "Test alert"
-        assert result.data.service == "test_service"
-        assert result.data.level == "warning"
+        assert result.data.title == "Test Alert"
+        assert result.data.message == "Test alert message"
+        assert result.data.severity == "medium"
 
     def test_create_health_check_success(self) -> None:
         """Test successful health check creation."""
@@ -70,18 +69,17 @@ class TestSimpleAPI:
 
         assert result.success
         assert isinstance(result.data, FlextHealthCheck)
-        assert result.data.service_name == "test_service"
+        assert result.data.component == "test_service"
         assert result.data.status == "healthy"
 
     def test_create_log_entry_success(self) -> None:
         """Test successful log entry creation."""
-        result = flext_create_log_entry("Test message", "test_service", "INFO")
+        result = flext_create_log_entry("Test message", "test_service", "info")
 
         assert result.success
         assert isinstance(result.data, FlextLogEntry)
-        assert result.data.message == "Test message"
-        assert result.data.service == "test_service"
-        assert result.data.level == "INFO"
+        assert result.data.message == "[test_service] Test message"
+        assert result.data.level == "info"
 
 
 class TestFactoryPattern:
@@ -94,7 +92,7 @@ class TestFactoryPattern:
 
         result = factory.create_metric("global_test", 100.0, "count")
         assert result.success
-        assert result.data.name == "global_test"
+        assert result.unwrap().name == "global_test"
 
     def test_custom_factory(self) -> None:
         """Test custom factory creation."""
@@ -105,7 +103,7 @@ class TestFactoryPattern:
 
         result = factory.create_metric("custom_test", 200.0, "count")
         assert result.success
-        assert result.data.name == "custom_test"
+        assert result.unwrap().name == "custom_test"
 
 
 class TestEntityValidation:
@@ -116,29 +114,29 @@ class TestEntityValidation:
         result = flext_create_metric("valid_metric", 50.0, "count")
         assert result.success
 
-        validation = result.data.validate_business_rules()
+        validation = result.unwrap().validate_business_rules()
         assert validation.success
 
     def test_metric_validation_empty_name(self) -> None:
         """Test metric validation with empty name."""
         result = flext_create_metric("", 50.0, "count")
         # Should be caught by pydantic validation
-        assert not result.success or not result.data.validate_business_rules().success
+        assert not result.success or not result.unwrap().validate_business_rules().success
 
     def test_trace_validation_success(self) -> None:
         """Test successful trace validation."""
-        result = flext_create_trace("valid_operation", "valid_service")
+        result = flext_create_trace("valid_operation")
         assert result.success
 
-        validation = result.data.validate_business_rules()
+        validation = result.unwrap().validate_business_rules()
         assert validation.success
 
     def test_alert_validation_success(self) -> None:
         """Test successful alert validation."""
-        result = flext_create_alert("Valid alert", "service", "info")
+        result = flext_create_alert("Valid alert", "service", "low")
         assert result.success
 
-        validation = result.data.validate_business_rules()
+        validation = result.unwrap().validate_business_rules()
         assert validation.success
 
     def test_health_check_validation_success(self) -> None:
@@ -146,7 +144,7 @@ class TestEntityValidation:
         result = flext_create_health_check("service", "healthy")
         assert result.success
 
-        validation = result.data.validate_business_rules()
+        validation = result.unwrap().validate_business_rules()
         assert validation.success
 
 
@@ -174,10 +172,10 @@ class TestEntityTypes:
     def test_entity_types(self) -> None:
         """Test that entities are of correct types."""
         metric_result = flext_create_metric("test", 1.0, "count")
-        trace_result = flext_create_trace("test", "service")
-        alert_result = flext_create_alert("test", "service", "info")
+        trace_result = flext_create_trace("test")
+        alert_result = flext_create_alert("test", "service", "medium")
         health_result = flext_create_health_check("service", "healthy")
-        log_result = flext_create_log_entry("test", "service", "INFO")
+        log_result = flext_create_log_entry("test", "service", "info")
 
         assert isinstance(metric_result.data, FlextMetric)
         assert isinstance(trace_result.data, FlextTrace)

@@ -110,7 +110,7 @@ class TestMonitorRealFunctionality:
         # Test recording metric with invalid data
         invalid_result = monitor.flext_record_metric("", 0.0)  # Empty name
         assert invalid_result.is_failure
-        assert "String should have at least 1 character" in (invalid_result.error or "")
+        assert "Metric name cannot be empty" in (invalid_result.error or "")
 
         # Test function monitoring with real exception
         @flext_monitor_function(monitor=monitor, metric_name="error_function")

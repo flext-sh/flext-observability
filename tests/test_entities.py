@@ -37,7 +37,7 @@ class TestEntityValidation:
 
     def test_trace_validation(self) -> None:
         """Test trace validation."""
-        result = flext_create_trace("trace-123", "test_operation")
+        result = flext_create_trace("test_operation")
         assert result.success
         assert result.data is not None
         validation_result = result.data.validate_business_rules()

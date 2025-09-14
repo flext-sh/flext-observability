@@ -8,8 +8,24 @@ from __future__ import annotations
 
 from flext_core import FlextConstants, FlextContainer, FlextLogger, FlextTypes
 
-# No public API classes currently
-from flext_observability.factories import FlextObservabilityMasterFactory
+from flext_observability.api import (
+    flext_create_alert,
+    flext_create_health_check,
+    flext_create_log_entry,
+    flext_create_metric,
+    flext_create_trace,
+)
+from flext_observability.entities import (
+    flext_alert,
+    flext_health_check,
+    flext_metric,
+    flext_trace,
+)
+from flext_observability.factories import (
+    FlextObservabilityMasterFactory,
+    get_global_factory,
+    reset_global_factory,
+)
 from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
@@ -17,7 +33,10 @@ from flext_observability.models import (
     FlextMetric,
     FlextTrace,
 )
-from flext_observability.monitoring import FlextObservabilityMonitor
+from flext_observability.monitoring import (
+    FlextObservabilityMonitor,
+    flext_monitor_function,
+)
 from flext_observability.services import (
     FlextAlertService,
     FlextHealthService,
@@ -25,6 +44,16 @@ from flext_observability.services import (
     FlextMetricsService,
     FlextTracingService,
 )
+
+# Backward compatibility aliases
+alert = flext_create_alert
+health_check = flext_create_health_check
+log = flext_create_log_entry
+metric = flext_create_metric
+trace = flext_create_trace
+
+# Legacy function alias
+flext_health_status = flext_create_health_check
 
 # Remove unused TYPE_CHECKING - not needed
 
@@ -51,11 +80,8 @@ __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 # Legacy facades removed - use direct imports from flext-core and factory classes
 
 __all__: FlextTypes.Core.StringList = [
-    # Core entities (actually imported)
     "FlextAlert",
-    # Services (actually imported)
     "FlextAlertService",
-    # flext-core re-exports (actually imported)
     "FlextConstants",
     "FlextContainer",
     "FlextHealthCheck",
@@ -65,14 +91,29 @@ __all__: FlextTypes.Core.StringList = [
     "FlextLoggingService",
     "FlextMetric",
     "FlextMetricsService",
-    # Factory (actually imported)
     "FlextObservabilityMasterFactory",
-    # Monitoring (actually imported)
     "FlextObservabilityMonitor",
     "FlextTrace",
     "FlextTracingService",
     "FlextTypes",
-    # Version info
     "__version__",
     "__version_info__",
+    "alert",
+    "flext_alert",
+    "flext_create_alert",
+    "flext_create_health_check",
+    "flext_create_log_entry",
+    "flext_create_metric",
+    "flext_create_trace",
+    "flext_health_check",
+    "flext_health_status",
+    "flext_metric",
+    "flext_monitor_function",
+    "flext_trace",
+    "get_global_factory",
+    "health_check",
+    "log",
+    "metric",
+    "reset_global_factory",
+    "trace",
 ]

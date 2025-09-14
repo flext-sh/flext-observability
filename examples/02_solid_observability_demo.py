@@ -8,7 +8,7 @@ and function monitoring capabilities.
 
 import time
 
-from flext_core import FlextContainer, FlextResult
+from flext_core import FlextContainer, FlextResult, FlextTypes
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -55,14 +55,14 @@ def demonstrate_solid_design() -> None:
     factory.create_metric("custom_metric", 100.0, "units")
 
     # Liskov Substitution: All entities implement the same base interface
-    results: list[FlextResult[object]] = [
+    results = [
         metric_result,
         trace_result,
         alert_result,
         health_result,
     ]
     entities: list[FlextMetric | FlextTrace | FlextAlert | FlextHealthCheck] = [
-        result.data for result in results if result.success and result.data
+        result.unwrap() for result in results if hasattr(result, "success") and result.success and hasattr(result, "unwrap")
     ]
     for entity in entities:
         if hasattr(entity, "validate_business_rules"):

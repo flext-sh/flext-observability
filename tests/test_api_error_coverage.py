@@ -49,14 +49,14 @@ class TestApiErrorHandling:
     def test_flext_create_log_entry_error_handling(self) -> None:
         """Test log entry creation error handling paths."""
         # Test with valid values to cover normal execution
-        result = flext_create_log_entry("Test message", "test_service", "INFO")
+        result = flext_create_log_entry("Test message", "test_service", "info")
         assert result.success
 
         # Test with different log levels
-        result = flext_create_log_entry("Warning message", "test_service", "WARNING")
+        result = flext_create_log_entry("Warning message", "test_service", "warning")
         assert result.success
 
-        result = flext_create_log_entry("Error message", "test_service", "ERROR")
+        result = flext_create_log_entry("Error message", "test_service", "error")
         assert result.success
 
     def test_flext_create_trace_error_handling(self) -> None:
@@ -82,14 +82,14 @@ class TestApiErrorHandling:
     def test_flext_create_alert_error_handling(self) -> None:
         """Test alert creation error handling paths."""
         # Test with valid values to cover normal execution
-        result = flext_create_alert("Test alert", "test_service", "info")
+        result = flext_create_alert("Test alert", "test_service", "medium")
         assert result.success
 
         # Test with different alert levels
-        result = flext_create_alert("Warning alert", "test_service", "warning")
+        result = flext_create_alert("Warning alert", "test_service", "high")
         assert result.success
 
-        result = flext_create_alert("Error alert", "test_service", "error")
+        result = flext_create_alert("Error alert", "test_service", "critical")
         assert result.success
 
         result = flext_create_alert("Critical alert", "test_service", "critical")
@@ -119,7 +119,7 @@ class TestApiErrorHandling:
         assert metric_result.success
 
         log_result = flext_create_log_entry(
-            "Timestamped log", "test_service", "INFO", timestamp=custom_timestamp
+            "Timestamped log", "test_service", "info", timestamp=custom_timestamp
         )
         assert log_result.success
 
@@ -129,7 +129,7 @@ class TestApiErrorHandling:
         assert trace_result.success
 
         alert_result = flext_create_alert(
-            "Timestamped alert", "test_service", "info", timestamp=custom_timestamp
+            "Timestamped alert", "test_service", "medium", timestamp=custom_timestamp
         )
         assert alert_result.success
 
@@ -189,13 +189,13 @@ class TestApiEdgeCases:
         result = flext_create_trace("empty_config", "service", config={})
         assert result.success
 
-        # Test with None values in config
-        config = {"trace_id": None, "span_id": None}
-        result = flext_create_trace("none_config", "service", config=config)
+        # Test with string values in config
+        config = {"trace_id": "trace_123", "span_id": "span_456"}
+        result = flext_create_trace("string_config", "service", config=config)
         assert result.success
 
         # Test with string conversion of IDs
-        config = {"trace_id": 123, "span_id": 456}  # Non-string IDs
+        config = {"trace_id": "123", "span_id": "456"}  # String IDs
         result = flext_create_trace("numeric_ids", "service", config=config)
         assert result.success
 

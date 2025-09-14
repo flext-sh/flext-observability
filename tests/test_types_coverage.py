@@ -76,10 +76,10 @@ class TestTypesModuleCoverage:
         """Test that protocols define expected attributes using real entities."""
         # Create real entities instead of mock implementations
         metric_result = flext_create_metric("test_metric", 42.0, "count")
-        trace_result = flext_create_trace("test_op", "test_service")
-        alert_result = flext_create_alert("Test alert", "test_service", "warning")
+        trace_result = flext_create_trace("test_op")
+        alert_result = flext_create_alert("Test alert", "test_service", "medium")
         health_result = flext_create_health_check("test_service", "healthy")
-        log_result = flext_create_log_entry("Test log", "test_service", "INFO")
+        log_result = flext_create_log_entry("Test log", "test_service", "info")
 
         # Verify all entities were created successfully
         assert metric_result.success
@@ -102,30 +102,30 @@ class TestTypesModuleCoverage:
         assert hasattr(metric_instance, "timestamp")
         assert hasattr(metric_instance, "tags")
 
-        assert hasattr(trace_instance, "operation_name")
-        assert hasattr(trace_instance, "service_name")
+        assert hasattr(trace_instance, "operation")
         assert hasattr(trace_instance, "span_id")
         assert hasattr(trace_instance, "trace_id")
-        assert hasattr(trace_instance, "start_time")
-        assert hasattr(trace_instance, "end_time")
+        assert hasattr(trace_instance, "span_attributes")
+        assert hasattr(trace_instance, "duration_ms")
         assert hasattr(trace_instance, "status")
+        assert hasattr(trace_instance, "timestamp")
 
+        assert hasattr(alert_instance, "title")
         assert hasattr(alert_instance, "message")
-        assert hasattr(alert_instance, "level")
-        assert hasattr(alert_instance, "service")
+        assert hasattr(alert_instance, "severity")
+        assert hasattr(alert_instance, "status")
+        assert hasattr(alert_instance, "tags")
         assert hasattr(alert_instance, "timestamp")
-        assert hasattr(alert_instance, "resolved")
-
-        assert hasattr(health_instance, "service_name")
+        assert hasattr(health_instance, "component")
         assert hasattr(health_instance, "status")
+        assert hasattr(health_instance, "message")
+        assert hasattr(health_instance, "metrics")
         assert hasattr(health_instance, "timestamp")
-        assert hasattr(health_instance, "details")
 
         assert hasattr(log_instance, "message")
         assert hasattr(log_instance, "level")
-        assert hasattr(log_instance, "service")
+        assert hasattr(log_instance, "context")
         assert hasattr(log_instance, "timestamp")
-        assert hasattr(log_instance, "correlation_id")
 
     def test_observability_types_class(self) -> None:
         """Test ObservabilityTypes class attributes."""

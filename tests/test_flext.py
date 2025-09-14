@@ -7,9 +7,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TypeVar, cast
+from typing import cast
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextResult, T
 
 from flext_observability import (
     flext_create_alert,
@@ -18,8 +18,6 @@ from flext_observability import (
     flext_create_metric,
     flext_create_trace,
 )
-
-T = TypeVar("T")
 
 
 def assert_success_with_data[T](result: FlextResult[T]) -> T:
@@ -61,22 +59,22 @@ class TestSimpleApiCreation:
         """Test successful log entry creation."""
         result = flext_create_log_entry("Test message", "test_service")
         data = assert_success_with_data(result)
-        if data.message != "Test message":
-            raise AssertionError(f"Expected {'Test message'}, got {data.message}")
-        assert data.level == "INFO"
+        if data.message != "[test_service] Test message":
+            raise AssertionError(f"Expected {'[test_service] Test message'}, got {data.message}")
+        assert data.level == "info"
 
     def test_create_log_entry_with_context(self) -> None:
         """Test log entry creation with context."""
         result = flext_create_log_entry(
             "Error occurred",
             "test_service",
-            level="ERROR",
+            level="error",
         )
         data = assert_success_with_data(result)
-        if data.level != "ERROR":
-            raise AssertionError(f"Expected {'ERROR'}, got {data.level}")
-        # Check that extra_data field exists (our version of context)
-        assert hasattr(data, "extra_data")
+        if data.level != "error":
+            raise AssertionError(f"Expected {'error'}, got {data.level}")
+        # Check that context field exists
+        assert hasattr(data, "context")
 
     def test_create_trace_success(self) -> None:
         """Test successful trace creation."""
@@ -86,48 +84,47 @@ class TestSimpleApiCreation:
         data = assert_success_with_data(result)
         if data.trace_id != "trace-123":
             raise AssertionError(f"Expected {'trace-123'}, got {data.trace_id}")
-        assert data.operation_name == "user_login"
+        assert data.operation == "user_login"
 
     def test_create_trace_with_config(self) -> None:
         """Test trace creation with configuration."""
         config = {"span_id": "span-456", "trace_id": "trace-789"}
-        result = flext_create_trace(
-            "data_processing", "trace-789", config=cast("FlextTypes.Data.Dict", config)
-        )
+        result = flext_create_trace("data_processing", "trace-789", config=config)
         data = assert_success_with_data(result)
         if data.span_id != "span-456":
             raise AssertionError(f"Expected {'span-456'}, got {data.span_id}")
 
     def test_create_alert_success(self) -> None:
         """Test successful alert creation."""
-        result = flext_create_alert("High CPU usage detected", "system_monitor")
+        result = flext_create_alert("High CPU Alert", "High CPU usage detected")
         data = assert_success_with_data(result)
         if data.message != "High CPU usage detected":
             raise AssertionError(
                 f"Expected {'High CPU usage detected'}, got {data.message}"
             )
-        assert data.service == "system_monitor"
-        if data.level != "info":  # default
-            raise AssertionError(f"Expected {'info'}, got {data.level}")
+        # FlextAlert doesn't have service field, check other attributes
+        assert data.title == "High CPU Alert"
+        if data.severity != "low":  # default
+            raise AssertionError(f"Expected {'low'}, got {data.severity}")
 
     def test_create_alert_high_severity(self) -> None:
         """Test alert creation with high severity."""
         result = flext_create_alert(
             "Database connection failed",
-            "database_service",
-            level="critical",
+            "Database connection failed message",
+            severity="critical",
         )
         data = assert_success_with_data(result)
-        if data.level != "critical":
-            raise AssertionError(f"Expected {'critical'}, got {data.level}")
-        assert data.service == "database_service"
+        if data.severity != "critical":
+            raise AssertionError(f"Expected {'critical'}, got {data.severity}")
+        assert data.title == "Database connection failed"
 
     def test_create_health_check_success(self) -> None:
         """Test successful health check creation."""
         result = flext_create_health_check("database")
         data = assert_success_with_data(result)
-        if data.service_name != "database":
-            raise AssertionError(f"Expected {'database'}, got {data.service_name}")
+        if data.component != "database":
+            raise AssertionError(f"Expected {'database'}, got {data.component}")
         assert data.status == "healthy"  # default
 
     def test_create_health_check_with_status(self) -> None:
@@ -137,11 +134,11 @@ class TestSimpleApiCreation:
             status="degraded",
         )
         data = assert_success_with_data(result)
-        if data.service_name != "api_server":
-            raise AssertionError(f"Expected {'api_server'}, got {data.service_name}")
+        if data.component != "api_server":
+            raise AssertionError(f"Expected {'api_server'}, got {data.component}")
         assert data.status == "degraded"
-        # Check that details field exists
-        assert hasattr(data, "details")
+        # Check that metrics field exists
+        assert hasattr(data, "metrics")
 
 
 class TestSimpleApiErrorHandling:
@@ -181,7 +178,7 @@ class TestSimpleApiErrorHandling:
             errors_caught += 1
         # Trace test
         try:
-            trace_result = flext_create_trace("trace", "op", timestamp=None)
+            trace_result = flext_create_trace("trace", timestamp=None)
             assert trace_result.success or trace_result.is_failure
         except (RuntimeError, ValueError, TypeError):
             errors_caught += 1

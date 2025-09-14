@@ -12,11 +12,11 @@ from flext_core import FlextContainer, FlextTypes
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
-    alert,
-    health_check,
-    log,
-    metric,
-    trace,
+    flext_create_alert,
+    flext_create_health_check,
+    flext_create_log_entry,
+    flext_create_metric,
+    flext_create_trace,
 )
 
 
@@ -116,7 +116,7 @@ class TestE2EComprehensiveObservability:
                 "user_agent": "test",
             },
             duration_ms=250,
-            status="in_progress",
+            status="pending",
         )
 
         assert parent_result.success
@@ -239,7 +239,7 @@ class TestE2EComprehensiveObservability:
             metric_result = factory.metric(f"performance_test_metric_{i}", float(i))
             log_result = factory.log(f"Performance test log {i}")
             alert_result = factory.alert(
-                f"Test Alert {i}", "performance-testing", "info"
+                f"Test Alert {i}", "performance-testing", "low"
             )
             trace_result = factory.trace(f"trace-perf-{i}", f"test_op_{i}")
 
@@ -278,11 +278,15 @@ class TestE2EComprehensiveObservability:
     def test_e2e_global_factory_consistency(self) -> None:
         """E2E test: Global factory provides consistent access."""
         # Test global convenience functions
-        metric_result = metric("global_test_metric", 42.0, tags={"test": "global"})
-        log_result = log("Global test log", level="info")
-        alert_result = alert("Global Test Alert", "Testing global access")
-        trace_result = trace("global-trace-123", "global_operation")
-        health_result = health_check("global_component", status="healthy")
+        metric_result = flext_create_metric(
+            "global_test_metric", 42.0, tags={"test": "global"}
+        )
+        log_result = flext_create_log_entry("Global test log", level="info")
+        alert_result = flext_create_alert(
+            "Global Test Alert", "Testing global access", severity="medium"
+        )
+        trace_result = flext_create_trace("global-trace-123")
+        health_result = flext_create_health_check("global_component", status="healthy")
 
         # All global functions should work
         assert metric_result.success
