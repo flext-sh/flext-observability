@@ -62,7 +62,9 @@ def demonstrate_solid_design() -> None:
         health_result,
     ]
     entities: list[FlextMetric | FlextTrace | FlextAlert | FlextHealthCheck] = [
-        result.unwrap() for result in results if hasattr(result, "success") and result.success and hasattr(result, "unwrap")
+        result.unwrap()
+        for result in results
+        if hasattr(result, "success") and result.success and hasattr(result, "unwrap")
     ]
     for entity in entities:
         if hasattr(entity, "validate_business_rules"):

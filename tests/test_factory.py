@@ -275,7 +275,9 @@ class TestFlextObservabilityMasterFactoryReal:
         for i, result in enumerate(results):
             # Use hasattr to check for FlextResult methods
             assert hasattr(result, "success"), f"Entity {i} missing success attribute"
-            assert result.success, f"Entity {i} creation failed: {getattr(result, 'error', 'Unknown error')}"
+            assert result.success, (
+                f"Entity {i} creation failed: {getattr(result, 'error', 'Unknown error')}"
+            )
 
         # Verify entities have proper timestamps
         for result in results:
