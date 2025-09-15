@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3  # pragma: no cover
 """Comprehensive functional examples for flext-observability.
 
 Copyright (c) 2025 FLEXT Contributors

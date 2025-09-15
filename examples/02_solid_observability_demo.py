@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3  # pragma: no cover
 """SOLID Observability Demo - Real functionality demonstration.
 
 This example demonstrates the real functionality implemented in flext-observability

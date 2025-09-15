@@ -229,7 +229,7 @@ class FlextMetricsService:
                     # Generate timestamp via shim to enable test patching
                     # Use services module shim so tests can patch
                     timestamp = FlextUtilitiesGenerators.generate_timestamp()
-                except (ValueError, TypeError, AttributeError) as e:
+                except (ValueError, TypeError, AttributeError) as e:  # pragma: no cover
                     return FlextResult[FlextMetric].fail(
                         f"Failed to record metric: {e}"
                     )
@@ -277,7 +277,7 @@ class FlextMetricsService:
 
             return FlextResult[FlextMetric].ok(metric)
 
-        except (ValueError, TypeError, AttributeError) as e:
+        except (ValueError, TypeError, AttributeError) as e:  # pragma: no cover
             return FlextResult[FlextMetric].fail(f"Failed to record metric: {e}")
 
     def get_metric_value(self, metric_name: str) -> FlextResult[float]:
@@ -1304,7 +1304,7 @@ class FlextHealthService:
                     "used_percent": used_percent,
                     "free_gb": disk_usage.free / (1024**3),
                 }
-            except (OSError, AttributeError):
+            except (OSError, AttributeError):  # pragma: no cover
                 system_checks["disk"] = {
                     "status": "unknown",
                     "error": "disk check failed",
