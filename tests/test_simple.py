@@ -297,7 +297,7 @@ class TestFlextMixinsCoverage:
 
         # Test calling the field validator directly to trigger the exception path
         with pytest.raises(ValueError, match="Metric value must be numeric"):
-            FlextMetric.validate_metric_value(float(BadFloat()))
+            FlextMetric.validate_metric_value(BadFloat())
 
     def test_metric_value_validation_decimal_nan_coverage(self) -> None:
         """Test FlextMetric value validation with Decimal NaN - covers lines 191, 200-201."""
@@ -1357,7 +1357,7 @@ class TestFlextMixinsCoverage:
         # Mock the FlextMetric class constructor to raise a general exception
         # This will trigger the general Exception handler at lines 1068-1069
         with patch.object(entities_module, "FlextMetric") as mock_metric_class:
-            mock_metric_class.model_construct.side_effect = RuntimeError(
+            mock_metric_class.side_effect = RuntimeError(
                 "Unexpected error in model construction"
             )
 

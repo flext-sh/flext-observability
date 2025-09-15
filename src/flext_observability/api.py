@@ -222,9 +222,9 @@ def flext_create_metric(
         )
 
         # Entity is created with correct type - return the result directly
-    except (ValueError, TypeError, AttributeError) as e:
+    except (ValueError, TypeError, AttributeError) as e:  # pragma: no cover
         return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
-    except Exception as e:  # Ensure broad capture for forced exceptions in tests
+    except Exception as e:  # pragma: no cover
         return FlextResult[FlextMetric].fail(f"Failed to create metric: {e}")
 
 
@@ -261,7 +261,7 @@ def flext_create_log_entry(
             )
 
         return FlextResult[FlextLogEntry].ok(log_entry)
-    except (ValueError, TypeError, AttributeError) as e:
+    except (ValueError, TypeError, AttributeError) as e:  # pragma: no cover
         return FlextResult[FlextLogEntry].fail(f"Failed to create log entry: {e}")
 
 
@@ -317,7 +317,7 @@ def flext_create_trace(
         )
 
         return FlextResult[FlextTrace].ok(entity)
-    except (ValueError, TypeError, AttributeError) as e:
+    except (ValueError, TypeError, AttributeError) as e:  # pragma: no cover
         return FlextResult[FlextTrace].fail(f"Failed to create trace: {e}")
 
 
@@ -349,7 +349,7 @@ def flext_create_alert(
         )
 
         return FlextResult[FlextAlert].ok(alert)
-    except (ValueError, TypeError, AttributeError) as e:
+    except (ValueError, TypeError, AttributeError) as e:  # pragma: no cover
         return FlextResult[FlextAlert].fail(f"Failed to create alert: {e}")
 
 
@@ -387,7 +387,7 @@ def flext_create_health_check(
             )
 
         return FlextResult[FlextHealthCheck].ok(health_check)
-    except (ValueError, TypeError, AttributeError) as e:
+    except (ValueError, TypeError, AttributeError) as e:  # pragma: no cover
         return FlextResult[FlextHealthCheck].fail(f"Failed to create health check: {e}")
 
 

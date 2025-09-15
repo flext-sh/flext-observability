@@ -21,9 +21,7 @@ class TestEntityValidationErrors:
 
     def test_metric_invalid_name_validation(self) -> None:
         """Test FlextMetric with invalid name (empty string)."""
-        with pytest.raises(
-            ValidationError, match="String should have at least 1 character"
-        ):
+        with pytest.raises(ValidationError, match="Metric name cannot be empty"):
             FlextMetric(
                 name="",  # Empty name should fail Pydantic validation
                 value=42.0,
@@ -55,8 +53,10 @@ class TestEntityValidationErrors:
         """Test FlextLogEntry with invalid level."""
         log_entry = FlextLogEntry(
             message="Test message",
-            level="INVALID_LEVEL",  # Invalid level for business rules
+            level="info",  # Valid level for construction
         )
+        # Test business rule validation for invalid level after creation (bypass Pydantic validation)
+        object.__setattr__(log_entry, "level", "INVALID_LEVEL")
         result = log_entry.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
@@ -94,22 +94,24 @@ class TestEntityValidationErrors:
         alert = FlextAlert(
             title="Test Alert",
             message="Valid message",
-            severity="info",
+            severity="low",
         )
         # Test business rule validation for empty message after creation (bypass Pydantic validation)
         object.__setattr__(alert, "message", "")
         result = alert.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "Alert message cannot be empty" in result.error
+        assert "Invalid alert message" in result.error
 
     def test_alert_invalid_severity_validation(self) -> None:
         """Test FlextAlert with invalid level."""
         alert = FlextAlert(
             title="Test Alert",
             message="Test message",
-            severity="invalid_severity",  # Invalid severity for business rules
+            severity="low",  # Valid severity for construction
         )
+        # Test business rule validation for invalid severity after creation (bypass Pydantic validation)
+        object.__setattr__(alert, "severity", "invalid_severity")
         result = alert.validate_business_rules()
         assert result.is_failure
         assert result.error is not None

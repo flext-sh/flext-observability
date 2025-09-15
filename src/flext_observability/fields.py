@@ -6,11 +6,14 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar, cast
 
 from pydantic import Field, field_validator
 
 from flext_observability.constants import ObservabilityConstants
+
+if TYPE_CHECKING:
+    from pydantic.fields import FieldInfo
 
 
 class MetricValueField:
@@ -112,18 +115,59 @@ class HealthStatusField:
 
 # Convenience field definitions
 
-metric_name_field = Field(min_length=1, max_length=255, description="Metric name")
-metric_value_field = Field(ge=0.0, description="Metric value (non-negative)")
-metric_unit_field = Field(
-    default=ObservabilityConstants.DEFAULT_METRIC_UNIT, description="Metric unit"
-)
-trace_name_field = Field(
-    min_length=1, max_length=255, description="Trace operation name"
-)
-alert_message_field = Field(min_length=1, max_length=1000, description="Alert message")
-timestamp_field = Field(
-    default_factory=lambda: datetime.now(UTC), description="Timestamp"
-)
+
+def _create_metric_name_field() -> FieldInfo:
+    """Create metric name field."""
+    return cast(
+        "FieldInfo", Field(min_length=1, max_length=255, description="Metric name")
+    )
+
+
+def _create_metric_value_field() -> FieldInfo:
+    """Create metric value field."""
+    return cast("FieldInfo", Field(ge=0.0, description="Metric value (non-negative)"))
+
+
+def _create_metric_unit_field() -> FieldInfo:
+    """Create metric unit field."""
+    return cast(
+        "FieldInfo",
+        Field(
+            default=ObservabilityConstants.DEFAULT_METRIC_UNIT,
+            description="Metric unit",
+        ),
+    )
+
+
+def _create_trace_name_field() -> FieldInfo:
+    """Create trace name field."""
+    return cast(
+        "FieldInfo",
+        Field(min_length=1, max_length=255, description="Trace operation name"),
+    )
+
+
+def _create_alert_message_field() -> FieldInfo:
+    """Create alert message field."""
+    return cast(
+        "FieldInfo", Field(min_length=1, max_length=1000, description="Alert message")
+    )
+
+
+def _create_timestamp_field() -> FieldInfo:
+    """Create timestamp field."""
+    return cast(
+        "FieldInfo",
+        Field(default_factory=lambda: datetime.now(UTC), description="Timestamp"),
+    )
+
+
+metric_name_field = _create_metric_name_field()
+metric_value_field = _create_metric_value_field()
+metric_unit_field = _create_metric_unit_field()
+trace_name_field = _create_trace_name_field()
+alert_message_field = _create_alert_message_field()
+timestamp_field = _create_timestamp_field()
 
 
 __all__ = [
