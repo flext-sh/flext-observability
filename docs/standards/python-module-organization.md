@@ -1380,7 +1380,7 @@ class FlextOracleService:
         # Oracle-specific observability patterns
         return self._execute_oracle_query(query)
 
-class FlextLDAPService:
+class FlextLdapService:
     """LDAP service with ecosystem-standard monitoring."""
 
     @flext_monitor_function("ldap_operation")

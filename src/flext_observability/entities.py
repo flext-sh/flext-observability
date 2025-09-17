@@ -12,14 +12,14 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import cast
 
+from pydantic import ConfigDict, Field, field_validator
+
 from flext_core import (
     FlextLogger,
     FlextMixins,
     FlextModels,
     FlextResult,
-    FlextValidations,
 )
-from pydantic import ConfigDict, Field, field_validator
 
 
 class FlextUtilitiesGenerators:
@@ -150,7 +150,7 @@ class FlextMetric(FlextModels.Entity):
     @classmethod
     def validate_metric_name(cls, v: str) -> str:
         """Validate metric name is non-empty and follows naming conventions."""
-        if not FlextValidations.validate_non_empty_string_func(v):
+        if not (v and str(v).strip()):
             msg = "Metric name cannot be empty"
             raise ValueError(msg)
         return v
@@ -216,8 +216,8 @@ class FlextMetric(FlextModels.Entity):
             ...     print(f"Validation failed: {result.error}")
 
         """
-        # Use FlextValidations for standardized validation
-        if not FlextValidations.validate_non_empty_string_func(self.name):
+        # Use direct validation for standardized validation
+        if not (self.name and str(self.name).strip()):
             return FlextResult[None].fail("Invalid metric name")
 
         if not isinstance(self.value, (int, float)):
@@ -328,7 +328,7 @@ class FlextLogEntry(FlextModels.Entity):
     @classmethod
     def validate_log_message(cls, v: str) -> str:
         """Validate log message is non-empty and meaningful."""
-        if not FlextValidations.validate_non_empty_string_func(v):
+        if not (v and str(v).strip()):
             msg = "Log message cannot be empty"
             raise ValueError(msg)
         return v
@@ -371,8 +371,8 @@ class FlextLogEntry(FlextModels.Entity):
             True
 
         """
-        # Use FlextValidations for standardized validation
-        if not FlextValidations.validate_non_empty_string_func(self.message):
+        # Use direct validation for standardized validation
+        if not (self.message and str(self.message).strip()):
             return FlextResult[None].fail("Invalid log message")
         if self.level not in {"debug", "info", "warning", "error", "critical"}:
             return FlextResult[None].fail("Invalid log level")
@@ -494,7 +494,7 @@ class FlextTrace(FlextModels.Entity):
     @classmethod
     def validate_trace_id(cls, v: str) -> str:
         """Validate trace ID is non-empty for global correlation."""
-        if not FlextValidations.validate_non_empty_string_func(v):
+        if not (v and str(v).strip()):
             msg = "Trace ID cannot be empty"
             raise ValueError(msg)
         return v
@@ -503,7 +503,7 @@ class FlextTrace(FlextModels.Entity):
     @classmethod
     def validate_operation_name(cls, v: str) -> str:
         """Validate operation name is meaningful and searchable."""
-        if not FlextValidations.validate_non_empty_string_func(v):
+        if not (v and str(v).strip()):
             msg = "Operation name cannot be empty"
             raise ValueError(msg)
         return v
@@ -512,7 +512,7 @@ class FlextTrace(FlextModels.Entity):
     @classmethod
     def validate_span_id(cls, v: str) -> str:
         """Validate span ID is non-empty for unique identification."""
-        if not FlextValidations.validate_non_empty_string_func(v):
+        if not (v and str(v).strip()):
             msg = "Span ID cannot be empty"
             raise ValueError(msg)
         return v
@@ -564,10 +564,10 @@ class FlextTrace(FlextModels.Entity):
             True
 
         """
-        # Use FlextValidations for standardized validation
-        if not FlextValidations.validate_non_empty_string_func(self.trace_id):
+        # Use direct validation for standardized validation
+        if not (self.trace_id and str(self.trace_id).strip()):
             return FlextResult[None].fail("Invalid trace ID")
-        if not FlextValidations.validate_non_empty_string_func(self.operation):
+        if not (self.operation and str(self.operation).strip()):
             return FlextResult[None].fail("Invalid operation name")
         return FlextResult[None].ok(None)
 
@@ -675,7 +675,7 @@ class FlextAlert(FlextModels.Entity):
     @classmethod
     def validate_alert_title(cls, v: str) -> str:
         """Validate alert title is non-empty and descriptive."""
-        if not FlextValidations.validate_non_empty_string_func(v):
+        if not (v and str(v).strip()):
             msg = "Alert title cannot be empty"
             raise ValueError(msg)
         return v
@@ -684,7 +684,7 @@ class FlextAlert(FlextModels.Entity):
     @classmethod
     def validate_alert_message(cls, v: str) -> str:
         """Validate alert message provides sufficient detail."""
-        if not FlextValidations.validate_non_empty_string_func(v):
+        if not (v and str(v).strip()):
             msg = "Alert message cannot be empty"
             raise ValueError(msg)
         return v
@@ -737,10 +737,10 @@ class FlextAlert(FlextModels.Entity):
             True
 
         """
-        # Use FlextValidations for standardized validation
-        if not FlextValidations.validate_non_empty_string_func(self.title):
+        # Use direct validation for standardized validation
+        if not (self.title and str(self.title).strip()):
             return FlextResult[None].fail("Invalid alert title")
-        if not FlextValidations.validate_non_empty_string_func(self.message):
+        if not (self.message and str(self.message).strip()):
             return FlextResult[None].fail("Invalid alert message")
         if self.severity not in {"low", "medium", "high", "critical", "emergency"}:
             return FlextResult[None].fail("Invalid alert severity")
@@ -848,7 +848,7 @@ class FlextHealthCheck(FlextModels.Entity):
     @classmethod
     def validate_component_name(cls, v: str) -> str:
         """Validate component name is non-empty and identifiable."""
-        if not FlextValidations.validate_non_empty_string_func(v):
+        if not (v and str(v).strip()):
             msg = "Component name cannot be empty"
             raise ValueError(msg)
         return v
@@ -891,8 +891,8 @@ class FlextHealthCheck(FlextModels.Entity):
             True
 
         """
-        # Use FlextValidations for standardized validation
-        if not FlextValidations.validate_non_empty_string_func(self.component):
+        # Use direct validation for standardized validation
+        if not (self.component and str(self.component).strip()):
             return FlextResult[None].fail("Invalid component name")
         if self.status not in {"healthy", "unhealthy", "degraded", "unknown"}:
             return FlextResult[None].fail("Invalid health status")

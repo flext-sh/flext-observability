@@ -8,11 +8,10 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import TypeVar, cast
-
-from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes
+from typing import cast
 
 import flext_observability.models as _models
+from flext_core import F, FlextContainer, FlextLogger, FlextResult, FlextTypes
 from flext_observability import models as _models_module
 from flext_observability.services import (
     FlextAlertService,
@@ -44,8 +43,7 @@ AnyCallable = (
     | Callable[[float], dict[str, float]]  # io_intensive_task function
 )
 
-# TypeVar for preserving function signatures in decorator
-F = TypeVar("F", bound=AnyCallable)
+# F TypeVar imported from flext_core
 
 
 # Constants for argument length checks

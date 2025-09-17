@@ -9,7 +9,6 @@ and function monitoring capabilities.
 import time
 
 from flext_core import FlextContainer, FlextResult, FlextTypes
-
 from flext_observability import (
     FlextObservabilityMasterFactory,
     flext_create_alert,
