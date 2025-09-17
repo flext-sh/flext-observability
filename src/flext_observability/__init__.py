@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextConstants, FlextContainer, FlextLogger, FlextTypes
-
 from flext_observability.api import (
     flext_create_alert,
     flext_create_health_check,

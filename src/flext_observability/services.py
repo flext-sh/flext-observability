@@ -14,13 +14,13 @@ from collections import defaultdict
 from typing import cast
 
 import psutil
+
 from flext_core import (
     FlextContainer,
     FlextLogger,
     FlextResult,
     FlextTypes,
 )
-
 from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
