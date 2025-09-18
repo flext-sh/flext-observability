@@ -25,7 +25,7 @@ class TestEntityFactoryFunctions:
             severity="high",  # severity parameter
             tags={"test": "value"},
         )
-        assert str(alert.id) != ""  # ID is auto-generated
+        assert str(alert.id)  # ID is auto-generated
         assert alert.title == "Test Title"
         assert alert.message == "Test Message"
         assert alert.severity == "high"
@@ -37,7 +37,7 @@ class TestEntityFactoryFunctions:
             "Test Message",  # service parameter
             tags={"test": "value"},
         )
-        assert str(alert.id) != ""  # ID is auto-generated
+        assert str(alert.id)  # ID is auto-generated
         assert alert.title == "Test Title"
         assert alert.message == "Test Message"
 
@@ -49,7 +49,7 @@ class TestEntityFactoryFunctions:
             tags={"test": "value"},
         )
         assert alert.id is not None
-        assert str(alert.id) != ""
+        assert str(alert.id)
         assert alert.title == "Test Title"
         assert alert.message == "Test Message"
 
@@ -61,7 +61,7 @@ class TestEntityFactoryFunctions:
             "span_456",  # span_id parameter
             tags={"test": "value"},
         )
-        assert str(trace.id) != ""  # ID is auto-generated
+        assert str(trace.id)  # ID is auto-generated
         assert trace.operation == "test_operation"
         # FlextTrace doesn't have service_name field
         assert trace.span_id == "span_456"
@@ -76,7 +76,7 @@ class TestEntityFactoryFunctions:
             tags={"test": "value"},
         )
         assert trace.id is not None
-        assert str(trace.id) != ""
+        assert str(trace.id)
         assert trace.operation == "another_operation"
         # FlextTrace doesn't have service_name field
 
@@ -91,7 +91,7 @@ class TestEntityFactoryFunctions:
         # Factory function returns FlextResult[FlextMetric]
         assert metric.success
         metric_obj = metric.unwrap()
-        assert str(metric_obj.id) != ""
+        assert str(metric_obj.id)
         assert metric_obj.name == "test_metric"
         assert metric_obj.value == 42.5
 
@@ -105,7 +105,7 @@ class TestEntityFactoryFunctions:
         # Factory function returns FlextResult[FlextMetric]
         assert metric.success
         metric_obj = metric.unwrap()
-        assert str(metric_obj.id) != ""
+        assert str(metric_obj.id)
 
     def test_flext_metric_without_id(self) -> None:
         """Test flext_metric without id (auto-generated)."""
@@ -118,7 +118,7 @@ class TestEntityFactoryFunctions:
         assert metric.success
         metric_obj = metric.unwrap()
         assert metric_obj.id is not None
-        assert str(metric_obj.id) != ""
+        assert str(metric_obj.id)
 
     def test_flext_metric_with_decimal_value(self) -> None:
         """Test flext_metric with Decimal value."""
@@ -152,7 +152,7 @@ class TestEntityFactoryFunctions:
             message="Health check message",
             metrics={"cpu": 50.0},  # metrics parameter
         )
-        assert str(health.id) != ""  # ID is auto-generated
+        assert str(health.id)  # ID is auto-generated
         assert health.component == "test_component"
         assert health.status == "healthy"
 
@@ -164,7 +164,7 @@ class TestEntityFactoryFunctions:
             metrics={"memory": 75.0},  # metrics parameter
         )
         assert health.id is not None
-        assert str(health.id) != ""
+        assert str(health.id)
         assert health.component == "auto_component"
 
     def test_flext_metric_validation_edge_cases(self) -> None:

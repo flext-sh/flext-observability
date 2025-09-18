@@ -1,8 +1,8 @@
 # FLEXT-OBSERVABILITY CLAUDE.MD
 
 **Enterprise Observability and Monitoring Foundation for FLEXT Ecosystem**  
-**Version**: 0.9.0 | **Authority**: OBSERVABILITY & MONITORING FOUNDATION | **Updated**: 2025-01-08  
-**Status**: Production-ready observability platform with zero errors across all quality gates
+**Version**: 0.9.9 RC | **Authority**: OBSERVABILITY & MONITORING FOUNDATION | **Updated**: 2025-01-08  
+**Status**: Production-ready observability platform with zero errors across all quality gates · 1.0.0 Release Preparation
 
 **References**: See [../CLAUDE.md](../CLAUDE.md) for FLEXT ecosystem standards and [README.md](README.md) for project overview.
 
@@ -10,11 +10,11 @@
 
 ## 🔗 MCP SERVER INTEGRATION
 
-| MCP Server | Purpose | Status |
-|------------|---------|--------|
-| **serena** | Observability codebase analysis and monitoring navigation | **ACTIVE** |
-| **sequential-thinking** | Observability architecture and metrics problem solving | **ACTIVE** |
-| **github** | Observability ecosystem integration and monitoring PRs | **ACTIVE** |
+| MCP Server              | Purpose                                                   | Status     |
+| ----------------------- | --------------------------------------------------------- | ---------- |
+| **serena**              | Observability codebase analysis and monitoring navigation | **ACTIVE** |
+| **sequential-thinking** | Observability architecture and metrics problem solving    | **ACTIVE** |
+| **github**              | Observability ecosystem integration and monitoring PRs    | **ACTIVE** |
 
 **Usage**: `claude mcp list` for available servers, leverage for observability-specific development patterns and monitoring analysis.
 
@@ -277,8 +277,8 @@ from flext_core.internal.logging import Logger              # WRONG: Internal mo
 
 **MANDATORY FLEXT Ecosystem Dependencies:**
 
-- `flext-core>=0.9.0` - Foundation patterns, FlextResult, service base classes, logging
-- `flext-cli>=0.9.0` - CLI patterns, command processing, and user interface
+- `flext-core>=0.9.9` - Foundation patterns, FlextResult, service base classes, logging
+- `flext-cli>=0.9.9` - CLI patterns, command processing, and user interface
 
 **EXTERNAL Observability Dependencies (Abstracted Through FLEXT):**
 

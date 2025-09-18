@@ -1434,4 +1434,4 @@ class FlextLdapService:
 **Last Updated**: August 3, 2025
 **Target Audience**: FLEXT ecosystem developers implementing observability
 **Scope**: Python module organization for observability across 33-project ecosystem
-**Version**: 0.9.0 → 0.9.0 observability development guidelines
+**Version**: 0.9.9 RC → 0.9.9 observability development guidelines
