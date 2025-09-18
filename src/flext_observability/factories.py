@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import time
+import uuid
 from datetime import UTC, datetime
 
 from flext_core import (
@@ -19,23 +19,11 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
-from flext_observability.entities import (
-    FlextUtilitiesGenerators,
-)
-from flext_observability.models import (
-    FlextAlert,
-    FlextHealthCheck,
-    FlextLogEntry,
-    FlextMetric,
-    FlextTrace,
-)
-from flext_observability.services import (
-    FlextAlertService,
-    FlextHealthService,
-    FlextLoggingService,
-    FlextMetricsService,
-    FlextTracingService,
-)
+
+try:
+    import psutil
+except ImportError:
+    psutil = None
 
 
 def _generate_utc_datetime() -> datetime:
@@ -43,137 +31,170 @@ def _generate_utc_datetime() -> datetime:
     return datetime.now(tz=UTC)
 
 
-class FlextObservabilityService(FlextDomainService):
-    """Unified observability service implementing FLEXT patterns.
+class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
+    """Observability service providing metrics, tracing, and logging capabilities.
 
-    REFACTORED: No longer a factory pattern - uses direct service composition.
-    Single responsibility for observability operations with proper SOLID principles.
+    Unified class implementing observability patterns with flext-core foundation.
     """
 
     def __init__(self, **data: object) -> None:
-        """Initialize observability service with proper composition."""
+        """Initialize observability service with flext-core foundation."""
         super().__init__(**data)
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
+        self._metrics_enabled = True
+        self._tracing_enabled = True
 
-        # Direct service composition - no factory patterns
-        self._metrics_service = FlextMetricsService(self._container)
-        self._logging_service = FlextLoggingService(self._container)
-        self._tracing_service = FlextTracingService(self._container)
-        self._alert_service = FlextAlertService(self._container)
-        self._health_service = FlextHealthService(self._container)
+    class _MetricsHelper:
+        """Nested helper for metrics collection."""
 
-    def record_metric(
-        self,
-        name: str,
-        value: float,
-        unit: str = "",
-        tags: dict[str, str] | None = None,
-        timestamp: datetime | None = None,
-    ) -> FlextResult[FlextMetric]:
-        """Record metric using direct service call - no wrapper patterns."""
-        if not name or not isinstance(value, (int, float)):
-            return FlextResult[FlextMetric].fail("Invalid metric parameters")
+        @staticmethod
+        def collect_system_metrics() -> FlextResult[dict[str, float]]:
+            """Collect system performance metrics."""
+            if psutil is None:
+                return FlextResult[dict[str, float]].fail("psutil not available")
 
-        metric = FlextMetric(
-            name=name,
-            value=float(value),
-            unit=unit,
-            tags=tags or {},
-            timestamp=timestamp or _generate_utc_datetime(),
-        )
+            try:
+                metrics = {
+                    "cpu_percent": psutil.cpu_percent(interval=1),
+                    "memory_percent": psutil.virtual_memory().percent,
+                    "disk_percent": psutil.disk_usage("/").percent,
+                    "load_average": psutil.getloadavg()[0]
+                    if hasattr(psutil, "getloadavg")
+                    else 0.0,
+                }
 
-        return self._metrics_service.record_metric(metric)
+                return FlextResult[dict[str, float]].ok(metrics)
 
-    def create_log_entry(
-        self,
-        message: str,
-        level: str = "info",
-        context: FlextTypes.Core.Dict | None = None,
-        timestamp: datetime | None = None,
-    ) -> FlextResult[FlextLogEntry]:
-        """Create log entry using direct service call - no wrapper patterns."""
-        if not message:
-            return FlextResult[FlextLogEntry].fail("Message is required")
+            except ImportError:
+                return FlextResult[dict[str, float]].fail(
+                    "psutil not available for system metrics"
+                )
+            except Exception as e:
+                return FlextResult[dict[str, float]].fail(
+                    f"Metrics collection error: {e!s}"
+                )
 
-        log_entry = FlextLogEntry(
-            message=message,
-            level=level,
-            context=context or {},
-            timestamp=timestamp or _generate_utc_datetime(),
-        )
+        @staticmethod
+        def format_metrics(metrics: dict[str, float]) -> FlextResult[dict[str, str]]:
+            """Format metrics for display."""
+            try:
+                formatted = {}
+                for key, value in metrics.items():
+                    if isinstance(value, float):
+                        formatted[key] = f"{value:.2f}%"
+                    else:
+                        formatted[key] = str(value)
 
-        return self._logging_service.log_entry(log_entry)
+                return FlextResult[dict[str, str]].ok(formatted)
 
-    def create_alert(
-        self,
-        title: str,
-        message: str,
-        severity: str = "low",
-        tags: dict[str, str] | None = None,
-        timestamp: datetime | None = None,
-    ) -> FlextResult[FlextAlert]:
-        """Create alert using direct service call - no wrapper patterns."""
-        if not title or not message:
-            return FlextResult[FlextAlert].fail("Title and message are required")
+            except Exception as e:
+                return FlextResult[dict[str, str]].fail(
+                    f"Metrics formatting error: {e!s}"
+                )
 
-        alert = FlextAlert(
-            title=title,
-            message=message,
-            severity=severity,
-            timestamp=timestamp or _generate_utc_datetime(),
-            tags=tags or {},
-        )
+    class _TracingHelper:
+        """Nested helper for distributed tracing."""
 
-        return self._alert_service.create_alert(alert)
+        @staticmethod
+        def create_trace_context() -> FlextResult[dict[str, str]]:
+            """Create distributed tracing context."""
+            try:
+                trace_context = {
+                    "trace_id": str(uuid.uuid4()),
+                    "span_id": str(uuid.uuid4()),
+                    "timestamp": datetime.now(UTC).isoformat(),
+                    "service": "flext-observability",
+                }
 
-    def start_trace(
-        self,
-        operation: str,
-        trace_id: str | None = None,
-        span_id: str | None = None,
-        status: str = "pending",
-        span_attributes: FlextTypes.Core.Dict | None = None,
-        timestamp: datetime | None = None,
-    ) -> FlextResult[FlextTrace]:
-        """Start trace using direct service call - no wrapper patterns."""
-        if not operation:
-            return FlextResult[FlextTrace].fail("Operation is required")
+                return FlextResult[dict[str, str]].ok(trace_context)
 
-        trace = FlextTrace(
-            operation=operation,
-            trace_id=trace_id or FlextUtilitiesGenerators.generate_uuid(),
-            span_id=span_id or f"span-{int(time.time() * 1000)}",
-            status=status,
-            timestamp=timestamp or _generate_utc_datetime(),
-            span_attributes=span_attributes or {},
-        )
+            except Exception as e:
+                return FlextResult[dict[str, str]].fail(
+                    f"Trace context creation error: {e!s}"
+                )
 
-        return self._tracing_service.start_trace(trace)
+        @staticmethod
+        def log_trace_event(context: dict[str, str], event: str) -> FlextResult[None]:
+            """Log trace event with context."""
+            try:
+                logger = FlextLogger(__name__)
+                logger.info(f"TRACE[{context.get('trace_id', 'unknown')}]: {event}")
 
-    def perform_health_check(
-        self,
-        component: str,
-        status: str = "healthy",
-        message: str = "",
-        timestamp: datetime | None = None,
-    ) -> FlextResult[FlextHealthCheck]:
-        """Perform health check using direct service call - no wrapper patterns."""
-        if not component:
-            return FlextResult[FlextHealthCheck].fail("Component is required")
+                return FlextResult[None].ok(None)
 
-        health_check = FlextHealthCheck(
-            component=component,
-            status=status,
-            timestamp=timestamp or _generate_utc_datetime(),
-            message=message,
-        )
+            except Exception as e:
+                return FlextResult[None].fail(f"Trace logging error: {e!s}")
 
-        return self._health_service.check_health(health_check)
+    def health_check(self) -> FlextResult[str]:
+        """Check observability service health."""
+        self._logger.debug("Performing observability health check")
 
-    def get_overall_health(self) -> FlextResult[FlextTypes.Core.Dict]:
-        """Get overall health status using direct service call."""
-        return self._health_service.get_overall_health()
+        # Test metrics collection
+        metrics_result = self._MetricsHelper.collect_system_metrics()
+        if metrics_result.is_failure:
+            return FlextResult[str].fail(
+                f"Metrics collection failed: {metrics_result.error}"
+            )
+
+        # Test tracing
+        trace_result = self._TracingHelper.create_trace_context()
+        if trace_result.is_failure:
+            return FlextResult[str].fail(f"Tracing failed: {trace_result.error}")
+
+        return FlextResult[str].ok("Observability service healthy")
+
+    def collect_observability_data(self) -> FlextResult[FlextTypes.Core.Dict]:
+        """Collect comprehensive observability data."""
+        self._logger.info("Collecting observability data")
+
+        observability_data = {}
+
+        # Collect metrics if enabled
+        if self._metrics_enabled:
+            metrics_result = self._MetricsHelper.collect_system_metrics()
+            if metrics_result.is_success:
+                format_result = self._MetricsHelper.format_metrics(
+                    metrics_result.unwrap()
+                )
+                if format_result.is_success:
+                    observability_data["metrics"] = format_result.unwrap()
+
+        # Create trace context if enabled
+        if self._tracing_enabled:
+            trace_result = self._TracingHelper.create_trace_context()
+            if trace_result.is_success:
+                observability_data["trace_context"] = trace_result.unwrap()
+
+        # Add service metadata
+        observability_data["service_info"] = {
+            "name": "flext-observability",
+            "version": "1.0.0",
+            "metrics_enabled": self._metrics_enabled,
+            "tracing_enabled": self._tracing_enabled,
+        }
+
+        return FlextResult[FlextTypes.Core.Dict].ok(observability_data)
+
+    def execute(self) -> FlextResult[FlextTypes.Core.Dict]:
+        """Execute observability service operation."""
+        self._logger.info("Executing observability service")
+
+        # Health check first
+        health_result = self.health_check()
+        if health_result.is_failure:
+            return FlextResult[FlextTypes.Core.Dict].fail(
+                f"Health check failed: {health_result.error}"
+            )
+
+        # Collect observability data
+        data_result = self.collect_observability_data()
+        if data_result.is_failure:
+            return FlextResult[FlextTypes.Core.Dict].fail(
+                f"Data collection failed: {data_result.error}"
+            )
+
+        return data_result
 
 
 __all__: FlextTypes.Core.StringList = [
