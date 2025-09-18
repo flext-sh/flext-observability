@@ -6,7 +6,19 @@
 
 **References**: See [../CLAUDE.md](../CLAUDE.md) for FLEXT ecosystem standards and [README.md](README.md) for project overview.
 
-**Copyright (c) 2025 FLEXT Team. All rights reserved.**  
+**Hierarchy**: This document provides project-specific standards based on workspace-level patterns defined in [../CLAUDE.md](../CLAUDE.md). For architectural principles, quality gates, and MCP server usage, reference the main workspace standards.
+
+## 🔗 MCP SERVER INTEGRATION
+
+| MCP Server | Purpose | Status |
+|------------|---------|--------|
+| **serena** | Observability codebase analysis and monitoring navigation | **ACTIVE** |
+| **sequential-thinking** | Observability architecture and metrics problem solving | **ACTIVE** |
+| **github** | Observability ecosystem integration and monitoring PRs | **ACTIVE** |
+
+**Usage**: `claude mcp list` for available servers, leverage for observability-specific development patterns and monitoring analysis.
+
+**Copyright (c) 2025 FLEXT Team. All rights reserved.**
 **License**: MIT
 
 ---
@@ -357,7 +369,7 @@ from flext_core import FlextResult, get_logger
 from flext_observability import FlextMetricsService, FlextMetric
 import asyncio
 
-async def enterprise_metrics_collection(service_name: str, metrics_config: Dict[str, Any]) -> FlextResult[List[FlextMetric]]:
+async def enterprise_metrics_collection(service_name: str, metrics_config: Dict[str, object]) -> FlextResult[List[FlextMetric]]:
     """Enterprise metrics collection with proper error handling - NO try/except fallbacks."""
     logger = get_logger("observability_operations")
 
@@ -405,7 +417,7 @@ from flext_core import FlextDomainService, FlextResult, get_logger
 from flext_observability import FlextTracingService, FlextTrace
 from flext_observability import flext_create_trace, flext_monitor_function
 import asyncio
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 class EnterpriseObservabilityService(FlextDomainService):
     """Enterprise observability service using FLEXT foundation - NO custom implementations."""
@@ -416,7 +428,7 @@ class EnterpriseObservabilityService(FlextDomainService):
         self._service_name = service_name
         self._tracing_service = FlextTracingService()
 
-    async def create_distributed_trace(self, operation_name: str, trace_context: Dict[str, Any]) -> FlextResult[FlextTrace]:
+    async def create_distributed_trace(self, operation_name: str, trace_context: Dict[str, object]) -> FlextResult[FlextTrace]:
         """Create distributed trace using flext-observability foundation exclusively."""
 
         # Distributed tracing through flext-observability
@@ -441,13 +453,13 @@ class EnterpriseObservabilityService(FlextDomainService):
             return FlextResult[FlextTrace].fail(f"Distributed tracing creation failed: {e}")
 
     @flext_monitor_function("service_processing")
-    async def process_monitored_operation(self, operation_data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
+    async def process_monitored_operation(self, operation_data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """Process operation with automatic monitoring using flext-observability patterns."""
 
         # Create trace for operation
         trace_result = await self.create_distributed_trace("process_operation", operation_data)
         if trace_result.is_failure:
-            return FlextResult[Dict[str, Any]].fail(f"Trace creation failed: {trace_result.error}")
+            return FlextResult[Dict[str, object]].fail(f"Trace creation failed: {trace_result.error}")
 
         trace = trace_result.unwrap()
 
@@ -471,7 +483,7 @@ class EnterpriseObservabilityService(FlextDomainService):
             if complete_result.is_failure:
                 self._logger.warning(f"Trace completion failed: {complete_result.error}")
 
-            return FlextResult[Dict[str, Any]].ok({
+            return FlextResult[Dict[str, object]].ok({
                 "operation": operation_data.get("operation", "unknown"),
                 "result": processing_result,
                 "trace_id": trace.trace_id,
@@ -483,9 +495,9 @@ class EnterpriseObservabilityService(FlextDomainService):
             if error_result.is_failure:
                 self._logger.warning(f"Error trace failed: {error_result.error}")
 
-            return FlextResult[Dict[str, Any]].fail(f"Monitored operation failed: {e}")
+            return FlextResult[Dict[str, object]].fail(f"Monitored operation failed: {e}")
 
-    async def _process_business_logic(self, data: Dict[str, Any]) -> Any:
+    async def _process_business_logic(self, data: Dict[str, object]) -> object:
         """Business logic processing."""
         # Simulate processing
         await asyncio.sleep(0.1)
@@ -514,7 +526,7 @@ class EnterpriseAlertingService:
         self._alert_service = FlextAlertService()
         self._health_service = FlextHealthService()
 
-    async def create_system_alert(self, alert_config: Dict[str, Any]) -> FlextResult[FlextAlert]:
+    async def create_system_alert(self, alert_config: Dict[str, object]) -> FlextResult[FlextAlert]:
         """Create system alert using flext-observability alerting patterns."""
 
         try:
@@ -568,14 +580,14 @@ class EnterpriseAlertingService:
         except Exception as e:
             return FlextResult[List[FlextHealthCheck]].fail(f"System health monitoring failed: {e}")
 
-    async def process_alert_escalation(self, alert: FlextAlert, escalation_config: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
+    async def process_alert_escalation(self, alert: FlextAlert, escalation_config: Dict[str, object]) -> FlextResult[Dict[str, object]]:
         """Process alert escalation using flext-observability alert management."""
 
         try:
             # Process alert through flext-observability
             process_result = await self._alert_service.process_alert(alert)
             if process_result.is_failure:
-                return FlextResult[Dict[str, Any]].fail(f"Alert processing failed: {process_result.error}")
+                return FlextResult[Dict[str, object]].fail(f"Alert processing failed: {process_result.error}")
 
             processed_alert = process_result.unwrap()
 
@@ -585,11 +597,11 @@ class EnterpriseAlertingService:
                 escalation_config
             )
             if escalation_result.is_failure:
-                return FlextResult[Dict[str, Any]].fail(f"Alert escalation failed: {escalation_result.error}")
+                return FlextResult[Dict[str, object]].fail(f"Alert escalation failed: {escalation_result.error}")
 
             escalated_alert = escalation_result.unwrap()
 
-            return FlextResult[Dict[str, Any]].ok({
+            return FlextResult[Dict[str, object]].ok({
                 "alert_id": alert.alert_id,
                 "escalated": True,
                 "escalation_level": escalation_config.get("level", 1),
@@ -597,7 +609,7 @@ class EnterpriseAlertingService:
                 "success": True
             })
         except Exception as e:
-            return FlextResult[Dict[str, Any]].fail(f"Alert escalation processing failed: {e}")
+            return FlextResult[Dict[str, object]].fail(f"Alert escalation processing failed: {e}")
 
 # Usage pattern for enterprise alerting
 async def create_enterprise_alerting_service() -> FlextResult[EnterpriseAlertingService]:
@@ -665,9 +677,9 @@ from flext_observability import FlextMetricsService, FlextTracingService
 
 async def collect_monitor_alert(
     service_name: str,
-    metrics_config: Dict[str, Any],
+    metrics_config: Dict[str, object],
     alert_thresholds: Dict[str, float]
-) -> FlextResult[Dict[str, Any]]:
+) -> FlextResult[Dict[str, object]]:
     """Complete observability pipeline with railway-oriented programming."""
     metrics_service = FlextMetricsService()
     tracing_service = FlextTracingService()
@@ -675,19 +687,19 @@ async def collect_monitor_alert(
     # Metrics collection phase with FlextResult chaining
     metrics_result = await metrics_service.collect_metrics(service_name, metrics_config)
     if metrics_result.is_failure:
-        return FlextResult[Dict[str, Any]].fail(f"Metrics collection failed: {metrics_result.error}")
+        return FlextResult[Dict[str, object]].fail(f"Metrics collection failed: {metrics_result.error}")
 
     # Distributed tracing phase with FlextResult chaining
     tracing_result = await tracing_service.start_trace(f"{service_name}_monitoring")
     if tracing_result.is_failure:
-        return FlextResult[Dict[str, Any]].fail(f"Tracing failed: {tracing_result.error}")
+        return FlextResult[Dict[str, object]].fail(f"Tracing failed: {tracing_result.error}")
 
     # Alert evaluation phase with FlextResult chaining
     alert_result = await evaluate_alert_thresholds(metrics_result.unwrap(), alert_thresholds)
     if alert_result.is_failure:
-        return FlextResult[Dict[str, Any]].fail(f"Alert evaluation failed: {alert_result.error}")
+        return FlextResult[Dict[str, object]].fail(f"Alert evaluation failed: {alert_result.error}")
 
-    return FlextResult[Dict[str, Any]].ok({
+    return FlextResult[Dict[str, object]].ok({
         "collected_metrics": metrics_result.unwrap(),
         "trace_id": tracing_result.unwrap(),
         "alerts_triggered": alert_result.unwrap()
@@ -707,7 +719,7 @@ except Exception as e:
 from flext_observability import FlextMetricsService, FlextTracingService, flext_monitor_function
 
 @flext_monitor_function("critical_business_operation")
-async def monitored_business_operation(operation_data: Dict[str, Any]) -> FlextResult[Any]:
+async def monitored_business_operation(operation_data: Dict[str, object]) -> FlextResult[object]:
     """Business operation with comprehensive observability."""
     metrics_service = FlextMetricsService()
 
@@ -716,7 +728,7 @@ async def monitored_business_operation(operation_data: Dict[str, Any]) -> FlextR
     result = await execute_business_logic(operation_data)
     await metrics_service.record_metric("operation_success", 1.0, "count")
 
-    return FlextResult[Any].ok(result)
+    return FlextResult[object].ok(result)
 
 # ❌ WRONG - Mocked observability operations
 @patch('prometheus_client.Counter')  # FORBIDDEN - use real observability
