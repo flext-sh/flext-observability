@@ -21,9 +21,7 @@ from flext_observability.entities import (
     flext_trace,
 )
 from flext_observability.factories import (
-    FlextObservabilityMasterFactory,
-    get_global_factory,
-    reset_global_factory,
+    FlextObservabilityService,
 )
 from flext_observability.models import (
     FlextAlert,
@@ -90,8 +88,8 @@ __all__: FlextTypes.Core.StringList = [
     "FlextLoggingService",
     "FlextMetric",
     "FlextMetricsService",
-    "FlextObservabilityMasterFactory",
     "FlextObservabilityMonitor",
+    "FlextObservabilityService",
     "FlextTrace",
     "FlextTracingService",
     "FlextTypes",
@@ -109,10 +107,8 @@ __all__: FlextTypes.Core.StringList = [
     "flext_metric",
     "flext_monitor_function",
     "flext_trace",
-    "get_global_factory",
     "health_check",
     "log",
     "metric",
-    "reset_global_factory",
     "trace",
 ]

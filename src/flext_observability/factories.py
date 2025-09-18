@@ -11,6 +11,10 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from typing import cast
+
+# FIXED: Removed ImportError fallback - psutil must be available (ZERO TOLERANCE)
+import psutil
 
 from flext_core import (
     FlextContainer,
@@ -19,11 +23,6 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
-
-try:
-    import psutil
-except ImportError:
-    psutil = None
 
 
 def _generate_utc_datetime() -> datetime:
@@ -39,7 +38,7 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
 
     def __init__(self, **data: object) -> None:
         """Initialize observability service with flext-core foundation."""
-        super().__init__(**data)
+        super().__init__()
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
         self._metrics_enabled = True
@@ -51,29 +50,17 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
         @staticmethod
         def collect_system_metrics() -> FlextResult[dict[str, float]]:
             """Collect system performance metrics."""
-            if psutil is None:
-                return FlextResult[dict[str, float]].fail("psutil not available")
+            # FIXED: Removed psutil availability check - psutil must be available (ZERO TOLERANCE)
+            metrics = {
+                "cpu_percent": psutil.cpu_percent(interval=1),
+                "memory_percent": psutil.virtual_memory().percent,
+                "disk_percent": psutil.disk_usage("/").percent,
+                "load_average": psutil.getloadavg()[0]
+                if hasattr(psutil, "getloadavg")
+                else 0.0,
+            }
 
-            try:
-                metrics = {
-                    "cpu_percent": psutil.cpu_percent(interval=1),
-                    "memory_percent": psutil.virtual_memory().percent,
-                    "disk_percent": psutil.disk_usage("/").percent,
-                    "load_average": psutil.getloadavg()[0]
-                    if hasattr(psutil, "getloadavg")
-                    else 0.0,
-                }
-
-                return FlextResult[dict[str, float]].ok(metrics)
-
-            except ImportError:
-                return FlextResult[dict[str, float]].fail(
-                    "psutil not available for system metrics"
-                )
-            except Exception as e:
-                return FlextResult[dict[str, float]].fail(
-                    f"Metrics collection error: {e!s}"
-                )
+            return FlextResult[dict[str, float]].ok(metrics)
 
         @staticmethod
         def format_metrics(metrics: dict[str, float]) -> FlextResult[dict[str, str]]:
@@ -81,10 +68,8 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
             try:
                 formatted = {}
                 for key, value in metrics.items():
-                    if isinstance(value, float):
-                        formatted[key] = f"{value:.2f}%"
-                    else:
-                        formatted[key] = str(value)
+                    # All values are guaranteed to be float by type hint
+                    formatted[key] = f"{value:.2f}%"
 
                 return FlextResult[dict[str, str]].ok(formatted)
 
@@ -170,11 +155,13 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
         observability_data["service_info"] = {
             "name": "flext-observability",
             "version": "1.0.0",
-            "metrics_enabled": self._metrics_enabled,
-            "tracing_enabled": self._tracing_enabled,
+            "metrics_enabled": str(self._metrics_enabled),
+            "tracing_enabled": str(self._tracing_enabled),
         }
 
-        return FlextResult[FlextTypes.Core.Dict].ok(observability_data)
+        return FlextResult[FlextTypes.Core.Dict].ok(
+            cast("FlextTypes.Core.Dict", observability_data)
+        )
 
     def execute(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Execute observability service operation."""

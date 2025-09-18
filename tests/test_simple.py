@@ -16,6 +16,7 @@ from pydantic import ValidationError
 
 from flext_core import FlextResult
 from flext_observability import (
+    _generate_utc_datetime,
     entities as entities_module,
     flext_create_alert,
     flext_create_health_check,
@@ -30,7 +31,6 @@ from flext_observability.entities import (
     FlextMetric,
     FlextTrace,
     FlextUtilitiesGenerators,
-    _generate_utc_datetime,
 )
 from flext_observability.models import (
     flext_alert,

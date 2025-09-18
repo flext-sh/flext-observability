@@ -36,7 +36,7 @@ class TestEntityValidationErrors:
             unit="count",
         )
         # Test business rule validation for negative values (currently allowed)
-        object.__setattr__(metric, "value", -10.0)
+        setattr(metric, "value", -10.0)
         result = metric.validate_business_rules()
         # Current implementation allows negative values
         assert result.success
@@ -56,7 +56,7 @@ class TestEntityValidationErrors:
             level="info",  # Valid level for construction
         )
         # Test business rule validation for invalid level after creation (bypass Pydantic validation)
-        object.__setattr__(log_entry, "level", "INVALID_LEVEL")
+        setattr(log_entry, "level", "INVALID_LEVEL")
         result = log_entry.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
@@ -97,7 +97,7 @@ class TestEntityValidationErrors:
             severity="low",
         )
         # Test business rule validation for empty message after creation (bypass Pydantic validation)
-        object.__setattr__(alert, "message", "")
+        setattr(alert, "message", "")
         result = alert.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
@@ -111,7 +111,7 @@ class TestEntityValidationErrors:
             severity="low",  # Valid severity for construction
         )
         # Test business rule validation for invalid severity after creation (bypass Pydantic validation)
-        object.__setattr__(alert, "severity", "invalid_severity")
+        setattr(alert, "severity", "invalid_severity")
         result = alert.validate_business_rules()
         assert result.is_failure
         assert result.error is not None

@@ -131,5 +131,5 @@ All documentation in this project follows FLEXT ecosystem standards:
 ---
 
 **Last Updated**: 2025-08-03  
-**Version**: 0.9.0 Beta  
-**Status**: Foundation documentation complete, implementation guides in progress
+**Version**: 0.9.9 RC Beta  
+**Status**: Foundation documentation complete, implementation guides in progress · 1.0.0 Release Preparation
