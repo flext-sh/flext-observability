@@ -35,7 +35,9 @@ class TestMetricsServiceRealFunctionality:
         assert gauge_metric.success
 
         histogram_metric = flext_create_metric(
-            "response_time_ms", 250.0, "milliseconds",
+            "response_time_ms",
+            250.0,
+            "milliseconds",
         )
         assert histogram_metric.success
 
@@ -166,7 +168,9 @@ class TestMetricsServiceRealFunctionality:
             """Record metrics from a specific thread."""
             for i in range(5):
                 metric = flext_create_metric(
-                    f"thread_{thread_id}_metric_{i}", float(i), "count",
+                    f"thread_{thread_id}_metric_{i}",
+                    float(i),
+                    "count",
                 )
                 if metric.success:
                     result = service.record_metric(metric.unwrap())
@@ -282,7 +286,9 @@ class TestAlertServiceRealFunctionality:
 
         for level in alert_levels:
             alert = flext_create_alert(
-                f"Test {level} alert", f"Test {level} alert message", level,
+                f"Test {level} alert",
+                f"Test {level} alert message",
+                level,
             )
             assert alert.success
 

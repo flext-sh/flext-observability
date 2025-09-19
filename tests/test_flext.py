@@ -80,7 +80,9 @@ class TestSimpleApiCreation:
     def test_create_trace_success(self) -> None:
         """Test successful trace creation."""
         result = flext_create_trace(
-            "user_login", "trace-123", config={"trace_id": "trace-123"},
+            "user_login",
+            "trace-123",
+            config={"trace_id": "trace-123"},
         )
         data = assert_success_with_data(result)
         if data.trace_id != "trace-123":

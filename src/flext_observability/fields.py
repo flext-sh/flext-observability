@@ -119,7 +119,8 @@ class HealthStatusField:
 def _create_metric_name_field() -> FieldInfo:
     """Create metric name field."""
     return cast(
-        "FieldInfo", Field(min_length=1, max_length=255, description="Metric name"),
+        "FieldInfo",
+        Field(min_length=1, max_length=255, description="Metric name"),
     )
 
 
@@ -150,7 +151,8 @@ def _create_trace_name_field() -> FieldInfo:
 def _create_alert_message_field() -> FieldInfo:
     """Create alert message field."""
     return cast(
-        "FieldInfo", Field(min_length=1, max_length=1000, description="Alert message"),
+        "FieldInfo",
+        Field(min_length=1, max_length=1000, description="Alert message"),
     )
 
 
