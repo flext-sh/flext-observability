@@ -36,7 +36,7 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
     Unified class implementing observability patterns with flext-core foundation.
     """
 
-    def __init__(self, **data: object) -> None:
+    def __init__(self, **_data: object) -> None:
         """Initialize observability service with flext-core foundation."""
         super().__init__()
         self._container = FlextContainer.get_global()
