@@ -59,7 +59,9 @@ class TestFlextObservabilityMasterFactoryReal:
 
         # Create log using factory
         log_result = factory.create_log_entry(
-            "Test log message", "test_service", "info",
+            "Test log message",
+            "test_service",
+            "info",
         )
 
         # Validate real result
@@ -75,7 +77,9 @@ class TestFlextObservabilityMasterFactoryReal:
 
         # Test custom level - system accepts it (this is real behavior)
         custom_level_result = factory.create_log_entry(
-            "Test", "service", "INVALID_LEVEL",
+            "Test",
+            "service",
+            "INVALID_LEVEL",
         )
         if custom_level_result.is_failure:
             # If system rejects it, verify error message
@@ -91,7 +95,9 @@ class TestFlextObservabilityMasterFactoryReal:
 
         # Create alert using factory
         alert_result = factory.create_alert(
-            "Critical error detected", "monitoring", "critical",
+            "Critical error detected",
+            "monitoring",
+            "critical",
         )
 
         # Validate real result
@@ -284,7 +290,9 @@ class TestFlextObservabilityMasterFactoryReal:
             entity = result.unwrap() if hasattr(result, "unwrap") else result
             assert hasattr(entity, "timestamp") or hasattr(entity, "created_at")
             timestamp_attr = getattr(
-                entity, "timestamp", getattr(entity, "created_at", None),
+                entity,
+                "timestamp",
+                getattr(entity, "created_at", None),
             )
             if timestamp_attr:
                 # Handle both FlextModels and datetime objects

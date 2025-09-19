@@ -108,7 +108,9 @@ class TestSimpleCoverage:
     def test_create_log_entry_validation_failure(self) -> None:
         """Test log entry creation with validation failure."""
         result = flext_create_log_entry(
-            "test message", "test_service", "INVALID_LEVEL",
+            "test message",
+            "test_service",
+            "INVALID_LEVEL",
         )  # Invalid level
         assert result.is_failure
         assert result.error is not None
@@ -117,7 +119,9 @@ class TestSimpleCoverage:
     def test_create_log_entry_invalid_level(self) -> None:
         """Test log entry creation with invalid level."""
         result = flext_create_log_entry(
-            "Test message", "test_service", level="INVALID_LEVEL",
+            "Test message",
+            "test_service",
+            level="INVALID_LEVEL",
         )
         assert result.is_failure
         assert result.error is not None
@@ -322,7 +326,10 @@ class TestFlextMixinsCoverage:
         # Test invalid metric_type validation error
         with pytest.raises(ValidationError) as exc_info:
             FlextMetric(
-                id="test-id", name="test", value=42.0, metric_type="invalid_type",
+                id="test-id",
+                name="test",
+                value=42.0,
+                metric_type="invalid_type",
             )
 
         # Verify the error contains the expected message
@@ -336,7 +343,10 @@ class TestFlextMixinsCoverage:
 
         for metric_type in valid_types:
             metric = FlextMetric(
-                id="test-id", name="test", value=42.0, metric_type=metric_type,
+                id="test-id",
+                name="test",
+                value=42.0,
+                metric_type=metric_type,
             )
             assert metric.metric_type == metric_type
             assert isinstance(metric, FlextMetric)
@@ -498,7 +508,9 @@ class TestFlextMixinsCoverage:
         """Test FlextLogEntry.validate_business_rules() method success path - covers lines 400-404."""
         # Test successful validation path (line 404)
         log_entry = FlextLogEntry(
-            id="test-log-id", message="Valid log message", level="info",
+            id="test-log-id",
+            message="Valid log message",
+            level="info",
         )
 
         # Call the validate_business_rules method directly to test it
@@ -512,7 +524,9 @@ class TestFlextMixinsCoverage:
         """Test FlextLogEntry.validate_business_rules() method message validation failure - covers lines 400-401."""
         # Create log entry with valid message first
         log_entry = FlextLogEntry(
-            id="test-log-id", message="Valid message", level="info",
+            id="test-log-id",
+            message="Valid message",
+            level="info",
         )
 
         # Directly modify the message to empty to test validation logic
@@ -533,7 +547,9 @@ class TestFlextMixinsCoverage:
         """Test FlextLogEntry.validate_business_rules() method level validation failure - covers lines 402-403."""
         # Create log entry with valid data first
         log_entry = FlextLogEntry(
-            id="test-log-id", message="Valid message", level="info",
+            id="test-log-id",
+            message="Valid message",
+            level="info",
         )
 
         # Test invalid level that doesn't match the set - line 402-403
@@ -773,7 +789,9 @@ class TestFlextMixinsCoverage:
         """Test FlextAlert title field validation success - covers line 706."""
         # Test successful title validation (line 706)
         alert = FlextAlert(
-            id="test-alert-id", title="Valid Alert Title", message="Test alert message",
+            id="test-alert-id",
+            title="Valid Alert Title",
+            message="Test alert message",
         )
 
         # Verify the alert was created successfully
@@ -963,7 +981,8 @@ class TestFlextMixinsCoverage:
         """Test FlextHealthCheck component field validation success - covers line 879."""
         # Test successful component validation (line 879)
         health_check = FlextHealthCheck(
-            id="test-health-check-id", component="valid_component_name",
+            id="test-health-check-id",
+            component="valid_component_name",
         )
 
         # Verify the health check was created successfully
@@ -1152,7 +1171,8 @@ class TestFlextMixinsCoverage:
         """Test flext_alert factory function with default id generation - covers line 965."""
         # Test with no id or version (triggers line 965 - default path)
         alert = flext_alert(
-            title="Default Alert", message="Alert with auto-generated ID",
+            title="Default Alert",
+            message="Alert with auto-generated ID",
         )
 
         # Verify the alert was created with auto-generated id and defaults
@@ -1199,7 +1219,9 @@ class TestFlextMixinsCoverage:
         """Test flext_trace factory function with default id generation - covers lines 1000-1008."""
         # Test with no id (triggers lines 1000-1008 - default path)
         trace = flext_trace(
-            trace_id="trace-default", operation="db.query", span_id="span-default",
+            trace_id="trace-default",
+            operation="db.query",
+            span_id="span-default",
         )
 
         # Verify the trace was created with auto-generated id and defaults
@@ -1326,7 +1348,9 @@ class TestFlextMixinsCoverage:
         """Test flext_health_check factory function with default id - covers lines 1092-1099."""
         # Test with no id (triggers lines 1092-1099 - default path)
         health = flext_health_check(
-            component="api-service", status="degraded", message="High latency detected",
+            component="api-service",
+            status="degraded",
+            message="High latency detected",
         )
 
         # Verify the health check was created with auto-generated id

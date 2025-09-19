@@ -40,7 +40,9 @@ def demonstrate_simple_api() -> None:
 
     # Create alerts
     alert_result = flext_create_alert(
-        "High CPU usage detected", "monitoring", "warning",
+        "High CPU usage detected",
+        "monitoring",
+        "warning",
     )
     if alert_result.success:
         pass
@@ -52,7 +54,9 @@ def demonstrate_simple_api() -> None:
 
     # Create log entries
     log_result = flext_create_log_entry(
-        "User authentication successful", "auth-service", "INFO",
+        "User authentication successful",
+        "auth-service",
+        "INFO",
     )
     if log_result.success:
         pass

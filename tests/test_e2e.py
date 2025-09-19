@@ -239,7 +239,9 @@ class TestE2EComprehensiveObservability:
             metric_result = factory.metric(f"performance_test_metric_{i}", float(i))
             log_result = factory.log(f"Performance test log {i}")
             alert_result = factory.alert(
-                f"Test Alert {i}", "performance-testing", "low",
+                f"Test Alert {i}",
+                "performance-testing",
+                "low",
             )
             trace_result = factory.trace(f"trace-perf-{i}", f"test_op_{i}")
 
@@ -279,11 +281,15 @@ class TestE2EComprehensiveObservability:
         """E2E test: Global factory provides consistent access."""
         # Test global convenience functions
         metric_result = flext_create_metric(
-            "global_test_metric", 42.0, tags={"test": "global"},
+            "global_test_metric",
+            42.0,
+            tags={"test": "global"},
         )
         log_result = flext_create_log_entry("Global test log", level="info")
         alert_result = flext_create_alert(
-            "Global Test Alert", "Testing global access", severity="medium",
+            "Global Test Alert",
+            "Testing global access",
+            severity="medium",
         )
         trace_result = flext_create_trace("global-trace-123")
         health_result = flext_create_health_check("global_component", status="healthy")
