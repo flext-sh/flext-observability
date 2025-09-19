@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import cast
 
 import flext_observability.models as _models
-from flext_core import F, FlextContainer, FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes
 from flext_observability import models as _models_module
 from flext_observability.services import (
     FlextAlertService,
@@ -341,7 +341,7 @@ def flext_monitor_function(
     while maintaining code quality standards and SOLID principles.
     """
 
-    def decorator(func: F) -> F:
+    def decorator(func: AnyCallable) -> AnyCallable:
         def wrapper(*args: object, **kwargs: object) -> object:
             # Get or create monitor instance
             active_monitor = monitor
@@ -376,7 +376,7 @@ def flext_monitor_function(
         wrapper.__module__ = getattr(func, "__module__", __name__)
 
         # Return wrapper with preserved metadata and type
-        return cast("F", wrapper)
+        return cast("AnyCallable", wrapper)
 
     return decorator
 
