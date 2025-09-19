@@ -60,7 +60,7 @@ class TestSimpleApiCreation:
         data = assert_success_with_data(result)
         if data.message != "[test_service] Test message":
             raise AssertionError(
-                f"Expected {'[test_service] Test message'}, got {data.message}"
+                f"Expected {'[test_service] Test message'}, got {data.message}",
             )
         assert data.level == "info"
 
@@ -80,7 +80,7 @@ class TestSimpleApiCreation:
     def test_create_trace_success(self) -> None:
         """Test successful trace creation."""
         result = flext_create_trace(
-            "user_login", "trace-123", config={"trace_id": "trace-123"}
+            "user_login", "trace-123", config={"trace_id": "trace-123"},
         )
         data = assert_success_with_data(result)
         if data.trace_id != "trace-123":
@@ -101,7 +101,7 @@ class TestSimpleApiCreation:
         data = assert_success_with_data(result)
         if data.message != "High CPU usage detected":
             raise AssertionError(
-                f"Expected {'High CPU usage detected'}, got {data.message}"
+                f"Expected {'High CPU usage detected'}, got {data.message}",
             )
         # FlextAlert doesn't have service field, check other attributes
         assert data.title == "High CPU Alert"

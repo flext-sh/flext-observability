@@ -59,7 +59,7 @@ class TestMonitorRealFunctionality:
         assert gauge_result.success, f"Gauge metric failed: {gauge_result.error}"
 
         histogram_result = monitor.flext_record_metric(
-            "response_time_seconds", 0.25, "histogram"
+            "response_time_seconds", 0.25, "histogram",
         )
         assert histogram_result.success, (
             f"Histogram metric failed: {histogram_result.error}"
@@ -156,7 +156,7 @@ class TestMonitorRealFunctionality:
             """Record metrics from multiple threads."""
             for i in range(10):
                 result = monitor.flext_record_metric(
-                    f"thread_{thread_id}_metric_{i}", float(i)
+                    f"thread_{thread_id}_metric_{i}", float(i),
                 )
                 results.append(result.success)
 

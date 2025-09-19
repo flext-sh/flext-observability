@@ -43,22 +43,22 @@ class TestCompleteIntegrationReal:
         assert metric_result.success
 
         log_result = self.factory.create_log_entry(
-            "Pipeline started", "integration_service", "info"
+            "Pipeline started", "integration_service", "info",
         )
         assert log_result.success
 
         trace_result = self.factory.create_trace(
-            "process_pipeline", "integration_service"
+            "process_pipeline", "integration_service",
         )
         assert trace_result.success
 
         alert_result = self.factory.create_alert(
-            "Pipeline monitoring active", "integration_service", "medium"
+            "Pipeline monitoring active", "integration_service", "medium",
         )
         assert alert_result.success
 
         health_result = self.factory.create_health_check(
-            "integration_service", "healthy"
+            "integration_service", "healthy",
         )
         assert health_result.success
 
@@ -83,7 +83,7 @@ class TestCompleteIntegrationReal:
 
         # Step 5: Record metrics through monitor
         record_result = self.monitor.flext_record_metric(
-            "pipeline_throughput", 95.5, "gauge"
+            "pipeline_throughput", 95.5, "gauge",
         )
         assert record_result.success
 
@@ -112,11 +112,11 @@ class TestCompleteIntegrationReal:
             try:
                 # Each worker creates different entities
                 metric_result = self.factory.create_metric(
-                    f"worker_{worker_id}_operations", float(worker_id * 10), "counter"
+                    f"worker_{worker_id}_operations", float(worker_id * 10), "counter",
                 )
                 if not metric_result.success:
                     errors.append(
-                        f"Worker {worker_id} metric failed: {metric_result.error}"
+                        f"Worker {worker_id} metric failed: {metric_result.error}",
                     )
                     return
 
@@ -131,11 +131,11 @@ class TestCompleteIntegrationReal:
 
                 # Record metric through monitor
                 record_result = self.monitor.flext_record_metric(
-                    f"worker_{worker_id}_performance", float(worker_id * 5), "gauge"
+                    f"worker_{worker_id}_performance", float(worker_id * 5), "gauge",
                 )
                 if not record_result.success:
                     errors.append(
-                        f"Worker {worker_id} record failed: {record_result.error}"
+                        f"Worker {worker_id} record failed: {record_result.error}",
                     )
                     return
 
@@ -302,14 +302,14 @@ class TestCompleteIntegrationReal:
         metric = metric_result.unwrap()
         # Global factory returns object, so we need to check attributes exist
         assert hasattr(metric, "name")
-        assert getattr(metric, "name") == "global_test_metric"
+        assert metric.name == "global_test_metric"
 
         log_result = global_factory.log("Global factory test")
         assert log_result.success
         log_entry = log_result.unwrap()
         # Global factory returns object, so we need to check attributes exist
         assert hasattr(log_entry, "message")
-        assert getattr(log_entry, "message") == "Global factory test"
+        assert log_entry.message == "Global factory test"
 
         # Verify global factory persistence
         same_factory = get_global_factory()
@@ -385,43 +385,43 @@ class TestCompleteIntegrationReal:
 
         # 2. Log workflow initiation
         log_start = self.factory.create_log_entry(
-            "Workflow initiated", "coordination_service", "info"
+            "Workflow initiated", "coordination_service", "info",
         )
         assert log_start.success
 
         # 3. Create trace for workflow
         trace_workflow = self.factory.create_trace(
-            "coordinate_services", "coordination_service"
+            "coordinate_services", "coordination_service",
         )
         assert trace_workflow.success
 
         # 4. Record progress metric
         progress_result = self.monitor.flext_record_metric(
-            "workflow_progress", 25.0, "gauge"
+            "workflow_progress", 25.0, "gauge",
         )
         assert progress_result.success
 
         # 5. Update progress
         progress_update = self.monitor.flext_record_metric(
-            "workflow_progress", 75.0, "gauge"
+            "workflow_progress", 75.0, "gauge",
         )
         assert progress_update.success
 
         # 6. Create completion alert
         completion_alert = self.factory.create_alert(
-            "Workflow 75% complete", "coordination_service", "medium"
+            "Workflow 75% complete", "coordination_service", "medium",
         )
         assert completion_alert.success
 
         # 7. Final health check
         final_health = self.factory.create_health_check(
-            "coordination_service", "healthy"
+            "coordination_service", "healthy",
         )
         assert final_health.success
 
         # 8. Log workflow completion
         log_complete = self.factory.create_log_entry(
-            "Workflow completed", "coordination_service", "info"
+            "Workflow completed", "coordination_service", "info",
         )
         assert log_complete.success
 

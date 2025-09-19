@@ -192,7 +192,7 @@ class FlextObservabilityMonitor:
                 self._metrics_service = FlextMetricsService(self.container)
             except Exception as e:
                 return FlextResult[None].fail(
-                    f"Observability initialization failed: {e}"
+                    f"Observability initialization failed: {e}",
                 )
             self._logging_service = FlextLoggingService(self.container)
             self._tracing_service = FlextTracingService(self.container)
@@ -253,14 +253,14 @@ class FlextObservabilityMonitor:
         try:
             if not self._health_service:
                 return FlextResult[FlextTypes.Core.Dict].fail(
-                    "Health service not available"
+                    "Health service not available",
                 )
 
             # Get overall health and add monitor-specific metrics
             health_result = self._health_service.get_overall_health()
             if health_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
-                    health_result.error or "Health service failure"
+                    health_result.error or "Health service failure",
                 )
 
             health_data = health_result.data or {}
@@ -280,7 +280,7 @@ class FlextObservabilityMonitor:
 
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Health status check failed: {e}"
+                f"Health status check failed: {e}",
             )
 
     def flext_is_monitoring_active(self) -> bool:
@@ -301,7 +301,7 @@ class FlextObservabilityMonitor:
             metric_result = _models.flext_metric(name, value, metric_type=metric_type)
             if metric_result.is_failure:
                 return FlextResult[None].fail(
-                    metric_result.error or "Failed to create metric"
+                    metric_result.error or "Failed to create metric",
                 )
             metric = metric_result.unwrap()
             record_result = self._metrics_service.record_metric(metric)
@@ -317,7 +317,7 @@ class FlextObservabilityMonitor:
         """Get comprehensive metrics summary."""
         if not self._metrics_service:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                "Metrics service not available"
+                "Metrics service not available",
             )
 
         return self._metrics_service.get_metrics_summary()

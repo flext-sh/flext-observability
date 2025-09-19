@@ -257,7 +257,7 @@ def flext_create_log_entry(
         validation_result = log_entry.validate_business_rules()
         if not validation_result.success:
             return FlextResult[FlextLogEntry].fail(
-                f"Business rule validation failed: {validation_result.error}"
+                f"Business rule validation failed: {validation_result.error}",
             )
 
         return FlextResult[FlextLogEntry].ok(log_entry)
@@ -370,7 +370,7 @@ def flext_create_health_check(
             probe.validate_business_rules()
         except Exception as e:
             return FlextResult[FlextHealthCheck].fail(
-                f"Failed to create health check: {e}"
+                f"Failed to create health check: {e}",
             )
 
         health_check = FlextHealthCheck(
@@ -383,7 +383,7 @@ def flext_create_health_check(
         validation_result = health_check.validate_business_rules()
         if not validation_result.success:
             return FlextResult[FlextHealthCheck].fail(
-                f"Business rule validation failed: {validation_result.error}"
+                f"Business rule validation failed: {validation_result.error}",
             )
 
         return FlextResult[FlextHealthCheck].ok(health_check)
