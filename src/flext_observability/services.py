@@ -221,7 +221,7 @@ class FlextMetricsService:
             validation_result = self._validate_metric_input(metric)
             if validation_result.is_failure:
                 return FlextResult[FlextMetric].fail(
-                    validation_result.error or "Validation failed"
+                    validation_result.error or "Validation failed",
                 )
 
             with self._metrics_lock:
@@ -231,7 +231,7 @@ class FlextMetricsService:
                     timestamp = FlextUtilitiesGenerators.generate_timestamp()
                 except (ValueError, TypeError, AttributeError) as e:  # pragma: no cover
                     return FlextResult[FlextMetric].fail(
-                        f"Failed to record metric: {e}"
+                        f"Failed to record metric: {e}",
                     )
 
                 # Store raw metric data
@@ -308,7 +308,7 @@ class FlextMetricsService:
 
         except (ValueError, TypeError, ArithmeticError) as e:
             return FlextResult[float].fail(
-                f"Failed to retrieve metric '{metric_name}': {e}"
+                f"Failed to retrieve metric '{metric_name}': {e}",
             )
 
     def get_metrics_summary(self) -> FlextResult[FlextTypes.Core.Dict]:
@@ -339,7 +339,7 @@ class FlextMetricsService:
 
         except (ValueError, TypeError, ArithmeticError) as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to generate metrics summary: {e}"
+                f"Failed to generate metrics summary: {e}",
             )
 
     def export_prometheus_format(self) -> FlextResult[str]:
@@ -592,12 +592,12 @@ class FlextTracingService:
                 or not hasattr(trace, "operation")
             ):
                 return FlextResult[FlextTrace].fail(
-                    "Invalid trace: missing trace_id or operation"
+                    "Invalid trace: missing trace_id or operation",
                 )
 
             if not trace.trace_id or not isinstance(trace.trace_id, str):
                 return FlextResult[FlextTrace].fail(
-                    "Trace ID must be a non-empty string"
+                    "Trace ID must be a non-empty string",
                 )
 
             # Real trace management with thread safety
@@ -685,7 +685,7 @@ class FlextTracingService:
 
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to add span to trace '{trace_id}': {e}"
+                f"Failed to add span to trace '{trace_id}': {e}",
             )
 
     def finish_trace(
@@ -738,7 +738,7 @@ class FlextTracingService:
 
         except (ValueError, TypeError, KeyError, ArithmeticError) as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to finish trace '{trace_id}': {e}"
+                f"Failed to finish trace '{trace_id}': {e}",
             )
 
     def get_trace_info(self, trace_id: str) -> FlextResult[FlextTypes.Core.Dict]:
@@ -760,12 +760,12 @@ class FlextTracingService:
                     return FlextResult[FlextTypes.Core.Dict].ok(trace_info)
 
                 return FlextResult[FlextTypes.Core.Dict].fail(
-                    f"Trace '{trace_id}' not found"
+                    f"Trace '{trace_id}' not found",
                 )
 
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to get trace info for '{trace_id}': {e}"
+                f"Failed to get trace info for '{trace_id}': {e}",
             )
 
     def export_jaeger_format(self, trace_id: str) -> FlextResult[FlextTypes.Core.Dict]:
@@ -873,7 +873,7 @@ class FlextTracingService:
 
         except (ValueError, TypeError, ArithmeticError) as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to generate tracing summary: {e}"
+                f"Failed to generate tracing summary: {e}",
             )
 
 
@@ -1065,7 +1065,7 @@ class FlextHealthService:
         if isinstance(health, FlextResult):
             if health.is_failure:
                 return FlextResult[FlextHealthCheck].fail(
-                    health.error or "Health check creation failed"
+                    health.error or "Health check creation failed",
                 )
             if health.data is None:
                 return FlextResult[FlextHealthCheck].fail("Health check data is None")
@@ -1136,7 +1136,7 @@ class FlextHealthService:
             # Input validation (defensive programming)
             if not actual_health or not hasattr(actual_health, "component"):
                 return FlextResult[FlextHealthCheck].fail(
-                    "Invalid health check: missing component"
+                    "Invalid health check: missing component",
                 )
 
             component_name = actual_health.component
@@ -1244,7 +1244,7 @@ class FlextHealthService:
 
         except (ValueError, TypeError, AttributeError, ArithmeticError) as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to get overall health: {e}"
+                f"Failed to get overall health: {e}",
             )
 
     def get_component_health_history(
@@ -1332,10 +1332,10 @@ class FlextHealthService:
             }
 
             return FlextResult[FlextTypes.Core.Dict].ok(
-                cast("FlextTypes.Core.Dict", system_checks)
+                cast("FlextTypes.Core.Dict", system_checks),
             )
 
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"System health check failed: {e}"
+                f"System health check failed: {e}",
             )

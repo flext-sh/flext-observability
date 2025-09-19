@@ -75,7 +75,7 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
 
             except Exception as e:
                 return FlextResult[dict[str, str]].fail(
-                    f"Metrics formatting error: {e!s}"
+                    f"Metrics formatting error: {e!s}",
                 )
 
     class _TracingHelper:
@@ -96,7 +96,7 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
 
             except Exception as e:
                 return FlextResult[dict[str, str]].fail(
-                    f"Trace context creation error: {e!s}"
+                    f"Trace context creation error: {e!s}",
                 )
 
         @staticmethod
@@ -119,7 +119,7 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
         metrics_result = self._MetricsHelper.collect_system_metrics()
         if metrics_result.is_failure:
             return FlextResult[str].fail(
-                f"Metrics collection failed: {metrics_result.error}"
+                f"Metrics collection failed: {metrics_result.error}",
             )
 
         # Test tracing
@@ -140,7 +140,7 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
             metrics_result = self._MetricsHelper.collect_system_metrics()
             if metrics_result.is_success:
                 format_result = self._MetricsHelper.format_metrics(
-                    metrics_result.unwrap()
+                    metrics_result.unwrap(),
                 )
                 if format_result.is_success:
                     observability_data["metrics"] = format_result.unwrap()
@@ -160,7 +160,7 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
         }
 
         return FlextResult[FlextTypes.Core.Dict].ok(
-            cast("FlextTypes.Core.Dict", observability_data)
+            cast("FlextTypes.Core.Dict", observability_data),
         )
 
     def execute(self) -> FlextResult[FlextTypes.Core.Dict]:
@@ -171,14 +171,14 @@ class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
         health_result = self.health_check()
         if health_result.is_failure:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Health check failed: {health_result.error}"
+                f"Health check failed: {health_result.error}",
             )
 
         # Collect observability data
         data_result = self.collect_observability_data()
         if data_result.is_failure:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Data collection failed: {data_result.error}"
+                f"Data collection failed: {data_result.error}",
             )
 
         return data_result

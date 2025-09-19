@@ -114,27 +114,27 @@ class TestApiErrorHandling:
 
         # Test all API functions with custom timestamps
         metric_result = flext_create_metric(
-            "timestamped_metric", 1.0, "count", timestamp=custom_timestamp
+            "timestamped_metric", 1.0, "count", timestamp=custom_timestamp,
         )
         assert metric_result.success
 
         log_result = flext_create_log_entry(
-            "Timestamped log", "test_service", "info", timestamp=custom_timestamp
+            "Timestamped log", "test_service", "info", timestamp=custom_timestamp,
         )
         assert log_result.success
 
         trace_result = flext_create_trace(
-            "timestamped_op", "test_service", timestamp=custom_timestamp
+            "timestamped_op", "test_service", timestamp=custom_timestamp,
         )
         assert trace_result.success
 
         alert_result = flext_create_alert(
-            "Timestamped alert", "test_service", "medium", timestamp=custom_timestamp
+            "Timestamped alert", "test_service", "medium", timestamp=custom_timestamp,
         )
         assert alert_result.success
 
         health_result = flext_create_health_check(
-            "test_service", "healthy", timestamp=custom_timestamp
+            "test_service", "healthy", timestamp=custom_timestamp,
         )
         assert health_result.success
 
@@ -207,12 +207,12 @@ class TestApiEdgeCases:
 
         # Test log entry with minimal parameters
         result = flext_create_log_entry(
-            "Minimal log", "service"
+            "Minimal log", "service",
         )  # No level specified, should default to INFO
         assert result.success
 
         # Test health check with minimal parameters
         result = flext_create_health_check(
-            "minimal_service"
+            "minimal_service",
         )  # No status specified, should default to healthy
         assert result.success
