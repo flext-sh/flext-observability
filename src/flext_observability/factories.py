@@ -25,11 +25,6 @@ from flext_core import (
 )
 
 
-def _generate_utc_datetime() -> datetime:
-    """Generate UTC datetime using flext-core pattern."""
-    return datetime.now(tz=UTC)
-
-
 class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
     """Observability service providing metrics, tracing, and logging capabilities.
 
