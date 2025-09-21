@@ -227,10 +227,10 @@ class TestFlextMixinsCoverage:
         assert entity_id1 != entity_id2  # Should be unique
 
     def test_generate_utc_datetime_coverage(self) -> None:
-        """Test _generate_utc_datetime function - covers lines 97-98."""
-        dt1 = _generate_utc_datetime()
+        """Test datetime.now(UTC) function - covers lines 97-98."""
+        dt1 = datetime.now(UTC)
         time.sleep(0.001)  # Small delay to ensure different timestamps
-        dt2 = _generate_utc_datetime()
+        dt2 = datetime.now(UTC)
 
         assert isinstance(dt1, datetime)
         assert isinstance(dt2, datetime)
