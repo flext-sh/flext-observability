@@ -11,7 +11,12 @@ from collections.abc import Callable
 from typing import cast
 
 import flext_observability.models as _models
-from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes
+from flext_core import (
+    FlextContainer,
+    FlextLogger,
+    FlextResult,
+    FlextTypes,
+)
 from flext_observability import models as _models_module
 from flext_observability.services import (
     FlextAlertService,
@@ -46,10 +51,10 @@ AnyCallable = (
 # F TypeVar imported from flext_core
 
 
-# Constants for argument length checks
-_NO_ARGS = 0
-_ONE_ARG = 1
-_TWO_ARGS = 2
+# Constants for argument length checks - use FlextConstants for standardization
+_NO_ARGS = 0  # No arguments
+_ONE_ARG = 1  # One argument
+_TWO_ARGS = 2  # Two arguments
 
 
 # Helper function to call any function - specific type handling
@@ -263,18 +268,15 @@ class FlextObservabilityMonitor:
                     health_result.error or "Health service failure",
                 )
 
-            health_data = health_result.data or {}
+            health_data = health_result.unwrap() if health_result.is_success else {}
 
             # Add monitor-specific health information
-            monitor_health: FlextTypes.Core.Dict = {
+            health_data["monitor_metrics"] = {
                 "monitor_uptime_seconds": time.time() - self._monitor_start_time,
                 "functions_monitored": self._functions_monitored,
                 "services_initialized": self._initialized,
                 "monitoring_active": self._running,
             }
-
-            if isinstance(health_data, dict):
-                health_data["monitor_metrics"] = monitor_health
 
             return FlextResult[FlextTypes.Core.Dict].ok(health_data)
 
@@ -286,6 +288,10 @@ class FlextObservabilityMonitor:
     def flext_is_monitoring_active(self) -> bool:
         """Check if real monitoring is active and operational."""
         return self._initialized and self._running
+
+    def flext_is_initialized(self) -> bool:
+        """Check if observability services are initialized."""
+        return self._initialized
 
     def flext_record_metric(
         self,
@@ -351,7 +357,7 @@ def flext_monitor_function(
                 active_monitor = FlextObservabilityMonitor()
 
             # Initialize monitor if not already initialized
-            if active_monitor and not active_monitor._initialized:
+            if active_monitor and not active_monitor.flext_is_initialized():
                 init_result = active_monitor.flext_initialize_observability()
                 if init_result.is_failure:
                     # If initialization fails, execute function without monitoring

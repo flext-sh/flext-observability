@@ -775,7 +775,7 @@ class FlextTracingService:
             if trace_info_result.is_failure:
                 return trace_info_result
 
-            trace_info = trace_info_result.data
+            trace_info = trace_info_result.unwrap()
 
             # Create Jaeger-compatible format
             jaeger_trace: FlextTypes.Core.Dict = {
@@ -1067,9 +1067,10 @@ class FlextHealthService:
                 return FlextResult[FlextHealthCheck].fail(
                     health.error or "Health check creation failed",
                 )
-            if health.data is None:
+            health_data = health.unwrap()
+            if health_data is None:
                 return FlextResult[FlextHealthCheck].fail("Health check data is None")
-            return FlextResult[FlextHealthCheck].ok(health.data)
+            return FlextResult[FlextHealthCheck].ok(health_data)
         return FlextResult[FlextHealthCheck].ok(health)
 
     def _create_health_record(
@@ -1131,7 +1132,7 @@ class FlextHealthService:
             if actual_health_result.is_failure:
                 return actual_health_result
 
-            actual_health = actual_health_result.data
+            actual_health = actual_health_result.unwrap()
 
             # Input validation (defensive programming)
             if not actual_health or not hasattr(actual_health, "component"):
@@ -1182,9 +1183,11 @@ class FlextHealthService:
             component_name = "unknown"
             health_status = "unknown"
             try:
-                if isinstance(health, FlextResult) and health.success and health.data:
-                    component_name = health.data.component
-                    health_status = health.data.status
+                if isinstance(health, FlextResult) and health.is_success:
+                    health_data = health.unwrap()
+                    if health_data is not None:
+                        component_name = health_data.component
+                        health_status = health_data.status
                 elif not isinstance(health, FlextResult):
                     component_name = health.component
                     health_status = health.status

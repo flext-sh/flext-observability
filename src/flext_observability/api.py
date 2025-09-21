@@ -255,7 +255,7 @@ def flext_create_log_entry(
 
         # Validate business rules
         validation_result = log_entry.validate_business_rules()
-        if not validation_result.success:
+        if validation_result.is_failure:
             return FlextResult[FlextLogEntry].fail(
                 f"Business rule validation failed: {validation_result.error}",
             )
@@ -381,7 +381,7 @@ def flext_create_health_check(
 
         # Validate business rules
         validation_result = health_check.validate_business_rules()
-        if not validation_result.success:
+        if validation_result.is_failure:
             return FlextResult[FlextHealthCheck].fail(
                 f"Business rule validation failed: {validation_result.error}",
             )

@@ -6,17 +6,16 @@ SPDX-License-Identifier: MIT
 
 import math
 import time
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from unittest.mock import patch
 
-import flext_tests
 import pytest
 from pydantic import ValidationError
 
+import flext_tests
 from flext_core import FlextResult
 from flext_observability import (
-    _generate_utc_datetime,
     entities as entities_module,
     flext_create_alert,
     flext_create_health_check,
