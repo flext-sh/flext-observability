@@ -18,14 +18,14 @@ import psutil
 
 from flext_core import (
     FlextContainer,
-    FlextDomainService,
     FlextLogger,
     FlextResult,
+    FlextService,
     FlextTypes,
 )
 
 
-class FlextObservabilityService(FlextDomainService[FlextTypes.Core.Dict]):
+class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
     """Observability service providing metrics, tracing, and logging capabilities.
 
     Unified class implementing observability patterns with flext-core foundation.
