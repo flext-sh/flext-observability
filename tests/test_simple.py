@@ -16,23 +16,19 @@ from pydantic import ValidationError
 import flext_tests
 from flext_core import FlextResult
 from flext_observability import (
-    entities as entities_module,
-    flext_create_alert,
-    flext_create_health_check,
-    flext_create_log_entry,
-    flext_create_metric,
-    flext_create_trace,
-)
-from flext_observability.entities import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
     FlextUtilitiesGenerators,
-)
-from flext_observability.models import (
+    entities as entities_module,
     flext_alert,
+    flext_create_alert,
+    flext_create_health_check,
+    flext_create_log_entry,
+    flext_create_metric,
+    flext_create_trace,
     flext_health_check,
     flext_metric,
     flext_trace,

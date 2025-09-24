@@ -106,25 +106,27 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
             except Exception as e:
                 return FlextResult[None].fail(f"Trace logging error: {e!s}")
 
-    def health_check(self) -> FlextResult[str]:
+    def health_check(self: object) -> FlextResult[str]:
         """Check observability service health."""
         self._logger.debug("Performing observability health check")
 
         # Test metrics collection
-        metrics_result = self._MetricsHelper.collect_system_metrics()
+        metrics_result: FlextResult[object] = (
+            self._MetricsHelper.collect_system_metrics()
+        )
         if metrics_result.is_failure:
             return FlextResult[str].fail(
                 f"Metrics collection failed: {metrics_result.error}",
             )
 
         # Test tracing
-        trace_result = self._TracingHelper.create_trace_context()
+        trace_result: FlextResult[object] = self._TracingHelper.create_trace_context()
         if trace_result.is_failure:
             return FlextResult[str].fail(f"Tracing failed: {trace_result.error}")
 
         return FlextResult[str].ok("Observability service healthy")
 
-    def collect_observability_data(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def collect_observability_data(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Collect comprehensive observability data."""
         self._logger.info("Collecting observability data")
 
@@ -132,7 +134,9 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
 
         # Collect metrics if enabled
         if self._metrics_enabled:
-            metrics_result = self._MetricsHelper.collect_system_metrics()
+            metrics_result: FlextResult[object] = (
+                self._MetricsHelper.collect_system_metrics()
+            )
             if metrics_result.is_success:
                 format_result = self._MetricsHelper.format_metrics(
                     metrics_result.unwrap(),
@@ -142,7 +146,9 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
 
         # Create trace context if enabled
         if self._tracing_enabled:
-            trace_result = self._TracingHelper.create_trace_context()
+            trace_result: FlextResult[object] = (
+                self._TracingHelper.create_trace_context()
+            )
             if trace_result.is_success:
                 observability_data["trace_context"] = trace_result.unwrap()
 
@@ -158,19 +164,19 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
             cast("FlextTypes.Core.Dict", observability_data),
         )
 
-    def execute(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def execute(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Execute observability service operation."""
         self._logger.info("Executing observability service")
 
         # Health check first
-        health_result = self.health_check()
+        health_result: FlextResult[object] = self.health_check()
         if health_result.is_failure:
             return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Health check failed: {health_result.error}",
             )
 
         # Collect observability data
-        data_result = self.collect_observability_data()
+        data_result: FlextResult[object] = self.collect_observability_data()
         if data_result.is_failure:
             return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Data collection failed: {data_result.error}",

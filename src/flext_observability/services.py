@@ -21,6 +21,7 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
+from flext_observability.constants import FlextObservabilityConstants
 from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
@@ -49,20 +50,7 @@ class FlextUtilitiesGenerators:
         return str(uuid.uuid4())
 
 
-class FlextObservabilityConstants:
-    """Constants for flext-observability operations."""
-
-    # Health check thresholds
-    MEMORY_WARNING_THRESHOLD = 80
-    MEMORY_CRITICAL_THRESHOLD = 95
-    DISK_WARNING_THRESHOLD = 80
-    DISK_CRITICAL_THRESHOLD = 95
-    THREAD_WARNING_THRESHOLD = 50
-    THREAD_CRITICAL_THRESHOLD = 100
-
-    # Metrics storage limits
-    MAX_METRICS_STORE_SIZE = 1000
-    METRICS_STORE_CLEANUP_SIZE = 500
+# Constants moved to flext_observability.constants.FlextObservabilityConstants
 
 
 # ============================================================================
@@ -132,7 +120,7 @@ class FlextMetricsService:
       ...     unit="milliseconds",
       ...     metric_type="histogram",
       ... )
-      >>> result = metrics_service.record_metric(response_time)
+      >>> result: FlextResult[object] = metrics_service.record_metric(response_time)
       >>> if result.success:
       ...     print(f"Recorded metric: {result.data.name}")
 
@@ -141,7 +129,7 @@ class FlextMetricsService:
       >>> user_count = FlextMetric(
       ...     name="active_users", value=1250, unit="count", metric_type="gauge"
       ... )
-      >>> result = metrics_service.record_metric(user_count)
+      >>> result: FlextResult[object] = metrics_service.record_metric(user_count)
       >>> # Automatic validation and business rule enforcement
 
     Thread Safety:
@@ -218,7 +206,7 @@ class FlextMetricsService:
         """Record metric with real storage and validation using SOLID principles."""
         try:
             # Input validation (defensive programming)
-            validation_result = self._validate_metric_input(metric)
+            validation_result: FlextResult[object] = self._validate_metric_input(metric)
             if validation_result.is_failure:
                 return FlextResult[FlextMetric].fail(
                     validation_result.error or "Validation failed",
@@ -311,7 +299,7 @@ class FlextMetricsService:
                 f"Failed to retrieve metric '{metric_name}': {e}",
             )
 
-    def get_metrics_summary(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def get_metrics_summary(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive metrics summary with statistics."""
         try:
             with self._metrics_lock:
@@ -342,7 +330,7 @@ class FlextMetricsService:
                 f"Failed to generate metrics summary: {e}",
             )
 
-    def export_prometheus_format(self) -> FlextResult[str]:
+    def export_prometheus_format(self: object) -> FlextResult[str]:
         """Export metrics in Prometheus format for real integration."""
         try:
             with self._metrics_lock:
@@ -375,7 +363,7 @@ class FlextMetricsService:
         except (ValueError, TypeError, ArithmeticError) as e:
             return FlextResult[str].fail(f"Failed to export Prometheus format: {e}")
 
-    def reset_metrics(self) -> FlextResult[None]:
+    def reset_metrics(self: object) -> FlextResult[None]:
         """Reset all metrics (useful for testing and cleanup)."""
         try:
             with self._metrics_lock:
@@ -436,7 +424,7 @@ class FlextLoggingService:
       ...         "response_time_ms": 45.2,
       ...     },
       ... )
-      >>> result = logging_service.log_entry(log_entry)
+      >>> result: FlextResult[object] = logging_service.log_entry(log_entry)
 
     Integration:
       - Built on flext-core logging foundation
@@ -530,7 +518,7 @@ class FlextTracingService:
       ...     operation="user_workflow",
       ...     span_id="span_parent",
       ... )
-      >>> result = tracing_service.start_trace(parent_trace)
+      >>> result: FlextResult[object] = tracing_service.start_trace(parent_trace)
       >>>
       >>> # Create child span
       >>> child_trace = FlextTrace(
@@ -539,7 +527,7 @@ class FlextTracingService:
       ...     span_id="span_child",
       ...     span_attributes={"parent_span_id": "span_parent"},
       ... )
-      >>> child_result = tracing_service.start_trace(child_trace)
+      >>> child_result: FlextResult[object] = tracing_service.start_trace(child_trace)
 
     Thread Safety:
       All tracing operations are thread-safe using reentrant locks, supporting
@@ -771,7 +759,7 @@ class FlextTracingService:
     def export_jaeger_format(self, trace_id: str) -> FlextResult[FlextTypes.Core.Dict]:
         """Export trace in Jaeger-compatible format for real integration."""
         try:
-            trace_info_result = self.get_trace_info(trace_id)
+            trace_info_result: FlextResult[object] = self.get_trace_info(trace_id)
             if trace_info_result.is_failure:
                 return trace_info_result
 
@@ -838,7 +826,7 @@ class FlextTracingService:
                 f"Failed to export Jaeger format for trace '{trace_id}': {e}",
             )
 
-    def get_tracing_summary(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def get_tracing_summary(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive tracing service summary with statistics."""
         try:
             with self._traces_lock:
@@ -916,7 +904,7 @@ class FlextAlertService:
       ...     severity="critical",
       ...     tags={"service": "database", "environment": "production"},
       ... )
-      >>> result = alert_service.create_alert(alert)
+      >>> result: FlextResult[object] = alert_service.create_alert(alert)
 
     Integration:
       - Built on flext-core foundation patterns
@@ -1015,7 +1003,7 @@ class FlextHealthService:
       ...     message="Database responding normally",
       ...     metrics={"response_time_ms": 15.2, "active_connections": 45},
       ... )
-      >>> result = health_service.check_component_health(db_health)
+      >>> result: FlextResult[object] = health_service.check_component_health(db_health)
 
     Thread Safety:
       All health monitoring operations are thread-safe using reentrant locks,
@@ -1067,7 +1055,7 @@ class FlextHealthService:
                 return FlextResult[FlextHealthCheck].fail(
                     health.error or "Health check creation failed",
                 )
-            health_data = health.unwrap()
+            health_data: FlextTypes.Core.Dict = health.unwrap()
             if health_data is None:
                 return FlextResult[FlextHealthCheck].fail("Health check data is None")
             return FlextResult[FlextHealthCheck].ok(health_data)
@@ -1128,7 +1116,9 @@ class FlextHealthService:
         """Perform comprehensive health check with real monitoring and history."""
         try:
             # Extract actual health check (reduced complexity)
-            actual_health_result = self._extract_actual_health(health)
+            actual_health_result: FlextResult[object] = self._extract_actual_health(
+                health
+            )
             if actual_health_result.is_failure:
                 return actual_health_result
 
@@ -1184,7 +1174,7 @@ class FlextHealthService:
             health_status = "unknown"
             try:
                 if isinstance(health, FlextResult) and health.is_success:
-                    health_data = health.unwrap()
+                    health_data: FlextTypes.Core.Dict = health.unwrap()
                     if health_data is not None:
                         component_name = health_data.component
                         health_status = health_data.status
@@ -1198,7 +1188,7 @@ class FlextHealthService:
 
             return FlextResult[FlextHealthCheck].fail(f"Failed to check health: {e}")
 
-    def get_overall_health(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def get_overall_health(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive overall system health with detailed component status."""
         try:
             with self._health_lock:
@@ -1269,10 +1259,10 @@ class FlextHealthService:
                 f"Failed to get health history for '{component_name}': {e}",
             )
 
-    def perform_system_health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def perform_system_health_check(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform comprehensive system health checks including infrastructure."""
         try:
-            system_checks = {}
+            system_checks: dict[str, dict[str, float | str]] = {}
 
             # Memory usage check - psutil is a required dependency
             memory = psutil.virtual_memory()

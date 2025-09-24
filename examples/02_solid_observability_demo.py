@@ -13,19 +13,17 @@ import time
 
 from flext_core import FlextContainer, FlextResult, FlextTypes
 from flext_observability import (
+    FlextAlert,
+    FlextHealthCheck,
+    FlextMetric,
     FlextObservabilityMasterFactory,
+    FlextTrace,
     flext_create_alert,
     flext_create_health_check,
     flext_create_metric,
     flext_create_trace,
     flext_monitor_function,
     get_global_factory,
-)
-from flext_observability.models import (
-    FlextAlert,
-    FlextHealthCheck,
-    FlextMetric,
-    FlextTrace,
 )
 
 

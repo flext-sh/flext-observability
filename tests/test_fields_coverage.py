@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 import pytest
 
 import flext_observability.fields as fields_module
-from flext_observability.fields import (
+from flext_observability import (
     AlertLevelField,
     HealthStatusField,
     MetricUnitField,
