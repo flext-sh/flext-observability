@@ -14,21 +14,32 @@ from flext_observability.api import (
     flext_create_metric,
     flext_create_trace,
 )
+from flext_observability.constants import FlextObservabilityConstants
 from flext_observability.entities import (
-    flext_alert,
-    flext_health_check,
-    flext_metric,
-    flext_trace,
-)
-from flext_observability.factories import (
-    FlextObservabilityService,
-)
-from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
+    FlextUtilitiesGenerators,
+    flext_alert,
+    flext_health_check,
+    flext_metric,
+    flext_trace,
+)
+from flext_observability.factories import FlextObservabilityService
+from flext_observability.fields import (
+    AlertLevelField,
+    HealthStatusField,
+    MetricUnitField,
+    MetricValueField,
+    TraceStatusField,
+    alert_message_field,
+    metric_name_field,
+    metric_unit_field,
+    metric_value_field,
+    timestamp_field,
+    trace_name_field,
 )
 from flext_observability.monitoring import (
     FlextObservabilityMonitor,
@@ -40,6 +51,20 @@ from flext_observability.services import (
     FlextLoggingService,
     FlextMetricsService,
     FlextTracingService,
+)
+from flext_observability.types import (
+    AlertLevel,
+    AlertProtocol,
+    HealthCheckProtocol,
+    HealthStatus,
+    LogEntryProtocol,
+    LogLevel,
+    MetricProtocol,
+    MetricValue,
+    ObservabilityTypes,
+    TagsDict,
+    TraceProtocol,
+    TraceStatus,
 )
 
 # Backward compatibility aliases
@@ -77,6 +102,9 @@ __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 # Legacy facades removed - use direct imports from flext-core and factory classes
 
 __all__: FlextTypes.Core.StringList = [
+    "AlertLevel",
+    "AlertLevelField",
+    "AlertProtocol",
     "FlextAlert",
     "FlextAlertService",
     "FlextConstants",
@@ -88,14 +116,32 @@ __all__: FlextTypes.Core.StringList = [
     "FlextLoggingService",
     "FlextMetric",
     "FlextMetricsService",
+    "FlextObservabilityConstants",
+    "FlextObservabilityConstants",
     "FlextObservabilityMonitor",
     "FlextObservabilityService",
     "FlextTrace",
     "FlextTracingService",
     "FlextTypes",
+    "FlextUtilitiesGenerators",
+    "HealthCheckProtocol",
+    "HealthStatus",
+    "HealthStatusField",
+    "LogEntryProtocol",
+    "LogLevel",
+    "MetricProtocol",
+    "MetricUnitField",
+    "MetricValue",
+    "MetricValueField",
+    "ObservabilityTypes",
+    "TagsDict",
+    "TraceProtocol",
+    "TraceStatus",
+    "TraceStatusField",
     "__version__",
     "__version_info__",
     "alert",
+    "alert_message_field",
     "flext_alert",
     "flext_create_alert",
     "flext_create_health_check",
@@ -110,5 +156,10 @@ __all__: FlextTypes.Core.StringList = [
     "health_check",
     "log",
     "metric",
+    "metric_name_field",
+    "metric_unit_field",
+    "metric_value_field",
+    "timestamp_field",
     "trace",
+    "trace_name_field",
 ]

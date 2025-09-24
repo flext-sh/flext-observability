@@ -173,7 +173,7 @@ class FlextMetric(FlextModels.Entity):
         return v
 
     @classmethod
-    def _raise_invalid_metric_value(cls) -> None:
+    def _raise_invalid_metric_value(cls: object) -> None:
         """Helper to raise metric value error."""
         msg = "Metric value cannot be NaN or infinite"
         raise ValueError(msg)
@@ -188,7 +188,7 @@ class FlextMetric(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate metric business rules and domain constraints.
 
         Implements comprehensive business rule validation including name verification,
@@ -245,7 +245,7 @@ class FlextLogEntry(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate structured logging business rules and domain constraints.
 
         Enforces business rules specific to structured logging within the FLEXT
@@ -334,7 +334,7 @@ class FlextTrace(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate distributed tracing business rules and domain constraints.
 
         Enforces business rules specific to distributed tracing within the FLEXT
@@ -406,7 +406,7 @@ class FlextAlert(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate alert management business rules and domain constraints.
 
         Enforces business rules specific to alert management within the FLEXT
@@ -427,7 +427,7 @@ class FlextAlert(FlextModels.Entity):
 
         Example:
             >>> alert = FlextAlert(title="", message="test")  # Invalid empty title
-            >>> result = alert.validate_business_rules()
+            >>> result: FlextResult[object] = alert.validate_business_rules()
             >>> result.is_failure
             True
             >>> "title" in result.error
@@ -560,7 +560,7 @@ class FlextHealthCheck(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate health monitoring business rules and domain constraints.
 
         Enforces business rules specific to health monitoring within the FLEXT
@@ -581,7 +581,7 @@ class FlextHealthCheck(FlextModels.Entity):
 
         Example:
             >>> health = FlextHealthCheck(component="", status="healthy")
-            >>> result = health.validate_business_rules()
+            >>> result: FlextResult[object] = health.validate_business_rules()
             >>> result.is_failure
             True
             >>> "component" in result.error
@@ -609,7 +609,7 @@ def flext_alert(
     **kwargs: object,
 ) -> FlextAlert:
     """Create a FlextAlert entity with proper validation."""
-    tags = cast("dict[str, str]", kwargs.get("tags", {}))
+    tags: dict[str, object] = cast("dict[str, str]", kwargs.get("tags", {}))
     timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
     # Create with explicit kwargs for better type safety
@@ -653,7 +653,9 @@ def flext_trace(
     **kwargs: object,
 ) -> FlextTrace:
     """Create a FlextTrace entity with proper validation."""
-    span_attributes = cast("dict[str, object]", kwargs.get("span_attributes", {}))
+    span_attributes: dict[str, object] = cast(
+        "dict[str, object]", kwargs.get("span_attributes", {})
+    )
     duration_ms = cast("int", kwargs.get("duration_ms", 0))
     timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
@@ -690,7 +692,7 @@ def flext_metric(
 ) -> FlextResult[FlextMetric]:
     """Create a FlextMetric entity with proper validation and type safety."""
     try:
-        tags = cast("dict[str, str]", kwargs.get("tags", {}))
+        tags: dict[str, object] = cast("dict[str, str]", kwargs.get("tags", {}))
         timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
         # Create with explicit kwargs for better type safety
@@ -727,7 +729,7 @@ def flext_metric(
         metric.metric_type = metric_type
 
         # Validate business rules
-        validation_result = metric.validate_business_rules()
+        validation_result: FlextResult[object] = metric.validate_business_rules()
         if validation_result.is_failure:
             return FlextResult[FlextMetric].fail(
                 validation_result.error or "Metric validation failed",
@@ -748,7 +750,7 @@ def flext_health_check(
     **kwargs: object,
 ) -> FlextHealthCheck:
     """Create a FlextHealthCheck entity with proper validation."""
-    metrics = cast("dict[str, object]", kwargs.get("metrics", {}))
+    metrics: dict[str, object] = cast("dict[str, object]", kwargs.get("metrics", {}))
     timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
     # Create with explicit kwargs for better type safety

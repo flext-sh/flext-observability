@@ -20,6 +20,10 @@ TraceStatus = str  # "started", "running", "completed", "failed"
 HealthStatus = str  # "healthy", "degraded", "unhealthy"
 
 
+class FlextObservabilityTypes(CoreFlextTypes):
+    """Observability-specific types extending FlextTypes."""
+
+
 class MetricProtocol(Protocol):
     """Protocol for metric entities."""
 

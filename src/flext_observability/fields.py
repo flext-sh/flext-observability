@@ -6,14 +6,11 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, ClassVar, cast
+from typing import ClassVar
 
 from pydantic import Field, field_validator
 
-from flext_observability.constants import ObservabilityConstants
-
-if TYPE_CHECKING:
-    from pydantic.fields import FieldInfo
+from flext_observability.constants import FlextObservabilityConstants
 
 
 class MetricValueField:
@@ -65,10 +62,10 @@ class AlertLevelField:
     def validate_alert_level(cls, v: str) -> str:
         """Validate alert level is valid."""
         valid_levels = {
-            ObservabilityConstants.ALERT_LEVEL_INFO,
-            ObservabilityConstants.ALERT_LEVEL_WARNING,
-            ObservabilityConstants.ALERT_LEVEL_ERROR,
-            ObservabilityConstants.ALERT_LEVEL_CRITICAL,
+            FlextObservabilityConstants.ALERT_LEVEL_INFO,
+            FlextObservabilityConstants.ALERT_LEVEL_WARNING,
+            FlextObservabilityConstants.ALERT_LEVEL_ERROR,
+            FlextObservabilityConstants.ALERT_LEVEL_CRITICAL,
         }
         if v not in valid_levels:
             msg = f"Invalid alert level: {v}. Must be one of {valid_levels}"
@@ -84,10 +81,10 @@ class TraceStatusField:
     def validate_trace_status(cls, v: str) -> str:
         """Validate trace status is valid."""
         valid_statuses = {
-            ObservabilityConstants.TRACE_STATUS_STARTED,
-            ObservabilityConstants.TRACE_STATUS_RUNNING,
-            ObservabilityConstants.TRACE_STATUS_COMPLETED,
-            ObservabilityConstants.TRACE_STATUS_FAILED,
+            FlextObservabilityConstants.TRACE_STATUS_STARTED,
+            FlextObservabilityConstants.TRACE_STATUS_RUNNING,
+            FlextObservabilityConstants.TRACE_STATUS_COMPLETED,
+            FlextObservabilityConstants.TRACE_STATUS_FAILED,
         }
         if v not in valid_statuses:
             msg = f"Invalid trace status: {v}. Must be one of {valid_statuses}"
@@ -103,9 +100,9 @@ class HealthStatusField:
     def validate_health_status(cls, v: str) -> str:
         """Validate health status is valid."""
         valid_statuses = {
-            ObservabilityConstants.HEALTH_STATUS_HEALTHY,
-            ObservabilityConstants.HEALTH_STATUS_DEGRADED,
-            ObservabilityConstants.HEALTH_STATUS_UNHEALTHY,
+            FlextObservabilityConstants.HEALTH_STATUS_HEALTHY,
+            FlextObservabilityConstants.HEALTH_STATUS_DEGRADED,
+            FlextObservabilityConstants.HEALTH_STATUS_UNHEALTHY,
         }
         if v not in valid_statuses:
             msg = f"Invalid health status: {v}. Must be one of {valid_statuses}"
@@ -116,52 +113,37 @@ class HealthStatusField:
 # Convenience field definitions
 
 
-def _create_metric_name_field() -> FieldInfo:
+def _create_metric_name_field() -> Field:
     """Create metric name field."""
-    return cast(
-        "FieldInfo",
-        Field(min_length=1, max_length=255, description="Metric name"),
-    )
+    return Field(min_length=1, max_length=255, description="Metric name")
 
 
-def _create_metric_value_field() -> FieldInfo:
+def _create_metric_value_field() -> Field:
     """Create metric value field."""
-    return cast("FieldInfo", Field(ge=0.0, description="Metric value (non-negative)"))
+    return Field(ge=0.0, description="Metric value (non-negative)")
 
 
-def _create_metric_unit_field() -> FieldInfo:
+def _create_metric_unit_field() -> Field:
     """Create metric unit field."""
-    return cast(
-        "FieldInfo",
-        Field(
-            default=ObservabilityConstants.DEFAULT_METRIC_UNIT,
-            description="Metric unit",
-        ),
+    return Field(
+        default=FlextObservabilityConstants.DEFAULT_METRIC_UNIT,
+        description="Metric unit",
     )
 
 
-def _create_trace_name_field() -> FieldInfo:
+def _create_trace_name_field() -> Field:
     """Create trace name field."""
-    return cast(
-        "FieldInfo",
-        Field(min_length=1, max_length=255, description="Trace operation name"),
-    )
+    return Field(min_length=1, max_length=255, description="Trace operation name")
 
 
-def _create_alert_message_field() -> FieldInfo:
+def _create_alert_message_field() -> Field:
     """Create alert message field."""
-    return cast(
-        "FieldInfo",
-        Field(min_length=1, max_length=1000, description="Alert message"),
-    )
+    return Field(min_length=1, max_length=1000, description="Alert message")
 
 
-def _create_timestamp_field() -> FieldInfo:
+def _create_timestamp_field() -> Field:
     """Create timestamp field."""
-    return cast(
-        "FieldInfo",
-        Field(default_factory=lambda: datetime.now(UTC), description="Timestamp"),
-    )
+    return Field(default_factory=lambda: datetime.now(UTC), description="Timestamp")
 
 
 metric_name_field = _create_metric_name_field()

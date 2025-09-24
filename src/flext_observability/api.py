@@ -76,12 +76,12 @@ Example:
     ... )
     >>>
     >>> # Create performance metric with minimal parameters
-    >>> metric_result = flext_create_metric("api_requests", 42, "count")
+    >>> metric_result: FlextResult[object] = flext_create_metric("api_requests", 42, "count")
     >>> if metric_result.success:
     ...     print(f"Metric: {metric_result.data.name}")
     >>>
     >>> # Create distributed trace for request tracking
-    >>> trace_result = flext_create_trace("user_login", "auth-service")
+    >>> trace_result: FlextResult[object] = flext_create_trace("user_login", "auth-service")
     >>>
     >>> # Create critical alert for immediate attention
     >>> alert_result = flext_create_alert(
@@ -254,7 +254,7 @@ def flext_create_log_entry(
         )
 
         # Validate business rules
-        validation_result = log_entry.validate_business_rules()
+        validation_result: FlextResult[object] = log_entry.validate_business_rules()
         if validation_result.is_failure:
             return FlextResult[FlextLogEntry].fail(
                 f"Business rule validation failed: {validation_result.error}",
@@ -276,7 +276,7 @@ def flext_create_trace(
     ✅ ELIMINATED DUPLICATION: Delegates to entities.flext_trace()
     to avoid code duplication. Single source of truth for trace creation.
     """
-    config = config or {}
+    config: dict[str, object] = config or {}
 
     try:
         # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
@@ -294,8 +294,8 @@ def flext_create_trace(
             return FlextResult[FlextTrace].fail(f"Failed to create trace: {e}")
 
         # Generate trace and span IDs if not provided in config
-        trace_id_from_config = config.get("trace_id")
-        span_id_from_config = config.get("span_id")
+        trace_id_from_config: dict[str, object] = config.get("trace_id")
+        span_id_from_config: dict[str, object] = config.get("span_id")
 
         trace_id = (
             str(trace_id_from_config)
@@ -380,7 +380,7 @@ def flext_create_health_check(
         )
 
         # Validate business rules
-        validation_result = health_check.validate_business_rules()
+        validation_result: FlextResult[object] = health_check.validate_business_rules()
         if validation_result.is_failure:
             return FlextResult[FlextHealthCheck].fail(
                 f"Business rule validation failed: {validation_result.error}",

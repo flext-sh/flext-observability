@@ -11,7 +11,7 @@ from __future__ import annotations
 from flext_core import FlextConstants
 
 
-class ObservabilityConstants(FlextConstants):
+class FlextObservabilityConstants(FlextConstants):
     """Observability-specific constants extending flext-core patterns."""
 
     # Metric types
@@ -50,4 +50,7 @@ class ObservabilityConstants(FlextConstants):
     SERVICE_LOGGING = "logging"
 
 
-__all__ = ["ObservabilityConstants"]
+# Export alias for backward compatibility
+# FlextObservabilityConstants is already defined as the class above
+
+__all__ = ["FlextObservabilityConstants"]

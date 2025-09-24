@@ -13,7 +13,13 @@ import pytest
 
 from flext_core import FlextContainer
 from flext_observability import (
+    FlextAlert,
+    FlextHealthCheck,
+    FlextLogEntry,
+    FlextMetric,
+    FlextObservabilityConstants,
     FlextObservabilityMasterFactory,
+    FlextTrace,
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,
@@ -21,14 +27,6 @@ from flext_observability import (
     flext_create_trace,
     get_global_factory,
     reset_global_factory,
-)
-from flext_observability.constants import ObservabilityConstants
-from flext_observability.models import (
-    FlextAlert,
-    FlextHealthCheck,
-    FlextLogEntry,
-    FlextMetric,
-    FlextTrace,
 )
 
 
@@ -155,17 +153,17 @@ class TestConstants:
 
     def test_constants_available(self) -> None:
         """Test that constants are properly defined."""
-        assert hasattr(ObservabilityConstants, "METRIC_TYPE_COUNTER")
-        assert hasattr(ObservabilityConstants, "ALERT_LEVEL_WARNING")
-        assert hasattr(ObservabilityConstants, "TRACE_STATUS_STARTED")
-        assert hasattr(ObservabilityConstants, "HEALTH_STATUS_HEALTHY")
+        assert hasattr(FlextObservabilityConstants, "METRIC_TYPE_COUNTER")
+        assert hasattr(FlextObservabilityConstants, "ALERT_LEVEL_WARNING")
+        assert hasattr(FlextObservabilityConstants, "TRACE_STATUS_STARTED")
+        assert hasattr(FlextObservabilityConstants, "HEALTH_STATUS_HEALTHY")
 
     def test_constants_values(self) -> None:
         """Test constant values are correct."""
-        assert ObservabilityConstants.METRIC_TYPE_COUNTER == "counter"
-        assert ObservabilityConstants.ALERT_LEVEL_WARNING == "warning"
-        assert ObservabilityConstants.TRACE_STATUS_STARTED == "started"
-        assert ObservabilityConstants.HEALTH_STATUS_HEALTHY == "healthy"
+        assert FlextObservabilityConstants.METRIC_TYPE_COUNTER == "counter"
+        assert FlextObservabilityConstants.ALERT_LEVEL_WARNING == "warning"
+        assert FlextObservabilityConstants.TRACE_STATUS_STARTED == "started"
+        assert FlextObservabilityConstants.HEALTH_STATUS_HEALTHY == "healthy"
 
 
 class TestEntityTypes:

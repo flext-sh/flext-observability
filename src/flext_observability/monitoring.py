@@ -29,7 +29,7 @@ from flext_observability.services import (
 # Function type aliases - flexible approach for Python 3.13+ without object
 # Define Union of common callable patterns to satisfy PyRight
 
-AnyCallable = (
+object_callable = (
     Callable[[], object]
     | Callable[[str], object]
     | Callable[[str], str]
@@ -58,7 +58,9 @@ _TWO_ARGS = 2  # Two arguments
 
 
 # Helper function to call any function - specific type handling
-def _call_any_function(func: AnyCallable, *args: object, **kwargs: object) -> object:
+def _call_any_function(
+    func: object_callable, *args: object, **kwargs: object
+) -> object:
     """Helper to call function with object args - specific type handling."""
     # Use cast to match the expected signature
     args_len = len(args)
@@ -133,17 +135,17 @@ class FlextObservabilityMonitor:
       >>> monitor = FlextObservabilityMonitor(container)
       >>>
       >>> # Initialize all observability services
-      >>> init_result = monitor.initialize_observability()
+      >>> init_result: FlextResult[object] = monitor.initialize_observability()
       >>> if init_result.success:
       ...     print("Observability services initialized")
       >>>
       >>> # Start monitoring operations
-      >>> start_result = monitor.start_monitoring()
+      >>> start_result: FlextResult[object] = monitor.start_monitoring()
       >>> if start_result.success:
       ...     print("Monitoring active")
       >>>
       >>> # Check overall system health
-      >>> health_result = monitor.get_health_status()
+      >>> health_result: FlextResult[object] = monitor.get_health_status()
       >>> if health_result.success:
       ...     print(f"System health: {health_result.data}")
 
@@ -186,7 +188,7 @@ class FlextObservabilityMonitor:
         self._monitor_start_time = time.time()
         self._functions_monitored = 0
 
-    def flext_initialize_observability(self) -> FlextResult[None]:
+    def flext_initialize_observability(self: object) -> FlextResult[None]:
         """Initialize all observability services with real functionality."""
         if self._initialized:
             return FlextResult[None].ok(None)
@@ -214,7 +216,9 @@ class FlextObservabilityMonitor:
             ]
 
             for service_name, service in services:
-                register_result = self.container.register(service_name, service)
+                register_result: FlextResult[object] = self.container.register(
+                    service_name, service
+                )
                 if register_result.is_failure:
                     return FlextResult[None].fail(f"Failed to register {service_name}")
 
@@ -225,7 +229,7 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[None].fail(f"Observability initialization failed: {e}")
 
-    def flext_start_monitoring(self) -> FlextResult[None]:
+    def flext_start_monitoring(self: object) -> FlextResult[None]:
         """Start real observability monitoring with service coordination."""
         if not self._initialized:
             return FlextResult[None].fail("Monitor not initialized")
@@ -241,7 +245,7 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[None].fail(f"Failed to start monitoring: {e}")
 
-    def flext_stop_monitoring(self) -> FlextResult[None]:
+    def flext_stop_monitoring(self: object) -> FlextResult[None]:
         """Stop observability monitoring with graceful service shutdown."""
         if not self._running:
             return FlextResult[None].ok(None)
@@ -253,7 +257,7 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[None].fail(f"Failed to stop monitoring: {e}")
 
-    def flext_get_health_status(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def flext_get_health_status(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive health status with real metrics."""
         try:
             if not self._health_service:
@@ -262,13 +266,17 @@ class FlextObservabilityMonitor:
                 )
 
             # Get overall health and add monitor-specific metrics
-            health_result = self._health_service.get_overall_health()
+            health_result: FlextResult[object] = (
+                self._health_service.get_overall_health()
+            )
             if health_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     health_result.error or "Health service failure",
                 )
 
-            health_data = health_result.unwrap() if health_result.is_success else {}
+            health_data: dict[str, object] = (
+                health_result.unwrap() if health_result.is_success else {}
+            )
 
             # Add monitor-specific health information
             health_data["monitor_metrics"] = {
@@ -285,11 +293,11 @@ class FlextObservabilityMonitor:
                 f"Health status check failed: {e}",
             )
 
-    def flext_is_monitoring_active(self) -> bool:
+    def flext_is_monitoring_active(self: object) -> bool:
         """Check if real monitoring is active and operational."""
         return self._initialized and self._running
 
-    def flext_is_initialized(self) -> bool:
+    def flext_is_initialized(self: object) -> bool:
         """Check if observability services are initialized."""
         return self._initialized
 
@@ -304,13 +312,17 @@ class FlextObservabilityMonitor:
             return FlextResult[None].fail("Metrics service not available")
 
         try:
-            metric_result = _models.flext_metric(name, value, metric_type=metric_type)
+            metric_result: FlextResult[object] = _models.flext_metric(
+                name, value, metric_type=metric_type
+            )
             if metric_result.is_failure:
                 return FlextResult[None].fail(
                     metric_result.error or "Failed to create metric",
                 )
             metric = metric_result.unwrap()
-            record_result = self._metrics_service.record_metric(metric)
+            record_result: FlextResult[object] = self._metrics_service.record_metric(
+                metric
+            )
             if record_result.is_failure:
                 return FlextResult[None].fail(
                     record_result.error or "Failed to record metric",
@@ -319,7 +331,7 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[None].fail(f"Failed to record metric: {e}")
 
-    def flext_get_metrics_summary(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def flext_get_metrics_summary(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Get comprehensive metrics summary."""
         if not self._metrics_service:
             return FlextResult[FlextTypes.Core.Dict].fail(
@@ -328,11 +340,11 @@ class FlextObservabilityMonitor:
 
         return self._metrics_service.get_metrics_summary()
 
-    def increment_functions_monitored(self) -> None:
+    def increment_functions_monitored(self: object) -> None:
         """Public method to increment functions monitored counter."""
         self._functions_monitored += 1
 
-    def get_alert_service(self) -> FlextAlertService | None:
+    def get_alert_service(self: object) -> FlextAlertService | None:
         """Public method to get alert service."""
         return self._alert_service
 
@@ -340,14 +352,14 @@ class FlextObservabilityMonitor:
 def flext_monitor_function(
     monitor: FlextObservabilityMonitor | None = None,
     metric_name: str | None = None,
-) -> Callable[[AnyCallable], AnyCallable]:
+) -> Callable[[object_callable], object_callable]:
     """Create function monitoring decorator with real metrics collection.
 
     SOLID compliant with reduced complexity version that provides real functionality
     while maintaining code quality standards and SOLID principles.
     """
 
-    def decorator(func: AnyCallable) -> AnyCallable:
+    def decorator(func: object_callable) -> object_callable:
         def wrapper(*args: object, **kwargs: object) -> object:
             # Get or create monitor instance
             active_monitor = monitor
@@ -358,7 +370,9 @@ def flext_monitor_function(
 
             # Initialize monitor if not already initialized
             if active_monitor and not active_monitor.flext_is_initialized():
-                init_result = active_monitor.flext_initialize_observability()
+                init_result: FlextResult[object] = (
+                    active_monitor.flext_initialize_observability()
+                )
                 if init_result.is_failure:
                     # If initialization fails, execute function without monitoring
                     return _call_any_function(func, *args, **kwargs)
@@ -382,13 +396,13 @@ def flext_monitor_function(
         wrapper.__module__ = getattr(func, "__module__", __name__)
 
         # Return wrapper with preserved metadata and type
-        return cast("AnyCallable", wrapper)
+        return cast("object_callable", wrapper)
 
     return decorator
 
 
 def _execute_monitored_function(
-    func: AnyCallable,
+    func: object_callable,
     args: tuple[object, ...],
     kwargs: FlextTypes.Core.Dict,
     monitor: FlextObservabilityMonitor,
@@ -401,7 +415,7 @@ def _execute_monitored_function(
 
     try:
         # Execute the function
-        result = _call_any_function(func, *args, **kwargs)
+        result: FlextResult[object] = _call_any_function(func, *args, **kwargs)
 
         # Record success metrics
         execution_time = time.time() - start_time

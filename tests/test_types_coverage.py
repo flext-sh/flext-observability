@@ -9,13 +9,6 @@ from decimal import Decimal
 
 import flext_observability.types as types_module
 from flext_observability import (
-    flext_create_alert,
-    flext_create_health_check,
-    flext_create_log_entry,
-    flext_create_metric,
-    flext_create_trace,
-)
-from flext_observability.types import (
     AlertLevel,
     AlertProtocol,
     FlextTypes,
@@ -29,6 +22,11 @@ from flext_observability.types import (
     TagsDict,
     TraceProtocol,
     TraceStatus,
+    flext_create_alert,
+    flext_create_health_check,
+    flext_create_log_entry,
+    flext_create_metric,
+    flext_create_trace,
 )
 
 
