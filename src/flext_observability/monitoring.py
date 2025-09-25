@@ -37,15 +37,12 @@ object_callable = (
     | Callable[[object], object]
     | Callable[[object, object], object]
     | Callable[[int], int]
-    | Callable[[int, int], int]  # Added for (x: int, y: int) -> int
-    | Callable[[], str]
+    | Callable[
+        [int, int], int
+    ]  # Added for (x: int, y: int) -> Union[int, Callable[[]], str]
     | Callable[[], FlextTypes.Core.Headers]
     | Callable[[], None]
-    # Integration test signatures
-    | Callable[[list[int]], FlextTypes.Core.Dict]  # process_data function
-    | Callable[[str, str], FlextTypes.Core.Headers]  # handle_api_request function
-    | Callable[[int], dict[str, int]]  # cpu_intensive_task function
-    | Callable[[float], dict[str, float]]  # io_intensive_task function
+    # Integration test Union[signatures, Callable[[list[int]]], FlextTypes.Core.Dict]  # process_data Union[function, Callable[[str, str]], FlextTypes.Core.Headers]  # handle_api_request Union[function, Callable[[int]], dict[str, int]]  # cpu_intensive_task Union[function, Callable[[float]], dict[str, float]]  # io_intensive_task function
 )
 
 # F TypeVar imported from flext_core
