@@ -13,7 +13,7 @@ from flext_core import E, F, FlextTypes as CoreFlextTypes, P, R, T, U, V
 
 # Observability-specific type aliases
 MetricValue = float | int | Decimal
-TagsDict = dict[str, str | int | float | bool]
+TagsDict = dict[str, str | int | float] | bool
 LogLevel = str  # "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
 AlertLevel = str  # "info", "warning", "error", "critical"
 TraceStatus = str  # "started", "running", "completed", "failed"

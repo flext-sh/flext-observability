@@ -1,4 +1,4 @@
-"""FLEXT Observability Configuration - Monitoring and observability settings.
+"""FLEXT Observability Configuration - Unified monitoring and observability settings.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -6,159 +6,117 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from pydantic import Field
+from typing import Self
+
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextConfig, FlextModels, FlextResult, FlextTypes
+from flext_core import FlextConfig, FlextResult, FlextTypes
 
 
-class FlextObservabilityMetricsConfig(FlextModels.Config):
-    """Metrics collection configuration."""
+class FlextObservabilityConfig(FlextConfig):
+    """Unified observability configuration extending FlextConfig.
 
-    enabled: bool = Field(
+    Single consolidated class providing comprehensive monitoring, metrics, tracing,
+    and health check configuration for the FLEXT observability system following
+    standardization requirements.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="FLEXT_OBSERVABILITY_",
+        case_sensitive=False,
+        validate_assignment=True,
+        use_enum_values=True,
+        arbitrary_types_allowed=True,
+    )
+
+    # === METRICS CONFIGURATION ===
+    metrics_enabled: bool = Field(
         default=True,
         description="Enable metrics collection",
     )
-    export_interval_seconds: int = Field(
+    metrics_export_interval_seconds: int = Field(
         default=60,
         description="Metrics export interval in seconds",
         gt=0,
         le=3600,
     )
-    namespace: str = Field(
+    metrics_namespace: str = Field(
         default="flext",
         description="Metrics namespace",
     )
-    include_host_metrics: bool = Field(
+    metrics_include_host_metrics: bool = Field(
         default=True,
         description="Include host system metrics",
     )
-    include_process_metrics: bool = Field(
+    metrics_include_process_metrics: bool = Field(
         default=True,
         description="Include process metrics",
     )
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
-        """Validate metrics configuration business rules."""
-        if self.export_interval_seconds < 1:
-            return FlextResult[None].fail("Export interval must be positive")
-        if not self.namespace or not self.namespace.strip():
-            return FlextResult[None].fail("Metrics namespace cannot be empty")
-        return FlextResult[None].ok(None)
-
-
-class FlextObservabilityTracingConfig(FlextModels.Config):
-    """Distributed tracing configuration."""
-
-    enabled: bool = Field(
+    # === TRACING CONFIGURATION ===
+    tracing_enabled: bool = Field(
         default=True,
         description="Enable distributed tracing",
     )
-    sampling_rate: float = Field(
+    tracing_sampling_rate: float = Field(
         default=1.0,
         description="Trace sampling rate (0.0 to 1.0)",
         ge=0.0,
         le=1.0,
     )
-    exporter_endpoint: str | None = Field(
+    tracing_exporter_endpoint: str | None = Field(
         default=None,
         description="Trace exporter endpoint URL",
     )
-    service_name: str = Field(
+    tracing_service_name: str = Field(
         default="flext-service",
         description="Service name for traces",
     )
-    max_span_attributes: int = Field(
+    tracing_max_span_attributes: int = Field(
         default=128,
         description="Maximum number of span attributes",
         gt=0,
         le=1000,
     )
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
-        """Validate tracing configuration business rules."""
-        if self.sampling_rate < 0.0 or self.sampling_rate > 1.0:
-            return FlextResult[None].fail("Sampling rate must be between 0.0 and 1.0")
-        if not self.service_name or not self.service_name.strip():
-            return FlextResult[None].fail("Service name cannot be empty")
-        return FlextResult[None].ok(None)
-
-
-class FlextObservabilityMonitoringConfig(FlextModels.Config):
-    """Health monitoring configuration."""
-
-    enabled: bool = Field(
+    # === MONITORING CONFIGURATION ===
+    monitoring_enabled: bool = Field(
         default=True,
         description="Enable health monitoring",
     )
-    check_interval_seconds: int = Field(
+    monitoring_check_interval_seconds: int = Field(
         default=30,
         description="Health check interval in seconds",
         gt=0,
         le=3600,
     )
-    alert_on_failure: bool = Field(
+    monitoring_alert_on_failure: bool = Field(
         default=True,
         description="Send alerts on health check failures",
     )
-    failure_threshold: int = Field(
+    monitoring_failure_threshold: int = Field(
         default=3,
         description="Number of failures before alerting",
         gt=0,
         le=10,
     )
-    include_dependency_checks: bool = Field(
+    monitoring_include_dependency_checks: bool = Field(
         default=True,
         description="Include dependency health checks",
     )
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
-        """Validate monitoring configuration business rules."""
-        if self.check_interval_seconds < 1:
-            return FlextResult[None].fail("Check interval must be positive")
-        if self.failure_threshold < 1:
-            return FlextResult[None].fail("Failure threshold must be positive")
-        return FlextResult[None].ok(None)
-
-
-class FlextObservabilityConfig(FlextConfig):
-    """Complete observability configuration using FlextConfig patterns.
-
-    Provides comprehensive monitoring, metrics, tracing, and health check
-    configuration for the FLEXT observability system.
-    """
-
-    model_config = SettingsConfigDict(
-        env_prefix="FLEXT_OBSERVABILITY_",
-        case_sensitive=False,
-    )
-
-    # Structured configuration using value objects
-    metrics: FlextObservabilityMetricsConfig = Field(
-        default_factory=FlextObservabilityMetricsConfig,
-        description="Metrics collection configuration",
-    )
-    tracing: FlextObservabilityTracingConfig = Field(
-        default_factory=FlextObservabilityTracingConfig,
-        description="Distributed tracing configuration",
-    )
-    monitoring: FlextObservabilityMonitoringConfig = Field(
-        default_factory=FlextObservabilityMonitoringConfig,
-        description="Health monitoring configuration",
-    )
-
-    # Logging configuration
+    # === LOGGING CONFIGURATION ===
     log_level: str = Field(
         default="INFO",
         description="Observability logging level",
-        pattern="^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$",
     )
     structured_logging: bool = Field(
         default=True,
         description="Enable structured logging",
     )
 
-    # Project identification
+    # === PROJECT IDENTIFICATION ===
     project_name: str = Field(
         default="flext-observability",
         description="Project name",
@@ -168,36 +126,123 @@ class FlextObservabilityConfig(FlextConfig):
         description="Project version",
     )
 
-    def validate_domain_rules(self: object) -> FlextResult[None]:
-        """Validate complete observability configuration."""
-        validations = [
-            ("Metrics", self.metrics.validate_business_rules()),
-            ("Tracing", self.tracing.validate_business_rules()),
-            ("Monitoring", self.monitoring.validate_business_rules()),
-        ]
+    # === PYDANTIC 2.11+ VALIDATORS ===
+    @field_validator("log_level")
+    @classmethod
+    def validate_log_level(cls, v: str) -> str:
+        """Validate log level format."""
+        valid_levels = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
+        if v.upper() not in valid_levels:
+            msg = f"Log level must be one of {valid_levels}"
+            raise ValueError(msg)
+        return v.upper()
 
-        for section_name, validation_result in validations:
-            if not validation_result.success:
-                return FlextResult[None].fail(
-                    f"{section_name} validation failed: {validation_result.error}",
-                )
+    @field_validator("metrics_namespace")
+    @classmethod
+    def validate_metrics_namespace(cls, v: str) -> str:
+        """Validate metrics namespace format."""
+        if not v or not v.strip():
+            msg = "Metrics namespace cannot be empty"
+            raise ValueError(msg)
+        return v.strip()
 
-        return FlextResult[None].ok(None)
+    @field_validator("tracing_service_name")
+    @classmethod
+    def validate_tracing_service_name(cls, v: str) -> str:
+        """Validate tracing service name format."""
+        if not v or not v.strip():
+            msg = "Tracing service name cannot be empty"
+            raise ValueError(msg)
+        return v.strip()
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
-        """Alias to validate_domain_rules for business rule validation."""
-        return self.validate_domain_rules()
+    @model_validator(mode="after")
+    def validate_observability_consistency(self) -> Self:
+        """Validate observability configuration consistency."""
+        # Validate metrics configuration consistency
+        if self.metrics_enabled and self.metrics_export_interval_seconds < 1:
+            msg = "Metrics export interval must be positive when metrics are enabled"
+            raise ValueError(msg)
+
+        # Validate tracing configuration consistency
+        if self.tracing_enabled and not (0.0 <= self.tracing_sampling_rate <= 1.0):
+            msg = "Tracing sampling rate must be between 0.0 and 1.0"
+            raise ValueError(msg)
+
+        # Validate monitoring configuration consistency
+        if self.monitoring_enabled and self.monitoring_check_interval_seconds < 1:
+            msg = (
+                "Monitoring check interval must be positive when monitoring is enabled"
+            )
+            raise ValueError(msg)
+
+        if self.monitoring_enabled and self.monitoring_failure_threshold < 1:
+            msg = "Monitoring failure threshold must be positive when monitoring is enabled"
+            raise ValueError(msg)
+
+        return self
+
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate observability business rules."""
+        try:
+            # Validate metrics business rules
+            if self.metrics_enabled:
+                if self.metrics_export_interval_seconds < 1:
+                    return FlextResult[None].fail(
+                        "Metrics export interval must be positive"
+                    )
+                if not self.metrics_namespace or not self.metrics_namespace.strip():
+                    return FlextResult[None].fail("Metrics namespace cannot be empty")
+
+            # Validate tracing business rules
+            if self.tracing_enabled:
+                if not (0.0 <= self.tracing_sampling_rate <= 1.0):
+                    return FlextResult[None].fail(
+                        "Tracing sampling rate must be between 0.0 and 1.0"
+                    )
+                if (
+                    not self.tracing_service_name
+                    or not self.tracing_service_name.strip()
+                ):
+                    return FlextResult[None].fail(
+                        "Tracing service name cannot be empty"
+                    )
+
+            # Validate monitoring business rules
+            if self.monitoring_enabled:
+                if self.monitoring_check_interval_seconds < 1:
+                    return FlextResult[None].fail(
+                        "Monitoring check interval must be positive"
+                    )
+                if self.monitoring_failure_threshold < 1:
+                    return FlextResult[None].fail(
+                        "Monitoring failure threshold must be positive"
+                    )
+
+            return FlextResult[None].ok(None)
+        except Exception as e:
+            return FlextResult[None].fail(f"Business rules validation failed: {e}")
 
     @classmethod
     def create_with_defaults(
         cls,
-        **overrides: FlextTypes.Core.Dict,
+        **overrides: object,
     ) -> FlextObservabilityConfig:
         """Create configuration with intelligent defaults."""
         defaults = {
-            "metrics": FlextObservabilityMetricsConfig(),
-            "tracing": FlextObservabilityTracingConfig(),
-            "monitoring": FlextObservabilityMonitoringConfig(),
+            "metrics_enabled": True,
+            "metrics_export_interval_seconds": 60,
+            "metrics_namespace": "flext",
+            "metrics_include_host_metrics": True,
+            "metrics_include_process_metrics": True,
+            "tracing_enabled": True,
+            "tracing_sampling_rate": 1.0,
+            "tracing_service_name": "flext-service",
+            "tracing_max_span_attributes": 128,
+            "monitoring_enabled": True,
+            "monitoring_check_interval_seconds": 30,
+            "monitoring_alert_on_failure": True,
+            "monitoring_failure_threshold": 3,
+            "monitoring_include_dependency_checks": True,
             "log_level": "INFO",
             "structured_logging": True,
             "project_name": "flext-observability",
@@ -209,7 +254,4 @@ class FlextObservabilityConfig(FlextConfig):
 
 __all__: FlextTypes.Core.StringList = [
     "FlextObservabilityConfig",
-    "FlextObservabilityMetricsConfig",
-    "FlextObservabilityMonitoringConfig",
-    "FlextObservabilityTracingConfig",
 ]

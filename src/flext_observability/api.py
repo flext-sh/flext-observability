@@ -135,7 +135,7 @@ def flext_create_metric(
 
     Args:
       name (str): Metric name following observability naming conventions.
-      value (float | Decimal): Numeric metric value with high precision support.
+      value (Union[float, Decimal]): Numeric metric value with high precision support.
           Supports both float and Decimal types for financial and precision-critical
           measurements. Must be finite and valid numeric value.
       unit (str, optional): Measurement unit for metric value interpretation.

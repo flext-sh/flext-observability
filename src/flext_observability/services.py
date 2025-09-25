@@ -936,7 +936,7 @@ class FlextAlertService:
                 return FlextResult[FlextAlert].fail("Alert cannot be None")
 
             self.logger.warning(
-                "Alert created: %s | Severity: %s",
+                "Alert created: %Union[s, Severity]: %s",
                 alert.message,
                 alert.severity,
             )
