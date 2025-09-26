@@ -20,6 +20,7 @@ from flext_core import (
     FlextModels,
     FlextResult,
 )
+from flext_observability.typings import FlextObservabilityTypes
 
 
 class FlextUtilitiesGenerators:
@@ -111,7 +112,7 @@ class FlextMetric(FlextModels.Entity):
       ...     name="api_response_time",
       ...     value=150.5,
       ...     unit="milliseconds",
-      ...     tags={"service": "user-api", "endpoint": "/users"},
+      ...     tags={"service": user - api, "endpoint": "/users"},
       ...     metric_type="histogram",
       ... )
       >>> validation = metric.validate_business_rules()
@@ -142,7 +143,9 @@ class FlextMetric(FlextModels.Entity):
     name: str = Field(..., description="Metric name")
     value: float | Decimal = Field(..., description="Metric value")
     unit: str = Field(default="", description="Metric unit")
-    tags: dict[str, str] = Field(default_factory=dict, description="Metric tags")
+    tags: FlextObservabilityTypes.Core.TagsDict = Field(
+        default_factory=dict, description="Metric tags"
+    )
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
     metric_type: str = Field(default="gauge", description="Metric type")
 
@@ -220,7 +223,7 @@ class FlextLogEntry(FlextModels.Entity):
 
     message: str = Field(..., description="Log message")
     level: str = Field(default="info", description="Log level")
-    context: dict[str, object] = Field(
+    context: FlextObservabilityTypes.Core.MetadataDict = Field(
         default_factory=dict,
         description="Log context",
     )
@@ -280,7 +283,7 @@ class FlextTrace(FlextModels.Entity):
     trace_id: str = Field(..., description="Trace ID")
     operation: str = Field(..., description="Operation name")
     span_id: str = Field(..., description="Span ID")
-    span_attributes: dict[str, object] = Field(
+    span_attributes: FlextObservabilityTypes.Core.SpanAttributesDict = Field(
         default_factory=dict,
         description="Span attributes",
     )
@@ -365,7 +368,9 @@ class FlextAlert(FlextModels.Entity):
     message: str = Field(..., description="Alert message")
     severity: str = Field(default="low", description="Alert severity")
     status: str = Field(default="active", description="Alert status")
-    tags: dict[str, str] = Field(default_factory=dict, description="Alert tags")
+    tags: FlextObservabilityTypes.Core.TagsDict = Field(
+        default_factory=dict, description="Alert tags"
+    )
     timestamp: datetime = Field(default_factory=_generate_utc_datetime)
 
     @field_validator("title")
@@ -463,13 +468,13 @@ class FlextHealthCheck(FlextModels.Entity):
           "postgresql-database",
           "flext-tap-oracle", "meltano-orchestrator"). Used for health dashboard
           organization and dependency mapping.
-      status (str): Current health classification: "healthy" (operating normally),
+      status (str): Current health classification: healthy (operating normally),
           "unhealthy" (service failure), "degraded" (reduced performance),
           "unknown" (cannot determine status). Used for alerting and routing.
       message (str): Detailed health status description providing diagnostic context,
           error details, performance indicators, and recommended actions.
           Empty string indicates no additional information beyond status.
-      metrics (Dict[str, object]): Quantitative health indicators including response
+      metrics (dict["str", "object"]): Quantitative health indicators including response
           times, error rates, resource utilization, and custom business metrics.
           Supports nested objects for comprehensive health telemetry.
       timestamp (datetime): UTC timestamp when health check was performed with
@@ -535,7 +540,7 @@ class FlextHealthCheck(FlextModels.Entity):
     component: str = Field(..., description="Component name")
     status: str = Field(default="unknown", description="Health status")
     message: str = Field(default="", description="Health message")
-    metrics: dict[str, object] = Field(
+    metrics: FlextObservabilityTypes.Core.HealthMetricsDict = Field(
         default_factory=dict,
         description="Health metrics",
     )
@@ -609,7 +614,9 @@ def flext_alert(
     **kwargs: object,
 ) -> FlextAlert:
     """Create a FlextAlert entity with proper validation."""
-    tags: dict[str, object] = cast("dict[str, str]", kwargs.get("tags", {}))
+    tags: FlextObservabilityTypes.Core.TagsDict = cast(
+        "FlextObservabilityTypes.Core.TagsDict", kwargs.get("tags", {})
+    )
     timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
     # Create with explicit kwargs for better type safety
@@ -653,8 +660,9 @@ def flext_trace(
     **kwargs: object,
 ) -> FlextTrace:
     """Create a FlextTrace entity with proper validation."""
-    span_attributes: dict[str, object] = cast(
-        "dict[str, object]", kwargs.get("span_attributes", {})
+    span_attributes: FlextObservabilityTypes.Core.SpanAttributesDict = cast(
+        "FlextObservabilityTypes.Core.SpanAttributesDict",
+        kwargs.get("span_attributes", {}),
     )
     duration_ms = cast("int", kwargs.get("duration_ms", 0))
     timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
@@ -692,7 +700,9 @@ def flext_metric(
 ) -> FlextResult[FlextMetric]:
     """Create a FlextMetric entity with proper validation and type safety."""
     try:
-        tags: dict[str, object] = cast("dict[str, str]", kwargs.get("tags", {}))
+        tags: FlextObservabilityTypes.Core.TagsDict = cast(
+            "FlextObservabilityTypes.Core.TagsDict", kwargs.get("tags", {})
+        )
         timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
         # Create with explicit kwargs for better type safety
@@ -750,7 +760,9 @@ def flext_health_check(
     **kwargs: object,
 ) -> FlextHealthCheck:
     """Create a FlextHealthCheck entity with proper validation."""
-    metrics: dict[str, object] = cast("dict[str, object]", kwargs.get("metrics", {}))
+    metrics: FlextObservabilityTypes.Core.HealthMetricsDict = cast(
+        "FlextObservabilityTypes.Core.HealthMetricsDict", kwargs.get("metrics", {})
+    )
     timestamp = cast("datetime", kwargs.get("timestamp", _generate_utc_datetime()))
 
     # Create with explicit kwargs for better type safety
@@ -780,11 +792,11 @@ def flext_health_check(
 _logger = FlextLogger(__name__)
 try:
     # Explicitly rebuild models to ensure forward refs (Decimal) are resolved
-    FlextMetric.model_rebuild(_types_namespace={"Decimal": Decimal})
-    FlextTrace.model_rebuild(_types_namespace={"Decimal": Decimal})
-    FlextAlert.model_rebuild(_types_namespace={"Decimal": Decimal})
-    FlextLogEntry.model_rebuild(_types_namespace={"Decimal": Decimal})
-    FlextHealthCheck.model_rebuild(_types_namespace={"Decimal": Decimal})
+    FlextMetric.model_rebuild(_types_namespace={"Decimal": "Decimal"})
+    FlextTrace.model_rebuild(_types_namespace={"Decimal": "Decimal"})
+    FlextAlert.model_rebuild(_types_namespace={"Decimal": "Decimal"})
+    FlextLogEntry.model_rebuild(_types_namespace={"Decimal": "Decimal"})
+    FlextHealthCheck.model_rebuild(_types_namespace={"Decimal": "Decimal"})
 except Exception as exc:  # pragma: no cover - Pydantic internal failure unlikely
     _logger.warning(  # pragma: no cover
         "Pydantic model_rebuild failed for flext-observability entities",

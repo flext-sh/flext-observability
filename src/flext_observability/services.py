@@ -11,7 +11,7 @@ import threading
 import time
 import uuid
 from collections import defaultdict
-from typing import cast
+from typing import cast, override
 
 import psutil
 
@@ -29,6 +29,7 @@ from flext_observability.models import (
     FlextMetric,
     FlextTrace,
 )
+from flext_observability.typings import FlextObservabilityTypes
 
 
 class FlextUtilitiesGenerators:
@@ -127,7 +128,7 @@ class FlextMetricsService:
       Business metrics with validation:
 
       >>> user_count = FlextMetric(
-      ...     name="active_users", value=1250, unit="count", metric_type="gauge"
+      ...     name=active_users, value=1250, unit=count, metric_type="gauge"
       ... )
       >>> result: FlextResult[object] = metrics_service.record_metric(user_count)
       >>> # Automatic validation and business rule enforcement
@@ -159,18 +160,29 @@ class FlextMetricsService:
 
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize metrics service with real storage and aggregation."""
         self.container = container or FlextContainer()
         self.logger = FlextLogger(self.__class__.__name__)
 
         # Real metrics storage with thread safety (Single Responsibility)
-        self._metrics_store: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
+        self._metrics_store: FlextObservabilityTypes.Core.MetricsStore = defaultdict(
+            list
+        )
         self._metrics_lock = threading.RLock()
-        self._metric_counters: dict[str, float] = defaultdict(float)
-        self._metric_gauges: dict[str, float] = {}
-        self._metric_histograms: dict[str, list[float]] = defaultdict(
-            list,
+        self._metric_counters: FlextObservabilityTypes.Core.CountersDict = defaultdict(
+            float
+        )
+        self._metric_gauges: FlextObservabilityTypes.Core.GaugesDict = {}
+        self._metric_histograms: FlextObservabilityTypes.Core.HistogramsDict = (
+            defaultdict(
+                list,
+            )
         )  # Keep as-is, specific numeric type
 
         # Service health tracking - use flext-core facilities
@@ -226,7 +238,7 @@ class FlextMetricsService:
                 metric_data: FlextTypes.Core.Dict = {
                     "name": metric.name,
                     "value": metric.value,
-                    "timestamp": timestamp,
+                    "timestamp": "timestamp",
                     "labels": getattr(metric, "labels", {}),
                     "unit": getattr(metric, "unit", None),
                     "type": getattr(metric, "metric_type", "gauge"),
@@ -434,6 +446,11 @@ class FlextLoggingService:
 
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize structured logging service with dependency injection.
 
@@ -548,20 +565,29 @@ class FlextTracingService:
 
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize tracing service with real span tracking and correlation."""
         self.container = container or FlextContainer()
         self.logger = FlextLogger(self.__class__.__name__)
 
         # Real trace storage with thread safety (Single Responsibility)
-        self._active_traces: dict[str, FlextTypes.Core.Dict] = {}
-        self._completed_traces: dict[str, FlextTypes.Core.Dict] = {}
-        self._trace_spans: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
+        self._active_traces: FlextObservabilityTypes.Core.TracesDict = {}
+        self._completed_traces: FlextObservabilityTypes.Core.TracesDict = {}
+        self._trace_spans: FlextObservabilityTypes.Core.TraceSpansDict = defaultdict(
+            list
+        )
         self._traces_lock = threading.RLock()
 
         # Correlation tracking for distributed tracing
-        self._trace_hierarchy: dict[str, FlextTypes.Core.StringList] = defaultdict(
-            list,
+        self._trace_hierarchy: FlextObservabilityTypes.Core.TraceHierarchyDict = (
+            defaultdict(
+                list,
+            )
         )  # Keep as-is, string specific
         self._span_relationships: FlextTypes.Core.Headers = {}  # Keep as-is, string specific
 
@@ -596,7 +622,7 @@ class FlextTracingService:
                 trace_context: FlextTypes.Core.Dict = {
                     "trace_id": trace.trace_id,
                     "operation": trace.operation,
-                    "start_time": start_time,
+                    "start_time": "start_time",
                     "status": "active",
                     "service_name": getattr(
                         trace,
@@ -649,18 +675,18 @@ class FlextTracingService:
                     )
 
                 span_id = f"{trace_id}_{len(self._trace_spans[trace_id])}"
-                span_start_time = time.time()
+                time.time()
 
                 # Create comprehensive span
                 span: FlextTypes.Core.Dict = {
-                    "span_id": span_id,
-                    "trace_id": trace_id,
-                    "name": span_name,
-                    "start_time": span_start_time,
+                    "span_id": "span_id",
+                    "trace_id": "trace_id",
+                    "name": "span_name",
+                    "start_time": "span_start_time",
                     "status": "active",
                     "attributes": dict(span_attributes),
                     "events": [],
-                    "parent_span_id": None,  # Can be extended for nested spans
+                    "parent_span_id": "None",  # Can be extended for nested spans
                 }
 
                 # Add span to trace
@@ -700,9 +726,9 @@ class FlextTracingService:
                 # Update trace with completion info
                 trace_context.update(
                     {
-                        "end_time": end_time,
-                        "duration_seconds": duration,
-                        "status": status,
+                        "end_time": "end_time",
+                        "duration_seconds": "duration",
+                        "status": "status",
                         "span_count": len(self._trace_spans[trace_id]),
                     },
                 )
@@ -767,10 +793,10 @@ class FlextTracingService:
 
             # Create Jaeger-compatible format
             jaeger_trace: FlextTypes.Core.Dict = {
-                "traceID": trace_id,
+                "traceID": "trace_id",
                 "spans": [
                     {
-                        "traceID": trace_id,
+                        "traceID": "trace_id",
                         "spanID": span.get("span_id", ""),
                         "operationName": span.get("name", ""),
                         "startTime": int(
@@ -784,7 +810,7 @@ class FlextTracingService:
                             else 0,
                         ),
                         "tags": [
-                            {"key": k, "value": str(v)}
+                            {"key": "k", "value": str(v)}
                             for k, v in cast(
                                 "FlextTypes.Core.Dict",
                                 span.get("attributes") or {},
@@ -835,7 +861,7 @@ class FlextTracingService:
 
                 summary: FlextTypes.Core.Dict = {
                     "service_info": {
-                        "uptime_seconds": uptime,
+                        "uptime_seconds": "uptime",
                         "traces_started": self._traces_started,
                         "traces_completed": self._traces_completed,
                         "active_traces": len(self._active_traces),
@@ -914,6 +940,11 @@ class FlextAlertService:
 
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize alert service with dependency injection.
 
@@ -936,7 +967,7 @@ class FlextAlertService:
                 return FlextResult[FlextAlert].fail("Alert cannot be None")
 
             self.logger.warning(
-                "Alert created: %Union[s, Severity]: %s",
+                "Alert created: %s | Severity: %s",
                 alert.message,
                 alert.severity,
             )
@@ -1024,14 +1055,21 @@ class FlextHealthService:
 
     """
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize health service with real monitoring and alerting."""
         self.container = container or FlextContainer()
         self.logger = FlextLogger(self.__class__.__name__)
 
         # Real health monitoring with thread safety (Single Responsibility)
-        self._component_health: dict[str, FlextTypes.Core.Dict] = {}
-        self._health_history: dict[str, list[FlextTypes.Core.Dict]] = defaultdict(list)
+        self._component_health: FlextObservabilityTypes.Core.ComponentHealthDict = {}
+        self._health_history: FlextObservabilityTypes.Core.HealthHistoryDict = (
+            defaultdict(list)
+        )
         self._health_lock = threading.RLock()
 
         # Health monitoring configuration
@@ -1070,7 +1108,7 @@ class FlextHealthService:
         return {
             "component": actual_health.component,
             "status": getattr(actual_health, "status", "unknown"),
-            "check_time": check_time,
+            "check_time": "check_time",
             "details": getattr(actual_health, "details", {}),
             "metrics": getattr(actual_health, "metrics", {}),
             "error_message": getattr(actual_health, "error_message", None),
@@ -1197,28 +1235,26 @@ class FlextHealthService:
 
                 # Calculate overall health status
                 total_components = len(self._component_health)
-                healthy_count = len(self._healthy_components)
+                len(self._healthy_components)
                 unhealthy_count = len(self._unhealthy_components)
 
                 # Determine overall status
-                if total_components == 0:
-                    overall_status = "unknown"
-                elif unhealthy_count == 0:
-                    overall_status = "healthy"
-                elif unhealthy_count < total_components / 2:
-                    overall_status = "degraded"
-                else:
-                    overall_status = "unhealthy"
+                if (
+                    total_components == 0
+                    or unhealthy_count == 0
+                    or unhealthy_count < total_components / 2
+                ):
+                    pass
 
                 # Create comprehensive health summary
                 health_summary: FlextTypes.Core.Dict = {
-                    "overall_status": overall_status,
-                    "timestamp": current_time,
-                    "uptime_seconds": uptime,
+                    "overall_status": "overall_status",
+                    "timestamp": "current_time",
+                    "uptime_seconds": "uptime",
                     "summary": {
-                        "total_components": total_components,
-                        "healthy_components": healthy_count,
-                        "unhealthy_components": unhealthy_count,
+                        "total_components": "total_components",
+                        "healthy_components": "healthy_count",
+                        "unhealthy_components": "unhealthy_count",
                         "health_checks_performed": self._total_health_checks,
                     },
                     "components": dict(self._component_health),
@@ -1243,39 +1279,35 @@ class FlextHealthService:
     def get_component_health_history(
         self,
         component_name: str,
-    ) -> FlextResult[list[FlextTypes.Core.Dict]]:
+    ) -> FlextResult[FlextObservabilityTypes.Core.HealthHistoryList]:
         """Get health history for a specific component."""
         try:
             with self._health_lock:
                 # Return empty list if no history exists (not a failure)
                 if component_name not in self._health_history:
-                    return FlextResult[list[FlextTypes.Core.Dict]].ok([])
+                    return FlextResult[
+                        FlextObservabilityTypes.Core.HealthHistoryList
+                    ].ok([])
 
                 history = self._health_history[component_name].copy()
-                return FlextResult[list[FlextTypes.Core.Dict]].ok(history)
+                return FlextResult[FlextObservabilityTypes.Core.HealthHistoryList].ok(
+                    history
+                )
 
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[list[FlextTypes.Core.Dict]].fail(
+            return FlextResult[FlextObservabilityTypes.Core.HealthHistoryList].fail(
                 f"Failed to get health history for '{component_name}': {e}",
             )
 
     def perform_system_health_check(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Perform comprehensive system health checks including infrastructure."""
         try:
-            system_checks: dict[str, dict[str, float | str]] = {}
+            system_checks: FlextObservabilityTypes.Core.SystemChecksDict = {}
 
             # Memory usage check - psutil is a required dependency
             memory = psutil.virtual_memory()
-            memory_status = (
-                "healthy"
-                if memory.percent < FlextObservabilityConstants.MEMORY_WARNING_THRESHOLD
-                else "warning"
-                if memory.percent
-                < FlextObservabilityConstants.MEMORY_CRITICAL_THRESHOLD
-                else "critical"
-            )
             system_checks["memory"] = {
-                "status": memory_status,
+                "status": "memory_status",
                 "used_percent": memory.percent,
                 "available_gb": memory.available / (1024**3),
             }
@@ -1283,18 +1315,10 @@ class FlextHealthService:
             # Disk usage check
             try:
                 disk_usage = shutil.disk_usage("/")
-                used_percent = (disk_usage.used / disk_usage.total) * 100
-                disk_status = (
-                    "healthy"
-                    if used_percent < FlextObservabilityConstants.DISK_WARNING_THRESHOLD
-                    else "warning"
-                    if used_percent
-                    < FlextObservabilityConstants.DISK_CRITICAL_THRESHOLD
-                    else "critical"
-                )
+                (disk_usage.used / disk_usage.total) * 100
                 system_checks["disk"] = {
-                    "status": disk_status,
-                    "used_percent": used_percent,
+                    "status": "disk_status",
+                    "used_percent": "used_percent",
                     "free_gb": disk_usage.free / (1024**3),
                 }
             except (OSError, AttributeError):  # pragma: no cover
@@ -1304,17 +1328,10 @@ class FlextHealthService:
                 }
 
             # Thread count check
-            thread_count = threading.active_count()
-            thread_status = (
-                "healthy"
-                if thread_count < FlextObservabilityConstants.THREAD_WARNING_THRESHOLD
-                else "warning"
-                if thread_count < FlextObservabilityConstants.THREAD_CRITICAL_THRESHOLD
-                else "critical"
-            )
+            threading.active_count()
             system_checks["threads"] = {
-                "status": thread_status,
-                "active_count": thread_count,
+                "status": "thread_status",
+                "active_count": "thread_count",
             }
 
             # Service availability check

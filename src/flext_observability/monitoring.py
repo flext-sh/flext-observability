@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import cast
+from typing import cast, override
 
 import flext_observability.models as _models
 from flext_core import (
@@ -25,6 +25,7 @@ from flext_observability.services import (
     FlextMetricsService,
     FlextTracingService,
 )
+from flext_observability.typings import FlextObservabilityTypes
 
 # Function type aliases - flexible approach for Python 3.13+ without object
 # Define Union of common callable patterns to satisfy PyRight
@@ -35,14 +36,14 @@ object_callable = (
     | Callable[[str], str]
     | Callable[[str], FlextTypes.Core.Dict]
     | Callable[[object], object]
-    | Callable[[object, object], object]
+    | Callable[["object", "object"], object]
     | Callable[[int], int]
     | Callable[
-        [int, int], int
-    ]  # Added for (x: int, y: int) -> Union[int, Callable[[]], str]
+        ["int", "int"], int
+    ]  # Added for (x: "int", y: int) -> int | Callable[[], str]
     | Callable[[], FlextTypes.Core.Headers]
     | Callable[[], None]
-    # Integration test Union[signatures, Callable[[list[int]]], FlextTypes.Core.Dict]  # process_data Union[function, Callable[[str, str]], FlextTypes.Core.Headers]  # handle_api_request Union[function, Callable[[int]], dict[str, int]]  # cpu_intensive_task Union[function, Callable[[float]], dict[str, float]]  # io_intensive_task function
+    # Integration test signatures | Callable[[list[int]], FlextTypes.Core.Dict]  # process_data function | Callable[[str | str], FlextTypes.Core.Headers]  # handle_api_request function | Callable[[int], dict["str", "int"]]  # cpu_intensive_task function | Callable[[float], dict["str", "float"]]  # io_intensive_task function
 )
 
 # F TypeVar imported from flext_core
@@ -167,6 +168,7 @@ class FlextObservabilityMonitor:
 
     """
 
+    @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and integration."""
         self.container = container or FlextContainer()
@@ -204,7 +206,7 @@ class FlextObservabilityMonitor:
             self._health_service = FlextHealthService(self.container)
 
             # Register services in container (Dependency Inversion)
-            services: list[tuple[str, object]] = [
+            services: FlextObservabilityTypes.Core.ServicesList = [
                 ("flext_metrics_service", self._metrics_service),
                 ("flext_logging_service", self._logging_service),
                 ("flext_tracing_service", self._tracing_service),
@@ -271,7 +273,7 @@ class FlextObservabilityMonitor:
                     health_result.error or "Health service failure",
                 )
 
-            health_data: dict[str, object] = (
+            health_data: FlextObservabilityTypes.Core.HealthMetricsDict = (
                 health_result.unwrap() if health_result.is_success else {}
             )
 

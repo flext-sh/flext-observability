@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import cast
+from typing import cast, override
 
 # FIXED: Removed ImportError fallback - psutil must be available (ZERO TOLERANCE)
 import psutil
@@ -23,6 +23,7 @@ from flext_core import (
     FlextService,
     FlextTypes,
 )
+from flext_observability.typings import FlextObservabilityTypes
 
 
 class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
@@ -31,6 +32,7 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
     Unified class implementing observability patterns with flext-core foundation.
     """
 
+    @override
     def __init__(self, **_data: object) -> None:
         """Initialize observability service with flext-core foundation."""
         super().__init__()
@@ -43,7 +45,9 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
         """Nested helper for metrics collection."""
 
         @staticmethod
-        def collect_system_metrics() -> FlextResult[dict[str, float]]:
+        def collect_system_metrics() -> FlextResult[
+            FlextObservabilityTypes.Core.MetricDict
+        ]:
             """Collect system performance metrics."""
             # FIXED: Removed psutil availability check - psutil must be available (ZERO TOLERANCE)
             metrics = {
@@ -55,10 +59,12 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
                 else 0.0,
             }
 
-            return FlextResult[dict[str, float]].ok(metrics)
+            return FlextResult[FlextObservabilityTypes.Core.MetricDict].ok(metrics)
 
         @staticmethod
-        def format_metrics(metrics: dict[str, float]) -> FlextResult[dict[str, str]]:
+        def format_metrics(
+            metrics: FlextObservabilityTypes.Core.MetricDict,
+        ) -> FlextResult[FlextObservabilityTypes.Core.MetricFormatDict]:
             """Format metrics for display."""
             try:
                 formatted = {}
@@ -66,10 +72,12 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
                     # All values are guaranteed to be float by type hint
                     formatted[key] = f"{value:.2f}%"
 
-                return FlextResult[dict[str, str]].ok(formatted)
+                return FlextResult[FlextObservabilityTypes.Core.MetricFormatDict].ok(
+                    formatted
+                )
 
             except Exception as e:
-                return FlextResult[dict[str, str]].fail(
+                return FlextResult[FlextObservabilityTypes.Core.MetricFormatDict].fail(
                     f"Metrics formatting error: {e!s}",
                 )
 
@@ -77,7 +85,9 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
         """Nested helper for distributed tracing."""
 
         @staticmethod
-        def create_trace_context() -> FlextResult[dict[str, str]]:
+        def create_trace_context() -> FlextResult[
+            FlextObservabilityTypes.Core.TraceContextDict
+        ]:
             """Create distributed tracing context."""
             try:
                 trace_context = {
@@ -87,15 +97,19 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
                     "service": "flext-observability",
                 }
 
-                return FlextResult[dict[str, str]].ok(trace_context)
+                return FlextResult[FlextObservabilityTypes.Core.TraceContextDict].ok(
+                    trace_context
+                )
 
             except Exception as e:
-                return FlextResult[dict[str, str]].fail(
+                return FlextResult[FlextObservabilityTypes.Core.TraceContextDict].fail(
                     f"Trace context creation error: {e!s}",
                 )
 
         @staticmethod
-        def log_trace_event(context: dict[str, str], event: str) -> FlextResult[None]:
+        def log_trace_event(
+            context: FlextObservabilityTypes.Core.TraceContextDict, event: str
+        ) -> FlextResult[None]:
             """Log trace event with context."""
             try:
                 logger = FlextLogger(__name__)
@@ -164,6 +178,7 @@ class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
             cast("FlextTypes.Core.Dict", observability_data),
         )
 
+    @override
     def execute(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Execute observability service operation."""
         self._logger.info("Executing observability service")

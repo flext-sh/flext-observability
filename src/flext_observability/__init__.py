@@ -52,7 +52,7 @@ from flext_observability.services import (
     FlextMetricsService,
     FlextTracingService,
 )
-from flext_observability.types import (
+from flext_observability.typings import (
     AlertLevel,
     AlertProtocol,
     HealthCheckProtocol,

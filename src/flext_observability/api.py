@@ -26,6 +26,7 @@ from flext_observability.models import (
     flext_metric,
     flext_trace,
 )
+from flext_observability.typings import FlextObservabilityTypes
 
 """
 Copyright (c) 2025 FLEXT Contributors
@@ -125,7 +126,7 @@ def flext_create_metric(
     name: str,
     value: float | Decimal,
     unit: str = "",
-    tags: dict[str, object] | None = None,
+    tags: FlextObservabilityTypes.Core.TagsDict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextMetric]:
     """Create observability metric with simplified API.
@@ -135,13 +136,13 @@ def flext_create_metric(
 
     Args:
       name (str): Metric name following observability naming conventions.
-      value (Union[float, Decimal]): Numeric metric value with high precision support.
+      value (float | Decimal): Numeric metric value with high precision support.
           Supports both float and Decimal types for financial and precision-critical
           measurements. Must be finite and valid numeric value.
       unit (str, optional): Measurement unit for metric value interpretation.
           Common units: "count", "milliseconds", "seconds", "bytes", "percent".
           Used for type inference and dashboard display formatting.
-      tags (Dict[str, str], optional): Metadata tags for metric categorization
+      tags (dict["str", "str"], optional): Metadata tags for metric categorization
           and filtering. Used for grouping, alerting rules, and dashboard filtering.
           Examples: {"service": "api", "environment": "production"}.
       timestamp (datetime, optional): Metric creation timestamp. Defaults to
@@ -171,7 +172,7 @@ def flext_create_metric(
       ...     name="daily_revenue",
       ...     value=15420.50,
       ...     unit="dollars",
-      ...     tags={"region": "us-east", "product": "premium"},
+      ...     tags={"region": us - east, "product": "premium"},
       ... )
 
     Validation:
@@ -205,7 +206,9 @@ def flext_create_metric(
                 name=name,
                 value=value,
                 unit=unit,
-                tags=cast("dict[str, str]", tags) if tags is not None else {},
+                tags=cast("FlextObservabilityTypes.Core.TagsDict", tags)
+                if tags is not None
+                else {},
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
@@ -268,7 +271,7 @@ def flext_create_log_entry(
 def flext_create_trace(
     operation_name: str,
     service_name: str = "default",
-    config: dict[str, str] | None = None,
+    config: FlextObservabilityTypes.Core.TraceContextDict | None = None,
     timestamp: datetime | None = None,
 ) -> FlextResult[FlextTrace]:
     """Create observability trace with simple parameters.
@@ -276,7 +279,7 @@ def flext_create_trace(
     ✅ ELIMINATED DUPLICATION: Delegates to entities.flext_trace()
     to avoid code duplication. Single source of truth for trace creation.
     """
-    config: dict[str, object] = config or {}
+    config: FlextObservabilityTypes.Core.TraceContextDict = config or {}
 
     try:
         # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
@@ -285,8 +288,8 @@ def flext_create_trace(
         try:
             probe = FlextTrace(
                 operation=operation_name,
-                trace_id="probe_trace_id",
-                span_id="probe_span_id",
+                trace_id=probe_trace_id,
+                span_id=probe_span_id,
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
@@ -294,8 +297,8 @@ def flext_create_trace(
             return FlextResult[FlextTrace].fail(f"Failed to create trace: {e}")
 
         # Generate trace and span IDs if not provided in config
-        trace_id_from_config: dict[str, object] = config.get("trace_id")
-        span_id_from_config: dict[str, object] = config.get("span_id")
+        trace_id_from_config: object = config.get("trace_id")
+        span_id_from_config: object = config.get("span_id")
 
         trace_id = (
             str(trace_id_from_config)

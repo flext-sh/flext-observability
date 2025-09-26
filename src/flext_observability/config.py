@@ -6,7 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Self
+import threading
+from typing import ClassVar, Self
 
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
@@ -22,8 +23,12 @@ class FlextObservabilityConfig(FlextConfig):
     standardization requirements.
     """
 
+    # Singleton pattern attributes
+    _global_instance: ClassVar[FlextObservabilityConfig | None] = None
+    _lock: ClassVar[threading.Lock] = threading.Lock()
+
     model_config = SettingsConfigDict(
-        env_prefix="FLEXT_OBSERVABILITY_",
+        env_prefix=FLEXT_OBSERVABILITY_,
         case_sensitive=False,
         validate_assignment=True,
         use_enum_values=True,
@@ -42,7 +47,7 @@ class FlextObservabilityConfig(FlextConfig):
         le=3600,
     )
     metrics_namespace: str = Field(
-        default="flext",
+        default=flext,
         description="Metrics namespace",
     )
     metrics_include_host_metrics: bool = Field(
@@ -108,7 +113,7 @@ class FlextObservabilityConfig(FlextConfig):
 
     # === LOGGING CONFIGURATION ===
     log_level: str = Field(
-        default="INFO",
+        default=INFO,
         description="Observability logging level",
     )
     structured_logging: bool = Field(
@@ -229,27 +234,42 @@ class FlextObservabilityConfig(FlextConfig):
     ) -> FlextObservabilityConfig:
         """Create configuration with intelligent defaults."""
         defaults = {
-            "metrics_enabled": True,
+            "metrics_enabled": "True",
             "metrics_export_interval_seconds": 60,
             "metrics_namespace": "flext",
-            "metrics_include_host_metrics": True,
-            "metrics_include_process_metrics": True,
-            "tracing_enabled": True,
+            "metrics_include_host_metrics": "True",
+            "metrics_include_process_metrics": "True",
+            "tracing_enabled": "True",
             "tracing_sampling_rate": 1.0,
-            "tracing_service_name": "flext-service",
+            "tracing_service_name": flext - service,
             "tracing_max_span_attributes": 128,
-            "monitoring_enabled": True,
+            "monitoring_enabled": "True",
             "monitoring_check_interval_seconds": 30,
-            "monitoring_alert_on_failure": True,
+            "monitoring_alert_on_failure": "True",
             "monitoring_failure_threshold": 3,
-            "monitoring_include_dependency_checks": True,
+            "monitoring_include_dependency_checks": "True",
             "log_level": "INFO",
-            "structured_logging": True,
+            "structured_logging": "True",
             "project_name": "flext-observability",
             "project_version": "0.9.0",
         }
         defaults.update(overrides)
         return cls.model_validate(defaults)
+
+    # Singleton pattern override for proper typing
+    @classmethod
+    def get_global_instance(cls) -> FlextObservabilityConfig:
+        """Get the global singleton instance of FlextObservabilityConfig."""
+        if cls._global_instance is None:
+            with cls._lock:
+                if cls._global_instance is None:
+                    cls._global_instance = cls()
+        return cls._global_instance
+
+    @classmethod
+    def reset_global_instance(cls) -> None:
+        """Reset the global FlextObservabilityConfig instance (mainly for testing)."""
+        cls._global_instance = None
 
 
 __all__: FlextTypes.Core.StringList = [
