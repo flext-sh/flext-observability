@@ -15,15 +15,9 @@ from flext_core import (
     FlextContainer,
     FlextLogger,
     FlextResult,
-    FlextTypes,
 )
-from flext_observability import models as _models_module
 from flext_observability.services import (
-    FlextAlertService,
-    FlextHealthService,
-    FlextLoggingService,
-    FlextMetricsService,
-    FlextTracingService,
+    FlextObservabilityService,
 )
 from flext_observability.typings import FlextObservabilityTypes
 
@@ -34,16 +28,18 @@ object_callable = (
     Callable[[], object]
     | Callable[[str], object]
     | Callable[[str], str]
-    | Callable[[str], FlextTypes.Core.Dict]
+    | Callable[[str], FlextObservabilityTypes.Core.MetadataDict]
     | Callable[[object], object]
     | Callable[["object", "object"], object]
     | Callable[[int], int]
-    | Callable[
-        ["int", "int"], int
-    ]  # Added for (x: "int", y: int) -> int | Callable[[], str]
-    | Callable[[], FlextTypes.Core.Headers]
+    | Callable[["int", "int"], int]
+    | Callable[[], str]
+    | Callable[[], FlextObservabilityTypes.Core.Headers]
     | Callable[[], None]
-    # Integration test signatures | Callable[[list[int]], FlextTypes.Core.Dict]  # process_data function | Callable[[str | str], FlextTypes.Core.Headers]  # handle_api_request function | Callable[[int], dict["str", "int"]]  # cpu_intensive_task function | Callable[[float], dict["str", "float"]]  # io_intensive_task function
+    | Callable[[list[int]], FlextObservabilityTypes.Core.MetadataDict]
+    | Callable[[str, str], FlextObservabilityTypes.Core.Headers]
+    | Callable[[int], dict[str, int]]
+    | Callable[[float], dict[str, float]]
 )
 
 # F TypeVar imported from flext_core
@@ -177,11 +173,7 @@ class FlextObservabilityMonitor:
         self._running = False
 
         # Real service instances (Dependency Inversion - depends on abstractions)
-        self._metrics_service: FlextMetricsService | None = None
-        self._logging_service: FlextLoggingService | None = None
-        self._tracing_service: FlextTracingService | None = None
-        self._alert_service: FlextAlertService | None = None
-        self._health_service: FlextHealthService | None = None
+        self._observability_service: FlextObservabilityService | None = None
 
         # Monitor metrics for self-monitoring
         self._monitor_start_time = time.time()
@@ -193,25 +185,17 @@ class FlextObservabilityMonitor:
             return FlextResult[None].ok(None)
 
         try:
-            # Initialize real services using SOLID principles (Single Responsibility)
+            # Initialize unified observability service using SOLID principles
             try:
-                self._metrics_service = FlextMetricsService(self.container)
+                self._observability_service = FlextObservabilityService()
             except Exception as e:
                 return FlextResult[None].fail(
                     f"Observability initialization failed: {e}",
                 )
-            self._logging_service = FlextLoggingService(self.container)
-            self._tracing_service = FlextTracingService(self.container)
-            self._alert_service = FlextAlertService(self.container)
-            self._health_service = FlextHealthService(self.container)
 
-            # Register services in container (Dependency Inversion)
+            # Register unified service in container (Dependency Inversion)
             services: FlextObservabilityTypes.Core.ServicesList = [
-                ("flext_metrics_service", self._metrics_service),
-                ("flext_logging_service", self._logging_service),
-                ("flext_tracing_service", self._tracing_service),
-                ("flext_alert_service", self._alert_service),
-                ("flext_health_service", self._health_service),
+                ("flext_observability_service", self._observability_service),
             ]
 
             for service_name, service in services:
@@ -256,11 +240,13 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[None].fail(f"Failed to stop monitoring: {e}")
 
-    def flext_get_health_status(self: object) -> FlextResult[FlextTypes.Core.Dict]:
+    def flext_get_health_status(
+        self: object,
+    ) -> FlextResult[FlextObservabilityTypes.Core.HealthMetricsDict]:
         """Get comprehensive health status with real metrics."""
         try:
             if not self._health_service:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextObservabilityTypes.Core.HealthMetricsDict].fail(
                     "Health service not available",
                 )
 
@@ -269,7 +255,7 @@ class FlextObservabilityMonitor:
                 self._health_service.get_overall_health()
             )
             if health_result.is_failure:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextObservabilityTypes.Core.HealthMetricsDict].fail(
                     health_result.error or "Health service failure",
                 )
 
@@ -285,10 +271,12 @@ class FlextObservabilityMonitor:
                 "monitoring_active": self._running,
             }
 
-            return FlextResult[FlextTypes.Core.Dict].ok(health_data)
+            return FlextResult[FlextObservabilityTypes.Core.HealthMetricsDict].ok(
+                health_data
+            )
 
         except (ValueError, TypeError, AttributeError) as e:
-            return FlextResult[FlextTypes.Core.Dict].fail(
+            return FlextResult[FlextObservabilityTypes.Core.HealthMetricsDict].fail(
                 f"Health status check failed: {e}",
             )
 
@@ -330,10 +318,12 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[None].fail(f"Failed to record metric: {e}")
 
-    def flext_get_metrics_summary(self: object) -> FlextResult[FlextTypes.Core.Dict]:
+    def flext_get_metrics_summary(
+        self: object,
+    ) -> FlextResult[FlextObservabilityTypes.Core.MetricDict]:
         """Get comprehensive metrics summary."""
         if not self._metrics_service:
-            return FlextResult[FlextTypes.Core.Dict].fail(
+            return FlextResult[FlextObservabilityTypes.Core.MetricDict].fail(
                 "Metrics service not available",
             )
 
@@ -343,9 +333,9 @@ class FlextObservabilityMonitor:
         """Public method to increment functions monitored counter."""
         self._functions_monitored += 1
 
-    def get_alert_service(self: object) -> FlextAlertService | None:
-        """Public method to get alert service."""
-        return self._alert_service
+    def get_observability_service(self: object) -> FlextObservabilityService | None:
+        """Public method to get unified observability service."""
+        return self._observability_service
 
 
 def flext_monitor_function(
@@ -403,7 +393,7 @@ def flext_monitor_function(
 def _execute_monitored_function(
     func: object_callable,
     args: tuple[object, ...],
-    kwargs: FlextTypes.Core.Dict,
+    kwargs: FlextObservabilityTypes.Core.MetadataDict,
     monitor: FlextObservabilityMonitor,
     metric_name: str | None,
 ) -> object:
@@ -448,17 +438,17 @@ def _execute_monitored_function(
             "histogram",
         )
 
-        # Create alert if alert service is available
-        alert_service = monitor.get_alert_service()
-        if alert_service:
+        # Create alert if observability service is available
+        observability_service = monitor.get_observability_service()
+        if observability_service:
             try:
                 # Use module import so tests can patch flext_alert
-                alert = _models_module.flext_alert(
-                    title=f"Function execution error: {function_name}",
-                    message=f"Function {function_name} failed with {type(e).__name__}",
-                    severity="high",
-                )
-                alert_service.create_alert(alert)
+                alert_data = {
+                    "title": f"Function execution error: {function_name}",
+                    "message": f"Function {function_name} failed with {type(e).__name__}",
+                    "severity": "high",
+                }
+                observability_service.alerts.create_alert(alert_data)
             except (ValueError, TypeError, AttributeError) as e:
                 logger = FlextLogger(__name__)
                 logger.warning(f"Alert creation failed during exception handling: {e}")
@@ -468,7 +458,7 @@ def _execute_monitored_function(
         raise
 
 
-__all__: FlextTypes.Core.StringList = [
+__all__: FlextObservabilityTypes.Core.StringList = [
     "FlextObservabilityMonitor",
     "flext_monitor_function",
 ]

@@ -14,6 +14,11 @@ from flext_core import FlextConstants
 class FlextObservabilityConstants(FlextConstants):
     """Observability-specific constants extending flext-core patterns."""
 
+    # Configuration defaults
+    DEFAULT_METRICS_NAMESPACE = "flext"
+    DEFAULT_SERVICE_NAME = "flext-service"
+    DEFAULT_LOG_LEVEL = "INFO"
+
     # Metric types
     METRIC_TYPE_COUNTER = "counter"
     METRIC_TYPE_GAUGE = "gauge"
@@ -42,12 +47,19 @@ class FlextObservabilityConstants(FlextConstants):
     DEFAULT_TRACE_TIMEOUT = 30.0
     DEFAULT_HEALTH_CHECK_INTERVAL = 60.0
 
+    # Storage limits for metrics service
+    MAX_METRICS_STORE_SIZE = 1000
+    METRICS_STORE_CLEANUP_SIZE = 500
+
     # Service names
     SERVICE_METRICS = "metrics"
     SERVICE_TRACING = "tracing"
     SERVICE_ALERTS = "alerts"
     SERVICE_HEALTH = "health"
     SERVICE_LOGGING = "logging"
+
+    # Monitoring endpoints
+    DEFAULT_MONITORING_ENDPOINT = "http://localhost:9090"
 
 
 # Export alias for backward compatibility

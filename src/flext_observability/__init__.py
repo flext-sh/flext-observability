@@ -21,13 +21,13 @@ from flext_observability.entities import (
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
-    FlextUtilitiesGenerators,
     flext_alert,
     flext_health_check,
     flext_metric,
     flext_trace,
 )
-from flext_observability.factories import FlextObservabilityService
+
+# FlextObservabilityService imported from services module instead
 from flext_observability.fields import (
     AlertLevelField,
     HealthStatusField,
@@ -46,11 +46,9 @@ from flext_observability.monitoring import (
     flext_monitor_function,
 )
 from flext_observability.services import (
-    FlextAlertService,
-    FlextHealthService,
-    FlextLoggingService,
-    FlextMetricsService,
-    FlextTracingService,
+    FlextObservabilityService,
+    FlextObservabilityUtilities,
+    FlextUtilitiesGenerators,
 )
 from flext_observability.typings import (
     AlertLevel,
@@ -101,27 +99,24 @@ __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 
 # Legacy facades removed - use direct imports from flext-core and factory classes
 
+# FlextObservabilityUtilities imported from services module
 __all__: FlextTypes.Core.StringList = [
     "AlertLevel",
     "AlertLevelField",
     "AlertProtocol",
     "FlextAlert",
-    "FlextAlertService",
     "FlextConstants",
     "FlextContainer",
     "FlextHealthCheck",
-    "FlextHealthService",
     "FlextLogEntry",
     "FlextLogger",
-    "FlextLoggingService",
     "FlextMetric",
-    "FlextMetricsService",
     "FlextObservabilityConstants",
     "FlextObservabilityConstants",
     "FlextObservabilityMonitor",
     "FlextObservabilityService",
+    "FlextObservabilityUtilities",
     "FlextTrace",
-    "FlextTracingService",
     "FlextTypes",
     "FlextUtilitiesGenerators",
     "HealthCheckProtocol",

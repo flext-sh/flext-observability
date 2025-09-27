@@ -11,18 +11,16 @@ from typing import cast
 
 from flext_core import FlextResult, FlextTypes
 
-# Removed circular import to flext_simple - not needed
+# Import all entities from entities.py - fixed import structure
 from flext_observability.entities import (
-    FlextUtilitiesGenerators,
-    flext_alert,
-    flext_health_check,
-)
-from flext_observability.models import (
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
+    FlextUtilitiesGenerators,
+    flext_alert,
+    flext_health_check,
     flext_metric,
     flext_trace,
 )
@@ -286,6 +284,8 @@ def flext_create_trace(
         _ = FlextUtilitiesGenerators.generate_entity_id()
         # Probe entity to allow tests patching FlextTrace and forcing validation error
         try:
+            probe_trace_id = "probe_trace_" + str(hash(operation_name))
+            probe_span_id = "probe_span_" + str(hash(operation_name))
             probe = FlextTrace(
                 operation=operation_name,
                 trace_id=probe_trace_id,

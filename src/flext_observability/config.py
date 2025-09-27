@@ -6,33 +6,33 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import threading
-from typing import ClassVar, Self
+from typing import Self
 
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextConfig, FlextResult, FlextTypes
+from flext_observability.constants import FlextObservabilityConstants
 
 
 class FlextObservabilityConfig(FlextConfig):
     """Unified observability configuration extending FlextConfig.
 
     Single consolidated class providing comprehensive monitoring, metrics, tracing,
-    and health check configuration for the FLEXT observability system following
-    standardization requirements.
+    and health check configuration for the FLEXT observability system using
+    enhanced singleton pattern with inverse dependency injection.
     """
 
-    # Singleton pattern attributes
-    _global_instance: ClassVar[FlextObservabilityConfig | None] = None
-    _lock: ClassVar[threading.Lock] = threading.Lock()
-
     model_config = SettingsConfigDict(
-        env_prefix=FLEXT_OBSERVABILITY_,
+        env_prefix="FLEXT_OBSERVABILITY_",
         case_sensitive=False,
+        # Inherit enhanced Pydantic 2.11+ features from FlextConfig
         validate_assignment=True,
-        use_enum_values=True,
-        arbitrary_types_allowed=True,
+        str_strip_whitespace=True,
+        json_schema_extra={
+            "title": "FLEXT Observability Configuration",
+            "description": "Enterprise observability configuration extending FlextConfig",
+        },
     )
 
     # === METRICS CONFIGURATION ===
@@ -47,7 +47,7 @@ class FlextObservabilityConfig(FlextConfig):
         le=3600,
     )
     metrics_namespace: str = Field(
-        default=flext,
+        default=FlextObservabilityConstants.DEFAULT_METRICS_NAMESPACE,
         description="Metrics namespace",
     )
     metrics_include_host_metrics: bool = Field(
@@ -75,7 +75,7 @@ class FlextObservabilityConfig(FlextConfig):
         description="Trace exporter endpoint URL",
     )
     tracing_service_name: str = Field(
-        default="flext-service",
+        default=FlextObservabilityConstants.DEFAULT_SERVICE_NAME,
         description="Service name for traces",
     )
     tracing_max_span_attributes: int = Field(
@@ -113,7 +113,7 @@ class FlextObservabilityConfig(FlextConfig):
 
     # === LOGGING CONFIGURATION ===
     log_level: str = Field(
-        default=INFO,
+        default=FlextObservabilityConstants.DEFAULT_LOG_LEVEL,
         description="Observability logging level",
     )
     structured_logging: bool = Field(
@@ -232,44 +232,21 @@ class FlextObservabilityConfig(FlextConfig):
         cls,
         **overrides: object,
     ) -> FlextObservabilityConfig:
-        """Create configuration with intelligent defaults."""
-        defaults = {
-            "metrics_enabled": "True",
-            "metrics_export_interval_seconds": 60,
-            "metrics_namespace": "flext",
-            "metrics_include_host_metrics": "True",
-            "metrics_include_process_metrics": "True",
-            "tracing_enabled": "True",
-            "tracing_sampling_rate": 1.0,
-            "tracing_service_name": flext - service,
-            "tracing_max_span_attributes": 128,
-            "monitoring_enabled": "True",
-            "monitoring_check_interval_seconds": 30,
-            "monitoring_alert_on_failure": "True",
-            "monitoring_failure_threshold": 3,
-            "monitoring_include_dependency_checks": "True",
-            "log_level": "INFO",
-            "structured_logging": "True",
-            "project_name": "flext-observability",
-            "project_version": "0.9.0",
-        }
-        defaults.update(overrides)
-        return cls.model_validate(defaults)
+        """Create configuration with intelligent defaults using enhanced singleton pattern."""
+        return cls.get_or_create_shared_instance(
+            project_name="flext-observability", **overrides
+        )
 
-    # Singleton pattern override for proper typing
     @classmethod
     def get_global_instance(cls) -> FlextObservabilityConfig:
-        """Get the global singleton instance of FlextObservabilityConfig."""
-        if cls._global_instance is None:
-            with cls._lock:
-                if cls._global_instance is None:
-                    cls._global_instance = cls()
-        return cls._global_instance
+        """Get the global singleton instance using enhanced FlextConfig pattern."""
+        return cls.get_or_create_shared_instance(project_name="flext-observability")
 
     @classmethod
     def reset_global_instance(cls) -> None:
         """Reset the global FlextObservabilityConfig instance (mainly for testing)."""
-        cls._global_instance = None
+        # Use the enhanced FlextConfig reset mechanism
+        cls.reset_shared_instance()
 
 
 __all__: FlextTypes.Core.StringList = [
