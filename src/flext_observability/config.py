@@ -11,7 +11,7 @@ from typing import Self
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextConfig, FlextResult, FlextTypes
+from flext_core import FlextConfig, FlextResult
 from flext_observability.constants import FlextObservabilityConstants
 
 
@@ -246,9 +246,9 @@ class FlextObservabilityConfig(FlextConfig):
     def reset_global_instance(cls) -> None:
         """Reset the global FlextObservabilityConfig instance (mainly for testing)."""
         # Use the enhanced FlextConfig reset mechanism
-        cls.reset_shared_instance()
+        super().reset_global_instance()
 
 
-__all__: FlextTypes.Core.StringList = [
+__all__: list[str] = [
     "FlextObservabilityConfig",
 ]

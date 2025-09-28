@@ -7,9 +7,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import cast
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextResult
 
 # Import all entities from entities.py - fixed import structure
 from flext_observability.entities import (
@@ -204,9 +203,7 @@ def flext_create_metric(
                 name=name,
                 value=value,
                 unit=unit,
-                tags=cast("FlextObservabilityTypes.Core.TagsDict", tags)
-                if tags is not None
-                else {},
+                tags=tags if tags is not None else {},
                 timestamp=timestamp or _generate_utc_datetime(),
             )
             probe.validate_business_rules()
@@ -255,7 +252,7 @@ def flext_create_log_entry(
         )
 
         # Validate business rules
-        validation_result: FlextResult[object] = log_entry.validate_business_rules()
+        validation_result = log_entry.validate_business_rules()
         if validation_result.is_failure:
             return FlextResult[FlextLogEntry].fail(
                 f"Business rule validation failed: {validation_result.error}",
@@ -277,7 +274,7 @@ def flext_create_trace(
     ✅ ELIMINATED DUPLICATION: Delegates to entities.flext_trace()
     to avoid code duplication. Single source of truth for trace creation.
     """
-    config: FlextObservabilityTypes.Core.TraceContextDict = config or {}
+    config = config or {}
 
     try:
         # ✅ DELEGATE to entities.flext_trace() to eliminate duplication
@@ -383,7 +380,7 @@ def flext_create_health_check(
         )
 
         # Validate business rules
-        validation_result: FlextResult[object] = health_check.validate_business_rules()
+        validation_result = health_check.validate_business_rules()
         if validation_result.is_failure:
             return FlextResult[FlextHealthCheck].fail(
                 f"Business rule validation failed: {validation_result.error}",
@@ -394,7 +391,7 @@ def flext_create_health_check(
         return FlextResult[FlextHealthCheck].fail(f"Failed to create health check: {e}")
 
 
-__all__: FlextTypes.Core.StringList = [
+__all__: list[str] = [
     "flext_alert",  # Re-expose from entities for DRY principle
     "flext_create_alert",
     "flext_create_health_check",

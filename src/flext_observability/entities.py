@@ -191,7 +191,7 @@ class FlextMetric(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate metric business rules and domain constraints.
 
         Implements comprehensive business rule validation including name verification,
@@ -248,7 +248,7 @@ class FlextLogEntry(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate structured logging business rules and domain constraints.
 
         Enforces business rules specific to structured logging within the FLEXT
@@ -337,7 +337,7 @@ class FlextTrace(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate distributed tracing business rules and domain constraints.
 
         Enforces business rules specific to distributed tracing within the FLEXT
@@ -411,7 +411,7 @@ class FlextAlert(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate alert management business rules and domain constraints.
 
         Enforces business rules specific to alert management within the FLEXT
@@ -565,7 +565,7 @@ class FlextHealthCheck(FlextModels.Entity):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate health monitoring business rules and domain constraints.
 
         Enforces business rules specific to health monitoring within the FLEXT

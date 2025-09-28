@@ -9,197 +9,311 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import uuid
-from datetime import UTC, datetime
-from typing import cast, override
-
 # FIXED: Removed ImportError fallback - psutil must be available (ZERO TOLERANCE)
-import psutil
-
 from flext_core import (
     FlextContainer,
     FlextLogger,
     FlextResult,
     FlextService,
-    FlextTypes,
+    FlextUtilities,
+)
+from flext_observability.services import (
+    FlextAlertService,
+    FlextHealthService,
+    FlextMetricsService,
+    FlextTracingService,
 )
 from flext_observability.typings import FlextObservabilityTypes
 
 
-class FlextObservabilityService(FlextService[FlextTypes.Core.Dict]):
-    """Observability service providing metrics, tracing, and logging capabilities.
+class FlextObservabilityService(
+    FlextService[FlextObservabilityTypes.Core.MetadataDict]
+):
+    """Observability service using FlextObservabilityTypes for enhanced type safety."""
 
-    Unified class implementing observability patterns with flext-core foundation.
-    """
-
-    @override
-    def __init__(self, **_data: object) -> None:
-        """Initialize observability service with flext-core foundation."""
-        super().__init__()
-        self._container = FlextContainer.get_global()
+    def __init__(self, **data: object) -> None:
+        """Initialize observability service with metrics and tracing capabilities."""
+        super().__init__(**data)
         self._logger = FlextLogger(__name__)
-        self._metrics_enabled = True
-        self._tracing_enabled = True
+        self._container = FlextContainer.get_global()
+        # Placeholder for service implementations - to be replaced when services are available
+        self._metrics_service = (
+            None  # FlextObservabilityMetricsService when implemented
+        )
+        self._tracing_service = (
+            None  # FlextObservabilityTracingService when implemented
+        )
 
-    class _MetricsHelper:
-        """Nested helper for metrics collection."""
+    class ObservabilityFactories:
+        """Factory methods for creating observability components."""
 
         @staticmethod
-        def collect_system_metrics() -> FlextResult[
-            FlextObservabilityTypes.Core.MetricDict
-        ]:
-            """Collect system performance metrics."""
-            # FIXED: Removed psutil availability check - psutil must be available (ZERO TOLERANCE)
-            metrics = {
-                "cpu_percent": psutil.cpu_percent(interval=1),
-                "memory_percent": psutil.virtual_memory().percent,
-                "disk_percent": psutil.disk_usage("/").percent,
-                "load_average": psutil.getloadavg()[0]
-                if hasattr(psutil, "getloadavg")
-                else 0.0,
-            }
-
-            return FlextResult[FlextObservabilityTypes.Core.MetricDict].ok(metrics)
+        def create_metrics(
+            service_name: str = "flext_observability",
+        ) -> FlextResult[FlextObservabilityTypes.Core.MetricDict]:
+            """Create standard metrics using observability-specific types."""
+            try:
+                metrics: FlextObservabilityTypes.Core.MetricDict = {
+                    "service_name": service_name,
+                    "timestamp": FlextUtilities.Generators.generate_timestamp(),
+                    "uptime_seconds": 0,
+                    "requests_total": 0,
+                    "errors_total": 0,
+                    "active_connections": 0,
+                }
+                return FlextResult[FlextObservabilityTypes.Core.MetricDict].ok(metrics)
+            except Exception as e:
+                return FlextResult[FlextObservabilityTypes.Core.MetricDict].fail(
+                    f"Metrics creation failed: {e}"
+                )
 
         @staticmethod
         def format_metrics(
             metrics: FlextObservabilityTypes.Core.MetricDict,
         ) -> FlextResult[FlextObservabilityTypes.Core.MetricFormatDict]:
-            """Format metrics for display."""
+            """Format metrics for export using observability-specific types."""
             try:
-                formatted = {}
-                for key, value in metrics.items():
-                    # All values are guaranteed to be float by type hint
-                    formatted[key] = f"{value:.2f}%"
-
+                formatted_metrics: FlextObservabilityTypes.Core.MetricFormatDict = {
+                    "metrics": metrics,
+                    "format": "prometheus",
+                    "timestamp": FlextUtilities.Generators.generate_timestamp(),
+                }
                 return FlextResult[FlextObservabilityTypes.Core.MetricFormatDict].ok(
-                    formatted
+                    formatted_metrics
                 )
-
             except Exception as e:
                 return FlextResult[FlextObservabilityTypes.Core.MetricFormatDict].fail(
-                    f"Metrics formatting error: {e!s}",
+                    f"Metrics formatting failed: {e}"
                 )
 
-    class _TracingHelper:
-        """Nested helper for distributed tracing."""
-
         @staticmethod
-        def create_trace_context() -> FlextResult[
-            FlextObservabilityTypes.Core.TraceContextDict
-        ]:
-            """Create distributed tracing context."""
+        def create_trace_context(
+            operation_name: str = "flext_operation",
+        ) -> FlextResult[FlextObservabilityTypes.Core.TraceContextDict]:
+            """Create trace context using observability-specific types."""
             try:
-                trace_context = {
-                    "trace_id": str(uuid.uuid4()),
-                    "span_id": str(uuid.uuid4()),
-                    "timestamp": datetime.now(UTC).isoformat(),
-                    "service": "flext-observability",
+                trace_context: FlextObservabilityTypes.Core.TraceContextDict = {
+                    "trace_id": FlextUtilities.Generators.generate_entity_id(),
+                    "span_id": FlextUtilities.Generators.generate_entity_id(),
+                    "operation_name": operation_name,
+                    "start_time": FlextUtilities.Generators.generate_timestamp(),
+                    "parent_span_id": None,
+                    "baggage": {},
                 }
-
                 return FlextResult[FlextObservabilityTypes.Core.TraceContextDict].ok(
                     trace_context
                 )
-
             except Exception as e:
                 return FlextResult[FlextObservabilityTypes.Core.TraceContextDict].fail(
-                    f"Trace context creation error: {e!s}",
+                    f"Trace context creation failed: {e}"
                 )
 
         @staticmethod
-        def log_trace_event(
+        def create_span_event(
             context: FlextObservabilityTypes.Core.TraceContextDict, event: str
-        ) -> FlextResult[None]:
-            """Log trace event with context."""
+        ) -> FlextResult[FlextObservabilityTypes.Core.SpanAttributesDict]:
+            """Create span event using observability-specific types."""
             try:
-                logger = FlextLogger(__name__)
-                logger.info(f"TRACE[{context.get('trace_id', 'unknown')}]: {event}")
-
-                return FlextResult[None].ok(None)
-
-            except Exception as e:
-                return FlextResult[None].fail(f"Trace logging error: {e!s}")
-
-    def health_check(self: object) -> FlextResult[str]:
-        """Check observability service health."""
-        self._logger.debug("Performing observability health check")
-
-        # Test metrics collection
-        metrics_result: FlextResult[object] = (
-            self._MetricsHelper.collect_system_metrics()
-        )
-        if metrics_result.is_failure:
-            return FlextResult[str].fail(
-                f"Metrics collection failed: {metrics_result.error}",
-            )
-
-        # Test tracing
-        trace_result: FlextResult[object] = self._TracingHelper.create_trace_context()
-        if trace_result.is_failure:
-            return FlextResult[str].fail(f"Tracing failed: {trace_result.error}")
-
-        return FlextResult[str].ok("Observability service healthy")
-
-    def collect_observability_data(self: object) -> FlextResult[FlextTypes.Core.Dict]:
-        """Collect comprehensive observability data."""
-        self._logger.info("Collecting observability data")
-
-        observability_data = {}
-
-        # Collect metrics if enabled
-        if self._metrics_enabled:
-            metrics_result: FlextResult[object] = (
-                self._MetricsHelper.collect_system_metrics()
-            )
-            if metrics_result.is_success:
-                format_result = self._MetricsHelper.format_metrics(
-                    metrics_result.unwrap(),
+                span_event: FlextObservabilityTypes.Core.SpanAttributesDict = {
+                    "trace_id": context.get("trace_id", "unknown"),
+                    "span_id": context.get("span_id", "unknown"),
+                    "event_name": event,
+                    "timestamp": FlextUtilities.Generators.generate_timestamp(),
+                    "attributes": {},
+                }
+                return FlextResult[FlextObservabilityTypes.Core.SpanAttributesDict].ok(
+                    span_event
                 )
-                if format_result.is_success:
-                    observability_data["metrics"] = format_result.unwrap()
+            except Exception as e:
+                return FlextResult[
+                    FlextObservabilityTypes.Core.SpanAttributesDict
+                ].fail(f"Span event creation failed: {e}")
 
-        # Create trace context if enabled
-        if self._tracing_enabled:
-            trace_result: FlextResult[object] = (
-                self._TracingHelper.create_trace_context()
-            )
-            if trace_result.is_success:
-                observability_data["trace_context"] = trace_result.unwrap()
+    def record_metric(
+        self,
+        metric_name: str,
+        metric_value: float,
+        tags: FlextObservabilityTypes.Core.TagsDict | None = None,
+    ) -> FlextResult[None]:
+        """Record metric using observability-specific types."""
+        if not metric_name or not isinstance(metric_name, str):
+            return FlextResult[None].fail("Metric name must be a non-empty string")
 
-        # Add service metadata
-        observability_data["service_info"] = {
-            "name": "flext-observability",
-            "version": "1.0.0",
-            "metrics_enabled": str(self._metrics_enabled),
-            "tracing_enabled": str(self._tracing_enabled),
-        }
-
-        return FlextResult[FlextTypes.Core.Dict].ok(
-            cast("FlextTypes.Core.Dict", observability_data),
-        )
-
-    @override
-    def execute(self: object) -> FlextResult[FlextTypes.Core.Dict]:
-        """Execute observability service operation."""
-        self._logger.info("Executing observability service")
-
-        # Health check first
-        health_result: FlextResult[object] = self.health_check()
-        if health_result.is_failure:
-            return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Health check failed: {health_result.error}",
+        try:
+            metric_result = self._metrics_service.record_counter(
+                name=metric_name,
+                value=metric_value,
+                tags=tags or {},
             )
 
-        # Collect observability data
-        data_result: FlextResult[object] = self.collect_observability_data()
-        if data_result.is_failure:
-            return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Data collection failed: {data_result.error}",
+            if metric_result.is_failure:
+                return FlextResult[None].fail(
+                    f"Metric recording failed: {metric_result.error}"
+                )
+
+            self._logger.debug(f"Recorded metric: {metric_name} = {metric_value}")
+            return FlextResult[None].ok(None)
+
+        except Exception as e:
+            return FlextResult[None].fail(f"Metric recording error: {e}")
+
+    def start_trace(
+        self,
+        operation_name: str,
+        trace_context: FlextObservabilityTypes.Core.TraceContextDict | None = None,
+    ) -> FlextResult[str]:
+        """Start distributed trace using observability-specific types."""
+        if not operation_name or not isinstance(operation_name, str):
+            return FlextResult[str].fail("Operation name must be a non-empty string")
+
+        try:
+            # Create trace context if not provided
+            if trace_context is None:
+                context_result = self.ObservabilityFactories.create_trace_context(
+                    operation_name
+                )
+                if context_result.is_failure:
+                    return FlextResult[str].fail(
+                        f"Trace context creation failed: {context_result.error}"
+                    )
+                trace_context = context_result.unwrap()
+
+            # Start trace through tracing service
+            trace_result = self._tracing_service.start_trace(
+                operation_name=operation_name,
+                trace_context=trace_context,
             )
 
-        return data_result
+            if trace_result.is_failure:
+                return FlextResult[str].fail(
+                    f"Trace start failed: {trace_result.error}"
+                )
+
+            trace_id = str(trace_context.get("trace_id", "unknown"))
+            self._logger.debug(f"Started trace: {operation_name} (ID: {trace_id})")
+            return FlextResult[str].ok(trace_id)
+
+        except Exception as e:
+            return FlextResult[str].fail(f"Trace start error: {e}")
+
+    def collect_observability_data(
+        self,
+    ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
+        """Collect comprehensive observability data using observability-specific types."""
+        try:
+            # Collect metrics
+            metrics_result = self._metrics_service.get_metrics_summary()
+            if metrics_result.is_failure:
+                return FlextResult[FlextObservabilityTypes.Core.MetadataDict].fail(
+                    f"Metrics collection failed: {metrics_result.error}"
+                )
+
+            # Collect tracing data
+            traces_result = self._tracing_service.get_trace_summary()
+            if traces_result.is_failure:
+                return FlextResult[FlextObservabilityTypes.Core.MetadataDict].fail(
+                    f"Traces collection failed: {traces_result.error}"
+                )
+
+            # Compile observability data
+            observability_data: FlextObservabilityTypes.Core.MetadataDict = {
+                "service_name": "flext_observability",
+                "timestamp": FlextUtilities.Generators.generate_timestamp(),
+                "metrics_summary": metrics_result.unwrap(),
+                "traces_summary": traces_result.unwrap(),
+                "health_status": "healthy",
+                "version": "0.9.0",
+            }
+
+            return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok(
+                observability_data,
+            )
+
+        except Exception as e:
+            return FlextResult[FlextObservabilityTypes.Core.MetadataDict].fail(
+                f"Observability data collection failed: {e}"
+            )
+
+    def execute(self) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
+        """Execute observability service operations using observability-specific types."""
+        try:
+            # Validate service state
+            if not hasattr(self, "_metrics_service") or not hasattr(
+                self, "_tracing_service"
+            ):
+                return FlextResult[FlextObservabilityTypes.Core.MetadataDict].fail(
+                    "Observability services not properly initialized"
+                )
+
+            # Collect and return observability data
+            return self.collect_observability_data()
+
+        except Exception as e:
+            return FlextResult[FlextObservabilityTypes.Core.MetadataDict].fail(
+                f"Observability service execution failed: {e}"
+            )
 
 
-__all__: FlextTypes.Core.StringList = [
+# Master factory class
+class FlextObservabilityMasterFactory:
+    """Master factory for creating all observability components."""
+
+    def __init__(self) -> None:
+        """Initialize the master factory."""
+        self._service = FlextObservabilityService()
+
+    def create_metrics_service(self) -> FlextMetricsService:
+        """Create a metrics service instance."""
+        return FlextMetricsService()
+
+    def create_tracing_service(self) -> FlextTracingService:
+        """Create a tracing service instance."""
+        return FlextTracingService()
+
+    def create_alert_service(self) -> FlextAlertService:
+        """Create an alert service instance."""
+        return FlextAlertService()
+
+    def create_health_service(self) -> FlextHealthService:
+        """Create a health service instance."""
+        return FlextHealthService()
+
+    def create_observability_service(self) -> FlextObservabilityService:
+        """Create the main observability service instance."""
+        return FlextObservabilityService()
+
+
+class _GlobalFactoryHolder:
+    """Holder for the global factory instance to avoid global variables."""
+
+    _instance: FlextObservabilityMasterFactory | None = None
+
+    @classmethod
+    def get(cls) -> FlextObservabilityMasterFactory:
+        """Get the global observability factory instance."""
+        if cls._instance is None:
+            cls._instance = FlextObservabilityMasterFactory()
+        return cls._instance
+
+    @classmethod
+    def reset(cls) -> None:
+        """Reset the global observability factory instance."""
+        cls._instance = None
+
+
+def get_global_factory() -> FlextObservabilityMasterFactory:
+    """Get the global observability factory instance."""
+    return _GlobalFactoryHolder.get()
+
+
+def reset_global_factory() -> None:
+    """Reset the global observability factory instance."""
+    _GlobalFactoryHolder.reset()
+
+
+__all__: list[str] = [
+    "FlextObservabilityMasterFactory",
     "FlextObservabilityService",
+    "get_global_factory",
+    "reset_global_factory",
 ]

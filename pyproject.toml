@@ -1,74 +1,174 @@
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = [ "poetry-core>=1.9.0",]
+    build-backend = "poetry.core.masonry.api"
+    requires = [
+        "poetry-core>=1.9.0",
+    ]
 
 [project]
-description = "FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry"
-name = "flext-observability"
-readme = "README.md"
-requires-python = ">=3.13,<3.14"
-version = "0.9.0"
-classifiers = [ "Development Status :: 5 - Production/Stable", "Intended Audience :: Developers", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3 :: Only", "Topic :: Software Development :: Libraries :: Python Modules", "Typing :: Typed", "Topic :: System :: Monitoring",]
-dependencies = [ "aiofiles>=24.1.0,<25.0.0", "opentelemetry-api (>=1.35.0)", "opentelemetry-sdk (>=1.35.0)", "prometheus-client (>=0.22.1)", "psutil>=6.1.0,<8.0.0", "pydantic>=2.11.7,<3.0.0", "pydantic-settings>=2.10.1,<3.0.0", "rich>=14.0.0", "structlog>=25.4.0,<26.0.0", "typer>=0.15.0,<1.0.0", "flext-core @ file:../flext-core",]
-keywords = [ "async", "enterprise", "flext", "logging", "metrics", "monitoring", "tracing", "typed",]
+    description = "FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry"
+    name = "flext-observability"
+    readme = "README.md"
+    requires-python = ">=3.13,<3.14"
+    version = "0.9.0"
+    classifiers = [
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3 :: Only",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Typing :: Typed",
+        "Topic :: System :: Monitoring",
+    ]
+    dependencies = [
+        "aiofiles>=24.1.0,<25.0.0",
+        "opentelemetry-api (>=1.35.0)",
+        "opentelemetry-sdk (>=1.35.0)",
+        "prometheus-client (>=0.22.1)",
+        "psutil>=6.1.0,<8.0.0",
+        "pydantic>=2.11.7,<3.0.0",
+        "pydantic-settings>=2.10.1,<3.0.0",
+        "rich>=14.0.0",
+        "structlog>=25.4.0,<26.0.0",
+        "typer>=0.15.0,<1.0.0",
+        "flext-core @ file:../flext-core",
+    ]
+    keywords = [
+        "async",
+        "enterprise",
+        "flext",
+        "logging",
+        "metrics",
+        "monitoring",
+        "tracing",
+        "typed",
+    ]
 [[project.authors]]
-name = "FLEXT Team"
-email = "team@flext.sh"
+    name  = "FLEXT Team"
+    email = "team@flext.sh"
 
 [[project.maintainers]]
-name = "FLEXT Team"
-email = "team@flext.sh"
+    name  = "FLEXT Team"
+    email = "team@flext.sh"
 
 [project.license]
-text = "MIT"
+    text = "MIT"
 
 [project.urls]
-Homepage = "https://github.com/flext-sh/flext"
-Repository = "https://github.com/flext-sh/flext"
-Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
+    Homepage      = "https://github.com/flext-sh/flext"
+    Repository    = "https://github.com/flext-sh/flext"
+    Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
 
 [project.optional-dependencies]
-dev = [ "autoflake>=2.3.1", "black>=25.1.0", "codespell>=2.3.0", "deptry>=0.23.0", "isort>=6.0.1", "pre-commit>=4.0.1", "pylint>=3.3.0", "pyupgrade>=3.19.0", "radon>=6.0.1", "ruff>=0.12.3", "vulture>=2.13",]
-test = [ "factory-boy>=3.3.1", "faker>=37.4.0", "hypothesis>=6.125.0", "pytest>=8.4.0", "pytest-benchmark>=5.1.0", "pytest-clarity>=1.0.1", "pytest-cov>=6.2.0", "pytest-deadfixtures>=2.2.1", "pytest-env>=1.1.5", "pytest-httpx>=0.35.0", "pytest-mock>=3.14.0", "pytest-randomly>=3.16.0", "pytest-sugar>=1.0.0", "pytest-timeout>=2.4.0", "pytest-xdist>=3.8.0",]
-typings = [ "django-stubs>=5.2.2", "types-ldap3>=2.9.13.20250622", "types-protobuf>=6.30.2.20250703", "types-psutil>=7.0.0", "types-psycopg2>=2.9.21.20250718", "types-python-dateutil>=2.9.0", "types-pyyaml>=6.0.12", "types-redis>=4.6.0", "types-requests>=2.32.4", "types-setuptools>=80.9.0", "types-toml>=0.10.8.20240310",]
-security = [ "bandit>=1.8.0", "pip-audit>=2.7.3",]
+    dev = [
+        "autoflake>=2.3.1",
+        "black>=25.1.0",
+        "codespell>=2.3.0",
+        "deptry>=0.23.0",
+        "isort>=6.0.1",
+        "pre-commit>=4.0.1",
+        "pylint>=3.3.0",
+        "pyupgrade>=3.19.0",
+        "radon>=6.0.1",
+        "ruff>=0.12.3",
+        "vulture>=2.13",
+    ]
+    test = [
+        "factory-boy>=3.3.1",
+        "faker>=37.4.0",
+        "hypothesis>=6.125.0",
+        "pytest>=8.4.0",
+        "pytest-benchmark>=5.1.0",
+        "pytest-clarity>=1.0.1",
+        "pytest-cov>=6.2.0",
+        "pytest-deadfixtures>=2.2.1",
+        "pytest-env>=1.1.5",
+        "pytest-httpx>=0.35.0",
+        "pytest-mock>=3.14.0",
+        "pytest-randomly>=3.16.0",
+        "pytest-sugar>=1.0.0",
+        "pytest-timeout>=2.4.0",
+        "pytest-xdist>=3.8.0",
+    ]
+    typings = [
+        "django-stubs>=5.2.2",
+        "types-ldap3>=2.9.13.20250622",
+        "types-protobuf>=6.30.2.20250703",
+        "types-psutil>=7.0.0",
+        "types-psycopg2>=2.9.21.20250718",
+        "types-python-dateutil>=2.9.0",
+        "types-pyyaml>=6.0.12",
+        "types-redis>=4.6.0",
+        "types-requests>=2.32.4",
+        "types-setuptools>=80.9.0",
+        "types-toml>=0.10.8.20240310",
+    ]
+    security = [
+        "bandit>=1.8.0",
+        "pip-audit>=2.7.3",
+    ]
 
 [project.scripts]
-flext-observability = "flext_observability.cli:main"
+    flext-observability = "flext_observability.cli:main"
 
 [tool.poetry]
 [[tool.poetry.packages]]
-include = "flext_observability"
-from = "src"
+    include = "flext_observability"
+    from    = "src"
 
 [tool.bandit]
-extend = "../.bandit-shared.toml"
+    extend = "../.bandit-shared.toml"
 
 [tool.coverage]
-extend = "../.coverage-shared.toml"
+    extend = "../.coverage-shared.toml"
 
 [tool.deptry]
-exclude = [ "__pycache__", ".archive", ".git", ".meltano", ".mypy_cache", ".pyrefly_cache", ".pytest_cache", ".ruff_cache", ".venv", "build", "dist", "htmlcov", "vendor", "node_modules", "reports", "venv",]
-known_first_party = [ "flext_observability",]
-pep621_dev_dependency_groups = [ "dev", "security", "test", "typings",]
+    exclude = [
+        "__pycache__",
+        ".archive",
+        ".git",
+        ".meltano",
+        ".mypy_cache",
+        ".pyrefly_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv",
+        "build",
+        "dist",
+        "htmlcov",
+        "vendor",
+        "node_modules",
+        "reports",
+        "venv",
+    ]
+    known_first_party = [
+        "flext_observability",
+    ]
+    pep621_dev_dependency_groups = [
+        "dev",
+        "security",
+        "test",
+        "typings",
+    ]
 
 [tool.ruff]
-extend = "../ruff-shared.toml"
-
-[tool.vulture]
-extend = "../.vulture-shared.toml"
-
-[tool.pyrefly]
-python_version = "3.13"
-target_version = "3.13"
-show_error_codes = true
-
-[tool.pytest.ini_options]
-extend = "../.pytest-ini-options-shared.toml"
+    extend = "../ruff-shared.toml"
 
 [tool.ruff.lint.isort]
-known-first-party = [ "flext_observability",]
+    known-first-party = [
+        "flext_observability",
+    ]
 
 [tool.poetry.group.dev.dependencies]
-types-psutil = "^7.0.0.20250801"
-pyrefly = "^0.34.0"
+    types-psutil = "^7.0.0.20250801"
+    pyrefly      = "^0.34.0"
+
+[tool.pyrefly]
+    python-version = "3.13"
+    search-path = [
+        "examples",
+        "scripts",
+        "src",
+        "tests",
+    ]

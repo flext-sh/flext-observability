@@ -23,6 +23,12 @@ from flext_core import (
     FlextUtilities,
 )
 from flext_observability.config import FlextObservabilityConfig
+from flext_observability.entities import (
+    FlextAlert,
+    FlextHealthCheck,
+    FlextMetric,
+    FlextTrace,
+)
 from flext_observability.typings import FlextObservabilityTypes
 
 
@@ -46,10 +52,11 @@ class FlextObservabilityService(
         validate_assignment = False
 
     # Metrics service operations (previously FlextMetricsService) - unified pattern
-    class _MetricsServiceHelper:
+    class MetricsServiceHelper:
         """Nested helper class for metrics collection and management operations."""
 
         def __init__(self, parent_service: FlextObservabilityService) -> None:
+            """Initialize metrics service helper with parent service reference."""
             self.parent = parent_service
             self.logger = parent_service.logger
             self.config = parent_service.config
@@ -227,10 +234,11 @@ class FlextObservabilityService(
                 )
 
     # Logging service operations - unified pattern
-    class _LoggingServiceHelper:
+    class LoggingServiceHelper:
         """Nested helper class for structured logging operations."""
 
         def __init__(self, parent_service: FlextObservabilityService) -> None:
+            """Initialize logging service helper with parent service reference."""
             self.parent = parent_service
             self.logger = parent_service.logger
 
@@ -252,10 +260,11 @@ class FlextObservabilityService(
                 return FlextResult[None].fail(f"Structured logging failed: {e}")
 
     # Tracing service operations - unified pattern
-    class _TracingServiceHelper:
+    class TracingServiceHelper:
         """Nested helper class for distributed tracing operations."""
 
         def __init__(self, parent_service: FlextObservabilityService) -> None:
+            """Initialize tracing service helper with parent service reference."""
             self.parent = parent_service
             self.logger = parent_service.logger
             self.config = parent_service.config
@@ -393,10 +402,11 @@ class FlextObservabilityService(
                 )
 
     # Alert service operations - unified pattern
-    class _AlertServiceHelper:
+    class AlertServiceHelper:
         """Nested helper class for alerting and notification operations."""
 
         def __init__(self, parent_service: FlextObservabilityService) -> None:
+            """Initialize alert service helper with parent service reference."""
             self.parent = parent_service
             self.logger = parent_service.logger
 
@@ -422,10 +432,11 @@ class FlextObservabilityService(
                 )
 
     # Health service operations - unified pattern
-    class _HealthServiceHelper:
+    class HealthServiceHelper:
         """Nested helper class for health monitoring operations."""
 
         def __init__(self, parent_service: FlextObservabilityService) -> None:
+            """Initialize health service helper with parent service reference."""
             self.parent = parent_service
             self.logger = parent_service.logger
             self.config = parent_service.config
@@ -474,11 +485,11 @@ class FlextObservabilityService(
         self._service_id = str(uuid4())
 
         # Initialize all service helpers (bypass Pydantic validation)
-        object.__setattr__(self, "metrics", self._MetricsServiceHelper(self))
-        object.__setattr__(self, "logging", self._LoggingServiceHelper(self))
-        object.__setattr__(self, "tracing", self._TracingServiceHelper(self))
-        object.__setattr__(self, "alerts", self._AlertServiceHelper(self))
-        object.__setattr__(self, "health", self._HealthServiceHelper(self))
+        object.__setattr__(self, "metrics", self.MetricsServiceHelper(self))
+        object.__setattr__(self, "logging", self.LoggingServiceHelper(self))
+        object.__setattr__(self, "tracing", self.TracingServiceHelper(self))
+        object.__setattr__(self, "alerts", self.AlertServiceHelper(self))
+        object.__setattr__(self, "health", self.HealthServiceHelper(self))
 
         self._logger.info(f"FlextObservabilityService initialized: {self._service_id}")
 
@@ -1059,8 +1070,103 @@ class FlextUtilitiesGenerators:
         return str(time.time())
 
 
+# Individual service wrapper classes
+class FlextMetricsService:
+    """Wrapper class for metrics operations using FlextObservabilityService."""
+
+    def __init__(self) -> None:
+        """Initialize metrics service wrapper."""
+        self._service = FlextObservabilityService()
+
+    def record_metric(
+        self,
+        metric: FlextMetric,
+        tags: FlextObservabilityTypes.Core.TagsDict | None = None,
+    ) -> FlextResult[None]:
+        """Record a metric using the unified service."""
+        return self._service.MetricsServiceHelper(self._service).record_metric(
+            metric, tags
+        )
+
+    def get_metrics_summary(
+        self,
+    ) -> FlextResult[FlextObservabilityTypes.Core.MetricsStore]:
+        """Get metrics summary using the unified service."""
+        return self._service.MetricsServiceHelper(self._service).get_metrics_summary()
+
+
+class FlextTracingService:
+    """Wrapper class for tracing operations using FlextObservabilityService."""
+
+    def __init__(self) -> None:
+        """Initialize tracing service wrapper."""
+        self._service = FlextObservabilityService()
+
+    def start_trace(
+        self,
+        trace: FlextTrace,
+        context: FlextObservabilityTypes.Core.TraceContextDict | None = None,
+    ) -> FlextResult[FlextTrace]:
+        """Start a trace using the unified service."""
+        return self._service.TracingServiceHelper(self._service).start_trace(
+            trace, context
+        )
+
+    def complete_trace(self, trace: FlextTrace) -> FlextResult[FlextTrace]:
+        """Complete a trace using the unified service."""
+        return self._service.TracingServiceHelper(self._service).complete_trace(trace)
+
+    def get_trace_summary(
+        self,
+    ) -> FlextResult[FlextObservabilityTypes.Core.TraceInfoDict]:
+        """Get trace summary using the unified service."""
+        return self._service.TracingServiceHelper(self._service).get_trace_summary()
+
+
+class FlextAlertService:
+    """Wrapper class for alert operations using FlextObservabilityService."""
+
+    def __init__(self) -> None:
+        """Initialize alert service wrapper."""
+        self._service = FlextObservabilityService()
+
+    def process_alert(self, alert: FlextAlert) -> FlextResult[FlextAlert]:
+        """Process an alert using the unified service."""
+        return self._service.AlertServiceHelper(self._service).process_alert(alert)
+
+    def escalate_alert(
+        self,
+        alert: FlextAlert,
+        escalation_config: dict[str, object],
+    ) -> FlextResult[FlextAlert]:
+        """Escalate an alert using the unified service."""
+        return self._service.AlertServiceHelper(self._service).escalate_alert(
+            alert, escalation_config
+        )
+
+
+class FlextHealthService:
+    """Wrapper class for health monitoring operations using FlextObservabilityService."""
+
+    def __init__(self) -> None:
+        """Initialize health service wrapper."""
+        self._service = FlextObservabilityService()
+
+    def execute_health_check(
+        self, health_check: FlextHealthCheck
+    ) -> FlextResult[FlextHealthCheck]:
+        """Execute a health check using the unified service."""
+        return self._service._HealthServiceHelper(self._service).execute_health_check(
+            health_check
+        )
+
+
 __all__ = [
+    "FlextAlertService",
+    "FlextHealthService",
+    "FlextMetricsService",
     "FlextObservabilityService",
     "FlextObservabilityUtilities",
+    "FlextTracingService",
     "FlextUtilitiesGenerators",
 ]
