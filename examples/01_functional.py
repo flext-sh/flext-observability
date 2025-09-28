@@ -30,12 +30,12 @@ def demonstrate_simple_api() -> None:
     """Demonstrate the simple API for creating observability entities."""
     # Create metrics
     metric_result = flext_create_metric("api_requests", 150.0, "count")
-    if metric_result.success:
+    if metric_result.is_success:
         pass
 
     # Create traces
     trace_result = flext_create_trace("user_registration", "auth-service")
-    if trace_result.success:
+    if trace_result.is_success:
         pass
 
     # Create alerts
@@ -44,12 +44,12 @@ def demonstrate_simple_api() -> None:
         "monitoring",
         "warning",
     )
-    if alert_result.success:
+    if alert_result.is_success:
         pass
 
     # Create health checks
     health_result = flext_create_health_check("database", "healthy")
-    if health_result.success:
+    if health_result.is_success:
         pass
 
     # Create log entries
@@ -58,7 +58,7 @@ def demonstrate_simple_api() -> None:
         "auth-service",
         "INFO",
     )
-    if log_result.success:
+    if log_result.is_success:
         pass
 
 
@@ -70,11 +70,11 @@ def demonstrate_factory_pattern() -> None:
 
     # Create entities via factory
     metric_result = factory.create_metric("response_time", 45.2, "milliseconds")
-    if metric_result.success:
+    if metric_result.is_success:
         pass
 
     trace_result = factory.create_trace("payment_processing", "payment-service")
-    if trace_result.success:
+    if trace_result.is_success:
         pass
 
 
@@ -94,7 +94,7 @@ def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     # Valid metric
     metric_result = flext_create_metric("valid_metric", 100.0, "count")
-    if metric_result.success:
+    if metric_result.is_success:
         metric_result.unwrap().validate_business_rules()
 
     # Invalid metric (negative value should be caught by pydantic or business rules)
@@ -113,7 +113,7 @@ def demonstrate_health_monitoring() -> None:
 
     for service, status in zip(services, statuses, strict=False):
         health_result = flext_create_health_check(service, status)
-        if health_result.success:
+        if health_result.is_success:
             pass
 
 
@@ -128,7 +128,7 @@ def demonstrate_alerting_scenario() -> None:
 
     for level, message, service in alert_scenarios:
         alert_result = flext_create_alert(message, service, level)
-        if alert_result.success:
+        if alert_result.is_success:
             icons = {
                 "info": "[INFO]",
                 "warning": "[WARN]",
@@ -148,7 +148,7 @@ def demonstrate_global_factory() -> None:
 
     # Use global factory
     metric_result = factory.create_metric("global_metric", 42.0, "count")
-    if metric_result.success:
+    if metric_result.is_success:
         pass
 
 

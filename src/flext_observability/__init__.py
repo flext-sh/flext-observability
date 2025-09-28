@@ -26,6 +26,11 @@ from flext_observability.entities import (
     flext_metric,
     flext_trace,
 )
+from flext_observability.factories import (
+    FlextObservabilityMasterFactory,
+    get_global_factory,
+    reset_global_factory,
+)
 
 # FlextObservabilityService imported from services module instead
 from flext_observability.fields import (
@@ -46,8 +51,12 @@ from flext_observability.monitoring import (
     flext_monitor_function,
 )
 from flext_observability.services import (
+    FlextAlertService,
+    FlextHealthService,
+    FlextMetricsService,
     FlextObservabilityService,
     FlextObservabilityUtilities,
+    FlextTracingService,
     FlextUtilitiesGenerators,
 )
 from flext_observability.typings import (
@@ -100,23 +109,28 @@ __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 # Legacy facades removed - use direct imports from flext-core and factory classes
 
 # FlextObservabilityUtilities imported from services module
-__all__: FlextTypes.Core.StringList = [
+__all__: list[str] = [
     "AlertLevel",
     "AlertLevelField",
     "AlertProtocol",
     "FlextAlert",
+    "FlextAlertService",
     "FlextConstants",
     "FlextContainer",
     "FlextHealthCheck",
+    "FlextHealthService",
     "FlextLogEntry",
     "FlextLogger",
     "FlextMetric",
+    "FlextMetricsService",
     "FlextObservabilityConstants",
     "FlextObservabilityConstants",
+    "FlextObservabilityMasterFactory",
     "FlextObservabilityMonitor",
     "FlextObservabilityService",
     "FlextObservabilityUtilities",
     "FlextTrace",
+    "FlextTracingService",
     "FlextTypes",
     "FlextUtilitiesGenerators",
     "HealthCheckProtocol",
@@ -148,12 +162,14 @@ __all__: FlextTypes.Core.StringList = [
     "flext_metric",
     "flext_monitor_function",
     "flext_trace",
+    "get_global_factory",
     "health_check",
     "log",
     "metric",
     "metric_name_field",
     "metric_unit_field",
     "metric_value_field",
+    "reset_global_factory",
     "timestamp_field",
     "trace",
     "trace_name_field",
