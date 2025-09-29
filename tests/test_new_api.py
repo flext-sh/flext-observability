@@ -37,7 +37,7 @@ class TestSimpleAPI:
         """Test successful metric creation."""
         result = flext_create_metric("test_metric", 42.0, "count")
 
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, FlextMetric)
         assert result.data.name == "test_metric"
         assert result.data.value == 42.0
@@ -47,7 +47,7 @@ class TestSimpleAPI:
         """Test successful trace creation."""
         result = flext_create_trace("test_operation")
 
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, FlextTrace)
         assert result.data.operation == "test_operation"
 
@@ -55,7 +55,7 @@ class TestSimpleAPI:
         """Test successful alert creation."""
         result = flext_create_alert("Test Alert", "Test alert message", "medium")
 
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, FlextAlert)
         assert result.data.title == "Test Alert"
         assert result.data.message == "Test alert message"
@@ -65,7 +65,7 @@ class TestSimpleAPI:
         """Test successful health check creation."""
         result = flext_create_health_check("test_service", "healthy")
 
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, FlextHealthCheck)
         assert result.data.component == "test_service"
         assert result.data.status == "healthy"
@@ -74,7 +74,7 @@ class TestSimpleAPI:
         """Test successful log entry creation."""
         result = flext_create_log_entry("Test message", "test_service", "info")
 
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, FlextLogEntry)
         assert result.data.message == "[test_service] Test message"
         assert result.data.level == "info"
@@ -89,7 +89,7 @@ class TestFactoryPattern:
         factory = get_global_factory()
 
         result = factory.create_metric("global_test", 100.0, "count")
-        assert result.success
+        assert result.is_success
         assert result.unwrap().name == "global_test"
 
     def test_custom_factory(self) -> None:
@@ -100,7 +100,7 @@ class TestFactoryPattern:
         factory = FlextObservabilityMasterFactory(container)
 
         result = factory.create_metric("custom_test", 200.0, "count")
-        assert result.success
+        assert result.is_success
         assert result.unwrap().name == "custom_test"
 
 
@@ -110,42 +110,43 @@ class TestEntityValidation:
     def test_metric_validation_success(self) -> None:
         """Test successful metric validation."""
         result = flext_create_metric("valid_metric", 50.0, "count")
-        assert result.success
+        assert result.is_success
 
         validation = result.unwrap().validate_business_rules()
-        assert validation.success
+        assert validation.is_success
 
     def test_metric_validation_empty_name(self) -> None:
         """Test metric validation with empty name."""
         result = flext_create_metric("", 50.0, "count")
         # Should be caught by pydantic validation
         assert (
-            not result.success or not result.unwrap().validate_business_rules().success
+            not result.is_success
+            or not result.unwrap().validate_business_rules().is_success
         )
 
     def test_trace_validation_success(self) -> None:
         """Test successful trace validation."""
         result = flext_create_trace("valid_operation")
-        assert result.success
+        assert result.is_success
 
         validation = result.unwrap().validate_business_rules()
-        assert validation.success
+        assert validation.is_success
 
     def test_alert_validation_success(self) -> None:
         """Test successful alert validation."""
         result = flext_create_alert("Valid alert", "service", "low")
-        assert result.success
+        assert result.is_success
 
         validation = result.unwrap().validate_business_rules()
-        assert validation.success
+        assert validation.is_success
 
     def test_health_check_validation_success(self) -> None:
         """Test successful health check validation."""
         result = flext_create_health_check("service", "healthy")
-        assert result.success
+        assert result.is_success
 
         validation = result.unwrap().validate_business_rules()
-        assert validation.success
+        assert validation.is_success
 
 
 class TestConstants:

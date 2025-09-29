@@ -89,7 +89,7 @@ class TestEntityFactoryFunctions:
             tags={"env": "test"},
         )
         # Factory function returns FlextResult[FlextMetric]
-        assert metric.success
+        assert metric.is_success
         metric_obj = metric.unwrap()
         assert str(metric_obj.id)
         assert metric_obj.name == "test_metric"
@@ -103,7 +103,7 @@ class TestEntityFactoryFunctions:
             tags={"test": "value"},
         )
         # Factory function returns FlextResult[FlextMetric]
-        assert metric.success
+        assert metric.is_success
         metric_obj = metric.unwrap()
         assert str(metric_obj.id)
 
@@ -115,7 +115,7 @@ class TestEntityFactoryFunctions:
             unit="percent",
             tags={"auto": "generated"},
         )
-        assert metric.success
+        assert metric.is_success
         metric_obj = metric.unwrap()
         assert metric_obj.id is not None
         assert str(metric_obj.id)
@@ -128,7 +128,7 @@ class TestEntityFactoryFunctions:
             unit="currency",
         )
         # Factory function returns FlextResult
-        assert metric.success
+        assert metric.is_success
         assert metric.data is not None
         assert isinstance(metric.data.value, Decimal)
         assert metric.data.value == Decimal("123.456")
@@ -171,28 +171,28 @@ class TestEntityFactoryFunctions:
         """Test flext_metric validation with edge cases - real validation testing."""
         # Test with extreme values - real boundary testing
         large_metric = flext_metric("large_value_metric", float("1e10"))
-        assert large_metric.success
+        assert large_metric.is_success
         large_metric_obj = large_metric.unwrap()
         assert large_metric_obj.value == 1e10
         assert large_metric_obj.name == "large_value_metric"
 
         # Test with very small positive values
         small_metric = flext_metric("small_value_metric", float("1e-10"))
-        assert small_metric.success
+        assert small_metric.is_success
         small_metric_obj = small_metric.unwrap()
         assert small_metric_obj.value == 1e-10
         assert small_metric_obj.name == "small_value_metric"
 
         # Test with zero value - boundary condition
         zero_metric = flext_metric("zero_metric", 0.0)
-        assert zero_metric.success
+        assert zero_metric.is_success
         zero_metric_obj = zero_metric.unwrap()
         assert zero_metric_obj.value == 0.0
         assert zero_metric_obj.name == "zero_metric"
 
         # Test that negative values are allowed - current implementation allows them
         negative_metric = flext_metric("negative_metric", -42.5)
-        assert negative_metric.success
+        assert negative_metric.is_success
         negative_metric_obj = negative_metric.unwrap()
         assert negative_metric_obj.value == -42.5
         assert negative_metric_obj.name == "negative_metric"

@@ -39,7 +39,7 @@ class TestEntityValidationErrors:
         setattr(metric, "value", -10.0)
         result = metric.validate_business_rules()
         # Current implementation allows negative values
-        assert result.success
+        assert result.is_success
 
     def test_log_entry_invalid_message_validation(self) -> None:
         """Test FlextLogEntry with invalid message (empty string)."""

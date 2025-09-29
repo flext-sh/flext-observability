@@ -113,17 +113,17 @@ class HealthStatusField:
 # Convenience field definitions
 
 
-def _create_metric_name_field() -> Field:
+def _create_metric_name_field() -> object:
     """Create metric name field."""
     return Field(min_length=1, max_length=255, description="Metric name")
 
 
-def _create_metric_value_field() -> Field:
+def _create_metric_value_field() -> object:
     """Create metric value field."""
     return Field(ge=0.0, description="Metric value (non-negative)")
 
 
-def _create_metric_unit_field() -> Field:
+def _create_metric_unit_field() -> object:
     """Create metric unit field."""
     return Field(
         default=FlextObservabilityConstants.DEFAULT_METRIC_UNIT,
@@ -131,17 +131,17 @@ def _create_metric_unit_field() -> Field:
     )
 
 
-def _create_trace_name_field() -> Field:
+def _create_trace_name_field() -> object:
     """Create trace name field."""
     return Field(min_length=1, max_length=255, description="Trace operation name")
 
 
-def _create_alert_message_field() -> Field:
+def _create_alert_message_field() -> object:
     """Create alert message field."""
     return Field(min_length=1, max_length=1000, description="Alert message")
 
 
-def _create_timestamp_field() -> Field:
+def _create_timestamp_field() -> object:
     """Create timestamp field."""
     return Field(default_factory=lambda: datetime.now(UTC), description="Timestamp")
 

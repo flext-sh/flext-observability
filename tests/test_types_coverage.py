@@ -80,11 +80,11 @@ class TestTypesModuleCoverage:
         log_result = flext_create_log_entry("Test log", "test_service", "info")
 
         # Verify all entities were created successfully
-        assert metric_result.success
-        assert trace_result.success
-        assert alert_result.success
-        assert health_result.success
-        assert log_result.success
+        assert metric_result.is_success
+        assert trace_result.is_success
+        assert alert_result.is_success
+        assert health_result.is_success
+        assert log_result.is_success
 
         # Extract real instances
         metric_instance = metric_result.data

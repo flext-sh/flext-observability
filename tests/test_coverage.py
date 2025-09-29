@@ -31,7 +31,7 @@ class TestRealFunctionalCoverage:
         )
 
         validation_result = metric.validate_business_rules()
-        assert validation_result.success
+        assert validation_result.is_success
 
         # Test empty name validation through Pydantic validation
         with pytest.raises(Exception):  # Pydantic should catch empty name
@@ -48,7 +48,7 @@ class TestRealFunctionalCoverage:
             unit="test",
         )
         validation_result = negative_metric.validate_business_rules()
-        assert validation_result.success  # Business rules allow negative values
+        assert validation_result.is_success  # Business rules allow negative values
 
         # Test business rule validation on valid metric
         valid_metric = FlextMetric(
@@ -58,7 +58,7 @@ class TestRealFunctionalCoverage:
         )
 
         business_validation = valid_metric.validate_business_rules()
-        assert business_validation.success
+        assert business_validation.is_success
 
     def test_factory_error_handling_real(self) -> None:
         """Test factory error handling through real invalid inputs."""
@@ -66,18 +66,18 @@ class TestRealFunctionalCoverage:
 
         # Test invalid metric creation
         invalid_metric = factory.create_metric("", -1.0)
-        assert not invalid_metric.success
+        assert not invalid_metric.is_success
         assert invalid_metric.error is not None
 
         # Test invalid log entry creation
         invalid_log = factory.create_log_entry("", "invalid_level")
         # Should either succeed with empty message or fail with meaningful error
-        assert invalid_log.success or invalid_log.error is not None
+        assert invalid_log.is_success or invalid_log.error is not None
 
         # Test invalid alert creation
         invalid_alert = factory.create_alert("", "service", "invalid_level")
         # Should either succeed or fail with meaningful error
-        assert invalid_alert.success or invalid_alert.error is not None
+        assert invalid_alert.is_success or invalid_alert.error is not None
 
     def test_comprehensive_factory_functionality_real(self) -> None:
         """Test comprehensive factory functionality for coverage."""
@@ -90,7 +90,7 @@ class TestRealFunctionalCoverage:
             "percentage",
             tags={"test": "comprehensive"},
         )
-        assert metric_result.success
+        assert metric_result.is_success
         assert metric_result.data is not None
         assert metric_result.data.name == "comprehensive_test"
         assert metric_result.data.value == 99.9
@@ -101,7 +101,7 @@ class TestRealFunctionalCoverage:
             "info",
             context={"test": "comprehensive"},
         )
-        assert log_result.success or log_result.error is not None
+        assert log_result.is_success or log_result.error is not None
 
         # Test trace creation
         trace_result = factory.create_trace(
@@ -109,7 +109,7 @@ class TestRealFunctionalCoverage:
             "test_service",
             tags={"test": "comprehensive"},
         )
-        assert trace_result.success or trace_result.error is not None
+        assert trace_result.is_success or trace_result.error is not None
 
         # Test alert creation
         alert_result = factory.create_alert(
@@ -118,7 +118,7 @@ class TestRealFunctionalCoverage:
             "warning",
             tags={"test": "comprehensive"},
         )
-        assert alert_result.success or alert_result.error is not None
+        assert alert_result.is_success or alert_result.error is not None
 
         # Test health check creation
         health_result = factory.create_health_check(
@@ -126,7 +126,7 @@ class TestRealFunctionalCoverage:
             "healthy",
             details={"test": "comprehensive"},
         )
-        assert health_result.success or health_result.error is not None
+        assert health_result.is_success or health_result.error is not None
 
     def test_entity_edge_cases_real_functionality(self) -> None:
         """Test entity edge cases through real functionality."""
@@ -139,7 +139,7 @@ class TestRealFunctionalCoverage:
         )
 
         validation = extreme_metric.validate_business_rules()
-        assert validation.success
+        assert validation.is_success
 
         # Test metric with minimal valid values
         minimal_metric = FlextMetric(
@@ -149,7 +149,7 @@ class TestRealFunctionalCoverage:
         )
 
         minimal_validation = minimal_metric.validate_business_rules()
-        assert minimal_validation.success
+        assert minimal_validation.is_success
 
     def test_global_factory_functionality_real(self) -> None:
         """Test global factory functionality for coverage."""
@@ -166,7 +166,7 @@ class TestRealFunctionalCoverage:
 
         # Test global factory functionality
         metric_result = global_factory.create_metric("global_test", 123.45)
-        assert metric_result.success
+        assert metric_result.is_success
 
         # Reset again for cleanup
         reset_global_factory()

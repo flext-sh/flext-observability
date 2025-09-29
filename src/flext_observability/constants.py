@@ -59,6 +59,10 @@ class FlextObservabilityConstants(FlextConstants):
     SERVICE_LOGGING = "logging"
 
     # Monitoring endpoints
+    # Config-specific defaults
+    DEFAULT_METRICS_EXPORT_INTERVAL_SECONDS = 60
+    DEFAULT_TRACING_SAMPLING_RATE = 1.0
+    DEFAULT_MAX_SPAN_ATTRIBUTES = 128
     DEFAULT_MONITORING_ENDPOINT = "http://localhost:9090"
 
 

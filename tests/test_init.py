@@ -36,7 +36,7 @@ class TestInitCoverage:
     def test_flext_health_status_function(self) -> None:
         """Test flext_health_status function coverage."""
         result = flext_health_status("flext-observability", "healthy")
-        assert result.success
+        assert result.is_success
         health_check = result.unwrap()
         assert health_check.status == "healthy"
         assert health_check.component == "flext-observability"

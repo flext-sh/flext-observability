@@ -11,7 +11,7 @@ from typing import Self
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextConfig, FlextResult
+from flext_core import FlextConfig, FlextConstants, FlextResult
 from flext_observability.constants import FlextObservabilityConstants
 
 
@@ -41,7 +41,7 @@ class FlextObservabilityConfig(FlextConfig):
         description="Enable metrics collection",
     )
     metrics_export_interval_seconds: int = Field(
-        default=60,
+        default=FlextObservabilityConstants.DEFAULT_METRICS_EXPORT_INTERVAL_SECONDS,
         description="Metrics export interval in seconds",
         gt=0,
         le=3600,
@@ -65,7 +65,7 @@ class FlextObservabilityConfig(FlextConfig):
         description="Enable distributed tracing",
     )
     tracing_sampling_rate: float = Field(
-        default=1.0,
+        default=FlextObservabilityConstants.DEFAULT_TRACING_SAMPLING_RATE,
         description="Trace sampling rate (0.0 to 1.0)",
         ge=0.0,
         le=1.0,
@@ -79,7 +79,7 @@ class FlextObservabilityConfig(FlextConfig):
         description="Service name for traces",
     )
     tracing_max_span_attributes: int = Field(
-        default=128,
+        default=FlextObservabilityConstants.DEFAULT_MAX_SPAN_ATTRIBUTES,
         description="Maximum number of span attributes",
         gt=0,
         le=1000,
@@ -91,7 +91,7 @@ class FlextObservabilityConfig(FlextConfig):
         description="Enable health monitoring",
     )
     monitoring_check_interval_seconds: int = Field(
-        default=30,
+        default=FlextConstants.Network.DEFAULT_TIMEOUT,
         description="Health check interval in seconds",
         gt=0,
         le=3600,
@@ -101,7 +101,7 @@ class FlextObservabilityConfig(FlextConfig):
         description="Send alerts on health check failures",
     )
     monitoring_failure_threshold: int = Field(
-        default=3,
+        default=FlextConstants.Reliability.MAX_RETRY_ATTEMPTS,
         description="Number of failures before alerting",
         gt=0,
         le=10,

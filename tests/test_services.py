@@ -29,44 +29,44 @@ class TestMetricsServiceRealFunctionality:
 
         # Record different types of metrics
         counter_metric = flext_create_metric("http_requests_total", 1.0, "count")
-        assert counter_metric.success
+        assert counter_metric.is_success
 
         gauge_metric = flext_create_metric("cpu_usage_percent", 75.5, "percent")
-        assert gauge_metric.success
+        assert gauge_metric.is_success
 
         histogram_metric = flext_create_metric(
             "response_time_ms",
             250.0,
             "milliseconds",
         )
-        assert histogram_metric.success
+        assert histogram_metric.is_success
 
         # Record metrics
         counter_result = service.record_metric(counter_metric.unwrap())
-        assert counter_result.success
+        assert counter_result.is_success
 
         gauge_result = service.record_metric(gauge_metric.unwrap())
-        assert gauge_result.success
+        assert gauge_result.is_success
 
         histogram_result = service.record_metric(histogram_metric.unwrap())
-        assert histogram_result.success
+        assert histogram_result.is_success
 
         # Get individual metric values
         counter_value = service.get_metric_value("http_requests_total")
-        assert counter_value.success
+        assert counter_value.is_success
         assert counter_value.data == 1.0
 
         gauge_value = service.get_metric_value("cpu_usage_percent")
-        assert gauge_value.success
+        assert gauge_value.is_success
         assert gauge_value.data == 75.5
 
         histogram_value = service.get_metric_value("response_time_ms")
-        assert histogram_value.success
+        assert histogram_value.is_success
         assert histogram_value.data == 250.0
 
         # Get summary
         summary = service.get_metrics_summary()
-        assert summary.success
+        assert summary.is_success
         assert isinstance(summary.data, dict)
         assert "service_info" in summary.data
 
@@ -81,22 +81,22 @@ class TestMetricsServiceRealFunctionality:
         # Record multiple counter metrics
         for _ in range(5):
             counter_metric = flext_create_metric("request_count", 1.0, "count")
-            assert counter_metric.success
+            assert counter_metric.is_success
             service.record_metric(counter_metric.unwrap())
 
         # Counter should sum values
         counter_value = service.get_metric_value("request_count")
-        assert counter_value.success
+        assert counter_value.is_success
         assert counter_value.data == 5.0
 
         # Record multiple gauge metrics (should keep latest)
         for value in [10.0, 20.0, 30.0]:
             gauge_metric = flext_create_metric("temperature", value, "celsius")
-            assert gauge_metric.success
+            assert gauge_metric.is_success
             service.record_metric(gauge_metric.unwrap())
 
         gauge_value = service.get_metric_value("temperature")
-        assert gauge_value.success
+        assert gauge_value.is_success
         assert gauge_value.data == 30.0  # Latest value
 
     def test_prometheus_export_format(self) -> None:
@@ -112,12 +112,12 @@ class TestMetricsServiceRealFunctionality:
 
         for name, value, unit in metrics_data:
             metric = flext_create_metric(name, value, unit)
-            assert metric.success
+            assert metric.is_success
             service.record_metric(metric.unwrap())
 
         # Export to Prometheus format
         export_result = service.export_prometheus_format()
-        assert export_result.success
+        assert export_result.is_success
 
         prometheus_output = export_result.data
         assert isinstance(prometheus_output, str)
@@ -138,23 +138,23 @@ class TestMetricsServiceRealFunctionality:
         # Record some metrics
         for i in range(3):
             metric = flext_create_metric(f"test_metric_{i}", float(i), "count")
-            assert metric.success
+            assert metric.is_success
             service.record_metric(metric.unwrap())
 
         # Verify metrics exist
         summary_before = service.get_metrics_summary()
-        assert summary_before.success
+        assert summary_before.is_success
         service_info = summary_before.unwrap()["service_info"]
         assert isinstance(service_info, dict)
         assert service_info["metrics_recorded"] == 3
 
         # Reset metrics
         reset_result = service.reset_metrics()
-        assert reset_result.success
+        assert reset_result.is_success
 
         # Verify metrics are cleared
         summary_after = service.get_metrics_summary()
-        assert summary_after.success
+        assert summary_after.is_success
         service_info_after = summary_after.unwrap()["service_info"]
         assert isinstance(service_info_after, dict)
         assert service_info_after["metrics_recorded"] == 0
@@ -172,9 +172,9 @@ class TestMetricsServiceRealFunctionality:
                     float(i),
                     "count",
                 )
-                if metric.success:
+                if metric.is_success:
                     result = service.record_metric(metric.unwrap())
-                    results.append(result.success)
+                    results.append(result.is_success)
 
         # Start multiple threads
         threads: list[threading.Thread] = []
@@ -193,7 +193,7 @@ class TestMetricsServiceRealFunctionality:
 
         # Verify service state
         summary = service.get_metrics_summary()
-        assert summary.success
+        assert summary.is_success
 
 
 class TestTracingServiceRealFunctionality:
@@ -205,30 +205,30 @@ class TestTracingServiceRealFunctionality:
 
         # Create and start a trace
         trace = flext_create_trace("user_request", "api_service")
-        assert trace.success
+        assert trace.is_success
 
         trace_obj = trace.unwrap()
         start_result = service.start_trace(trace_obj)
-        assert start_result.success
+        assert start_result.is_success
 
         # Add spans to the trace
         span_result = service.add_span_to_trace(trace_obj.trace_id, "database_query")
-        assert span_result.success
+        assert span_result.is_success
 
         span_result2 = service.add_span_to_trace(trace_obj.trace_id, "cache_lookup")
-        assert span_result2.success
+        assert span_result2.is_success
 
         # Get trace info
         trace_info = service.get_trace_info(trace_obj.trace_id)
-        assert trace_info.success
+        assert trace_info.is_success
 
         # Finish the trace
         finish_result = service.finish_trace(trace_obj.trace_id)
-        assert finish_result.success
+        assert finish_result.is_success
 
         # Get tracing summary
         summary = service.get_tracing_summary()
-        assert summary.success
+        assert summary.is_success
         assert isinstance(summary.data, dict)
 
     def test_jaeger_export_format(self) -> None:
@@ -237,7 +237,7 @@ class TestTracingServiceRealFunctionality:
 
         # Create a trace with spans
         trace = flext_create_trace("payment_processing", "payment_service")
-        assert trace.success
+        assert trace.is_success
 
         trace_obj = trace.unwrap()
         service.start_trace(trace_obj)
@@ -247,7 +247,7 @@ class TestTracingServiceRealFunctionality:
 
         # Export to Jaeger format
         jaeger_result = service.export_jaeger_format(trace_obj.trace_id)
-        assert jaeger_result.success
+        assert jaeger_result.is_success
 
         jaeger_data = jaeger_result.unwrap()
         assert isinstance(jaeger_data, dict)
@@ -268,10 +268,10 @@ class TestLoggingServiceRealFunctionality:
 
         for level in log_levels:
             log_entry = flext_create_log_entry(f"Test {level} message", level)
-            assert log_entry.success
+            assert log_entry.is_success
 
             result = service.log_entry(log_entry.unwrap())
-            assert result.success
+            assert result.is_success
 
 
 class TestAlertServiceRealFunctionality:
@@ -290,10 +290,10 @@ class TestAlertServiceRealFunctionality:
                 f"Test {level} alert message",
                 level,
             )
-            assert alert.success
+            assert alert.is_success
 
             result = service.create_alert(alert.unwrap())
-            assert result.success
+            assert result.is_success
 
 
 class TestHealthServiceRealFunctionality:
@@ -308,27 +308,27 @@ class TestHealthServiceRealFunctionality:
 
         for component in components:
             health_check = flext_create_health_check(component, "healthy")
-            assert health_check.success
+            assert health_check.is_success
 
             result = service.check_health(health_check.unwrap())
-            assert result.success
+            assert result.is_success
 
         # Get overall health
         overall_health = service.get_overall_health()
-        assert overall_health.success
+        assert overall_health.is_success
         assert isinstance(overall_health.data, dict)
 
         # Get component history
         for component in components:
             history = service.get_component_health_history(component)
-            assert history.success
+            assert history.is_success
 
     def test_system_health_check(self) -> None:
         """Test system health check functionality."""
         service = FlextHealthService()
 
         system_health = service.perform_system_health_check()
-        assert system_health.success
+        assert system_health.is_success
 
         health_data = system_health.data
         assert isinstance(health_data, dict)
@@ -351,15 +351,15 @@ class TestHealthServiceRealFunctionality:
         # Create multiple unhealthy reports for same component
         for _ in range(5):  # More than the threshold
             health_check = flext_create_health_check("failing_component", "unhealthy")
-            assert health_check.success
+            assert health_check.is_success
 
             result = service.check_health(health_check.unwrap())
-            assert result.success
+            assert result.is_success
 
         # Verify component is tracked as persistently unhealthy
         # This tests internal state management without accessing private attributes
         overall_health = service.get_overall_health()
-        assert overall_health.success
+        assert overall_health.is_success
 
 
 class TestServiceErrorHandlingRealFunctionality:
@@ -379,16 +379,16 @@ class TestServiceErrorHandlingRealFunctionality:
 
         # Test export with no metrics
         export_result = service.export_prometheus_format()
-        assert export_result.success
+        assert export_result.is_success
         assert isinstance(export_result.data, str)
 
         # Test export with special characters in metric names
         special_metric = flext_create_metric("metric_with_underscores", 42.0)
-        assert special_metric.success
+        assert special_metric.is_success
         service.record_metric(special_metric.unwrap())
 
         export_result = service.export_prometheus_format()
-        assert export_result.success
+        assert export_result.is_success
         assert "metric_with_underscores 42.0" in export_result.unwrap()
 
     def test_tracing_service_span_management(self) -> None:
@@ -397,11 +397,11 @@ class TestServiceErrorHandlingRealFunctionality:
 
         # Create a trace and add multiple spans
         trace = flext_create_trace("complex_operation", "service_a")
-        assert trace.success
+        assert trace.is_success
 
         trace_obj = trace.unwrap()
         start_result = service.start_trace(trace_obj)
-        assert start_result.success
+        assert start_result.is_success
 
         # Add spans in sequence
         span_operations = [
@@ -413,15 +413,15 @@ class TestServiceErrorHandlingRealFunctionality:
 
         for operation in span_operations:
             span_result = service.add_span_to_trace(trace_obj.trace_id, operation)
-            assert span_result.success
+            assert span_result.is_success
 
         # Get trace information
         trace_info = service.get_trace_info(trace_obj.trace_id)
-        assert trace_info.success
+        assert trace_info.is_success
 
         # Finish the trace
         finish_result = service.finish_trace(trace_obj.trace_id)
-        assert finish_result.success
+        assert finish_result.is_success
 
     def test_alert_service_different_severity_levels(self) -> None:
         """Test alert service with different severity levels."""
@@ -432,10 +432,10 @@ class TestServiceErrorHandlingRealFunctionality:
 
         for level in severity_levels:
             alert = flext_create_alert(f"Test {level} alert", "test_service", level)
-            assert alert.success
+            assert alert.is_success
 
             result = service.create_alert(alert.data)
-            assert result.success
+            assert result.is_success
 
         # All alerts created successfully - real functionality validated
 
@@ -445,7 +445,7 @@ class TestServiceErrorHandlingRealFunctionality:
 
         # Perform real system health check
         system_health = service.perform_system_health_check()
-        assert system_health.success
+        assert system_health.is_success
 
         health_data = system_health.data
         assert isinstance(health_data, dict)

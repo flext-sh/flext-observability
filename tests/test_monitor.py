@@ -25,15 +25,15 @@ class TestMonitorRealFunctionality:
 
         # Initialize observability services
         init_result = monitor.flext_initialize_observability()
-        assert init_result.success, f"Initialization failed: {init_result.error}"
+        assert init_result.is_success, f"Initialization failed: {init_result.error}"
 
         # Start monitoring
         start_result = monitor.flext_start_monitoring()
-        assert start_result.success, f"Start monitoring failed: {start_result.error}"
+        assert start_result.is_success, f"Start monitoring failed: {start_result.error}"
 
         # Get health status
         health_result = monitor.flext_get_health_status()
-        assert health_result.success, f"Health status failed: {health_result.error}"
+        assert health_result.is_success, f"Health status failed: {health_result.error}"
 
         health_data = health_result.data
         assert isinstance(health_data, dict)
@@ -41,7 +41,7 @@ class TestMonitorRealFunctionality:
 
         # Stop monitoring
         stop_result = monitor.flext_stop_monitoring()
-        assert stop_result.success, f"Stop monitoring failed: {stop_result.error}"
+        assert stop_result.is_success, f"Stop monitoring failed: {stop_result.error}"
 
     def test_real_metric_recording_workflow(self) -> None:
         """Test complete metric recording workflow with real services."""
@@ -49,27 +49,31 @@ class TestMonitorRealFunctionality:
 
         # Initialize the monitor
         init_result = monitor.flext_initialize_observability()
-        assert init_result.success
+        assert init_result.is_success
 
         # Record various types of metrics
         counter_result = monitor.flext_record_metric("requests_total", 1.0, "counter")
-        assert counter_result.success, f"Counter metric failed: {counter_result.error}"
+        assert counter_result.is_success, (
+            f"Counter metric failed: {counter_result.error}"
+        )
 
         gauge_result = monitor.flext_record_metric("cpu_usage_percent", 75.5, "gauge")
-        assert gauge_result.success, f"Gauge metric failed: {gauge_result.error}"
+        assert gauge_result.is_success, f"Gauge metric failed: {gauge_result.error}"
 
         histogram_result = monitor.flext_record_metric(
             "response_time_seconds",
             0.25,
             "histogram",
         )
-        assert histogram_result.success, (
+        assert histogram_result.is_success, (
             f"Histogram metric failed: {histogram_result.error}"
         )
 
         # Get metrics summary
         summary_result = monitor.flext_get_metrics_summary()
-        assert summary_result.success, f"Metrics summary failed: {summary_result.error}"
+        assert summary_result.is_success, (
+            f"Metrics summary failed: {summary_result.error}"
+        )
 
         summary_data = summary_result.data
         assert isinstance(summary_data, dict)
@@ -98,7 +102,7 @@ class TestMonitorRealFunctionality:
 
         # Get metrics summary to verify monitoring worked
         summary_result = monitor.flext_get_metrics_summary()
-        assert summary_result.success
+        assert summary_result.is_success
 
         summary_data = summary_result.data
         assert isinstance(summary_data, dict)
@@ -134,16 +138,16 @@ class TestMonitorRealFunctionality:
 
         # Initialize services
         init_result = monitor.flext_initialize_observability()
-        assert init_result.success
+        assert init_result.is_success
 
         # Start monitoring
         start_result = monitor.flext_start_monitoring()
-        assert start_result.success
+        assert start_result.is_success
         assert monitor.flext_is_monitoring_active()
 
         # Stop monitoring
         stop_result = monitor.flext_stop_monitoring()
-        assert stop_result.success
+        assert stop_result.is_success
         assert not monitor.flext_is_monitoring_active()
 
     def test_concurrent_metric_recording(self) -> None:
@@ -161,7 +165,7 @@ class TestMonitorRealFunctionality:
                     f"thread_{thread_id}_metric_{i}",
                     float(i),
                 )
-                results.append(result.success)
+                results.append(result.is_success)
 
         # Create and start multiple threads
         threads: list[threading.Thread] = []
@@ -207,4 +211,4 @@ class TestMonitorRealFunctionality:
 
         # Get metrics summary to verify monitoring captured performance data
         summary_result = monitor.flext_get_metrics_summary()
-        assert summary_result.success
+        assert summary_result.is_success
