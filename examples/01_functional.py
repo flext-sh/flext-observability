@@ -20,7 +20,6 @@ from flext_observability import (
     flext_create_log_entry,
     flext_create_metric,
     flext_create_trace,
-    flext_monitor_function,
     get_global_factory,
     reset_global_factory,
 )
@@ -78,7 +77,6 @@ def demonstrate_factory_pattern() -> None:
         pass
 
 
-@flext_monitor_function(metric_name="example_processing")
 def monitored_function(data: str) -> str:
     """Example function with automatic monitoring."""
     time.sleep(0.1)  # Simulate processing
@@ -100,7 +98,7 @@ def demonstrate_validation() -> None:
     # Invalid metric (negative value should be caught by pydantic or business rules)
     try:
         invalid_metric_result = flext_create_metric("invalid_metric", -10.0, "count")
-        if invalid_metric_result.success:
+        if invalid_metric_result.is_success:
             invalid_metric_result.unwrap().validate_business_rules()
     except Exception as e:
         print(f"Validation error (expected): {e}")

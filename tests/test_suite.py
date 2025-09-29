@@ -31,42 +31,42 @@ class TestCompleteIntegrationReal:
         """Test complete observability pipeline with real production workflow."""
         # Step 1: Initialize monitoring system
         init_result = self.monitor.flext_initialize_observability()
-        assert init_result.success, (
+        assert init_result.is_success, (
             f"Monitor initialization failed: {init_result.error}"
         )
 
         start_result = self.monitor.flext_start_monitoring()
-        assert start_result.success, f"Monitor start failed: {start_result.error}"
+        assert start_result.is_success, f"Monitor start failed: {start_result.error}"
 
         # Step 2: Create observability entities using factory
         metric_result = self.factory.create_metric("pipeline_requests", 150, "counter")
-        assert metric_result.success
+        assert metric_result.is_success
 
         log_result = self.factory.create_log_entry(
             "Pipeline started",
             "integration_service",
             "info",
         )
-        assert log_result.success
+        assert log_result.is_success
 
         trace_result = self.factory.create_trace(
             "process_pipeline",
             "integration_service",
         )
-        assert trace_result.success
+        assert trace_result.is_success
 
         alert_result = self.factory.create_alert(
             "Pipeline monitoring active",
             "integration_service",
             "medium",
         )
-        assert alert_result.success
+        assert alert_result.is_success
 
         health_result = self.factory.create_health_check(
             "integration_service",
             "healthy",
         )
-        assert health_result.success
+        assert health_result.is_success
 
         # Step 3: Validate entity properties
         metric = metric_result.unwrap()
@@ -83,7 +83,7 @@ class TestCompleteIntegrationReal:
 
         # Step 4: Test monitor health status
         health_status = self.monitor.flext_get_health_status()
-        assert health_status.success
+        assert health_status.is_success
         assert isinstance(health_status.data, dict)
         assert "monitor_metrics" in health_status.data
 
@@ -93,24 +93,24 @@ class TestCompleteIntegrationReal:
             95.5,
             "gauge",
         )
-        assert record_result.success
+        assert record_result.is_success
 
         # Step 6: Get metrics summary
         summary_result = self.monitor.flext_get_metrics_summary()
-        assert summary_result.success
+        assert summary_result.is_success
 
         # Step 7: Stop monitoring gracefully
         stop_result = self.monitor.flext_stop_monitoring()
-        assert stop_result.success
+        assert stop_result.is_success
 
     def test_multithreaded_real_operations(self) -> None:
         """Test multithreaded real operations without mocks."""
         # Initialize monitor
         init_result = self.monitor.flext_initialize_observability()
-        assert init_result.success
+        assert init_result.is_success
 
         start_result = self.monitor.flext_start_monitoring()
-        assert start_result.success
+        assert start_result.is_success
 
         results: list[bool] = []
         errors: FlextTypes.Core.StringList = []
@@ -124,7 +124,7 @@ class TestCompleteIntegrationReal:
                     float(worker_id * 10),
                     "counter",
                 )
-                if not metric_result.success:
+                if not metric_result.is_success:
                     errors.append(
                         f"Worker {worker_id} metric failed: {metric_result.error}",
                     )
@@ -135,7 +135,7 @@ class TestCompleteIntegrationReal:
                     f"worker_service_{worker_id}",
                     "info",
                 )
-                if not log_result.success:
+                if not log_result.is_success:
                     errors.append(f"Worker {worker_id} log failed: {log_result.error}")
                     return
 
@@ -145,7 +145,7 @@ class TestCompleteIntegrationReal:
                     float(worker_id * 5),
                     "gauge",
                 )
-                if not record_result.success:
+                if not record_result.is_success:
                     errors.append(
                         f"Worker {worker_id} record failed: {record_result.error}",
                     )
@@ -176,10 +176,10 @@ class TestCompleteIntegrationReal:
         """Test function monitoring integration with real execution."""
         # Initialize monitor
         init_result = self.monitor.flext_initialize_observability()
-        assert init_result.success
+        assert init_result.is_success
 
         start_result = self.monitor.flext_start_monitoring()
-        assert start_result.success
+        assert start_result.is_success
 
         # Create monitored functions
         @flext_monitor_function(monitor=self.monitor, metric_name="data_processing")
@@ -220,7 +220,7 @@ class TestCompleteIntegrationReal:
 
         # Verify monitoring captured the executions
         health_status = self.monitor.flext_get_health_status()
-        assert health_status.success
+        assert health_status.is_success
         health_data = health_status.unwrap()
         assert isinstance(health_data, dict)
         monitor_metrics = health_data["monitor_metrics"]
@@ -271,14 +271,14 @@ class TestCompleteIntegrationReal:
 
         # Valid metric
         metric_result = self.factory.create_metric("cpu_usage", 75.5, "gauge")
-        assert metric_result.success
+        assert metric_result.is_success
         metric = metric_result.unwrap()
         validation = metric.validate_business_rules()
-        assert validation.success
+        assert validation.is_success
 
         # Test metric with potentially invalid business rule
         metric_negative = self.factory.create_metric("error_rate", -5.0, "gauge")
-        if metric_negative.success:
+        if metric_negative.is_success:
             # Business rule validation should catch negative values for certain metrics
             metric_neg = metric_negative.unwrap()
             validation = metric_neg.validate_business_rules()
@@ -287,17 +287,17 @@ class TestCompleteIntegrationReal:
 
         # Valid trace
         trace_result = self.factory.create_trace("user_login", "auth_service")
-        assert trace_result.success
+        assert trace_result.is_success
         trace = trace_result.unwrap()
         trace_validation = trace.validate_business_rules()
-        assert trace_validation.success
+        assert trace_validation.is_success
 
         # Valid alert
         alert_result = self.factory.create_alert("System alert", "monitoring", "high")
-        assert alert_result.success
+        assert alert_result.is_success
         alert = alert_result.unwrap()
         alert_validation = alert.validate_business_rules()
-        assert alert_validation.success
+        assert alert_validation.is_success
 
     def test_global_factory_integration_real(self) -> None:
         """Test global factory integration with real operations."""
@@ -310,14 +310,14 @@ class TestCompleteIntegrationReal:
 
         # Perform operations through global factory
         metric_result = global_factory.metric("global_test_metric", 100.0)
-        assert metric_result.success
+        assert metric_result.is_success
         metric = metric_result.unwrap()
         # Global factory returns object, so we need to check attributes exist
         assert hasattr(metric, "name")
         assert metric.name == "global_test_metric"
 
         log_result = global_factory.log("Global factory test")
-        assert log_result.success
+        assert log_result.is_success
         log_entry = log_result.unwrap()
         # Global factory returns object, so we need to check attributes exist
         assert hasattr(log_entry, "message")
@@ -339,10 +339,10 @@ class TestCompleteIntegrationReal:
         """Test performance monitoring with real computational workloads."""
         # Initialize monitoring
         init_result = self.monitor.flext_initialize_observability()
-        assert init_result.success
+        assert init_result.is_success
 
         start_result = self.monitor.flext_start_monitoring()
-        assert start_result.success
+        assert start_result.is_success
 
         @flext_monitor_function(monitor=self.monitor, metric_name="computation")
         def cpu_intensive_task(iterations: int) -> dict[str, int]:
@@ -370,7 +370,7 @@ class TestCompleteIntegrationReal:
 
         # Verify performance metrics were captured
         health_status = self.monitor.flext_get_health_status()
-        assert health_status.success
+        assert health_status.is_success
         health_data = health_status.unwrap()
         assert isinstance(health_data, dict)
         monitor_metrics = health_data["monitor_metrics"]
@@ -379,21 +379,21 @@ class TestCompleteIntegrationReal:
 
         # Get metrics summary to verify performance data
         summary = self.monitor.flext_get_metrics_summary()
-        assert summary.success
+        assert summary.is_success
 
     def test_service_coordination_real(self) -> None:
         """Test service coordination with real service interactions."""
         # Initialize monitor
         init_result = self.monitor.flext_initialize_observability()
-        assert init_result.success
+        assert init_result.is_success
 
         start_result = self.monitor.flext_start_monitoring()
-        assert start_result.success
+        assert start_result.is_success
 
         # Create a coordinated workflow
         # 1. Create initial metric
         initial_metric = self.factory.create_metric("workflow_start", 1, "counter")
-        assert initial_metric.success
+        assert initial_metric.is_success
 
         # 2. Log workflow initiation
         log_start = self.factory.create_log_entry(
@@ -401,14 +401,14 @@ class TestCompleteIntegrationReal:
             "coordination_service",
             "info",
         )
-        assert log_start.success
+        assert log_start.is_success
 
         # 3. Create trace for workflow
         trace_workflow = self.factory.create_trace(
             "coordinate_services",
             "coordination_service",
         )
-        assert trace_workflow.success
+        assert trace_workflow.is_success
 
         # 4. Record progress metric
         progress_result = self.monitor.flext_record_metric(
@@ -416,7 +416,7 @@ class TestCompleteIntegrationReal:
             25.0,
             "gauge",
         )
-        assert progress_result.success
+        assert progress_result.is_success
 
         # 5. Update progress
         progress_update = self.monitor.flext_record_metric(
@@ -424,7 +424,7 @@ class TestCompleteIntegrationReal:
             75.0,
             "gauge",
         )
-        assert progress_update.success
+        assert progress_update.is_success
 
         # 6. Create completion alert
         completion_alert = self.factory.create_alert(
@@ -432,14 +432,14 @@ class TestCompleteIntegrationReal:
             "coordination_service",
             "medium",
         )
-        assert completion_alert.success
+        assert completion_alert.is_success
 
         # 7. Final health check
         final_health = self.factory.create_health_check(
             "coordination_service",
             "healthy",
         )
-        assert final_health.success
+        assert final_health.is_success
 
         # 8. Log workflow completion
         log_complete = self.factory.create_log_entry(
@@ -447,15 +447,15 @@ class TestCompleteIntegrationReal:
             "coordination_service",
             "info",
         )
-        assert log_complete.success
+        assert log_complete.is_success
 
         # 9. Final metric
         final_metric = self.factory.create_metric("workflow_complete", 1, "counter")
-        assert final_metric.success
+        assert final_metric.is_success
 
         # Verify all operations succeeded and system is healthy
         final_health_status = self.monitor.flext_get_health_status()
-        assert final_health_status.success
+        assert final_health_status.is_success
         final_health_data = final_health_status.unwrap()
         assert isinstance(final_health_data, dict)
         final_monitor_metrics = final_health_data["monitor_metrics"]

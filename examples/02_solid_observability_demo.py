@@ -22,19 +22,16 @@ from flext_observability import (
     flext_create_health_check,
     flext_create_metric,
     flext_create_trace,
-    flext_monitor_function,
     get_global_factory,
 )
 
 
-@flext_monitor_function(metric_name="database_operation")
 def database_query(query: str) -> FlextTypes.Core.Dict:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)  # Simulate database latency
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-@flext_monitor_function(metric_name="api_request")
 def process_api_request(endpoint: str) -> FlextTypes.Core.Dict:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)  # Simulate processing time
@@ -64,7 +61,9 @@ def demonstrate_solid_design() -> None:
     entities: list[FlextMetric | FlextTrace | FlextAlert | FlextHealthCheck] = [
         result.unwrap()
         for result in results
-        if hasattr(result, "success") and result.success and hasattr(result, "unwrap")
+        if hasattr(result, "success")
+        and result.is_success
+        and hasattr(result, "unwrap")
     ]
     for entity in entities:
         if hasattr(entity, "validate_business_rules"):
@@ -87,7 +86,7 @@ def demonstrate_metrics_collection() -> None:
 
     for name, value, unit in metrics:
         result = flext_create_metric(name, value, unit)
-        if result.success:
+        if result.is_success:
             pass
 
 
@@ -104,7 +103,7 @@ def demonstrate_distributed_tracing() -> None:
 
     for service, operation in services:
         result = flext_create_trace(operation, service)
-        if result.success:
+        if result.is_success:
             pass
 
 
@@ -121,7 +120,7 @@ def demonstrate_health_monitoring() -> None:
 
     for service, status in services_health:
         result = flext_create_health_check(service, status)
-        if result.success:
+        if result.is_success:
             pass
 
 
@@ -136,7 +135,7 @@ def demonstrate_alerting_system() -> None:
 
     for level, message, service in alerts:
         result = flext_create_alert(message, service, level)
-        if result.success:
+        if result.is_success:
             icons = {
                 "info": "[INFO]",
                 "warning": "[WARN]",
@@ -182,7 +181,7 @@ def demonstrate_validation() -> None:
     ]
 
     for result in entities_to_validate:
-        if result.success and result.data:
+        if result.is_success and result.data:
             result.data.validate_business_rules()
             result_type = type(result.data).__name__
             print(f"Validation successful for {result_type}")

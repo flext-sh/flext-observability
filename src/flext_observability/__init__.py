@@ -50,6 +50,7 @@ from flext_observability.monitoring import (
     FlextObservabilityMonitor,
     flext_monitor_function,
 )
+from flext_observability.protocols import FlextObservabilityProtocols
 from flext_observability.services import (
     FlextAlertService,
     FlextHealthService,
@@ -127,6 +128,7 @@ __all__: list[str] = [
     "FlextObservabilityConstants",
     "FlextObservabilityMasterFactory",
     "FlextObservabilityMonitor",
+    "FlextObservabilityProtocols",
     "FlextObservabilityService",
     "FlextObservabilityUtilities",
     "FlextTrace",

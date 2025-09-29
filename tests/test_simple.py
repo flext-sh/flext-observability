@@ -42,13 +42,13 @@ class TestSimpleCoverage:
         """Test metric type inference for counter metrics."""
         # Test _total suffix
         result = flext_create_metric("requests_total", 100)
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert result.data.metric_type == "counter"
 
         # Test _count suffix
         result = flext_create_metric("errors_count", 5)
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert result.data.metric_type == "counter"
 
@@ -56,39 +56,39 @@ class TestSimpleCoverage:
         """Test metric type inference for histogram metrics."""
         # Test _duration suffix
         result = flext_create_metric("request_duration", 0.5)
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert result.data.metric_type == "histogram"
 
         # Test _time suffix
         result = flext_create_metric("response_time", 0.2)
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert result.data.metric_type == "histogram"
 
         # Test _seconds suffix
         result = flext_create_metric("processing_seconds", 1.5)
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert result.data.metric_type == "histogram"
 
         # Test "histogram" in name
         result = flext_create_metric("cpu_histogram_data", 85.0)
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert result.data.metric_type == "histogram"
 
     def test_metric_default_type_gauge(self) -> None:
         """Test default metric type (gauge)."""
         result = flext_create_metric("custom_metric", 42.0)
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert result.data.metric_type == "gauge"
 
     def test_metric_with_decimal_value(self) -> None:
         """Test metric creation with Decimal value."""
         result = flext_create_metric("precise_value", Decimal("123.456789"))
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert isinstance(result.data.value, Decimal)
         assert result.data.value == Decimal("123.456789")
@@ -354,7 +354,7 @@ class TestFlextMixinsCoverage:
         results = []
         for i in range(10):  # Reduzir número para teste mais rápido
             result = flext_create_metric(f"perf_metric_{i}", float(i), "count")
-            assert result.success
+            assert result.is_success
             results.append(result)
 
         # Verificar que temos dados reais do profiler
@@ -368,10 +368,10 @@ class TestFlextMixinsCoverage:
     def test_flext_result_factory_real_usage(self) -> None:
         """Test using FlextResultFactory from flext_tests for result validation."""
         # Usar ResultFactory para validar padrões de resultado
-        test_result = flext_tests.FlextTestsFactories.ResultFactory.success_result(
+        test_result = flext_tests.FlextTestsFactories.ResultFactory.is_success_result(
             "test_data",
         )
-        assert test_result.success
+        assert test_result.is_success
         assert test_result.data == "test_data"
 
         failure_result = flext_tests.FlextTestsFactories.ResultFactory.failure_result(
@@ -382,7 +382,7 @@ class TestFlextMixinsCoverage:
 
         # Validar que nossas funções seguem o mesmo padrão
         real_result = flext_create_metric("validation_test", 42.0, "count")
-        assert real_result.success
+        assert real_result.is_success
         assert real_result.data is not None
 
     def test_flext_metric_validate_business_rules_success_coverage(self) -> None:
@@ -392,7 +392,7 @@ class TestFlextMixinsCoverage:
 
         # Call the validate_business_rules method directly to test it
         result = metric.validate_business_rules()
-        assert result.success
+        assert result.is_success
         assert result.data is None  # Success returns None
 
     def test_flext_metric_validate_business_rules_name_failure_coverage(self) -> None:
@@ -445,7 +445,7 @@ class TestFlextMixinsCoverage:
 
         result = metric.validate_business_rules()
         assert (
-            result.success
+            result.is_success
         )  # Should succeed because "123.456" can be converted to float
 
     def test_flext_log_entry_message_validation_error_coverage(self) -> None:
@@ -510,7 +510,7 @@ class TestFlextMixinsCoverage:
 
         # Call the validate_business_rules method directly to test it
         result = log_entry.validate_business_rules()
-        assert result.success
+        assert result.is_success
         assert result.data is None  # Success returns None
 
     def test_flext_log_entry_validate_business_rules_message_failure_coverage(
@@ -720,7 +720,7 @@ class TestFlextMixinsCoverage:
 
         # Call the validate_business_rules method directly to test it
         result = trace.validate_business_rules()
-        assert result.success
+        assert result.is_success
         assert result.data is None  # Success returns None
 
     def test_flext_trace_validate_business_rules_trace_id_failure_coverage(
@@ -895,7 +895,7 @@ class TestFlextMixinsCoverage:
 
         # Call the validate_business_rules method directly to test it
         result = alert.validate_business_rules()
-        assert result.success
+        assert result.is_success
         assert result.data is None  # Success returns None
 
     def test_flext_alert_validate_business_rules_title_failure_coverage(self) -> None:

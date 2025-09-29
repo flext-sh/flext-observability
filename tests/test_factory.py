@@ -37,7 +37,9 @@ class TestFlextObservabilityMasterFactoryReal:
         metric_result = factory.create_metric("test_metric", 42.5, "gauge")
 
         # Validate real result
-        assert metric_result.success, f"Metric creation failed: {metric_result.error}"
+        assert metric_result.is_success, (
+            f"Metric creation failed: {metric_result.error}"
+        )
         assert metric_result.data is not None
         assert metric_result.data.name == "test_metric"
         assert metric_result.data.value == 42.5
@@ -65,7 +67,7 @@ class TestFlextObservabilityMasterFactoryReal:
         )
 
         # Validate real result
-        assert log_result.success, f"Log creation failed: {log_result.error}"
+        assert log_result.is_success, f"Log creation failed: {log_result.error}"
         assert log_result.data is not None
         assert log_result.data.message == "Test log message"
         # FlextLogEntry doesn't have service field, check other attributes
@@ -101,7 +103,7 @@ class TestFlextObservabilityMasterFactoryReal:
         )
 
         # Validate real result
-        assert alert_result.success, f"Alert creation failed: {alert_result.error}"
+        assert alert_result.is_success, f"Alert creation failed: {alert_result.error}"
         assert alert_result.data is not None
         assert alert_result.data.message == "Critical error detected"
         # FlextAlert doesn't have service or level fields, check other attributes
@@ -116,7 +118,7 @@ class TestFlextObservabilityMasterFactoryReal:
         trace_result = factory.create_trace("user_authentication", "auth_service")
 
         # Validate real result
-        assert trace_result.success, f"Trace creation failed: {trace_result.error}"
+        assert trace_result.is_success, f"Trace creation failed: {trace_result.error}"
         assert trace_result.data is not None
         assert trace_result.data.operation == "user_authentication"
         # FlextTrace doesn't have service_name field, check other attributes
@@ -132,7 +134,7 @@ class TestFlextObservabilityMasterFactoryReal:
         health_result = factory.create_health_check("database", "healthy")
 
         # Validate real result
-        assert health_result.success, (
+        assert health_result.is_success, (
             f"Health check creation failed: {health_result.error}"
         )
         assert health_result.data is not None
@@ -145,7 +147,7 @@ class TestFlextObservabilityMasterFactoryReal:
 
         # Test shorthand metric method
         metric_result = factory.metric("cpu_usage", 85.2)
-        assert metric_result.success
+        assert metric_result.is_success
         metric = metric_result.unwrap()
         assert hasattr(metric, "name")
         assert metric.name == "cpu_usage"
@@ -154,21 +156,21 @@ class TestFlextObservabilityMasterFactoryReal:
 
         # Test shorthand log method
         log_result = factory.log("System started")
-        assert log_result.success
+        assert log_result.is_success
         log_entry = log_result.unwrap()
         assert hasattr(log_entry, "message")
         assert log_entry.message == "System started"
 
         # Test shorthand alert method
         alert_result = factory.alert("High memory usage", "monitoring")
-        assert alert_result.success
+        assert alert_result.is_success
         alert = alert_result.unwrap()
         assert hasattr(alert, "message")
         assert alert.message == "High memory usage"
 
         # Test shorthand trace method
         trace_result = factory.trace("trace-123", "api_request")
-        assert trace_result.success
+        assert trace_result.is_success
         trace = trace_result.unwrap()
         assert hasattr(trace, "operation")
         assert trace.operation == "api_request"
@@ -216,18 +218,18 @@ class TestFlextObservabilityMasterFactoryReal:
 
         # Test metrics with business rule validation
         metric_result = factory.create_metric("response_time", 150.0, "milliseconds")
-        assert metric_result.success
+        assert metric_result.is_success
 
         # Validate business rules on created entity
         validation_result = metric_result.unwrap().validate_business_rules()
-        assert validation_result.success
+        assert validation_result.is_success
 
         # Test with negative value (currently allowed by implementation)
         negative_metric = factory.create_metric("error_rate", -5.0)  # Negative value
-        assert negative_metric.success
+        assert negative_metric.is_success
         # Current implementation allows negative values
         validation_result = negative_metric.unwrap().validate_business_rules()
-        assert validation_result.success
+        assert validation_result.is_success
 
     def test_factory_error_handling_real(self) -> None:
         """Test factory error handling with real scenarios."""
@@ -280,7 +282,7 @@ class TestFlextObservabilityMasterFactoryReal:
         for i, result in enumerate(results):
             # Use hasattr to check for FlextResult methods
             assert hasattr(result, "success"), f"Entity {i} missing success attribute"
-            assert result.success, (
+            assert result.is_success, (
                 f"Entity {i} creation failed: {getattr(result, 'error', 'Unknown error')}"
             )
 

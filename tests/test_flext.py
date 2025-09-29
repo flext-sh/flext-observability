@@ -21,7 +21,7 @@ from flext_observability import (
 
 def assert_success_with_data[T](result: FlextResult[T]) -> T:
     """Assert result is successful and return non-None data."""
-    assert result.success
+    assert result.is_success
     assert result.data is not None
     return result.data
 
@@ -156,7 +156,7 @@ class TestSimpleApiErrorHandling:
             result = flext_create_metric("test", cast("float", "invalid"))
             # Function should handle this gracefully
             result_obtained = True
-            assert result.success or result.is_failure
+            assert result.is_success or result.is_failure
         except (RuntimeError, ValueError, TypeError, Exception):
             # If it throws, that's also acceptable behavior for invalid input
             exception_occurred = True
@@ -170,19 +170,19 @@ class TestSimpleApiErrorHandling:
         # Metric test
         try:
             metric_result = flext_create_metric("test", 1.0, timestamp=None)
-            assert metric_result.success or metric_result.is_failure
+            assert metric_result.is_success or metric_result.is_failure
         except (RuntimeError, ValueError, TypeError):
             errors_caught += 1
         # Log test
         try:
             log_result = flext_create_log_entry("test", "test_service", timestamp=None)
-            assert log_result.success or log_result.is_failure
+            assert log_result.is_success or log_result.is_failure
         except (RuntimeError, ValueError, TypeError):
             errors_caught += 1
         # Trace test
         try:
             trace_result = flext_create_trace("trace", timestamp=None)
-            assert trace_result.success or trace_result.is_failure
+            assert trace_result.is_success or trace_result.is_failure
         except (RuntimeError, ValueError, TypeError):
             errors_caught += 1
         # Test passes regardless of errors (functions handle None gracefully or raise)

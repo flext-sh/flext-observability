@@ -739,7 +739,7 @@ def flext_metric(
         metric.metric_type = metric_type
 
         # Validate business rules
-        validation_result: FlextResult[object] = metric.validate_business_rules()
+        validation_result = metric.validate_business_rules()
         if validation_result.is_failure:
             return FlextResult[FlextMetric].fail(
                 validation_result.error or "Metric validation failed",

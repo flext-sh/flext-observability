@@ -45,92 +45,140 @@ class MetricProtocol(Protocol):
         ...
 
     @property
-    def timestamp(self) -> datetime: ...
+    def timestamp(self) -> datetime:
+        """The metric timestamp."""
+        ...
 
     @property
-    def tags(self) -> TagsDict: ...
+    def tags(self) -> TagsDict:
+        """The metric tags."""
+        ...
 
 
 class TraceProtocol(Protocol):
     """Protocol for trace entities."""
 
     @property
-    def operation(self) -> str: ...
+    def operation(self) -> str:
+        """The trace operation."""
+        ...
 
     @property
-    def span_id(self) -> str: ...
+    def span_id(self) -> str:
+        """The span ID."""
+        ...
 
     @property
-    def trace_id(self) -> str: ...
+    def trace_id(self) -> str:
+        """The trace ID."""
+        ...
 
     @property
-    def span_attributes(self) -> dict[str, object]: ...
+    def span_attributes(self) -> dict[str, object]:
+        """The span attributes."""
+        ...
 
     @property
-    def duration_ms(self) -> float | None: ...
+    def duration_ms(self) -> float | None:
+        """The duration in milliseconds."""
+        ...
 
     @property
-    def status(self) -> TraceStatus: ...
+    def status(self) -> TraceStatus:
+        """The trace status."""
+        ...
 
     @property
-    def timestamp(self) -> datetime: ...
+    def timestamp(self) -> datetime:
+        """The trace timestamp."""
+        ...
 
 
 class AlertProtocol(Protocol):
     """Protocol for alert entities."""
 
     @property
-    def title(self) -> str: ...
+    def title(self) -> str:
+        """The alert title."""
+        ...
 
     @property
-    def message(self) -> str: ...
+    def message(self) -> str:
+        """The alert message."""
+        ...
 
     @property
-    def severity(self) -> AlertLevel: ...
+    def severity(self) -> AlertLevel:
+        """The alert severity."""
+        ...
 
     @property
-    def status(self) -> str: ...
+    def status(self) -> str:
+        """The alert status."""
+        ...
 
     @property
-    def tags(self) -> TagsDict: ...
+    def tags(self) -> TagsDict:
+        """The alert tags."""
+        ...
 
     @property
-    def timestamp(self) -> datetime: ...
+    def timestamp(self) -> datetime:
+        """The alert timestamp."""
+        ...
 
 
 class HealthCheckProtocol(Protocol):
     """Protocol for health check entities."""
 
     @property
-    def component(self) -> str: ...
+    def component(self) -> str:
+        """The component name."""
+        ...
 
     @property
-    def status(self) -> HealthStatus: ...
+    def status(self) -> HealthStatus:
+        """The health status."""
+        ...
 
     @property
-    def message(self) -> str: ...
+    def message(self) -> str:
+        """The health check message."""
+        ...
 
     @property
-    def metrics(self) -> dict[str, object]: ...
+    def metrics(self) -> dict[str, object]:
+        """The health check metrics."""
+        ...
 
     @property
-    def timestamp(self) -> datetime: ...
+    def timestamp(self) -> datetime:
+        """The health check timestamp."""
+        ...
 
 
 class LogEntryProtocol(Protocol):
     """Protocol for log entry entities."""
 
     @property
-    def message(self) -> str: ...
+    def message(self) -> str:
+        """Log message content."""
+        ...
 
     @property
-    def level(self) -> LogLevel: ...
+    def level(self) -> LogLevel:
+        """Log level for the entry."""
+        ...
 
     @property
-    def context(self) -> dict[str, object]: ...
+    def context(self) -> dict[str, object]:
+        """Additional context data for the log entry."""
+        ...
 
     @property
-    def timestamp(self) -> datetime: ...
+    def timestamp(self) -> datetime:
+        """Timestamp when the log entry was created."""
+        ...
 
 
 class ObservabilityTypes(CoreFlextTypes):

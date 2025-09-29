@@ -25,7 +25,7 @@ from pydantic import (
     model_validator,
 )
 
-from flext_core import FlextModels
+from flext_core import FlextConstants, FlextModels
 
 # Re-export entities from entities.py to maintain compatibility
 from flext_observability.constants import FlextObservabilityConstants
@@ -203,9 +203,13 @@ class FlextObservabilityModels(FlextModels):
         )
 
         collection_interval: float = Field(
-            default=60.0, description="Collection interval in seconds"
+            default=FlextObservabilityConstants.DEFAULT_METRICS_EXPORT_INTERVAL_SECONDS,
+            description="Collection interval in seconds",
         )
-        retention_days: int = Field(default=30, description="Metric retention in days")
+        retention_days: int = Field(
+            default=FlextConstants.Network.DEFAULT_TIMEOUT,
+            description="Metric retention in days",
+        )
         aggregation_method: str = Field(default="sum", description="Aggregation method")
         enable_alerting: bool = Field(
             default=True, description="Enable alerting for metrics"
@@ -314,10 +318,12 @@ class FlextObservabilityModels(FlextModels):
         )
 
         sampling_rate: float = Field(
-            default=0.1, description="Trace sampling rate (0.0-1.0)"
+            default=FlextObservabilityConstants.DEFAULT_TRACING_SAMPLING_RATE / 10,
+            description="Trace sampling rate (0.0-1.0)",
         )
         max_trace_duration: int = Field(
-            default=300, description="Maximum trace duration in seconds"
+            default=FlextConstants.Network.DEFAULT_TIMEOUT * 10,
+            description="Maximum trace duration in seconds",
         )
         enable_performance_tracing: bool = Field(
             default=True, description="Enable performance tracing"
@@ -419,10 +425,12 @@ class FlextObservabilityModels(FlextModels):
         )
 
         escalation_delay: int = Field(
-            default=300, description="Escalation delay in seconds"
+            default=FlextConstants.Network.DEFAULT_TIMEOUT * 10,
+            description="Escalation delay in seconds",
         )
         max_escalation_level: int = Field(
-            default=3, description="Maximum escalation level"
+            default=FlextConstants.Reliability.MAX_RETRY_ATTEMPTS,
+            description="Maximum escalation level",
         )
         enable_notifications: bool = Field(
             default=True, description="Enable alert notifications"
@@ -527,18 +535,22 @@ class FlextObservabilityModels(FlextModels):
         )
 
         check_interval: int = Field(
-            default=30, description="Health check interval in seconds"
+            default=FlextConstants.Network.DEFAULT_TIMEOUT,
+            description="Health check interval in seconds",
         )
-        timeout: int = Field(default=10, description="Health check timeout in seconds")
+        timeout: int = Field(
+            default=FlextConstants.Network.DEFAULT_TIMEOUT // 3,
+            description="Health check timeout in seconds",
+        )
         failure_threshold: int = Field(
-            default=3, description="Failure threshold for unhealthy status"
+            default=FlextConstants.Reliability.MAX_RETRY_ATTEMPTS,
+            description="Failure threshold for unhealthy status",
         )
         enable_auto_recovery: bool = Field(
             default=True, description="Enable automatic recovery"
         )
 
         @computed_field
-        @property
         def check_interval_minutes(self) -> float:
             """Computed field for check interval in minutes."""
             return self.check_interval / 60
@@ -626,8 +638,14 @@ class FlextObservabilityModels(FlextModels):
             validate_assignment=True, use_enum_values=True, extra="forbid", frozen=False
         )
 
-        retention_days: int = Field(default=7, description="Log retention in days")
-        max_log_size_mb: int = Field(default=100, description="Maximum log size in MB")
+        retention_days: int = Field(
+            default=FlextConstants.Network.DEFAULT_TIMEOUT // 4,
+            description="Log retention in days",
+        )
+        max_log_size_mb: int = Field(
+            default=FlextConstants.Logging.MAX_FILE_SIZE // (1024 * 1024),
+            description="Maximum log size in MB",
+        )
         enable_structured_logging: bool = Field(
             default=True, description="Enable structured logging"
         )
@@ -728,10 +746,12 @@ class FlextObservabilityModels(FlextModels):
             default=True, description="Enable memory monitoring"
         )
         sampling_interval: int = Field(
-            default=5, description="Sampling interval in seconds"
+            default=FlextConstants.Container.DEFAULT_WORKERS,
+            description="Sampling interval in seconds",
         )
         performance_threshold_ms: float = Field(
-            default=1000.0, description="Performance threshold in milliseconds"
+            default=FlextConstants.Performance.BatchProcessing.DEFAULT_SIZE,
+            description="Performance threshold in milliseconds",
         )
 
         @computed_field

@@ -1156,7 +1156,7 @@ class FlextHealthService:
         self, health_check: FlextHealthCheck
     ) -> FlextResult[FlextHealthCheck]:
         """Execute a health check using the unified service."""
-        return self._service._HealthServiceHelper(self._service).execute_health_check(
+        return self._service.HealthServiceHelper(self._service).execute_health_check(
             health_check
         )
 
