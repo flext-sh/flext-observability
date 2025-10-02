@@ -258,7 +258,7 @@ class FlextMetricsRepository(Protocol):
 
 ### Future Scalability Patterns
 
-- **Async Service Layer**: Non-blocking operations for high-throughput scenarios
+- **Service Layer**: Non-blocking operations for high-throughput scenarios
 - **External Storage**: Redis, PostgreSQL, or time-series databases
 - **Event-Driven Architecture**: Domain events for loose coupling
 - **Sampling Strategies**: Intelligent sampling for high-volume environments

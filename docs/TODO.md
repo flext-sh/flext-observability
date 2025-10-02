@@ -78,7 +78,7 @@ tests/
 
 - Metric collection sampling strategies for high-volume environments
 - Memory usage optimization for long-running processes
-- Async processing for I/O-bound operations
+- processing for I/O-bound operations
 - Connection pooling for external monitoring systems
 
 **Current Performance**: Suitable for most enterprise use cases
