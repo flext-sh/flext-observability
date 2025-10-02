@@ -36,7 +36,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[bool]: Success status
 
             """
-            ...
 
         def get_metrics(
             self,
@@ -56,7 +55,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[list[dict[str, object]]]: Metrics data or error
 
             """
-            ...
 
         def create_counter(
             self, name: str, description: str, *, unit: str = "count"
@@ -72,7 +70,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[object]: Counter instance or error
 
             """
-            ...
 
         def create_gauge(
             self, name: str, description: str, *, unit: str = "value"
@@ -88,7 +85,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[object]: Gauge instance or error
 
             """
-            ...
 
         def create_histogram(
             self,
@@ -110,7 +106,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[object]: Histogram instance or error
 
             """
-            ...
 
     @runtime_checkable
     class TracingProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -134,7 +129,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[object]: Span instance or error
 
             """
-            ...
 
         def finish_span(
             self, span: object, *, status: str = "ok", error: str | None = None
@@ -150,7 +144,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[bool]: Success status
 
             """
-            ...
 
         def add_span_tag(
             self, span: object, key: str, value: str | float
@@ -166,7 +159,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[bool]: Success status
 
             """
-            ...
 
         def get_trace(self, trace_id: str) -> FlextResult[dict[str, object]]:
             """Get trace by ID.
@@ -178,7 +170,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[dict[str, object]]: Trace data or error
 
             """
-            ...
 
         def search_traces(
             self,
@@ -200,7 +191,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[list[dict[str, object]]]: Traces data or error
 
             """
-            ...
 
     @runtime_checkable
     class AlertingProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -226,7 +216,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[str]: Alert ID or error
 
             """
-            ...
 
         def resolve_alert(self, alert_id: str) -> FlextResult[bool]:
             """Resolve an alert.
@@ -238,7 +227,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[bool]: Success status
 
             """
-            ...
 
         def get_alerts(
             self,
@@ -258,7 +246,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[list[dict[str, object]]]: Alerts data or error
 
             """
-            ...
 
         def create_alert_rule(
             self,
@@ -280,7 +267,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[str]: Rule ID or error
 
             """
-            ...
 
     @runtime_checkable
     class HealthCheckProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -296,7 +282,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[dict[str, object]]: Health status or error
 
             """
-            ...
 
         def register_health_check(
             self, service_name: str, check_function: object, *, interval: int = 60
@@ -312,7 +297,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[bool]: Success status
 
             """
-            ...
 
         def get_service_status(
             self, service_name: str
@@ -326,7 +310,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[dict[str, object]]: Service status or error
 
             """
-            ...
 
         def get_all_services_status(self) -> FlextResult[dict[str, object]]:
             """Get health status for all services.
@@ -335,7 +318,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[dict[str, object]]: All services status or error
 
             """
-            ...
 
     @runtime_checkable
     class LoggingProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -363,7 +345,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[bool]: Success status
 
             """
-            ...
 
         def get_logs(
             self,
@@ -387,7 +368,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[list[dict[str, object]]]: Logs data or error
 
             """
-            ...
 
         def create_logger(
             self, name: str, *, level: str = "info", format_string: str | None = None
@@ -403,7 +383,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[object]: Logger instance or error
 
             """
-            ...
 
         def configure_logging(self, config: dict[str, object]) -> FlextResult[bool]:
             """Configure logging system.
@@ -415,7 +394,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[bool]: Success status
 
             """
-            ...
 
     @runtime_checkable
     class DashboardProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -439,7 +417,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[str]: Dashboard ID or error
 
             """
-            ...
 
         def get_dashboard(self, dashboard_id: str) -> FlextResult[dict[str, object]]:
             """Get dashboard by ID.
@@ -451,7 +428,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[dict[str, object]]: Dashboard data or error
 
             """
-            ...
 
         def add_widget(
             self, dashboard_id: str, widget_config: dict[str, object]
@@ -466,7 +442,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[str]: Widget ID or error
 
             """
-            ...
 
         def get_dashboard_data(
             self,
@@ -486,7 +461,6 @@ class FlextObservabilityProtocols(FlextProtocols):
                 FlextResult[dict[str, object]]: Dashboard data or error
 
             """
-            ...
 
     # Convenience aliases for easier downstream usage
     ObservabilityMetricsProtocol = MetricsProtocol

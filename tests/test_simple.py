@@ -98,7 +98,9 @@ class TestSimpleCoverage:
         result = flext_create_metric("", 42.0)  # Empty name
         assert result.is_failure
         assert result.error is not None
-        assert "Metric name cannot be empty" in result.error
+        assert (
+            result.error is not None and "Metric name cannot be empty" in result.error
+        )
 
     def test_create_log_entry_validation_failure(self) -> None:
         """Test log entry creation with validation failure."""
@@ -109,7 +111,7 @@ class TestSimpleCoverage:
         )  # Invalid level
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid log level" in result.error
+        assert result.error is not None and "Invalid log level" in result.error
 
     def test_create_log_entry_invalid_level(self) -> None:
         """Test log entry creation with invalid level."""
@@ -120,49 +122,62 @@ class TestSimpleCoverage:
         )
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid log level" in result.error
+        assert result.error is not None and "Invalid log level" in result.error
 
     def test_create_trace_validation_failure(self) -> None:
         """Test trace creation with validation failure."""
         result = flext_create_trace("", "test_service")  # Empty operation_name
         assert result.is_failure
         assert result.error is not None
-        assert "Operation name cannot be empty" in result.error
+        assert (
+            result.error is not None
+            and "Operation name cannot be empty" in result.error
+        )
 
     def test_create_trace_invalid_operation(self) -> None:
         """Test trace creation with invalid operation."""
         result = flext_create_trace("")  # Invalid empty operation
         assert result.is_failure
         assert result.error is not None
-        assert "Operation name cannot be empty" in result.error
+        assert (
+            result.error is not None
+            and "Operation name cannot be empty" in result.error
+        )
 
     def test_create_alert_validation_failure(self) -> None:
         """Test alert creation with validation failure."""
         result = flext_create_alert("", "test_service")  # Empty title
         assert result.is_failure
         assert result.error is not None
-        assert "Alert title cannot be empty" in result.error
+        assert (
+            result.error is not None and "Alert title cannot be empty" in result.error
+        )
 
     def test_create_alert_invalid_message(self) -> None:
         """Test alert creation with invalid message."""
         result = flext_create_alert("Test title", "")  # Empty message
         assert result.is_failure
         assert result.error is not None
-        assert "Alert message cannot be empty" in result.error
+        assert (
+            result.error is not None and "Alert message cannot be empty" in result.error
+        )
 
     def test_create_health_check_validation_failure(self) -> None:
         """Test health check creation with validation failure."""
         result = flext_create_health_check("")  # Empty component
         assert result.is_failure
         assert result.error is not None
-        assert "Component name cannot be empty" in result.error
+        assert (
+            result.error is not None
+            and "Component name cannot be empty" in result.error
+        )
 
     def test_create_health_check_invalid_status(self) -> None:
         """Test health check creation with invalid status."""
         result = flext_create_health_check("test_component", status="invalid_status")
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid health status" in result.error
+        assert result.error is not None and "Invalid health status" in result.error
 
 
 class TestFlextMixinsCoverage:
@@ -412,7 +427,7 @@ class TestFlextMixinsCoverage:
         result = metric.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid metric name" in result.error
+        assert result.error is not None and "Invalid metric name" in result.error
 
     def test_flext_metric_validate_business_rules_value_type_failure_coverage(
         self,
@@ -429,7 +444,7 @@ class TestFlextMixinsCoverage:
         result = metric.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid metric value" in result.error
+        assert result.error is not None and "Invalid metric value" in result.error
 
     def test_flext_metric_validate_business_rules_string_number_success_coverage(
         self,
@@ -534,7 +549,7 @@ class TestFlextMixinsCoverage:
         result = log_entry.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid log message" in result.error
+        assert result.error is not None and "Invalid log message" in result.error
 
     def test_flext_log_entry_validate_business_rules_level_failure_coverage(
         self,
@@ -555,7 +570,7 @@ class TestFlextMixinsCoverage:
         result = log_entry.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid log level" in result.error
+        assert result.error is not None and "Invalid log level" in result.error
 
     def test_flext_trace_trace_id_validation_error_coverage(self) -> None:
         """Test FlextTrace trace_id field validation error - covers lines 522-525."""
@@ -743,7 +758,7 @@ class TestFlextMixinsCoverage:
         result = trace.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid trace ID" in result.error
+        assert result.error is not None and "Invalid trace ID" in result.error
 
     def test_flext_trace_validate_business_rules_operation_failure_coverage(
         self,
@@ -1037,7 +1052,7 @@ class TestFlextMixinsCoverage:
         # Verify business rule validation failed
         assert result.is_failure
         assert result.error == "Invalid component name"
-        assert "component" in result.error
+        assert result.error is not None and "component" in result.error
 
     def test_flext_health_check_validate_business_rules_invalid_status_coverage(
         self,
@@ -1062,7 +1077,7 @@ class TestFlextMixinsCoverage:
         # Verify business rule validation failed
         assert result.is_failure
         assert result.error == "Invalid health status"
-        assert "status" in result.error
+        assert result.error is not None and "status" in result.error
 
     def test_flext_health_check_validate_business_rules_success_coverage(self) -> None:
         """Test FlextHealthCheck validate_business_rules with valid data - covers line 924."""

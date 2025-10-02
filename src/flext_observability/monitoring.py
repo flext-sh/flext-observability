@@ -10,12 +10,13 @@ import time
 from collections.abc import Callable
 from typing import cast, override
 
-import flext_observability.models as _models
 from flext_core import (
     FlextContainer,
     FlextLogger,
     FlextResult,
 )
+
+import flext_observability.models as _models
 from flext_observability.services import (
     FlextObservabilityService,
 )

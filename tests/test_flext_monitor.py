@@ -4,11 +4,9 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-from typing import Never
-
 import pytest
-
 from flext_core import FlextContainer, FlextResult, FlextTypes
+
 from flext_observability import (
     FlextObservabilityMonitor,
     flext_monitor_function,
