@@ -9,12 +9,10 @@ import threading
 from flext_observability import (
     FlextAlertService,
     FlextHealthService,
-    FlextLoggingService,
     FlextMetricsService,
     FlextTracingService,
     flext_create_alert,
     flext_create_health_check,
-    flext_create_log_entry,
     flext_create_metric,
     flext_create_trace,
 )
@@ -256,22 +254,7 @@ class TestTracingServiceRealFunctionality:
         assert jaeger_data["traceID"] == trace_obj.trace_id
 
 
-class TestLoggingServiceRealFunctionality:
-    """Test FlextLoggingService with real functionality."""
-
-    def test_log_entry_workflow(self) -> None:
-        """Test complete logging workflow."""
-        service = FlextLoggingService()
-
-        # Create and log different levels
-        log_levels = ["debug", "info", "warning", "error"]
-
-        for level in log_levels:
-            log_entry = flext_create_log_entry(f"Test {level} message", level)
-            assert log_entry.is_success
-
-            result = service.log_entry(log_entry.unwrap())
-            assert result.is_success
+# TestLoggingServiceRealFunctionality class removed - FlextLoggingService doesn't exist as a separate class
 
 
 class TestAlertServiceRealFunctionality:

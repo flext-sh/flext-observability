@@ -62,7 +62,7 @@ Provides comprehensive test fixtures and configuration:
 - **OpenTelemetry Setup**: In-memory tracing exporters for testing
 - **Prometheus Configuration**: Test metrics registry setup
 - **Shared Fixtures**: FlextContainer, services, and entity factories
-- **Async Testing**: Support for async test utilities
+- **Testing**: Support for test utilities
 - **Test Data**: Factory functions for consistent test data
 
 ### Test Fixtures Available

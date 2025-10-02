@@ -165,7 +165,7 @@ This document provides an overview of the current implementation status, disting
 - Basic metrics only (execution time, success rate)
 - No advanced sampling strategies
 - Limited context extraction
-- No async function support
+- No function support
 
 **Evidence**: Decorator tests pass, but limited real-world usage validation.
 
