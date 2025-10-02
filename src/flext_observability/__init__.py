@@ -6,6 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import Final
+
 from flext_core import FlextConstants, FlextContainer, FlextLogger, FlextTypes
 from flext_observability.api import (
     flext_create_alert,
@@ -31,8 +33,6 @@ from flext_observability.factories import (
     get_global_factory,
     reset_global_factory,
 )
-
-# FlextObservabilityService imported from services module instead
 from flext_observability.fields import (
     AlertLevelField,
     HealthStatusField,
@@ -74,43 +74,24 @@ from flext_observability.typings import (
     TraceProtocol,
     TraceStatus,
 )
+from flext_observability.version import VERSION, FlextObservabilityVersion
 
-# Backward compatibility aliases
 alert = flext_create_alert
 health_check = flext_create_health_check
 log = flext_create_log_entry
 metric = flext_create_metric
 trace = flext_create_trace
 
-# Legacy function alias
 flext_health_status = flext_create_health_check
 
-# Remove unused TYPE_CHECKING - not needed
+PROJECT_VERSION: Final[FlextObservabilityVersion] = VERSION
 
-__version__ = "0.9.0"
-__version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
+__version__: str = VERSION.version
+__version_info__: tuple[int | str, ...] = VERSION.version_info
 
-# Import FlextLogger from flext_core
-
-# Simple API from api module
-# No public API classes currently
-
-# Factory patterns from factories module
-
-# Core entities from models module
-
-# Monitor patterns from monitoring module
-
-# Services from services module
-
-
-# flext_health_status function moved to api.py module
-
-
-# Legacy facades removed - use direct imports from flext-core and factory classes
-
-# FlextObservabilityUtilities imported from services module
-__all__: list[str] = [
+__all__ = [
+    "PROJECT_VERSION",
+    "VERSION",
     "AlertLevel",
     "AlertLevelField",
     "AlertProtocol",
@@ -125,12 +106,12 @@ __all__: list[str] = [
     "FlextMetric",
     "FlextMetricsService",
     "FlextObservabilityConstants",
-    "FlextObservabilityConstants",
     "FlextObservabilityMasterFactory",
     "FlextObservabilityMonitor",
     "FlextObservabilityProtocols",
     "FlextObservabilityService",
     "FlextObservabilityUtilities",
+    "FlextObservabilityVersion",
     "FlextTrace",
     "FlextTracingService",
     "FlextTypes",

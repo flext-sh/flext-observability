@@ -65,6 +65,10 @@ class FlextObservabilityConstants(FlextConstants):
     DEFAULT_MAX_SPAN_ATTRIBUTES = 128
     DEFAULT_MONITORING_ENDPOINT = "http://localhost:9090"
 
+    # Function argument length constants
+    NO_ARGS = 0  # No arguments
+    ONE_ARG = 1  # One argument
+
 
 # Export alias for backward compatibility
 # FlextObservabilityConstants is already defined as the class above
