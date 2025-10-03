@@ -24,9 +24,6 @@ from flext_observability.services import (
 )
 from flext_observability.typings import FlextObservabilityTypes
 
-# Unified monitoring class with nested helpers - no loose functions
-
-
 # ============================================================================
 # OBSERVABILITY MONITORING ORCHESTRATION - Real Implementation with SOLID
 # ============================================================================
