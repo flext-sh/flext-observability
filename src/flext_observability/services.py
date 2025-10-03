@@ -24,7 +24,7 @@ from flext_core import (
     FlextUtilities,
 )
 from flext_observability.config import FlextObservabilityConfig
-from flext_observability.entities import (
+from flext_observability import (
     FlextHealthCheck,
     FlextMetric,
 )

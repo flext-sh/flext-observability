@@ -18,7 +18,7 @@ from flext_core import (
 )
 from flext_observability.config import FlextObservabilityConfig
 from flext_observability.constants import FlextObservabilityConstants
-from flext_observability.entities import flext_metric
+from flext_observability import flext_metric
 from flext_observability.services import (
     FlextObservabilityService,
 )

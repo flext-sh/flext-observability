@@ -10,13 +10,14 @@ This package implements Clean Architecture and Domain-Driven Design patterns spe
 
 Core business entities with domain validation and business logic:
 
-#### [entities.py](entities.py) - Domain Entities
+#### [models.py](models.py) - Domain Models (FlextObservabilityModels)
 
 - **FlextMetric**: Metrics collection entity with domain validation
 - **FlextTrace**: Distributed tracing span entity with context propagation
 - **FlextAlert**: Alert management entity with severity handling
 - **FlextHealthCheck**: Health monitoring entity with dependency validation
 - **FlextLogEntry**: Structured logging entity with correlation ID support
+- **FlextUtilitiesGenerators**: Utility functions for ID generation and timestamps
 
 ### Application Layer
 
@@ -103,7 +104,7 @@ Base patterns and cross-cutting concerns:
 ### Basic Entity Creation
 
 ```python
-from flext_observability.entities import FlextMetric, FlextTrace
+from flext_observability import FlextMetric, FlextTrace
 
 # Create metric with validation
 metric = FlextMetric(
