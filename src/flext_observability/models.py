@@ -565,7 +565,7 @@ class FlextObservabilityModels(FlextModels):
             """Validate health message is a string."""
             if not isinstance(v, str):
                 msg = "Health message must be a string"
-                raise ValueError(msg)
+                raise TypeError(msg)
             return v
 
         def validate_business_rules(self) -> FlextResult[bool]:
