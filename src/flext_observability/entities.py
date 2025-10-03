@@ -1,6 +1,11 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+"""FLEXT Observability Entities Module.
 
-SPDX-License-Identifier: MIT.
+This module provides unified observability entity definitions following the
+FLEXT ecosystem patterns. All entities are organized under a single namespace
+class to reduce file-level complexity while maintaining clean architecture.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -23,67 +28,74 @@ from flext_core import (
 from flext_observability.typings import FlextObservabilityTypes
 
 
-class FlextUtilitiesGenerators:
-    """Compatibility shim for tests expecting FlextUtilities.Generators.
+class FlextObservabilityEntities:
+    """Unified namespace for all FLEXT observability entities.
 
-    Maps to flext_core functions.
+    Single class containing all observability domain entities following
+    unified class pattern. Reduces file-level complexity while maintaining
+    clean separation of concerns and domain-driven design principles.
     """
 
-    @staticmethod
-    def generate_timestamp() -> float:
-        """Generate a timestamp."""
-        return time.time()
+    class UtilitiesGenerators:
+        """Utility generators for entity creation and IDs.
+
+        Compatibility shim for tests expecting FlextUtilities.Generators.
+        Maps to flext-core functions with observability-specific extensions.
+        """
+
+        @staticmethod
+        def generate_timestamp() -> float:
+            """Generate a timestamp."""
+            return time.time()
+
+        @staticmethod
+        def generate_uuid() -> str:
+            """Generate a UUID string."""
+            return str(uuid.uuid4())
+
+        @staticmethod
+        def generate_entity_id() -> str:
+            """Generate an entity ID."""
+            return str(uuid.uuid4())
+
+        @staticmethod
+        def generate_correlation_id() -> str:
+            """Generate a correlation ID."""
+            return str(uuid.uuid4())
+
+        @staticmethod
+        def generate_iso_timestamp() -> str:
+            """Generate an ISO timestamp string."""
+            return datetime.now(tz=UTC).isoformat()
+
+
+    # ============================================================================
+    # TIMESTAMP UTILITIES - Use flext-core centralized generation
+    # ============================================================================
 
     @staticmethod
-    def generate_uuid() -> str:
-        """Generate a UUID string."""
-        return str(uuid.uuid4())
+    def _generate_utc_datetime() -> datetime:
+        """Generate UTC datetime using flext-core pattern.
 
-    @staticmethod
-    def generate_entity_id() -> str:
-        """Generate an entity ID."""
-        return str(uuid.uuid4())
+        Uses flext-core centralized timestamp generation for consistency
+        across the FLEXT ecosystem. Eliminates local boilerplate duplication.
 
-    @staticmethod
-    def generate_correlation_id() -> str:
-        """Generate a correlation ID."""
-        return str(uuid.uuid4())
-
-    @staticmethod
-    def generate_iso_timestamp() -> str:
-        """Generate an ISO timestamp string."""
-        return datetime.now(tz=UTC).isoformat()
+        Returns:
+          datetime: Current UTC datetime with timezone information
+        """
+        # Use flext-core timestamp generation - direct float to datetime conversion
+        timestamp_float = time.time()
+        return datetime.fromtimestamp(
+            timestamp_float,
+            tz=UTC,
+        )
 
 
-# ============================================================================
-# TIMESTAMP UTILITIES - Use flext-core centralized generation
-# ============================================================================
+    # ============================================================================
+    # CORE ENTITIES - Simplified using flext-core patterns
+    # ============================================================================
 
-
-def _generate_utc_datetime() -> datetime:
-    """Generate UTC datetime using flext-core pattern.
-
-    Uses flext-core centralized timestamp generation for consistency
-    across the FLEXT ecosystem. Eliminates local boilerplate duplication.
-
-    Returns:
-      datetime: Current UTC datetime with timezone information
-
-    """
-    # Use flext-core timestamp generation - direct float to datetime conversion
-    timestamp_float = time.time()
-    return datetime.fromtimestamp(
-        timestamp_float,
-        tz=UTC,
-    )
-
-
-# ============================================================================
-# CORE ENTITIES - Simplified using flext-core patterns
-# ============================================================================
-
-
-class FlextMetric(FlextModels.Entity):
+    class FlextMetric(FlextModels.Entity):
     """Observability metric entity for collecting and validating measurement data.
 
     Core domain entity representing a single metric measurement with comprehensive
