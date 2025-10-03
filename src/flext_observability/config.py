@@ -260,7 +260,6 @@ class FlextObservabilityConfig(FlextConfig):
         In Pydantic v2, we don't maintain a persistent global instance to avoid
         issues with model state and validation.
         """
-        pass
 
 
 __all__: FlextTypes.StringList = [

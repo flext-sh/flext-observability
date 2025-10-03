@@ -27,7 +27,7 @@ from pydantic import (
     model_validator,
 )
 
-from flext_core import FlextConstants, FlextModels, FlextTypes
+from flext_core import FlextConstants, FlextModels, FlextResult, FlextTypes
 
 # Re-export entities from entities.py to maintain compatibility
 from flext_observability.constants import FlextObservabilityConstants
@@ -302,7 +302,7 @@ class FlextObservabilityModels(FlextModels):
             """Validate unit is a reasonable string."""
             if not isinstance(v, str):
                 msg = "Unit must be a string"
-                raise ValueError(msg)
+                raise TypeError(msg)
             return v
 
         def validate_business_rules(self) -> FlextResult[bool]:
