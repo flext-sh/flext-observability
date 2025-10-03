@@ -74,33 +74,33 @@ FlextTrace = FlextObservabilityModels.FlextTrace
 # Create thin facade functions using global factory
 def flext_create_alert(
     title: str, message: str, severity: str = "info", source: str = "system"
-) -> Any:
+) -> FlextTypes.Dict:
     """Create an alert using the global factory."""
     return get_global_factory().create_alert(title, message, severity, source)
 
 
 def flext_create_health_check(
     service_name: str, status: str = "healthy", details: dict[str, Any] | None = None
-) -> Any:
+) -> FlextTypes.Dict:
     """Create a health check using the global factory."""
     return get_global_factory().create_health_check(service_name, status, details)
 
 
 def flext_create_log_entry(
     level: str, message: str, metadata: dict[str, Any] | None = None
-) -> Any:
+) -> FlextTypes.Dict:
     """Create a log entry using the global factory."""
     return get_global_factory().create_log_entry(level, message, metadata)
 
 
-def flext_create_metric(name: str, value: float, unit: str = "count") -> Any:
+def flext_create_metric(name: str, value: float, unit: str = "count") -> FlextTypes.Dict:
     """Create a metric using the global factory."""
     return get_global_factory().create_metric(name, value, unit)
 
 
 def flext_create_trace(
     name: str, operation: str, context: dict[str, Any] | None = None
-) -> Any:
+) -> FlextTypes.Dict:
     """Create a trace using the global factory."""
     return get_global_factory().create_trace(name, operation, context)
 
