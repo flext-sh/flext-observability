@@ -115,6 +115,12 @@ def flext_create_trace(
     return get_global_factory().create_trace(name, operation, context)
 
 
+# Factory functions for direct entity creation
+flext_metric = FlextObservabilityModels.flext_metric
+flext_trace = FlextObservabilityModels.flext_trace
+flext_health_check = FlextObservabilityModels.flext_health_check
+
+
 # Create aliases for backward compatibility
 alert = flext_create_alert
 health_check = flext_create_health_check
@@ -177,7 +183,10 @@ __all__ = [
     "flext_create_log_entry",
     "flext_create_metric",
     "flext_create_trace",
+    "flext_health_check",
     "flext_health_status",
+    "flext_metric",
+    "flext_trace",
     "flext_monitor_function",
     "get_global_factory",
     "health_check",
