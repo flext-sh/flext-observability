@@ -68,6 +68,7 @@ class FlextObservabilityConstants(FlextConstants):
     # Function argument length constants
     NO_ARGS = 0  # No arguments
     ONE_ARG = 1  # One argument
+    TWO_ARGS = 2  # Two arguments
 
 
 # Export alias for backward compatibility

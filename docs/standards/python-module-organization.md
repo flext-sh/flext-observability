@@ -60,7 +60,7 @@ class FlextMetric(FlextModels.Entity):
     name: str
     value: float | Decimal
     unit: str = ""
-    tags: FlextTypes.Core.Headers = field(default_factory=dict)
+    tags: FlextTypes.StringDict = field(default_factory=dict)
     metric_type: str = "gauge"
 
     def validate_business_rules(self) -> FlextResult[None]:
@@ -1042,7 +1042,7 @@ def test_function_monitoring_with_exception():
 def create_business_metric(
     operation: str,
     value: float | Decimal,
-    tags: FlextTypes.Core.Headers | None = None
+    tags: FlextTypes.StringDict | None = None
 ) -> FlextResult[FlextMetric]:
     """Create business metric with complete type safety."""
     return flext_create_metric(
@@ -1090,7 +1090,7 @@ def create_metric(name, value, unit):  # Missing types
 
 ```python
 # ✅ Always use FlextResult for observability error handling
-def create_comprehensive_observability(operation: str) -> FlextResult[FlextTypes.Core.Dict]:
+def create_comprehensive_observability(operation: str) -> FlextResult[FlextTypes.Dict]:
     """Create comprehensive observability data with error handling."""
 
     # Chain observability operations with proper error handling
@@ -1136,9 +1136,9 @@ def create_metric_bad(name: str, value: float) -> FlextMetric:
 ```python
 def create_business_observability_dashboard(
     service_name: str,
-    metrics_config: FlextTypes.Core.Dict,
-    trace_config: FlextTypes.Core.Dict
-) -> FlextResult[FlextTypes.Core.Dict]:
+    metrics_config: FlextTypes.Dict,
+    trace_config: FlextTypes.Dict
+) -> FlextResult[FlextTypes.Dict]:
     """
     Create comprehensive business observability dashboard.
 
@@ -1164,7 +1164,7 @@ def create_business_observability_dashboard(
             }
 
     Returns:
-        FlextResult[FlextTypes.Core.Dict]: Success contains dashboard configuration
+        FlextResult[FlextTypes.Dict]: Success contains dashboard configuration
         with metric definitions, trace setup, and health check configuration.
         Failure contains detailed error message explaining setup failure.
 

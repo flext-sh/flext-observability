@@ -13,7 +13,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import datetime
+import math
+from datetime import UTC, datetime
+from decimal import Decimal
 from typing import Self
 
 from pydantic import (
@@ -25,7 +27,7 @@ from pydantic import (
     model_validator,
 )
 
-from flext_core import FlextConstants, FlextModels
+from flext_core import FlextConstants, FlextModels, FlextTypes
 
 # Re-export entities from entities.py to maintain compatibility
 from flext_observability.constants import FlextObservabilityConstants
@@ -92,7 +94,7 @@ class FlextObservabilityModels(FlextModels):
 
     @computed_field
     @property
-    def observability_model_summary(self) -> dict[str, object]:
+    def observability_model_summary(self) -> FlextTypes.Dict:
         """Computed field providing summary of observability model capabilities."""
         return {
             "metrics_models": 2,
@@ -121,7 +123,7 @@ class FlextObservabilityModels(FlextModels):
     @field_serializer("model_config", when_used="json")
     def serialize_with_observability_metadata(
         self, value: object, _info: object
-    ) -> dict[str, object]:
+    ) -> FlextTypes.Dict:
         """Serialize with observability metadata for monitoring context."""
         return {
             "config": value,
@@ -158,7 +160,7 @@ class FlextObservabilityModels(FlextModels):
         timestamp: datetime = Field(
             default_factory=datetime.now, description="Metric timestamp"
         )
-        labels: dict[str, str] = Field(
+        labels: FlextTypes.StringDict = Field(
             default_factory=dict, description="Metric labels"
         )
         source: str = Field(description="Metric source service")
@@ -186,8 +188,8 @@ class FlextObservabilityModels(FlextModels):
 
         @field_serializer("labels", when_used="json")
         def serialize_labels_with_metadata(
-            self, value: dict[str, str], _info: object
-        ) -> dict[str, object]:
+            self, value: FlextTypes.StringDict, _info: object
+        ) -> FlextTypes.Dict:
             """Serialize labels with metadata for monitoring."""
             return {
                 "labels": value,
@@ -217,7 +219,7 @@ class FlextObservabilityModels(FlextModels):
 
         @computed_field
         @property
-        def config_summary(self) -> dict[str, object]:
+        def config_summary(self) -> FlextTypes.Dict:
             """Computed field for metric configuration summary."""
             return {
                 "collection_interval_minutes": self.collection_interval / 60,
@@ -236,6 +238,348 @@ class FlextObservabilityModels(FlextModels):
                 msg = "Retention days must be positive"
                 raise ValueError(msg)
             return self
+
+    class FlextMetric(FlextModels.Entity):
+        """Observability metric entity for collecting and validating measurement data.
+
+        Core domain entity representing a single metric measurement with comprehensive
+        validation, type safety, and business rule enforcement. Supports both float
+        and Decimal values for financial precision, includes metadata tags for
+        categorization, and implements domain-driven validation patterns.
+        """
+
+        model_config = ConfigDict(
+            frozen=False,  # Allow dynamic attributes
+        )
+
+        name: str = Field(..., description="Metric name")
+        value: float | Decimal = Field(..., description="Metric value")
+        unit: str = Field(default="", description="Metric unit")
+        tags: FlextTypes.Dict = Field(default_factory=dict, description="Metric tags")
+        timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+        metric_type: str = Field(default="gauge", description="Metric type")
+
+        @field_validator("name")
+        @classmethod
+        def validate_metric_name(cls, v: str) -> str:
+            """Validate metric name is non-empty and follows naming conventions."""
+            if not (v and str(v).strip()):
+                msg = "Metric name cannot be empty"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("value")
+        @classmethod
+        def validate_metric_value(cls, v: float | Decimal) -> float | Decimal:
+            """Validate metric value is numeric and not NaN/infinite."""
+            # Try to convert to float to validate it's numeric
+            try:
+                float_val = float(v)
+            except (ValueError, TypeError) as e:
+                msg = "Metric value must be numeric"
+                raise ValueError(msg) from e
+
+            # Check for NaN and infinite values after successful float conversion
+            if math.isnan(float_val) or math.isinf(float_val):
+                msg = "Metric value cannot be NaN or infinite"
+                raise ValueError(msg)
+
+            return v
+
+        @field_validator("metric_type")
+        @classmethod
+        def validate_metric_type(cls, v: str) -> str:
+            """Validate metric type is one of the supported types."""
+            valid_types = {"counter", "gauge", "histogram", "summary"}
+            if v not in valid_types:
+                msg = f"Metric type must be one of {valid_types}"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("unit")
+        @classmethod
+        def validate_unit(cls, v: str) -> str:
+            """Validate unit is a reasonable string."""
+            if not isinstance(v, str):
+                msg = "Unit must be a string"
+                raise ValueError(msg)
+            return v
+
+        def validate_business_rules(self) -> FlextResult[bool]:
+            """Validate business rules for metric entity."""
+            try:
+                # Additional business rule validations can be added here
+                if not self.name:
+                    return FlextResult[bool].fail("Metric name is required")
+
+                if self.value is None:
+                    return FlextResult[bool].fail("Metric value is required")
+
+                # Validate tags structure
+                if not isinstance(self.tags, dict):
+                    return FlextResult[bool].fail("Tags must be a dictionary")
+
+                return FlextResult[bool].ok(True)
+            except Exception as e:
+                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
+
+    class FlextLogEntry(FlextModels.Entity):
+        """Structured Logging Entity for FLEXT Ecosystem.
+
+        Enterprise-grade structured logging entity implementing comprehensive logging
+        semantics with severity classification, rich contextual information, and
+        correlation ID support.
+        """
+
+        message: str = Field(..., description="Log message")
+        level: str = Field(default="info", description="Log level")
+        context: FlextTypes.Dict = Field(
+            default_factory=dict,
+            description="Log context",
+        )
+        timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+        @field_validator("message")
+        @classmethod
+        def validate_log_message(cls, v: str) -> str:
+            """Validate log message is non-empty and meaningful."""
+            if not (v and str(v).strip()):
+                msg = "Log message cannot be empty"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("level")
+        @classmethod
+        def validate_log_level(cls, v: str) -> str:
+            """Validate log level is a valid severity classification."""
+            valid_levels = {"debug", "info", "warning", "error", "critical"}
+            if v not in valid_levels:
+                msg = f"Invalid log level: {v}. Must be one of {valid_levels}"
+                raise ValueError(msg)
+            return v
+
+        def validate_business_rules(self) -> FlextResult[bool]:
+            """Validate structured logging business rules."""
+            try:
+                if not (self.message and str(self.message).strip()):
+                    return FlextResult[bool].fail("Invalid log message")
+                if self.level not in {"debug", "info", "warning", "error", "critical"}:
+                    return FlextResult[bool].fail(f"Invalid log level: {self.level}")
+                return FlextResult[bool].ok(True)
+            except Exception as e:
+                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
+
+    class FlextTrace(FlextModels.Entity):
+        """Distributed Tracing Span Entity for FLEXT Ecosystem.
+
+        Enterprise-grade distributed tracing entity implementing OpenTelemetry-compatible
+        span semantics with comprehensive context propagation, timing precision, and
+        cross-service correlation.
+        """
+
+        trace_id: str = Field(..., description="Trace ID")
+        operation: str = Field(..., description="Operation name")
+        span_id: str = Field(..., description="Span ID")
+        span_attributes: FlextTypes.Dict = Field(
+            default_factory=dict,
+            description="Span attributes",
+        )
+        duration_ms: int = Field(default=0, description="Duration in milliseconds")
+        status: str = Field(default="pending", description="Trace status")
+        timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+        @field_validator("trace_id")
+        @classmethod
+        def validate_trace_id(cls, v: str) -> str:
+            """Validate trace ID is non-empty for global correlation."""
+            if not (v and str(v).strip()):
+                msg = "Trace ID cannot be empty"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("operation")
+        @classmethod
+        def validate_operation_name(cls, v: str) -> str:
+            """Validate operation name is meaningful and searchable."""
+            if not (v and str(v).strip()):
+                msg = "Operation name cannot be empty"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("span_id")
+        @classmethod
+        def validate_span_id(cls, v: str) -> str:
+            """Validate span ID is non-empty for unique identification."""
+            if not (v and str(v).strip()):
+                msg = "Span ID cannot be empty"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("status")
+        @classmethod
+        def validate_trace_status(cls, v: str) -> str:
+            """Validate trace status is a valid state."""
+            valid_statuses = {"pending", "running", "completed", "failed"}
+            if v not in valid_statuses:
+                msg = f"Invalid trace status: {v}. Must be one of {valid_statuses}"
+                raise ValueError(msg)
+            return v
+
+        def validate_business_rules(self) -> FlextResult[bool]:
+            """Validate distributed tracing business rules."""
+            try:
+                if not self.trace_id:
+                    return FlextResult[bool].fail("Trace ID is required")
+                if not self.operation:
+                    return FlextResult[bool].fail("Operation name is required")
+                if not self.span_id:
+                    return FlextResult[bool].fail("Span ID is required")
+                if self.status not in {"pending", "running", "completed", "failed"}:
+                    return FlextResult[bool].fail(
+                        f"Invalid trace status: {self.status}"
+                    )
+                return FlextResult[bool].ok(True)
+            except Exception as e:
+                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
+
+    class FlextAlert(FlextModels.Entity):
+        """Alert Management Entity for FLEXT Ecosystem Monitoring.
+
+        Enterprise-grade alert entity implementing comprehensive alerting semantics
+        with severity classification, lifecycle management, and rich contextual
+        information.
+        """
+
+        title: str = Field(..., description="Alert title")
+        message: str = Field(..., description="Alert message")
+        severity: str = Field(default="low", description="Alert severity")
+        status: str = Field(default="active", description="Alert status")
+        tags: FlextTypes.Dict = Field(default_factory=dict, description="Alert tags")
+        timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+        @field_validator("title")
+        @classmethod
+        def validate_alert_title(cls, v: str) -> str:
+            """Validate alert title is non-empty and descriptive."""
+            if not (v and str(v).strip()):
+                msg = "Alert title cannot be empty"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("message")
+        @classmethod
+        def validate_alert_message(cls, v: str) -> str:
+            """Validate alert message provides sufficient detail."""
+            if not (v and str(v).strip()):
+                msg = "Alert message cannot be empty"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("severity")
+        @classmethod
+        def validate_alert_severity(cls, v: str) -> str:
+            """Validate alert severity is a valid classification level."""
+            valid_severities = {"low", "medium", "high", "critical", "emergency"}
+            if v not in valid_severities:
+                msg = f"Invalid alert severity: {v}. Must be one of {valid_severities}"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("status")
+        @classmethod
+        def validate_alert_status(cls, v: str) -> str:
+            """Validate alert status is a valid state."""
+            valid_statuses = {"active", "acknowledged", "resolved", "suppressed"}
+            if v not in valid_statuses:
+                msg = f"Invalid alert status: {v}. Must be one of {valid_statuses}"
+                raise ValueError(msg)
+            return v
+
+        def validate_business_rules(self) -> FlextResult[bool]:
+            """Validate alert management business rules."""
+            try:
+                if not self.title:
+                    return FlextResult[bool].fail("Alert title is required")
+                if not self.message:
+                    return FlextResult[bool].fail("Alert message is required")
+                if self.severity not in {
+                    "low",
+                    "medium",
+                    "high",
+                    "critical",
+                    "emergency",
+                }:
+                    return FlextResult[bool].fail(
+                        f"Invalid alert severity: {self.severity}"
+                    )
+                if self.status not in {
+                    "active",
+                    "acknowledged",
+                    "resolved",
+                    "suppressed",
+                }:
+                    return FlextResult[bool].fail(
+                        f"Invalid alert status: {self.status}"
+                    )
+                return FlextResult[bool].ok(True)
+            except Exception as e:
+                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
+
+    class FlextHealthCheck(FlextModels.Entity):
+        """Health Monitoring Entity for FLEXT Ecosystem Components.
+
+        Enterprise-grade health check entity implementing comprehensive service health
+        semantics with status classification, diagnostic metrics, and dependency validation.
+        """
+
+        component: str = Field(..., description="Component name")
+        status: str = Field(default="unknown", description="Health status")
+        message: str = Field(default="", description="Health check message")
+        metrics: FlextTypes.Dict = Field(
+            default_factory=dict, description="Health metrics"
+        )
+        timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+        @field_validator("component")
+        @classmethod
+        def validate_component_name(cls, v: str) -> str:
+            """Validate component name is non-empty and identifiable."""
+            if not (v and str(v).strip()):
+                msg = "Component name cannot be empty"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("status")
+        @classmethod
+        def validate_health_status(cls, v: str) -> str:
+            """Validate health status is a valid classification."""
+            valid_statuses = {"healthy", "degraded", "unhealthy", "unknown"}
+            if v not in valid_statuses:
+                msg = f"Invalid health status: {v}. Must be one of {valid_statuses}"
+                raise ValueError(msg)
+            return v
+
+        @field_validator("message")
+        @classmethod
+        def validate_health_message(cls, v: str) -> str:
+            """Validate health message is a string."""
+            if not isinstance(v, str):
+                msg = "Health message must be a string"
+                raise ValueError(msg)
+            return v
+
+        def validate_business_rules(self) -> FlextResult[bool]:
+            """Validate health monitoring business rules."""
+            try:
+                if not self.component:
+                    return FlextResult[bool].fail("Component name is required")
+                if self.status not in {"healthy", "degraded", "unhealthy", "unknown"}:
+                    return FlextResult[bool].fail(
+                        f"Invalid health status: {self.status}"
+                    )
+                return FlextResult[bool].ok(True)
+            except Exception as e:
+                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
 
     # Distributed Tracing Models
     class TraceEntry(FlextModels.Value):
@@ -264,7 +608,9 @@ class FlextObservabilityModels(FlextModels):
             default=None, description="Duration in milliseconds"
         )
         status: str = Field(default="active", description="Trace status")
-        tags: dict[str, str] = Field(default_factory=dict, description="Trace tags")
+        tags: FlextTypes.StringDict = Field(
+            default_factory=dict, description="Trace tags"
+        )
 
         @computed_field
         @property
@@ -297,8 +643,8 @@ class FlextObservabilityModels(FlextModels):
 
         @field_serializer("tags", when_used="json")
         def serialize_tags_with_context(
-            self, value: dict[str, str], _info: object
-        ) -> dict[str, object]:
+            self, value: FlextTypes.StringDict, _info: object
+        ) -> FlextTypes.Dict:
             """Serialize tags with trace context."""
             return {
                 "tags": value,
@@ -367,7 +713,7 @@ class FlextObservabilityModels(FlextModels):
             default=None, description="Alert resolution time"
         )
         status: str = Field(default="active", description="Alert status")
-        metadata: dict[str, str] = Field(
+        metadata: FlextTypes.StringDict = Field(
             default_factory=dict, description="Alert metadata"
         )
 
@@ -404,8 +750,8 @@ class FlextObservabilityModels(FlextModels):
 
         @field_serializer("metadata", when_used="json")
         def serialize_metadata_with_alert_context(
-            self, value: dict[str, str], _info: object
-        ) -> dict[str, object]:
+            self, value: FlextTypes.StringDict, _info: object
+        ) -> FlextTypes.Dict:
             """Serialize metadata with alert context."""
             return {
                 "metadata": value,
@@ -435,7 +781,7 @@ class FlextObservabilityModels(FlextModels):
         enable_notifications: bool = Field(
             default=True, description="Enable alert notifications"
         )
-        notification_channels: list[str] = Field(
+        notification_channels: FlextTypes.StringList = Field(
             default_factory=list, description="Notification channels"
         )
 
@@ -478,7 +824,7 @@ class FlextObservabilityModels(FlextModels):
         response_time_ms: float | None = Field(
             default=None, description="Response time in milliseconds"
         )
-        details: dict[str, object] = Field(
+        details: FlextTypes.Dict = Field(
             default_factory=dict, description="Health check details"
         )
 
@@ -514,8 +860,8 @@ class FlextObservabilityModels(FlextModels):
 
         @field_serializer("details", when_used="json")
         def serialize_details_with_health_context(
-            self, value: dict[str, object], _info: object
-        ) -> dict[str, object]:
+            self, value: FlextTypes.Dict, _info: object
+        ) -> FlextTypes.Dict:
             """Serialize details with health check context."""
             return {
                 "details": value,
@@ -589,7 +935,7 @@ class FlextObservabilityModels(FlextModels):
             default_factory=datetime.now, description="Log timestamp"
         )
         source: str = Field(description="Log source")
-        context: dict[str, object] = Field(
+        context: FlextTypes.Dict = Field(
             default_factory=dict, description="Log context"
         )
 
@@ -618,8 +964,8 @@ class FlextObservabilityModels(FlextModels):
 
         @field_serializer("context", when_used="json")
         def serialize_context_with_log_metadata(
-            self, value: dict[str, object], _info: object
-        ) -> dict[str, object]:
+            self, value: FlextTypes.Dict, _info: object
+        ) -> FlextTypes.Dict:
             """Serialize context with log metadata."""
             return {
                 "context": value,
@@ -709,7 +1055,7 @@ class FlextObservabilityModels(FlextModels):
 
         @computed_field
         @property
-        def resource_summary(self) -> dict[str, object]:
+        def resource_summary(self) -> FlextTypes.Dict:
             """Computed field for resource usage summary."""
             return {
                 "duration_ms": self.duration_ms,
@@ -721,7 +1067,7 @@ class FlextObservabilityModels(FlextModels):
         @field_serializer("cpu_usage", when_used="json")
         def serialize_cpu_usage_with_metadata(
             self, value: float | None, _info: object
-        ) -> dict[str, object]:
+        ) -> FlextTypes.Dict:
             """Serialize CPU usage with performance metadata."""
             return {
                 "cpu_percent": value,
@@ -756,7 +1102,7 @@ class FlextObservabilityModels(FlextModels):
 
         @computed_field
         @property
-        def monitoring_summary(self) -> dict[str, object]:
+        def monitoring_summary(self) -> FlextTypes.Dict:
             """Computed field for monitoring configuration summary."""
             return {
                 "cpu_enabled": self.enable_cpu_monitoring,
@@ -791,7 +1137,7 @@ class FlextObservabilityModels(FlextModels):
         dashboard_id: str = Field(description="Unique dashboard identifier")
         name: str = Field(description="Dashboard name")
         description: str = Field(description="Dashboard description")
-        widgets: list[dict[str, object]] = Field(
+        widgets: list[FlextTypes.Dict] = Field(
             default_factory=list, description="Dashboard widgets"
         )
         created_by: str = Field(description="Dashboard creator")
@@ -808,7 +1154,7 @@ class FlextObservabilityModels(FlextModels):
 
         @computed_field
         @property
-        def dashboard_summary(self) -> dict[str, object]:
+        def dashboard_summary(self) -> FlextTypes.Dict:
             """Computed field for dashboard summary."""
             return {
                 "name": self.name,
@@ -819,8 +1165,8 @@ class FlextObservabilityModels(FlextModels):
 
         @field_serializer("widgets", when_used="json")
         def serialize_widgets_with_dashboard_context(
-            self, value: list[dict[str, object]], _info: object
-        ) -> dict[str, object]:
+            self, value: list[FlextTypes.Dict], _info: object
+        ) -> FlextTypes.Dict:
             """Serialize widgets with dashboard context."""
             return {
                 "widgets": value,
@@ -870,7 +1216,7 @@ class FlextObservabilityModels(FlextModels):
 
         @computed_field
         @property
-        def monitoring_summary(self) -> dict[str, object]:
+        def monitoring_summary(self) -> FlextTypes.Dict:
             """Computed field for monitoring configuration summary."""
             return {
                 "metrics_enabled": self.enable_metrics,
@@ -892,7 +1238,7 @@ class FlextObservabilityModels(FlextModels):
         @field_serializer("monitoring_endpoint", when_used="json")
         def serialize_endpoint_with_security_mask(
             self, value: str, _info: object
-        ) -> dict[str, object]:
+        ) -> FlextTypes.Dict:
             """Serialize monitoring endpoint with security considerations."""
             return {
                 "endpoint": value,

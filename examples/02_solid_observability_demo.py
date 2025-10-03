@@ -26,13 +26,13 @@ from flext_observability import (
 )
 
 
-def database_query(query: str) -> FlextTypes.Core.Dict:
+def database_query(query: str) -> FlextTypes.Dict:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)  # Simulate database latency
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> FlextTypes.Core.Dict:
+def process_api_request(endpoint: str) -> FlextTypes.Dict:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)  # Simulate processing time
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}

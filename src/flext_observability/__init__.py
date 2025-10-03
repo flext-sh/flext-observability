@@ -6,28 +6,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Final
+from typing import Any, Final
 
 from flext_core import FlextConstants, FlextContainer, FlextLogger, FlextTypes
-from flext_observability.api import (
-    flext_create_alert,
-    flext_create_health_check,
-    flext_create_log_entry,
-    flext_create_metric,
-    flext_create_trace,
-)
+from flext_observability.__version__ import __version__, __version_info__
+from flext_observability.config import FlextObservabilityConfig
 from flext_observability.constants import FlextObservabilityConstants
-from flext_observability.entities import (
-    FlextAlert,
-    FlextHealthCheck,
-    FlextLogEntry,
-    FlextMetric,
-    FlextTrace,
-    flext_alert,
-    flext_health_check,
-    flext_metric,
-    flext_trace,
-)
 from flext_observability.factories import (
     FlextObservabilityMasterFactory,
     get_global_factory,
@@ -45,6 +29,9 @@ from flext_observability.fields import (
     metric_value_field,
     timestamp_field,
     trace_name_field,
+)
+from flext_observability.models import (
+    FlextObservabilityModels,
 )
 from flext_observability.monitoring import (
     FlextObservabilityMonitor,
@@ -74,8 +61,51 @@ from flext_observability.typings import (
     TraceProtocol,
     TraceStatus,
 )
-from flext_observability.version import VERSION, FlextObservabilityVersion
+from flext_observability.version import VERSION
 
+# Expose entity classes for backward compatibility
+FlextAlert = FlextObservabilityModels.FlextAlert
+FlextHealthCheck = FlextObservabilityModels.FlextHealthCheck
+FlextLogEntry = FlextObservabilityModels.FlextLogEntry
+FlextMetric = FlextObservabilityModels.FlextMetric
+FlextTrace = FlextObservabilityModels.FlextTrace
+
+
+# Create thin facade functions using global factory
+def flext_create_alert(
+    title: str, message: str, severity: str = "info", source: str = "system"
+) -> Any:
+    """Create an alert using the global factory."""
+    return get_global_factory().create_alert(title, message, severity, source)
+
+
+def flext_create_health_check(
+    service_name: str, status: str = "healthy", details: dict[str, Any] | None = None
+) -> Any:
+    """Create a health check using the global factory."""
+    return get_global_factory().create_health_check(service_name, status, details)
+
+
+def flext_create_log_entry(
+    level: str, message: str, metadata: dict[str, Any] | None = None
+) -> Any:
+    """Create a log entry using the global factory."""
+    return get_global_factory().create_log_entry(level, message, metadata)
+
+
+def flext_create_metric(name: str, value: float, unit: str = "count") -> Any:
+    """Create a metric using the global factory."""
+    return get_global_factory().create_metric(name, value, unit)
+
+
+def flext_create_trace(
+    name: str, operation: str, context: dict[str, Any] | None = None
+) -> Any:
+    """Create a trace using the global factory."""
+    return get_global_factory().create_trace(name, operation, context)
+
+
+# Create aliases for backward compatibility
 alert = flext_create_alert
 health_check = flext_create_health_check
 log = flext_create_log_entry
@@ -84,10 +114,7 @@ trace = flext_create_trace
 
 flext_health_status = flext_create_health_check
 
-PROJECT_VERSION: Final[FlextObservabilityVersion] = VERSION
-
-__version__: str = VERSION.version
-__version_info__: tuple[int | str, ...] = VERSION.version_info
+PROJECT_VERSION: Final[str] = VERSION
 
 __all__ = [
     "PROJECT_VERSION",
@@ -105,13 +132,13 @@ __all__ = [
     "FlextLogger",
     "FlextMetric",
     "FlextMetricsService",
+    "FlextObservabilityConfig",
     "FlextObservabilityConstants",
     "FlextObservabilityMasterFactory",
     "FlextObservabilityMonitor",
     "FlextObservabilityProtocols",
     "FlextObservabilityService",
     "FlextObservabilityUtilities",
-    "FlextObservabilityVersion",
     "FlextTrace",
     "FlextTracingService",
     "FlextTypes",
@@ -134,17 +161,13 @@ __all__ = [
     "__version_info__",
     "alert",
     "alert_message_field",
-    "flext_alert",
     "flext_create_alert",
     "flext_create_health_check",
     "flext_create_log_entry",
     "flext_create_metric",
     "flext_create_trace",
-    "flext_health_check",
     "flext_health_status",
-    "flext_metric",
     "flext_monitor_function",
-    "flext_trace",
     "get_global_factory",
     "health_check",
     "log",
