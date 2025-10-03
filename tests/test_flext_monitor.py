@@ -307,7 +307,7 @@ class TestFlextMonitorFunction:
         monitor.flext_start_monitoring()
 
         @flext_monitor_function(monitor)
-        def test_func() -> Never:
+        def test_func() -> None:
             msg = "Test error"
             raise ValueError(msg)
 
