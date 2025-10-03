@@ -456,7 +456,7 @@ class FlextObservabilityEntities:
 
 
     class FlextHealthCheck(FlextModels.Entity):
-    """Health Monitoring Entity for FLEXT Ecosystem Components.
+        """Health Monitoring Entity for FLEXT Ecosystem Components.
 
     Enterprise-grade health check entity implementing comprehensive service health
     semantics with status classification, diagnostic metrics, and dependency validation.
@@ -543,71 +543,71 @@ class FlextObservabilityEntities:
 
     """
 
-    component: str = Field(..., description="Component name")
-    status: str = Field(default="unknown", description="Health status")
-    message: str = Field(default="", description="Health message")
-    metrics: FlextObservabilityTypes.Core.HealthMetricsDict = Field(
-        default_factory=dict,
-        description="Health metrics",
-    )
-    timestamp: datetime = Field(default_factory=FlextObservabilityEntities._generate_utc_datetime)
-
-    @field_validator("component")
-    @classmethod
-    def validate_component_name(cls, v: str) -> str:
-        """Validate component name is non-empty and identifiable."""
-        if not (v and str(v).strip()):
-            msg = "Component name cannot be empty"
-            raise ValueError(msg)
-        return v
-
-    @field_validator("status")
-    @classmethod
-    def validate_health_status(cls, v: str) -> str:
-        """Validate status is a valid health classification level."""
-        valid_statuses = {"healthy", "unhealthy", "degraded", "unknown"}
-        if v not in valid_statuses:
-            msg = f"Invalid health status: {v}. Must be one of {valid_statuses}"
-            raise ValueError(msg)
-        return v
-
-    def validate_business_rules(self) -> FlextResult[None]:
-        """Validate health monitoring business rules and domain constraints.
-
-        Enforces business rules specific to health monitoring within the FLEXT
-        ecosystem, ensuring health check data integrity and compatibility with
-        monitoring infrastructure. Validates component identification, status
-        classification, and domain constraints for reliable health assessment.
-
-        Business Rules Validated:
-            - Component name must be non-empty and identifiable
-            - Status must be valid health classification level
-            - Message should provide meaningful diagnostic context
-            - Metrics should remain serializable for integration
-            - Health data should support dependency correlation
-
-        Returns:
-            FlextResult[None]: Success if all business rules pass,
-            failure with descriptive error message explaining violation.
-
-        Example:
-            >>> health = FlextHealthCheck(component="", status="healthy")
-            >>> result: FlextResult[object] = health.validate_business_rules()
-            >>> result.is_failure
-            True
-            >>> "component" in result.error
-            True
-
-        """
-        # Use direct validation for standardized validation
-        if not (self.component and str(self.component).strip()):
-            return FlextResult[None].fail("Invalid component name")
-        if self.status not in {"healthy", "unhealthy", "degraded", "unknown"}:
-            return FlextResult[None].fail("Invalid health status")
-        return FlextResult[None].ok(None)
-
-
-    # ============================================================================
+        component: str = Field(..., description="Component name")
+        status: str = Field(default="unknown", description="Health status")
+        message: str = Field(default="", description="Health message")
+        metrics: FlextObservabilityTypes.Core.HealthMetricsDict = Field(
+            default_factory=dict,
+            description="Health metrics",
+        )
+        timestamp: datetime = Field(default_factory=FlextObservabilityEntities._generate_utc_datetime)
+        
+        @field_validator("component")
+        @classmethod
+        def validate_component_name(cls, v: str) -> str:
+            """Validate component name is non-empty and identifiable."""
+            if not (v and str(v).strip()):
+                msg = "Component name cannot be empty"
+                raise ValueError(msg)
+            return v
+        
+        @field_validator("status")
+        @classmethod
+        def validate_health_status(cls, v: str) -> str:
+            """Validate status is a valid health classification level."""
+            valid_statuses = {"healthy", "unhealthy", "degraded", "unknown"}
+            if v not in valid_statuses:
+                msg = f"Invalid health status: {v}. Must be one of {valid_statuses}"
+                raise ValueError(msg)
+            return v
+        
+        def validate_business_rules(self) -> FlextResult[None]:
+            """Validate health monitoring business rules and domain constraints.
+        
+            Enforces business rules specific to health monitoring within the FLEXT
+            ecosystem, ensuring health check data integrity and compatibility with
+            monitoring infrastructure. Validates component identification, status
+            classification, and domain constraints for reliable health assessment.
+        
+            Business Rules Validated:
+                - Component name must be non-empty and identifiable
+                - Status must be valid health classification level
+                - Message should provide meaningful diagnostic context
+                - Metrics should remain serializable for integration
+                - Health data should support dependency correlation
+        
+            Returns:
+                FlextResult[None]: Success if all business rules pass,
+                failure with descriptive error message explaining violation.
+        
+            Example:
+                >>> health = FlextHealthCheck(component="", status="healthy")
+                >>> result: FlextResult[object] = health.validate_business_rules()
+                >>> result.is_failure
+                True
+                >>> "component" in result.error
+                True
+        
+            """
+            # Use direct validation for standardized validation
+            if not (self.component and str(self.component).strip()):
+                return FlextResult[None].fail("Invalid component name")
+            if self.status not in {"healthy", "unhealthy", "degraded", "unknown"}:
+                return FlextResult[None].fail("Invalid health status")
+            return FlextResult[None].ok(None)
+        
+        
+        # ============================================================================
     # FACTORY FUNCTIONS - Create entities with proper validation
     # ============================================================================
 
@@ -617,12 +617,10 @@ class FlextObservabilityEntities:
     message: str,
     severity: str = "low",
     status: str = "active",
-        **kwargs: object,
+    **kwargs: object,
     ) -> FlextAlert:
         """Create a FlextAlert entity with proper validation."""
-        tags: FlextObservabilityTypes.Core.TagsDict = cast(
-            "FlextObservabilityTypes.Core.TagsDict", kwargs.get("tags", {})
-        )
+        tags = cast("FlextObservabilityTypes.Core.TagsDict", kwargs.get("tags", {}))
         timestamp = cast("datetime", kwargs.get("timestamp", FlextObservabilityEntities._generate_utc_datetime()))
 
         # Create with explicit kwargs for better type safety
@@ -658,18 +656,15 @@ class FlextObservabilityEntities:
         )
 
 
-        def flext_trace(
-        trace_id: str,
-        operation: str,
-        span_id: str,
-        status: str = "pending",
-        **kwargs: object,
+    def flext_trace(
+    trace_id: str,
+    operation: str,
+    span_id: str,
+    status: str = "pending",
+    **kwargs: object,
     ) -> FlextTrace:
         """Create a FlextTrace entity with proper validation."""
-        span_attributes: FlextObservabilityTypes.Core.SpanAttributesDict = cast(
-            "FlextObservabilityTypes.Core.SpanAttributesDict",
-            kwargs.get("span_attributes", {}),
-        )
+        span_attributes = cast("FlextObservabilityTypes.Core.SpanAttributesDict", kwargs.get("span_attributes", {}))
         duration_ms = cast("int", kwargs.get("duration_ms", 0))
         timestamp = cast("datetime", kwargs.get("timestamp", FlextObservabilityEntities._generate_utc_datetime()))
 
@@ -706,9 +701,7 @@ class FlextObservabilityEntities:
     ) -> FlextResult[FlextMetric]:
         """Create a FlextMetric entity with proper validation and type safety."""
         try:
-            tags: FlextObservabilityTypes.Core.TagsDict = cast(
-                "FlextObservabilityTypes.Core.TagsDict", kwargs.get("tags", {})
-            )
+            tags = cast("FlextObservabilityTypes.Core.TagsDict", kwargs.get("tags", {}))
             timestamp = cast("datetime", kwargs.get("timestamp", FlextObservabilityEntities._generate_utc_datetime()))
 
             # Create with explicit kwargs for better type safety
