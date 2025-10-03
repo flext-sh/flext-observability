@@ -206,8 +206,14 @@ class FlextObservabilityMonitor:
                 return FlextResult[None].fail("Configuration not available")
 
             # Check if observability features are enabled via config
-            if not self._config.metrics_enabled and not self._config.tracing_enabled and not self._config.monitoring_enabled:
-                self._logger.warning("All observability features are disabled in configuration")
+            if (
+                not self._config.metrics_enabled
+                and not self._config.tracing_enabled
+                and not self._config.monitoring_enabled
+            ):
+                self._logger.warning(
+                    "All observability features are disabled in configuration"
+                )
                 # Still initialize but with warning
 
             # Initialize unified observability service using SOLID principles
