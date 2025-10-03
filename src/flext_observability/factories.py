@@ -138,7 +138,11 @@ class FlextObservabilityMasterFactory:
     def process_alert(self, alert: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
         """Process an alert."""
         try:
-            processed_alert = {**alert, "processed": True, "processed_at": datetime.now(UTC).isoformat()}
+            processed_alert = {
+                **alert,
+                "processed": True,
+                "processed_at": datetime.now(UTC).isoformat(),
+            }
             return FlextResult[FlextTypes.Dict].ok(processed_alert)
         except Exception as e:
             return FlextResult[FlextTypes.Dict].fail(f"Alert processing failed: {e}")
@@ -161,7 +165,9 @@ class FlextObservabilityMasterFactory:
     def start_trace(self, trace: FlextTypes.Dict) -> FlextResult[str]:
         """Start a trace."""
         try:
-            trace_id = trace.get("trace_id", FlextUtilities.Generators.generate_entity_id())
+            trace_id = trace.get(
+                "trace_id", FlextUtilities.Generators.generate_entity_id()
+            )
             self._logger.debug(f"Started trace: {trace_id}")
             return FlextResult[str].ok(str(trace_id))
         except Exception as e:
@@ -170,7 +176,11 @@ class FlextObservabilityMasterFactory:
     def complete_trace(self, trace: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
         """Complete a trace."""
         try:
-            completed_trace = {**trace, "completed": True, "end_time": FlextUtilities.Generators.generate_timestamp()}
+            completed_trace = {
+                **trace,
+                "completed": True,
+                "end_time": FlextUtilities.Generators.generate_timestamp(),
+            }
             return FlextResult[FlextTypes.Dict].ok(completed_trace)
         except Exception as e:
             return FlextResult[FlextTypes.Dict].fail(f"Trace completion failed: {e}")
@@ -196,10 +206,16 @@ class FlextObservabilityMasterFactory:
     ) -> FlextResult[FlextTypes.Dict]:
         """Execute a health check."""
         try:
-            executed_check = {**health_check, "executed": True, "execution_time": FlextUtilities.Generators.generate_timestamp()}
+            executed_check = {
+                **health_check,
+                "executed": True,
+                "execution_time": FlextUtilities.Generators.generate_timestamp(),
+            }
             return FlextResult[FlextTypes.Dict].ok(executed_check)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Health check execution failed: {e}")
+            return FlextResult[FlextTypes.Dict].fail(
+                f"Health check execution failed: {e}"
+            )
 
     def create_health_check(
         self,
@@ -218,7 +234,9 @@ class FlextObservabilityMasterFactory:
             }
             return FlextResult[FlextTypes.Dict].ok(health_check)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Health check creation failed: {e}")
+            return FlextResult[FlextTypes.Dict].fail(
+                f"Health check creation failed: {e}"
+            )
 
     class GlobalFactoryHolder:
         """Nested holder for the global factory instance - unified pattern."""

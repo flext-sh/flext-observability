@@ -1112,7 +1112,9 @@ class FlextTracingService:
         """Start a trace using the unified service."""
         return self._service.tracing.start_trace(operation_name, context)
 
-    def complete_trace(self, trace_id: str) -> FlextResult[FlextObservabilityTypes.Core.TraceInfoDict]:
+    def complete_trace(
+        self, trace_id: str
+    ) -> FlextResult[FlextObservabilityTypes.Core.TraceInfoDict]:
         """Complete a trace using the unified service."""
         return self._service.tracing.complete_trace(trace_id)
 
@@ -1130,7 +1132,9 @@ class FlextAlertService:
         """Initialize alert service wrapper."""
         self._service = FlextObservabilityService()
 
-    def process_alert(self, alert_data: FlextObservabilityTypes.Core.MetadataDict) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
+    def process_alert(
+        self, alert_data: FlextObservabilityTypes.Core.MetadataDict
+    ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
         """Process an alert using the unified service."""
         return self._service.alerts.create_alert(alert_data)
 
@@ -1141,8 +1145,14 @@ class FlextAlertService:
     ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
         """Escalate an alert using the unified service."""
         # For now, just return the alert as escalated
-        escalated_alert = {**alert, "escalated": True, "escalation_config": escalation_config}
-        return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok(escalated_alert)
+        escalated_alert = {
+            **alert,
+            "escalated": True,
+            "escalation_config": escalation_config,
+        }
+        return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok(
+            escalated_alert
+        )
 
 
 class FlextHealthService:
@@ -1161,7 +1171,7 @@ class FlextHealthService:
             component=health_check.component,
             status=health_check.status,
             message=health_check.message,
-            metrics={**health_check.metrics, "executed": True}
+            metrics={**health_check.metrics, "executed": True},
         )
         return FlextResult[FlextHealthCheck].ok(executed_check)
 

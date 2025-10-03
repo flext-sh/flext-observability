@@ -8,7 +8,13 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from flext_core import FlextConstants, FlextContainer, FlextLogger, FlextTypes
+from flext_core import (
+    FlextConstants,
+    FlextContainer,
+    FlextLogger,
+    FlextResult,
+    FlextTypes,
+)
 from flext_observability.__version__ import __version__, __version_info__
 from flext_observability.config import FlextObservabilityConfig
 from flext_observability.constants import FlextObservabilityConstants
@@ -95,7 +101,9 @@ def flext_create_log_entry(
     return get_global_factory().create_log_entry(level, message, metadata)
 
 
-def flext_create_metric(name: str, value: float, unit: str = "count") -> FlextResult[FlextTypes.Dict]:
+def flext_create_metric(
+    name: str, value: float, unit: str = "count"
+) -> FlextResult[FlextTypes.Dict]:
     """Create a metric using the global factory."""
     return get_global_factory().create_metric(name, value, unit)
 
