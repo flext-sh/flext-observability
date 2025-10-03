@@ -10,10 +10,10 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from unittest.mock import patch
 
+import flext_tests
 import pytest
 from pydantic import ValidationError
 
-import flext_tests
 from flext_core import FlextResult
 from flext_observability import (
     FlextAlert,

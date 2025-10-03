@@ -8,10 +8,10 @@ import math
 from decimal import Decimal
 
 import flext_observability.types as types_module
+from flext_core import FlextTypes
 from flext_observability import (
     AlertLevel,
     AlertProtocol,
-    FlextTypes,
     HealthCheckProtocol,
     HealthStatus,
     LogEntryProtocol,

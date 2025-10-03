@@ -62,38 +62,41 @@ class FlextObservabilityTypes(CoreFlextTypes):
 
         # Observability-specific project configurations
         type ObservabilityProjectConfig = dict[
-            str, str | int | bool | list[str] | object
+            str, str | int | bool | FlextTypes.StringList | object
         ]
-        type MonitoringConfig = dict[str, str | int | bool | list[str]]
-        type MetricsConfig = dict[str, bool | str | dict[str, object]]
-        type TracingConfig = dict[str, str | int | bool | list[str] | object]
+        type MonitoringConfig = dict[str, str | int | bool | FlextTypes.StringList]
+        type MetricsConfig = dict[str, bool | str | FlextTypes.Dict]
+        type TracingConfig = dict[
+            str, str | int | bool | FlextTypes.StringList | object
+        ]
 
     # =========================================================================
     # OBSERVABILITY CORE TYPES - Commonly used observability-specific types
     # =========================================================================
 
-    class Core(CoreFlextTypes.Core):
-        """Core observability types extending FlextTypes.Core."""
+    class Core(CoreFlextTypes):
+        """Core observability types extending FlextTypes."""
 
         # Metric types
         type MetricDict = dict[str, float | str | int]
         type MetricFormatDict = dict[str, str | dict[str, float | str | int] | float]
         type MetricValueDict = dict[str, float | int]
-        type MetricConfigDict = dict[str, bool | str | dict[str, object]]
+        type MetricConfigDict = dict[str, bool | str | FlextTypes.Dict]
 
         # Tag and metadata types
-        type TagsDict = dict[str, str]
-        type MetadataDict = dict[str, object]
-        type AttributesDict = dict[str, object]
+        type TagsDict = FlextTypes.StringDict
+        type MetadataDict = FlextTypes.Dict
+        type AttributesDict = FlextTypes.Dict
+        type Headers = dict[str, str]  # HTTP headers for observability
 
         # Trace types
         type TraceContextDict = dict[str, str | None]
-        type SpanAttributesDict = dict[str, object]
-        type TraceInfoDict = dict[str, object]
+        type SpanAttributesDict = FlextTypes.Dict
+        type TraceInfoDict = FlextTypes.Dict
 
         # Health monitoring types
-        type HealthMetricsDict = dict[str, object]
-        type ComponentHealthDict = dict[str, object]
+        type HealthMetricsDict = FlextTypes.Dict
+        type ComponentHealthDict = FlextTypes.Dict
         type SystemChecksDict = dict[str, dict[str, float | str]]
 
         # Service and container types
@@ -102,15 +105,15 @@ class FlextObservabilityTypes(CoreFlextTypes):
 
         # Storage types for observability services
         type MetricsStore = dict[str, list[MetadataDict]]
-        type CountersDict = dict[str, float]
-        type GaugesDict = dict[str, float]
-        type HistogramsList = list[float]
+        type CountersDict = FlextTypes.FloatDict
+        type GaugesDict = FlextTypes.FloatDict
+        type HistogramsList = FlextTypes.FloatList
         type HistogramsDict = dict[str, HistogramsList]
 
         # Trace storage types
         type TracesDict = dict[str, MetadataDict]
         type TraceSpansDict = dict[str, list[MetadataDict]]
-        type TraceHierarchyDict = dict[str, list[str]]
+        type TraceHierarchyDict = dict[str, FlextTypes.StringList]
 
         # Health storage types
         type HealthHistoryDict = dict[str, list[MetadataDict]]

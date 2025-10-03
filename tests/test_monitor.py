@@ -9,6 +9,7 @@ import time
 
 import pytest
 
+from flext_core import FlextTypes
 from flext_observability import (
     FlextObservabilityMonitor,
     flext_monitor_function,
@@ -156,7 +157,7 @@ class TestMonitorRealFunctionality:
         monitor.flext_initialize_observability()
         monitor.flext_start_monitoring()
 
-        results: list[bool] = []
+        results: FlextTypes.BoolList = []
 
         def record_metrics(thread_id: int) -> None:
             """Record metrics from multiple threads."""
