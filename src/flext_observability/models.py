@@ -4,8 +4,7 @@ Provides unified FlextObservabilityModels class with comprehensive nested classe
 for metrics, traces, alerts, health checks, and logging operations.
 Built on flext-core patterns with proper separation of concerns.
 
-This module re-exports entities from entities.py to maintain compatibility
-while following FLEXT architecture patterns.
+All entities are consolidated within the FlextObservabilityModels namespace class.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -18,6 +17,7 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Self
 
+from flext_core import FlextConstants, FlextModels, FlextResult, FlextTypes
 from pydantic import (
     ConfigDict,
     Field,
@@ -26,8 +26,6 @@ from pydantic import (
     field_validator,
     model_validator,
 )
-
-from flext_core import FlextConstants, FlextModels, FlextResult, FlextTypes
 
 # Re-export entities from entities.py to maintain compatibility
 from flext_observability.constants import FlextObservabilityConstants
@@ -47,110 +45,14 @@ class FlextObservabilityModels(FlextModels):
     All nested classes inherit FlextModels validation and patterns.
     """
 
-    model_config = ConfigDict(
-        validate_assignment=True,
-        use_enum_values=True,
-        arbitrary_types_allowed=True,
-        extra="forbid",
-        frozen=False,
-        validate_return=True,
-        ser_json_timedelta="iso8601",
-        ser_json_bytes="base64",
-        hide_input_in_errors=True,
-        json_schema_extra={
-            "examples": [
-                {
-                    "monitoring_enabled": True,
-                    "tracing_enabled": True,
-                    "alerting_enabled": True,
-                    "health_checks_enabled": True,
-                }
-            ],
-            "description": "Enterprise observability models for comprehensive monitoring operations",
-        },
-    )
-
-    @computed_field
-    @property
-    def active_observability_models_count(self) -> int:
-        """Computed field returning the number of active observability model types."""
-        model_types = [
-            "MetricEntry",
-            "MetricConfig",
-            "TraceEntry",
-            "TraceConfig",
-            "AlertEntry",
-            "AlertConfig",
-            "HealthCheckEntry",
-            "HealthConfig",
-            "LogEntry",
-            "LogConfig",
-            "PerformanceEntry",
-            "PerformanceConfig",
-            "DashboardEntry",
-            "MonitoringConfig",
-        ]
-        return len(model_types)
-
-    @computed_field
-    @property
-    def observability_model_summary(self) -> FlextTypes.Dict:
-        """Computed field providing summary of observability model capabilities."""
-        return {
-            "metrics_models": 2,
-            "tracing_models": 2,
-            "alerting_models": 2,
-            "health_models": 2,
-            "logging_models": 2,
-            "performance_models": 2,
-            "dashboard_models": 1,
-            "monitoring_models": 1,
-            "total_models": self.active_observability_models_count,
-            "enterprise_features": [
-                "distributed_tracing",
-                "metrics_collection",
-                "alerting",
-                "health_monitoring",
-            ],
-        }
-
-    @model_validator(mode="after")
-    def validate_observability_consistency(self) -> FlextObservabilityModels:
-        """Validate observability model consistency across all components."""
-        # Perform cross-model validation for observability requirements
-        return self
-
-    @field_serializer("model_config", when_used="json")
-    def serialize_with_observability_metadata(
-        self, value: object, _info: object
-    ) -> FlextTypes.Dict:
-        """Serialize with observability metadata for monitoring context."""
-        return {
-            "config": value,
-            "observability_metadata": {
-                "models_available": self.active_observability_models_count,
-                "monitoring_capabilities": [
-                    "metrics",
-                    "tracing",
-                    "alerting",
-                    "health",
-                    "logging",
-                    "performance",
-                ],
-                "enterprise_ready": True,
-            },
-        }
-
     # Core Metrics Models
     class MetricEntry(FlextModels.Value):
         """Comprehensive metric entry model."""
 
         model_config = ConfigDict(
             validate_assignment=True,
-            use_enum_values=True,
             extra="forbid",
             frozen=False,
-            hide_input_in_errors=True,
         )
 
         metric_id: str = Field(description="Unique metric identifier")
@@ -201,7 +103,9 @@ class FlextObservabilityModels(FlextModels):
         """Metric configuration model."""
 
         model_config = ConfigDict(
-            validate_assignment=True, use_enum_values=True, extra="forbid", frozen=False
+            validate_assignment=True,
+            extra="forbid",
+            frozen=False,
         )
 
         collection_interval: float = Field(
@@ -581,6 +485,70 @@ class FlextObservabilityModels(FlextModels):
             except Exception as e:
                 return FlextResult[bool].fail(f"Business rule validation failed: {e}")
 
+    # Factory methods for direct entity creation
+    @staticmethod
+    def flext_metric(
+        name: str,
+        value: float | Decimal,
+        unit: str = "",
+        metric_type: str = "gauge",
+        **kwargs: object,
+    ) -> FlextResult[FlextObservabilityModels.FlextMetric]:
+        """Create a FlextMetric entity directly."""
+        try:
+            return FlextResult[FlextObservabilityModels.FlextMetric].ok(
+                FlextObservabilityModels.FlextMetric(
+                    name=name, value=value, unit=unit, metric_type=metric_type, **kwargs
+                )
+            )
+        except Exception as e:
+            return FlextResult[FlextObservabilityModels.FlextMetric].fail(
+                f"Failed to create metric: {e}"
+            )
+
+    @staticmethod
+    def flext_trace(
+        trace_id: str,
+        operation: str,
+        span_id: str,
+        status: str = "pending",
+        **kwargs: object,
+    ) -> FlextResult[FlextObservabilityModels.FlextTrace]:
+        """Create a FlextTrace entity directly."""
+        try:
+            return FlextResult[FlextObservabilityModels.FlextTrace].ok(
+                FlextObservabilityModels.FlextTrace(
+                    trace_id=trace_id,
+                    operation=operation,
+                    span_id=span_id,
+                    status=status,
+                    **kwargs,
+                )
+            )
+        except Exception as e:
+            return FlextResult[FlextObservabilityModels.FlextTrace].fail(
+                f"Failed to create trace: {e}"
+            )
+
+    @staticmethod
+    def flext_health_check(
+        component: str,
+        status: str = "unknown",
+        message: str = "",
+        **kwargs: object,
+    ) -> FlextResult[FlextObservabilityModels.FlextHealthCheck]:
+        """Create a FlextHealthCheck entity directly."""
+        try:
+            return FlextResult[FlextObservabilityModels.FlextHealthCheck].ok(
+                FlextObservabilityModels.FlextHealthCheck(
+                    component=component, status=status, message=message, **kwargs
+                )
+            )
+        except Exception as e:
+            return FlextResult[FlextObservabilityModels.FlextHealthCheck].fail(
+                f"Failed to create health check: {e}"
+            )
+
     # Distributed Tracing Models
     class TraceEntry(FlextModels.Value):
         """Comprehensive trace entry model."""
@@ -660,7 +628,9 @@ class FlextObservabilityModels(FlextModels):
         """Trace configuration model."""
 
         model_config = ConfigDict(
-            validate_assignment=True, use_enum_values=True, extra="forbid", frozen=False
+            validate_assignment=True,
+            extra="forbid",
+            frozen=False,
         )
 
         sampling_rate: float = Field(
@@ -767,7 +737,9 @@ class FlextObservabilityModels(FlextModels):
         """Alert configuration model."""
 
         model_config = ConfigDict(
-            validate_assignment=True, use_enum_values=True, extra="forbid", frozen=False
+            validate_assignment=True,
+            extra="forbid",
+            frozen=False,
         )
 
         escalation_delay: int = Field(
@@ -877,7 +849,9 @@ class FlextObservabilityModels(FlextModels):
         """Health monitoring configuration model."""
 
         model_config = ConfigDict(
-            validate_assignment=True, use_enum_values=True, extra="forbid", frozen=False
+            validate_assignment=True,
+            extra="forbid",
+            frozen=False,
         )
 
         check_interval: int = Field(
@@ -981,7 +955,9 @@ class FlextObservabilityModels(FlextModels):
         """Log configuration model."""
 
         model_config = ConfigDict(
-            validate_assignment=True, use_enum_values=True, extra="forbid", frozen=False
+            validate_assignment=True,
+            extra="forbid",
+            frozen=False,
         )
 
         retention_days: int = Field(
@@ -1082,7 +1058,9 @@ class FlextObservabilityModels(FlextModels):
         """Performance monitoring configuration model."""
 
         model_config = ConfigDict(
-            validate_assignment=True, use_enum_values=True, extra="forbid", frozen=False
+            validate_assignment=True,
+            extra="forbid",
+            frozen=False,
         )
 
         enable_cpu_monitoring: bool = Field(
@@ -1182,7 +1160,9 @@ class FlextObservabilityModels(FlextModels):
         """Global monitoring configuration model."""
 
         model_config = ConfigDict(
-            validate_assignment=True, use_enum_values=True, extra="forbid", frozen=False
+            validate_assignment=True,
+            extra="forbid",
+            frozen=False,
         )
 
         enable_metrics: bool = Field(

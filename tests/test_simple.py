@@ -12,9 +12,9 @@ from unittest.mock import patch
 
 import flext_tests
 import pytest
+from flext_core import FlextResult
 from pydantic import ValidationError
 
-from flext_core import FlextResult
 from flext_observability import (
     FlextAlert,
     FlextHealthCheck,

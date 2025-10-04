@@ -7,8 +7,9 @@ SPDX-License-Identifier: MIT
 import math
 from decimal import Decimal
 
-import flext_observability.typings as types_module
 from flext_core import FlextTypes
+
+import flext_observability.typings as types_module
 from flext_observability import (
     AlertLevel,
     AlertProtocol,

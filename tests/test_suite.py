@@ -8,6 +8,7 @@ import threading
 import time
 
 from flext_core import FlextContainer, FlextTypes
+
 from flext_observability import (
     FlextObservabilityMasterFactory,
     FlextObservabilityMonitor,

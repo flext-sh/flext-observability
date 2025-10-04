@@ -15,17 +15,13 @@ from datetime import UTC, datetime
 from flext_core import (
     FlextContainer,
     FlextLogger,
-    FlextResult,
     FlextTypes,
     FlextUtilities,
 )
+
 from flext_observability.config import FlextObservabilityConfig
 from flext_observability.services import (
-    FlextAlertService,
-    FlextHealthService,
-    FlextMetricsService,
     FlextObservabilityService,
-    FlextTracingService,
 )
 
 
@@ -41,21 +37,21 @@ class FlextObservabilityMasterFactory:
         # Use global config instance to avoid duplication
         self._config = FlextObservabilityConfig.get_global_instance()
 
-    def create_metrics_service(self) -> FlextMetricsService:
+    def create_metrics_service(self) -> object:
         """Create a metrics service instance."""
-        return FlextMetricsService()
+        return self._service.metrics
 
-    def create_tracing_service(self) -> FlextTracingService:
+    def create_tracing_service(self) -> object:
         """Create a tracing service instance."""
-        return FlextTracingService()
+        return self._service.tracing
 
-    def create_alert_service(self) -> FlextAlertService:
+    def create_alert_service(self) -> object:
         """Create an alert service instance."""
-        return FlextAlertService()
+        return self._service.alerts
 
-    def create_health_service(self) -> FlextHealthService:
+    def create_health_service(self) -> object:
         """Create a health service instance."""
-        return FlextHealthService()
+        return self._service.health
 
     def create_observability_service(self) -> FlextObservabilityService:
         """Create the main observability service instance."""
@@ -63,7 +59,7 @@ class FlextObservabilityMasterFactory:
 
     def create_metric(
         self, name: str, value: float, unit: str = "count"
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextTypes.Dict:
         """Create a metric using the factory."""
         try:
             metrics: FlextTypes.Dict = {
@@ -73,16 +69,17 @@ class FlextObservabilityMasterFactory:
                 "value": value,
                 "unit": unit,
             }
-            return FlextResult[FlextTypes.Dict].ok(metrics)
+            return metrics
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Metric creation failed: {e}")
+            msg = f"Metric creation failed: {e}"
+            raise ValueError(msg) from e
 
     def create_trace(
         self, name: str, operation: str, context: FlextTypes.Dict | None = None
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextTypes.Dict:
         """Create a trace using the factory."""
         try:
-            trace_context = {
+            return {
                 "trace_id": FlextUtilities.Generators.generate_entity_id(),
                 "span_id": FlextUtilities.Generators.generate_entity_id(),
                 "name": name,
@@ -90,16 +87,16 @@ class FlextObservabilityMasterFactory:
                 "start_time": FlextUtilities.Generators.generate_timestamp(),
                 "context": context or {},
             }
-            return FlextResult[FlextTypes.Dict].ok(trace_context)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Trace creation failed: {e}")
+            msg = f"Trace creation failed: {e}"
+            raise ValueError(msg) from e
 
     def create_log_entry(
         self,
         level: str,
         message: str,
         metadata: FlextTypes.Dict | None = None,
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextTypes.Dict:
         """Create a log entry using the factory."""
         try:
             log_entry: FlextTypes.Dict = {
@@ -109,9 +106,10 @@ class FlextObservabilityMasterFactory:
                 "timestamp": datetime.now(UTC).isoformat(),
                 "correlation_id": FlextUtilities.Generators.generate_entity_id(),
             }
-            return FlextResult[FlextTypes.Dict].ok(log_entry)
+            return log_entry
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Log entry creation failed: {e}")
+            msg = f"Log entry creation failed: {e}"
+            raise ValueError(msg) from e
 
     def create_alert(
         self,
@@ -119,7 +117,7 @@ class FlextObservabilityMasterFactory:
         message: str,
         severity: str = "info",
         source: str = "system",
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextTypes.Dict:
         """Create an alert using the factory."""
         try:
             alert: FlextTypes.Dict = {
@@ -131,98 +129,96 @@ class FlextObservabilityMasterFactory:
                 "created_at": datetime.now(UTC).isoformat(),
                 "status": "active",
             }
-            return FlextResult[FlextTypes.Dict].ok(alert)
+            return alert
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Alert creation failed: {e}")
+            msg = f"Alert creation failed: {e}"
+            raise ValueError(msg) from e
 
-    def process_alert(self, alert: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
+    def process_alert(self, alert: FlextTypes.Dict) -> FlextTypes.Dict:
         """Process an alert."""
         try:
-            processed_alert = {
+            return {
                 **alert,
                 "processed": True,
                 "processed_at": datetime.now(UTC).isoformat(),
             }
-            return FlextResult[FlextTypes.Dict].ok(processed_alert)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Alert processing failed: {e}")
+            msg = f"Alert processing failed: {e}"
+            raise ValueError(msg) from e
 
     def escalate_alert(
         self, alert: FlextTypes.Dict, escalation_config: FlextTypes.Dict
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextTypes.Dict:
         """Escalate an alert."""
         try:
-            escalated_alert = {
+            return {
                 **alert,
                 "escalated": True,
                 "escalation_config": escalation_config,
                 "escalated_at": datetime.now(UTC).isoformat(),
             }
-            return FlextResult[FlextTypes.Dict].ok(escalated_alert)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Alert escalation failed: {e}")
+            msg = f"Alert escalation failed: {e}"
+            raise ValueError(msg) from e
 
-    def start_trace(self, trace: FlextTypes.Dict) -> FlextResult[str]:
+    def start_trace(self, trace: FlextTypes.Dict) -> str:
         """Start a trace."""
         try:
             trace_id = trace.get(
                 "trace_id", FlextUtilities.Generators.generate_entity_id()
             )
             self._logger.debug(f"Started trace: {trace_id}")
-            return FlextResult[str].ok(str(trace_id))
+            return str(trace_id)
         except Exception as e:
-            return FlextResult[str].fail(f"Trace start failed: {e}")
+            msg = f"Trace start failed: {e}"
+            raise ValueError(msg) from e
 
-    def complete_trace(self, trace: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
+    def complete_trace(self, trace: FlextTypes.Dict) -> FlextTypes.Dict:
         """Complete a trace."""
         try:
-            completed_trace = {
+            return {
                 **trace,
                 "completed": True,
                 "end_time": FlextUtilities.Generators.generate_timestamp(),
             }
-            return FlextResult[FlextTypes.Dict].ok(completed_trace)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Trace completion failed: {e}")
+            msg = f"Trace completion failed: {e}"
+            raise ValueError(msg) from e
 
-    def get_trace_summary(self) -> FlextResult[FlextTypes.Dict]:
+    def get_trace_summary(self) -> FlextTypes.Dict:
         """Get trace summary."""
         try:
-            summary = {"traces": 0, "active": 0, "completed": 0}
-            return FlextResult[FlextTypes.Dict].ok(summary)
+            return {"traces": 0, "active": 0, "completed": 0}
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Trace summary failed: {e}")
+            msg = f"Trace summary failed: {e}"
+            raise ValueError(msg) from e
 
-    def get_metrics_summary(self) -> FlextResult[FlextTypes.Dict]:
+    def get_metrics_summary(self) -> FlextTypes.Dict:
         """Get metrics summary."""
         try:
-            summary = {"metrics": 0, "total": 0, "active": 0}
-            return FlextResult[FlextTypes.Dict].ok(summary)
+            return {"metrics": 0, "total": 0, "active": 0}
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Metrics summary failed: {e}")
+            msg = f"Metrics summary failed: {e}"
+            raise ValueError(msg) from e
 
-    def execute_health_check(
-        self, health_check: FlextTypes.Dict
-    ) -> FlextResult[FlextTypes.Dict]:
+    def execute_health_check(self, health_check: FlextTypes.Dict) -> FlextTypes.Dict:
         """Execute a health check."""
         try:
-            executed_check = {
+            return {
                 **health_check,
                 "executed": True,
                 "execution_time": FlextUtilities.Generators.generate_timestamp(),
             }
-            return FlextResult[FlextTypes.Dict].ok(executed_check)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(
-                f"Health check execution failed: {e}"
-            )
+            msg = f"Health check execution failed: {e}"
+            raise ValueError(msg) from e
 
     def create_health_check(
         self,
         service_name: str,
         status: str = "healthy",
         details: FlextTypes.Dict | None = None,
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextTypes.Dict:
         """Create a health check using the factory."""
         try:
             health_check: FlextTypes.Dict = {
@@ -232,11 +228,10 @@ class FlextObservabilityMasterFactory:
                 "timestamp": datetime.now(UTC).isoformat(),
                 "check_id": FlextUtilities.Generators.generate_entity_id(),
             }
-            return FlextResult[FlextTypes.Dict].ok(health_check)
+            return health_check
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(
-                f"Health check creation failed: {e}"
-            )
+            msg = f"Health check creation failed: {e}"
+            raise ValueError(msg) from e
 
     class GlobalFactoryHolder:
         """Nested holder for the global factory instance - unified pattern."""

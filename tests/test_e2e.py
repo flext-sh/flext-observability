@@ -8,8 +8,8 @@ import time
 from datetime import UTC, datetime
 
 import pytest
-
 from flext_core import FlextContainer, FlextTypes
+
 from flext_observability import (
     FlextObservabilityMasterFactory,
     flext_create_alert,

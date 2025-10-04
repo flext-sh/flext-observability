@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 import threading
 
 from flext_core import FlextTypes
+
 from flext_observability import (
     FlextAlertService,
     FlextHealthService,

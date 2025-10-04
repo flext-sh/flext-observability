@@ -339,7 +339,7 @@ result = flext_create_log_entry(
 ```python
 from flext_observability import flext_create_metric, flext_create_trace
 
-def process_business_operation(data: dict) -> FlextResult[dict]:
+def process_business_operation(data: dict) -> FlextResult[FlextTypes.Dict]:
     """Example of chaining observability operations."""
 
     # Create metric - handle potential failure
@@ -389,7 +389,7 @@ def create_system_metrics() -> list[FlextResult[FlextMetric]]:
 ### Pattern 3: Observability Context Propagation
 
 ```python
-def handle_user_request(user_id: str, operation: str) -> FlextResult[dict]:
+def handle_user_request(user_id: str, operation: str) -> FlextResult[FlextTypes.Dict]:
     """Example of propagating context through observability."""
 
     # Create base context
