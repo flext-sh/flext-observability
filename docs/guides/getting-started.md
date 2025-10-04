@@ -158,7 +158,7 @@ from flext_core import FlextResult
 
 class UserService:
     @flext_monitor_function("user_service_create")
-    def create_user(self, user_data: dict) -> FlextResult[dict]:
+    def create_user(self, user_data: dict) -> FlextResult[FlextTypes.Dict]:
         """Create user with automatic monitoring."""
 
         # Record custom metric
@@ -183,7 +183,7 @@ class DatabaseConnectionService:
         self.container = FlextContainer()
         self.health_service = FlextHealthService(self.container)
 
-    def check_database_health(self) -> FlextResult[dict]:
+    def check_database_health(self) -> FlextResult[FlextTypes.Dict]:
         """Monitor database connection health."""
 
         # Create health check
@@ -209,7 +209,7 @@ from flext_observability import flext_monitor_function, flext_create_metric
 
 class FlextTapOracle:
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> list[dict]:
+    def extract_records(self, table_name: str) -> list[FlextTypes.Dict]:
         """Extract records with monitoring."""
 
         # Your extraction logic

@@ -71,7 +71,7 @@ class UserService:
         self.metrics = FlextMetricsService(container)
         self.factory = FlextObservabilityMasterFactory()
 
-    def create_user(self, user_data: dict) -> FlextResult[dict]:
+    def create_user(self, user_data: dict) -> FlextResult[FlextTypes.Dict]:
         """Create user with comprehensive observability."""
         # Create business metrics
         metric_result = self.factory.create_metric(
@@ -115,7 +115,7 @@ def process_order(order_data: dict) -> dict:
 
 # Advanced monitoring with context
 @flext_monitor_function("payment_processing")
-def process_payment(amount: float, currency: str) -> FlextResult[dict]:
+def process_payment(amount: float, currency: str) -> FlextResult[FlextTypes.Dict]:
     """Process payment with error handling and monitoring."""
     if amount <= 0:
         return FlextResult[None].fail("Invalid payment amount")
@@ -137,7 +137,7 @@ def process_payment(amount: float, currency: str) -> FlextResult[dict]:
 # Health check integration example
 from flext_observability import flext_create_health_check, FlextHealthService
 
-def monitor_database_health() -> FlextResult[dict]:
+def monitor_database_health() -> FlextResult[FlextTypes.Dict]:
     """Monitor database connectivity and performance."""
     try:
         # Test database connection
@@ -178,7 +178,7 @@ def monitor_database_health() -> FlextResult[dict]:
 # Parent-child trace correlation
 from flext_observability import flext_create_trace
 
-def process_user_workflow(user_id: str) -> FlextResult[dict]:
+def process_user_workflow(user_id: str) -> FlextResult[FlextTypes.Dict]:
     """Process user workflow with distributed tracing."""
 
     # Create parent trace
@@ -208,7 +208,7 @@ def process_user_workflow(user_id: str) -> FlextResult[dict]:
         "status": "completed"
     })
 
-def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[dict]:
+def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[FlextTypes.Dict]:
     """Validate user with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="user_validation",
@@ -241,7 +241,7 @@ class FlextTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> list[dict]:
+    def extract_records(self, table_name: str) -> list[FlextTypes.Dict]:
         """Extract records with automatic monitoring."""
 
         # Extract data (business logic)
@@ -275,7 +275,7 @@ class FlextAPIService:
     """Example FastAPI service with observability."""
 
     @flext_monitor_function("api_endpoint")
-    def handle_user_request(self, request_data: dict) -> FlextResult[dict]:
+    def handle_user_request(self, request_data: dict) -> FlextResult[FlextTypes.Dict]:
         """Handle API request with comprehensive observability."""
 
         # Request metrics

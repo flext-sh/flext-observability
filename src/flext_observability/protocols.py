@@ -65,6 +65,7 @@ class FlextObservabilityProtocols:
                 tags: FlextTypes.StringDict | None = None,
             ) -> FlextResult[bool]:
                 """Record a metric value."""
+                ...
 
             def get_metrics(
                 self,
@@ -74,16 +75,19 @@ class FlextObservabilityProtocols:
                 end_time: str | None = None,
             ) -> FlextResult[list[FlextTypes.Dict]]:
                 """Get collected metrics."""
+                ...
 
             def create_counter(
                 self, name: str, description: str, *, unit: str = "count"
             ) -> FlextResult[object]:
                 """Create a counter metric."""
+                ...
 
             def create_gauge(
                 self, name: str, description: str, *, unit: str = "value"
             ) -> FlextResult[object]:
                 """Create a gauge metric."""
+                ...
 
             def create_histogram(
                 self,
@@ -94,6 +98,7 @@ class FlextObservabilityProtocols:
                 buckets: FlextTypes.FloatList | None = None,
             ) -> FlextResult[object]:
                 """Create a histogram metric."""
+                ...
 
         @runtime_checkable
         class TracingProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -107,19 +112,23 @@ class FlextObservabilityProtocols:
                 parent_span_id: str | None = None,
             ) -> FlextResult[object]:
                 """Start a new trace span."""
+                ...
 
             def finish_span(
                 self, span: object, *, status: str = "ok", error: str | None = None
             ) -> FlextResult[bool]:
                 """Finish a trace span."""
+                ...
 
             def add_span_tag(
                 self, span: object, key: str, value: str | float
             ) -> FlextResult[bool]:
                 """Add tag to trace span."""
+                ...
 
             def get_trace(self, trace_id: str) -> FlextResult[FlextTypes.Dict]:
                 """Get trace by ID."""
+                ...
 
             def search_traces(
                 self,
@@ -130,6 +139,7 @@ class FlextObservabilityProtocols:
                 end_time: str | None = None,
             ) -> FlextResult[list[FlextTypes.Dict]]:
                 """Search traces by criteria."""
+                ...
 
         @runtime_checkable
         class AlertingProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -144,9 +154,11 @@ class FlextObservabilityProtocols:
                 tags: FlextTypes.StringDict | None = None,
             ) -> FlextResult[str]:
                 """Create an alert."""
+                ...
 
             def resolve_alert(self, alert_id: str) -> FlextResult[bool]:
                 """Resolve an alert."""
+                ...
 
             def get_alerts(
                 self,
@@ -156,6 +168,7 @@ class FlextObservabilityProtocols:
                 resolved: bool | None = None,
             ) -> FlextResult[list[FlextTypes.Dict]]:
                 """Get alerts by criteria."""
+                ...
 
             def create_alert_rule(
                 self,
@@ -166,6 +179,7 @@ class FlextObservabilityProtocols:
                 duration: int | None = None,
             ) -> FlextResult[str]:
                 """Create an alert rule."""
+                ...
 
         @runtime_checkable
         class HealthCheckProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -173,19 +187,23 @@ class FlextObservabilityProtocols:
 
             def check_health(self, service_name: str) -> FlextResult[FlextTypes.Dict]:
                 """Perform health check for a service."""
+                ...
 
             def register_health_check(
                 self, service_name: str, check_function: object, *, interval: int = 60
             ) -> FlextResult[bool]:
                 """Register a health check."""
+                ...
 
             def get_service_status(
                 self, service_name: str
             ) -> FlextResult[FlextTypes.Dict]:
                 """Get service health status."""
+                ...
 
             def get_all_services_status(self) -> FlextResult[FlextTypes.Dict]:
                 """Get health status for all services."""
+                ...
 
         @runtime_checkable
         class LoggingProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -201,6 +219,7 @@ class FlextObservabilityProtocols:
                 extra: FlextTypes.Dict | None = None,
             ) -> FlextResult[bool]:
                 """Log a message."""
+                ...
 
             def get_logs(
                 self,
@@ -212,6 +231,7 @@ class FlextObservabilityProtocols:
                 end_time: str | None = None,
             ) -> FlextResult[list[FlextTypes.Dict]]:
                 """Get logs by criteria."""
+                ...
 
             def create_logger(
                 self,
@@ -221,9 +241,11 @@ class FlextObservabilityProtocols:
                 format_string: str | None = None,
             ) -> FlextResult[object]:
                 """Create a logger instance."""
+                ...
 
             def configure_logging(self, config: FlextTypes.Dict) -> FlextResult[bool]:
                 """Configure logging system."""
+                ...
 
         @runtime_checkable
         class DashboardProtocol(FlextProtocols.Domain.Service, Protocol):
@@ -237,14 +259,17 @@ class FlextObservabilityProtocols:
                 widgets: list[FlextTypes.Dict] | None = None,
             ) -> FlextResult[str]:
                 """Create a dashboard."""
+                ...
 
             def get_dashboard(self, dashboard_id: str) -> FlextResult[FlextTypes.Dict]:
                 """Get dashboard by ID."""
+                ...
 
             def add_widget(
                 self, dashboard_id: str, widget_config: FlextTypes.Dict
             ) -> FlextResult[str]:
                 """Add widget to dashboard."""
+                ...
 
             def get_dashboard_data(
                 self,
@@ -254,6 +279,7 @@ class FlextObservabilityProtocols:
                 end_time: str | None = None,
             ) -> FlextResult[FlextTypes.Dict]:
                 """Get dashboard data."""
+                ...
 
     # =========================================================================
     # BACKWARD COMPATIBILITY ALIASES

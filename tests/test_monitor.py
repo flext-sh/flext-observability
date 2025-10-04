@@ -8,8 +8,8 @@ import threading
 import time
 
 import pytest
-
 from flext_core import FlextTypes
+
 from flext_observability import (
     FlextObservabilityMonitor,
     flext_monitor_function,
