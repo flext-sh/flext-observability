@@ -28,9 +28,9 @@ from flext_observability.typings import FlextObservabilityTypes
 
 
 class FlextObservabilityServices(FlextUtilities):
-    """Unified observability services class following namespace class pattern.
+    """Unified observability services class following FLEXT namespace class pattern.
 
-    Consolidates all observability functionality into a single class with nested helpers.
+    Single unified class with nested helpers for all observability operations.
     Follows FLEXT pattern: one class per module with nested subclasses for organization.
     """
 
@@ -43,273 +43,283 @@ class FlextObservabilityServices(FlextUtilities):
     MIN_PERCENTILE: ClassVar[float] = 0.0
     MAX_PERCENTILE: ClassVar[float] = 100.0
 
-    # Metrics storage - class-level shared state with thread safety
-    _metrics_counters: ClassVar[FlextObservabilityTypes.Core.CountersDict] = {}
-    _metrics_gauges: ClassVar[FlextObservabilityTypes.Core.GaugesDict] = {}
-    _metrics_histograms: ClassVar[FlextObservabilityTypes.Core.HistogramsDict] = {}
-    _metrics_metadata: ClassVar[FlextObservabilityTypes.Core.MetadataDict] = {}
-    _metrics_lock: ClassVar[threading.Lock] = threading.Lock()
+    class MetricsService:
+        """Nested metrics service helper class."""
 
-    @classmethod
-    def record_counter(
-        cls,
-        name: str,
-        value: float = 1.0,
-        tags: FlextObservabilityTypes.Core.TagsDict | None = None,
-    ) -> FlextResult[None]:
-        """Record counter metric with thread safety."""
-        try:
-            with cls._metrics_lock:
-                if name not in cls._metrics_counters:
-                    cls._metrics_counters[name] = 0.0
-                cls._metrics_counters[name] += value
+        # Metrics storage - class-level shared state with thread safety
+        _metrics_counters: ClassVar[FlextObservabilityTypes.Core.CountersDict] = {}
+        _metrics_gauges: ClassVar[FlextObservabilityTypes.Core.GaugesDict] = {}
+        _metrics_histograms: ClassVar[FlextObservabilityTypes.Core.HistogramsDict] = {}
+        _metrics_metadata: ClassVar[FlextObservabilityTypes.Core.MetadataDict] = {}
+        _metrics_lock: ClassVar[threading.Lock] = threading.Lock()
 
-                # Store metadata if provided
-                if tags:
-                    cls._metrics_metadata[name] = tags
+        @classmethod
+        def record_counter(
+            cls,
+            name: str,
+            value: float = 1.0,
+            tags: FlextObservabilityTypes.Core.TagsDict | None = None,
+        ) -> FlextResult[None]:
+            """Record counter metric with thread safety."""
+            try:
+                with cls._metrics_lock:
+                    if name not in cls._metrics_counters:
+                        cls._metrics_counters[name] = 0.0
+                    cls._metrics_counters[name] += value
 
-            return FlextResult[None].ok(None)
+                    # Store metadata if provided
+                    if tags:
+                        cls._metrics_metadata[name] = tags
 
-        except Exception as e:
-            return FlextResult[None].fail(f"Counter recording failed: {e}")
+                return FlextResult[None].ok(None)
 
-    @classmethod
-    def record_gauge(
-        cls,
-        name: str,
-        value: float,
-        tags: FlextObservabilityTypes.Core.TagsDict | None = None,
-    ) -> FlextResult[None]:
-        """Record gauge metric with metadata support."""
-        try:
-            with cls._metrics_lock:
-                cls._metrics_gauges[name] = value
+            except Exception as e:
+                return FlextResult[None].fail(f"Counter recording failed: {e}")
 
-                # Store metadata if provided
-                if tags:
-                    cls._metrics_metadata[name] = tags
+        @classmethod
+        def record_gauge(
+            cls,
+            name: str,
+            value: float,
+            tags: FlextObservabilityTypes.Core.TagsDict | None = None,
+        ) -> FlextResult[None]:
+            """Record gauge metric with metadata support."""
+            try:
+                with cls._metrics_lock:
+                    cls._metrics_gauges[name] = value
 
-            return FlextResult[None].ok(None)
+                    # Store metadata if provided
+                    if tags:
+                        cls._metrics_metadata[name] = tags
 
-        except Exception as e:
-            return FlextResult[None].fail(f"Gauge recording failed: {e}")
+                return FlextResult[None].ok(None)
 
-    @classmethod
-    def record_histogram(
-        cls,
-        name: str,
-        value: float,
-        tags: FlextObservabilityTypes.Core.TagsDict | None = None,
-    ) -> FlextResult[None]:
-        """Record histogram value with comprehensive tracking."""
-        try:
-            with cls._metrics_lock:
-                if name not in cls._metrics_histograms:
-                    cls._metrics_histograms[name] = []
-                cls._metrics_histograms[name].append(value)
+            except Exception as e:
+                return FlextResult[None].fail(f"Gauge recording failed: {e}")
 
-                # Store metadata if provided
-                if tags:
-                    cls._metrics_metadata[name] = tags
+        @classmethod
+        def record_histogram(
+            cls,
+            name: str,
+            value: float,
+            tags: FlextObservabilityTypes.Core.TagsDict | None = None,
+        ) -> FlextResult[None]:
+            """Record histogram value with comprehensive tracking."""
+            try:
+                with cls._metrics_lock:
+                    if name not in cls._metrics_histograms:
+                        cls._metrics_histograms[name] = []
+                    cls._metrics_histograms[name].append(value)
 
-            return FlextResult[None].ok(None)
+                    # Store metadata if provided
+                    if tags:
+                        cls._metrics_metadata[name] = tags
 
-        except Exception as e:
-            return FlextResult[None].fail(f"Histogram recording failed: {e}")
+                return FlextResult[None].ok(None)
 
-    @classmethod
-    def add_custom_metric(
-        cls,
-        name: str,
-        metric_type: str,
-        value: float,
-        metadata: FlextObservabilityTypes.Core.MetadataDict | None = None,
-    ) -> FlextResult[None]:
-        """Add custom metric with flexible type support."""
-        try:
-            # Convert metadata to tags format if needed
-            tags: FlextObservabilityTypes.Core.TagsDict | None = None
-            if metadata and isinstance(metadata, dict):
-                tags = {k: str(v) for k, v in metadata.items()}
+            except Exception as e:
+                return FlextResult[None].fail(f"Histogram recording failed: {e}")
 
-            if metric_type == "counter":
-                return cls.record_counter(name, value, tags)
-            if metric_type == "gauge":
-                return cls.record_gauge(name, value, tags)
-            if metric_type == "histogram":
-                return cls.record_histogram(name, value, tags)
+        @classmethod
+        def add_custom_metric(
+            cls,
+            name: str,
+            metric_type: str,
+            value: float,
+            metadata: FlextObservabilityTypes.Core.MetadataDict | None = None,
+        ) -> FlextResult[None]:
+            """Add custom metric with flexible type support."""
+            try:
+                # Convert metadata to tags format if needed
+                tags: FlextObservabilityTypes.Core.TagsDict | None = None
+                if metadata and isinstance(metadata, dict):
+                    tags = {k: str(v) for k, v in metadata.items()}
 
-            return FlextResult[None].fail(f"Unknown metric type: {metric_type}")
+                if metric_type == "counter":
+                    return cls.record_counter(name, value, tags)
+                if metric_type == "gauge":
+                    return cls.record_gauge(name, value, tags)
+                if metric_type == "histogram":
+                    return cls.record_histogram(name, value, tags)
 
-        except Exception as e:
-            return FlextResult[None].fail(f"Custom metric addition failed: {e}")
+                return FlextResult[None].fail(f"Unknown metric type: {metric_type}")
 
-    @classmethod
-    def collect_metrics(
-        cls,
-    ) -> FlextResult[FlextObservabilityTypes.Core.MetricsStore]:
-        """Collect all metrics data for export."""
-        try:
-            with cls._metrics_lock:
-                metric_data: FlextObservabilityTypes.Core.Dict = {
-                    "counters": dict(cls._metrics_counters),
-                    "gauges": dict(cls._metrics_gauges),
-                    "histograms": dict(cls._metrics_histograms),
-                    "metadata": dict(cls._metrics_metadata),
-                    "collection_timestamp": time.time(),
-                }
+            except Exception as e:
+                return FlextResult[None].fail(f"Custom metric addition failed: {e}")
 
-                metrics_store: FlextObservabilityTypes.Core.MetricsStore = {
-                    "current_metrics": [metric_data]
-                }
+        @classmethod
+        def collect_metrics(
+            cls,
+        ) -> FlextResult[FlextObservabilityTypes.Core.MetricsStore]:
+            """Collect all metrics data for export."""
+            try:
+                with cls._metrics_lock:
+                    metric_data: FlextObservabilityTypes.Core.Dict = {
+                        "counters": dict(cls._metrics_counters),
+                        "gauges": dict(cls._metrics_gauges),
+                        "histograms": dict(cls._metrics_histograms),
+                        "metadata": dict(cls._metrics_metadata),
+                        "collection_timestamp": time.time(),
+                    }
 
-                return FlextResult[FlextObservabilityTypes.Core.MetricsStore].ok(
-                    metrics_store
+                    metrics_store: FlextObservabilityTypes.Core.MetricsStore = {
+                        "current_metrics": [metric_data]
+                    }
+
+                    return FlextResult[FlextObservabilityTypes.Core.MetricsStore].ok(
+                        metrics_store
+                    )
+
+            except Exception as e:
+                return FlextResult[FlextObservabilityTypes.Core.MetricsStore].fail(
+                    f"Metrics collection failed: {e}"
                 )
 
-        except Exception as e:
-            return FlextResult[FlextObservabilityTypes.Core.MetricsStore].fail(
-                f"Metrics collection failed: {e}"
-            )
+        @classmethod
+        def reset_metrics(cls) -> FlextResult[None]:
+            """Reset all metrics data."""
+            try:
+                with cls._metrics_lock:
+                    cls._metrics_counters.clear()
+                    cls._metrics_gauges.clear()
+                    cls._metrics_histograms.clear()
+                    cls._metrics_metadata.clear()
 
-    @classmethod
-    def reset_metrics(cls) -> FlextResult[None]:
-        """Reset all metrics data."""
-        try:
-            with cls._metrics_lock:
-                cls._metrics_counters.clear()
-                cls._metrics_gauges.clear()
-                cls._metrics_histograms.clear()
-                cls._metrics_metadata.clear()
+                return FlextResult[None].ok(None)
 
-            return FlextResult[None].ok(None)
+            except Exception as e:
+                return FlextResult[None].fail(f"Metrics reset failed: {e}")
 
-        except Exception as e:
-            return FlextResult[None].fail(f"Metrics reset failed: {e}")
+        @classmethod
+        def get_metrics_summary(
+            cls,
+        ) -> FlextResult[FlextObservabilityTypes.Core.MetricDict]:
+            """Get comprehensive metrics summary."""
+            try:
+                with cls._metrics_lock:
+                    summary: FlextObservabilityTypes.Core.MetricDict = {
+                        "total_counters": len(cls._metrics_counters),
+                        "total_gauges": len(cls._metrics_gauges),
+                        "total_histograms": len(cls._metrics_histograms),
+                        "counters_sum": sum(cls._metrics_counters.values()),
+                        "gauges_avg": (
+                            sum(cls._metrics_gauges.values()) / len(cls._metrics_gauges)
+                            if cls._metrics_gauges
+                            else 0.0
+                        ),
+                        "histograms_total_values": sum(
+                            len(hist) for hist in cls._metrics_histograms.values()
+                        ),
+                        "last_collection": time.time(),
+                    }
 
-    @classmethod
-    def get_metrics_summary(
-        cls,
-    ) -> FlextResult[FlextObservabilityTypes.Core.MetricDict]:
-        """Get comprehensive metrics summary."""
-        try:
-            with cls._metrics_lock:
-                summary: FlextObservabilityTypes.Core.MetricDict = {
-                    "total_counters": len(cls._metrics_counters),
-                    "total_gauges": len(cls._metrics_gauges),
-                    "total_histograms": len(cls._metrics_histograms),
-                    "counters_sum": sum(cls._metrics_counters.values()),
-                    "gauges_avg": (
-                        sum(cls._metrics_gauges.values()) / len(cls._metrics_gauges)
-                        if cls._metrics_gauges
-                        else 0.0
-                    ),
-                    "histograms_total_values": sum(
-                        len(hist) for hist in cls._metrics_histograms.values()
-                    ),
-                    "last_collection": time.time(),
-                }
+                    return FlextResult[FlextObservabilityTypes.Core.MetricDict].ok(
+                        summary
+                    )
 
-                return FlextResult[FlextObservabilityTypes.Core.MetricDict].ok(summary)
+            except Exception as e:
+                return FlextResult[FlextObservabilityTypes.Core.MetricDict].fail(
+                    f"Metrics summary generation failed: {e}"
+                )
 
-        except Exception as e:
-            return FlextResult[FlextObservabilityTypes.Core.MetricDict].fail(
-                f"Metrics summary generation failed: {e}"
-            )
+    class TracingService:
+        """Nested tracing service helper class."""
 
-    # Tracing storage - class-level shared state with thread safety
-    _active_traces: ClassVar[FlextObservabilityTypes.Core.TracesDict] = {}
-    _completed_traces: ClassVar[FlextObservabilityTypes.Core.TraceSpansDict] = {}
-    _span_relationships: ClassVar[FlextObservabilityTypes.Core.Headers] = {}
-    _trace_lock: ClassVar[threading.Lock] = threading.Lock()
+        # Tracing storage - class-level shared state with thread safety
+        _active_traces: ClassVar[FlextObservabilityTypes.Core.TracesDict] = {}
+        _completed_traces: ClassVar[FlextObservabilityTypes.Core.TraceSpansDict] = {}
+        _span_relationships: ClassVar[FlextObservabilityTypes.Core.Headers] = {}
+        _trace_lock: ClassVar[threading.Lock] = threading.Lock()
 
-    @classmethod
-    def start_trace(
-        cls,
-        operation_name: str,
-        trace_context: FlextObservabilityTypes.Core.TraceContextDict | None = None,
-    ) -> FlextResult[str]:
-        """Start new distributed trace."""
-        try:
-            trace_id = str(uuid4())
+        @classmethod
+        def start_trace(
+            cls,
+            operation_name: str,
+            trace_context: FlextObservabilityTypes.Core.TraceContextDict | None = None,
+        ) -> FlextResult[str]:
+            """Start new distributed trace."""
+            try:
+                trace_id = str(uuid4())
 
-            with cls._trace_lock:
-                trace_data = {
-                    "trace_id": trace_id,
-                    "operation": operation_name,
-                    "start_time": time.time(),
-                    "context": trace_context or {},
-                    "status": "active",
-                }
-                cls._active_traces[trace_id] = trace_data
+                with cls._trace_lock:
+                    trace_data = {
+                        "trace_id": trace_id,
+                        "operation": operation_name,
+                        "start_time": time.time(),
+                        "context": trace_context or {},
+                        "status": "active",
+                    }
+                    cls._active_traces[trace_id] = trace_data
 
-            return FlextResult[str].ok(trace_id)
+                return FlextResult[str].ok(trace_id)
 
-        except Exception as e:
-            return FlextResult[str].fail(f"Trace start failed: {e}")
+            except Exception as e:
+                return FlextResult[str].fail(f"Trace start failed: {e}")
 
-    @classmethod
-    def add_span(
-        cls,
-        trace_id: str,
-        span_name: str,
-        span_attributes: FlextObservabilityTypes.Core.SpanAttributesDict | None = None,
-    ) -> FlextResult[str]:
-        """Add span to existing trace."""
-        try:
-            if trace_id not in cls._active_traces:
-                return FlextResult[str].fail(f"Trace {trace_id} not found")
+        @classmethod
+        def add_span(
+            cls,
+            trace_id: str,
+            span_name: str,
+            span_attributes: FlextObservabilityTypes.Core.SpanAttributesDict
+            | None = None,
+        ) -> FlextResult[str]:
+            """Add span to existing trace."""
+            try:
+                if trace_id not in cls._active_traces:
+                    return FlextResult[str].fail(f"Trace {trace_id} not found")
 
-            span_id = str(uuid4())
+                span_id = str(uuid4())
 
-            with cls._trace_lock:
-                if trace_id not in cls._completed_traces:
-                    cls._completed_traces[trace_id] = []
+                with cls._trace_lock:
+                    if trace_id not in cls._completed_traces:
+                        cls._completed_traces[trace_id] = []
 
-                span_data: FlextObservabilityTypes.Core.Dict = {
-                    "span_id": span_id,
-                    "name": span_name,
-                    "attributes": span_attributes or {},
-                    "start_time": time.time(),
-                    "trace_id": trace_id,
-                }
+                    span_data: FlextObservabilityTypes.Core.Dict = {
+                        "span_id": span_id,
+                        "name": span_name,
+                        "attributes": span_attributes or {},
+                        "start_time": time.time(),
+                        "trace_id": trace_id,
+                    }
 
-                cls._completed_traces[trace_id].append(span_data)
+                    cls._completed_traces[trace_id].append(span_data)
 
-            return FlextResult[str].ok(span_id)
+                return FlextResult[str].ok(span_id)
 
-        except Exception as e:
-            return FlextResult[str].fail(f"Span addition failed: {e}")
+            except Exception as e:
+                return FlextResult[str].fail(f"Span addition failed: {e}")
 
-    @classmethod
-    def complete_trace(cls, trace_id: str) -> FlextResult[None]:
-        """Complete distributed trace."""
-        try:
-            if trace_id not in cls._active_traces:
-                return FlextResult[None].fail(f"Trace {trace_id} not found")
+        @classmethod
+        def complete_trace(cls, trace_id: str) -> FlextResult[None]:
+            """Complete distributed trace."""
+            try:
+                if trace_id not in cls._active_traces:
+                    return FlextResult[None].fail(f"Trace {trace_id} not found")
 
-            with cls._trace_lock:
-                if trace_id in cls._completed_traces:
-                    for span in cls._completed_traces[trace_id]:
-                        span["end_time"] = time.time()
+                with cls._trace_lock:
+                    if trace_id in cls._completed_traces:
+                        for span in cls._completed_traces[trace_id]:
+                            span["end_time"] = time.time()
 
-                del cls._active_traces[trace_id]
+                    del cls._active_traces[trace_id]
 
-            return FlextResult[None].ok(None)
+                return FlextResult[None].ok(None)
 
-        except Exception as e:
-            return FlextResult[None].fail(f"Trace completion failed: {e}")
+            except Exception as e:
+                return FlextResult[None].fail(f"Trace completion failed: {e}")
 
+        @classmethod
         def get_tracing_summary(
-            self,
+            cls,
         ) -> FlextResult[FlextObservabilityTypes.Core.TraceInfoDict]:
             """Get comprehensive tracing summary."""
             try:
-                with self._trace_lock:
-                    active_count = len(self._active_traces)
-                    completed_count = len(self._completed_traces)
+                with cls._trace_lock:
+                    active_count = len(cls._active_traces)
+                    completed_count = len(cls._completed_traces)
                     total_spans = sum(
-                        len(spans) for spans in self._completed_traces.values()
+                        len(spans) for spans in cls._completed_traces.values()
                     )
 
                     summary: FlextObservabilityTypes.Core.TraceInfoDict = {
@@ -328,19 +338,12 @@ class FlextObservabilityServices(FlextUtilities):
                     f"Tracing summary generation failed: {e}"
                 )
 
-        return None
+    class AlertService:
+        """Nested alert service helper class."""
 
-    # Alert service operations - unified pattern
-    class AlertServiceHelper:
-        """Nested helper class for alerting and notification operations."""
-
-        def __init__(self, parent_service: FlextObservabilityServices) -> None:
-            """Initialize alert service helper with parent service reference."""
-            self.parent = parent_service
-            self.logger = parent_service.logger
-
+        @staticmethod
         def create_alert(
-            self, alert_data: FlextObservabilityTypes.Core.MetadataDict
+            alert_data: FlextObservabilityTypes.Core.MetadataDict,
         ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
             """Create alert with proper metadata."""
             try:
@@ -352,7 +355,8 @@ class FlextObservabilityServices(FlextUtilities):
                     **alert_data,
                 }
 
-                self.logger.info(f"Alert created: {alert_id}")
+                logger = FlextLogger(__name__)
+                logger.info(f"Alert created: {alert_id}")
                 return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok(alert)
 
             except Exception as e:
@@ -360,29 +364,23 @@ class FlextObservabilityServices(FlextUtilities):
                     f"Alert creation failed: {e}"
                 )
 
-    # Health service operations - unified pattern
-    class HealthServiceHelper:
-        """Nested helper class for health monitoring operations."""
+    class HealthService:
+        """Nested health service helper class."""
 
-        def __init__(self, parent_service: FlextObservabilityServices) -> None:
-            """Initialize health service helper with parent service reference."""
-            self.parent = parent_service
-            self.logger = parent_service.logger
-            self.config = parent_service.config
-
+        @staticmethod
         def get_health_status(
-            self,
+            service_start_time: float | None = None,
+            service_id: str | None = None,
         ) -> FlextResult[FlextObservabilityTypes.Core.HealthMetricsDict]:
             """Get comprehensive health status."""
             try:
-                # Get system health metrics - access parent attributes properly
-                service_start_time = getattr(self.parent, "_start_time", time.time())
-                service_id = getattr(self.parent, "_service_id", "unknown")
+                start_time = service_start_time or time.time()
+                svc_id = service_id or "unknown"
 
                 health_status: FlextObservabilityTypes.Core.HealthMetricsDict = {
                     "service_status": "healthy",
-                    "uptime": time.time() - service_start_time,
-                    "service_id": service_id,
+                    "uptime": time.time() - start_time,
+                    "service_id": svc_id,
                     "memory_usage": "available",
                     "cpu_usage": "normal",
                     "disk_usage": "normal",
@@ -400,9 +398,9 @@ class FlextObservabilityServices(FlextUtilities):
                     f"Health status check failed: {e}"
                 )
 
-    def __init__(self, **data: object) -> None:
+    def __init__(self) -> None:
         """Initialize FlextObservabilityService with comprehensive monitoring capabilities."""
-        super().__init__(**data)
+        super().__init__()
 
         # Initialize core components using global instances (no duplication)
         self._container = FlextContainer.get_global()
@@ -412,13 +410,6 @@ class FlextObservabilityServices(FlextUtilities):
         # Service initialization
         self._start_time = time.time()
         self._service_id = str(uuid4())
-
-        # Initialize all service helpers (bypass Pydantic validation)
-        object.__setattr__(self, "metrics", self.MetricsServiceHelper(self))
-        object.__setattr__(self, "logging", self.LoggingServiceHelper(self))
-        object.__setattr__(self, "tracing", self.TracingServiceHelper(self))
-        object.__setattr__(self, "alerts", self.AlertServiceHelper(self))
-        object.__setattr__(self, "health", self.HealthServiceHelper(self))
 
         self._logger.info(f"FlextObservabilityService initialized: {self._service_id}")
 
@@ -446,43 +437,6 @@ class FlextObservabilityServices(FlextUtilities):
         """Get service ID."""
         return self._service_id
 
-    # Property accessors for service helpers (for factory access)
-    @property
-    def metrics(self) -> MetricsServiceHelper:
-        """Get metrics service helper."""
-        return self._get_helper("metrics")
-
-    @property
-    def tracing(self) -> TracingServiceHelper:
-        """Get tracing service helper."""
-        return self._get_helper("tracing")
-
-    @property
-    def alerts(self) -> AlertServiceHelper:
-        """Get alerts service helper."""
-        return self._get_helper("alerts")
-
-    @property
-    def health(self) -> HealthServiceHelper:
-        """Get health service helper."""
-        return self._get_helper("health")
-
-    def _get_helper(self, name: str) -> object:
-        """Get helper instance by name."""
-        helper = getattr(self, f"_{name}", None)
-        if helper is None:
-            # Initialize helper if not exists
-            if name == "metrics":
-                helper = self.MetricsServiceHelper(self)
-            elif name == "tracing":
-                helper = self.TracingServiceHelper(self)
-            elif name == "alerts":
-                helper = self.AlertServiceHelper(self)
-            elif name == "health":
-                helper = self.HealthServiceHelper(self)
-            setattr(self, f"_{name}", helper)
-        return helper
-
     def execute(
         self, request: FlextObservabilityTypes.Core.MetadataDict
     ) -> FlextResult[FlextObservabilityTypes.Core.MetricsStore]:
@@ -496,7 +450,7 @@ class FlextObservabilityServices(FlextUtilities):
                         "Missing metric data"
                     )
 
-                return self.metrics.collect_metrics()
+                return self.MetricsService.collect_metrics()
 
             if request_type == "trace":
                 if "trace_data" not in request:
@@ -509,7 +463,9 @@ class FlextObservabilityServices(FlextUtilities):
                 })
 
             if request_type == "health":
-                health_result = self.health.get_health_status()
+                health_result = self.HealthService.get_health_status(
+                    self._start_time, self._service_id
+                )
                 if health_result.is_failure:
                     return FlextResult[FlextObservabilityTypes.Core.MetricsStore].fail(
                         f"Health check failed: {health_result.error}"
@@ -534,9 +490,11 @@ class FlextObservabilityServices(FlextUtilities):
         """Get comprehensive service summary."""
         try:
             # Collect metrics summary
-            metrics_summary_result = self.metrics.get_metrics_summary()
-            tracing_summary_result = self.tracing.get_tracing_summary()
-            health_summary_result = self.health.get_health_status()
+            metrics_summary_result = self.MetricsService.get_metrics_summary()
+            tracing_summary_result = self.TracingService.get_tracing_summary()
+            health_summary_result = self.HealthService.get_health_status(
+                self._start_time, self._service_id
+            )
 
             summary: FlextObservabilityTypes.Core.Dict = {
                 "service_id": self._service_id,
@@ -1012,7 +970,6 @@ class FlextObservabilityServices(FlextUtilities):
                     f"Percentile calculation failed: {e}"
                 )
 
-    # Generator utilities (moved from separate FlextUtilitiesGenerators class)
     class Generators:
         """Nested class for generating timestamps and IDs."""
 
@@ -1022,6 +979,113 @@ class FlextObservabilityServices(FlextUtilities):
             return str(time.time())
 
 
+    class MasterFactory:
+        """Master factory for creating and managing observability entities."""
+
+        # Global factory instance
+        _global_factory: ClassVar[FlextObservabilityServices | None] = None
+
+        @classmethod
+        def get_global_factory(cls) -> FlextObservabilityServices:
+            """Get the global factory instance."""
+            if cls._global_factory is None:
+                cls._global_factory = FlextObservabilityServices()
+            return cls._global_factory
+
+        @classmethod
+        def reset_global_factory(cls) -> None:
+            """Reset the global factory instance."""
+            cls._global_factory = None
+
+        @classmethod
+        def create_metric(
+            cls,
+            name: str,
+            value: float,
+            unit: str = "count",
+            metadata: FlextObservabilityTypes.Core.MetadataDict | None = None,
+        ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
+            """Create a metric through the master factory."""
+            factory = cls.get_global_factory()
+            # Use the metrics service to create
+            return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok({
+                "name": name,
+                "value": value,
+                "unit": unit,
+                "metadata": metadata or {},
+                "created_by": "master_factory",
+            })
+
+        @classmethod
+        def create_trace(
+            cls,
+            name: str,
+            operation: str,
+            context: FlextObservabilityTypes.Core.MetadataDict | None = None,
+        ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
+            """Create a trace through the master factory."""
+            factory = cls.get_global_factory()
+            return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok({
+                "name": name,
+                "operation": operation,
+                "context": context or {},
+                "created_by": "master_factory",
+            })
+
+        @classmethod
+        def create_alert(
+            cls,
+            title: str,
+            message: str,
+            severity: str = "info",
+            source: str = "system",
+        ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
+            """Create an alert through the master factory."""
+            factory = cls.get_global_factory()
+            return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok({
+                "title": title,
+                "message": message,
+                "severity": severity,
+                "source": source,
+                "created_by": "master_factory",
+            })
+
+        @classmethod
+        def create_health_check(
+            cls,
+            service_name: str,
+            status: str = "healthy",
+            details: FlextObservabilityTypes.Core.MetadataDict | None = None,
+        ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
+            """Create a health check through the master factory."""
+            factory = cls.get_global_factory()
+            return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok({
+                "service_name": service_name,
+                "status": status,
+                "details": details or {},
+                "created_by": "master_factory",
+            })
+
+
+# Backward compatibility aliases
+FlextObservabilityService = FlextObservabilityServices
+FlextObservabilityMasterFactory = FlextObservabilityServices.MasterFactory
+
+# Global factory functions
+def get_global_factory() -> FlextObservabilityServices:
+    """Get the global factory instance (backward compatibility)."""
+    return FlextObservabilityServices.MasterFactory.get_global_factory()
+
+
+def reset_global_factory() -> None:
+    """Reset the global factory instance (backward compatibility)."""
+    FlextObservabilityServices.MasterFactory.reset_global_factory()
+
+
 __all__ = [
+    "FlextObservabilityService",
     "FlextObservabilityServices",
+    "FlextObservabilityMasterFactory",
+    "get_global_factory",
+    "reset_global_factory",
 ]

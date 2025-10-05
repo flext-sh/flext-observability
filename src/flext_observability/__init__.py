@@ -21,9 +21,13 @@ from flext_observability.__version__ import __version__, __version_info__
 from flext_observability.config import FlextObservabilityConfig
 from flext_observability.constants import FlextObservabilityConstants
 from flext_observability.factories import (
-    FlextObservabilityMasterFactory,
-    get_global_factory,
-    reset_global_factory,
+    FlextObservabilityFactories,
+    flext_create_alert,
+    flext_create_health_check,
+    flext_create_log_entry,
+    flext_create_metric,
+    flext_create_trace,
+    get_global_observability_service,
 )
 from flext_observability.fields import (
     AlertLevelField,
@@ -90,7 +94,7 @@ class FlextObservability:
             title: str, message: str, severity: str = "info", source: str = "system"
         ) -> FlextResult[FlextTypes.Dict]:
             """Create an alert using the global factory."""
-            return get_global_factory().create_alert(title, message, severity, source)
+            return flext_create_alert(title, message, severity, source)
 
         @staticmethod
         def create_health_check(
@@ -98,8 +102,8 @@ class FlextObservability:
             status: str = "healthy",
             details: FlextTypes.Dict | None = None,
         ) -> FlextResult[FlextTypes.Dict]:
-            """Create a health check using the global factory."""
-            return get_global_factory().create_health_check(
+            """Create a health check using the factory."""
+            return FlextObservabilityFactories.HealthCheckFactory.create_health_check(
                 service_name, status, details
             )
 
@@ -107,22 +111,28 @@ class FlextObservability:
         def create_log_entry(
             level: str, message: str, metadata: FlextTypes.Dict | None = None
         ) -> FlextResult[FlextTypes.Dict]:
-            """Create a log entry using the global factory."""
-            return get_global_factory().create_log_entry(level, message, metadata)
+            """Create a log entry using the factory."""
+            return FlextObservabilityFactories.LogEntryFactory.create_log_entry(
+                level, message, metadata
+            )
 
         @staticmethod
         def create_metric(
             name: str, value: float, unit: str = "count"
         ) -> FlextResult[FlextTypes.Dict]:
-            """Create a metric using the global factory."""
-            return get_global_factory().create_metric(name, value, unit)
+            """Create a metric using the factory."""
+            return FlextObservabilityFactories.MetricFactory.create_metric(
+                name, value, unit
+            )
 
         @staticmethod
         def create_trace(
             name: str, operation: str, context: FlextTypes.Dict | None = None
         ) -> FlextResult[FlextTypes.Dict]:
-            """Create a trace using the global factory."""
-            return get_global_factory().create_trace(name, operation, context)
+            """Create a trace using the factory."""
+            return FlextObservabilityFactories.TraceFactory.create_trace(
+                name, operation, context
+            )
 
     class Entities:
         """Direct entity creation operations."""
@@ -134,15 +144,11 @@ class FlextObservability:
             unit: str = "",
             metric_type: str = "gauge",
             **kwargs: object,
-        ) -> FlextObservabilityModels.FlextMetric:
+        ) -> FlextResult[FlextObservabilityModels.FlextMetric]:
             """Create a FlextMetric entity directly."""
-            result = FlextObservabilityModels.flext_metric(
+            return FlextObservabilityModels.flext_metric(
                 name, value, unit, metric_type, **kwargs
             )
-            if result.is_failure:
-                msg = f"Failed to create metric: {result.error}"
-                raise ValueError(msg)
-            return result.unwrap()
 
         @staticmethod
         def trace(
@@ -151,15 +157,11 @@ class FlextObservability:
             span_id: str,
             status: str = "pending",
             **kwargs: object,
-        ) -> FlextObservabilityModels.FlextTrace:
+        ) -> FlextResult[FlextObservabilityModels.FlextTrace]:
             """Create a FlextTrace entity directly."""
-            result = FlextObservabilityModels.flext_trace(
+            return FlextObservabilityModels.flext_trace(
                 trace_id, operation, span_id, status, **kwargs
             )
-            if result.is_failure:
-                msg = f"Failed to create trace: {result.error}"
-                raise ValueError(msg)
-            return result.unwrap()
 
         @staticmethod
         def health_check(
@@ -167,51 +169,11 @@ class FlextObservability:
             status: str = "unknown",
             message: str = "",
             **kwargs: object,
-        ) -> FlextObservabilityModels.FlextHealthCheck:
+        ) -> FlextResult[FlextObservabilityModels.FlextHealthCheck]:
             """Create a FlextHealthCheck entity directly."""
-            result = FlextObservabilityModels.flext_health_check(
+            return FlextObservabilityModels.flext_health_check(
                 component, status, message, **kwargs
             )
-            if result.is_failure:
-                msg = f"Failed to create health check: {result.error}"
-                raise ValueError(msg)
-            return result.unwrap()
-
-
-# Backward compatibility aliases - use FlextResult properly
-def flext_create_alert(
-    title: str, message: str, severity: str = "info", source: str = "system"
-) -> FlextResult[FlextTypes.Dict]:
-    """Create an alert using the factory (backward compatibility)."""
-    return FlextObservability.Factory.create_alert(title, message, severity, source)
-
-
-def flext_create_health_check(
-    service_name: str, status: str = "healthy", details: FlextTypes.Dict | None = None
-) -> FlextResult[FlextTypes.Dict]:
-    """Create a health check using the factory (backward compatibility)."""
-    return FlextObservability.Factory.create_health_check(service_name, status, details)
-
-
-def flext_create_log_entry(
-    level: str, message: str, metadata: FlextTypes.Dict | None = None
-) -> FlextResult[FlextTypes.Dict]:
-    """Create a log entry using the factory (backward compatibility)."""
-    return FlextObservability.Factory.create_log_entry(level, message, metadata)
-
-
-def flext_create_metric(
-    name: str, value: float, unit: str = "count"
-) -> FlextResult[FlextTypes.Dict]:
-    """Create a metric using the factory (backward compatibility)."""
-    return FlextObservability.Factory.create_metric(name, value, unit)
-
-
-def flext_create_trace(
-    name: str, operation: str, context: FlextTypes.Dict | None = None
-) -> FlextResult[FlextTypes.Dict]:
-    """Create a trace using the factory (backward compatibility)."""
-    return FlextObservability.Factory.create_trace(name, operation, context)
 
 
 flext_metric = FlextObservability.Entities.metric
@@ -249,7 +211,6 @@ __all__ = [
     "FlextObservability",
     "FlextObservabilityConfig",
     "FlextObservabilityConstants",
-    "FlextObservabilityMasterFactory",
     "FlextObservabilityMonitor",
     "FlextObservabilityProtocols",
     "FlextObservabilityService",
@@ -289,6 +250,7 @@ __all__ = [
     "flext_monitor_function",
     "flext_trace",
     "get_global_factory",
+    "get_global_observability_service",
     "health_check",
     "log",
     "metric",

@@ -16,11 +16,11 @@ from flext_core import (
     FlextResult,
 )
 
-from flext_observability import (
-    flext_create_alert,
-    flext_metric,
-)
 from flext_observability.config import FlextObservabilityConfig
+
+# Import functions directly to avoid circular imports
+from flext_observability.factories import get_global_observability_service
+from flext_observability.models import FlextObservabilityModels
 from flext_observability.services import (
     FlextObservabilityServices,
 )
@@ -125,7 +125,7 @@ class FlextObservabilityMonitor:
             observability_service = monitor.get_observability_service()
             if observability_service:
                 try:
-                    alert_result = flext_create_alert(
+                    alert_result = get_global_observability_service().create_alert(
                         title=f"Function execution error: {function_name}",
                         message=f"Function {function_name} failed with {type(error).__name__}",
                         severity="high",
@@ -298,7 +298,9 @@ class FlextObservabilityMonitor:
                 self._logger.debug("Metrics recording disabled in configuration")
                 return FlextResult[None].ok(None)  # Silently succeed when disabled
 
-            metric_result = flext_metric(name, value, metric_type=metric_type)
+            metric_result = FlextObservabilityModels.flext_metric(
+                name, value, metric_type=metric_type
+            )
             if metric_result.is_failure:
                 return FlextResult[None].fail(
                     metric_result.error or "Failed to create metric",
@@ -330,69 +332,65 @@ class FlextObservabilityMonitor:
         """Public method to get unified observability service."""
         return self._observability_service
 
+    class MonitoringDecorators:
+        """Nested class for monitoring decorators and function wrappers."""
 
-def flext_monitor_function(
-    monitor: FlextObservabilityMonitor | None = None,
-    metric_name: str | None = None,
-) -> Callable[
-    [FlextObservabilityMonitor.object_callable],
-    FlextObservabilityMonitor.object_callable,
-]:
-    """Create function monitoring decorator with real metrics collection.
+        @staticmethod
+        def flext_monitor_function(
+            monitor: FlextObservabilityMonitor | None = None,
+            metric_name: str | None = None,
+        ) -> Callable[
+            [FlextObservabilityMonitor.object_callable],
+            FlextObservabilityMonitor.object_callable,
+        ]:
+            """Create function monitoring decorator with metrics collection.
 
-    SOLID compliant with reduced complexity version that provides real functionality
-    while maintaining code quality standards and SOLID principles.
-    """
+            Simplified decorator that records function execution metrics using flext-observability.
+            """
 
-    def decorator(
-        func: FlextObservabilityMonitor.object_callable,
-    ) -> FlextObservabilityMonitor.object_callable:
-        def wrapper(*args: object, **kwargs: object) -> object:
-            # Get or create monitor instance
-            active_monitor = monitor
-            if not active_monitor:
-                # No factory dependency - simple monitoring only
-                # Use a basic monitor instance for simple monitoring
-                active_monitor = FlextObservabilityMonitor()
+            def decorator(
+                func: FlextObservabilityMonitor.object_callable,
+            ) -> FlextObservabilityMonitor.object_callable:
+                def wrapper(*args: object, **kwargs: object) -> object:
+                    # Use provided monitor or create simple one
+                    active_monitor = monitor or FlextObservabilityMonitor()
 
-            # Initialize monitor if not already initialized
-            if active_monitor and not active_monitor.flext_is_initialized():
-                init_result = active_monitor.flext_initialize_observability()
-                if init_result.is_failure:
-                    # If initialization fails, execute function without monitoring
+                    # Initialize if needed
+                    if not active_monitor.flext_is_initialized():
+                        init_result = active_monitor.flext_initialize_observability()
+                        if init_result.is_failure:
+                            # Execute without monitoring if initialization fails
+                            return FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
+                                func, *args, **kwargs
+                            )
+
+                    # Start monitoring if active
+                    if active_monitor.flext_is_monitoring_active():
+                        return FlextObservabilityMonitor.MonitoringHelpers.execute_monitored_function(
+                            func, args, kwargs, active_monitor, metric_name
+                        )
+
+                    # Execute without monitoring
                     return (
                         FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
                             func, *args, **kwargs
                         )
                     )
 
-            # Execute function normally if no monitoring
-            if not (active_monitor and active_monitor.flext_is_monitoring_active()):
-                return FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
-                    func, *args, **kwargs
-                )
+                # Preserve function metadata
+                wrapper.__name__ = getattr(func, "__name__", "wrapped_function")
+                wrapper.__doc__ = getattr(func, "__doc__", wrapper.__doc__)
+                wrapper.__module__ = getattr(func, "__module__", __name__)
 
-            # Monitor function execution
-            return (
-                FlextObservabilityMonitor.MonitoringHelpers.execute_monitored_function(
-                    func,
-                    args,
-                    kwargs,
-                    active_monitor,
-                    metric_name,
-                )
-            )
+                return cast("FlextObservabilityMonitor.object_callable", wrapper)
 
-        # Preserve function metadata
-        wrapper.__name__ = getattr(func, "__name__", "wrapped_function")
-        wrapper.__doc__ = getattr(func, "__doc__", wrapper.__doc__)
-        wrapper.__module__ = getattr(func, "__module__", __name__)
+            return decorator
 
-        # Return wrapper with preserved metadata and type
-        return cast("FlextObservabilityMonitor.object_callable", wrapper)
 
-    return decorator
-
+# Backward compatibility alias - maintain ABI stability
+flext_monitor_function = (
+    FlextObservabilityMonitor.MonitoringDecorators.flext_monitor_function
+)
 
 __all__: FlextObservabilityTypes.Core.StringList = [
     "FlextObservabilityMonitor",
