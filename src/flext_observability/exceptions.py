@@ -42,14 +42,30 @@ class FlextObservabilityExceptions(FlextExceptions):
     class ObservabilityBaseError(FlextExceptions.BaseError):
         """Base exception for all observability domain errors."""
 
-        def _extract_common_kwargs(self, kwargs: dict[str, object]) -> tuple[dict[str, object], str | None, str | None]:
+        def _extract_common_kwargs(
+            self, kwargs: dict[str, object]
+        ) -> tuple[dict[str, object], str | None, str | None]:
             """Extract common kwargs for error construction."""
-            context = kwargs.get("context", {}) if isinstance(kwargs.get("context"), dict) else {}
-            correlation_id = kwargs.get("correlation_id") if isinstance(kwargs.get("correlation_id"), str) else None
-            error_code = kwargs.get("error_code") if isinstance(kwargs.get("error_code"), str) else None
+            context = (
+                kwargs.get("context", {})
+                if isinstance(kwargs.get("context"), dict)
+                else {}
+            )
+            correlation_id = (
+                kwargs.get("correlation_id")
+                if isinstance(kwargs.get("correlation_id"), str)
+                else None
+            )
+            error_code = (
+                kwargs.get("error_code")
+                if isinstance(kwargs.get("error_code"), str)
+                else None
+            )
             return context, correlation_id, error_code
 
-        def _build_context(self, base_context: dict[str, object], **extra_fields: object) -> dict[str, object]:
+        def _build_context(
+            self, base_context: dict[str, object], **extra_fields: object
+        ) -> dict[str, object]:
             """Build context with additional fields."""
             context = dict(base_context)
             context.update(extra_fields)

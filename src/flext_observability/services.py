@@ -978,7 +978,6 @@ class FlextObservabilityServices(FlextUtilities):
             """Generate timestamp for observability operations."""
             return str(time.time())
 
-
     class MasterFactory:
         """Master factory for creating and managing observability entities."""
 
@@ -1006,7 +1005,7 @@ class FlextObservabilityServices(FlextUtilities):
             metadata: FlextObservabilityTypes.Core.MetadataDict | None = None,
         ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
             """Create a metric through the master factory."""
-            factory = cls.get_global_factory()
+            cls.get_global_factory()
             # Use the metrics service to create
             return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok({
                 "name": name,
@@ -1024,7 +1023,7 @@ class FlextObservabilityServices(FlextUtilities):
             context: FlextObservabilityTypes.Core.MetadataDict | None = None,
         ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
             """Create a trace through the master factory."""
-            factory = cls.get_global_factory()
+            cls.get_global_factory()
             return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok({
                 "name": name,
                 "operation": operation,
@@ -1041,7 +1040,7 @@ class FlextObservabilityServices(FlextUtilities):
             source: str = "system",
         ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
             """Create an alert through the master factory."""
-            factory = cls.get_global_factory()
+            cls.get_global_factory()
             return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok({
                 "title": title,
                 "message": message,
@@ -1058,7 +1057,7 @@ class FlextObservabilityServices(FlextUtilities):
             details: FlextObservabilityTypes.Core.MetadataDict | None = None,
         ) -> FlextResult[FlextObservabilityTypes.Core.MetadataDict]:
             """Create a health check through the master factory."""
-            factory = cls.get_global_factory()
+            cls.get_global_factory()
             return FlextResult[FlextObservabilityTypes.Core.MetadataDict].ok({
                 "service_name": service_name,
                 "status": status,
@@ -1070,6 +1069,7 @@ class FlextObservabilityServices(FlextUtilities):
 # Backward compatibility aliases
 FlextObservabilityService = FlextObservabilityServices
 FlextObservabilityMasterFactory = FlextObservabilityServices.MasterFactory
+
 
 # Global factory functions
 def get_global_factory() -> FlextObservabilityServices:
@@ -1083,9 +1083,9 @@ def reset_global_factory() -> None:
 
 
 __all__ = [
+    "FlextObservabilityMasterFactory",
     "FlextObservabilityService",
     "FlextObservabilityServices",
-    "FlextObservabilityMasterFactory",
     "get_global_factory",
     "reset_global_factory",
 ]
