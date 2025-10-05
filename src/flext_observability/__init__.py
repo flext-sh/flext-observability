@@ -51,7 +51,10 @@ from flext_observability.monitoring import (
 )
 from flext_observability.protocols import FlextObservabilityProtocols
 from flext_observability.services import (
+    FlextObservabilityMasterFactory,
     FlextObservabilityServices,
+    get_global_factory,
+    reset_global_factory,
 )
 from flext_observability.typings import (
     AlertLevel,
