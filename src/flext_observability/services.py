@@ -447,14 +447,14 @@ class FlextObservabilityServices(FlextUtilities):
 
         # Initialize core components using global instances (no duplication)
         self._container = FlextContainer.get_global()
-        self._logger = FlextLogger(__name__)
+        self.logger = FlextLogger(__name__)
         self._config = FlextObservabilityConfig.get_global_instance()
 
         # Service initialization
         self._start_time = time.time()
         self._service_id = str(uuid4())
 
-        self._logger.info(f"FlextObservabilityService initialized: {self._service_id}")
+        self.logger.info(f"FlextObservabilityService initialized: {self._service_id}")
 
     # Property accessors for core components
     @property
@@ -465,7 +465,7 @@ class FlextObservabilityServices(FlextUtilities):
     @property
     def logger(self) -> FlextLogger:
         """Get logger instance."""
-        return self._logger
+        return self.logger
 
     @property
     def config(self) -> FlextObservabilityConfig:

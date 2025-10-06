@@ -138,7 +138,7 @@ class FlextObservabilityMonitor:
 
     # Class attributes with proper type annotations
     container: FlextContainer
-    _logger: FlextLogger
+    logger: FlextLogger
     _initialized: bool
     _running: bool
     _observability_service: FlextObservabilityServices | None
@@ -151,7 +151,7 @@ class FlextObservabilityMonitor:
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
         self.container = container or FlextContainer.get_global()
-        self._logger = FlextLogger(self.__class__.__name__)
+        self.logger = FlextLogger(self.__class__.__name__)
         self._config = FlextObservabilityConfig.get_global_instance()
         self._initialized = False
         self._running = False
@@ -181,7 +181,7 @@ class FlextObservabilityMonitor:
                 and not self._config.tracing_enabled
                 and not self._config.monitoring_enabled
             ):
-                self._logger.warning(
+                self.logger.warning(
                     "All observability features are disabled in configuration"
                 )
                 # Still initialize but with warning
@@ -207,7 +207,7 @@ class FlextObservabilityMonitor:
                     return FlextResult[None].fail(f"Failed to register {service_name}")
 
             self._initialized = True
-            self._logger.info("Observability monitor initialized successfully")
+            self.logger.info("Observability monitor initialized successfully")
             return FlextResult[None].ok(None)
 
         except (ValueError, TypeError, AttributeError) as e:
@@ -222,7 +222,7 @@ class FlextObservabilityMonitor:
             return FlextResult[None].ok(None)
 
         try:
-            self._logger.info("Starting real observability monitoring")
+            self.logger.info("Starting real observability monitoring")
             self._running = True
             self._monitor_start_time = time.time()
             return FlextResult[None].ok(None)
@@ -235,7 +235,7 @@ class FlextObservabilityMonitor:
             return FlextResult[None].ok(None)
 
         try:
-            self._logger.info("Stopping observability monitoring")
+            self.logger.info("Stopping observability monitoring")
             self._running = False
             return FlextResult[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
@@ -305,7 +305,7 @@ class FlextObservabilityMonitor:
         try:
             # Check if metrics are enabled in configuration
             if not self._config.metrics_enabled:
-                self._logger.debug("Metrics recording disabled in configuration")
+                self.logger.debug("Metrics recording disabled in configuration")
                 return FlextResult[None].ok(None)  # Silently succeed when disabled
 
             metric_result = FlextObservabilityModels.flext_metric(
@@ -318,7 +318,7 @@ class FlextObservabilityMonitor:
 
             # For now, just log the metric since we don't have a persistent metrics service
             metric_result.unwrap()  # Validate metric creation
-            self._logger.debug(f"Recorded metric: {name}={value} ({metric_type})")
+            self.logger.debug(f"Recorded metric: {name}={value} ({metric_type})")
             return FlextResult[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
             return FlextResult[None].fail(f"Failed to record metric: {e}")
