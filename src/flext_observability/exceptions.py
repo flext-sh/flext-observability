@@ -46,20 +46,17 @@ class FlextObservabilityExceptions(FlextExceptions):
             self, kwargs: dict[str, object]
         ) -> tuple[dict[str, object], str | None, str | None]:
             """Extract common kwargs for error construction."""
-            context = (
-                kwargs.get("context", {})
-                if isinstance(kwargs.get("context"), dict)
-                else {}
+            context_value = kwargs.get("context", {})
+            context: dict[str, object] = (
+                context_value if isinstance(context_value, dict) else {}
             )
-            correlation_id = (
-                kwargs.get("correlation_id")
-                if isinstance(kwargs.get("correlation_id"), str)
-                else None
+            correlation_id_value = kwargs.get("correlation_id")
+            correlation_id: str | None = (
+                correlation_id_value if isinstance(correlation_id_value, str) else None
             )
-            error_code = (
-                kwargs.get("error_code")
-                if isinstance(kwargs.get("error_code"), str)
-                else None
+            error_code_value = kwargs.get("error_code")
+            error_code: str | None = (
+                error_code_value if isinstance(error_code_value, str) else None
             )
             return context, correlation_id, error_code
 

@@ -13,7 +13,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Literal, Protocol
 
-from flext_core import E, F, FlextTypes, FlextTypes as CoreFlextTypes, P, R, T, U, V
+from flext_core import FlextTypes, T
 
 # Observability-specific type aliases
 MetricValue = float | int | Decimal
@@ -24,7 +24,7 @@ TraceStatus = str  # "started", "running", "completed", "failed"
 HealthStatus = str  # "healthy", "degraded", "unhealthy"
 
 
-class FlextObservabilityTypes(CoreFlextTypes):
+class FlextObservabilityTypes(FlextTypes):
     """Unified observability types extending FlextTypes.
 
     Single class containing all observability type definitions,
@@ -43,7 +43,7 @@ class FlextObservabilityTypes(CoreFlextTypes):
     # OBSERVABILITY PROJECT TYPES - Domain-specific project types extending FlextTypes
     # =========================================================================
 
-    class Project(CoreFlextTypes.Project):
+    class Project(FlextTypes.Project):
         """Observability-specific project types extending FlextTypes.Project.
 
         Adds observability/monitoring-specific project types while inheriting
@@ -52,7 +52,7 @@ class FlextObservabilityTypes(CoreFlextTypes):
         """
 
         # Observability-specific project types extending the generic ones
-        type ProjectType = Literal[
+        type ObservabilityProjectType = Literal[
             # Generic types inherited from FlextTypes.Project
             "library",
             "application",
@@ -90,7 +90,7 @@ class FlextObservabilityTypes(CoreFlextTypes):
     # OBSERVABILITY CORE TYPES - Commonly used observability-specific types
     # =========================================================================
 
-    class Core(CoreFlextTypes):
+    class ObservabilityCore(FlextTypes):
         """Core observability types extending FlextTypes."""
 
         # Metric types
@@ -103,7 +103,7 @@ class FlextObservabilityTypes(CoreFlextTypes):
         type TagsDict = FlextTypes.StringDict
         type MetadataDict = FlextTypes.Dict
         type AttributesDict = FlextTypes.Dict
-        type Headers = dict[str, str]  # HTTP headers for observability
+        type ObservabilityHeaders = dict[str, str]  # HTTP headers for observability
 
         # Trace types
         type TraceContextDict = dict[str, str | None]
@@ -314,7 +314,7 @@ class LogEntryProtocol(Protocol):
     correlation_id: str | None
 
 
-class ObservabilityTypes(CoreFlextTypes):
+class ObservabilityTypes(FlextTypes):
     """Observability domain-specific types extending flext-core."""
 
     # Value types
@@ -340,8 +340,6 @@ FlextObservabilityTypesAlias = ObservabilityTypes
 __all__ = [
     "AlertLevel",
     "AlertProtocol",
-    "E",
-    "F",
     "FlextObservabilityTypes",
     "FlextObservabilityTypesAlias",
     "HealthCheckProtocol",
@@ -351,12 +349,8 @@ __all__ = [
     "MetricProtocol",
     "MetricValue",
     "ObservabilityTypes",
-    "P",
-    "R",
     "T",
     "TagsDict",
     "TraceProtocol",
     "TraceStatus",
-    "U",
-    "V",
 ]
