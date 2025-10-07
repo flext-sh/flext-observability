@@ -55,7 +55,7 @@ class FlextObservabilityMonitor:
             **kwargs: object,
         ) -> object:
             """Helper to call function with flexible arguments."""
-            # Cast to Any to avoid type checking issues with arbitrary function calls
+            # Cast to object to avoid type checking issues with arbitrary function calls
             return func(*args, **kwargs)
 
         @staticmethod
