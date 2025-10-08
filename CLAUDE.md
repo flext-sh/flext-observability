@@ -835,7 +835,7 @@ export ALERTMANAGER_URL=http://localhost:9093        # Alert Manager URL
 
 ```bash
 # MANDATORY - Use FLEXT workspace virtual environment
-cd /home/marlonsc/flext                          # Navigate to FLEXT workspace
+cd ..                          # Navigate to FLEXT workspace
 source .venv/bin/activate                        # Activate shared virtual environment
 cd flext-observability                          # Navigate to observability project
 
