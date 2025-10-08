@@ -207,7 +207,7 @@ For Singer taps, targets, and DBT projects:
 ```python
 from flext_observability import flext_monitor_function, flext_create_metric
 
-class FlextTapOracle:
+class FlextMeltanoTapOracle:
     @flext_monitor_function("tap_oracle_extract")
     def extract_records(self, table_name: str) -> list[FlextTypes.Dict]:
         """Extract records with monitoring."""
