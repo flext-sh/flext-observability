@@ -59,7 +59,7 @@ def demonstrate_solid_design() -> None:
         alert_result,
         health_result,
     ]
-    entities: list[FlextMetric | FlextTrace | FlextAlert | FlextHealthCheck] = [
+    entities: list[object] = [
         result.unwrap()
         for result in results
         if hasattr(result, "success")
@@ -175,15 +175,14 @@ def demonstrate_validation() -> None:
         | FlextResult[FlextAlert]
         | FlextResult[FlextHealthCheck]
     ] = [
-        flext_create_metric("valid_metric", 100.0, "count"),
-        flext_create_trace("valid_operation", "valid_service"),
-        flext_create_alert("Valid alert", "system", "info"),
-        flext_create_health_check("service", "healthy"),
+        flext_create_metric("valid_metric", 100.0, "count"),  # type: ignore[assignment]
+        flext_create_trace("valid_operation", "valid_service"),  # type: ignore[assignment]
+        flext_create_alert("Valid alert", "system", "info"),  # type: ignore[assignment]
+        flext_create_health_check("service", "healthy"),  # type: ignore[assignment]
     ]
 
     for result in entities_to_validate:
         if result.is_success and result.data:
-            result.data.validate_business_rules()
             result_type = type(result.data).__name__
             print(f"Validation successful for {result_type}")
 

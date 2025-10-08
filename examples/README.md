@@ -237,7 +237,7 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[FlextT
 # Example Singer tap with observability
 from flext_observability import flext_monitor_function, flext_create_metric
 
-class FlextTapOracle:
+class FlextMeltanoTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
