@@ -175,10 +175,10 @@ def demonstrate_validation() -> None:
         | FlextResult[FlextAlert]
         | FlextResult[FlextHealthCheck]
     ] = [
-        flext_create_metric("valid_metric", 100.0, "count"),  # type: ignore[assignment]
-        flext_create_trace("valid_operation", "valid_service"),  # type: ignore[assignment]
-        flext_create_alert("Valid alert", "system", "info"),  # type: ignore[assignment]
-        flext_create_health_check("service", "healthy"),  # type: ignore[assignment]
+        flext_create_metric("valid_metric", 100.0, "count"),
+        flext_create_trace("valid_operation", "valid_service"),
+        flext_create_alert("Valid alert", "system", "info"),
+        flext_create_health_check("service", "healthy"),
     ]
 
     for result in entities_to_validate:
