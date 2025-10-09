@@ -66,12 +66,10 @@ from flext_observability.typings import (
     TraceProtocol,
     TraceStatus,
 )
-from flext_observability.version import VERSION
 
 # Removed over-engineered FlextObservability facade class - not used anywhere in flext ecosystem
 
 __all__ = [
-    "VERSION",
     "AlertLevel",
     "AlertLevelField",
     "AlertProtocol",
