@@ -1,7 +1,7 @@
 """FLEXT Observability Tracing Domain Models.
 
-Provides focused tracing models following the namespace class pattern.
-Contains trace entities, configurations, and factory methods for tracing operations.
+Consolidated tracing models in single class with nested structure.
+No helpers, getters, setters, fallbacks or compatibility code.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -9,8 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
-from typing import Self
+from datetime import datetime
 
 from flext_core import FlextCore
 from pydantic import (
@@ -25,22 +24,23 @@ from pydantic import (
 
 
 class FlextObservabilityTracing(FlextCore.Models):
-    """Focused tracing models for observability operations extending FlextCore.Models.
+    """Consolidated tracing domain models in single class.
 
-    Provides comprehensive tracing entities, configurations, and operations
-    for distributed tracing, span management, and trace correlation within the FLEXT ecosystem.
+    Contains all tracing-related models and configurations as nested classes.
+    Follows SOLID principles with no external dependencies or compatibility layers.
     """
 
-    # Distributed Tracing Models
     class TraceEntry(FlextCore.Models.Value):
-        """Comprehensive trace entry model."""
+        """Trace entry model."""
 
         model_config = ConfigDict(
             validate_assignment=True,
             use_enum_values=True,
             extra="forbid",
             frozen=False,
-            hide_input_in_errors=True,
+            hide_input_in_errors=False,  # Show input for better error messages
+            str_strip_whitespace=True,  # Strip whitespace from strings
+            str_to_lower=False,  # Keep original case for strings
         )
 
         trace_id: str = Field(description="Unique trace identifier")
@@ -99,11 +99,7 @@ class FlextObservabilityTracing(FlextCore.Models):
             return {
                 "tags": value,
                 "tag_count": len(value),
-                "trace_context": {
-                    "service": self.service_name,
-                    "operation": self.operation_name,
-                    "is_root": self.is_root_span,
-                },
+                "trace_context": f"{self.service_name}.{self.operation_name}",
             }
 
     class TraceConfig(BaseModel):
@@ -113,146 +109,41 @@ class FlextObservabilityTracing(FlextCore.Models):
             validate_assignment=True,
             extra="forbid",
             frozen=False,
+            str_strip_whitespace=True,
+            str_to_lower=False,
         )
 
         sampling_rate: float = Field(
-            default=0.1,  # 10% sampling
-            description="Trace sampling rate (0.0-1.0)",
+            default=1.0,  # Sample all traces by default
+            description="Trace sampling rate (0.0 to 1.0)",
         )
-        max_trace_duration: int = Field(
-            default=3600,  # 1 hour
-            description="Maximum trace duration in seconds",
+        max_spans_per_trace: int = Field(
+            default=1000,
+            description="Maximum spans per trace",
         )
-        enable_performance_tracing: bool = Field(
-            default=True, description="Enable performance tracing"
+        service_name: str = Field(description="Service name for traces")
+        exporter_endpoint: str | None = Field(
+            default=None, description="Trace exporter endpoint"
         )
-
-        @computed_field
-        @property
-        def sampling_percentage(self) -> float:
-            """Computed field for sampling rate as percentage."""
-            return self.sampling_rate * 100
+        enable_auto_instrumentation: bool = Field(
+            default=True, description="Enable automatic instrumentation"
+        )
 
         @model_validator(mode="after")
         def validate_trace_config(self) -> Self:
-            """Validate trace configuration parameters."""
-            if not 0.0 <= self.sampling_rate <= 1.0:
+            """Validate trace configuration consistency."""
+            if not (0.0 <= self.sampling_rate <= 1.0):
                 msg = "Sampling rate must be between 0.0 and 1.0"
+                raise ValueError(msg)
+            if self.max_spans_per_trace <= 0:
+                msg = "Max spans per trace must be positive"
+                raise ValueError(msg)
+            if not self.service_name or not self.service_name.strip():
+                msg = "Service name cannot be empty"
                 raise ValueError(msg)
             return self
 
-    class FlextTrace(FlextCore.Models.Entity):
-        """Distributed Tracing Span Entity for FLEXT Ecosystem.
 
-        Enterprise-grade distributed tracing entity implementing OpenTelemetry-compatible
-        span semantics with comprehensive context propagation, timing precision, and
-        cross-service correlation.
-        """
-
-        trace_id: str = Field(..., description="Trace ID")
-        operation: str = Field(..., description="Operation name")
-        span_id: str = Field(..., description="Span ID")
-        span_attributes: FlextCore.Types.Dict = Field(
-            default_factory=dict,
-            description="Span attributes",
-        )
-        duration_ms: int = Field(default=0, description="Duration in milliseconds")
-        status: str = Field(default="pending", description="Trace status")
-        timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
-
-        @field_validator("trace_id")
-        @classmethod
-        def validate_trace_id(cls, v: str) -> str:
-            """Validate trace ID is non-empty for global correlation."""
-            if not (v and str(v).strip()):
-                msg = "Trace ID cannot be empty"
-                raise ValueError(msg)
-            return v
-
-        @field_validator("operation")
-        @classmethod
-        def validate_operation_name(cls, v: str) -> str:
-            """Validate operation name is meaningful and searchable."""
-            if not (v and str(v).strip()):
-                msg = "Operation name cannot be empty"
-                raise ValueError(msg)
-            return v
-
-        @field_validator("span_id")
-        @classmethod
-        def validate_span_id(cls, v: str) -> str:
-            """Validate span ID is non-empty for unique identification."""
-            if not (v and str(v).strip()):
-                msg = "Span ID cannot be empty"
-                raise ValueError(msg)
-            return v
-
-        @field_validator("status")
-        @classmethod
-        def validate_trace_status(cls, v: str) -> str:
-            """Validate trace status is a valid state."""
-            valid_statuses = {"pending", "running", "completed", "failed"}
-            if v not in valid_statuses:
-                msg = f"Invalid trace status: {v}. Must be one of {valid_statuses}"
-                raise ValueError(msg)
-            return v
-
-        def validate_business_rules(self) -> FlextCore.Result[bool]:
-            """Validate distributed tracing business rules."""
-            try:
-                if not self.trace_id:
-                    return FlextCore.Result[bool].fail("Trace ID is required")
-                if not self.operation:
-                    return FlextCore.Result[bool].fail("Operation name is required")
-                if not self.span_id:
-                    return FlextCore.Result[bool].fail("Span ID is required")
-                if self.status not in {"pending", "running", "completed", "failed"}:
-                    return FlextCore.Result[bool].fail(
-                        f"Invalid trace status: {self.status}"
-                    )
-                return FlextCore.Result[bool].ok(True)
-            except Exception as e:
-                return FlextCore.Result[bool].fail(
-                    f"Business rule validation failed: {e}"
-                )
-
-    # Factory methods for direct entity creation
-    @staticmethod
-    def flext_trace(
-        trace_id: str,
-        operation: str,
-        span_id: str,
-        status: str = "pending",
-        **kwargs: object,
-    ) -> FlextCore.Result[FlextObservabilityTracing.FlextTrace]:
-        """Create a FlextTrace entity directly."""
-        try:
-            # Filter kwargs to only include valid FlextTrace parameters
-            valid_kwargs: FlextCore.Types.Dict = {}
-            if "span_attributes" in kwargs and isinstance(
-                kwargs["span_attributes"], dict
-            ):
-                valid_kwargs["span_attributes"] = kwargs["span_attributes"]
-            if "duration_ms" in kwargs and isinstance(kwargs["duration_ms"], int):
-                valid_kwargs["duration_ms"] = kwargs["duration_ms"]
-            if "timestamp" in kwargs and isinstance(kwargs["timestamp"], datetime):
-                valid_kwargs["timestamp"] = kwargs["timestamp"]
-
-            return FlextCore.Result[FlextObservabilityTracing.FlextTrace].ok(
-                FlextObservabilityTracing.FlextTrace(
-                    trace_id=trace_id,
-                    operation=operation,
-                    span_id=span_id,
-                    status=status,
-                )
-            )
-        except Exception as e:
-            return FlextCore.Result[FlextObservabilityTracing.FlextTrace].fail(
-                f"Failed to create trace: {e}"
-            )
-
-
-# Export the focused tracing namespace class
 __all__ = [
     "FlextObservabilityTracing",
 ]

@@ -14,11 +14,7 @@ import time
 from flext_core import FlextCore
 
 from flext_observability import (
-    FlextAlert,
-    FlextHealthCheck,
-    FlextMetric,
     FlextObservabilityMasterFactory,
-    FlextTrace,
     flext_create_alert,
     flext_create_health_check,
     flext_create_metric,
@@ -169,12 +165,7 @@ def demonstrate_factory_patterns() -> None:
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     # Create various entities and validate them
-    entities_to_validate: list[
-        FlextCore.Result[FlextMetric]
-        | FlextCore.Result[FlextTrace]
-        | FlextCore.Result[FlextAlert]
-        | FlextCore.Result[FlextHealthCheck]
-    ] = [
+    entities_to_validate: list[FlextCore.Result[FlextCore.Types.Dict]] = [
         flext_create_metric("valid_metric", 100.0, "count"),
         flext_create_trace("valid_operation", "valid_service"),
         flext_create_alert("Valid alert", "system", "info"),

@@ -40,6 +40,8 @@ class FlextObservabilityMetrics(FlextCore.Models):
             validate_assignment=True,
             extra="forbid",
             frozen=False,
+            str_strip_whitespace=True,
+            str_to_lower=False,
         )
 
         metric_id: str = Field(description="Unique metric identifier")
@@ -81,6 +83,8 @@ class FlextObservabilityMetrics(FlextCore.Models):
             validate_assignment=True,
             extra="forbid",
             frozen=False,
+            str_strip_whitespace=True,
+            str_to_lower=False,
         )
 
         collection_interval: float = Field(

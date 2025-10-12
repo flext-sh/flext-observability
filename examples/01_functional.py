@@ -54,9 +54,9 @@ def demonstrate_simple_api() -> None:
 
     # Create log entries
     log_result = flext_create_log_entry(
-        "INFO",
         "User authentication successful",
-        {"service": "auth-service"},
+        "INFO",
+        "auth-service",
     )
     if log_result.is_success:
         pass

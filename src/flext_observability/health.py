@@ -40,7 +40,9 @@ class FlextObservabilityHealth(FlextCore.Models):
             use_enum_values=True,
             extra="forbid",
             frozen=False,
-            hide_input_in_errors=True,
+            hide_input_in_errors=False,  # Show input for better error messages
+            str_strip_whitespace=True,  # Strip whitespace from strings
+            str_to_lower=False,  # Keep original case for strings
         )
 
         check_id: str = Field(description="Unique health check identifier")
@@ -109,6 +111,8 @@ class FlextObservabilityHealth(FlextCore.Models):
             validate_assignment=True,
             extra="forbid",
             frozen=False,
+            str_strip_whitespace=True,
+            str_to_lower=False,
         )
 
         check_interval: int = Field(

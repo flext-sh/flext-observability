@@ -26,9 +26,11 @@ class FlextObservabilityConfig(FlextCore.Config):
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_OBSERVABILITY_",
         case_sensitive=False,
-        # Inherit enhanced Pydantic 2.11+ features from FlextCore.Config
+        # Enhanced Pydantic v2.11+ features
         validate_assignment=True,
         str_strip_whitespace=True,
+        str_to_lower=False,
+        extra="ignore",  # Allow extra fields from environment
         json_schema_extra={
             "title": "FLEXT Observability Configuration",
             "description": "Enterprise observability configuration extending FlextCore.Config",
