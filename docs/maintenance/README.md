@@ -68,13 +68,13 @@ python docs/maintenance/reports/generate-reports.py
 
 ### Content Quality Metrics
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| Documentation Files | 17 | 17 | ✅ |
-| External Links | <10 | 11 | ⚠️ |
-| Image References | 0 | 0 | ✅ |
-| TODO/FIXME Items | 0 | TBD | 🔍 |
-| Broken References | 0 | TBD | 🔍 |
+| Metric              | Target | Current | Status |
+| ------------------- | ------ | ------- | ------ |
+| Documentation Files | 17     | 17      | ✅     |
+| External Links      | <10    | 11      | ⚠️     |
+| Image References    | 0      | 0       | ✅     |
+| TODO/FIXME Items    | 0      | TBD     | 🔍     |
+| Broken References   | 0      | TBD     | 🔍     |
 
 ### Content Freshness Analysis
 

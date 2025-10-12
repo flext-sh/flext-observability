@@ -25,7 +25,7 @@ make setup
 
 - Complete domain entities (FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck, FlextLogEntry) with Pydantic v2 validation
 - Full service layer with dependency injection and FlextCore.Result[T] railway patterns
-- Simple API factory functions (flext_create_*) for easy integration
+- Simple API factory functions (flext*create*\*) for easy integration
 - Monitoring decorators (@flext_monitor_function) for automatic instrumentation
 - Clean Architecture implementation (Domain → Application → Infrastructure)
 - Comprehensive test suite (481 functions across 40 files)
@@ -212,7 +212,7 @@ else:
 
 - ✅ Domain entities with Pydantic v2 validation and business logic
 - ✅ Service layer with dependency injection and FlextCore.Result[T] patterns
-- ✅ Simple API factory functions (flext_create_*)
+- ✅ Simple API factory functions (flext*create*\*)
 - ✅ Monitoring decorators (@flext_monitor_function)
 - ✅ Clean Architecture implementation (Domain → Application → Infrastructure)
 - ✅ Comprehensive test suite (481 functions across 40 files)
