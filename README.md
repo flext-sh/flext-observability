@@ -24,7 +24,7 @@ make setup
 **What Actually Works:**
 
 - Complete domain entities (FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck, FlextLogEntry) with Pydantic v2 validation
-- Full service layer with dependency injection and FlextResult[T] railway patterns
+- Full service layer with dependency injection and FlextCore.Result[T] railway patterns
 - Simple API factory functions (flext_create_*) for easy integration
 - Monitoring decorators (@flext_monitor_function) for automatic instrumentation
 - Clean Architecture implementation (Domain → Application → Infrastructure)
@@ -68,7 +68,7 @@ FLEXT Observability provides observability patterns for all ecosystem services:
 ### **Core Responsibilities**
 
 1. **Observability Entities**: Domain models for metrics, traces, alerts, health checks
-2. **Monitoring Services**: Type-safe services with FlextResult error handling
+2. **Monitoring Services**: Type-safe services with FlextCore.Result error handling
 3. **Instrumentation**: Decorators and utilities for automatic monitoring
 
 ## Key Features
@@ -82,9 +82,9 @@ FLEXT Observability provides observability patterns for all ecosystem services:
 
 ### **FLEXT Core Integration**
 
-- **FlextResult Pattern**: Type-safe error handling for all operations
-- **FlextModels.Entity**: Domain entities with business logic validation
-- **FlextContainer**: Dependency injection for service management
+- **FlextCore.Result Pattern**: Type-safe error handling for all operations
+- **FlextCore.Models.Entity**: Domain entities with business logic validation
+- **FlextCore.Container**: Dependency injection for service management
 
 ## Installation & Usage
 
@@ -183,11 +183,11 @@ export PROMETHEUS_PUSH_GATEWAY=http://localhost:9091
 ### **FLEXT Core Patterns**
 
 ```python
-# FlextResult for all operations
+# FlextCore.Result for all operations
 from flext_observability import FlextMetricsService
-from flext_core import FlextContainer
+from flext_core import FlextCore
 
-container = FlextContainer()
+container = FlextCore.Container()
 metrics_service = FlextMetricsService(container)
 
 result = metrics_service.record_metric(metric)
@@ -211,7 +211,7 @@ else:
 **Completed**:
 
 - ✅ Domain entities with Pydantic v2 validation and business logic
-- ✅ Service layer with dependency injection and FlextResult[T] patterns
+- ✅ Service layer with dependency injection and FlextCore.Result[T] patterns
 - ✅ Simple API factory functions (flext_create_*)
 - ✅ Monitoring decorators (@flext_monitor_function)
 - ✅ Clean Architecture implementation (Domain → Application → Infrastructure)

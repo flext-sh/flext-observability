@@ -152,48 +152,10 @@ class FlextObservabilityFields:
         return Field(default_factory=lambda: datetime.now(UTC), description="Timestamp")
 
 
-# Backward compatibility classes for existing code
-class MetricValueField(FlextObservabilityFields.MetricFields):
-    """Backward compatibility class for MetricValueField."""
-
-
-class MetricUnitField(FlextObservabilityFields.MetricFields):
-    """Backward compatibility class for MetricUnitField."""
-
-
-class AlertLevelField(FlextObservabilityFields.AlertFields):
-    """Backward compatibility class for AlertLevelField."""
-
-
-class TraceStatusField(FlextObservabilityFields.TraceFields):
-    """Backward compatibility class for TraceStatusField."""
-
-
-class HealthStatusField(FlextObservabilityFields.HealthFields):
-    """Backward compatibility class for HealthStatusField."""
-
-
-# Convenience field instances
-metric_name_field = FlextObservabilityFields.create_metric_name_field()
-metric_value_field = FlextObservabilityFields.create_metric_value_field()
-metric_unit_field = FlextObservabilityFields.create_metric_unit_field()
-trace_name_field = FlextObservabilityFields.create_trace_name_field()
-alert_message_field = FlextObservabilityFields.create_alert_message_field()
-timestamp_field = FlextObservabilityFields.create_timestamp_field()
+# Removed unused backward compatibility classes and field instances
+# All field functionality is now available through FlextObservabilityFields
 
 
 __all__ = [
-    # Backward compatibility
-    "AlertLevelField",
     "FlextObservabilityFields",
-    "HealthStatusField",
-    "MetricUnitField",
-    "MetricValueField",
-    "TraceStatusField",
-    "alert_message_field",
-    "metric_name_field",
-    "metric_unit_field",
-    "metric_value_field",
-    "timestamp_field",
-    "trace_name_field",
 ]

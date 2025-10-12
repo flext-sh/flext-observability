@@ -4,14 +4,13 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+from flext_core import FlextCore
+
 import flext_observability
 from flext_observability import (
     FlextAlert,
-    FlextConstants,
-    FlextContainer,
     FlextHealthCheck,
     FlextLogEntry,
-    FlextLogger,
     FlextMetric,
     FlextObservabilityMasterFactory,
     FlextTrace,
@@ -94,6 +93,6 @@ class TestInitCoverage:
     def test_flext_core_reexports(self) -> None:
         """Test that flext-core re-exports are available."""
         # Test that re-exported classes are available
-        assert callable(FlextContainer)
-        assert FlextConstants is not None
-        assert callable(FlextLogger)
+        assert callable(FlextCore.Container)
+        assert FlextCore.Constants is not None
+        assert callable(FlextCore.Logger)

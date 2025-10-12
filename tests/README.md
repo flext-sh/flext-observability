@@ -2,7 +2,7 @@
 
 **Comprehensive test suite ensuring 95%+ coverage and enterprise-grade quality for FLEXT Observability.**
 
-This test suite implements comprehensive testing strategies including unit tests, integration tests, end-to-end tests, and specialized coverage tests. All tests follow FLEXT ecosystem standards with railway-oriented programming patterns and FlextResult validation.
+This test suite implements comprehensive testing strategies including unit tests, integration tests, end-to-end tests, and specialized coverage tests. All tests follow FLEXT ecosystem standards with railway-oriented programming patterns and FlextCore.Result validation.
 
 ## Test Organization
 
@@ -61,7 +61,7 @@ Provides comprehensive test fixtures and configuration:
 
 - **OpenTelemetry Setup**: In-memory tracing exporters for testing
 - **Prometheus Configuration**: Test metrics registry setup
-- **Shared Fixtures**: FlextContainer, services, and entity factories
+- **Shared Fixtures**: FlextCore.Container, services, and entity factories
 - **Testing**: Support for test utilities
 - **Test Data**: Factory functions for consistent test data
 
@@ -70,7 +70,7 @@ Provides comprehensive test fixtures and configuration:
 ```python
 # Core testing fixtures
 @pytest.fixture
-def clean_container() -> FlextContainer:
+def clean_container() -> FlextCore.Container:
     """Provide clean dependency injection container."""
 
 @pytest.fixture
@@ -86,11 +86,11 @@ def metrics_service(clean_container) -> FlextMetricsService:
 
 ### Railway-Oriented Testing
 
-All tests validate FlextResult patterns:
+All tests validate FlextCore.Result patterns:
 
 ```python
 def test_metric_creation_success():
-    """Test successful metric creation with FlextResult validation."""
+    """Test successful metric creation with FlextCore.Result validation."""
     result = flext_create_metric("api_requests", 42.0, "count")
 
     assert result.success
@@ -207,7 +207,7 @@ make coverage-html          # HTML report in htmlcov/
 - **Service Operations**: Business logic and coordination
 - **API Interfaces**: Simple API and factory patterns
 - **Monitoring Integration**: Decorator and automatic instrumentation
-- **Error Handling**: FlextResult failure paths and exception scenarios
+- **Error Handling**: FlextCore.Result failure paths and exception scenarios
 - **Performance**: Basic performance and memory usage validation
 
 ### Quality Assurance
@@ -215,7 +215,7 @@ make coverage-html          # HTML report in htmlcov/
 All tests must:
 
 - Follow railway-oriented programming patterns
-- Validate FlextResult success and failure paths
+- Validate FlextCore.Result success and failure paths
 - Include comprehensive error scenario testing
 - Maintain isolation and independence
 - Use consistent naming and documentation patterns
@@ -224,7 +224,7 @@ All tests must:
 
 ### Writing New Tests
 
-1. **Follow FlextResult Patterns**: Test both success and failure paths
+1. **Follow FlextCore.Result Patterns**: Test both success and failure paths
 2. **Use Shared Fixtures**: Leverage conftest.py fixtures for consistency
 3. **Test Domain Rules**: Validate entity business logic thoroughly
 4. **Mock External Dependencies**: Keep tests isolated and fast

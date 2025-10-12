@@ -11,10 +11,10 @@ class TestFlextObservabilityHealth:
     """Test the FlextObservabilityHealth class."""
 
     def test_inherits_from_flext_models(self) -> None:
-        """Test that FlextObservabilityHealth inherits from FlextModels."""
-        from flext_core import FlextModels
+        """Test that FlextObservabilityHealth inherits from FlextCore.Models."""
+        from flext_core import FlextCore
 
-        assert issubclass(FlextObservabilityHealth, FlextModels)
+        assert issubclass(FlextObservabilityHealth, FlextCore.Models)
 
     def test_flext_health_check_class_exists(self) -> None:
         """Test that FlextHealthCheck class exists."""

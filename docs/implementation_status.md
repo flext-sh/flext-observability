@@ -12,7 +12,7 @@
 - Complete Clean Architecture implementation (Domain → Application → Infrastructure)
 - 21 Python modules with proper separation of concerns
 - Domain-Driven Design with rich domain entities
-- Railway-oriented programming with FlextResult[T] throughout
+- Railway-oriented programming with FlextCore.Result[T] throughout
 
 ### **Implementation Completion**: 100% ✅
 - All core functionality implemented and working
@@ -75,10 +75,10 @@
 #### **Import Compatibility Issue**
 ```python
 # CURRENT: BROKEN - T not exported from flext-core
-from flext_core import FlextTypes, T  # ImportError
+from flext_core import FlextCore, T  # ImportError
 
 # SHOULD BE: Fixed in flext-core __init__.py
-from flext_core import FlextTypes  # T accessible via FlextTypes.T
+from flext_core import FlextCore
 ```
 
 #### **Test Execution Status**
@@ -96,7 +96,7 @@ from flext_core import FlextTypes  # T accessible via FlextTypes.T
 
 **Solution Required**:
 1. **flext-core fix**: Export `T` in flext-core `__init__.py` OR
-2. **flext-observability fix**: Change import to `from flext_core import FlextTypes; T = FlextTypes.T`
+2. **flext-observability fix**: Change import to `from flext_core import FlextCore`
 
 **Impact**: Unblocks all testing, type checking, and quality validation.
 
@@ -171,7 +171,7 @@ make lint        # Ruff compliance
 - **Clean Architecture**: Proper layer separation maintained throughout
 - **Domain-Driven Design**: Rich domain entities with business logic
 - **Type Safety**: Complete Python 3.13+ annotations
-- **Railway Pattern**: FlextResult[T] used consistently for error handling
+- **Railway Pattern**: FlextCore.Result[T] used consistently for error handling
 - **Dependency Injection**: Proper service registration and resolution
 
 ### **Implementation Decisions**

@@ -21,7 +21,7 @@ fixtures/
 ├── observability_fixtures.py    # Core observability test fixtures
 ├── entity_fixtures.py           # Test data for domain entities
 ├── service_fixtures.py          # Mock services and dependencies
-├── container_fixtures.py        # FlextContainer test configurations
+├── container_fixtures.py        # FlextCore.Container test configurations
 ├── mock_external_systems.py     # External system mocks
 └── test_data_factories.py       # Test data factory functions
 ```
@@ -60,13 +60,13 @@ def sample_trace() -> FlextTrace:
 def mock_metrics_service() -> Mock:
     """Mock metrics service for testing."""
     mock_service = Mock(spec=FlextMetricsService)
-    mock_service.record_metric.return_value = FlextResult[None].ok(sample_metric())
+    mock_service.record_metric.return_value = FlextCore.Result[None].ok(sample_metric())
     return mock_service
 
 @pytest.fixture
 def mock_container() -> Mock:
-    """Mock FlextContainer for service testing."""
-    mock_container = Mock(spec=FlextContainer)
+    """Mock FlextCore.Container for service testing."""
+    mock_container = Mock(spec=FlextCore.Container)
     return mock_container
 ```
 

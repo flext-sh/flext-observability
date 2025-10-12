@@ -290,7 +290,7 @@ src/flext_observability/
 
 ```python
 # Core Domain Entities
-class FlextMetric(FlextModels.Entity):
+class FlextMetric(FlextCore.Models.Entity):
     """Immutable metric entity with domain validation."""
     name: str
     value: float
@@ -298,13 +298,13 @@ class FlextMetric(FlextModels.Entity):
     timestamp: datetime
     tags: dict[str, str]
 
-class FlextTrace(FlextModels.Entity):
+class FlextTrace(FlextCore.Models.Entity):
     """Distributed trace entity with span hierarchy."""
     trace_id: str
     spans: list[Span]
     context: TraceContext
 
-class FlextAlert(FlextModels.Entity):
+class FlextAlert(FlextCore.Models.Entity):
     """Alert entity with severity and routing."""
     name: str
     severity: AlertLevel
@@ -315,19 +315,19 @@ class FlextAlert(FlextModels.Entity):
 #### **Service Layer Classes**
 
 ```python
-class FlextObservabilityServices(FlextUtilities):
+class FlextObservabilityServices(FlextCore.Utilities):
     """Unified service class with all observability operations."""
 
     @classmethod
-    def record_counter(cls, name: str, value: float = 1.0) -> FlextResult[None]:
+    def record_counter(cls, name: str, value: float = 1.0) -> FlextCore.Result[None]:
         """Record counter metric with thread safety."""
 
     @classmethod
-    def create_trace(cls, operation: str) -> FlextResult[FlextTrace]:
+    def create_trace(cls, operation: str) -> FlextCore.Result[FlextTrace]:
         """Create new distributed trace."""
 
     @classmethod
-    def evaluate_alert(cls, alert: FlextAlert) -> FlextResult[bool]:
+    def evaluate_alert(cls, alert: FlextAlert) -> FlextCore.Result[bool]:
         """Evaluate alert conditions."""
 ```
 
@@ -337,10 +337,10 @@ class FlextObservabilityServices(FlextUtilities):
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-    def create_metric(self, name: str, value: float, unit: str) -> FlextResult[FlextMetric]:
+    def create_metric(self, name: str, value: float, unit: str) -> FlextCore.Result[FlextMetric]:
         """Create validated metric entity."""
 
-    def create_trace(self, operation: str, context: dict) -> FlextResult[FlextTrace]:
+    def create_trace(self, operation: str, context: dict) -> FlextCore.Result[FlextTrace]:
         """Create validated trace entity."""
 ```
 
@@ -369,7 +369,7 @@ External Monitoring Systems
 ```
 Domain Validation Failure
      ↓
-FlextResult[T].fail(error_message)
+FlextCore.Result[T].fail(error_message)
      ↓
 Service Layer Error Handling
      ↓
@@ -386,7 +386,7 @@ External System Notification
 
 ### ADRs Referenced
 
-- **ADR-001**: Railway-oriented Programming with FlextResult[T]
+- **ADR-001**: Railway-oriented Programming with FlextCore.Result[T]
 - **ADR-002**: Clean Architecture Layer Separation
 - **ADR-003**: Domain-Driven Design with Pydantic Entities
 - **ADR-004**: Unified Service Class Pattern
@@ -394,7 +394,7 @@ External System Notification
 
 ### Key Architectural Principles
 
-1. **Railway Pattern**: All operations return `FlextResult[T]` for composable error handling
+1. **Railway Pattern**: All operations return `FlextCore.Result[T]` for composable error handling
 2. **Clean Architecture**: Strict layer separation (Domain → Application → Infrastructure)
 3. **Domain-Driven Design**: Rich domain entities with business logic validation
 4. **Type Safety**: Complete Python 3.13+ type annotations throughout

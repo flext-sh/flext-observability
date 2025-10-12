@@ -12,8 +12,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextModels, FlextResult, FlextTypes
+from flext_core import FlextCore
 from pydantic import (
+    BaseModel,
     ConfigDict,
     Field,
     computed_field,
@@ -23,15 +24,15 @@ from pydantic import (
 )
 
 
-class FlextObservabilityHealth(FlextModels):
-    """Focused health monitoring models for observability operations extending FlextModels.
+class FlextObservabilityHealth(FlextCore.Models):
+    """Focused health monitoring models for observability operations extending FlextCore.Models.
 
     Provides comprehensive health check entities, configurations, and operations
     for service health monitoring, status tracking, and health validation within the FLEXT ecosystem.
     """
 
     # Health Monitoring Models
-    class HealthCheckEntry(FlextModels.Value):
+    class HealthCheckEntry(FlextCore.Models.Value):
         """Comprehensive health check entry model."""
 
         model_config = ConfigDict(
@@ -52,7 +53,7 @@ class FlextObservabilityHealth(FlextModels):
         response_time_ms: float | None = Field(
             default=None, description="Response time in milliseconds"
         )
-        details: FlextTypes.Dict = Field(
+        details: FlextCore.Types.Dict = Field(
             default_factory=dict, description="Health check details"
         )
 
@@ -88,8 +89,8 @@ class FlextObservabilityHealth(FlextModels):
 
         @field_serializer("details", when_used="json")
         def serialize_details_with_health_context(
-            self, value: FlextTypes.Dict, _info: object
-        ) -> FlextTypes.Dict:
+            self, value: FlextCore.Types.Dict, _info: object
+        ) -> FlextCore.Types.Dict:
             """Serialize details with health check context."""
             return {
                 "details": value,
@@ -101,7 +102,7 @@ class FlextObservabilityHealth(FlextModels):
                 },
             }
 
-    class HealthConfig(FlextModels.Configuration):
+    class HealthConfig(BaseModel):
         """Health monitoring configuration model."""
 
         model_config = ConfigDict(
@@ -145,7 +146,7 @@ class FlextObservabilityHealth(FlextModels):
                 raise ValueError(msg)
             return self
 
-    class FlextHealthCheck(FlextModels.Entity):
+    class FlextHealthCheck(FlextCore.Models.Entity):
         """Health Monitoring Entity for FLEXT Ecosystem Components.
 
         Enterprise-grade health check entity implementing comprehensive service health
@@ -155,7 +156,7 @@ class FlextObservabilityHealth(FlextModels):
         component: str = Field(..., description="Component name")
         status: str = Field(default="unknown", description="Health status")
         message: str = Field(default="", description="Health check message")
-        metrics: FlextTypes.Dict = Field(
+        metrics: FlextCore.Types.Dict = Field(
             default_factory=dict, description="Health metrics"
         )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -188,18 +189,20 @@ class FlextObservabilityHealth(FlextModels):
                 raise TypeError(msg)
             return v
 
-        def validate_business_rules(self) -> FlextResult[bool]:
+        def validate_business_rules(self) -> FlextCore.Result[bool]:
             """Validate health monitoring business rules."""
             try:
                 if not self.component:
-                    return FlextResult[bool].fail("Component name is required")
+                    return FlextCore.Result[bool].fail("Component name is required")
                 if self.status not in {"healthy", "degraded", "unhealthy", "unknown"}:
-                    return FlextResult[bool].fail(
+                    return FlextCore.Result[bool].fail(
                         f"Invalid health status: {self.status}"
                     )
-                return FlextResult[bool].ok(True)
+                return FlextCore.Result[bool].ok(True)
             except Exception as e:
-                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
+                return FlextCore.Result[bool].fail(
+                    f"Business rule validation failed: {e}"
+                )
 
     # Factory methods for direct entity creation
     @staticmethod
@@ -208,23 +211,23 @@ class FlextObservabilityHealth(FlextModels):
         status: str = "unknown",
         message: str = "",
         **kwargs: object,
-    ) -> FlextResult[FlextObservabilityHealth.FlextHealthCheck]:
+    ) -> FlextCore.Result[FlextObservabilityHealth.FlextHealthCheck]:
         """Create a FlextHealthCheck entity directly."""
         try:
             # Filter kwargs to only include valid FlextHealthCheck parameters
-            valid_kwargs: dict[str, object] = {}
+            valid_kwargs: FlextCore.Types.Dict = {}
             if "metrics" in kwargs and isinstance(kwargs["metrics"], dict):
                 valid_kwargs["metrics"] = kwargs["metrics"]
             if "timestamp" in kwargs and isinstance(kwargs["timestamp"], datetime):
                 valid_kwargs["timestamp"] = kwargs["timestamp"]
 
-            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(
+            return FlextCore.Result[FlextObservabilityHealth.FlextHealthCheck].ok(
                 FlextObservabilityHealth.FlextHealthCheck(
                     component=component, status=status, message=message
                 )
             )
         except Exception as e:
-            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].fail(
+            return FlextCore.Result[FlextObservabilityHealth.FlextHealthCheck].fail(
                 f"Failed to create health check: {e}"
             )
 

@@ -13,10 +13,10 @@ from __future__ import annotations
 from enum import Enum
 from typing import override
 
-from flext_core import FlextExceptions
+from flext_core import FlextCore
 
 
-class FlextObservabilityExceptions(FlextExceptions):
+class FlextObservabilityExceptions(FlextCore.Exceptions):
     """Single CONSOLIDATED class containing ALL observability exceptions."""
 
     class ObservabilityErrorCodes(Enum):
@@ -39,15 +39,15 @@ class FlextObservabilityExceptions(FlextExceptions):
         OBSERVABILITY_CONFIG_ERROR = "OBSERVABILITY_CONFIG_ERROR"
 
     # Base observability exception classes as nested classes
-    class ObservabilityBaseError(FlextExceptions.BaseError):
+    class ObservabilityBaseError(FlextCore.Exceptions.BaseError):
         """Base exception for all observability domain errors."""
 
         def _extract_common_kwargs(
-            self, kwargs: dict[str, object]
-        ) -> tuple[dict[str, object], str | None, str | None]:
+            self, kwargs: FlextCore.Types.Dict
+        ) -> tuple[FlextCore.Types.Dict, str | None, str | None]:
             """Extract common kwargs for error construction."""
             context_value = kwargs.get("context", {})
-            context: dict[str, object] = (
+            context: FlextCore.Types.Dict = (
                 context_value if isinstance(context_value, dict) else {}
             )
             correlation_id_value = kwargs.get("correlation_id")
@@ -61,8 +61,8 @@ class FlextObservabilityExceptions(FlextExceptions):
             return context, correlation_id, error_code
 
         def _build_context(
-            self, base_context: dict[str, object], **extra_fields: object
-        ) -> dict[str, object]:
+            self, base_context: FlextCore.Types.Dict, **extra_fields: object
+        ) -> FlextCore.Types.Dict:
             """Build context with additional fields."""
             context = dict(base_context)
             context.update(extra_fields)

@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_core import FlextContainer
+from flext_core import FlextCore
 
 from flext_observability import (
     FlextAlert,
@@ -94,9 +94,9 @@ class TestFactoryPattern:
 
     def test_custom_factory(self) -> None:
         """Test custom factory creation."""
-        # FlextContainer imported at top level
+        # FlextCore.Container imported at top level
 
-        container = FlextContainer()
+        container = FlextCore.Container()
         factory = FlextObservabilityMasterFactory(container)
 
         result = factory.create_metric("custom_test", 200.0, "count")

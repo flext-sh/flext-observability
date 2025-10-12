@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 import threading
 
-from flext_core import FlextTypes
+from flext_core import FlextCore
 
 from flext_observability import (
     FlextAlertService,
@@ -162,7 +162,7 @@ class TestMetricsServiceRealFunctionality:
     def test_concurrent_metrics_recording(self) -> None:
         """Test concurrent metrics recording for thread safety."""
         service = FlextMetricsService()
-        results: FlextTypes.BoolList = []
+        results: FlextCore.Types.BoolList = []
 
         def record_metrics_batch(thread_id: int) -> None:
             """Record metrics from a specific thread."""

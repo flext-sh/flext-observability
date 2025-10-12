@@ -34,7 +34,7 @@ integration/
 ```python
 def test_metrics_service_with_factory_integration():
     """Test metrics service integration with factory."""
-    container = FlextContainer()
+    container = FlextCore.Container()
     factory = FlextObservabilityMasterFactory(container)
     metrics_service = FlextMetricsService(container)
 
@@ -52,9 +52,9 @@ def test_metrics_service_with_factory_integration():
 ```python
 def test_flext_core_container_integration():
     """Test integration with flext-core dependency injection."""
-from flext_core import FlextContainer
+from flext_core import FlextCore
 
-    container = FlextContainer()
+    container = FlextCore.Container()
     # Test that observability services integrate properly
     factory = FlextObservabilityMasterFactory(container)
     assert factory.container is container
@@ -74,7 +74,7 @@ from flext_core import FlextContainer
 @pytest.fixture(scope="module")
 def integration_container():
     """Shared container for integration tests."""
-    container = FlextContainer()
+    container = FlextCore.Container()
     # Setup integration-specific services
     return container
 ```

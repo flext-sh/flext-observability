@@ -17,7 +17,7 @@ Core business entities with domain validation and business logic:
 - **FlextAlert**: Alert management entity with severity handling
 - **FlextHealthCheck**: Health monitoring entity with dependency validation
 - **FlextLogEntry**: Structured logging entity with correlation ID support
-- **FlextUtilitiesGenerators**: Utility functions for ID generation and timestamps
+- **FlextCore.UtilitiesGenerators**: Utility functions for ID generation and timestamps
 
 ### Application Layer
 
@@ -123,9 +123,9 @@ if validation.success:
 
 ```python
 from flext_observability.services import FlextMetricsService
-from flext_core import FlextContainer
+from flext_core import FlextCore
 
-container = FlextContainer()
+container = FlextCore.Container()
 metrics_service = FlextMetricsService(container)
 
 result = metrics_service.record_metric(metric)
@@ -175,9 +175,9 @@ def process_order(order_data: dict) -> dict:
 
 All modules follow FLEXT ecosystem standards:
 
-- **FlextResult[T]** for railway-oriented programming
-- **FlextContainer** for dependency injection
-- **FlextModels.Entity** base patterns for domain entities
+- **FlextCore.Result[T]** for railway-oriented programming
+- **FlextCore.Container** for dependency injection
+- **FlextCore.Models.Entity** base patterns for domain entities
 - **Type safety** with comprehensive annotations
 
 ### Cross-Service Observability
@@ -185,9 +185,9 @@ All modules follow FLEXT ecosystem standards:
 ```python
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
-def handle_user_request(request: dict) -> FlextResult[FlextTypes.Dict]:
+def handle_user_request(request: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
     # Automatic metrics, tracing, and logging
-    return FlextResult[None].ok({"status": "processed"})
+    return FlextCore.Result[None].ok({"status": "processed"})
 ```
 
 ## Quality Standards
@@ -197,13 +197,13 @@ All modules in this package maintain:
 - **100% Type Coverage**: Complete type annotations
 - **95% Test Coverage**: Comprehensive test suites
 - **Domain Validation**: Business rule enforcement
-- **Error Handling**: FlextResult patterns throughout
+- **Error Handling**: FlextCore.Result patterns throughout
 - **Documentation**: Enterprise-grade docstrings
 
 ## Development Guidelines
 
 1. **Follow Clean Architecture**: Maintain clear layer separation
-2. **Use FlextResult**: All operations return FlextResult[T]
+2. **Use FlextCore.Result**: All operations return FlextCore.Result[T]
 3. **Domain Validation**: Implement validate_business_rules() for entities
 4. **Type Safety**: Complete type annotations required
 5. **Test Coverage**: 95% minimum coverage for all new code
