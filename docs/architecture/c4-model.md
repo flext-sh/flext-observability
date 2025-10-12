@@ -18,6 +18,7 @@ The C4 Model provides four levels of architectural abstraction:
 ## 🌍 Level 1: System Context
 
 ### System Purpose
+
 FLEXT Observability is the enterprise monitoring and metrics foundation library for the entire FLEXT ecosystem, providing consistent observability patterns across 33+ projects.
 
 ### Context Diagram
@@ -65,12 +66,14 @@ FLEXT Observability is the enterprise monitoring and metrics foundation library 
 ### External Interfaces
 
 #### Primary Users
+
 - **Enterprise Application Developers**: Use FLEXT Observability for consistent monitoring
 - **DevOps Teams**: Configure and maintain observability infrastructure
 - **Monitoring Teams**: Access metrics, traces, and alerts through dashboards
 - **Data Teams**: Analyze observability data for insights
 
 #### External Systems
+
 - **Prometheus**: Metrics collection and storage
 - **Grafana**: Visualization and dashboards
 - **Jaeger**: Distributed tracing backend
@@ -144,30 +147,35 @@ FLEXT Observability is the enterprise monitoring and metrics foundation library 
 ### Container Descriptions
 
 #### **Simple API Container**
+
 - **Technology**: Python Functions
 - **Purpose**: Easy-to-use factory functions for quick integration
 - **Interfaces**: `flext_create_metric()`, `flext_create_trace()`, `flext_create_alert()`
 - **Users**: Application developers needing simple observability integration
 
 #### **Monitoring Decorators Container**
+
 - **Technology**: Python Decorators
 - **Purpose**: Automatic instrumentation of functions and methods
 - **Interfaces**: `@flext_monitor_function`, `@flext_monitor_method`
 - **Users**: Framework and library developers
 
 #### **Core Application Services Container**
+
 - **Technology**: Python Classes with Railway Pattern
 - **Purpose**: Business logic orchestration and service coordination
 - **Interfaces**: `FlextObservabilityServices` unified service class
 - **Dependencies**: Domain entities, storage layer
 
 #### **Domain Layer Container**
+
 - **Technology**: Pydantic v2 Models, Domain Entities
 - **Purpose**: Core business logic and domain rules
 - **Interfaces**: `FlextMetric`, `FlextTrace`, `FlextAlert`, `FlextHealthCheck`
 - **Characteristics**: Immutable entities, business rule validation
 
 #### **Infrastructure Layer Container**
+
 - **Technology**: External APIs, Storage Abstractions
 - **Purpose**: External system integrations and persistence
 - **Interfaces**: Prometheus client, OpenTelemetry SDK, Storage adapters
@@ -224,6 +232,7 @@ FLEXT Observability is the enterprise monitoring and metrics foundation library 
 ### Key Components
 
 #### **Metrics Service Components**
+
 - **Counter Recorder**: Thread-safe counter increment operations
 - **Gauge Recorder**: Real-time value recording with metadata
 - **Histogram Recorder**: Statistical distribution tracking
@@ -231,6 +240,7 @@ FLEXT Observability is the enterprise monitoring and metrics foundation library 
 - **Export Formatter**: Prometheus/OpenMetrics format conversion
 
 #### **Tracing Service Components**
+
 - **Trace Creator**: Distributed trace initialization and context management
 - **Span Manager**: Individual operation tracking within traces
 - **Context Propagator**: Trace context passing between services
@@ -238,6 +248,7 @@ FLEXT Observability is the enterprise monitoring and metrics foundation library 
 - **Trace Exporter**: OpenTelemetry protocol export
 
 #### **Alerting Service Components**
+
 - **Alert Rule Engine**: Condition evaluation and threshold checking
 - **Alert Manager**: Alert lifecycle management and state tracking
 - **Notification Dispatcher**: Multi-channel alert delivery
@@ -245,6 +256,7 @@ FLEXT Observability is the enterprise monitoring and metrics foundation library 
 - **Alert History**: Alert persistence and audit trail
 
 #### **Domain Entities**
+
 - **FlextMetric**: Immutable metric data with validation
 - **FlextTrace**: Trace context and span hierarchy
 - **FlextAlert**: Alert definition with severity and routing
