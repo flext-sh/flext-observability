@@ -497,7 +497,7 @@ class FlextObservabilityServices(FlextCore.Utilities):
 
     # Property accessors for core components
     @property
-    def container(self) -> FlextBase.Container:
+    def container(self) -> FlextCore.Container:
         """Get container instance."""
         return self._container
 

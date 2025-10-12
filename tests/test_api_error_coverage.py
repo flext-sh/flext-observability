@@ -65,18 +65,20 @@ class TestApiErrorHandling:
         result = flext_create_trace("test_operation", "test_service")
         assert result.is_success
 
-        # Test with config parameters
-        config = {"trace_id": "custom_trace_123", "span_id": "custom_span_456"}
-        result = flext_create_trace("operation_with_config", "service", config=config)
+        # Test with context parameters
+        context = {"trace_id": "custom_trace_123", "span_id": "custom_span_456"}
+        result = flext_create_trace(
+            "operation_with_context", "service", context=context
+        )
         assert result.is_success
 
-        # Test with partial config
-        config = {"trace_id": "only_trace_id"}
-        result = flext_create_trace("partial_config_op", "service", config=config)
+        # Test with partial context
+        context = {"trace_id": "only_trace_id"}
+        result = flext_create_trace("partial_context_op", "service", context=context)
         assert result.is_success
 
-        config = {"span_id": "only_span_id"}
-        result = flext_create_trace("partial_config_op2", "service", config=config)
+        context = {"span_id": "only_span_id"}
+        result = flext_create_trace("partial_context_op2", "service", context=context)
         assert result.is_success
 
     def test_flext_create_alert_error_handling(self) -> None:
@@ -198,18 +200,18 @@ class TestApiEdgeCases:
 
     def test_trace_id_generation_logic(self) -> None:
         """Test trace ID generation with different config scenarios."""
-        # Test with empty config
-        result = flext_create_trace("empty_config", "service", config={})
+        # Test with empty context
+        result = flext_create_trace("empty_context", "service", context={})
         assert result.is_success
 
-        # Test with string values in config
-        config = {"trace_id": "trace_123", "span_id": "span_456"}
-        result = flext_create_trace("string_config", "service", config=config)
+        # Test with string values in context
+        context = {"trace_id": "trace_123", "span_id": "span_456"}
+        result = flext_create_trace("string_context", "service", context=context)
         assert result.is_success
 
         # Test with string conversion of IDs
-        config = {"trace_id": "123", "span_id": "456"}  # String IDs
-        result = flext_create_trace("numeric_ids", "service", config=config)
+        context = {"trace_id": "123", "span_id": "456"}  # String IDs
+        result = flext_create_trace("numeric_ids", "service", context=context)
         assert result.is_success
 
     def test_api_functions_parameter_combinations(self) -> None:

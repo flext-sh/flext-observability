@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_observability.__version__ import __version__, __version_info__
-from flext_observability.alerting import FlextObservabilityAlerting
 from flext_observability.config import FlextObservabilityConfig
 from flext_observability.constants import FlextObservabilityConstants
 from flext_observability.factories import (
@@ -20,9 +19,6 @@ from flext_observability.factories import (
 from flext_observability.fields import (
     FlextObservabilityFields,
 )
-from flext_observability.health import FlextObservabilityHealth
-from flext_observability.logging import FlextObservabilityLogging
-from flext_observability.metrics import FlextObservabilityMetrics
 from flext_observability.models import (
     FlextObservabilityModels,
 )
@@ -36,7 +32,6 @@ from flext_observability.services import (
     get_global_factory,
     reset_global_factory,
 )
-from flext_observability.tracing import FlextObservabilityTracing
 from flext_observability.typings import (
     FlextObservabilityTypes,
     HealthCheckProtocol,
@@ -47,12 +42,12 @@ from flext_observability.typings import (
     TraceProtocol,
 )
 
-# Direct model exports (moved from models.py)
-FlextMetric = FlextObservabilityMetrics.FlextMetric
-FlextTrace = FlextObservabilityTracing.FlextTrace
-FlextAlert = FlextObservabilityAlerting.FlextAlert
-FlextHealthCheck = FlextObservabilityHealth.FlextHealthCheck
-FlextLogEntry = FlextObservabilityLogging.FlextLogEntry
+# Direct model exports from consolidated models
+FlextMetric = FlextObservabilityModels.Metrics.MetricEntry
+FlextTrace = FlextObservabilityModels.Tracing.TraceEntry
+FlextAlert = FlextObservabilityModels.Alerting.AlertEntry
+FlextHealthCheck = FlextObservabilityModels.Health.HealthCheckEntry
+FlextLogEntry = FlextObservabilityModels.Logging.LogEntry
 
 # Removed over-engineered FlextObservability facade class - not used anywhere in flext ecosystem
 
