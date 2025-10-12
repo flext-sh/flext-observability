@@ -11,10 +11,10 @@ class TestFlextObservabilityTypes:
     """Test the FlextObservabilityTypes class."""
 
     def test_inherits_from_flext_types(self) -> None:
-        """Test that FlextObservabilityTypes inherits from FlextTypes."""
-        from flext_core import FlextTypes
+        """Test that FlextObservabilityTypes inherits from FlextCore.Types."""
+        from flext_core import FlextCore
 
-        assert issubclass(FlextObservabilityTypes, FlextTypes)
+        assert issubclass(FlextObservabilityTypes, FlextCore.Types)
 
     def test_nested_type_classes(self) -> None:
         """Test that nested type classes exist."""

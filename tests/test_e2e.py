@@ -8,7 +8,7 @@ import time
 from datetime import UTC, datetime
 
 import pytest
-from flext_core import FlextContainer, FlextTypes
+from flext_core import FlextCore
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -50,7 +50,7 @@ class TestE2EComprehensiveObservability:
 
     def test_e2e_logging_with_context(self) -> None:
         """E2E test: Create logs with rich context, validate structure."""
-        contexts: list[FlextTypes.Dict] = [
+        contexts: list[FlextCore.Types.Dict] = [
             {"user_id": "12345", "session": "abc-def", "ip": "192.168.1.1"},
             {"trace_id": "trace-123", "span_id": "span-456", "operation": "db_query"},
             {"error_code": 500, "stack_trace": "Error in line 42", "component": "auth"},
@@ -122,7 +122,7 @@ class TestE2EComprehensiveObservability:
         assert parent_result.is_success
 
         # Child spans
-        child_operations: list[tuple[str, int, FlextTypes.Dict]] = [
+        child_operations: list[tuple[str, int, FlextCore.Types.Dict]] = [
             ("auth_validation", 25, {"user_id": "12345", "auth_method": "jwt"}),
             ("database_query", 180, {"query": "SELECT * FROM users", "rows": 1}),
             ("response_formatting", 45, {"format": "json", "size_bytes": 1024}),
@@ -142,7 +142,7 @@ class TestE2EComprehensiveObservability:
 
     def test_e2e_health_monitoring_comprehensive(self) -> None:
         """E2E test: Health monitoring across multiple components."""
-        components: list[tuple[str, str, str, FlextTypes.Dict]] = [
+        components: list[tuple[str, str, str, FlextCore.Types.Dict]] = [
             (
                 "database",
                 "healthy",
@@ -263,8 +263,8 @@ class TestE2EComprehensiveObservability:
     def test_e2e_multiple_factories_isolation(self) -> None:
         """E2E test: Multiple factories work independently."""
         # Create separate containers and factories
-        container1 = FlextContainer()
-        container2 = FlextContainer()
+        container1 = FlextCore.Container()
+        container2 = FlextCore.Container()
 
         factory1 = FlextObservabilityMasterFactory(container1)
         factory2 = FlextObservabilityMasterFactory(container2)

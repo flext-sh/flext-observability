@@ -87,7 +87,7 @@ def test_factory_service_monitor_integration():
     metric_result = factory.create_metric("integration_test", 42.0)
 
     # 2. Process via service
-    container = FlextContainer()
+    container = FlextCore.Container()
     service = FlextMetricsService(container)
     record_result = service.record_metric(metric_result.data)
 

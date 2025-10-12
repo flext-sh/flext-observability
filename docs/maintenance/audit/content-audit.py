@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-"""
-Documentation Content Audit System
-==================================
+"""Documentation Content Audit System.
+=================================
 
 Comprehensive content analysis and quality assessment for flext-observability documentation.
 
@@ -19,16 +17,26 @@ Usage:
 
 import argparse
 import json
-import os
 import re
-import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 import yaml
+from flext_core import FlextCore
+
+# Constants for magic values
+MAX_LINK_DENSITY_PERCENT = 5
+MIN_WORDS_FOR_CODE_EXAMPLE = 200
+EXCELLENT_QUALITY_THRESHOLD = 90
+GOOD_QUALITY_THRESHOLD = 75
+FAIR_QUALITY_THRESHOLD = 60
+EXCELLENT_FRESHNESS_THRESHOLD = 90
+GOOD_FRESHNESS_THRESHOLD = 75
+FAIR_FRESHNESS_THRESHOLD = 60
+MAX_LINE_LENGTH = 120
+MAX_LONG_LINES_THRESHOLD = 5
 
 
 @dataclass
@@ -48,8 +56,8 @@ class ContentMetrics:
     last_modified: datetime = field(default_factory=datetime.now)
     freshness_score: float = 0.0
     quality_score: float = 0.0
-    issues: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    issues: FlextCore.Types.StringList = field(default_factory=list)
+    recommendations: FlextCore.Types.StringList = field(default_factory=list)
 
 
 @dataclass
@@ -68,63 +76,64 @@ class AuditReport:
     freshness_threshold_days: int = 30
     fresh_files: int = 0
     stale_files: int = 0
-    file_metrics: Dict[str, ContentMetrics] = field(default_factory=dict)
-    category_breakdown: Dict[str, int] = field(default_factory=dict)
+    file_metrics: dict[str, ContentMetrics] = field(default_factory=dict)
+    category_breakdown: dict[str, int] = field(default_factory=dict)
     overall_quality_score: float = 0.0
 
 
 class DocumentationAuditor:
     """Main documentation audit system."""
 
-    def __init__(self, docs_root: Path, config_path: Optional[Path] = None):
+    def __init__(self, docs_root: Path, config_path: Path | None = None) -> None:
+        """Initialize the documentation auditor.
+
+        Args:
+            docs_root: Root directory containing documentation files
+            config_path: Optional path to custom audit configuration file
+
+        """
         self.docs_root = docs_root
         self.config = self._load_config(config_path)
         self.report = AuditReport()
 
-    def _load_config(self, config_path: Optional[Path]) -> dict:
+    def _load_config(self, config_path: Path | None) -> dict:
         """Load audit configuration."""
         default_config = {
             "freshness_threshold_days": 30,
             "min_words_per_file": 50,
             "max_external_links": 10,
-            "quality_thresholds": {
-                "excellent": 90,
-                "good": 75,
-                "fair": 60,
-                "poor": 45
-            },
-            "required_sections": [
-                "description", "usage", "examples", "api"
-            ]
+            "quality_thresholds": {"excellent": 90, "good": 75, "fair": 60, "poor": 45},
+            "required_sections": ["description", "usage", "examples", "api"],
         }
 
         if config_path and config_path.exists():
-            with open(config_path, 'r') as f:
+            with Path(config_path).open("r", encoding="utf-8") as f:
                 user_config = yaml.safe_load(f)
                 default_config.update(user_config)
 
         return default_config
 
-    def discover_files(self) -> List[Path]:
+    def discover_files(self) -> list[Path]:
         """Discover all markdown files in the documentation tree."""
         files = []
         for pattern in ["*.md", "*.mdx"]:
             files.extend(self.docs_root.rglob(pattern))
 
         # Filter out maintenance system files
-        files = [f for f in files if "maintenance" not in str(f.relative_to(self.docs_root))]
+        files = [
+            f for f in files if "maintenance" not in str(f.relative_to(self.docs_root))
+        ]
 
         return sorted(files)
 
     def analyze_file(self, file_path: Path) -> ContentMetrics:
         """Analyze a single documentation file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with Path(file_path).open("r", encoding="utf-8") as f:
                 content = f.read()
         except Exception as e:
             return ContentMetrics(
-                file_path=str(file_path),
-                issues=[f"Failed to read file: {e}"]
+                file_path=str(file_path), issues=[f"Failed to read file: {e}"]
             )
 
         metrics = ContentMetrics(file_path=str(file_path))
@@ -134,19 +143,21 @@ class DocumentationAuditor:
         metrics.word_count = len(content.split())
 
         # Structural analysis
-        metrics.heading_count = len(re.findall(r'^#{1,6}\s+', content, re.MULTILINE))
-        metrics.link_count = len(re.findall(r'\[([^\]]+)\]\(([^)]+)\)', content))
-        metrics.code_block_count = len(re.findall(r'```', content))
-        metrics.list_item_count = len(re.findall(r'^[\s]*[-*+]\s+', content, re.MULTILINE))
-        metrics.table_count = len(re.findall(r'\|.*\|.*\|', content))
+        metrics.heading_count = len(re.findall(r"^#{1,6}\s+", content, re.MULTILINE))
+        metrics.link_count = len(re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content))
+        metrics.code_block_count = len(re.findall(r"```", content))
+        metrics.list_item_count = len(
+            re.findall(r"^[\s]*[-*+]\s+", content, re.MULTILINE)
+        )
+        metrics.table_count = len(re.findall(r"\|.*\|.*\|", content))
 
-        # TODO/FIXME tracking
-        metrics.todo_count = len(re.findall(r'\bTODO\b', content, re.IGNORECASE))
-        metrics.fixme_count = len(re.findall(r'\bFIXME\b', content, re.IGNORECASE))
+        # TODO: Add more comprehensive marker detection for different comment styles
+        metrics.todo_count = len(re.findall(r"\bTODO\b", content, re.IGNORECASE))
+        metrics.fixme_count = len(re.findall(r"\bFIXME\b", content, re.IGNORECASE))
 
         # File metadata
         stat = file_path.stat()
-        metrics.last_modified = datetime.fromtimestamp(stat.st_mtime)
+        metrics.last_modified = datetime.fromtimestamp(stat.st_mtime, tz=UTC)
 
         # Quality analysis
         self._analyze_quality(metrics, content)
@@ -156,13 +167,21 @@ class DocumentationAuditor:
         return metrics
 
     def _analyze_quality(self, metrics: ContentMetrics, content: str) -> None:
-        """Analyze content quality and assign scores."""
+        """Analyze content quality and assign scores.
+
+        Args:
+            metrics: Content metrics to update with quality analysis
+            content: File content (currently not used for quality analysis)
+
+        """
         score = 100.0
 
         # Word count penalty
         if metrics.word_count < self.config["min_words_per_file"]:
             score -= 20
-            metrics.recommendations.append("Consider expanding content (minimum 50 words)")
+            metrics.recommendations.append(
+                "Consider expanding content (minimum 50 words)"
+            )
 
         # Structure quality
         if metrics.heading_count == 0:
@@ -171,23 +190,26 @@ class DocumentationAuditor:
 
         # Link density (too many or too few)
         link_density = metrics.link_count / max(metrics.word_count, 1) * 100
-        if link_density > 5:
+        if link_density > MAX_LINK_DENSITY_PERCENT:
             score -= 10
             metrics.recommendations.append("High link density may distract readers")
 
         # Code examples
-        if metrics.code_block_count == 0 and metrics.word_count > 200:
+        if (
+            metrics.code_block_count == 0
+            and metrics.word_count > MIN_WORDS_FOR_CODE_EXAMPLE
+        ):
             score -= 10
             metrics.recommendations.append("Consider adding code examples")
 
-        # TODO/FIXME penalties
+        # TODO: Consider configurable penalty weights for different marker types
         score -= (metrics.todo_count + metrics.fixme_count) * 5
 
         metrics.quality_score = max(0, score)
 
     def _check_freshness(self, metrics: ContentMetrics) -> None:
         """Check content freshness against thresholds."""
-        days_since_update = (datetime.now() - metrics.last_modified).days
+        days_since_update = (datetime.now(UTC) - metrics.last_modified).days
         threshold = self.config["freshness_threshold_days"]
 
         if days_since_update <= threshold:
@@ -199,34 +221,38 @@ class DocumentationAuditor:
         else:
             metrics.freshness_score = 25.0
 
-        if metrics.freshness_score < 75:
-            metrics.recommendations.append(f"Consider updating (last modified {days_since_update} days ago)")
+        if metrics.freshness_score < GOOD_FRESHNESS_THRESHOLD:
+            metrics.recommendations.append(
+                f"Consider updating (last modified {days_since_update} days ago)"
+            )
 
     def _identify_issues(self, metrics: ContentMetrics, content: str) -> None:
         """Identify specific content issues."""
         # Check for broken internal references
-        internal_links = re.findall(r'\[([^\]]+)\]\(([^)]+)\)', content)
-        for link_text, link_target in internal_links:
-            if not link_target.startswith('http') and not link_target.startswith('#'):
+        internal_links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
+        for _link_text, link_target in internal_links:
+            if not link_target.startswith("http") and not link_target.startswith("#"):
                 # Check if relative file exists
                 target_path = (Path(metrics.file_path).parent / link_target).resolve()
-                if not target_path.exists() and not link_target.startswith('../'):
+                if not target_path.exists() and not link_target.startswith("../"):
                     metrics.issues.append(f"Broken internal link: {link_target}")
 
         # Check for missing alt text (though we have no images currently)
-        images_without_alt = re.findall(r'!\[\]\([^)]+\)', content)
+        images_without_alt = re.findall(r"!\[\]\([^)]+\)", content)
         if images_without_alt:
             metrics.issues.append("Images found without alt text")
 
         # Check heading hierarchy
-        headings = re.findall(r'^(#{1,6})\s+', content, re.MULTILINE)
+        headings = re.findall(r"^(#{1,6})\s+", content, re.MULTILINE)
         heading_levels = [len(h) for h in headings]
         if heading_levels and heading_levels[0] != 1:
             metrics.issues.append("Document should start with H1 heading")
 
         # Check for excessively long lines
-        long_lines = [line for line in content.splitlines() if len(line) > 120]
-        if len(long_lines) > 5:
+        long_lines = [
+            line for line in content.splitlines() if len(line) > MAX_LINE_LENGTH
+        ]
+        if len(long_lines) > MAX_LONG_LINES_THRESHOLD:
             metrics.recommendations.append("Consider breaking long lines (>120 chars)")
 
     def run_audit(self, comprehensive: bool = False) -> AuditReport:
@@ -247,7 +273,10 @@ class DocumentationAuditor:
 
             # Categorize issues
             for issue in metrics.issues:
-                if any(keyword in issue.lower() for keyword in ['broken', 'missing', 'failed']):
+                if any(
+                    keyword in issue.lower()
+                    for keyword in ["broken", "missing", "failed"]
+                ):
                     self.report.critical_issues += 1
                 else:
                     self.report.warning_issues += 1
@@ -264,7 +293,9 @@ class DocumentationAuditor:
 
         # Calculate overall quality score
         total_score = sum(m.quality_score for m in self.report.file_metrics.values())
-        self.report.overall_quality_score = total_score / max(len(self.report.file_metrics), 1)
+        self.report.overall_quality_score = total_score / max(
+            len(self.report.file_metrics), 1
+        )
 
         return self.report
 
@@ -272,27 +303,25 @@ class DocumentationAuditor:
         """Categorize documentation file by type."""
         path_str = str(file_path.relative_to(self.docs_root))
 
-        if 'api' in path_str:
-            return 'API Reference'
-        elif 'guides' in path_str:
-            return 'User Guides'
-        elif 'architecture' in path_str:
-            return 'Architecture'
-        elif 'standards' in path_str:
-            return 'Standards'
-        elif 'examples' in path_str:
-            return 'Examples'
-        elif file_path.name in ['README.md', 'CLAUDE.md']:
-            return 'Root Documentation'
-        else:
-            return 'General'
+        if "api" in path_str:
+            return "API Reference"
+        if "guides" in path_str:
+            return "User Guides"
+        if "architecture" in path_str:
+            return "Architecture"
+        if "standards" in path_str:
+            return "Standards"
+        if "examples" in path_str:
+            return "Examples"
+        if file_path.name in {"README.md", "CLAUDE.md"}:
+            return "Root Documentation"
+        return "General"
 
-    def generate_report(self, output_format: str = 'markdown') -> str:
+    def generate_report(self, output_format: str = "markdown") -> str:
         """Generate audit report in specified format."""
-        if output_format == 'json':
+        if output_format == "json":
             return self._generate_json_report()
-        else:
-            return self._generate_markdown_report()
+        return self._generate_markdown_report()
 
     def _generate_markdown_report(self) -> str:
         """Generate markdown audit report."""
@@ -421,37 +450,32 @@ class DocumentationAuditor:
         """Get icon for quality/freshness score."""
         if score >= 90:
             return "🟢"
-        elif score >= 75:
+        if score >= 75:
             return "🟡"
-        elif score >= 60:
+        if score >= 60:
             return "🟠"
-        else:
-            return "🔴"
+        return "🔴"
 
 
-def main():
+def main() -> None:
     """Main entry point for documentation audit."""
     parser = argparse.ArgumentParser(description="Documentation Content Audit System")
     parser.add_argument(
         "--comprehensive",
         action="store_true",
-        help="Run comprehensive analysis with detailed recommendations"
+        help="Run comprehensive analysis with detailed recommendations",
     )
     parser.add_argument(
         "--output-format",
         choices=["markdown", "json"],
         default="markdown",
-        help="Output format for audit report"
+        help="Output format for audit report",
     )
     parser.add_argument(
-        "--config",
-        type=Path,
-        help="Path to custom audit configuration file"
+        "--config", type=Path, help="Path to custom audit configuration file"
     )
     parser.add_argument(
-        "--output-file",
-        type=Path,
-        help="Save report to file instead of stdout"
+        "--output-file", type=Path, help="Save report to file instead of stdout"
     )
 
     args = parser.parse_args()
@@ -461,21 +485,16 @@ def main():
     auditor = DocumentationAuditor(docs_root, args.config)
 
     # Run audit
-    print("🔍 Running documentation audit...")
-    report = auditor.run_audit(args.comprehensive)
+    auditor.run_audit(args.comprehensive)
 
     # Generate report
-    print("📊 Generating audit report...")
     report_content = auditor.generate_report(args.output_format)
 
     # Output report
     if args.output_file:
         args.output_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(args.output_file, 'w', encoding='utf-8') as f:
+        with Path(args.output_file).open("w", encoding="utf-8") as f:
             f.write(report_content)
-        print(f"✅ Report saved to {args.output_file}")
-    else:
-        print(report_content)
 
 
 if __name__ == "__main__":

@@ -12,8 +12,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextModels, FlextResult, FlextTypes
+from flext_core import FlextCore
 from pydantic import (
+    BaseModel,
     ConfigDict,
     Field,
     computed_field,
@@ -23,15 +24,15 @@ from pydantic import (
 )
 
 
-class FlextObservabilityTracing(FlextModels):
-    """Focused tracing models for observability operations extending FlextModels.
+class FlextObservabilityTracing(FlextCore.Models):
+    """Focused tracing models for observability operations extending FlextCore.Models.
 
     Provides comprehensive tracing entities, configurations, and operations
     for distributed tracing, span management, and trace correlation within the FLEXT ecosystem.
     """
 
     # Distributed Tracing Models
-    class TraceEntry(FlextModels.Value):
+    class TraceEntry(FlextCore.Models.Value):
         """Comprehensive trace entry model."""
 
         model_config = ConfigDict(
@@ -57,7 +58,7 @@ class FlextObservabilityTracing(FlextModels):
             default=None, description="Duration in milliseconds"
         )
         status: str = Field(default="active", description="Trace status")
-        tags: FlextTypes.StringDict = Field(
+        tags: FlextCore.Types.StringDict = Field(
             default_factory=dict, description="Trace tags"
         )
 
@@ -92,8 +93,8 @@ class FlextObservabilityTracing(FlextModels):
 
         @field_serializer("tags", when_used="json")
         def serialize_tags_with_context(
-            self, value: FlextTypes.StringDict, _info: object
-        ) -> FlextTypes.Dict:
+            self, value: FlextCore.Types.StringDict, _info: object
+        ) -> FlextCore.Types.Dict:
             """Serialize tags with trace context."""
             return {
                 "tags": value,
@@ -105,7 +106,7 @@ class FlextObservabilityTracing(FlextModels):
                 },
             }
 
-    class TraceConfig(FlextModels.Configuration):
+    class TraceConfig(BaseModel):
         """Trace configuration model."""
 
         model_config = ConfigDict(
@@ -140,7 +141,7 @@ class FlextObservabilityTracing(FlextModels):
                 raise ValueError(msg)
             return self
 
-    class FlextTrace(FlextModels.Entity):
+    class FlextTrace(FlextCore.Models.Entity):
         """Distributed Tracing Span Entity for FLEXT Ecosystem.
 
         Enterprise-grade distributed tracing entity implementing OpenTelemetry-compatible
@@ -151,7 +152,7 @@ class FlextObservabilityTracing(FlextModels):
         trace_id: str = Field(..., description="Trace ID")
         operation: str = Field(..., description="Operation name")
         span_id: str = Field(..., description="Span ID")
-        span_attributes: FlextTypes.Dict = Field(
+        span_attributes: FlextCore.Types.Dict = Field(
             default_factory=dict,
             description="Span attributes",
         )
@@ -196,22 +197,24 @@ class FlextObservabilityTracing(FlextModels):
                 raise ValueError(msg)
             return v
 
-        def validate_business_rules(self) -> FlextResult[bool]:
+        def validate_business_rules(self) -> FlextCore.Result[bool]:
             """Validate distributed tracing business rules."""
             try:
                 if not self.trace_id:
-                    return FlextResult[bool].fail("Trace ID is required")
+                    return FlextCore.Result[bool].fail("Trace ID is required")
                 if not self.operation:
-                    return FlextResult[bool].fail("Operation name is required")
+                    return FlextCore.Result[bool].fail("Operation name is required")
                 if not self.span_id:
-                    return FlextResult[bool].fail("Span ID is required")
+                    return FlextCore.Result[bool].fail("Span ID is required")
                 if self.status not in {"pending", "running", "completed", "failed"}:
-                    return FlextResult[bool].fail(
+                    return FlextCore.Result[bool].fail(
                         f"Invalid trace status: {self.status}"
                     )
-                return FlextResult[bool].ok(True)
+                return FlextCore.Result[bool].ok(True)
             except Exception as e:
-                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
+                return FlextCore.Result[bool].fail(
+                    f"Business rule validation failed: {e}"
+                )
 
     # Factory methods for direct entity creation
     @staticmethod
@@ -221,11 +224,11 @@ class FlextObservabilityTracing(FlextModels):
         span_id: str,
         status: str = "pending",
         **kwargs: object,
-    ) -> FlextResult[FlextObservabilityTracing.FlextTrace]:
+    ) -> FlextCore.Result[FlextObservabilityTracing.FlextTrace]:
         """Create a FlextTrace entity directly."""
         try:
             # Filter kwargs to only include valid FlextTrace parameters
-            valid_kwargs: dict[str, object] = {}
+            valid_kwargs: FlextCore.Types.Dict = {}
             if "span_attributes" in kwargs and isinstance(
                 kwargs["span_attributes"], dict
             ):
@@ -235,7 +238,7 @@ class FlextObservabilityTracing(FlextModels):
             if "timestamp" in kwargs and isinstance(kwargs["timestamp"], datetime):
                 valid_kwargs["timestamp"] = kwargs["timestamp"]
 
-            return FlextResult[FlextObservabilityTracing.FlextTrace].ok(
+            return FlextCore.Result[FlextObservabilityTracing.FlextTrace].ok(
                 FlextObservabilityTracing.FlextTrace(
                     trace_id=trace_id,
                     operation=operation,
@@ -244,7 +247,7 @@ class FlextObservabilityTracing(FlextModels):
                 )
             )
         except Exception as e:
-            return FlextResult[FlextObservabilityTracing.FlextTrace].fail(
+            return FlextCore.Result[FlextObservabilityTracing.FlextTrace].fail(
                 f"Failed to create trace: {e}"
             )
 

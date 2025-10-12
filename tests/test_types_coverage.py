@@ -7,22 +7,16 @@ SPDX-License-Identifier: MIT
 import math
 from decimal import Decimal
 
-from flext_core import FlextTypes
+from flext_core import FlextCore
 
 import flext_observability.typings as types_module
 from flext_observability import (
-    AlertLevel,
-    AlertProtocol,
     HealthCheckProtocol,
-    HealthStatus,
     LogEntryProtocol,
-    LogLevel,
     MetricProtocol,
-    MetricValue,
     ObservabilityTypes,
     TagsDict,
     TraceProtocol,
-    TraceStatus,
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,
@@ -59,17 +53,7 @@ class TestTypesModuleCoverage:
         assert tags["float_tag"] == math.pi
         assert tags["bool_tag"] is True
 
-    def test_string_type_aliases(self) -> None:
-        """Test string-based type aliases."""
-        log_level: LogLevel = "INFO"
-        alert_level: AlertLevel = "warning"
-        trace_status: TraceStatus = "completed"
-        health_status: HealthStatus = "healthy"
-
-        assert log_level == "INFO"
-        assert alert_level == "warning"
-        assert trace_status == "completed"
-        assert health_status == "healthy"
+    # Removed test_string_type_aliases as it tested removed type aliases
 
     def test_protocol_structure_validation(self) -> None:
         """Test that protocols define expected attributes using real entities."""
@@ -144,36 +128,30 @@ class TestTypesModuleCoverage:
         assert ObservabilityTypes.LogEntryProtocol == LogEntryProtocol
 
     def test_flext_types_alias(self) -> None:
-        """Test FlextTypes alias works correctly."""
-        # Test that FlextTypes is an alias for ObservabilityTypes
-        assert FlextTypes == ObservabilityTypes
+        """Test FlextCore.Types alias works correctly."""
+        # Test that FlextCore.Types is an alias for ObservabilityTypes
+        assert FlextCore.Types == ObservabilityTypes
 
         # Test that they have the same attributes
-        assert FlextTypes.MetricValue == ObservabilityTypes.MetricValue
-        assert FlextTypes.MetricProtocol == ObservabilityTypes.MetricProtocol
+        assert FlextCore.Types.MetricValue == ObservabilityTypes.MetricValue
+        assert FlextCore.Types.MetricProtocol == ObservabilityTypes.MetricProtocol
 
     def test_module_all_exports(self) -> None:
         """Test that all expected exports are available."""
         # Test that __all__ contains expected items
         expected_exports = {
-            "AlertLevel",
-            "AlertProtocol",
             "E",
             "F",
-            "FlextTypes",
+            "FlextCore.Types",
             "HealthCheckProtocol",
-            "HealthStatus",
             "LogEntryProtocol",
-            "LogLevel",
             "MetricProtocol",
-            "MetricValue",
             "ObservabilityTypes",
             "P",
             "R",
             "T",
             "TagsDict",
             "TraceProtocol",
-            "TraceStatus",
             "U",
             "V",
         }

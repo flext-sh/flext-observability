@@ -12,8 +12,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextModels, FlextResult, FlextTypes
+from flext_core import FlextCore
 from pydantic import (
+    BaseModel,
     ConfigDict,
     Field,
     computed_field,
@@ -23,15 +24,15 @@ from pydantic import (
 )
 
 
-class FlextObservabilityLogging(FlextModels):
-    """Focused logging models for observability operations extending FlextModels.
+class FlextObservabilityLogging(FlextCore.Models):
+    """Focused logging models for observability operations extending FlextCore.Models.
 
     Provides comprehensive logging entities, configurations, and operations
     for structured logging, log management, and log analysis within the FLEXT ecosystem.
     """
 
     # Log Management Models
-    class LogEntry(FlextModels.Value):
+    class LogEntry(FlextCore.Models.Value):
         """Comprehensive log entry model."""
 
         model_config = ConfigDict(
@@ -50,7 +51,7 @@ class FlextObservabilityLogging(FlextModels):
             default_factory=datetime.now, description="Log timestamp"
         )
         source: str = Field(description="Log source")
-        context: FlextTypes.Dict = Field(
+        context: FlextCore.Types.Dict = Field(
             default_factory=dict, description="Log context"
         )
 
@@ -79,8 +80,8 @@ class FlextObservabilityLogging(FlextModels):
 
         @field_serializer("context", when_used="json")
         def serialize_context_with_log_metadata(
-            self, value: FlextTypes.Dict, _info: object
-        ) -> FlextTypes.Dict:
+            self, value: FlextCore.Types.Dict, _info: object
+        ) -> FlextCore.Types.Dict:
             """Serialize context with log metadata."""
             return {
                 "context": value,
@@ -92,7 +93,7 @@ class FlextObservabilityLogging(FlextModels):
                 },
             }
 
-    class LogConfig(FlextModels.Configuration):
+    class LogConfig(BaseModel):
         """Log configuration model."""
 
         model_config = ConfigDict(
@@ -131,7 +132,7 @@ class FlextObservabilityLogging(FlextModels):
                 raise ValueError(msg)
             return self
 
-    class FlextLogEntry(FlextModels.Entity):
+    class FlextLogEntry(FlextCore.Models.Entity):
         """Structured Logging Entity for FLEXT Ecosystem.
 
         Enterprise-grade structured logging entity implementing comprehensive logging
@@ -141,7 +142,7 @@ class FlextObservabilityLogging(FlextModels):
 
         message: str = Field(..., description="Log message")
         level: str = Field(default="info", description="Log level")
-        context: FlextTypes.Dict = Field(
+        context: FlextCore.Types.Dict = Field(
             default_factory=dict,
             description="Log context",
         )
@@ -166,16 +167,20 @@ class FlextObservabilityLogging(FlextModels):
                 raise ValueError(msg)
             return v
 
-        def validate_business_rules(self) -> FlextResult[bool]:
+        def validate_business_rules(self) -> FlextCore.Result[bool]:
             """Validate structured logging business rules."""
             try:
                 if not (self.message and str(self.message).strip()):
-                    return FlextResult[bool].fail("Invalid log message")
+                    return FlextCore.Result[bool].fail("Invalid log message")
                 if self.level not in {"debug", "info", "warning", "error", "critical"}:
-                    return FlextResult[bool].fail(f"Invalid log level: {self.level}")
-                return FlextResult[bool].ok(True)
+                    return FlextCore.Result[bool].fail(
+                        f"Invalid log level: {self.level}"
+                    )
+                return FlextCore.Result[bool].ok(True)
             except Exception as e:
-                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
+                return FlextCore.Result[bool].fail(
+                    f"Business rule validation failed: {e}"
+                )
 
 
 # Export the focused logging namespace class

@@ -25,7 +25,7 @@ FLEXT Observability follows Uncle Bob's Clean Architecture with distinct, decoup
 │  FlextMetric | FlextTrace | FlextAlert | Business Rules    │
 ├═════════════════════════════════════════════════════════════┤
 │                   FLEXT-CORE FOUNDATION                    │
-│   FlextResult[T] | FlextContainer | FlextModels.Entity Patterns   │
+│   FlextCore.Result[T] | FlextCore.Container | FlextCore.Models.Entity Patterns   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -74,7 +74,7 @@ src/flext_observability/
 
 **Patterns**:
 
-- All entities extend `FlextModels.Entity` from flext-core
+- All entities extend `FlextCore.Models.Entity` from flext-core
 - Domain validation via `validate_business_rules()` method
 - Immutable value objects for measurements and timestamps
 - Business rule enforcement at entity level
@@ -91,8 +91,8 @@ src/flext_observability/
 
 **Patterns**:
 
-- All operations return `FlextResult[T]` for railway-oriented programming
-- Dependency injection via `FlextContainer`
+- All operations return `FlextCore.Result[T]` for railway-oriented programming
+- Dependency injection via `FlextCore.Container`
 - Service orchestration without external dependencies
 - Business logic coordination between entities
 
@@ -129,7 +129,7 @@ Domain Entities
        ↓
 Repository Storage
        ↓
-FlextResult[T] Response
+FlextCore.Result[T] Response
 ```
 
 ### Error Handling Flow
@@ -137,7 +137,7 @@ FlextResult[T] Response
 ```
 Domain Validation Error
        ↓
-FlextResult[None].fail()
+FlextCore.Result[None].fail()
        ↓
 Service Layer Handling
        ↓
@@ -156,10 +156,10 @@ FLEXT Observability integrates with the ecosystem through standardized patterns:
 
 ```python
 # All services use flext-core patterns
-from flext_core import FlextResult, FlextContainer, FlextModels.Entity
+from flext_core import FlextCore
 from flext_observability import FlextMetricsService
 
-container = FlextContainer()
+container = FlextCore.Container()
 service = FlextMetricsService(container)
 
 # Railway-oriented programming throughout
@@ -206,12 +206,12 @@ flext-observability
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-    def create_metric(self, name: str, value: float, unit: str = "") -> FlextResult[FlextMetric]:
+    def create_metric(self, name: str, value: float, unit: str = "") -> FlextCore.Result[FlextMetric]:
         """Create validated metric with domain rules."""
         # Domain validation
         # Entity creation
-        # FlextResult wrapping
-        return FlextResult[None].ok(metric)
+        # FlextCore.Result wrapping
+        return FlextCore.Result[None].ok(metric)
 ```
 
 ### Service Layer Pattern
@@ -220,16 +220,16 @@ class FlextObservabilityMasterFactory:
 class FlextMetricsService:
     """Application service for metrics operations."""
 
-    def __init__(self, container: FlextContainer) -> None:
+    def __init__(self, container: FlextCore.Container) -> None:
         self._container = container
         # Dependency injection setup
 
-    def record_metric(self, metric: FlextMetric) -> FlextResult[FlextMetric]:
+    def record_metric(self, metric: FlextMetric) -> FlextCore.Result[FlextMetric]:
         """Record metric with business logic."""
         # Business validation
         # Storage operations
         # Event publication
-        return FlextResult[None].ok(metric)
+        return FlextCore.Result[None].ok(metric)
 ```
 
 ### Repository Pattern (Future Implementation)
@@ -238,11 +238,11 @@ class FlextMetricsService:
 class FlextMetricsRepository(Protocol):
     """Repository interface for metrics persistence."""
 
-    def store_metric(self, metric: FlextMetric) -> FlextResult[None]:
+    def store_metric(self, metric: FlextMetric) -> FlextCore.Result[None]:
         """Store metric with persistence abstraction."""
         ...
 
-    def query_metrics(self, criteria: MetricsCriteria) -> FlextResult[List[FlextMetric]]:
+    def query_metrics(self, criteria: MetricsCriteria) -> FlextCore.Result[List[FlextMetric]]:
         """Query metrics with filtering."""
         ...
 ```
@@ -312,11 +312,11 @@ class FlextMetricsRepository(Protocol):
 class FlextObservabilityPlugin(Protocol):
     """Plugin interface for extending observability."""
 
-    def on_metric_created(self, metric: FlextMetric) -> FlextResult[None]:
+    def on_metric_created(self, metric: FlextMetric) -> FlextCore.Result[None]:
         """Hook called when metrics are created."""
         ...
 
-    def on_trace_started(self, trace: FlextTrace) -> FlextResult[None]:
+    def on_trace_started(self, trace: FlextTrace) -> FlextCore.Result[None]:
         """Hook called when traces are started."""
         ...
 ```

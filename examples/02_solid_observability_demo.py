@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 
 import time
 
-from flext_core import FlextContainer, FlextResult, FlextTypes
+from flext_core import FlextCore
 
 from flext_observability import (
     FlextAlert,
@@ -27,13 +27,13 @@ from flext_observability import (
 )
 
 
-def database_query(query: str) -> FlextTypes.Dict:
+def database_query(query: str) -> FlextCore.Types.Dict:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)  # Simulate database latency
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> FlextTypes.Dict:
+def process_api_request(endpoint: str) -> FlextCore.Types.Dict:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)  # Simulate processing time
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
@@ -48,7 +48,7 @@ def demonstrate_solid_design() -> None:
     health_result = flext_create_health_check("database", "healthy")
 
     # Open/Closed: Extensible without modification
-    container = FlextContainer()
+    container = FlextCore.Container()
     factory = FlextObservabilityMasterFactory(container)
     factory.create_metric("custom_metric", 100.0, "units")
 
@@ -59,7 +59,7 @@ def demonstrate_solid_design() -> None:
         alert_result,
         health_result,
     ]
-    entities: list[object] = [
+    entities: FlextCore.Types.List = [
         result.unwrap()
         for result in results
         if hasattr(result, "success")
@@ -161,7 +161,7 @@ def demonstrate_factory_patterns() -> None:
     global_factory.create_metric("global_metric", 42.0, "count")
 
     # Custom factory with DI container
-    container = FlextContainer()
+    container = FlextCore.Container()
     custom_factory = FlextObservabilityMasterFactory(container)
     custom_factory.create_metric("custom_metric", 24.0, "count")
 
@@ -170,10 +170,10 @@ def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     # Create various entities and validate them
     entities_to_validate: list[
-        FlextResult[FlextMetric]
-        | FlextResult[FlextTrace]
-        | FlextResult[FlextAlert]
-        | FlextResult[FlextHealthCheck]
+        FlextCore.Result[FlextMetric]
+        | FlextCore.Result[FlextTrace]
+        | FlextCore.Result[FlextAlert]
+        | FlextCore.Result[FlextHealthCheck]
     ] = [
         flext_create_metric("valid_metric", 100.0, "count"),
         flext_create_trace("valid_operation", "valid_service"),

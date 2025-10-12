@@ -11,10 +11,10 @@ class TestFlextObservabilityLogging:
     """Test the FlextObservabilityLogging class."""
 
     def test_inherits_from_flext_models(self) -> None:
-        """Test that FlextObservabilityLogging inherits from FlextModels."""
-        from flext_core import FlextModels
+        """Test that FlextObservabilityLogging inherits from FlextCore.Models."""
+        from flext_core import FlextCore
 
-        assert issubclass(FlextObservabilityLogging, FlextModels)
+        assert issubclass(FlextObservabilityLogging, FlextCore.Models)
 
     def test_flext_log_entry_class_exists(self) -> None:
         """Test that FlextLogEntry class exists."""

@@ -12,8 +12,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextModels, FlextResult, FlextTypes
+from flext_core import FlextCore
 from pydantic import (
+    BaseModel,
     ConfigDict,
     Field,
     computed_field,
@@ -23,15 +24,15 @@ from pydantic import (
 )
 
 
-class FlextObservabilityAlerting(FlextModels):
-    """Focused alerting models for observability operations extending FlextModels.
+class FlextObservabilityAlerting(FlextCore.Models):
+    """Focused alerting models for observability operations extending FlextCore.Models.
 
     Provides comprehensive alert entities, configurations, and operations
     for alert management, escalation, and notification within the FLEXT ecosystem.
     """
 
     # Alert Management Models
-    class AlertEntry(FlextModels.Value):
+    class AlertEntry(FlextCore.Models.Value):
         """Comprehensive alert entry model."""
 
         model_config = ConfigDict(
@@ -54,7 +55,7 @@ class FlextObservabilityAlerting(FlextModels):
             default=None, description="Alert resolution time"
         )
         status: str = Field(default="active", description="Alert status")
-        metadata: FlextTypes.StringDict = Field(
+        metadata: FlextCore.Types.StringDict = Field(
             default_factory=dict, description="Alert metadata"
         )
 
@@ -91,8 +92,8 @@ class FlextObservabilityAlerting(FlextModels):
 
         @field_serializer("metadata", when_used="json")
         def serialize_metadata_with_alert_context(
-            self, value: FlextTypes.StringDict, _info: object
-        ) -> FlextTypes.Dict:
+            self, value: FlextCore.Types.StringDict, _info: object
+        ) -> FlextCore.Types.Dict:
             """Serialize metadata with alert context."""
             return {
                 "metadata": value,
@@ -104,7 +105,7 @@ class FlextObservabilityAlerting(FlextModels):
                 },
             }
 
-    class AlertConfig(FlextModels.Configuration):
+    class AlertConfig(BaseModel):
         """Alert configuration model."""
 
         model_config = ConfigDict(
@@ -124,7 +125,7 @@ class FlextObservabilityAlerting(FlextModels):
         enable_notifications: bool = Field(
             default=True, description="Enable alert notifications"
         )
-        notification_channels: FlextTypes.StringList = Field(
+        notification_channels: FlextCore.Types.StringList = Field(
             default_factory=list, description="Notification channels"
         )
 
@@ -145,7 +146,7 @@ class FlextObservabilityAlerting(FlextModels):
                 raise ValueError(msg)
             return self
 
-    class FlextAlert(FlextModels.Entity):
+    class FlextAlert(FlextCore.Models.Entity):
         """Alert Management Entity for FLEXT Ecosystem Monitoring.
 
         Enterprise-grade alert entity implementing comprehensive alerting semantics
@@ -157,7 +158,9 @@ class FlextObservabilityAlerting(FlextModels):
         message: str = Field(..., description="Alert message")
         severity: str = Field(default="low", description="Alert severity")
         status: str = Field(default="active", description="Alert status")
-        tags: FlextTypes.Dict = Field(default_factory=dict, description="Alert tags")
+        tags: FlextCore.Types.Dict = Field(
+            default_factory=dict, description="Alert tags"
+        )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
         @field_validator("title")
@@ -198,13 +201,13 @@ class FlextObservabilityAlerting(FlextModels):
                 raise ValueError(msg)
             return v
 
-        def validate_business_rules(self) -> FlextResult[bool]:
+        def validate_business_rules(self) -> FlextCore.Result[bool]:
             """Validate alert management business rules."""
             try:
                 if not self.title:
-                    return FlextResult[bool].fail("Alert title is required")
+                    return FlextCore.Result[bool].fail("Alert title is required")
                 if not self.message:
-                    return FlextResult[bool].fail("Alert message is required")
+                    return FlextCore.Result[bool].fail("Alert message is required")
                 if self.severity not in {
                     "low",
                     "medium",
@@ -212,7 +215,7 @@ class FlextObservabilityAlerting(FlextModels):
                     "critical",
                     "emergency",
                 }:
-                    return FlextResult[bool].fail(
+                    return FlextCore.Result[bool].fail(
                         f"Invalid alert severity: {self.severity}"
                     )
                 if self.status not in {
@@ -221,12 +224,14 @@ class FlextObservabilityAlerting(FlextModels):
                     "resolved",
                     "suppressed",
                 }:
-                    return FlextResult[bool].fail(
+                    return FlextCore.Result[bool].fail(
                         f"Invalid alert status: {self.status}"
                     )
-                return FlextResult[bool].ok(True)
+                return FlextCore.Result[bool].ok(True)
             except Exception as e:
-                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
+                return FlextCore.Result[bool].fail(
+                    f"Business rule validation failed: {e}"
+                )
 
     # Factory methods for direct entity creation
     @staticmethod
@@ -235,11 +240,11 @@ class FlextObservabilityAlerting(FlextModels):
         message: str,
         severity: str = "info",
         **kwargs: object,
-    ) -> FlextResult[FlextObservabilityAlerting.FlextAlert]:
+    ) -> FlextCore.Result[FlextObservabilityAlerting.FlextAlert]:
         """Create a FlextAlert entity directly."""
         try:
             # Filter kwargs to only include valid FlextAlert parameters
-            valid_kwargs: dict[str, object] = {}
+            valid_kwargs: FlextCore.Types.Dict = {}
             if "status" in kwargs and isinstance(kwargs["status"], str):
                 valid_kwargs["status"] = kwargs["status"]
             if "tags" in kwargs and isinstance(kwargs["tags"], dict):
@@ -247,7 +252,7 @@ class FlextObservabilityAlerting(FlextModels):
             if "timestamp" in kwargs and isinstance(kwargs["timestamp"], datetime):
                 valid_kwargs["timestamp"] = kwargs["timestamp"]
 
-            return FlextResult[FlextObservabilityAlerting.FlextAlert].ok(
+            return FlextCore.Result[FlextObservabilityAlerting.FlextAlert].ok(
                 FlextObservabilityAlerting.FlextAlert(
                     title=title,
                     message=message,
@@ -255,7 +260,7 @@ class FlextObservabilityAlerting(FlextModels):
                 )
             )
         except Exception as e:
-            return FlextResult[FlextObservabilityAlerting.FlextAlert].fail(
+            return FlextCore.Result[FlextObservabilityAlerting.FlextAlert].fail(
                 f"Failed to create alert: {e}"
             )
 

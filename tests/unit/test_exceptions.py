@@ -28,10 +28,10 @@ class TestFlextObservabilityExceptions:
     """Test the FlextObservabilityExceptions class."""
 
     def test_inherits_from_flext_exceptions(self) -> None:
-        """Test that FlextObservabilityExceptions inherits from FlextExceptions."""
-        from flext_core import FlextExceptions
+        """Test that FlextObservabilityExceptions inherits from FlextCore.Exceptions."""
+        from flext_core import FlextCore
 
-        assert issubclass(FlextObservabilityExceptions, FlextExceptions)
+        assert issubclass(FlextObservabilityExceptions, FlextCore.Exceptions)
 
 
 class TestFlextObservabilityError:

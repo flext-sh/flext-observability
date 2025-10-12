@@ -11,10 +11,10 @@ class TestFlextObservabilityServices:
     """Test the unified FlextObservabilityServices class."""
 
     def test_inherits_from_flext_utilities(self) -> None:
-        """Test that FlextObservabilityServices inherits from FlextUtilities."""
-        from flext_core import FlextUtilities
+        """Test that FlextObservabilityServices inherits from FlextCore.Utilities."""
+        from flext_core import FlextCore
 
-        assert issubclass(FlextObservabilityServices, FlextUtilities)
+        assert issubclass(FlextObservabilityServices, FlextCore.Utilities)
 
     def test_domain_constants(self) -> None:
         """Test domain constants are properly defined."""
@@ -136,11 +136,11 @@ class TestFlextObservabilityUtilities:
         assert hasattr(FlextObservabilityServices, "FlextObservabilityUtilities")
 
     def test_utilities_inherits_from_flext_utilities(self) -> None:
-        """Test that FlextObservabilityUtilities inherits from FlextUtilities."""
-        from flext_core import FlextUtilities
+        """Test that FlextObservabilityUtilities inherits from FlextCore.Utilities."""
+        from flext_core import FlextCore
 
         assert issubclass(
-            FlextObservabilityServices.FlextObservabilityUtilities, FlextUtilities
+            FlextObservabilityServices.FlextObservabilityUtilities, FlextCore.Utilities
         )
 
 

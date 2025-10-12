@@ -11,10 +11,10 @@ class TestFlextObservabilityConfig:
     """Test the FlextObservabilityConfig class."""
 
     def test_inherits_from_flext_config(self) -> None:
-        """Test that FlextObservabilityConfig inherits from FlextConfig."""
-        from flext_core import FlextConfig
+        """Test that FlextObservabilityConfig inherits from FlextCore.Config."""
+        from flext_core import FlextCore
 
-        assert issubclass(FlextObservabilityConfig, FlextConfig)
+        assert issubclass(FlextObservabilityConfig, FlextCore.Config)
 
     def test_configuration_attributes(self) -> None:
         """Test configuration attributes are properly defined."""

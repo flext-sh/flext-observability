@@ -1,7 +1,7 @@
 """FLEXT Observability Types Module.
 
 This module provides unified type definitions, aliases, and protocols for the FLEXT observability system.
-All type definitions follow the domain separation principle and extend FlextTypes appropriately.
+All type definitions follow the domain separation principle and extend FlextCore.Types appropriately.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -11,9 +11,12 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Literal, Protocol
+from typing import Literal, Protocol, TypeVar
 
-from flext_core import FlextTypes, T
+from flext_core import FlextCore
+
+# Define T TypeVar for generic programming
+T = TypeVar("T")
 
 # Observability-specific type aliases
 MetricValue = float | int | Decimal
@@ -24,8 +27,8 @@ TraceStatus = str  # "started", "running", "completed", "failed"
 HealthStatus = str  # "healthy", "degraded", "unhealthy"
 
 
-class FlextObservabilityTypes(FlextTypes):
-    """Unified observability types extending FlextTypes.
+class FlextObservabilityTypes(FlextCore.Types):
+    """Unified observability types extending FlextCore.Types.
 
     Single class containing all observability type definitions,
     protocols, and aliases following unified class pattern.
@@ -40,20 +43,20 @@ class FlextObservabilityTypes(FlextTypes):
     HealthStatus = HealthStatus
 
     # =========================================================================
-    # OBSERVABILITY PROJECT TYPES - Domain-specific project types extending FlextTypes
+    # OBSERVABILITY PROJECT TYPES - Domain-specific project types extending FlextCore.Types
     # =========================================================================
 
-    class Project(FlextTypes.Project):
-        """Observability-specific project types extending FlextTypes.Project.
+    class Project(FlextCore.Types.Project):
+        """Observability-specific project types extending FlextCore.Types.Project.
 
         Adds observability/monitoring-specific project types while inheriting
-        generic types from FlextTypes. Follows domain separation principle:
+        generic types from FlextCore.Types. Follows domain separation principle:
         Observability domain owns monitoring-specific types.
         """
 
         # Observability-specific project types extending the generic ones
         type ObservabilityProjectType = Literal[
-            # Generic types inherited from FlextTypes.Project
+            # Generic types inherited from FlextCore.Types.Project
             "library",
             "application",
             "service",
@@ -78,41 +81,41 @@ class FlextObservabilityTypes(FlextTypes):
 
         # Observability-specific project configurations
         type ObservabilityProjectConfig = dict[
-            str, str | int | bool | FlextTypes.StringList | object
+            str, str | int | bool | FlextCore.Types.StringList | object
         ]
-        type MonitoringConfig = dict[str, str | int | bool | FlextTypes.StringList]
-        type MetricsConfig = dict[str, bool | str | FlextTypes.Dict]
+        type MonitoringConfig = dict[str, str | int | bool | FlextCore.Types.StringList]
+        type MetricsConfig = dict[str, bool | str | FlextCore.Types.Dict]
         type TracingConfig = dict[
-            str, str | int | bool | FlextTypes.StringList | object
+            str, str | int | bool | FlextCore.Types.StringList | object
         ]
 
     # =========================================================================
     # OBSERVABILITY CORE TYPES - Commonly used observability-specific types
     # =========================================================================
 
-    class ObservabilityCore(FlextTypes):
-        """Core observability types extending FlextTypes."""
+    class ObservabilityCore(FlextCore.Types):
+        """Core observability types extending FlextCore.Types."""
 
         # Metric types
         type MetricDict = dict[str, float | str | int]
         type MetricFormatDict = dict[str, str | dict[str, float | str | int] | float]
         type MetricValueDict = dict[str, float | int]
-        type MetricConfigDict = dict[str, bool | str | FlextTypes.Dict]
+        type MetricConfigDict = dict[str, bool | str | FlextCore.Types.Dict]
 
         # Tag and metadata types
-        type TagsDict = FlextTypes.StringDict
-        type MetadataDict = FlextTypes.Dict
-        type AttributesDict = FlextTypes.Dict
+        type TagsDict = FlextCore.Types.StringDict
+        type MetadataDict = FlextCore.Types.Dict
+        type AttributesDict = FlextCore.Types.Dict
         type ObservabilityHeaders = dict[str, str]  # HTTP headers for observability
 
         # Trace types
         type TraceContextDict = dict[str, str | None]
-        type SpanAttributesDict = FlextTypes.Dict
-        type TraceInfoDict = FlextTypes.Dict
+        type SpanAttributesDict = FlextCore.Types.Dict
+        type TraceInfoDict = FlextCore.Types.Dict
 
         # Health monitoring types
-        type HealthMetricsDict = FlextTypes.Dict
-        type ComponentHealthDict = FlextTypes.Dict
+        type HealthMetricsDict = FlextCore.Types.Dict
+        type ComponentHealthDict = FlextCore.Types.Dict
         type SystemChecksDict = dict[str, dict[str, float | str]]
 
         # Service and container types
@@ -121,15 +124,15 @@ class FlextObservabilityTypes(FlextTypes):
 
         # Storage types for observability services
         type MetricsStore = dict[str, list[MetadataDict]]
-        type CountersDict = FlextTypes.FloatDict
-        type GaugesDict = FlextTypes.FloatDict
-        type HistogramsList = FlextTypes.FloatList
+        type CountersDict = FlextCore.Types.FloatDict
+        type GaugesDict = FlextCore.Types.FloatDict
+        type HistogramsList = FlextCore.Types.FloatList
         type HistogramsDict = dict[str, HistogramsList]
 
         # Trace storage types
         type TracesDict = dict[str, MetadataDict]
         type TraceSpansDict = dict[str, list[MetadataDict]]
-        type TraceHierarchyDict = dict[str, FlextTypes.StringList]
+        type TraceHierarchyDict = dict[str, FlextCore.Types.StringList]
 
         # Health storage types
         type HealthHistoryDict = dict[str, list[MetadataDict]]
@@ -176,7 +179,7 @@ class FlextObservabilityTypes(FlextTypes):
                 """Get trace ID."""
                 raise NotImplementedError
 
-            def span_attributes(self) -> FlextTypes.Dict:
+            def span_attributes(self) -> FlextCore.Types.Dict:
                 """Get span attributes."""
                 raise NotImplementedError
 
@@ -234,7 +237,7 @@ class FlextObservabilityTypes(FlextTypes):
                 """Get health message."""
                 raise NotImplementedError
 
-            def metrics(self) -> FlextTypes.Dict:
+            def metrics(self) -> FlextCore.Types.Dict:
                 """Get health metrics."""
                 raise NotImplementedError
 
@@ -253,7 +256,7 @@ class FlextObservabilityTypes(FlextTypes):
                 """Get log level."""
                 raise NotImplementedError
 
-            def context(self) -> FlextTypes.Dict:
+            def context(self) -> FlextCore.Types.Dict:
                 """Get log context."""
                 raise NotImplementedError
 
@@ -314,7 +317,7 @@ class LogEntryProtocol(Protocol):
     correlation_id: str | None
 
 
-class ObservabilityTypes(FlextTypes):
+class ObservabilityTypes(FlextCore.Types):
     """Observability domain-specific types extending flext-core."""
 
     # Value types

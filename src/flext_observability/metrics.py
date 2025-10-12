@@ -14,26 +14,26 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Self
 
-from flext_core import FlextModels, FlextResult, FlextTypes
+from flext_core import FlextCore
 from pydantic import (
+    BaseModel,
     ConfigDict,
     Field,
-    computed_field,
     field_serializer,
     field_validator,
     model_validator,
 )
 
 
-class FlextObservabilityMetrics(FlextModels):
-    """Focused metrics models for observability operations extending FlextModels.
+class FlextObservabilityMetrics(FlextCore.Models):
+    """Focused metrics models for observability operations extending FlextCore.Models.
 
     Provides comprehensive metric entities, configurations, and operations
     for metrics collection, validation, and management within the FLEXT ecosystem.
     """
 
     # Core Metrics Models
-    class MetricEntry(FlextModels.Value):
+    class MetricEntry(FlextCore.Models.Value):
         """Comprehensive metric entry model."""
 
         model_config = ConfigDict(
@@ -49,22 +49,10 @@ class FlextObservabilityMetrics(FlextModels):
         timestamp: datetime = Field(
             default_factory=datetime.now, description="Metric timestamp"
         )
-        labels: FlextTypes.StringDict = Field(
+        labels: FlextCore.Types.StringDict = Field(
             default_factory=dict, description="Metric labels"
         )
         source: str = Field(description="Metric source service")
-
-        @computed_field
-        @property
-        def metric_key(self) -> str:
-            """Computed field for unique metric key."""
-            return f"{self.source}.{self.name}"
-
-        @computed_field
-        @property
-        def formatted_value(self) -> str:
-            """Computed field for formatted metric value with unit."""
-            return f"{self.value} {self.unit}"
 
         @field_validator("name")
         @classmethod
@@ -77,8 +65,8 @@ class FlextObservabilityMetrics(FlextModels):
 
         @field_serializer("labels", when_used="json")
         def serialize_labels_with_metadata(
-            self, value: FlextTypes.StringDict, _info: object
-        ) -> FlextTypes.Dict:
+            self, value: FlextCore.Types.StringDict, _info: object
+        ) -> FlextCore.Types.Dict:
             """Serialize labels with metadata for monitoring."""
             return {
                 "labels": value,
@@ -86,7 +74,7 @@ class FlextObservabilityMetrics(FlextModels):
                 "metric_context": self.source,
             }
 
-    class MetricConfig(FlextModels.Configuration):
+    class MetricConfig(BaseModel):
         """Metric configuration model."""
 
         model_config = ConfigDict(
@@ -108,17 +96,6 @@ class FlextObservabilityMetrics(FlextModels):
             default=True, description="Enable alerting for metrics"
         )
 
-        @computed_field
-        @property
-        def config_summary(self) -> FlextTypes.Dict:
-            """Computed field for metric configuration summary."""
-            return {
-                "collection_interval_minutes": self.collection_interval / 60,
-                "retention_weeks": self.retention_days / 7,
-                "alerting_enabled": self.enable_alerting,
-                "aggregation": self.aggregation_method,
-            }
-
         @model_validator(mode="after")
         def validate_metric_config(self) -> Self:
             """Validate metric configuration parameters."""
@@ -130,7 +107,7 @@ class FlextObservabilityMetrics(FlextModels):
                 raise ValueError(msg)
             return self
 
-    class FlextMetric(FlextModels.Entity):
+    class FlextMetric(FlextCore.Models.Entity):
         """Observability metric entity for collecting and validating measurement data.
 
         Core domain entity representing a single metric measurement with comprehensive
@@ -146,7 +123,9 @@ class FlextObservabilityMetrics(FlextModels):
         name: str = Field(..., description="Metric name")
         value: float | Decimal = Field(..., description="Metric value")
         unit: str = Field(default="", description="Metric unit")
-        tags: FlextTypes.Dict = Field(default_factory=dict, description="Metric tags")
+        tags: FlextCore.Types.Dict = Field(
+            default_factory=dict, description="Metric tags"
+        )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
         metric_type: str = Field(default="gauge", description="Metric type")
 
@@ -196,23 +175,25 @@ class FlextObservabilityMetrics(FlextModels):
                 raise TypeError(msg)
             return v
 
-        def validate_business_rules(self) -> FlextResult[bool]:
+        def validate_business_rules(self) -> FlextCore.Result[bool]:
             """Validate business rules for metric entity."""
             try:
                 # Additional business rule validations can be added here
                 if not self.name:
-                    return FlextResult[bool].fail("Metric name is required")
+                    return FlextCore.Result[bool].fail("Metric name is required")
 
                 if self.value is None:
-                    return FlextResult[bool].fail("Metric value is required")
+                    return FlextCore.Result[bool].fail("Metric value is required")
 
                 # Validate tags structure
                 if not isinstance(self.tags, dict):
-                    return FlextResult[bool].fail("Tags must be a dictionary")
+                    return FlextCore.Result[bool].fail("Tags must be a dictionary")
 
-                return FlextResult[bool].ok(True)
+                return FlextCore.Result[bool].ok(True)
             except Exception as e:
-                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
+                return FlextCore.Result[bool].fail(
+                    f"Business rule validation failed: {e}"
+                )
 
     # Factory methods for direct entity creation
     @staticmethod
@@ -222,23 +203,23 @@ class FlextObservabilityMetrics(FlextModels):
         unit: str = "",
         metric_type: str = "gauge",
         **kwargs: object,
-    ) -> FlextResult[FlextObservabilityMetrics.FlextMetric]:
+    ) -> FlextCore.Result[FlextObservabilityMetrics.FlextMetric]:
         """Create a FlextMetric entity directly."""
         try:
             # Filter kwargs to only include valid FlextMetric parameters
-            valid_kwargs: dict[str, object] = {}
+            valid_kwargs: FlextCore.Types.Dict = {}
             if "tags" in kwargs and isinstance(kwargs["tags"], dict):
                 valid_kwargs["tags"] = kwargs["tags"]
             if "timestamp" in kwargs and isinstance(kwargs["timestamp"], datetime):
                 valid_kwargs["timestamp"] = kwargs["timestamp"]
 
-            return FlextResult[FlextObservabilityMetrics.FlextMetric].ok(
+            return FlextCore.Result[FlextObservabilityMetrics.FlextMetric].ok(
                 FlextObservabilityMetrics.FlextMetric(
                     name=name, value=value, unit=unit, metric_type=metric_type
                 )
             )
         except Exception as e:
-            return FlextResult[FlextObservabilityMetrics.FlextMetric].fail(
+            return FlextCore.Result[FlextObservabilityMetrics.FlextMetric].fail(
                 f"Failed to create metric: {e}"
             )
 

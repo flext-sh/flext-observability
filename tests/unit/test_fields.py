@@ -7,18 +7,7 @@ SPDX-License-Identifier: MIT
 import pytest
 
 from flext_observability import (
-    AlertLevelField,
     FlextObservabilityFields,
-    HealthStatusField,
-    MetricUnitField,
-    MetricValueField,
-    TraceStatusField,
-    alert_message_field,
-    metric_name_field,
-    metric_unit_field,
-    metric_value_field,
-    timestamp_field,
-    trace_name_field,
 )
 
 
@@ -214,53 +203,5 @@ class TestHealthFields:
             )
 
 
-class TestBackwardCompatibility:
-    """Test backward compatibility classes."""
-
-    def test_metric_value_field_backward_compatibility(self) -> None:
-        """Test MetricValueField backward compatibility class."""
-        assert issubclass(MetricValueField, FlextObservabilityFields.MetricFields)
-
-    def test_metric_unit_field_backward_compatibility(self) -> None:
-        """Test MetricUnitField backward compatibility class."""
-        assert issubclass(MetricUnitField, FlextObservabilityFields.MetricFields)
-
-    def test_alert_level_field_backward_compatibility(self) -> None:
-        """Test AlertLevelField backward compatibility class."""
-        assert issubclass(AlertLevelField, FlextObservabilityFields.AlertFields)
-
-    def test_trace_status_field_backward_compatibility(self) -> None:
-        """Test TraceStatusField backward compatibility class."""
-        assert issubclass(TraceStatusField, FlextObservabilityFields.TraceFields)
-
-    def test_health_status_field_backward_compatibility(self) -> None:
-        """Test HealthStatusField backward compatibility class."""
-        assert issubclass(HealthStatusField, FlextObservabilityFields.HealthFields)
-
-
-class TestFieldInstances:
-    """Test field instances are created properly."""
-
-    def test_metric_name_field_instance(self) -> None:
-        """Test metric_name_field is created."""
-        assert metric_name_field is not None
-
-    def test_metric_value_field_instance(self) -> None:
-        """Test metric_value_field is created."""
-        assert metric_value_field is not None
-
-    def test_metric_unit_field_instance(self) -> None:
-        """Test metric_unit_field is created."""
-        assert metric_unit_field is not None
-
-    def test_trace_name_field_instance(self) -> None:
-        """Test trace_name_field is created."""
-        assert trace_name_field is not None
-
-    def test_alert_message_field_instance(self) -> None:
-        """Test alert_message_field is created."""
-        assert alert_message_field is not None
-
-    def test_timestamp_field_instance(self) -> None:
-        """Test timestamp_field is created."""
-        assert timestamp_field is not None
+# Removed backward compatibility and field instance tests
+# as those symbols have been removed from the public API

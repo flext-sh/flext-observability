@@ -11,10 +11,10 @@ class TestFlextObservabilityModels:
     """Test the unified FlextObservabilityModels class."""
 
     def test_inherits_from_flext_models(self) -> None:
-        """Test that FlextObservabilityModels inherits from FlextModels."""
-        from flext_core import FlextModels
+        """Test that FlextObservabilityModels inherits from FlextCore.Models."""
+        from flext_core import FlextCore
 
-        assert issubclass(FlextObservabilityModels, FlextModels)
+        assert issubclass(FlextObservabilityModels, FlextCore.Models)
 
     def test_metrics_namespace(self) -> None:
         """Test Metrics namespace is properly assigned."""
