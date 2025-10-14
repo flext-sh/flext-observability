@@ -64,7 +64,7 @@ class FlextObservabilityExceptions(FlextCore.Exceptions):
             self, base_context: FlextCore.Types.Dict, **extra_fields: object
         ) -> FlextCore.Types.Dict:
             """Build context with additional fields."""
-            context = dict(base_context)
+            context = dict[str, object](base_context)
             context.update(extra_fields)
             return context
 

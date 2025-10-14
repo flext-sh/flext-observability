@@ -104,7 +104,7 @@ Automatically monitor function execution:
 from flext_observability import flext_monitor_function
 
 @flext_monitor_function("user_data_processing")
-def process_user_data(user_id: str, data: dict) -> dict:
+def process_user_data(user_id: str, data: dict) -> dict[str, object]:
     """This function is automatically monitored."""
     # Your business logic here
     processed_data = {"user_id": user_id, "status": "processed"}

@@ -195,10 +195,10 @@ class FlextObservabilityServices(FlextCore.Utilities):
         try:
             with cls._metrics_lock:
                 metric_data: FlextObservabilityTypes.ObservabilityCore.Dict = {
-                    "counters": dict(cls._metrics_counters),
-                    "gauges": dict(cls._metrics_gauges),
-                    "histograms": dict(cls._metrics_histograms),
-                    "metadata": dict(cls._metrics_metadata),
+                    "counters": dict[str, object](cls._metrics_counters),
+                    "gauges": dict[str, object](cls._metrics_gauges),
+                    "histograms": dict[str, object](cls._metrics_histograms),
+                    "metadata": dict[str, object](cls._metrics_metadata),
                     "collection_timestamp": time.time(),
                 }
 

@@ -194,7 +194,7 @@ def flext_create_trace(operation_name: str, service_name: str) -> FlextCore.Resu
 from flext_observability.flext_monitor import flext_monitor_function
 
 @flext_monitor_function("user_processing")
-def process_user_data(user_data: dict) -> dict:
+def process_user_data(user_data: dict) -> dict[str, object]:
     """Function automatically monitored for execution time and errors."""
     # Business logic here
     return {"status": "processed", "user": user_data}
