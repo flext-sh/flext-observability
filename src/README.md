@@ -75,7 +75,7 @@ trace_result = flext_create_trace("user_login", "auth-service")
 
 # Use monitoring decorators
 @flext_monitor_function("business_operation")
-def process_order(order_data: dict) -> dict:
+def process_order(order_data: dict) -> dict[str, object]:
     return {"status": "processed"}
 ```
 

@@ -95,7 +95,7 @@ class UserService:
 from flext_observability import flext_monitor_function
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> dict:
+def process_order(order_data: dict) -> dict[str, object]:
     """Process order with automatic monitoring.
 
     This function automatically gets:

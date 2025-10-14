@@ -164,7 +164,7 @@ trace_result = flext_create_trace("user_login", "auth-service")
 from flext_observability.flext_monitor import flext_monitor_function
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> dict:
+def process_order(order_data: dict) -> dict[str, object]:
     # Automatically monitored for execution time, success/failure
     return {"status": "processed", "order_id": order_data["id"]}
 ```
