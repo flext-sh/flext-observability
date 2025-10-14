@@ -24,6 +24,14 @@ from flext_observability import (
     flext_create_metric,
     flext_create_trace,
 )
+from flext_observability.typings import (
+    AlertLevel,
+    AlertProtocol,
+    HealthStatus,
+    LogLevel,
+    MetricValue,
+    TraceStatus,
+)
 
 
 class TestTypesModuleCoverage:
