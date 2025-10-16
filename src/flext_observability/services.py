@@ -1157,15 +1157,13 @@ class FlextObservabilityServices(FlextUtilities):
             # Use the metrics service to create
             return FlextResult[
                 FlextObservabilityTypes.ObservabilityCore.MetadataDict
-            ].ok(
-                {
-                    "name": name,
-                    "value": value,
-                    "unit": unit,
-                    "metadata": metadata or {},
-                    "created_by": "master_factory",
-                }
-            )
+            ].ok({
+                "name": name,
+                "value": value,
+                "unit": unit,
+                "metadata": metadata or {},
+                "created_by": "master_factory",
+            })
 
         @classmethod
         def create_trace(
@@ -1179,14 +1177,12 @@ class FlextObservabilityServices(FlextUtilities):
             cls.get_global_factory()
             return FlextResult[
                 FlextObservabilityTypes.ObservabilityCore.MetadataDict
-            ].ok(
-                {
-                    "name": name,
-                    "operation": operation,
-                    "context": context or {},
-                    "created_by": "master_factory",
-                }
-            )
+            ].ok({
+                "name": name,
+                "operation": operation,
+                "context": context or {},
+                "created_by": "master_factory",
+            })
 
         @classmethod
         def create_alert(
@@ -1200,15 +1196,13 @@ class FlextObservabilityServices(FlextUtilities):
             cls.get_global_factory()
             return FlextResult[
                 FlextObservabilityTypes.ObservabilityCore.MetadataDict
-            ].ok(
-                {
-                    "title": title,
-                    "message": message,
-                    "severity": severity,
-                    "source": source,
-                    "created_by": "master_factory",
-                }
-            )
+            ].ok({
+                "title": title,
+                "message": message,
+                "severity": severity,
+                "source": source,
+                "created_by": "master_factory",
+            })
 
         @classmethod
         def create_health_check(
@@ -1222,14 +1216,12 @@ class FlextObservabilityServices(FlextUtilities):
             cls.get_global_factory()
             return FlextResult[
                 FlextObservabilityTypes.ObservabilityCore.MetadataDict
-            ].ok(
-                {
-                    "service_name": service_name,
-                    "status": status,
-                    "details": details or {},
-                    "created_by": "master_factory",
-                }
-            )
+            ].ok({
+                "service_name": service_name,
+                "status": status,
+                "details": details or {},
+                "created_by": "master_factory",
+            })
 
         @classmethod
         def create_log_entry(
@@ -1244,15 +1236,13 @@ class FlextObservabilityServices(FlextUtilities):
             cls.get_global_factory()
             return FlextResult[
                 FlextObservabilityTypes.ObservabilityCore.MetadataDict
-            ].ok(
-                {
-                    "message": message,
-                    "service": service,
-                    "level": level,
-                    "metadata": metadata or {},
-                    "created_by": "master_factory",
-                }
-            )
+            ].ok({
+                "message": message,
+                "service": service,
+                "level": level,
+                "metadata": metadata or {},
+                "created_by": "master_factory",
+            })
 
 
 # Backward compatibility aliases

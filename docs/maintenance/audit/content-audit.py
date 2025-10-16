@@ -355,15 +355,13 @@ class DocumentationAuditor:
         for category, count in sorted(self.report.category_breakdown.items()):
             report_lines.append(f"| {category} | {count} |")
 
-        report_lines.extend(
-            [
-                "",
-                "## 📋 File Details",
-                "",
-                "| File | Quality | Freshness | Issues | Words |",
-                "|------|---------|-----------|--------|-------|",
-            ]
-        )
+        report_lines.extend([
+            "",
+            "## 📋 File Details",
+            "",
+            "| File | Quality | Freshness | Issues | Words |",
+            "|------|---------|-----------|--------|-------|",
+        ])
 
         for file_path, metrics in sorted(self.report.file_metrics.items()):
             relative_path = Path(file_path).relative_to(self.docs_root)
@@ -376,14 +374,12 @@ class DocumentationAuditor:
                 f"{freshness_icon} {metrics.freshness_score:.0f} | {issue_count} | {metrics.word_count:,} |"
             )
 
-        report_lines.extend(
-            [
-                "",
-                "## 🔧 Recommendations",
-                "",
-                "### Priority Actions",
-            ]
-        )
+        report_lines.extend([
+            "",
+            "## 🔧 Recommendations",
+            "",
+            "### Priority Actions",
+        ])
 
         # Group recommendations by priority
         priority_recs = defaultdict(list)
