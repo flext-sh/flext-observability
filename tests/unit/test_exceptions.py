@@ -5,6 +5,8 @@ SPDX-License-Identifier: MIT
 
 """
 
+from flext_core import FlextExceptions
+
 from flext_observability import (
     FlextAlertCreationError,
     FlextAlertEscalationError,
@@ -29,10 +31,8 @@ class TestFlextObservabilityExceptions:
     """Test the FlextObservabilityExceptions class."""
 
     def test_inherits_from_flext_exceptions(self) -> None:
-        """Test that FlextObservabilityExceptions inherits from FlextCore.Exceptions."""
-        from flext_core import FlextCore
-
-        assert issubclass(FlextObservabilityExceptions, FlextCore.Exceptions)
+        """Test that FlextObservabilityExceptions inherits from FlextExceptions."""
+        assert issubclass(FlextObservabilityExceptions, FlextExceptions)
 
 
 class TestFlextObservabilityError:

@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import cast
 
-from flext_core import FlextCore
+from flext_core import FlextResult, FlextTypes
 
 from flext_observability import (
     flext_create_alert,
@@ -20,10 +20,10 @@ from flext_observability import (
     flext_create_trace,
 )
 
-T = FlextCore.Types.T
+T = FlextTypes.T
 
 
-def assert_success_with_data[T](result: FlextCore.Result[T]) -> T:
+def assert_success_with_data[T](result: FlextResult[T]) -> T:
     """Assert result is successful and return non-None data."""
     assert result.is_success
     assert result.data is not None

@@ -123,10 +123,29 @@ For more advanced scenarios, use the service layer with flext-core patterns:
 
 ```python
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 # Initialize dependency injection container
-container = FlextCore.Container()
+container = FlextContainer()
 
 # Create observability services
 metrics_service = FlextMetricsService(container)
@@ -154,11 +173,30 @@ For FLEXT ecosystem services (API, Auth, Web, CLI):
 ```python
 # In your FLEXT service initialization
 from flext_observability import flext_monitor_function, flext_create_metric
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 class UserService:
     @flext_monitor_function("user_service_create")
-    def create_user(self, user_data: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def create_user(self, user_data: dict) -> FlextResult[FlextTypes.Dict]:
         """Create user with automatic monitoring."""
 
         # Record custom metric
@@ -167,7 +205,7 @@ class UserService:
         # Your business logic
         user = {"id": "user123", "email": user_data["email"]}
 
-        return FlextCore.Result[None].ok(user)
+        return FlextResult[None].ok(user)
 ```
 
 ### Pattern 2: Infrastructure Service Integration
@@ -176,14 +214,33 @@ For FLEXT infrastructure services (Oracle, LDAP, LDIF):
 
 ```python
 from flext_observability import FlextHealthService, flext_create_health_check
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 class DatabaseConnectionService:
     def __init__(self):
-        self.container = FlextCore.Container()
+        self.container = FlextContainer()
         self.health_service = FlextHealthService(self.container)
 
-    def check_database_health(self) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def check_database_health(self) -> FlextResult[FlextTypes.Dict]:
         """Monitor database connection health."""
 
         # Create health check
@@ -209,7 +266,7 @@ from flext_observability import flext_monitor_function, flext_create_metric
 
 class FlextMeltanoTapOracle:
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> list[FlextCore.Types.Dict]:
+    def extract_records(self, table_name: str) -> list[FlextTypes.Dict]:
         """Extract records with monitoring."""
 
         # Your extraction logic
@@ -354,14 +411,33 @@ pip list | grep flext-observability
 ```bash
 # Solution: Ensure proper type imports
 from flext_observability import FlextMetric
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 # Use proper typing
-def create_metric() -> FlextCore.Result[FlextMetric]:
+def create_metric() -> FlextResult[FlextMetric]:
     return flext_create_metric("test", 1.0, "count")
 ```
 
-### FlextCore.Result pattern confusion
+### FlextResult pattern confusion
 
 ```python
 # ❌ Wrong: Directly accessing data without checking success

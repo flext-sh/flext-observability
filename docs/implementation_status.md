@@ -13,7 +13,7 @@
 - Complete Clean Architecture implementation (Domain → Application → Infrastructure)
 - 21 Python modules with proper separation of concerns
 - Domain-Driven Design with rich domain entities
-- Railway-oriented programming with FlextCore.Result[T] throughout
+- Railway-oriented programming with FlextResult[T] throughout
 
 ### **Implementation Completion**: 100% ✅
 
@@ -84,10 +84,48 @@
 
 ```python
 # CURRENT: BROKEN - T not exported from flext-core
-from flext_core import FlextCore, T  # ImportError
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities, T  # ImportError
 
 # SHOULD BE: Fixed in flext-core __init__.py
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 ```
 
 #### **Test Execution Status**
@@ -107,7 +145,26 @@ from flext_core import FlextCore
 **Solution Required**:
 
 1. **flext-core fix**: Export `T` in flext-core `__init__.py` OR
-2. **flext-observability fix**: Change import to `from flext_core import FlextCore`
+2. **flext-observability fix**: Change import to `from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities`
 
 **Impact**: Unblocks all testing, type checking, and quality validation.
 
@@ -191,7 +248,7 @@ make lint        # Ruff compliance
 - **Clean Architecture**: Proper layer separation maintained throughout
 - **Domain-Driven Design**: Rich domain entities with business logic
 - **Type Safety**: Complete Python 3.13+ annotations
-- **Railway Pattern**: FlextCore.Result[T] used consistently for error handling
+- **Railway Pattern**: FlextResult[T] used consistently for error handling
 - **Dependency Injection**: Proper service registration and resolution
 
 ### **Implementation Decisions**

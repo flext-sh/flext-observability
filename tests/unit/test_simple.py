@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import flext_tests
 import pytest
-from flext_core import FlextCore
+from flext_core import FlextResult, FlextUtilities
 from pydantic import ValidationError
 
 from flext_observability import (
@@ -181,12 +181,12 @@ class TestSimpleCoverage:
 
 
 class TestFlextMixinsCoverage:
-    """Test FlextCore.Mixins methods for complete coverage."""
+    """Test FlextMixins methods for complete coverage."""
 
     def test_generate_entity_id(self) -> None:
-        """Test FlextCore.UtilitiesGenerators.generate_entity_id method."""
-        entity_id1 = FlextCore.UtilitiesGenerators.generate_entity_id()
-        entity_id2 = FlextCore.UtilitiesGenerators.generate_entity_id()
+        """Test FlextUtilities.Generators.generate_entity_id method."""
+        entity_id1 = FlextUtilities.Generators.generate_entity_id()
+        entity_id2 = FlextUtilities.Generators.generate_entity_id()
 
         assert isinstance(entity_id1, str)
         assert isinstance(entity_id2, str)
@@ -195,9 +195,9 @@ class TestFlextMixinsCoverage:
         assert entity_id1 != entity_id2  # Should be unique
 
     def test_generate_correlation_id(self) -> None:
-        """Test FlextCore.UtilitiesGenerators.generate_correlation_id method."""
-        corr_id1 = FlextCore.UtilitiesGenerators.generate_correlation_id()
-        corr_id2 = FlextCore.UtilitiesGenerators.generate_correlation_id()
+        """Test FlextUtilities.Generators.generate_correlation_id method."""
+        corr_id1 = FlextUtilities.Generators.generate_correlation_id()
+        corr_id2 = FlextUtilities.Generators.generate_correlation_id()
 
         assert isinstance(corr_id1, str)
         assert isinstance(corr_id2, str)
@@ -206,19 +206,19 @@ class TestFlextMixinsCoverage:
         assert corr_id1 != corr_id2  # Should be unique
 
     def test_generate_timestamp_coverage(self) -> None:
-        """Test FlextCore.UtilitiesGenerators.generate_timestamp method - covers linha 70."""
-        timestamp1 = FlextCore.UtilitiesGenerators.generate_timestamp()
+        """Test FlextUtilities.Generators.generate_timestamp method - covers linha 70."""
+        timestamp1 = FlextUtilities.Generators.generate_timestamp()
         time.sleep(0.001)  # Pequeno delay para garantir diferença
-        timestamp2 = FlextCore.UtilitiesGenerators.generate_timestamp()
+        timestamp2 = FlextUtilities.Generators.generate_timestamp()
 
         assert isinstance(timestamp1, float)
         assert isinstance(timestamp2, float)
         assert timestamp2 > timestamp1
 
     def test_generate_uuid_coverage(self) -> None:
-        """Test FlextCore.UtilitiesGenerators.generate_uuid method - covers linha 74."""
-        uuid1 = FlextCore.UtilitiesGenerators.generate_uuid()
-        uuid2 = FlextCore.UtilitiesGenerators.generate_uuid()
+        """Test FlextUtilities.Generators.generate_uuid method - covers linha 74."""
+        uuid1 = FlextUtilities.Generators.generate_uuid()
+        uuid2 = FlextUtilities.Generators.generate_uuid()
 
         assert isinstance(uuid1, str)
         assert isinstance(uuid2, str)
@@ -227,9 +227,9 @@ class TestFlextMixinsCoverage:
         assert uuid1 != uuid2
 
     def test_generate_entity_id_coverage(self) -> None:
-        """Test FlextCore.UtilitiesGenerators.generate_entity_id method - covers linha 78."""
-        entity_id1 = FlextCore.UtilitiesGenerators.generate_entity_id()
-        entity_id2 = FlextCore.UtilitiesGenerators.generate_entity_id()
+        """Test FlextUtilities.Generators.generate_entity_id method - covers linha 78."""
+        entity_id1 = FlextUtilities.Generators.generate_entity_id()
+        entity_id2 = FlextUtilities.Generators.generate_entity_id()
 
         assert isinstance(entity_id1, str)
         assert isinstance(entity_id2, str)
@@ -381,7 +381,7 @@ class TestFlextMixinsCoverage:
         assert memory_info is not None
 
     def test_flext_result_factory_real_usage(self) -> None:
-        """Test using FlextCore.ResultFactory from flext_tests for result validation."""
+        """Test using FlextResultFactory from flext_tests for result validation."""
         # Usar ResultFactory para validar padrões de resultado
         test_result = flext_tests.FlextTestsFactories.ResultFactory.is_success_result(
             "test_data",
@@ -1035,12 +1035,12 @@ class TestFlextMixinsCoverage:
         """Test FlextHealthCheck validate_business_rules with invalid component - covers lines 920-921."""
         # Create a valid health check first, then modify component to bypass field validation
         health = FlextHealthCheck.model_construct(
-            id=FlextCore.UtilitiesGenerators.generate_uuid(),
+            id=FlextUtilities.Generators.generate_uuid(),
             component="",  # Empty component triggers line 920-921
             status="healthy",
             message="Test message",
             timestamp=datetime.fromtimestamp(
-                FlextCore.UtilitiesGenerators.generate_timestamp(),
+                FlextUtilities.Generators.generate_timestamp(),
                 tz=datetime.now(UTC).astimezone().tzinfo,
             ),
             metrics={},
@@ -1060,12 +1060,12 @@ class TestFlextMixinsCoverage:
         """Test FlextHealthCheck validate_business_rules with invalid status - covers lines 922-923."""
         # Create health check with invalid status using model_construct to bypass field validation
         health = FlextHealthCheck.model_construct(
-            id=FlextCore.UtilitiesGenerators.generate_uuid(),
+            id=FlextUtilities.Generators.generate_uuid(),
             component="database",
             status="invalid_status",  # Invalid status triggers line 922-923
             message="Test message",
             timestamp=datetime.fromtimestamp(
-                FlextCore.UtilitiesGenerators.generate_timestamp(),
+                FlextUtilities.Generators.generate_timestamp(),
                 tz=datetime.now(UTC).astimezone().tzinfo,
             ),
             metrics={},
@@ -1083,12 +1083,12 @@ class TestFlextMixinsCoverage:
         """Test FlextHealthCheck validate_business_rules with valid data - covers line 924."""
         # Create health check with valid component and status
         health = FlextHealthCheck(
-            id=FlextCore.UtilitiesGenerators.generate_uuid(),
+            id=FlextUtilities.Generators.generate_uuid(),
             component="database",
             status="healthy",  # Valid status
             message="Database is operational",
             timestamp=datetime.fromtimestamp(
-                FlextCore.UtilitiesGenerators.generate_timestamp(),
+                FlextUtilities.Generators.generate_timestamp(),
                 tz=datetime.now(UTC).astimezone().tzinfo,
             ),
             metrics={},
@@ -1109,12 +1109,12 @@ class TestFlextMixinsCoverage:
 
         for status in valid_statuses:
             health = FlextHealthCheck(
-                id=FlextCore.UtilitiesGenerators.generate_uuid(),
+                id=FlextUtilities.Generators.generate_uuid(),
                 component="test-component",
                 status=status,
                 message=f"Testing status: {status}",
                 timestamp=datetime.fromtimestamp(
-                    FlextCore.UtilitiesGenerators.generate_timestamp(),
+                    FlextUtilities.Generators.generate_timestamp(),
                     tz=datetime.now(UTC).astimezone().tzinfo,
                 ),
                 metrics={},
@@ -1129,9 +1129,9 @@ class TestFlextMixinsCoverage:
     def test_flext_alert_factory_with_id_and_version_coverage(self) -> None:
         """Test flext_alert factory function with id and version - covers lines 944-954."""
         # Test with both id and version in kwargs (triggers lines 944-954)
-        custom_id = FlextCore.UtilitiesGenerators.generate_uuid()
+        custom_id = FlextUtilities.Generators.generate_uuid()
         custom_version = 2
-        FlextCore.UtilitiesGenerators.generate_timestamp()
+        FlextUtilities.Generators.generate_timestamp()
         custom_tags = {"environment": "test", "priority": "high"}
 
         alert = flext_alert(
@@ -1157,8 +1157,8 @@ class TestFlextMixinsCoverage:
     def test_flext_alert_factory_with_id_only_coverage(self) -> None:
         """Test flext_alert factory function with id but no version - covers lines 955-964."""
         # Test with id but no version in kwargs (triggers lines 955-964)
-        custom_id = FlextCore.UtilitiesGenerators.generate_uuid()
-        FlextCore.UtilitiesGenerators.generate_timestamp()
+        custom_id = FlextUtilities.Generators.generate_uuid()
+        FlextUtilities.Generators.generate_timestamp()
 
         alert = flext_alert(
             title="Alert with ID only",
@@ -1199,10 +1199,10 @@ class TestFlextMixinsCoverage:
     def test_flext_trace_factory_with_id_coverage(self) -> None:
         """Test flext_trace factory function with custom id - covers lines 989-999."""
         # Test with custom id in kwargs (triggers lines 989-999)
-        custom_id = FlextCore.UtilitiesGenerators.generate_uuid()
+        custom_id = FlextUtilities.Generators.generate_uuid()
         custom_span_attrs = {"http.method": "GET", "http.status": 200}
         custom_duration = 150
-        custom_timestamp = FlextCore.UtilitiesGenerators.generate_timestamp()
+        custom_timestamp = FlextUtilities.Generators.generate_timestamp()
 
         trace = flext_trace(
             trace_id="trace-123",
@@ -1248,7 +1248,7 @@ class TestFlextMixinsCoverage:
     def test_flext_metric_with_id_and_version_coverage(self) -> None:
         """Test flext_metric factory with id and version - covers lines 1025-1034."""
         # Test with both id and version in kwargs (triggers lines 1025-1034)
-        custom_id = FlextCore.UtilitiesGenerators.generate_uuid()
+        custom_id = FlextUtilities.Generators.generate_uuid()
         custom_version = 3
         custom_tags = {"env": "prod", "region": "us-east"}
 
@@ -1277,7 +1277,7 @@ class TestFlextMixinsCoverage:
     def test_flext_metric_with_id_only_coverage(self) -> None:
         """Test flext_metric factory with id only - covers lines 1035-1043."""
         # Test with id but no version (triggers lines 1035-1043)
-        custom_id = FlextCore.UtilitiesGenerators.generate_uuid()
+        custom_id = FlextUtilities.Generators.generate_uuid()
 
         result = flext_metric(name="memory.used", value=2048, unit="MB", id=custom_id)
 
@@ -1333,9 +1333,9 @@ class TestFlextMixinsCoverage:
     def test_flext_health_check_factory_with_id_coverage(self) -> None:
         """Test flext_health_check factory function with custom id - covers lines 1083-1091."""
         # Test with custom id in kwargs (triggers lines 1083-1091)
-        custom_id = FlextCore.UtilitiesGenerators.generate_uuid()
+        custom_id = FlextUtilities.Generators.generate_uuid()
         custom_metrics = {"cpu": 75.5, "memory": 2048, "disk": 80.0}
-        custom_timestamp = FlextCore.UtilitiesGenerators.generate_timestamp()
+        custom_timestamp = FlextUtilities.Generators.generate_timestamp()
 
         health = flext_health_check(
             component="database",
@@ -1376,7 +1376,7 @@ class TestFlextMixinsCoverage:
         """Test flext_metric with business rule validation failure - covers line 1060."""
         # Mock validate_business_rules to return failure
         with patch.object(FlextMetric, "validate_business_rules") as mock_validate:
-            mock_validate.return_value = FlextCore.Result[None].fail(
+            mock_validate.return_value = FlextResult[None].fail(
                 "Mock business rule failure",
             )
 

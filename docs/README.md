@@ -46,7 +46,7 @@ Quick functions: [Simple API](api/simple-api.md)
 ### ✅ **Implemented & Working**
 
 - **Domain Entities**: FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck with Pydantic v2 validation
-- **Service Layer**: Complete services with FlextCore.Result[T] railway pattern and dependency injection
+- **Service Layer**: Complete services with FlextResult[T] railway pattern and dependency injection
 - **Factory Functions**: Simple API (flext_create_metric, flext_create_trace, flext_create_alert, etc.)
 - **Monitoring Decorators**: @flext_monitor_function for automatic instrumentation
 - **Type Safety**: Complete Python 3.13+ type annotations throughout

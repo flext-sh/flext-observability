@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from flext_core import FlextCore
+from flext_core import FlextContainer, FlextResult, FlextTypes
 
 from flext_observability import (
     FlextObservabilityMonitor,
@@ -18,7 +18,7 @@ EXPECTED_BULK_SIZE = 2
 EXPECTED_DATA_COUNT = 3
 
 
-def assert_failure_with_error[T](result: FlextCore.Result[T]) -> str:
+def assert_failure_with_error[T](result: FlextResult[T]) -> str:
     """Assert result is failure and return non-None error."""
     assert result.is_failure
     assert result.error is not None
@@ -30,7 +30,7 @@ class TestFlextObservabilityMonitor:
 
     def test_init_with_container(self) -> None:
         """Test monitor initialization with container."""
-        container = FlextCore.Container()
+        container = FlextContainer()
         monitor = FlextObservabilityMonitor(container)
         assert monitor.container is container
         assert not monitor._initialized
@@ -40,7 +40,7 @@ class TestFlextObservabilityMonitor:
         """Test monitor initialization without container."""
         monitor = FlextObservabilityMonitor()
         assert monitor.container is not None
-        assert isinstance(monitor.container, FlextCore.Container)
+        assert isinstance(monitor.container, FlextContainer)
         assert not monitor._initialized
         assert not monitor._running
 
@@ -69,7 +69,7 @@ class TestFlextObservabilityMonitor:
 
     def test_initialize_observability_with_real_container(self) -> None:
         """Test initialization with real container."""
-        container = FlextCore.Container()
+        container = FlextContainer()
         monitor = FlextObservabilityMonitor(container)
         result = monitor.flext_initialize_observability()
 
@@ -335,7 +335,7 @@ class TestFlextMonitorFunction:
             return "test"
 
         @flext_monitor_function(monitor)
-        def return_dict() -> FlextCore.Types.StringDict:
+        def return_dict() -> FlextTypes.StringDict:
             return {"key": "value"}
 
         @flext_monitor_function(monitor)

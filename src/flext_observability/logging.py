@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextCore
+from flext_core import FlextModels, FlextResult, FlextTypes
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -24,15 +24,15 @@ from pydantic import (
 )
 
 
-class FlextObservabilityLogging(FlextCore.Models):
-    """Focused logging models for observability operations extending FlextCore.Models.
+class FlextObservabilityLogging(FlextModels):
+    """Focused logging models for observability operations extending FlextModels.
 
     Provides comprehensive logging entities, configurations, and operations
     for structured logging, log management, and log analysis within the FLEXT ecosystem.
     """
 
     # Log Management Models
-    class LogEntry(FlextCore.Models.Value):
+    class LogEntry(FlextModels.Value):
         """Comprehensive log entry model."""
 
         model_config = ConfigDict(
@@ -53,18 +53,16 @@ class FlextObservabilityLogging(FlextCore.Models):
             default_factory=datetime.now, description="Log timestamp"
         )
         source: str = Field(description="Log source")
-        context: FlextCore.Types.Dict = Field(
+        context: FlextTypes.Dict = Field(
             default_factory=dict, description="Log context"
         )
 
         @computed_field
-        @property
         def log_key(self) -> str:
             """Computed field for unique log key."""
             return f"{self.source}.{self.logger_name}.{self.level}"
 
         @computed_field
-        @property
         def is_error_level(self) -> bool:
             """Computed field indicating if log is error level or higher."""
             error_levels = ["error", "critical"]
@@ -82,8 +80,8 @@ class FlextObservabilityLogging(FlextCore.Models):
 
         @field_serializer("context", when_used="json")
         def serialize_context_with_log_metadata(
-            self, value: FlextCore.Types.Dict, _info: object
-        ) -> FlextCore.Types.Dict:
+            self, value: FlextTypes.Dict, _info: object
+        ) -> FlextTypes.Dict:
             """Serialize context with log metadata."""
             return {
                 "context": value,
@@ -120,7 +118,6 @@ class FlextObservabilityLogging(FlextCore.Models):
         log_format: str = Field(default="json", description="Log format")
 
         @computed_field
-        @property
         def max_log_size_bytes(self) -> int:
             """Computed field for max log size in bytes."""
             return self.max_log_size_mb * 1024 * 1024
@@ -136,7 +133,7 @@ class FlextObservabilityLogging(FlextCore.Models):
                 raise ValueError(msg)
             return self
 
-    class FlextLogEntry(FlextCore.Models.Entity):
+    class FlextLogEntry(FlextModels.Entity):
         """Structured Logging Entity for FLEXT Ecosystem.
 
         Enterprise-grade structured logging entity implementing comprehensive logging
@@ -146,7 +143,7 @@ class FlextObservabilityLogging(FlextCore.Models):
 
         message: str = Field(..., description="Log message")
         level: str = Field(default="info", description="Log level")
-        context: FlextCore.Types.Dict = Field(
+        context: FlextTypes.Dict = Field(
             default_factory=dict,
             description="Log context",
         )
@@ -171,20 +168,16 @@ class FlextObservabilityLogging(FlextCore.Models):
                 raise ValueError(msg)
             return v
 
-        def validate_business_rules(self) -> FlextCore.Result[bool]:
+        def validate_business_rules(self) -> FlextResult[bool]:
             """Validate structured logging business rules."""
             try:
                 if not (self.message and str(self.message).strip()):
-                    return FlextCore.Result[bool].fail("Invalid log message")
+                    return FlextResult[bool].fail("Invalid log message")
                 if self.level not in {"debug", "info", "warning", "error", "critical"}:
-                    return FlextCore.Result[bool].fail(
-                        f"Invalid log level: {self.level}"
-                    )
-                return FlextCore.Result[bool].ok(True)
+                    return FlextResult[bool].fail(f"Invalid log level: {self.level}")
+                return FlextResult[bool].ok(True)
             except Exception as e:
-                return FlextCore.Result[bool].fail(
-                    f"Business rule validation failed: {e}"
-                )
+                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
 
 
 # Export the focused logging namespace class

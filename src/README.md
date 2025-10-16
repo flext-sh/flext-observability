@@ -39,13 +39,13 @@ src/flext_observability/
 
 1. **Clean Architecture**: Clear separation between domain, application, and infrastructure layers
 2. **Domain-Driven Design**: Rich domain models with business logic encapsulation
-3. **Railway-Oriented Programming**: FlextCore.Result[T] patterns throughout
+3. **Railway-Oriented Programming**: FlextResult[T] patterns throughout
 4. **Type Safety**: MyPy strict mode adoption; aiming for complete annotations
 5. **Enterprise Standards**: Professional code quality and documentation
 
 ## Integration Points
 
-- **flext-core**: Foundation patterns (FlextCore.Models.Entity, FlextCore.Result, FlextCore.Container)
+- **flext-core**: Foundation patterns (FlextModels.Entity, FlextResult, FlextContainer)
 - **OpenTelemetry**: Industry-standard telemetry (future integration)
 - **Prometheus**: Metrics export and collection compatibility
 - **Structured Logging**: JSON logging with correlation ID support
@@ -56,7 +56,7 @@ src/flext_observability/
 - **95% Test Coverage**: Comprehensive test suites
 - **Zero Tolerance Quality**: All quality gates must pass
 - **Documentation Standards**: Enterprise-grade docstrings
-- **Railway-Oriented**: All operations return FlextCore.Result[T]
+- **Railway-Oriented**: All operations return FlextResult[T]
 
 ## Usage Patterns
 

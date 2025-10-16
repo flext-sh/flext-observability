@@ -2,13 +2,13 @@
 
 **Quick-Start Functions for FLEXT Observability Integration**
 
-The Simple API provides the fastest way to integrate observability into FLEXT ecosystem projects. These functions offer a streamlined interface for creating observability entities with automatic validation and FlextCore.Result error handling.
+The Simple API provides the fastest way to integrate observability into FLEXT ecosystem projects. These functions offer a streamlined interface for creating observability entities with automatic validation and FlextResult error handling.
 
 ## 📋 API Overview
 
 All Simple API functions follow consistent patterns:
 
-- **Return Type**: `FlextCore.Result[Entity]` for railway-oriented programming
+- **Return Type**: `FlextResult[Entity]` for railway-oriented programming
 - **Error Handling**: Domain validation with descriptive error messages
 - **Type Safety**: Full type annotations with MyPy compatibility
 - **Zero Dependencies**: No external configuration required
@@ -24,9 +24,9 @@ def flext_create_metric(
     name: str,
     value: float | Decimal,
     unit: str = "",
-    tags: FlextCore.Types.StringDict | None = None,
+    tags: FlextTypes.StringDict | None = None,
     metric_type: str = "gauge"
-) -> FlextCore.Result[FlextMetric]
+) -> FlextResult[FlextMetric]
 ```
 
 #### Parameters
@@ -34,12 +34,12 @@ def flext_create_metric(
 - **`name`** (str, required): Metric identifier following naming conventions
 - **`value`** (float | Decimal, required): Numeric measurement value
 - **`unit`** (str, optional): Unit of measurement (e.g., "seconds", "bytes", "count")
-- **`tags`** (FlextCore.Types.StringDict, optional): Key-value pairs for metric categorization
+- **`tags`** (FlextTypes.StringDict, optional): Key-value pairs for metric categorization
 - **`metric_type`** (str, optional): Metric type ("gauge", "counter", "histogram")
 
 #### Returns
 
-`FlextCore.Result[FlextMetric]` - Success contains FlextMetric entity, failure contains validation error.
+`FlextResult[FlextMetric]` - Success contains FlextMetric entity, failure contains validation error.
 
 #### Examples
 
@@ -94,21 +94,21 @@ Create distributed tracing spans for request correlation and performance analysi
 def flext_create_trace(
     operation_name: str,
     service_name: str,
-    context: FlextCore.Types.StringDict | None = None,
+    context: FlextTypes.StringDict | None = None,
     parent_trace_id: str | None = None
-) -> FlextCore.Result[FlextTrace]
+) -> FlextResult[FlextTrace]
 ```
 
 #### Parameters
 
 - **`operation_name`** (str, required): Name of the operation being traced
 - **`service_name`** (str, required): Name of the service performing the operation
-- **`context`** (FlextCore.Types.StringDict, optional): Additional context information
+- **`context`** (FlextTypes.StringDict, optional): Additional context information
 - **`parent_trace_id`** (str, optional): Parent trace ID for span correlation
 
 #### Returns
 
-`FlextCore.Result[FlextTrace]` - Success contains FlextTrace entity, failure contains validation error.
+`FlextResult[FlextTrace]` - Success contains FlextTrace entity, failure contains validation error.
 
 #### Examples
 
@@ -153,8 +153,8 @@ def flext_create_alert(
     name: str,
     severity: str,
     message: str,
-    details: FlextCore.Types.StringDict | None = None
-) -> FlextCore.Result[FlextAlert]
+    details: FlextTypes.StringDict | None = None
+) -> FlextResult[FlextAlert]
 ```
 
 #### Parameters
@@ -162,11 +162,11 @@ def flext_create_alert(
 - **`name`** (str, required): Alert identifier/name
 - **`severity`** (str, required): Alert severity ("info", "warning", "error", "critical")
 - **`message`** (str, required): Human-readable alert description
-- **`details`** (FlextCore.Types.StringDict, optional): Additional alert context
+- **`details`** (FlextTypes.StringDict, optional): Additional alert context
 
 #### Returns
 
-`FlextCore.Result[FlextAlert]` - Success contains FlextAlert entity, failure contains validation error.
+`FlextResult[FlextAlert]` - Success contains FlextAlert entity, failure contains validation error.
 
 #### Examples
 
@@ -217,8 +217,8 @@ def flext_create_health_check(
     name: str,
     status: str,
     message: str = "",
-    details: FlextCore.Types.StringDict | None = None
-) -> FlextCore.Result[FlextHealthCheck]
+    details: FlextTypes.StringDict | None = None
+) -> FlextResult[FlextHealthCheck]
 ```
 
 #### Parameters
@@ -226,11 +226,11 @@ def flext_create_health_check(
 - **`name`** (str, required): Health check identifier
 - **`status`** (str, required): Health status ("healthy", "unhealthy", "degraded")
 - **`message`** (str, optional): Status description
-- **`details`** (FlextCore.Types.StringDict, optional): Additional health information
+- **`details`** (FlextTypes.StringDict, optional): Additional health information
 
 #### Returns
 
-`FlextCore.Result[FlextHealthCheck]` - Success contains FlextHealthCheck entity, failure contains validation error.
+`FlextResult[FlextHealthCheck]` - Success contains FlextHealthCheck entity, failure contains validation error.
 
 #### Examples
 
@@ -279,21 +279,21 @@ Create structured log entries with correlation ID support.
 def flext_create_log_entry(
     level: str,
     message: str,
-    context: FlextCore.Types.StringDict | None = None,
+    context: FlextTypes.StringDict | None = None,
     correlation_id: str | None = None
-) -> FlextCore.Result[FlextLogEntry]
+) -> FlextResult[FlextLogEntry]
 ```
 
 #### Parameters
 
 - **`level`** (str, required): Log level ("debug", "info", "warning", "error", "critical")
 - **`message`** (str, required): Log message content
-- **`context`** (FlextCore.Types.StringDict, optional): Additional context information
+- **`context`** (FlextTypes.StringDict, optional): Additional context information
 - **`correlation_id`** (str, optional): Request correlation ID for distributed tracing
 
 #### Returns
 
-`FlextCore.Result[FlextLogEntry]` - Success contains FlextLogEntry entity, failure contains validation error.
+`FlextResult[FlextLogEntry]` - Success contains FlextLogEntry entity, failure contains validation error.
 
 #### Examples
 
@@ -339,18 +339,18 @@ result = flext_create_log_entry(
 ```python
 from flext_observability import flext_create_metric, flext_create_trace
 
-def process_business_operation(data: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+def process_business_operation(data: dict) -> FlextResult[FlextTypes.Dict]:
     """Example of chaining observability operations."""
 
     # Create metric - handle potential failure
     metric_result = flext_create_metric("operations_started", 1, "count")
     if not metric_result.success:
-        return FlextCore.Result[None].fail(f"Failed to create metric: {metric_result.error}")
+        return FlextResult[None].fail(f"Failed to create metric: {metric_result.error}")
 
     # Create trace - handle potential failure
     trace_result = flext_create_trace("business_operation", "main-service")
     if not trace_result.success:
-        return FlextCore.Result[None].fail(f"Failed to create trace: {trace_result.error}")
+        return FlextResult[None].fail(f"Failed to create trace: {trace_result.error}")
 
     # Business logic here
     result_data = {"status": "processed", "data": data}
@@ -359,13 +359,13 @@ def process_business_operation(data: dict) -> FlextCore.Result[FlextCore.Types.D
     success_metric = flext_create_metric("operations_completed", 1, "count")
     # Note: In production, you might want to handle this error too
 
-    return FlextCore.Result[None].ok(result_data)
+    return FlextResult[None].ok(result_data)
 ```
 
 ### Pattern 2: Batch Observability Creation
 
 ```python
-def create_system_metrics() -> list[FlextCore.Result[FlextMetric]]:
+def create_system_metrics() -> list[FlextResult[FlextMetric]]:
     """Create multiple metrics with error handling."""
 
     metrics_to_create = [
@@ -389,7 +389,7 @@ def create_system_metrics() -> list[FlextCore.Result[FlextMetric]]:
 ### Pattern 3: Observability Context Propagation
 
 ```python
-def handle_user_request(user_id: str, operation: str) -> FlextCore.Result[FlextCore.Types.Dict]:
+def handle_user_request(user_id: str, operation: str) -> FlextResult[FlextTypes.Dict]:
     """Example of propagating context through observability."""
 
     # Create base context
@@ -403,7 +403,7 @@ def handle_user_request(user_id: str, operation: str) -> FlextCore.Result[FlextC
     )
 
     if not trace_result.success:
-        return FlextCore.Result[None].fail(f"Tracing failed: {trace_result.error}")
+        return FlextResult[None].fail(f"Tracing failed: {trace_result.error}")
 
     trace_id = trace_result.data.id
 
@@ -423,7 +423,7 @@ def handle_user_request(user_id: str, operation: str) -> FlextCore.Result[FlextC
         correlation_id=trace_id
     )
 
-    return FlextCore.Result[None].ok({
+    return FlextResult[None].ok({
         "trace_id": trace_id,
         "status": "success",
         "context": context

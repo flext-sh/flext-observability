@@ -89,7 +89,7 @@ class TestEntityFactoryFunctions:
             unit="seconds",
             tags={"env": "test"},
         )
-        # Factory function returns FlextCore.Result[FlextMetric]
+        # Factory function returns FlextResult[FlextMetric]
         assert metric.is_success
         metric_obj = metric.unwrap()
         assert str(metric_obj.id)
@@ -103,7 +103,7 @@ class TestEntityFactoryFunctions:
             100.0,
             tags={"test": "value"},
         )
-        # Factory function returns FlextCore.Result[FlextMetric]
+        # Factory function returns FlextResult[FlextMetric]
         assert metric.is_success
         metric_obj = metric.unwrap()
         assert str(metric_obj.id)
@@ -128,7 +128,7 @@ class TestEntityFactoryFunctions:
             Decimal("123.456"),
             unit="currency",
         )
-        # Factory function returns FlextCore.Result
+        # Factory function returns FlextResult
         assert metric.is_success
         assert metric.data is not None
         assert isinstance(metric.data.value, Decimal)

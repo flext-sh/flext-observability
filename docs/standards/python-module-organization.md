@@ -13,7 +13,7 @@ FLEXT Observability implements a **layered observability module architecture** t
 1. **Observability-First**: Every pattern designed for monitoring and telemetry
 2. **Explicit Dependencies**: Clear import paths with minimal coupling to flext-core
 3. **Type-Safe Observability**: Comprehensive type hints for all observability entities
-4. **Railway-Oriented Telemetry**: FlextCore.Result[T] threading through all observability operations
+4. **Railway-Oriented Telemetry**: FlextResult[T] threading through all observability operations
 5. **Ecosystem Consistency**: Observability patterns work identically across 33 projects
 
 ---
@@ -52,26 +52,45 @@ from flext_observability import FlextMetric, FlextTrace, flext_create_metric
 **Entity Architecture**:
 
 ```python
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from flext_observability.entities import FlextMetric, FlextTrace
 
-class FlextMetric(FlextCore.Models.Entity):
+class FlextMetric(FlextModels.Entity):
     """Observability metric with domain validation."""
     name: str
     value: float | Decimal
     unit: str = ""
-    tags: FlextCore.Types.StringDict = field(default_factory=dict)
+    tags: FlextTypes.StringDict = field(default_factory=dict)
     metric_type: str = "gauge"
 
-    def validate_business_rules(self) -> FlextCore.Result[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate metric domain rules."""
         if not self.name or not isinstance(self.name, str):
-            return FlextCore.Result[None].fail("Invalid metric name")
+            return FlextResult[None].fail("Invalid metric name")
         try:
             float(self.value)
         except (ValueError, TypeError):
-            return FlextCore.Result[None].fail("Invalid metric value")
-        return FlextCore.Result[None].ok(None)
+            return FlextResult[None].fail("Invalid metric value")
+        return FlextResult[None].ok(None)
 ```
 
 ### **Application Services Layer**
@@ -88,29 +107,48 @@ class FlextMetric(FlextCore.Models.Entity):
 **Service Pattern**:
 
 ```python
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from flext_observability.services import FlextMetricsService
 
 class FlextMetricsService:
     """Application service for metrics operations."""
 
-    def __init__(self, container: FlextCore.Container) -> None:
+    def __init__(self, container: FlextContainer) -> None:
         self._container = container
         self._metrics_store: dict[str, FlextMetric] = {}
 
-    def record_metric(self, metric: FlextMetric) -> FlextCore.Result[FlextMetric]:
+    def record_metric(self, metric: FlextMetric) -> FlextResult[FlextMetric]:
         """Record metric with business validation."""
         validation_result = metric.validate_business_rules()
         if validation_result.is_failure:
-            return FlextCore.Result[None].fail(f"Metric validation failed: {validation_result.error}")
+            return FlextResult[None].fail(f"Metric validation failed: {validation_result.error}")
 
         self._metrics_store[metric.id] = metric
-        return FlextCore.Result[None].ok(metric)
+        return FlextResult[None].ok(metric)
 
-    def export_prometheus_format(self) -> FlextCore.Result[str]:
+    def export_prometheus_format(self) -> FlextResult[str]:
         """Export metrics in Prometheus format."""
         # Business logic for Prometheus export
-        return FlextCore.Result[None].ok(prometheus_output)
+        return FlextResult[None].ok(prometheus_output)
 ```
 
 ### **Factory & Creation Layer**
@@ -130,7 +168,7 @@ from flext_observability.factory import FlextObservabilityMasterFactory
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-    def create_metric(self, name: str, value: float, unit: str = "") -> FlextCore.Result[FlextMetric]:
+    def create_metric(self, name: str, value: float, unit: str = "") -> FlextResult[FlextMetric]:
         """Create validated metric with domain rules."""
         try:
             metric = FlextMetric(
@@ -144,11 +182,11 @@ class FlextObservabilityMasterFactory:
             if validation_result.is_failure:
                 return validation_result
 
-            return FlextCore.Result[None].ok(metric)
+            return FlextResult[None].ok(metric)
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Metric creation failed: {str(e)}")
+            return FlextResult[None].fail(f"Metric creation failed: {str(e)}")
 
-    def create_trace(self, operation_name: str, service_name: str) -> FlextCore.Result[FlextTrace]:
+    def create_trace(self, operation_name: str, service_name: str) -> FlextResult[FlextTrace]:
         """Create validated trace span."""
         try:
             trace = FlextTrace(
@@ -156,9 +194,9 @@ class FlextObservabilityMasterFactory:
                 service_name=service_name,
                 start_time=datetime.now(UTC)
             )
-            return FlextCore.Result[None].ok(trace)
+            return FlextResult[None].ok(trace)
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Trace creation failed: {str(e)}")
+            return FlextResult[None].fail(f"Trace creation failed: {str(e)}")
 ```
 
 ### **Interface Adapters Layer**
@@ -177,12 +215,12 @@ class FlextObservabilityMasterFactory:
 ```python
 from flext_observability.flext_simple import flext_create_metric, flext_create_trace
 
-def flext_create_metric(name: str, value: float, unit: str = "") -> FlextCore.Result[FlextMetric]:
+def flext_create_metric(name: str, value: float, unit: str = "") -> FlextResult[FlextMetric]:
     """Simple API for metric creation."""
     factory = get_global_factory()
     return factory.create_metric(name, value, unit)
 
-def flext_create_trace(operation_name: str, service_name: str) -> FlextCore.Result[FlextTrace]:
+def flext_create_trace(operation_name: str, service_name: str) -> FlextResult[FlextTrace]:
     """Simple API for trace creation."""
     factory = get_global_factory()
     return factory.create_trace(operation_name, service_name)
@@ -230,21 +268,21 @@ class FlextObservabilityRepository:
         self._traces: dict[str, FlextTrace] = {}
         self._alerts: dict[str, FlextAlert] = {}
 
-    def store_metric(self, metric: FlextMetric) -> FlextCore.Result[None]:
+    def store_metric(self, metric: FlextMetric) -> FlextResult[None]:
         """Store metric with validation."""
         if not metric.id:
-            return FlextCore.Result[None].fail("Metric must have ID")
+            return FlextResult[None].fail("Metric must have ID")
 
         self._metrics[metric.id] = metric
-        return FlextCore.Result[None].ok(None)
+        return FlextResult[None].ok(None)
 
-    def find_metrics_by_name(self, name: str) -> FlextCore.Result[list[FlextMetric]]:
+    def find_metrics_by_name(self, name: str) -> FlextResult[list[FlextMetric]]:
         """Find metrics by name pattern."""
         matching_metrics = [
             metric for metric in self._metrics.values()
             if metric.name == name
         ]
-        return FlextCore.Result[None].ok(matching_metrics)
+        return FlextResult[None].ok(matching_metrics)
 ```
 
 ---
@@ -301,11 +339,11 @@ obs_platform.py            # Contains FlextObservabilityPlatformV2 orchestration
 
 ```python
 # Simple API functions use flext_create_ prefix
-def flext_create_metric(name: str, value: float, unit: str = "") -> FlextCore.Result[FlextMetric]
-def flext_create_trace(operation_name: str, service_name: str) -> FlextCore.Result[FlextTrace]
-def flext_create_alert(name: str, severity: str, message: str) -> FlextCore.Result[FlextAlert]
-def flext_create_health_check(name: str, status: str) -> FlextCore.Result[FlextHealthCheck]
-def flext_create_log_entry(level: str, message: str) -> FlextCore.Result[FlextLogEntry]
+def flext_create_metric(name: str, value: float, unit: str = "") -> FlextResult[FlextMetric]
+def flext_create_trace(operation_name: str, service_name: str) -> FlextResult[FlextTrace]
+def flext_create_alert(name: str, severity: str, message: str) -> FlextResult[FlextAlert]
+def flext_create_health_check(name: str, status: str) -> FlextResult[FlextHealthCheck]
+def flext_create_log_entry(level: str, message: str) -> FlextResult[FlextLogEntry]
 
 # Monitoring functions use flext_monitor_ prefix
 def flext_monitor_function(operation_name: str) -> Callable
@@ -338,12 +376,12 @@ from flext_observability import (
 
 # Use patterns directly in business logic
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+def process_order(order_data: dict) -> FlextResult[FlextTypes.Dict]:
     # Create business metrics
     flext_create_metric("orders_processed", 1, "count")
 
     # Business logic here
-    return FlextCore.Result[None].ok({"status": "processed"})
+    return FlextResult[None].ok({"status": "processed"})
 ```
 
 #### **2. Service Integration Pattern (For FLEXT Services)**
@@ -355,15 +393,34 @@ from flext_observability import (
     FlextTracingService,
     FlextObservabilityMasterFactory
 )
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 class UserAPIService:
-    def __init__(self, container: FlextCore.Container) -> None:
+    def __init__(self, container: FlextContainer) -> None:
         self.metrics = FlextMetricsService(container)
         self.tracing = FlextTracingService(container)
         self.factory = FlextObservabilityMasterFactory()
 
-    def handle_user_request(self, request: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def handle_user_request(self, request: dict) -> FlextResult[FlextTypes.Dict]:
         # Create request trace
         trace_result = self.factory.create_trace("user_request", "user-api")
         if trace_result.is_failure:
@@ -388,10 +445,10 @@ from flext_observability import (
 )
 
 class DatabaseConnectionService:
-    def __init__(self, container: FlextCore.Container) -> None:
+    def __init__(self, container: FlextContainer) -> None:
         self.health_service = FlextHealthService(container)
 
-    def check_database_connectivity(self) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def check_database_connectivity(self) -> FlextResult[FlextTypes.Dict]:
         """Monitor database health with observability."""
         try:
             # Test connection
@@ -412,7 +469,7 @@ class DatabaseConnectionService:
                 tags={"database": "postgresql", "host": self.host}
             )
 
-            return FlextCore.Result[None].ok({"status": "healthy", "metrics": [metric_result.data]})
+            return FlextResult[None].ok({"status": "healthy", "metrics": [metric_result.data]})
 
         except Exception as e:
             # Create failure health check
@@ -421,7 +478,7 @@ class DatabaseConnectionService:
                 status="unhealthy",
                 message=f"Connection failed: {str(e)}"
             )
-            return FlextCore.Result[None].fail(f"Database health check failed: {str(e)}")
+            return FlextResult[None].fail(f"Database health check failed: {str(e)}")
 ```
 
 ### **Anti-Patterns (Forbidden)**
@@ -442,7 +499,7 @@ metric = factory.create_metric("test", 1.0)  # Use flext_create_metric instead
 class MyCustomMetric:  # Use FlextMetric instead
     pass
 
-# ❌ Don't ignore FlextCore.Result error handling
+# ❌ Don't ignore FlextResult error handling
 result = flext_create_metric("test", 1.0)
 metric = result.data  # Should check result.success first
 ```
@@ -491,7 +548,7 @@ Infrastructure Layer  →  Foundation Layer  →  flext-core
 from flext_observability import flext_monitor_function, flext_get_correlation_id
 
 @flext_monitor_function("critical_business_operation")
-def process_payment(payment_data: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+def process_payment(payment_data: dict) -> FlextResult[FlextTypes.Dict]:
     """Function automatically gets observability patterns."""
     correlation_id = flext_get_correlation_id()
 
@@ -501,7 +558,7 @@ def process_payment(payment_data: dict) -> FlextCore.Result[FlextCore.Types.Dict
     # - Structured logging with correlation ID
     # - Error capture and categorization
 
-    return FlextCore.Result[None].ok({"status": "processed", "correlation_id": correlation_id})
+    return FlextResult[None].ok({"status": "processed", "correlation_id": correlation_id})
 ```
 
 ---
@@ -542,7 +599,7 @@ def create_business_metrics(operation: str, duration: float, success: bool) -> N
     )
 
 # Advanced metric patterns with validation
-def create_validated_metric(name: str, value: float) -> FlextCore.Result[None]:
+def create_validated_metric(name: str, value: float) -> FlextResult[None]:
     """Create metric with comprehensive validation."""
     metric_result = flext_create_metric(name, value, "count")
 
@@ -553,16 +610,16 @@ def create_validated_metric(name: str, value: float) -> FlextCore.Result[None]:
             message=f"Failed to create metric {name}: {metric_result.error}",
             context={"metric_name": name, "metric_value": str(value)}
         )
-        return FlextCore.Result[None].fail(f"Metric creation failed: {metric_result.error}")
+        return FlextResult[None].fail(f"Metric creation failed: {metric_result.error}")
 
-    return FlextCore.Result[None].ok(None)
+    return FlextResult[None].ok(None)
 ```
 
 ### **Distributed Tracing Patterns**
 
 ```python
 # Parent-child trace correlation
-def process_order_with_tracing(order_data: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+def process_order_with_tracing(order_data: dict) -> FlextResult[FlextTypes.Dict]:
     """Process order with distributed tracing."""
 
     # Create parent trace
@@ -581,9 +638,9 @@ def process_order_with_tracing(order_data: dict) -> FlextCore.Result[FlextCore.T
     if payment_result.is_failure:
         return payment_result
 
-    return FlextCore.Result[None].ok({"order_id": "order123", "trace_id": parent_trace.id})
+    return FlextResult[None].ok({"order_id": "order123", "trace_id": parent_trace.id})
 
-def validate_order_with_trace(order_data: dict, parent_trace_id: str) -> FlextCore.Result[FlextCore.Types.Dict]:
+def validate_order_with_trace(order_data: dict, parent_trace_id: str) -> FlextResult[FlextTypes.Dict]:
     """Validate order with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="validate_order",
@@ -595,14 +652,14 @@ def validate_order_with_trace(order_data: dict, parent_trace_id: str) -> FlextCo
         return child_trace_result
 
     # Validation logic with trace context
-    return FlextCore.Result[None].ok({"status": "valid", "trace_id": child_trace_result.data.id})
+    return FlextResult[None].ok({"status": "valid", "trace_id": child_trace_result.data.id})
 ```
 
 ### **Health Monitoring Patterns**
 
 ```python
 # Comprehensive health monitoring
-def monitor_service_health() -> FlextCore.Result[FlextCore.Types.Dict]:
+def monitor_service_health() -> FlextResult[FlextTypes.Dict]:
     """Comprehensive service health monitoring."""
 
     health_checks = []
@@ -635,13 +692,13 @@ def monitor_service_health() -> FlextCore.Result[FlextCore.Types.Dict]:
         tags={"service": "order-service"}
     )
 
-    return FlextCore.Result[None].ok({
+    return FlextResult[None].ok({
         "overall_status": overall_status,
         "checks": health_checks,
         "health_score": health_metric.data if health_metric.success else None
     })
 
-def check_database_health() -> FlextCore.Result[FlextHealthCheck]:
+def check_database_health() -> FlextResult[FlextHealthCheck]:
     """Check database connectivity and performance."""
     try:
         start_time = time.time()
@@ -673,11 +730,11 @@ def check_database_health() -> FlextCore.Result[FlextHealthCheck]:
 
 ```python
 # Business rule-based alerting
-def create_business_alert(metric_name: str, current_value: float, threshold: float) -> FlextCore.Result[None]:
+def create_business_alert(metric_name: str, current_value: float, threshold: float) -> FlextResult[None]:
     """Create business rule alert based on metric thresholds."""
 
     if current_value <= threshold:
-        return FlextCore.Result[None].ok(None)  # No alert needed
+        return FlextResult[None].ok(None)  # No alert needed
 
     # Determine severity based on threshold breach
     severity_ratio = current_value / threshold
@@ -703,7 +760,7 @@ def create_business_alert(metric_name: str, current_value: float, threshold: flo
     )
 
     if alert_result.is_failure:
-        return FlextCore.Result[None].fail(f"Failed to create alert: {alert_result.error}")
+        return FlextResult[None].fail(f"Failed to create alert: {alert_result.error}")
 
     # Create alert metric for monitoring
     alert_metric_result = flext_create_metric(
@@ -714,10 +771,10 @@ def create_business_alert(metric_name: str, current_value: float, threshold: flo
         metric_type="counter"
     )
 
-    return FlextCore.Result[None].ok(None)
+    return FlextResult[None].ok(None)
 
 # Alert escalation patterns
-def escalate_alert_if_needed(alert: FlextAlert, duration_minutes: int) -> FlextCore.Result[None]:
+def escalate_alert_if_needed(alert: FlextAlert, duration_minutes: int) -> FlextResult[None]:
     """Escalate alert based on duration and severity."""
 
     escalation_thresholds = {
@@ -743,7 +800,7 @@ def escalate_alert_if_needed(alert: FlextAlert, duration_minutes: int) -> FlextC
 
         return escalated_alert_result.map(lambda _: None)
 
-    return FlextCore.Result[None].ok(None)
+    return FlextResult[None].ok(None)
 ```
 
 ---
@@ -770,7 +827,7 @@ tests/
 └── test_complete_coverage.py      # Comprehensive coverage validation
 ```
 
-### **FlextCore.Result Testing Patterns for Observability**
+### **FlextResult Testing Patterns for Observability**
 
 ```python
 import pytest
@@ -796,7 +853,7 @@ def test_metric_creation_failure():
 
 def test_observability_chaining():
     """Test railway-oriented chaining of observability operations."""
-    def create_observability_data(operation: str) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def create_observability_data(operation: str) -> FlextResult[FlextTypes.Dict]:
         return (
             flext_create_metric(f"{operation}_requests", 1, "count")
             .flat_map(lambda metric:
@@ -815,7 +872,7 @@ def test_observability_chaining():
 
 def test_observability_failure_propagation():
     """Test failure propagation in observability chains."""
-    def create_invalid_observability() -> FlextCore.Result[FlextCore.Types.Dict]:
+    def create_invalid_observability() -> FlextResult[FlextTypes.Dict]:
         return (
             flext_create_metric("", 1, "count")  # Invalid metric name
             .flat_map(lambda metric:
@@ -918,12 +975,31 @@ class TestFlextTrace:
 
 ```python
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 @pytest.fixture
 def clean_container():
     """Provide clean container for each test."""
-    return FlextCore.Container()
+    return FlextContainer()
 
 @pytest.fixture
 def metrics_service(clean_container):
@@ -1042,8 +1118,8 @@ def test_function_monitoring_with_exception():
 def create_business_metric(
     operation: str,
     value: float | Decimal,
-    tags: FlextCore.Types.StringDict | None = None
-) -> FlextCore.Result[FlextMetric]:
+    tags: FlextTypes.StringDict | None = None
+) -> FlextResult[FlextMetric]:
     """Create business metric with complete type safety."""
     return flext_create_metric(
         name=f"business_{operation}",
@@ -1059,13 +1135,13 @@ T = TypeVar('T')
 U = TypeVar('U')
 
 def map_observability_result(
-    result: FlextCore.Result[T],
+    result: FlextResult[T],
     func: Callable[[T], U]
-) -> FlextCore.Result[U]:
+) -> FlextResult[U]:
     """Generic result mapping for observability operations."""
     if result.success:
-        return FlextCore.Result[None].ok(func(result.data))
-    return FlextCore.Result[None].fail(result.error)
+        return FlextResult[None].ok(func(result.data))
+    return FlextResult[None].fail(result.error)
 
 # ✅ Protocol definitions for observability interfaces
 from typing import Protocol
@@ -1073,11 +1149,11 @@ from typing import Protocol
 class ObservabilityCollector(Protocol):
     """Protocol for observability data collectors."""
 
-    def collect_metric(self, metric: FlextMetric) -> FlextCore.Result[None]:
+    def collect_metric(self, metric: FlextMetric) -> FlextResult[None]:
         """Collect metric data."""
         ...
 
-    def collect_trace(self, trace: FlextTrace) -> FlextCore.Result[None]:
+    def collect_trace(self, trace: FlextTrace) -> FlextResult[None]:
         """Collect trace data."""
         ...
 
@@ -1089,27 +1165,27 @@ def create_metric(name, value, unit):  # Missing types
 ### **Error Handling Standards**
 
 ```python
-# ✅ Always use FlextCore.Result for observability error handling
-def create_comprehensive_observability(operation: str) -> FlextCore.Result[FlextCore.Types.Dict]:
+# ✅ Always use FlextResult for observability error handling
+def create_comprehensive_observability(operation: str) -> FlextResult[FlextTypes.Dict]:
     """Create comprehensive observability data with error handling."""
 
     # Chain observability operations with proper error handling
     metric_result = flext_create_metric(f"{operation}_requests", 1, "count")
     if metric_result.is_failure:
-        return FlextCore.Result[None].fail(f"Failed to create metric: {metric_result.error}")
+        return FlextResult[None].fail(f"Failed to create metric: {metric_result.error}")
 
     trace_result = flext_create_trace(operation, "main-service")
     if trace_result.is_failure:
-        return FlextCore.Result[None].fail(f"Failed to create trace: {trace_result.error}")
+        return FlextResult[None].fail(f"Failed to create trace: {trace_result.error}")
 
-    return FlextCore.Result[None].ok({
+    return FlextResult[None].ok({
         "metric": metric_result.data,
         "trace": trace_result.data,
         "correlation_id": trace_result.data.id
     })
 
 # ✅ Chain observability operations safely
-def monitor_business_operation(operation_data: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+def monitor_business_operation(operation_data: dict) -> FlextResult[FlextTypes.Dict]:
     """Monitor business operation with comprehensive observability."""
     return (
         flext_create_trace("business_operation", "business-service")
@@ -1136,9 +1212,9 @@ def create_metric_bad(name: str, value: float) -> FlextMetric:
 ```python
 def create_business_observability_dashboard(
     service_name: str,
-    metrics_config: FlextCore.Types.Dict,
-    trace_config: FlextCore.Types.Dict
-) -> FlextCore.Result[FlextCore.Types.Dict]:
+    metrics_config: FlextTypes.Dict,
+    trace_config: FlextTypes.Dict
+) -> FlextResult[FlextTypes.Dict]:
     """
     Create comprehensive business observability dashboard.
 
@@ -1164,7 +1240,7 @@ def create_business_observability_dashboard(
             }
 
     Returns:
-        FlextCore.Result[FlextCore.Types.Dict]: Success contains dashboard configuration
+        FlextResult[FlextTypes.Dict]: Success contains dashboard configuration
         with metric definitions, trace setup, and health check configuration.
         Failure contains detailed error message explaining setup failure.
 
@@ -1182,7 +1258,7 @@ def create_business_observability_dashboard(
         - Uses FlextMetricsService for metrics collection coordination
         - Integrates with FlextTracingService for distributed tracing
         - Coordinates with FlextHealthService for health monitoring
-        - Built on flext-core FlextCore.Result patterns for error handling
+        - Built on flext-core FlextResult patterns for error handling
     """
     try:
         # Create service-specific observability components
@@ -1203,7 +1279,7 @@ def create_business_observability_dashboard(
             )
 
             if metric_result.is_failure:
-                return FlextCore.Result[None].fail(f"Failed to create metric {metric_name}: {metric_result.error}")
+                return FlextResult[None].fail(f"Failed to create metric {metric_name}: {metric_result.error}")
 
             dashboard_config["metrics"].append(metric_result.data)
 
@@ -1215,14 +1291,14 @@ def create_business_observability_dashboard(
         )
 
         if trace_result.is_failure:
-            return FlextCore.Result[None].fail(f"Failed to create trace setup: {trace_result.error}")
+            return FlextResult[None].fail(f"Failed to create trace setup: {trace_result.error}")
 
         dashboard_config["traces"].append(trace_result.data)
 
-        return FlextCore.Result[None].ok(dashboard_config)
+        return FlextResult[None].ok(dashboard_config)
 
     except Exception as e:
-        return FlextCore.Result[None].fail(f"Unexpected error creating observability dashboard: {str(e)}")
+        return FlextResult[None].fail(f"Unexpected error creating observability dashboard: {str(e)}")
 ```
 
 ---
@@ -1233,7 +1309,26 @@ def create_business_observability_dashboard(
 
 ```python
 # ✅ Standard observability imports across ecosystem
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from flext_observability import (
     flext_create_metric,
     flext_create_trace,
@@ -1245,12 +1340,12 @@ from flext_observability import (
 class FlextUserService:
     """User service with standardized observability."""
 
-    def __init__(self, container: FlextCore.Container) -> None:
+    def __init__(self, container: FlextContainer) -> None:
         self.container = container
         self.observability = FlextMetricsService(container)
 
     @flext_monitor_function("user_creation")
-    def create_user(self, user_data: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def create_user(self, user_data: dict) -> FlextResult[FlextTypes.Dict]:
         """Create user with automatic observability."""
 
         # Business metrics
@@ -1268,7 +1363,7 @@ class FlextUserService:
         return result
 
 # ✅ Cross-service observability correlation
-def sync_user_between_services(user_id: str) -> FlextCore.Result[FlextCore.Types.Dict]:
+def sync_user_between_services(user_id: str) -> FlextResult[FlextTypes.Dict]:
     """Sync user data between services with trace correlation."""
 
     # Create correlation trace
@@ -1292,7 +1387,7 @@ def sync_user_between_services(user_id: str) -> FlextCore.Result[FlextCore.Types
     flext_create_metric("user_sync_completed", 1, "count",
                        tags={"correlation_id": trace_id})
 
-    return FlextCore.Result[None].ok({
+    return FlextResult[None].ok({
         "user_id": user_id,
         "correlation_id": trace_id,
         "status": "synchronized"
@@ -1310,9 +1405,28 @@ class OracleTrace:  # Use FlextTrace instead
 
 ```python
 # ✅ Extend observability configuration patterns
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
-class ObservabilitySettings(FlextCore.Config):
+class ObservabilitySettings(FlextConfig):
     """Observability configuration extending core patterns."""
     metrics_enabled: bool = True
     tracing_enabled: bool = True
@@ -1322,7 +1436,7 @@ class ObservabilitySettings(FlextCore.Config):
     class Config:
         env_prefix = "OBSERVABILITY_"
 
-class UserServiceSettings(FlextCore.Config):
+class UserServiceSettings(FlextConfig):
     """User service configuration with observability."""
     service_name: str = "user-service"
     database_url: str = "postgresql://localhost/users"
@@ -1355,7 +1469,7 @@ class FlextAPIService:
     """API service with ecosystem-standard monitoring."""
 
     @flext_monitor_function("api_endpoint")
-    def handle_user_request(self, request_data: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def handle_user_request(self, request_data: dict) -> FlextResult[FlextTypes.Dict]:
         """Handle API request with automatic monitoring."""
         # Automatically gets:
         # - Request latency metrics
@@ -1366,7 +1480,7 @@ class FlextAPIService:
         return self._process_request(request_data)
 
     @flext_monitor_function("database_operation")
-    def query_user_data(self, user_id: str) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def query_user_data(self, user_id: str) -> FlextResult[FlextTypes.Dict]:
         """Database query with monitoring."""
         # Database-specific observability patterns
         return self._execute_database_query(user_id)
@@ -1375,7 +1489,7 @@ class FlextOracleService:
     """Oracle service with ecosystem-standard monitoring."""
 
     @flext_monitor_function("oracle_query")
-    def execute_wms_query(self, query: str) -> FlextCore.Result[list[FlextCore.Types.Dict]]:
+    def execute_wms_query(self, query: str) -> FlextResult[list[FlextTypes.Dict]]:
         """Execute Oracle WMS query with monitoring."""
         # Oracle-specific observability patterns
         return self._execute_oracle_query(query)
@@ -1384,7 +1498,7 @@ class FlextLdapService:
     """LDAP service with ecosystem-standard monitoring."""
 
     @flext_monitor_function("ldap_operation")
-    def search_users(self, search_filter: str) -> FlextCore.Result[list[FlextCore.Types.Dict]]:
+    def search_users(self, search_filter: str) -> FlextResult[list[FlextTypes.Dict]]:
         """LDAP search with monitoring."""
         # LDAP-specific observability patterns
         return self._execute_ldap_search(search_filter)
@@ -1400,7 +1514,7 @@ class FlextLdapService:
 - [ ] **Location**: Placed in appropriate observability architectural layer
 - [ ] **Imports**: Only imports from flext-core and same/lower observability layers
 - [ ] **Types**: Complete type annotations with MyPy compliance for observability entities
-- [ ] **Error Handling**: Uses FlextCore.Result for all observability error conditions
+- [ ] **Error Handling**: Uses FlextResult for all observability error conditions
 - [ ] **Documentation**: Comprehensive docstrings with observability examples
 - [ ] **Tests**: 95% coverage with observability-specific test patterns
 - [ ] **Exports**: Added to `__init__.py` if part of public observability API
@@ -1420,12 +1534,12 @@ class FlextLdapService:
 
 ### **Observability-Specific Standards**
 
-- [ ] **FlextCore.Result Integration**: All observability operations return FlextCore.Result[T]
+- [ ] **FlextResult Integration**: All observability operations return FlextResult[T]
 - [ ] **Entity Validation**: All observability entities implement `validate_business_rules()`
 - [ ] **Factory Support**: Entities can be created via FlextObservabilityMasterFactory
 - [ ] **Simple API**: Core functionality available via `flext_create_*` functions
 - [ ] **Monitoring Support**: Functions can be decorated with `@flext_monitor_function`
-- [ ] **Service Integration**: Services use FlextCore.Container dependency injection
+- [ ] **Service Integration**: Services use FlextContainer dependency injection
 - [ ] **Correlation IDs**: Tracing supports correlation ID propagation
 - [ ] **Ecosystem Consistency**: Patterns match other FLEXT observability implementations
 

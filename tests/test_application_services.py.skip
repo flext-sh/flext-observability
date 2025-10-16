@@ -1,13 +1,53 @@
 """Comprehensive tests for application services - achieving high coverage."""
 
 from __future__ import annotations
+from flext_core import FlextBus
+
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 from datetime import UTC, datetime
 from decimal import Decimal
 from unittest.mock import Mock
 
 import pytest
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
 # Use corrected imports from flext-observability root
 from flext_observability import (
@@ -28,12 +68,12 @@ class TestMetricsDomainService:
     """Test FlextMetricsService class comprehensively."""
 
     @pytest.fixture
-    def container(self) -> FlextCore.Container:
-        """Create FlextCore.Container for FlextMetricsService."""
-        return FlextCore.Container()
+    def container(self) -> FlextContainer:
+        """Create FlextContainer for FlextMetricsService."""
+        return FlextContainer()
 
     @pytest.fixture
-    def metrics_service(self, container: FlextCore.Container) -> FlextMetricsService:
+    def metrics_service(self, container: FlextContainer) -> FlextMetricsService:
         """Create FlextMetricsService instance with container."""
         return FlextMetricsService(container=container)
 
@@ -51,15 +91,15 @@ class TestMetricsDomainService:
     def test_record_metric_success(
         self,
         metrics_service: FlextMetricsService,
-        container: FlextCore.Container,
+        container: FlextContainer,
         sample_metric: FlextMetric,
     ) -> None:
         """Test successful metric recording."""
         # Setup mock repository
         mock_repository = Mock()
-        mock_repository.save.return_value = FlextCore.Result.ok(sample_metric)
+        mock_repository.save.return_value = FlextResult.ok(sample_metric)
 
-        # Mock the container.get() to return FlextCore.Result.ok(mock_repository)
+        # Mock the container.get() to return FlextResult.ok(mock_repository)
         container.register("metrics_repository", mock_repository)
 
         # Execute
@@ -86,13 +126,13 @@ class TestMetricsDomainService:
     def test_get_metric_success(
         self,
         metrics_service: FlextMetricsService,
-        container: FlextCore.Container,
+        container: FlextContainer,
         sample_metric: FlextMetric,
     ) -> None:
         """Test successful metric retrieval."""
         # Setup mock repository
         mock_repository = Mock()
-        mock_repository.get_by_id.return_value = FlextCore.Result.ok(sample_metric)
+        mock_repository.get_by_id.return_value = FlextResult.ok(sample_metric)
         container.register("metrics_repository", mock_repository)
 
         # Execute
@@ -120,12 +160,12 @@ class TestLoggingDomainService:
     """Test FlextLoggingService class comprehensively."""
 
     @pytest.fixture
-    def container(self) -> FlextCore.Container:
-        """Create FlextCore.Container for FlextLoggingService."""
-        return FlextCore.Container()
+    def container(self) -> FlextContainer:
+        """Create FlextContainer for FlextLoggingService."""
+        return FlextContainer()
 
     @pytest.fixture
-    def logging_service(self, container: FlextCore.Container) -> FlextLoggingService:
+    def logging_service(self, container: FlextContainer) -> FlextLoggingService:
         """Create FlextLoggingService instance with container."""
         return FlextLoggingService(container=container)
 
@@ -142,13 +182,13 @@ class TestLoggingDomainService:
     def test_log_entry_success(
         self,
         logging_service: FlextLoggingService,
-        container: FlextCore.Container,
+        container: FlextContainer,
         sample_log_entry: FlextLogEntry,
     ) -> None:
         """Test successful log entry creation."""
         # Setup mock repository
         mock_repository = Mock()
-        mock_repository.save.return_value = FlextCore.Result.ok(sample_log_entry)
+        mock_repository.save.return_value = FlextResult.ok(sample_log_entry)
         container.register("logging_repository", mock_repository)
 
         # Execute
@@ -173,14 +213,14 @@ class TestLoggingDomainService:
     def test_get_logs_success(
         self,
         logging_service: FlextLoggingService,
-        container: FlextCore.Container,
+        container: FlextContainer,
         sample_log_entry: FlextLogEntry,
     ) -> None:
         """Test successful logs retrieval."""
         # Setup mock repository
         mock_repository = Mock()
         mock_logs_list = [sample_log_entry]
-        mock_repository.find_by_level.return_value = FlextCore.Result.ok(mock_logs_list)
+        mock_repository.find_by_level.return_value = FlextResult.ok(mock_logs_list)
         container.register("logging_repository", mock_repository)
 
         # Execute
@@ -208,12 +248,12 @@ class TestAlertDomainService:
     """Test FlextAlertService class comprehensively."""
 
     @pytest.fixture
-    def container(self) -> FlextCore.Container:
-        """Create FlextCore.Container for FlextAlertService."""
-        return FlextCore.Container()
+    def container(self) -> FlextContainer:
+        """Create FlextContainer for FlextAlertService."""
+        return FlextContainer()
 
     @pytest.fixture
-    def alert_service(self, container: FlextCore.Container) -> FlextAlertService:
+    def alert_service(self, container: FlextContainer) -> FlextAlertService:
         """Create FlextAlertService instance with container."""
         return FlextAlertService(container=container)
 
@@ -231,13 +271,13 @@ class TestAlertDomainService:
     def test_create_alert_success(
         self,
         alert_service: FlextAlertService,
-        container: FlextCore.Container,
+        container: FlextContainer,
         sample_alert: FlextAlert,
     ) -> None:
         """Test successful alert creation."""
         # Setup mock repository
         mock_repository = Mock()
-        mock_repository.save.return_value = FlextCore.Result.ok(sample_alert)
+        mock_repository.save.return_value = FlextResult.ok(sample_alert)
         container.register("alert_repository", mock_repository)
 
         # Execute
@@ -264,12 +304,12 @@ class TestHealthDomainService:
     """Test FlextHealthService class comprehensively."""
 
     @pytest.fixture
-    def container(self) -> FlextCore.Container:
-        """Create FlextCore.Container for FlextHealthService."""
-        return FlextCore.Container()
+    def container(self) -> FlextContainer:
+        """Create FlextContainer for FlextHealthService."""
+        return FlextContainer()
 
     @pytest.fixture
-    def health_service(self, container: FlextCore.Container) -> FlextHealthService:
+    def health_service(self, container: FlextContainer) -> FlextHealthService:
         """Create FlextHealthService instance with container."""
         return FlextHealthService(container=container)
 
@@ -286,13 +326,13 @@ class TestHealthDomainService:
     def test_check_health_success(
         self,
         health_service: FlextHealthService,
-        container: FlextCore.Container,
+        container: FlextContainer,
         sample_health_check: FlextHealthCheck,
     ) -> None:
         """Test successful health check."""
         # Setup mock repository
         mock_repository = Mock()
-        mock_repository.get_by_component.return_value = FlextCore.Result.ok(
+        mock_repository.get_by_component.return_value = FlextResult.ok(
             sample_health_check,
         )
         container.register("health_repository", mock_repository)
@@ -318,17 +358,17 @@ class TestHealthDomainService:
     def test_get_overall_health_success(
         self,
         health_service: FlextHealthService,
-        container: FlextCore.Container,
+        container: FlextContainer,
         sample_health_check: FlextHealthCheck,
     ) -> None:
         """Test successful overall health retrieval."""
         # Setup mock repository and domain service
         mock_repository = Mock()
-        mock_repository.get_all.return_value = FlextCore.Result.ok([sample_health_check])
+        mock_repository.get_all.return_value = FlextResult.ok([sample_health_check])
         container.register("health_repository", mock_repository)
 
         mock_domain_service = Mock()
-        mock_domain_service.calculate_overall_health.return_value = FlextCore.Result.ok(
+        mock_domain_service.calculate_overall_health.return_value = FlextResult.ok(
             "healthy",
         )
         container.register("health_domain_service", mock_domain_service)
@@ -357,12 +397,12 @@ class TestTracingDomainService:
     """Test FlextTracingService class comprehensively."""
 
     @pytest.fixture
-    def container(self) -> FlextCore.Container:
-        """Create FlextCore.Container for FlextTracingService."""
-        return FlextCore.Container()
+    def container(self) -> FlextContainer:
+        """Create FlextContainer for FlextTracingService."""
+        return FlextContainer()
 
     @pytest.fixture
-    def tracing_service(self, container: FlextCore.Container) -> FlextTracingService:
+    def tracing_service(self, container: FlextContainer) -> FlextTracingService:
         """Create FlextTracingService instance with container."""
         return FlextTracingService(container=container)
 
@@ -381,13 +421,13 @@ class TestTracingDomainService:
     def test_start_trace_success(
         self,
         tracing_service: FlextTracingService,
-        container: FlextCore.Container,
+        container: FlextContainer,
         sample_trace: FlextTrace,
     ) -> None:
         """Test successful trace start."""
         # Setup mock repository
         mock_repository = Mock()
-        mock_repository.save.return_value = FlextCore.Result.ok(sample_trace)
+        mock_repository.save.return_value = FlextResult.ok(sample_trace)
         container.register("tracing_repository", mock_repository)
 
         # Execute
@@ -413,14 +453,14 @@ class TestTracingDomainService:
     def test_complete_trace_success(
         self,
         tracing_service: FlextTracingService,
-        container: FlextCore.Container,
+        container: FlextContainer,
         sample_trace: FlextTrace,
     ) -> None:
         """Test successful trace completion."""
         # Setup mock repository
         mock_repository = Mock()
-        mock_repository.get_by_id.return_value = FlextCore.Result.ok(sample_trace)
-        mock_repository.save.return_value = FlextCore.Result.ok(sample_trace)
+        mock_repository.get_by_id.return_value = FlextResult.ok(sample_trace)
+        mock_repository.save.return_value = FlextResult.ok(sample_trace)
         container.register("tracing_repository", mock_repository)
 
         # Execute

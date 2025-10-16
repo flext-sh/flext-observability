@@ -17,7 +17,7 @@ Core business entities with domain validation and business logic:
 - **FlextAlert**: Alert management entity with severity handling
 - **FlextHealthCheck**: Health monitoring entity with dependency validation
 - **FlextLogEntry**: Structured logging entity with correlation ID support
-- **FlextCore.UtilitiesGenerators**: Utility functions for ID generation and timestamps
+- **FlextUtilities.Generators**: Utility functions for ID generation and timestamps
 
 ### Application Layer
 
@@ -123,9 +123,28 @@ if validation.success:
 
 ```python
 from flext_observability.services import FlextMetricsService
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
-container = FlextCore.Container()
+container = FlextContainer()
 metrics_service = FlextMetricsService(container)
 
 result = metrics_service.record_metric(metric)
@@ -175,9 +194,9 @@ def process_order(order_data: dict) -> dict[str, object]:
 
 All modules follow FLEXT ecosystem standards:
 
-- **FlextCore.Result[T]** for railway-oriented programming
-- **FlextCore.Container** for dependency injection
-- **FlextCore.Models.Entity** base patterns for domain entities
+- **FlextResult[T]** for railway-oriented programming
+- **FlextContainer** for dependency injection
+- **FlextModels.Entity** base patterns for domain entities
 - **Type safety** with comprehensive annotations
 
 ### Cross-Service Observability
@@ -185,9 +204,9 @@ All modules follow FLEXT ecosystem standards:
 ```python
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
-def handle_user_request(request: dict) -> FlextCore.Result[FlextCore.Types.Dict]:
+def handle_user_request(request: dict) -> FlextResult[FlextTypes.Dict]:
     # Automatic metrics, tracing, and logging
-    return FlextCore.Result[None].ok({"status": "processed"})
+    return FlextResult[None].ok({"status": "processed"})
 ```
 
 ## Quality Standards
@@ -197,13 +216,13 @@ All modules in this package maintain:
 - **100% Type Coverage**: Complete type annotations
 - **95% Test Coverage**: Comprehensive test suites
 - **Domain Validation**: Business rule enforcement
-- **Error Handling**: FlextCore.Result patterns throughout
+- **Error Handling**: FlextResult patterns throughout
 - **Documentation**: Enterprise-grade docstrings
 
 ## Development Guidelines
 
 1. **Follow Clean Architecture**: Maintain clear layer separation
-2. **Use FlextCore.Result**: All operations return FlextCore.Result[T]
+2. **Use FlextResult**: All operations return FlextResult[T]
 3. **Domain Validation**: Implement validate_business_rules() for entities
 4. **Type Safety**: Complete type annotations required
 5. **Test Coverage**: 95% minimum coverage for all new code

@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from datetime import datetime
 
-from flext_core import FlextCore
+from flext_core import FlextContainer
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -22,14 +22,14 @@ class TestFlextObservabilityMasterFactoryReal:
     def test_factory_initialization_and_container_real(self) -> None:
         """Test factory initialization with real container integration."""
         # Test with custom container
-        container = FlextCore.Container()
+        container = FlextContainer()
         factory = FlextObservabilityMasterFactory(container)
         assert factory.container is container
 
         # Test without container (creates default)
         factory_default = FlextObservabilityMasterFactory()
         assert factory_default.container is not None
-        assert isinstance(factory_default.container, FlextCore.Container)
+        assert isinstance(factory_default.container, FlextContainer)
 
     def test_metric_creation_real_functionality(self) -> None:
         """Test metric creation with actual factory functionality."""
@@ -203,7 +203,7 @@ class TestFlextObservabilityMasterFactoryReal:
         reset_global_factory()
 
         # Create custom container
-        custom_container = FlextCore.Container()
+        custom_container = FlextContainer()
 
         # Get global factory with custom container
         factory = get_global_factory(custom_container)
@@ -282,7 +282,7 @@ class TestFlextObservabilityMasterFactoryReal:
         # All should succeed
         results = [metric, log, alert, trace, health]
         for i, result in enumerate(results):
-            # Use hasattr to check for FlextCore.Result methods
+            # Use hasattr to check for FlextResult methods
             assert hasattr(result, "success"), f"Entity {i} missing success attribute"
             assert result.is_success, (
                 f"Entity {i} creation failed: {getattr(result, 'error', 'Unknown error')}"
@@ -299,9 +299,9 @@ class TestFlextObservabilityMasterFactoryReal:
                 getattr(entity, "created_at", None),
             )
             if timestamp_attr:
-                # Handle both FlextCore.Models and datetime objects
+                # Handle both FlextModels and datetime objects
                 if hasattr(timestamp_attr, "root"):
-                    # FlextCore.Models object with .root attribute
+                    # FlextModels object with .root attribute
                     assert isinstance(timestamp_attr.root, datetime)
                 else:
                     # Direct datetime object

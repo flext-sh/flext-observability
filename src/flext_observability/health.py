@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextCore
+from flext_core import FlextModels, FlextResult, FlextTypes
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -24,15 +24,15 @@ from pydantic import (
 )
 
 
-class FlextObservabilityHealth(FlextCore.Models):
-    """Focused health monitoring models for observability operations extending FlextCore.Models.
+class FlextObservabilityHealth(FlextModels):
+    """Focused health monitoring models for observability operations extending FlextModels.
 
     Provides comprehensive health check entities, configurations, and operations
     for service health monitoring, status tracking, and health validation within the FLEXT ecosystem.
     """
 
     # Health Monitoring Models
-    class HealthCheckEntry(FlextCore.Models.Value):
+    class HealthCheckEntry(FlextModels.Value):
         """Comprehensive health check entry model."""
 
         model_config = ConfigDict(
@@ -55,24 +55,21 @@ class FlextObservabilityHealth(FlextCore.Models):
         response_time_ms: float | None = Field(
             default=None, description="Response time in milliseconds"
         )
-        details: FlextCore.Types.Dict = Field(
+        details: FlextTypes.Dict = Field(
             default_factory=dict, description="Health check details"
         )
 
         @computed_field
-        @property
         def health_key(self) -> str:
             """Computed field for unique health check key."""
             return f"{self.component}.{self.name}"
 
         @computed_field
-        @property
         def is_healthy(self) -> bool:
             """Computed field indicating if component is healthy."""
             return self.status.lower() == "healthy"
 
         @computed_field
-        @property
         def formatted_response_time(self) -> str:
             """Computed field for formatted response time."""
             if self.response_time_ms is None:
@@ -91,8 +88,8 @@ class FlextObservabilityHealth(FlextCore.Models):
 
         @field_serializer("details", when_used="json")
         def serialize_details_with_health_context(
-            self, value: FlextCore.Types.Dict, _info: object
-        ) -> FlextCore.Types.Dict:
+            self, value: FlextTypes.Dict, _info: object
+        ) -> FlextTypes.Dict:
             """Serialize details with health check context."""
             return {
                 "details": value,
@@ -150,7 +147,7 @@ class FlextObservabilityHealth(FlextCore.Models):
                 raise ValueError(msg)
             return self
 
-    class FlextHealthCheck(FlextCore.Models.Entity):
+    class FlextHealthCheck(FlextModels.Entity):
         """Health Monitoring Entity for FLEXT Ecosystem Components.
 
         Enterprise-grade health check entity implementing comprehensive service health
@@ -160,7 +157,7 @@ class FlextObservabilityHealth(FlextCore.Models):
         component: str = Field(..., description="Component name")
         status: str = Field(default="unknown", description="Health status")
         message: str = Field(default="", description="Health check message")
-        metrics: FlextCore.Types.Dict = Field(
+        metrics: FlextTypes.Dict = Field(
             default_factory=dict, description="Health metrics"
         )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -193,20 +190,18 @@ class FlextObservabilityHealth(FlextCore.Models):
                 raise TypeError(msg)
             return v
 
-        def validate_business_rules(self) -> FlextCore.Result[bool]:
+        def validate_business_rules(self) -> FlextResult[bool]:
             """Validate health monitoring business rules."""
             try:
                 if not self.component:
-                    return FlextCore.Result[bool].fail("Component name is required")
+                    return FlextResult[bool].fail("Component name is required")
                 if self.status not in {"healthy", "degraded", "unhealthy", "unknown"}:
-                    return FlextCore.Result[bool].fail(
+                    return FlextResult[bool].fail(
                         f"Invalid health status: {self.status}"
                     )
-                return FlextCore.Result[bool].ok(True)
+                return FlextResult[bool].ok(True)
             except Exception as e:
-                return FlextCore.Result[bool].fail(
-                    f"Business rule validation failed: {e}"
-                )
+                return FlextResult[bool].fail(f"Business rule validation failed: {e}")
 
     # Factory methods for direct entity creation
     @staticmethod
@@ -215,23 +210,23 @@ class FlextObservabilityHealth(FlextCore.Models):
         status: str = "unknown",
         message: str = "",
         **kwargs: object,
-    ) -> FlextCore.Result[FlextObservabilityHealth.FlextHealthCheck]:
+    ) -> FlextResult[FlextObservabilityHealth.FlextHealthCheck]:
         """Create a FlextHealthCheck entity directly."""
         try:
             # Filter kwargs to only include valid FlextHealthCheck parameters
-            valid_kwargs: FlextCore.Types.Dict = {}
+            valid_kwargs: FlextTypes.Dict = {}
             if "metrics" in kwargs and isinstance(kwargs["metrics"], dict):
                 valid_kwargs["metrics"] = kwargs["metrics"]
             if "timestamp" in kwargs and isinstance(kwargs["timestamp"], datetime):
                 valid_kwargs["timestamp"] = kwargs["timestamp"]
 
-            return FlextCore.Result[FlextObservabilityHealth.FlextHealthCheck].ok(
+            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(
                 FlextObservabilityHealth.FlextHealthCheck(
                     component=component, status=status, message=message
                 )
             )
         except Exception as e:
-            return FlextCore.Result[FlextObservabilityHealth.FlextHealthCheck].fail(
+            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].fail(
                 f"Failed to create health check: {e}"
             )
 

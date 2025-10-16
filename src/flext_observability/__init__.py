@@ -35,12 +35,6 @@ from flext_observability.services import (
 )
 from flext_observability.typings import (
     FlextObservabilityTypes,
-    HealthCheckProtocol,
-    LogEntryProtocol,
-    MetricProtocol,
-    ObservabilityTypes,
-    TagsDict,
-    TraceProtocol,
 )
 
 # Direct model exports from consolidated models

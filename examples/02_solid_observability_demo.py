@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 import time
 
-from flext_core import FlextCore
+from flext_core import FlextContainer, FlextResult, FlextTypes
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -24,13 +24,13 @@ from flext_observability import (
 )
 
 
-def database_query(query: str) -> FlextCore.Types.Dict:
+def database_query(query: str) -> FlextTypes.Dict:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)  # Simulate database latency
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> FlextCore.Types.Dict:
+def process_api_request(endpoint: str) -> FlextTypes.Dict:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)  # Simulate processing time
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
@@ -45,7 +45,7 @@ def demonstrate_solid_design() -> None:
     health_result = flext_create_health_check("database", "healthy")
 
     # Open/Closed: Extensible without modification
-    container = FlextCore.Container()
+    container = FlextContainer()
     factory = FlextObservabilityMasterFactory(container)
     factory.create_metric("custom_metric", 100.0, "units")
 
@@ -56,7 +56,7 @@ def demonstrate_solid_design() -> None:
         alert_result,
         health_result,
     ]
-    entities: FlextCore.Types.List = [
+    entities: FlextTypes.List = [
         result.unwrap()
         for result in results
         if hasattr(result, "success")
@@ -158,7 +158,7 @@ def demonstrate_factory_patterns() -> None:
     global_factory.create_metric("global_metric", 42.0, "count")
 
     # Custom factory with DI container
-    container = FlextCore.Container()
+    container = FlextContainer()
     custom_factory = FlextObservabilityMasterFactory(container)
     custom_factory.create_metric("custom_metric", 24.0, "count")
 
@@ -166,7 +166,7 @@ def demonstrate_factory_patterns() -> None:
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     # Create various entities and validate them
-    entities_to_validate: list[FlextCore.Result[FlextCore.Types.Dict]] = [
+    entities_to_validate: list[FlextResult[FlextTypes.Dict]] = [
         flext_create_metric("valid_metric", 100.0, "count"),
         flext_create_trace("valid_operation", "valid_service"),
         flext_create_alert("Valid alert", "system", "info"),
