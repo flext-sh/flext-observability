@@ -9,15 +9,15 @@ from __future__ import annotations
 
 from typing import Self
 
-from flext_core import FlextCore
+from flext_core import FlextConfig, FlextConstants, FlextResult, FlextTypes
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_observability.constants import FlextObservabilityConstants
 
 
-class FlextObservabilityConfig(FlextCore.Config):
-    """Unified observability configuration extending FlextCore.Config.
+class FlextObservabilityConfig(FlextConfig):
+    """Unified observability configuration extending FlextConfig.
 
     Single consolidated class providing comprehensive monitoring, metrics, tracing,
     and health check configuration for the FLEXT observability system using
@@ -34,7 +34,7 @@ class FlextObservabilityConfig(FlextCore.Config):
         extra="ignore",  # Allow extra fields from environment
         json_schema_extra={
             "title": "FLEXT Observability Configuration",
-            "description": "Enterprise observability configuration extending FlextCore.Config",
+            "description": "Enterprise observability configuration extending FlextConfig",
         },
     )
 
@@ -94,7 +94,7 @@ class FlextObservabilityConfig(FlextCore.Config):
         description="Enable health monitoring",
     )
     monitoring_check_interval_seconds: int = Field(
-        default=FlextCore.Constants.Network.DEFAULT_TIMEOUT,
+        default=FlextConstants.Network.DEFAULT_TIMEOUT,
         description="Health check interval in seconds",
         gt=0,
         le=3600,
@@ -104,7 +104,7 @@ class FlextObservabilityConfig(FlextCore.Config):
         description="Send alerts on health check failures",
     )
     monitoring_failure_threshold: int = Field(
-        default=FlextCore.Constants.Reliability.MAX_RETRY_ATTEMPTS,
+        default=FlextConstants.Reliability.MAX_RETRY_ATTEMPTS,
         description="Number of failures before alerting",
         gt=0,
         le=10,
@@ -115,10 +115,6 @@ class FlextObservabilityConfig(FlextCore.Config):
     )
 
     # === LOGGING CONFIGURATION ===
-    log_level: str = Field(
-        default=FlextObservabilityConstants.DEFAULT_LOG_LEVEL,
-        description="Observability logging level",
-    )
     structured_logging: bool = Field(
         default=True,
         description="Enable structured logging",
@@ -189,48 +185,46 @@ class FlextObservabilityConfig(FlextCore.Config):
 
         return self
 
-    def validate_business_rules(self) -> FlextCore.Result[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate observability business rules."""
         try:
             # Validate metrics business rules
             if self.metrics_enabled:
                 if self.metrics_export_interval_seconds < 1:
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         "Metrics export interval must be positive"
                     )
                 if not self.metrics_namespace or not self.metrics_namespace.strip():
-                    return FlextCore.Result[None].fail(
-                        "Metrics namespace cannot be empty"
-                    )
+                    return FlextResult[None].fail("Metrics namespace cannot be empty")
 
             # Validate tracing business rules
             if self.tracing_enabled:
                 if not (0.0 <= self.tracing_sampling_rate <= 1.0):
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         "Tracing sampling rate must be between 0.0 and 1.0"
                     )
                 if (
                     not self.tracing_service_name
                     or not self.tracing_service_name.strip()
                 ):
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         "Tracing service name cannot be empty"
                     )
 
             # Validate monitoring business rules
             if self.monitoring_enabled:
                 if self.monitoring_check_interval_seconds < 1:
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         "Monitoring check interval must be positive"
                     )
                 if self.monitoring_failure_threshold < 1:
-                    return FlextCore.Result[None].fail(
+                    return FlextResult[None].fail(
                         "Monitoring failure threshold must be positive"
                     )
 
-            return FlextCore.Result[None].ok(None)
+            return FlextResult[None].ok(None)
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Business rules validation failed: {e}")
+            return FlextResult[None].fail(f"Business rules validation failed: {e}")
 
     @classmethod
     def create_with_defaults(
@@ -239,7 +233,7 @@ class FlextObservabilityConfig(FlextCore.Config):
     ) -> FlextObservabilityConfig:
         """Create configuration with intelligent defaults using direct instantiation.
 
-        Uses the newer FlextCore.Config features for proper configuration management
+        Uses the newer FlextConfig features for proper configuration management
         without relying on removed singleton methods.
         """
         instance = cls()
@@ -267,6 +261,6 @@ class FlextObservabilityConfig(FlextCore.Config):
         """
 
 
-__all__: FlextCore.Types.StringList = [
+__all__: FlextTypes.StringList = [
     "FlextObservabilityConfig",
 ]

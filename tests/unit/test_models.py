@@ -5,6 +5,8 @@ SPDX-License-Identifier: MIT
 
 """
 
+from flext_core import FlextModels
+
 from flext_observability import FlextObservabilityModels
 
 
@@ -12,10 +14,8 @@ class TestFlextObservabilityModels:
     """Test the unified FlextObservabilityModels class."""
 
     def test_inherits_from_flext_models(self) -> None:
-        """Test that FlextObservabilityModels inherits from FlextCore.Models."""
-        from flext_core import FlextCore
-
-        assert issubclass(FlextObservabilityModels, FlextCore.Models)
+        """Test that FlextObservabilityModels inherits from FlextModels."""
+        assert issubclass(FlextObservabilityModels, FlextModels)
 
     def test_metrics_namespace(self) -> None:
         """Test Metrics namespace exists and is properly structured."""
@@ -60,21 +60,17 @@ class TestFlextObservabilityModels:
 
     def test_model_inheritance(self) -> None:
         """Test that model classes inherit from correct base classes."""
-        from flext_core import FlextCore
-
-        # Test that entry classes inherit from FlextCore.Models.Value
+        # Test that entry classes inherit from FlextModels.Value
         assert issubclass(
-            FlextObservabilityModels.Metrics.MetricEntry, FlextCore.Models.Value
+            FlextObservabilityModels.Metrics.MetricEntry, FlextModels.Value
         )
         assert issubclass(
-            FlextObservabilityModels.Tracing.TraceEntry, FlextCore.Models.Value
+            FlextObservabilityModels.Tracing.TraceEntry, FlextModels.Value
         )
         assert issubclass(
-            FlextObservabilityModels.Alerting.AlertEntry, FlextCore.Models.Value
+            FlextObservabilityModels.Alerting.AlertEntry, FlextModels.Value
         )
         assert issubclass(
-            FlextObservabilityModels.Health.HealthCheckEntry, FlextCore.Models.Value
+            FlextObservabilityModels.Health.HealthCheckEntry, FlextModels.Value
         )
-        assert issubclass(
-            FlextObservabilityModels.Logging.LogEntry, FlextCore.Models.Value
-        )
+        assert issubclass(FlextObservabilityModels.Logging.LogEntry, FlextModels.Value)

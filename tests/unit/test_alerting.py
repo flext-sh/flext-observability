@@ -5,6 +5,8 @@ SPDX-License-Identifier: MIT
 
 """
 
+from flext_core import FlextModels
+
 from flext_observability import FlextObservabilityAlerting
 
 
@@ -12,10 +14,8 @@ class TestFlextObservabilityAlerting:
     """Test the FlextObservabilityAlerting class."""
 
     def test_inherits_from_flext_models(self) -> None:
-        """Test that FlextObservabilityAlerting inherits from FlextCore.Models."""
-        from flext_core import FlextCore
-
-        assert issubclass(FlextObservabilityAlerting, FlextCore.Models)
+        """Test that FlextObservabilityAlerting inherits from FlextModels."""
+        assert issubclass(FlextObservabilityAlerting, FlextModels)
 
     def test_flext_alert_class_exists(self) -> None:
         """Test that FlextAlert class exists."""

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import time
 
-from flext_core import FlextCore
+from flext_core import FlextContainer
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -65,7 +65,7 @@ def demonstrate_simple_api() -> None:
 def demonstrate_factory_pattern() -> None:
     """Demonstrate the factory pattern for advanced usage."""
     # Create factory with container
-    container = FlextCore.Container()
+    container = FlextContainer()
     factory = FlextObservabilityMasterFactory(container)
 
     # Create entities via factory

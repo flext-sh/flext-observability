@@ -5,6 +5,8 @@ SPDX-License-Identifier: MIT
 
 """
 
+from flext_core import FlextTypes
+
 from flext_observability import FlextObservabilityTypes
 
 
@@ -12,10 +14,8 @@ class TestFlextObservabilityTypes:
     """Test the FlextObservabilityTypes class."""
 
     def test_inherits_from_flext_types(self) -> None:
-        """Test that FlextObservabilityTypes inherits from FlextCore.Types."""
-        from flext_core import FlextCore
-
-        assert issubclass(FlextObservabilityTypes, FlextCore.Types)
+        """Test that FlextObservabilityTypes inherits from FlextTypes."""
+        assert issubclass(FlextObservabilityTypes, FlextTypes)
 
     def test_nested_type_classes(self) -> None:
         """Test that nested type classes exist."""

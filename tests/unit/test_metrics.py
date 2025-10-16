@@ -5,6 +5,8 @@ SPDX-License-Identifier: MIT
 
 """
 
+from flext_core import FlextModels
+
 from flext_observability import FlextObservabilityMetrics
 
 
@@ -12,10 +14,8 @@ class TestFlextObservabilityMetrics:
     """Test the FlextObservabilityMetrics class."""
 
     def test_inherits_from_flext_models(self) -> None:
-        """Test that FlextObservabilityMetrics inherits from FlextCore.Models."""
-        from flext_core import FlextCore
-
-        assert issubclass(FlextObservabilityMetrics, FlextCore.Models)
+        """Test that FlextObservabilityMetrics inherits from FlextModels."""
+        assert issubclass(FlextObservabilityMetrics, FlextModels)
 
     def test_flext_metric_class_exists(self) -> None:
         """Test that FlextMetric class exists."""

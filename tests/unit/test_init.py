@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import FlextCore
+from flext_core import FlextConstants, FlextContainer, FlextLogger
 
 import flext_observability
 from flext_observability import (
@@ -94,6 +94,6 @@ class TestInitCoverage:
     def test_flext_core_reexports(self) -> None:
         """Test that flext-core re-exports are available."""
         # Test that re-exported classes are available
-        assert callable(FlextCore.Container)
-        assert FlextCore.Constants is not None
-        assert callable(FlextCore.Logger)
+        assert callable(FlextContainer)
+        assert FlextConstants is not None
+        assert callable(FlextLogger)

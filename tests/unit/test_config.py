@@ -5,6 +5,8 @@ SPDX-License-Identifier: MIT
 
 """
 
+from flext_core import FlextConfig
+
 from flext_observability import FlextObservabilityConfig
 
 
@@ -12,10 +14,8 @@ class TestFlextObservabilityConfig:
     """Test the FlextObservabilityConfig class."""
 
     def test_inherits_from_flext_config(self) -> None:
-        """Test that FlextObservabilityConfig inherits from FlextCore.Config."""
-        from flext_core import FlextCore
-
-        assert issubclass(FlextObservabilityConfig, FlextCore.Config)
+        """Test that FlextObservabilityConfig inherits from FlextConfig."""
+        assert issubclass(FlextObservabilityConfig, FlextConfig)
 
     def test_configuration_attributes(self) -> None:
         """Test configuration attributes are properly defined."""

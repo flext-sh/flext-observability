@@ -13,7 +13,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Self
 
-from flext_core import FlextCore
+from flext_core import FlextModels, FlextTypes
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -25,8 +25,8 @@ from pydantic import (
 )
 
 
-class FlextObservabilityModels(FlextCore.Models):
-    """Consolidated observability domain models extending FlextCore.Models.
+class FlextObservabilityModels(FlextModels):
+    """Consolidated observability domain models extending FlextModels.
 
     Single unified class containing all Pydantic v2 models for the observability domain,
     organized in nested classes following SOLID principles and FLEXT patterns.
@@ -36,10 +36,10 @@ class FlextObservabilityModels(FlextCore.Models):
     # METRICS DOMAIN - Metric collection and management
     # ============================================================================
 
-    class Metrics(FlextCore.Models):
+    class Metrics(FlextModels):
         """Metrics domain models for observability operations."""
 
-        class MetricEntry(FlextCore.Models.Value):
+        class MetricEntry(FlextModels.Value):
             """Comprehensive metric entry model."""
 
             model_config = ConfigDict(
@@ -57,7 +57,7 @@ class FlextObservabilityModels(FlextCore.Models):
             timestamp: datetime = Field(
                 default_factory=datetime.now, description="Metric timestamp"
             )
-            labels: FlextCore.Types.StringDict = Field(
+            labels: FlextTypes.StringDict = Field(
                 default_factory=dict, description="Metric labels"
             )
             source: str = Field(description="Metric source service")
@@ -73,8 +73,8 @@ class FlextObservabilityModels(FlextCore.Models):
 
             @field_serializer("labels", when_used="json")
             def serialize_labels_with_metadata(
-                self, value: FlextCore.Types.StringDict, _info: object
-            ) -> FlextCore.Types.Dict:
+                self, value: FlextTypes.StringDict, _info: object
+            ) -> FlextTypes.Dict:
                 """Serialize labels with metadata for monitoring."""
                 return {
                     "labels": value,
@@ -123,10 +123,10 @@ class FlextObservabilityModels(FlextCore.Models):
     # TRACING DOMAIN - Distributed tracing and span management
     # ============================================================================
 
-    class Tracing(FlextCore.Models):
+    class Tracing(FlextModels):
         """Tracing domain models for observability operations."""
 
-        class TraceEntry(FlextCore.Models.Value):
+        class TraceEntry(FlextModels.Value):
             """Comprehensive trace entry model."""
 
             model_config = ConfigDict(
@@ -156,7 +156,7 @@ class FlextObservabilityModels(FlextCore.Models):
                 default=None, description="Duration in milliseconds"
             )
             status: str = Field(default="active", description="Trace status")
-            tags: FlextCore.Types.StringDict = Field(
+            tags: FlextTypes.StringDict = Field(
                 default_factory=dict, description="Trace tags"
             )
 
@@ -191,8 +191,8 @@ class FlextObservabilityModels(FlextCore.Models):
 
             @field_serializer("tags", when_used="json")
             def serialize_tags_with_context(
-                self, value: FlextCore.Types.StringDict, _info: object
-            ) -> FlextCore.Types.Dict:
+                self, value: FlextTypes.StringDict, _info: object
+            ) -> FlextTypes.Dict:
                 """Serialize tags with trace context."""
                 return {
                     "tags": value,
@@ -245,10 +245,10 @@ class FlextObservabilityModels(FlextCore.Models):
     # ALERTING DOMAIN - Alert management and escalation
     # ============================================================================
 
-    class Alerting(FlextCore.Models):
+    class Alerting(FlextModels):
         """Alerting domain models for observability operations."""
 
-        class AlertEntry(FlextCore.Models.Value):
+        class AlertEntry(FlextModels.Value):
             """Comprehensive alert entry model."""
 
             model_config = ConfigDict(
@@ -273,7 +273,7 @@ class FlextObservabilityModels(FlextCore.Models):
                 default=None, description="Alert resolution time"
             )
             status: str = Field(default="active", description="Alert status")
-            metadata: FlextCore.Types.StringDict = Field(
+            metadata: FlextTypes.StringDict = Field(
                 default_factory=dict, description="Alert metadata"
             )
 
@@ -310,8 +310,8 @@ class FlextObservabilityModels(FlextCore.Models):
 
             @field_serializer("metadata", when_used="json")
             def serialize_metadata_with_alert_context(
-                self, value: FlextCore.Types.StringDict, _info: object
-            ) -> FlextCore.Types.Dict:
+                self, value: FlextTypes.StringDict, _info: object
+            ) -> FlextTypes.Dict:
                 """Serialize metadata with alert context."""
                 return {
                     "metadata": value,
@@ -364,10 +364,10 @@ class FlextObservabilityModels(FlextCore.Models):
     # HEALTH DOMAIN - Health monitoring and status tracking
     # ============================================================================
 
-    class Health(FlextCore.Models):
+    class Health(FlextModels):
         """Health domain models for observability operations."""
 
-        class HealthCheckEntry(FlextCore.Models.Value):
+        class HealthCheckEntry(FlextModels.Value):
             """Comprehensive health check entry model."""
 
             model_config = ConfigDict(
@@ -390,7 +390,7 @@ class FlextObservabilityModels(FlextCore.Models):
             response_time_ms: float | None = Field(
                 default=None, description="Response time in milliseconds"
             )
-            details: FlextCore.Types.Dict = Field(
+            details: FlextTypes.Dict = Field(
                 default_factory=dict, description="Health check details"
             )
 
@@ -426,8 +426,8 @@ class FlextObservabilityModels(FlextCore.Models):
 
             @field_serializer("details", when_used="json")
             def serialize_details_with_health_context(
-                self, value: FlextCore.Types.Dict, _info: object
-            ) -> FlextCore.Types.Dict:
+                self, value: FlextTypes.Dict, _info: object
+            ) -> FlextTypes.Dict:
                 """Serialize details with health context."""
                 return {
                     "details": value,
@@ -480,10 +480,10 @@ class FlextObservabilityModels(FlextCore.Models):
     # LOGGING DOMAIN - Structured logging and log management
     # ============================================================================
 
-    class Logging(FlextCore.Models):
+    class Logging(FlextModels):
         """Logging domain models for observability operations."""
 
-        class LogEntry(FlextCore.Models.Value):
+        class LogEntry(FlextModels.Value):
             """Comprehensive log entry model."""
 
             model_config = ConfigDict(
@@ -504,7 +504,7 @@ class FlextObservabilityModels(FlextCore.Models):
                 default_factory=datetime.now, description="Log timestamp"
             )
             source: str = Field(description="Log source")
-            context: FlextCore.Types.Dict = Field(
+            context: FlextTypes.Dict = Field(
                 default_factory=dict, description="Log context"
             )
 
@@ -533,8 +533,8 @@ class FlextObservabilityModels(FlextCore.Models):
 
             @field_serializer("context", when_used="json")
             def serialize_context_with_log_info(
-                self, value: FlextCore.Types.Dict, _info: object
-            ) -> FlextCore.Types.Dict:
+                self, value: FlextTypes.Dict, _info: object
+            ) -> FlextTypes.Dict:
                 """Serialize context with log information."""
                 return {
                     "context": value,

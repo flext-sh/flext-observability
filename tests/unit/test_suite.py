@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 import threading
 import time
 
-from flext_core import FlextCore
+from flext_core import FlextContainer, FlextTypes
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -25,7 +25,7 @@ class TestCompleteIntegrationReal:
     def setup_method(self) -> None:
         """Setup clean state for each test."""
         reset_global_factory()
-        self.container = FlextCore.Container()
+        self.container = FlextContainer()
         self.factory = FlextObservabilityMasterFactory(self.container)
         self.monitor = FlextObservabilityMonitor(self.container)
 
@@ -114,8 +114,8 @@ class TestCompleteIntegrationReal:
         start_result = self.monitor.flext_start_monitoring()
         assert start_result.is_success
 
-        results: FlextCore.Types.BoolList = []
-        errors: FlextCore.Types.StringList = []
+        results: FlextTypes.BoolList = []
+        errors: FlextTypes.StringList = []
 
         def worker_function(worker_id: int) -> None:
             """Worker function that performs real observability operations."""
@@ -185,7 +185,7 @@ class TestCompleteIntegrationReal:
 
         # Create monitored functions
         @flext_monitor_function(monitor=self.monitor, metric_name="data_processing")
-        def process_data(data: FlextCore.Types.IntList) -> FlextCore.Types.Dict:
+        def process_data(data: FlextTypes.IntList) -> FlextTypes.Dict:
             """Real data processing function."""
             # Simulate real processing
             time.sleep(0.1)
@@ -198,9 +198,7 @@ class TestCompleteIntegrationReal:
             }
 
         @flext_monitor_function(monitor=self.monitor, metric_name="api_request")
-        def handle_api_request(
-            endpoint: str, method: str
-        ) -> FlextCore.Types.StringDict:
+        def handle_api_request(endpoint: str, method: str) -> FlextTypes.StringDict:
             """Real API request handler."""
             time.sleep(0.05)
             return {
@@ -332,12 +330,12 @@ class TestCompleteIntegrationReal:
         assert same_factory is global_factory
 
         # Test with custom container - verify factory accepts it
-        custom_container = FlextCore.Container()
+        custom_container = FlextContainer()
         factory_with_container = get_global_factory(custom_container)
         # Global factory might have already initialized its own container
         # We test that the function call succeeds, which is the important behavior
         assert factory_with_container is not None
-        assert isinstance(factory_with_container.container, FlextCore.Container)
+        assert isinstance(factory_with_container.container, FlextContainer)
 
     def test_performance_monitoring_integration_real(self) -> None:
         """Test performance monitoring with real computational workloads."""
@@ -357,7 +355,7 @@ class TestCompleteIntegrationReal:
             return {"iterations": iterations, "result": result}
 
         @flext_monitor_function(monitor=self.monitor, metric_name="io_simulation")
-        def io_intensive_task(delay: float) -> FlextCore.Types.FloatDict:
+        def io_intensive_task(delay: float) -> FlextTypes.FloatDict:
             """IO intensive task simulation."""
             start_time = time.time()
             time.sleep(delay)

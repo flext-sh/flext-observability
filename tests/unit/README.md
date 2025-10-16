@@ -45,7 +45,7 @@ def test_flext_metric_domain_validation():
 @pytest.fixture
 def mock_container():
     """Mock container for service testing."""
-    return Mock(spec=FlextCore.Container)
+    return Mock(spec=FlextContainer)
 
 def test_metrics_service_record_metric(mock_container):
     """Test service logic without external dependencies."""

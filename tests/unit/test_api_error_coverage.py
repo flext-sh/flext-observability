@@ -180,7 +180,7 @@ class TestApiErrorHandling:
         assert callable(flext_create_alert)
         assert callable(flext_create_health_check)
 
-        # Test functions return FlextCore.Result objects
+        # Test functions return FlextResult objects
         result = flext_create_metric("export_test", 1.0, "test")
         assert hasattr(result, "success")
         assert hasattr(result, "data")
