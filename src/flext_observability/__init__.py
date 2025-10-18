@@ -10,13 +10,20 @@ from __future__ import annotations
 from flext_observability.__version__ import __version__, __version_info__
 from flext_observability.config import FlextObservabilityConfig
 from flext_observability.constants import FlextObservabilityConstants
-from flext_observability.factories import (
-    flext_create_alert,
-    flext_create_health_check,
-    flext_create_log_entry,
-    flext_create_metric,
-    flext_create_trace,
-)
+from flext_observability.factories import FlextObservabilityFactories
+
+
+# Generic factory functions - all observability creation goes through these
+def flext_create_entry(
+    name: str,
+    entry_type: str,
+    data: dict[str, object] | None = None,
+    metadata: dict[str, object] | None = None,
+) -> FlextResult[FlextObservabilityEntry]:
+    """Create generic observability entry - all creation goes through this."""
+    return FlextObservabilityFactories.create_entry(name, entry_type, data, metadata)
+
+
 from flext_observability.fields import (
     FlextObservabilityFields,
 )
@@ -28,7 +35,6 @@ from flext_observability.monitoring import (
     flext_monitor_function,
 )
 from flext_observability.services import (
-    FlextObservabilityMasterFactory,
     FlextObservabilityServices,
     get_global_factory,
     reset_global_factory,
@@ -37,47 +43,27 @@ from flext_observability.typings import (
     FlextObservabilityTypes,
 )
 
-# Direct model exports from consolidated models
-FlextMetric = FlextObservabilityModels.Metrics.MetricEntry
-FlextTrace = FlextObservabilityModels.Tracing.TraceEntry
-FlextAlert = FlextObservabilityModels.Alerting.AlertEntry
-FlextHealthCheck = FlextObservabilityModels.Health.HealthCheckEntry
-FlextLogEntry = FlextObservabilityModels.Logging.LogEntry
-
-# Removed over-engineered FlextObservability facade class - not used anywhere in flext ecosystem
-
+# Generic model exports
+FlextObservabilityEntry = FlextObservabilityModels.GenericObservabilityEntry
+FlextObservabilityConfig = FlextObservabilityModels.GenericObservabilityConfig
 
 # Removed over-engineered FlextObservability facade class - not used anywhere in flext ecosystem
 
 __all__ = [
-    "FlextAlert",
-    "FlextHealthCheck",
-    "FlextLogEntry",
-    "FlextMetric",
     "FlextObservabilityConfig",
     "FlextObservabilityConstants",
+    "FlextObservabilityEntry",
+    "FlextObservabilityFactories",
     "FlextObservabilityFields",
     "FlextObservabilityMasterFactory",
     "FlextObservabilityModels",
     "FlextObservabilityMonitor",
     "FlextObservabilityServices",
     "FlextObservabilityTypes",
-    "FlextTrace",
-    "HealthCheckProtocol",
-    "LogEntryProtocol",
-    "MetricProtocol",
-    "ObservabilityTypes",
-    "TagsDict",
-    "TraceProtocol",
     "__version__",
     "__version_info__",
-    "flext_create_alert",
-    "flext_create_health_check",
-    "flext_create_log_entry",
-    "flext_create_metric",
-    "flext_create_trace",
+    "flext_create_entry",
     "flext_monitor_function",
     "get_global_factory",
-    "get_global_observability_service",
     "reset_global_factory",
 ]

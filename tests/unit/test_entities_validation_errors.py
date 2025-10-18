@@ -67,18 +67,20 @@ class TestEntityValidationErrors:
         """Test FlextTrace trace_id validation (empty string)."""
         with pytest.raises(ValidationError, match="Trace ID cannot be empty"):
             FlextTrace(
-                operation="test_operation",
+                operation_name="test_operation",
                 trace_id="",  # Empty trace_id should fail validation
                 span_id="span_123",
+                service_name="test_service",
             )
 
     def test_trace_invalid_operation_validation(self) -> None:
         """Test FlextTrace with invalid operation (empty string)."""
         with pytest.raises(ValidationError, match="Operation name cannot be empty"):
             FlextTrace(
-                operation="",  # Empty operation should fail Pydantic validation
+                operation_name="",  # Empty operation should fail Pydantic validation
                 trace_id="trace_123",
                 span_id="span_123",
+                service_name="test_service",
             )
 
     def test_alert_invalid_title_validation(self) -> None:

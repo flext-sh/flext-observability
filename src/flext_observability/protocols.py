@@ -49,7 +49,7 @@ class FlextObservabilityProtocols:
                 value: float,
                 *,
                 unit: str = "count",
-                tags: FlextTypes.StringDict | None = None,
+                tags: dict[str, str] | None = None,
             ) -> FlextResult[bool]:
                 """Record a metric value."""
                 ...
@@ -60,7 +60,7 @@ class FlextObservabilityProtocols:
                 *,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> FlextResult[list[FlextTypes.Dict]]:
+            ) -> FlextResult[list[dict[str, object]]]:
                 """Get collected metrics."""
                 ...
 
@@ -113,7 +113,7 @@ class FlextObservabilityProtocols:
                 """Add tag to trace span."""
                 ...
 
-            def get_trace(self, trace_id: str) -> FlextResult[FlextTypes.Dict]:
+            def get_trace(self, trace_id: str) -> FlextResult[dict[str, object]]:
                 """Get trace by ID."""
                 ...
 
@@ -124,7 +124,7 @@ class FlextObservabilityProtocols:
                 operation_name: str | None = None,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> FlextResult[list[FlextTypes.Dict]]:
+            ) -> FlextResult[list[dict[str, object]]]:
                 """Search traces by criteria."""
                 ...
 
@@ -138,7 +138,7 @@ class FlextObservabilityProtocols:
                 level: str,
                 *,
                 service: str | None = None,
-                tags: FlextTypes.StringDict | None = None,
+                tags: dict[str, str] | None = None,
             ) -> FlextResult[str]:
                 """Create an alert."""
                 ...
@@ -153,7 +153,7 @@ class FlextObservabilityProtocols:
                 level: str | None = None,
                 service: str | None = None,
                 resolved: bool | None = None,
-            ) -> FlextResult[list[FlextTypes.Dict]]:
+            ) -> FlextResult[list[dict[str, object]]]:
                 """Get alerts by criteria."""
                 ...
 
@@ -172,7 +172,7 @@ class FlextObservabilityProtocols:
         class HealthCheckProtocol(FlextProtocols.Service, Protocol):
             """Protocol for health check operations."""
 
-            def check_health(self, service_name: str) -> FlextResult[FlextTypes.Dict]:
+            def check_health(self, service_name: str) -> FlextResult[dict[str, object]]:
                 """Perform health check for a service."""
                 ...
 
@@ -184,11 +184,11 @@ class FlextObservabilityProtocols:
 
             def get_service_status(
                 self, service_name: str
-            ) -> FlextResult[FlextTypes.Dict]:
+            ) -> FlextResult[dict[str, object]]:
                 """Get service health status."""
                 ...
 
-            def get_all_services_status(self) -> FlextResult[FlextTypes.Dict]:
+            def get_all_services_status(self) -> FlextResult[dict[str, object]]:
                 """Get health status for all services."""
                 ...
 
@@ -203,7 +203,7 @@ class FlextObservabilityProtocols:
                 *,
                 service: str | None = None,
                 correlation_id: str | None = None,
-                extra: FlextTypes.Dict | None = None,
+                extra: dict[str, object] | None = None,
             ) -> FlextResult[bool]:
                 """Log a message."""
                 ...
@@ -216,7 +216,7 @@ class FlextObservabilityProtocols:
                 correlation_id: str | None = None,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> FlextResult[list[FlextTypes.Dict]]:
+            ) -> FlextResult[list[dict[str, object]]]:
                 """Get logs by criteria."""
                 ...
 
@@ -230,7 +230,7 @@ class FlextObservabilityProtocols:
                 """Create a logger instance."""
                 ...
 
-            def configure_logging(self, config: FlextTypes.Dict) -> FlextResult[bool]:
+            def configure_logging(self, config: dict[str, object]) -> FlextResult[bool]:
                 """Configure logging system."""
                 ...
 
@@ -243,17 +243,19 @@ class FlextObservabilityProtocols:
                 name: str,
                 description: str,
                 *,
-                widgets: list[FlextTypes.Dict] | None = None,
+                widgets: list[dict[str, object]] | None = None,
             ) -> FlextResult[str]:
                 """Create a dashboard."""
                 ...
 
-            def get_dashboard(self, dashboard_id: str) -> FlextResult[FlextTypes.Dict]:
+            def get_dashboard(
+                self, dashboard_id: str
+            ) -> FlextResult[dict[str, object]]:
                 """Get dashboard by ID."""
                 ...
 
             def add_widget(
-                self, dashboard_id: str, widget_config: FlextTypes.Dict
+                self, dashboard_id: str, widget_config: dict[str, object]
             ) -> FlextResult[str]:
                 """Add widget to dashboard."""
                 ...
@@ -264,7 +266,7 @@ class FlextObservabilityProtocols:
                 *,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> FlextResult[FlextTypes.Dict]:
+            ) -> FlextResult[dict[str, object]]:
                 """Get dashboard data."""
                 ...
 

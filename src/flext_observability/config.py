@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Self
 
-from flext_core import FlextConfig, FlextConstants, FlextResult, FlextTypes
+from flext_core import FlextConfig, FlextConstants, FlextResult
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -162,25 +162,13 @@ class FlextObservabilityConfig(FlextConfig):
     @model_validator(mode="after")
     def validate_observability_consistency(self) -> Self:
         """Validate observability configuration consistency."""
-        # Validate metrics configuration consistency
-        if self.metrics_enabled and self.metrics_export_interval_seconds < 1:
-            msg = "Metrics export interval must be positive when metrics are enabled"
+        # Additional cross-field validations beyond Field constraints
+        if self.tracing_enabled and not self.tracing_service_name:
+            msg = "Tracing service name required when tracing is enabled"
             raise ValueError(msg)
 
-        # Validate tracing configuration consistency
-        if self.tracing_enabled and not (0.0 <= self.tracing_sampling_rate <= 1.0):
-            msg = "Tracing sampling rate must be between 0.0 and 1.0"
-            raise ValueError(msg)
-
-        # Validate monitoring configuration consistency
-        if self.monitoring_enabled and self.monitoring_check_interval_seconds < 1:
-            msg = (
-                "Monitoring check interval must be positive when monitoring is enabled"
-            )
-            raise ValueError(msg)
-
-        if self.monitoring_enabled and self.monitoring_failure_threshold < 1:
-            msg = "Monitoring failure threshold must be positive when monitoring is enabled"
+        if self.monitoring_enabled and not self.monitoring_failure_threshold:
+            msg = "Monitoring failure threshold required when monitoring is enabled"
             raise ValueError(msg)
 
         return self
@@ -188,39 +176,16 @@ class FlextObservabilityConfig(FlextConfig):
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate observability business rules."""
         try:
-            # Validate metrics business rules
-            if self.metrics_enabled:
-                if self.metrics_export_interval_seconds < 1:
-                    return FlextResult[None].fail(
-                        "Metrics export interval must be positive"
-                    )
-                if not self.metrics_namespace or not self.metrics_namespace.strip():
-                    return FlextResult[None].fail("Metrics namespace cannot be empty")
+            # Cross-field business validations
+            if self.metrics_enabled and not self.metrics_namespace.strip():
+                return FlextResult[None].fail(
+                    "Metrics namespace cannot be empty when enabled"
+                )
 
-            # Validate tracing business rules
-            if self.tracing_enabled:
-                if not (0.0 <= self.tracing_sampling_rate <= 1.0):
-                    return FlextResult[None].fail(
-                        "Tracing sampling rate must be between 0.0 and 1.0"
-                    )
-                if (
-                    not self.tracing_service_name
-                    or not self.tracing_service_name.strip()
-                ):
-                    return FlextResult[None].fail(
-                        "Tracing service name cannot be empty"
-                    )
-
-            # Validate monitoring business rules
-            if self.monitoring_enabled:
-                if self.monitoring_check_interval_seconds < 1:
-                    return FlextResult[None].fail(
-                        "Monitoring check interval must be positive"
-                    )
-                if self.monitoring_failure_threshold < 1:
-                    return FlextResult[None].fail(
-                        "Monitoring failure threshold must be positive"
-                    )
+            if self.tracing_enabled and not self.tracing_service_name.strip():
+                return FlextResult[None].fail(
+                    "Tracing service name cannot be empty when enabled"
+                )
 
             return FlextResult[None].ok(None)
         except Exception as e:
@@ -261,6 +226,6 @@ class FlextObservabilityConfig(FlextConfig):
         """
 
 
-__all__: FlextTypes.StringList = [
+__all__: list[str] = [
     "FlextObservabilityConfig",
 ]

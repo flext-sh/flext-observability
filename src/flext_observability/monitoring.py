@@ -9,6 +9,7 @@ from __future__ import annotations
 import time
 from collections.abc import Callable
 from typing import cast, override
+from uuid import uuid4
 
 from flext_core import FlextContainer, FlextLogger, FlextResult
 
@@ -306,7 +307,11 @@ class FlextObservabilityMonitor:
             # Create metric using the Metrics domain
             try:
                 metric = FlextObservabilityModels.Metrics.MetricEntry(
-                    name=name, value=value, unit=metric_type, source="monitoring_system"
+                    metric_id=str(uuid4()),
+                    name=name,
+                    value=value,
+                    unit=metric_type,
+                    source="monitoring_system",
                 )
                 metric_result = FlextResult[
                     FlextObservabilityModels.Metrics.MetricEntry

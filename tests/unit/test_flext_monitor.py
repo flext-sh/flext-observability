@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from flext_core import FlextContainer, FlextResult, FlextTypes
+from flext_core import FlextContainer, FlextResult
 
 from flext_observability import (
     FlextObservabilityMonitor,
@@ -335,7 +335,7 @@ class TestFlextMonitorFunction:
             return "test"
 
         @flext_monitor_function(monitor)
-        def return_dict() -> FlextTypes.StringDict:
+        def return_dict() -> dict[str, str]:
             return {"key": "value"}
 
         @flext_monitor_function(monitor)

@@ -1,8 +1,34 @@
 # FLEXT Observability - Documentation Hub
+## Table of Contents
+
+- [FLEXT Observability - Documentation Hub](#flext-observability---documentation-hub)
+  - [📚 Documentation Index](#-documentation-index)
+    - [🏗️ **Architecture & Design**](#-architecture--design)
+    - [🚀 **Development Guides**](#-development-guides)
+    - [🔧 **API Reference**](#-api-reference)
+    - [📋 **Implementation Status**](#-implementation-status)
+  - [🎯 Quick Navigation](#-quick-navigation)
+    - [**For New Developers**](#for-new-developers)
+    - [**For FLEXT Ecosystem Integration**](#for-flext-ecosystem-integration)
+    - [**For API Reference**](#for-api-reference)
+    - [**For Current Status**](#for-current-status)
+  - [🔍 Current Implementation Status](#-current-implementation-status)
+    - [✅ **Implemented & Working**](#-implemented--working)
+    - [⚠️ **Implemented & Blocked**](#-implemented--blocked)
+    - [📋 **Planned & Documented**](#-planned--documented)
+  - [📝 Documentation Standards](#-documentation-standards)
+  - [🤝 Contributing to Documentation](#-contributing-to-documentation)
+    - [Documentation Structure](#documentation-structure)
+    - [Standards for New Documentation](#standards-for-new-documentation)
+  - [🔗 Related Documentation](#-related-documentation)
+
 
 **Comprehensive Documentation for Observability Patterns in the FLEXT Ecosystem**
 
-This documentation hub provides detailed guides, architecture documentation, and development patterns for FLEXT Observability, the foundation library that enables consistent monitoring, metrics, and telemetry collection across all 33 projects in the FLEXT ecosystem.
+This documentation hub provides detailed guides, architecture documentation,
+     and development patterns for FLEXT Observability,
+     the foundation library that enables consistent monitoring, metrics,
+     and telemetry collection across all 33 projects in the FLEXT ecosystem.
 
 ## 📚 Documentation Index
 
@@ -104,4 +130,5 @@ All documentation in this project follows FLEXT ecosystem standards:
 
 **Last Updated**: 2025-10-10
 **Version**: 0.9.0
-**Status**: Architecture complete, quality validation blocked by import issues · Critical Path: Fix flext-core compatibility
+**Status**: Architecture complete,
+     quality validation blocked by import issues · Critical Path: Fix flext-core compatibility

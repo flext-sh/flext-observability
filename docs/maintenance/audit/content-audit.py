@@ -1,5 +1,4 @@
 """Documentation Content Audit System.
-=================================
 
 Comprehensive content analysis and quality assessment for flext-observability documentation.
 
@@ -24,7 +23,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import yaml
-from flext_core import FlextTypes
 
 # Constants for magic values
 MAX_LINK_DENSITY_PERCENT = 5
@@ -56,8 +54,8 @@ class ContentMetrics:
     last_modified: datetime = field(default_factory=datetime.now)
     freshness_score: float = 0.0
     quality_score: float = 0.0
-    issues: FlextTypes.StringList = field(default_factory=list)
-    recommendations: FlextTypes.StringList = field(default_factory=list)
+    issues: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -151,7 +149,7 @@ class DocumentationAuditor:
         )
         metrics.table_count = len(re.findall(r"\|.*\|.*\|", content))
 
-        # TODO: Add more comprehensive marker detection for different comment styles
+        # TODO(marlonsc): Add more comprehensive marker detection for different comment styles  # noqa: TD003, FIX002
         metrics.todo_count = len(re.findall(r"\bTODO\b", content, re.IGNORECASE))
         metrics.fixme_count = len(re.findall(r"\bFIXME\b", content, re.IGNORECASE))
 
@@ -166,7 +164,7 @@ class DocumentationAuditor:
 
         return metrics
 
-    def _analyze_quality(self, metrics: ContentMetrics, content: str) -> None:
+    def _analyze_quality(self, metrics: ContentMetrics, content: str) -> None:  # noqa: ARG002
         """Analyze content quality and assign scores.
 
         Args:
@@ -202,7 +200,7 @@ class DocumentationAuditor:
             score -= 10
             metrics.recommendations.append("Consider adding code examples")
 
-        # TODO: Consider configurable penalty weights for different marker types
+        # TODO(marlonsc): Consider configurable penalty weights for different marker types  # noqa: TD003, FIX002
         score -= (metrics.todo_count + metrics.fixme_count) * 5
 
         metrics.quality_score = max(0, score)
@@ -255,7 +253,7 @@ class DocumentationAuditor:
         if len(long_lines) > MAX_LONG_LINES_THRESHOLD:
             metrics.recommendations.append("Consider breaking long lines (>120 chars)")
 
-    def run_audit(self, comprehensive: bool = False) -> AuditReport:
+    def run_audit(self, comprehensive: bool = False) -> AuditReport:  # noqa: FBT001,FBT002,ARG002
         """Run comprehensive documentation audit."""
         files = self.discover_files()
         self.report.total_files = len(files)
@@ -282,7 +280,7 @@ class DocumentationAuditor:
                     self.report.warning_issues += 1
 
             # Freshness tracking
-            if metrics.freshness_score >= 75:
+            if metrics.freshness_score >= GOOD_FRESHNESS_THRESHOLD:
                 self.report.fresh_files += 1
             else:
                 self.report.stale_files += 1
@@ -448,11 +446,11 @@ class DocumentationAuditor:
 
     def _get_score_icon(self, score: float) -> str:
         """Get icon for quality/freshness score."""
-        if score >= 90:
+        if score >= EXCELLENT_QUALITY_THRESHOLD:
             return "🟢"
-        if score >= 75:
+        if score >= GOOD_QUALITY_THRESHOLD:
             return "🟡"
-        if score >= 60:
+        if score >= FAIR_QUALITY_THRESHOLD:
             return "🟠"
         return "🔴"
 
