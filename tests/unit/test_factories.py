@@ -15,70 +15,85 @@ class TestFlextObservabilityFactories:
         """Test that FlextObservabilityFactories class exists."""
         assert FlextObservabilityFactories is not None
 
-    def test_nested_factory_classes(self) -> None:
-        """Test that nested factory classes exist."""
-        assert hasattr(FlextObservabilityFactories, "MetricFactory")
-        assert hasattr(FlextObservabilityFactories, "TraceFactory")
-        assert hasattr(FlextObservabilityFactories, "AlertFactory")
-        assert hasattr(FlextObservabilityFactories, "HealthCheckFactory")
-        assert hasattr(FlextObservabilityFactories, "LogEntryFactory")
-
-    def test_metric_factory_methods(self) -> None:
-        """Test MetricFactory has required methods."""
-        factory = FlextObservabilityFactories.MetricFactory
+    def test_factory_methods_exist(self) -> None:
+        """Test that factory methods exist."""
         methods = [
             "create_metric",
-            "create_counter",
-            "create_gauge",
-            "create_histogram",
-        ]
-        for method in methods:
-            assert hasattr(factory, method)
-            assert callable(getattr(factory, method))
-
-    def test_trace_factory_methods(self) -> None:
-        """Test TraceFactory has required methods."""
-        factory = FlextObservabilityFactories.TraceFactory
-        methods = ["create_trace", "create_span", "start_trace", "complete_trace"]
-        for method in methods:
-            assert hasattr(factory, method)
-            assert callable(getattr(factory, method))
-
-    def test_alert_factory_methods(self) -> None:
-        """Test AlertFactory has required methods."""
-        factory = FlextObservabilityFactories.AlertFactory
-        methods = [
+            "create_trace",
             "create_alert",
-            "create_info_alert",
-            "create_warning_alert",
-            "create_error_alert",
-        ]
-        for method in methods:
-            assert hasattr(factory, method)
-            assert callable(getattr(factory, method))
-
-    def test_health_check_factory_methods(self) -> None:
-        """Test HealthCheckFactory has required methods."""
-        factory = FlextObservabilityFactories.HealthCheckFactory
-        methods = [
             "create_health_check",
-            "create_database_health_check",
-            "create_service_health_check",
-        ]
-        for method in methods:
-            assert hasattr(factory, method)
-            assert callable(getattr(factory, method))
-
-    def test_log_entry_factory_methods(self) -> None:
-        """Test LogEntryFactory has required methods."""
-        factory = FlextObservabilityFactories.LogEntryFactory
-        methods = [
             "create_log_entry",
-            "create_debug_log",
-            "create_info_log",
-            "create_warning_log",
-            "create_error_log",
         ]
         for method in methods:
-            assert hasattr(factory, method)
-            assert callable(getattr(factory, method))
+            assert hasattr(FlextObservabilityFactories, method)
+            assert callable(getattr(FlextObservabilityFactories, method))
+
+    def test_create_metric_success(self) -> None:
+        """Test creating a metric successfully."""
+        result = FlextObservabilityFactories.create_metric("test_metric", 42.0)
+        assert result.is_success
+        metric = result.unwrap()
+        assert metric.name == "test_metric"
+        assert metric.value == 42.0
+        assert metric.unit == "count"
+        assert metric.source == "application"
+
+    def test_create_trace_success(self) -> None:
+        """Test creating a trace successfully."""
+        result = FlextObservabilityFactories.create_trace(
+            "test_operation", "test_service"
+        )
+        assert result.is_success
+        trace = result.unwrap()
+        assert trace.operation_name == "test_operation"
+        assert trace.service_name == "test_service"
+
+    def test_create_alert_success(self) -> None:
+        """Test creating an alert successfully."""
+        result = FlextObservabilityFactories.create_alert("test_alert", "test message")
+        assert result.is_success
+        alert = result.unwrap()
+        assert alert.name == "test_alert"
+        assert alert.message == "test message"
+        assert alert.severity == "info"
+
+    def test_create_health_check_success(self) -> None:
+        """Test creating a health check successfully."""
+        result = FlextObservabilityFactories.create_health_check("test_check")
+        assert result.is_success
+        health_check = result.unwrap()
+        assert health_check.name == "test_check"
+        assert health_check.status == "healthy"
+
+    def test_create_log_entry_success(self) -> None:
+        """Test creating a log entry successfully."""
+        result = FlextObservabilityFactories.create_log_entry("test message")
+        assert result.is_success
+        log_entry = result.unwrap()
+        assert log_entry.message == "test message"
+        assert log_entry.level == "info"
+
+    def test_create_metric_validation_failure(self) -> None:
+        """Test metric creation validation failure."""
+        result = FlextObservabilityFactories.create_metric("", 42.0)
+        assert result.is_failure
+
+    def test_create_trace_validation_failure(self) -> None:
+        """Test trace creation validation failure."""
+        result = FlextObservabilityFactories.create_trace("", "test_service")
+        assert result.is_failure
+
+    def test_create_alert_validation_failure(self) -> None:
+        """Test alert creation validation failure."""
+        result = FlextObservabilityFactories.create_alert("", "message")
+        assert result.is_failure
+
+    def test_create_health_check_validation_failure(self) -> None:
+        """Test health check creation validation failure."""
+        result = FlextObservabilityFactories.create_health_check("")
+        assert result.is_failure
+
+    def test_create_log_entry_validation_failure(self) -> None:
+        """Test log entry creation validation failure."""
+        result = FlextObservabilityFactories.create_log_entry("")
+        assert result.is_failure

@@ -1,8 +1,56 @@
 # FLEXT Observability - Architecture Overview
+## Table of Contents
+
+- [FLEXT Observability - Architecture Overview](#flext-observability---architecture-overview)
+  - [🏗️ Architectural Principles](#-architectural-principles)
+    - [Clean Architecture Implementation](#clean-architecture-implementation)
+    - [Domain-Driven Design Structure](#domain-driven-design-structure)
+  - [📁 Project Structure](#-project-structure)
+    - [Source Code Organization](#source-code-organization)
+    - [Layer Responsibilities](#layer-responsibilities)
+      - [**Domain Layer** (`entities.py`, `validation.py`,
+     `constants.py`)](#domain-layer-entitiespy-validationpy-constantspy)
+      - [**Application Services Layer** (`services.py`,
+     `obs_platform.py`)](#application-services-layer-servicespy-obs_platformpy)
+      - [**Interface Adapters Layer** (`flext_simple.py`, `flext_monitor.py`,
+     `factory.py`)](#interface-adapters-layer-flext_simplepy-flext_monitorpy-factorypy)
+  - [🔄 Data Flow Architecture](#-data-flow-architecture)
+    - [Request Processing Flow](#request-processing-flow)
+    - [Error Handling Flow](#error-handling-flow)
+  - [🔗 Integration Architecture](#-integration-architecture)
+    - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
+      - [**Foundation Integration**](#foundation-integration)
+- [All services use flext-core patterns](#all-services-use-flext-core-patterns)
+- [Railway-oriented programming throughout](#railway-oriented-programming-throughout)
+      - [**Cross-Service Observability**](#cross-service-observability)
+- [Consistent monitoring across all FLEXT projects](#consistent-monitoring-across-all-flext-projects)
+    - [Dependency Management](#dependency-management)
+  - [🎯 Design Patterns](#-design-patterns)
+    - [Factory Pattern Implementation](#factory-pattern-implementation)
+    - [Service Layer Pattern](#service-layer-pattern)
+    - [Repository Pattern (Future Implementation)](#repository-pattern-future-implementation)
+  - [🚀 Scalability Architecture](#-scalability-architecture)
+    - [Current Implementation Characteristics](#current-implementation-characteristics)
+    - [Future Scalability Patterns](#future-scalability-patterns)
+  - [📊 Performance Considerations](#-performance-considerations)
+    - [Current Performance Profile](#current-performance-profile)
+    - [Optimization Strategies](#optimization-strategies)
+  - [🔐 Security Architecture](#-security-architecture)
+    - [Current Security Measures](#current-security-measures)
+    - [Security Patterns](#security-patterns)
+  - [🔄 Extension Points](#-extension-points)
+    - [Planned Extension Mechanisms](#planned-extension-mechanisms)
+    - [Integration Hooks](#integration-hooks)
+- [Future extension point example](#future-extension-point-example)
+
 
 **Clean Architecture and Domain-Driven Design Patterns for Ecosystem Observability**
 
-FLEXT Observability implements Clean Architecture with Domain-Driven Design (DDD) patterns, serving as the foundational observability library for all 33 projects in the FLEXT ecosystem. This document outlines the architectural decisions, layer responsibilities, and integration patterns that enable consistent monitoring across the entire data integration platform.
+FLEXT Observability implements Clean Architecture with Domain-Driven Design (DDD) patterns,
+     serving as the foundational observability library for all 33 projects in the FLEXT ecosystem. This document outlines the architectural decisions,
+    
+     layer responsibilities,
+     and integration patterns that enable consistent monitoring across the entire data integration platform.
 
 ## 🏗️ Architectural Principles
 
@@ -342,7 +390,8 @@ class FlextObservabilityPlugin(Protocol):
 
 ---
 
-**Next Steps**: Review [Domain Model](domain-model.md) for detailed entity patterns, or [Integration Patterns](integration-patterns.md) for ecosystem integration details.
+**Next Steps**: Review [Domain Model](domain-model.md) for detailed entity patterns,
+     or [Integration Patterns](integration-patterns.md) for ecosystem integration details.
 
 **Related Documentation**:
 

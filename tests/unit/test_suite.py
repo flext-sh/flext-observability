@@ -115,7 +115,7 @@ class TestCompleteIntegrationReal:
         assert start_result.is_success
 
         results: FlextTypes.BoolList = []
-        errors: FlextTypes.StringList = []
+        errors: list[str] = []
 
         def worker_function(worker_id: int) -> None:
             """Worker function that performs real observability operations."""
@@ -185,7 +185,7 @@ class TestCompleteIntegrationReal:
 
         # Create monitored functions
         @flext_monitor_function(monitor=self.monitor, metric_name="data_processing")
-        def process_data(data: FlextTypes.IntList) -> FlextTypes.Dict:
+        def process_data(data: FlextTypes.IntList) -> dict[str, object]:
             """Real data processing function."""
             # Simulate real processing
             time.sleep(0.1)
@@ -198,7 +198,7 @@ class TestCompleteIntegrationReal:
             }
 
         @flext_monitor_function(monitor=self.monitor, metric_name="api_request")
-        def handle_api_request(endpoint: str, method: str) -> FlextTypes.StringDict:
+        def handle_api_request(endpoint: str, method: str) -> dict[str, str]:
             """Real API request handler."""
             time.sleep(0.05)
             return {

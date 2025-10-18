@@ -22,16 +22,6 @@ from flext_observability import (
     FlextLogEntry,
     FlextMetric,
     FlextTrace,
-    entities as entities_module,
-    flext_alert,
-    flext_create_alert,
-    flext_create_health_check,
-    flext_create_log_entry,
-    flext_create_metric,
-    flext_create_trace,
-    flext_health_check,
-    flext_metric,
-    flext_trace,
 )
 
 
@@ -577,10 +567,10 @@ class TestFlextMixinsCoverage:
         # Test empty trace_id validation error (line 523-524)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
-                id="test-id",
                 trace_id="",  # Empty trace_id should trigger validation error
-                operation="test_operation",
                 span_id="test_span_id",
+                operation_name="test_operation",
+                service_name="test_service",
             )
 
         # Verify the error contains the expected message
@@ -590,10 +580,10 @@ class TestFlextMixinsCoverage:
         """Test FlextTrace trace_id field validation success - covers line 525."""
         # Test successful trace_id validation (line 525)
         trace = FlextTrace(
-            id="test-trace-id",
             trace_id="valid_trace_id",
-            operation="test_operation",
             span_id="test_span_id",
+            operation_name="test_operation",
+            service_name="test_service",
         )
 
         # Verify the trace was created successfully
@@ -605,10 +595,10 @@ class TestFlextMixinsCoverage:
         # Test empty operation validation error (line 532-533)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
-                id="test-id",
                 trace_id="test_trace_id",
-                operation="",  # Empty operation should trigger validation error
                 span_id="test_span_id",
+                operation_name="",  # Empty operation should trigger validation error
+                service_name="test_service",
             )
 
         # Verify the error contains the expected message
@@ -618,14 +608,14 @@ class TestFlextMixinsCoverage:
         """Test FlextTrace operation field validation success - covers line 534."""
         # Test successful operation validation (line 534)
         trace = FlextTrace(
-            id="test-trace-id",
             trace_id="test_trace_id",
-            operation="valid_operation_name",
             span_id="test_span_id",
+            operation_name="valid_operation_name",
+            service_name="test_service",
         )
 
         # Verify the trace was created successfully
-        assert trace.operation == "valid_operation_name"
+        assert trace.operation_name == "valid_operation_name"
         assert isinstance(trace, FlextTrace)
 
     def test_flext_trace_span_id_validation_error_coverage(self) -> None:
@@ -633,10 +623,10 @@ class TestFlextMixinsCoverage:
         # Test empty span_id validation error (line 541-542)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
-                id="test-id",
                 trace_id="test_trace_id",
-                operation="test_operation",
                 span_id="",  # Empty span_id should trigger validation error
+                operation_name="test_operation",
+                service_name="test_service",
             )
 
         # Verify the error contains the expected message
@@ -646,10 +636,10 @@ class TestFlextMixinsCoverage:
         """Test FlextTrace span_id field validation success - covers line 543."""
         # Test successful span_id validation (line 543)
         trace = FlextTrace(
-            id="test-trace-id",
             trace_id="test_trace_id",
-            operation="test_operation",
             span_id="valid_span_id",
+            operation_name="test_operation",
+            service_name="test_service",
         )
 
         # Verify the trace was created successfully
@@ -661,10 +651,10 @@ class TestFlextMixinsCoverage:
         # Test negative duration validation error (line 550-551)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
-                id="test-id",
                 trace_id="test_trace_id",
-                operation="test_operation",
                 span_id="test_span_id",
+                operation_name="test_operation",
+                service_name="test_service",
                 duration_ms=-100,  # Negative duration should trigger validation error
             )
 
@@ -678,10 +668,10 @@ class TestFlextMixinsCoverage:
 
         for duration in valid_durations:
             trace = FlextTrace(
-                id=f"test-trace-id-{duration}",
                 trace_id="test_trace_id",
-                operation="test_operation",
                 span_id="test_span_id",
+                operation_name="test_operation",
+                service_name="test_service",
                 duration_ms=duration,
             )
 
@@ -694,10 +684,10 @@ class TestFlextMixinsCoverage:
         # Test invalid status validation error (line 559-561)
         with pytest.raises(ValidationError) as exc_info:
             FlextTrace(
-                id="test-id",
                 trace_id="test_trace_id",
-                operation="test_operation",
                 span_id="test_span_id",
+                operation_name="test_operation",
+                service_name="test_service",
                 status="invalid_status",  # Invalid status should trigger validation error
             )
 
@@ -712,75 +702,16 @@ class TestFlextMixinsCoverage:
 
         for status in valid_statuses:
             trace = FlextTrace(
-                id=f"test-trace-id-{status}",
                 trace_id="test_trace_id",
-                operation="test_operation",
                 span_id="test_span_id",
+                operation_name="test_operation",
+                service_name="test_service",
                 status=status,
             )
 
             # Verify the trace was created successfully with valid status
             assert trace.status == status
             assert isinstance(trace, FlextTrace)
-
-    def test_flext_trace_validate_business_rules_success_coverage(self) -> None:
-        """Test FlextTrace.validate_business_rules() method success path - covers lines 593-597."""
-        # Test successful validation path (line 597)
-        trace = FlextTrace(
-            id="test-trace-id",
-            trace_id="valid_trace_id",
-            operation="valid_operation",
-            span_id="valid_span_id",
-        )
-
-        # Call the validate_business_rules method directly to test it
-        result = trace.validate_business_rules()
-        assert result.is_success
-        assert result.data is None  # Success returns None
-
-    def test_flext_trace_validate_business_rules_trace_id_failure_coverage(
-        self,
-    ) -> None:
-        """Test FlextTrace.validate_business_rules() method trace_id validation failure - covers lines 593-594."""
-        # Create trace with valid data first
-        trace = FlextTrace(
-            id="test-trace-id",
-            trace_id="valid_trace_id",
-            operation="valid_operation",
-            span_id="valid_span_id",
-        )
-
-        # Directly modify the trace_id to empty to test validation logic
-        # (bypassing Pydantic validation to test the validate_business_rules() method specifically)
-        trace.__dict__["trace_id"] = ""  # Direct assignment to bypass field validation
-
-        # Call validate_business_rules method - should fail on line 594
-        result = trace.validate_business_rules()
-        assert result.is_failure
-        assert result.error is not None
-        assert result.error is not None and "Invalid trace ID" in result.error
-
-    def test_flext_trace_validate_business_rules_operation_failure_coverage(
-        self,
-    ) -> None:
-        """Test FlextTrace.validate_business_rules() method operation validation failure - covers lines 595-596."""
-        # Create trace with valid data first
-        trace = FlextTrace(
-            id="test-trace-id",
-            trace_id="valid_trace_id",
-            operation="valid_operation",
-            span_id="valid_span_id",
-        )
-
-        # Test invalid operation that fails validation - line 595-596
-        trace.__dict__["operation"] = (
-            ""  # Direct assignment to test validate_business_rules()
-        )
-
-        result = trace.validate_business_rules()
-        assert result.is_failure
-        assert result.error is not None
-        assert "Invalid operation name" in str(result.error)
 
     def test_flext_alert_title_validation_error_coverage(self) -> None:
         """Test FlextAlert title field validation error - covers lines 703-706."""
@@ -1195,55 +1126,6 @@ class TestFlextMixinsCoverage:
         assert alert.status == "active"  # Default status
         assert isinstance(alert.tags, dict)
         assert isinstance(alert.timestamp, datetime)
-
-    def test_flext_trace_factory_with_id_coverage(self) -> None:
-        """Test flext_trace factory function with custom id - covers lines 989-999."""
-        # Test with custom id in kwargs (triggers lines 989-999)
-        custom_id = FlextUtilities.Generators.generate_uuid()
-        custom_span_attrs = {"http.method": "GET", "http.status": 200}
-        custom_duration = 150
-        custom_timestamp = FlextUtilities.Generators.generate_timestamp()
-
-        trace = flext_trace(
-            trace_id="trace-123",
-            operation="api.request",
-            span_id="span-456",
-            status="completed",
-            id=custom_id,
-            span_attributes=custom_span_attrs,
-            duration_ms=custom_duration,
-            timestamp=custom_timestamp,
-        )
-
-        # Verify the trace was created with provided values
-        assert trace.id == custom_id
-        assert trace.trace_id == "trace-123"
-        assert trace.operation == "api.request"
-        assert trace.span_id == "span-456"
-        assert trace.status == "completed"
-        assert trace.span_attributes == custom_span_attrs
-        assert trace.duration_ms == custom_duration
-        assert isinstance(trace.timestamp, datetime)
-
-    def test_flext_trace_factory_default_generation_coverage(self) -> None:
-        """Test flext_trace factory function with default id generation - covers lines 1000-1008."""
-        # Test with no id (triggers lines 1000-1008 - default path)
-        trace = flext_trace(
-            trace_id="trace-default",
-            operation="db.query",
-            span_id="span-default",
-        )
-
-        # Verify the trace was created with auto-generated id and defaults
-        assert trace.id is not None
-        assert len(trace.id) > 10  # Generated IDs should be substantial
-        assert trace.trace_id == "trace-default"
-        assert trace.operation == "db.query"
-        assert trace.span_id == "span-default"
-        assert trace.status == "pending"  # Default status
-        assert isinstance(trace.span_attributes, dict)
-        assert trace.duration_ms == 0  # Default duration
-        assert isinstance(trace.timestamp, datetime)
 
     def test_flext_metric_with_id_and_version_coverage(self) -> None:
         """Test flext_metric factory with id and version - covers lines 1025-1034."""

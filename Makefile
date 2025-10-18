@@ -12,6 +12,11 @@ SRC_DIR := src
 TESTS_DIR := tests
 COV_DIR := flext_observability
 
+# Documentation maintenance tooling
+FLEXT_ROOT := $(abspath ..)
+DOCS_CLI := PYTHONPATH=$(FLEXT_ROOT)/flext-quality/src python -m flext_quality.docs_maintenance.cli
+DOCS_PROFILE := advanced
+
 # Quality Standards
 MIN_COVERAGE := 100
 
@@ -232,6 +237,13 @@ docs: ## Build documentation
 .PHONY: docs-serve
 docs-serve: ## Serve documentation
 	$(POETRY) run mkdocs serve
+
+.PHONY: docs-maintenance docs-maintenance-dry-run
+docs-maintenance: ## Run shared documentation maintenance (Markdown only)
+	FLEXT_DOC_PROFILE=$(DOCS_PROFILE) FLEXT_DOC_PROJECT_ROOT=$(PWD) $(DOCS_CLI) --project-root $(PWD)
+
+docs-maintenance-dry-run: ## Preview documentation maintenance results without applying changes
+	FLEXT_DOC_PROFILE=$(DOCS_PROFILE) FLEXT_DOC_PROJECT_ROOT=$(PWD) $(DOCS_CLI) --project-root $(PWD) --dry-run --verbose
 
 # =============================================================================
 # DEPENDENCIES

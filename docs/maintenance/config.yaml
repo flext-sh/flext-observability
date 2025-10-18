@@ -1,0 +1,79 @@
+# Shared documentation maintenance configuration for flext-observability
+
+audit:
+  include_patterns:
+    - "*.md"
+  exclude_patterns:
+    - ".git/**"
+    - "backups/**"
+    - "reports/**"
+  thresholds:
+    min_word_count: 80
+    max_age_days: 45
+    min_quality_score: 75
+    min_completeness_score: 70
+
+content:
+  required_sections:
+    - "Overview"
+    - "Monitoring"
+    - "Troubleshooting"
+  prohibited_patterns:
+    - "TODO"
+    - "FIXME"
+    - "WIP"
+
+validation:
+  timeout: 8
+  retries: 2
+  user_agent: "FLEXT Observability DocMaintainer/1.0"
+  cache_ttl: 43200
+  skip_domains:
+    - "localhost"
+    - "127.0.0.1"
+  skip_patterns:
+    - "reports/**"
+    - "backups/**"
+
+style:
+  max_line_length: 100
+  require_language_in_code_blocks: true
+  consistent_list_markers: true
+  heading_hierarchy: true
+  no_trailing_spaces: true
+  accessibility:
+    require_alt_text: true
+    descriptive_links: true
+
+optimization:
+  auto_fix: true
+  create_backups: true
+  max_line_length: 100
+  add_toc_to_long_docs: true
+  toc_min_headings: 4
+  fix_common_typos: true
+  enhance_code_blocks: true
+  improve_formatting: true
+
+sync:
+  auto_commit: false
+  commit_message_template: "docs: maintenance - {operation}"
+  backup_before_changes: true
+  validate_before_commit: true
+  push_after_commit: false
+
+git:
+  remote_name: "origin"
+  main_branch: "main"
+  create_backup_branch: true
+
+reporting:
+  output_formats:
+    - "markdown"
+  include_charts: false
+  metrics_history_days: 30
+  dashboard_template: "markdown-only"
+  thresholds:
+    excellent_score: 90
+    good_score: 75
+    fair_score: 60

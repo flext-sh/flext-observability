@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextModels, FlextResult, FlextTypes
+from flext_core import FlextModels, FlextResult
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -55,7 +55,7 @@ class FlextObservabilityHealth(FlextModels):
         response_time_ms: float | None = Field(
             default=None, description="Response time in milliseconds"
         )
-        details: FlextTypes.Dict = Field(
+        details: dict[str, object] = Field(
             default_factory=dict, description="Health check details"
         )
 
@@ -88,8 +88,8 @@ class FlextObservabilityHealth(FlextModels):
 
         @field_serializer("details", when_used="json")
         def serialize_details_with_health_context(
-            self, value: FlextTypes.Dict, _info: object
-        ) -> FlextTypes.Dict:
+            self, value: dict[str, object], _info: object
+        ) -> dict[str, object]:
             """Serialize details with health check context."""
             return {
                 "details": value,
@@ -157,7 +157,7 @@ class FlextObservabilityHealth(FlextModels):
         component: str = Field(..., description="Component name")
         status: str = Field(default="unknown", description="Health status")
         message: str = Field(default="", description="Health check message")
-        metrics: FlextTypes.Dict = Field(
+        metrics: dict[str, object] = Field(
             default_factory=dict, description="Health metrics"
         )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -214,7 +214,7 @@ class FlextObservabilityHealth(FlextModels):
         """Create a FlextHealthCheck entity directly."""
         try:
             # Filter kwargs to only include valid FlextHealthCheck parameters
-            valid_kwargs: FlextTypes.Dict = {}
+            valid_kwargs: dict[str, object] = {}
             if "metrics" in kwargs and isinstance(kwargs["metrics"], dict):
                 valid_kwargs["metrics"] = kwargs["metrics"]
             if "timestamp" in kwargs and isinstance(kwargs["timestamp"], datetime):
