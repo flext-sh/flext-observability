@@ -149,7 +149,7 @@ class DocumentationAuditor:
         )
         metrics.table_count = len(re.findall(r"\|.*\|.*\|", content))
 
-        # TODO(marlonsc): Add more comprehensive marker detection for different comment styles  # noqa: TD003, FIX002
+        # TODO: Add more comprehensive marker detection for different comment styles
         metrics.todo_count = len(re.findall(r"\bTODO\b", content, re.IGNORECASE))
         metrics.fixme_count = len(re.findall(r"\bFIXME\b", content, re.IGNORECASE))
 
@@ -164,7 +164,7 @@ class DocumentationAuditor:
 
         return metrics
 
-    def _analyze_quality(self, metrics: ContentMetrics, content: str) -> None:  # noqa: ARG002
+    def _analyze_quality(self, metrics: ContentMetrics, content: str) -> None:
         """Analyze content quality and assign scores.
 
         Args:
@@ -200,7 +200,7 @@ class DocumentationAuditor:
             score -= 10
             metrics.recommendations.append("Consider adding code examples")
 
-        # TODO(marlonsc): Consider configurable penalty weights for different marker types  # noqa: TD003, FIX002
+        # TODO: Consider configurable penalty weights for different marker types
         score -= (metrics.todo_count + metrics.fixme_count) * 5
 
         metrics.quality_score = max(0, score)
@@ -253,7 +253,7 @@ class DocumentationAuditor:
         if len(long_lines) > MAX_LONG_LINES_THRESHOLD:
             metrics.recommendations.append("Consider breaking long lines (>120 chars)")
 
-    def run_audit(self, comprehensive: bool = False) -> AuditReport:  # noqa: FBT001,FBT002,ARG002
+    def run_audit(self, *, comprehensive: bool = False) -> AuditReport:
         """Run comprehensive documentation audit."""
         files = self.discover_files()
         self.report.total_files = len(files)

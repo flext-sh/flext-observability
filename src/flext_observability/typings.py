@@ -36,7 +36,7 @@ class FlextObservabilityTypes(FlextTypes):
     # OBSERVABILITY PROJECT TYPES - Domain-specific project types extending FlextTypes
     # =========================================================================
 
-    class Project(FlextTypes):
+    class ObservabilityProject(FlextTypes):
         """Observability-specific project types extending FlextTypes.
 
         Adds observability/monitoring-specific project types while inheriting
@@ -125,6 +125,13 @@ class FlextObservabilityTypes(FlextTypes):
         type ServiceRegistry = dict[str, dict[str, str | int | dict[str, object]]]
         type ServiceDiscovery = dict[str, list[dict[str, FlextTypes.JsonValue]]]
         type ServiceHealth = dict[str, str | dict[str, FlextTypes.JsonValue]]
+
+        # Additional core types for monitoring
+        type MetadataDict = dict[str, object]
+        type ServicesList = list[tuple[str, object]]
+        type HealthMetricsDict = dict[str, object]
+        type MetricDict = dict[str, object]
+        type StringList = list[str]
 
     # =========================================================================
     # OBSERVABILITY PROTOCOLS - Protocol definitions for observability interfaces
@@ -255,6 +262,10 @@ class FlextObservabilityTypes(FlextTypes):
             def timestamp(self) -> datetime:
                 """Get log timestamp."""
                 ...
+
+    # =========================================================================
+    # OBSERVABILITY PROJECT TYPES - Domain-specific project types extending FlextTypes
+    # =========================================================================
 
 
 # =============================================================================

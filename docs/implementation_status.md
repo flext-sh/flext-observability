@@ -1,4 +1,5 @@
 # Implementation Status - FLEXT Observability v0.9.0
+
 ## Table of Contents
 
 - [Implementation Status - FLEXT Observability v0.9.0](#implementation-status---flext-observability-v090)
@@ -17,8 +18,7 @@
     - [**Quality Gates** ❌ (BLOCKED)](#quality-gates--blocked)
       - [**Import Compatibility Issue**](#import-compatibility-issue)
 - [CURRENT: BROKEN - T not exported from flext-core](#current-broken---t-not-exported-from-flext-core)
-- [SHOULD BE: Fixed in flext-core __init__.py](#should-be-fixed-in-flext-core-__init__py)
-      - [**Test Execution Status**](#test-execution-status)
+- [SHOULD BE: Fixed in flext-core **init**.py](#should-be-fixed-in-flext-core-__init__py) - [**Test Execution Status**](#test-execution-status)
   - [🚧 Critical Path Resolution](#-critical-path-resolution)
     - [**Phase 1: Fix Import Compatibility** (CRITICAL - BLOCKING)](#phase-1-fix-import-compatibility-critical---blocking)
     - [**Phase 2: Quality Validation** (AFTER IMPORT FIX)](#phase-2-quality-validation-after-import-fix)
@@ -35,7 +35,6 @@
     - [**Implementation Decisions**](#implementation-decisions)
     - [**Current Blockers**](#current-blockers)
   - [📋 Status Summary](#-status-summary)
-
 
 **Current Status**: Architecture Complete, Quality Validation Blocked
 **Last Updated**: 2025-10-10
@@ -178,7 +177,7 @@ from flext_core import FlextUtilities
 ### **Phase 1: Fix Import Compatibility** (CRITICAL - BLOCKING)
 
 **Problem**: flext-observability imports `T` directly from `flext_core`,
-     but `T` is not exported in flext-core's `__init__.py`.
+but `T` is not exported in flext-core's `__init__.py`.
 
 **Solution Required**:
 
@@ -322,5 +321,5 @@ make lint        # Ruff compliance
 ---
 
 **FLEXT-Observability v0.9.0** - Comprehensive observability foundation with complete architecture and extensive test suite,
-    
+
      currently blocked by import compatibility issues.

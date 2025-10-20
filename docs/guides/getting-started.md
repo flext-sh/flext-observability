@@ -1,4 +1,5 @@
 # Getting Started with FLEXT Observability
+
 ## Table of Contents
 
 - [Getting Started with FLEXT Observability](#getting-started-with-flext-observability)
@@ -13,15 +14,15 @@
 - [Add flext-observability to your FLEXT project](#add-flext-observability-to-your-flext-project)
 - [Install development dependencies if contributing](#install-development-dependencies-if-contributing)
 - [Verify installation](#verify-installation)
-    - [Via pip (Alternative)](#via-pip-alternative)
+  - [Via pip (Alternative)](#via-pip-alternative)
 - [Direct installation](#direct-installation)
 - [Verify installation](#verify-installation)
   - [🏁 First Observability Integration](#-first-observability-integration)
     - [1. Basic Metric Creation](#1-basic-metric-creation)
 - [Create a simple metric](#create-a-simple-metric)
-    - [2. Basic Trace Creation](#2-basic-trace-creation)
+  - [2. Basic Trace Creation](#2-basic-trace-creation)
 - [Create a trace for an operation](#create-a-trace-for-an-operation)
-    - [3. Function Monitoring Decorator](#3-function-monitoring-decorator)
+  - [3. Function Monitoring Decorator](#3-function-monitoring-decorator)
 - [Use the function normally - monitoring happens automatically](#use-the-function-normally---monitoring-happens-automatically)
   - [🏛️ Service Layer Integration](#-service-layer-integration)
     - [Using Services with Dependency Injection](#using-services-with-dependency-injection)
@@ -31,8 +32,8 @@
   - [🔧 Integration Patterns](#-integration-patterns)
     - [Pattern 1: FLEXT Service Integration](#pattern-1-flext-service-integration)
 - [In your FLEXT service initialization](#in-your-flext-service-initialization)
-    - [Pattern 2: Infrastructure Service Integration](#pattern-2-infrastructure-service-integration)
-    - [Pattern 3: Singer Ecosystem Integration](#pattern-3-singer-ecosystem-integration)
+  - [Pattern 2: Infrastructure Service Integration](#pattern-2-infrastructure-service-integration)
+  - [Pattern 3: Singer Ecosystem Integration](#pattern-3-singer-ecosystem-integration)
   - [🧪 Testing Your Integration](#-testing-your-integration)
     - [Create Test File](#create-test-file)
     - [Run Tests](#run-tests)
@@ -42,7 +43,7 @@
   - [📊 Verify Integration](#-verify-integration)
     - [Check Quality Gates](#check-quality-gates)
 - [Ensure your integration passes FLEXT quality standards](#ensure-your-integration-passes-flext-quality-standards)
-    - [Monitor Integration](#monitor-integration)
+  - [Monitor Integration](#monitor-integration)
   - [🔄 Next Steps](#-next-steps)
     - [For Basic Usage](#for-basic-usage)
     - [For Advanced Integration](#for-advanced-integration)
@@ -51,18 +52,17 @@
     - [ImportError: No module named 'flext_observability'](#importerror-no-module-named-flext_observability)
 - [Solution: Verify installation](#solution-verify-installation)
 - [or](#or)
-    - [Type checking errors with MyPy](#type-checking-errors-with-mypy)
+  - [Type checking errors with MyPy](#type-checking-errors-with-mypy)
 - [Solution: Ensure proper type imports](#solution-ensure-proper-type-imports)
 - [Use proper typing](#use-proper-typing)
-    - [FlextResult pattern confusion](#flextresult-pattern-confusion)
+  - [FlextResult pattern confusion](#flextresult-pattern-confusion)
 - [❌ Wrong: Directly accessing data without checking success](#-wrong-directly-accessing-data-without-checking-success)
 - [✅ Correct: Always check success first](#-correct-always-check-success-first)
-
 
 **Quick Start Guide for Integrating Observability Patterns in FLEXT Projects**
 
 This guide will walk you through the essential steps to integrate FLEXT Observability into your FLEXT ecosystem project,
-     from installation to your first working observability implementation.
+from installation to your first working observability implementation.
 
 ## 🎯 Prerequisites
 

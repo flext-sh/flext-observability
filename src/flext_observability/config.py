@@ -133,13 +133,14 @@ class FlextObservabilityConfig(FlextConfig):
     # === PYDANTIC 2.11+ VALIDATORS ===
     @field_validator("log_level")
     @classmethod
-    def validate_log_level(cls, v: str) -> str:
+    def validate_log_level(cls, v: object | str) -> str:
         """Validate log level format."""
         valid_levels = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
-        if v.upper() not in valid_levels:
+        str_v = str(v).upper()
+        if str_v not in valid_levels:
             msg = f"Log level must be one of {valid_levels}"
             raise ValueError(msg)
-        return v.upper()
+        return str_v
 
     @field_validator("metrics_namespace")
     @classmethod

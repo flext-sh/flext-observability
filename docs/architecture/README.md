@@ -1,4 +1,5 @@
 # FLEXT Observability - Architecture Overview
+
 ## Table of Contents
 
 - [FLEXT Observability - Architecture Overview](#flext-observability---architecture-overview)
@@ -9,11 +10,11 @@
     - [Source Code Organization](#source-code-organization)
     - [Layer Responsibilities](#layer-responsibilities)
       - [**Domain Layer** (`entities.py`, `validation.py`,
-     `constants.py`)](#domain-layer-entitiespy-validationpy-constantspy)
+        `constants.py`)](#domain-layer-entitiespy-validationpy-constantspy)
       - [**Application Services Layer** (`services.py`,
-     `obs_platform.py`)](#application-services-layer-servicespy-obs_platformpy)
+        `obs_platform.py`)](#application-services-layer-servicespy-obs_platformpy)
       - [**Interface Adapters Layer** (`flext_simple.py`, `flext_monitor.py`,
-     `factory.py`)](#interface-adapters-layer-flext_simplepy-flext_monitorpy-factorypy)
+        `factory.py`)](#interface-adapters-layer-flext_simplepy-flext_monitorpy-factorypy)
   - [🔄 Data Flow Architecture](#-data-flow-architecture)
     - [Request Processing Flow](#request-processing-flow)
     - [Error Handling Flow](#error-handling-flow)
@@ -21,10 +22,9 @@
     - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
       - [**Foundation Integration**](#foundation-integration)
 - [All services use flext-core patterns](#all-services-use-flext-core-patterns)
-- [Railway-oriented programming throughout](#railway-oriented-programming-throughout)
-      - [**Cross-Service Observability**](#cross-service-observability)
+- [Railway-oriented programming throughout](#railway-oriented-programming-throughout) - [**Cross-Service Observability**](#cross-service-observability)
 - [Consistent monitoring across all FLEXT projects](#consistent-monitoring-across-all-flext-projects)
-    - [Dependency Management](#dependency-management)
+  - [Dependency Management](#dependency-management)
   - [🎯 Design Patterns](#-design-patterns)
     - [Factory Pattern Implementation](#factory-pattern-implementation)
     - [Service Layer Pattern](#service-layer-pattern)
@@ -43,12 +43,11 @@
     - [Integration Hooks](#integration-hooks)
 - [Future extension point example](#future-extension-point-example)
 
-
 **Clean Architecture and Domain-Driven Design Patterns for Ecosystem Observability**
 
 FLEXT Observability implements Clean Architecture with Domain-Driven Design (DDD) patterns,
-     serving as the foundational observability library for all 33 projects in the FLEXT ecosystem. This document outlines the architectural decisions,
-    
+serving as the foundational observability library for all 33 projects in the FLEXT ecosystem. This document outlines the architectural decisions,
+
      layer responsibilities,
      and integration patterns that enable consistent monitoring across the entire data integration platform.
 
@@ -391,7 +390,7 @@ class FlextObservabilityPlugin(Protocol):
 ---
 
 **Next Steps**: Review [Domain Model](domain-model.md) for detailed entity patterns,
-     or [Integration Patterns](integration-patterns.md) for ecosystem integration details.
+or [Integration Patterns](integration-patterns.md) for ecosystem integration details.
 
 **Related Documentation**:
 

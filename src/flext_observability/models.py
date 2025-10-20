@@ -1,7 +1,7 @@
 """Generic FLEXT Observability Models.
 
-Minimal, generic Pydantic models following FLEXT principles with zero domain-specific logic.
-Single unified class for all observability entities.
+Advanced Pydantic models with minimal code using composition and delegation.
+Single unified class for all observability entities with SOLID principles.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -10,36 +10,39 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
 from flext_core import FlextModels
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
 class FlextObservabilityModels(FlextModels):
-    """Generic observability models extending FlextModels.
+    """Generic observability models with advanced Pydantic patterns.
 
-    Single class providing generic base models for any observability entity type.
-    No domain-specific validation or computed fields - pure generic foundation.
+    Single class providing generic base models using composition and delegation.
+    Zero domain-specific logic - pure generic foundation with minimal code.
     """
 
     class GenericObservabilityEntry(FlextModels.Value):
-        """Generic base model for any observability entry."""
+        """Generic base model for any observability entry using advanced Pydantic."""
 
         model_config = ConfigDict(
             validate_assignment=True,
             extra="allow",
             frozen=False,
             str_strip_whitespace=True,
+            json_encoders={datetime: lambda v: v.isoformat()},
         )
 
         id: str = Field(
-            default_factory=lambda: str(uuid4()), description="Unique entity identifier"
+            default_factory=lambda: str(uuid4()),
+            min_length=1,
+            description="Unique entity identifier",
         )
-        name: str = Field(description="Entity name")
-        type: str = Field(description="Entity type (metric, trace, alert, health, log)")
+        name: str = Field(min_length=1, description="Entity name")
+        type: str = Field(min_length=1, description="Entity type")
         timestamp: datetime = Field(
             default_factory=datetime.now, description="Entry timestamp"
         )
@@ -50,19 +53,68 @@ class FlextObservabilityModels(FlextModels):
             default_factory=dict, description="Generic metadata"
         )
 
-    class GenericObservabilityConfig(BaseModel):
-        """Generic configuration model for observability settings."""
+        @computed_field
+        @property
+        def age_seconds(self) -> float:
+            """Computed age in seconds since creation."""
+            return (datetime.now(tz=UTC) - self.timestamp).total_seconds()
 
-        model_config = ConfigDict(validate_assignment=True, extra="allow")
+        @computed_field
+        @property
+        def has_data(self) -> bool:
+            """Check if entry has any data."""
+            return bool(self.data)
+
+        @computed_field
+        @property
+        def data_keys(self) -> list[str]:
+            """List of data keys for introspection."""
+            return list(self.data.keys()) if self.data else []
+
+    class GenericObservabilityConfig(BaseModel):
+        """Generic configuration using advanced Pydantic patterns."""
+
+        model_config = ConfigDict(
+            validate_assignment=True,
+            extra="allow",
+            frozen=False,
+            str_strip_whitespace=True,
+        )
 
         enabled: bool = Field(default=True, description="Enable observability")
         interval_seconds: float = Field(
-            default=60.0, description="Collection/check interval"
+            gt=0, default=60.0, description="Collection interval"
         )
-        retention_days: int = Field(default=30, description="Data retention period")
+        retention_days: int = Field(
+            ge=1, le=365, default=30, description="Retention period"
+        )
         settings: dict[str, Any] = Field(
             default_factory=dict, description="Type-specific settings"
         )
+
+        @computed_field
+        @property
+        def interval_minutes(self) -> float:
+            """Computed interval in minutes."""
+            return self.interval_seconds / 60.0
+
+        @computed_field
+        @property
+        def retention_hours(self) -> float:
+            """Computed retention in hours."""
+            return self.retention_days * 24.0
+
+    class Metrics:
+        """Metrics domain models."""
+
+        class MetricEntry(FlextModels.Entity):
+            """Metric entry model."""
+
+            metric_id: str = Field(default_factory=lambda: str(uuid4()))
+            name: str = Field(min_length=1)
+            value: float | int
+            unit: str
+            source: str = Field(default="unknown")
 
 
 __all__ = ["FlextObservabilityModels"]
