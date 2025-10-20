@@ -1,4 +1,5 @@
 # Simple API Reference
+
 ## Table of Contents
 
 - [Simple API Reference](#simple-api-reference)
@@ -10,35 +11,34 @@
       - [Examples](#examples)
 - [Basic metric](#basic-metric)
 - [Business metric with tags](#business-metric-with-tags)
-- [High-precision financial metric](#high-precision-financial-metric)
-      - [Error Scenarios](#error-scenarios)
+- [High-precision financial metric](#high-precision-financial-metric) - [Error Scenarios](#error-scenarios)
 - [Invalid metric name](#invalid-metric-name)
 - [Invalid value type](#invalid-value-type)
-    - [`flext_create_trace()`](#flext_create_trace)
-      - [Parameters](#parameters)
-      - [Returns](#returns)
-      - [Examples](#examples)
+  - [`flext_create_trace()`](#flext_create_trace)
+    - [Parameters](#parameters)
+    - [Returns](#returns)
+    - [Examples](#examples)
 - [Basic trace](#basic-trace)
 - [Trace with context](#trace-with-context)
 - [Child trace with parent correlation](#child-trace-with-parent-correlation)
-    - [`flext_create_alert()`](#flext_create_alert)
-      - [Parameters](#parameters)
-      - [Returns](#returns)
-      - [Examples](#examples)
+  - [`flext_create_alert()`](#flext_create_alert)
+    - [Parameters](#parameters)
+    - [Returns](#returns)
+    - [Examples](#examples)
 - [Basic alert](#basic-alert)
 - [Alert with detailed context](#alert-with-detailed-context)
 - [Business logic alert](#business-logic-alert)
-    - [`flext_create_health_check()`](#flext_create_health_check)
-      - [Parameters](#parameters)
-      - [Returns](#returns)
-      - [Examples](#examples)
+  - [`flext_create_health_check()`](#flext_create_health_check)
+    - [Parameters](#parameters)
+    - [Returns](#returns)
+    - [Examples](#examples)
 - [Basic health check](#basic-health-check)
 - [Unhealthy service check](#unhealthy-service-check)
 - [Degraded performance check](#degraded-performance-check)
-    - [`flext_create_log_entry()`](#flext_create_log_entry)
-      - [Parameters](#parameters)
-      - [Returns](#returns)
-      - [Examples](#examples)
+  - [`flext_create_log_entry()`](#flext_create_log_entry)
+    - [Parameters](#parameters)
+    - [Returns](#returns)
+    - [Examples](#examples)
 - [Basic log entry](#basic-log-entry)
 - [Log with context](#log-with-context)
 - [Correlated log entry](#correlated-log-entry)
@@ -52,7 +52,6 @@
 - [❌ MyPy will catch these type errors](#-mypy-will-catch-these-type-errors)
 - [✅ Correct usage](#-correct-usage)
   - [🔗 Related APIs](#-related-apis)
-
 
 **Quick-Start Functions for FLEXT Observability Integration**
 
@@ -517,4 +516,4 @@ flext_create_trace("operation", "service")
 ---
 
 **Next Steps**: For more advanced usage patterns,
-     see the [Factory API Reference](factory-api.md) or explore [Basic Usage Examples](../examples/basic-usage.md).
+see the [Factory API Reference](factory-api.md) or explore [Basic Usage Examples](../examples/basic-usage.md).

@@ -143,9 +143,8 @@ class TestEntityFactoryFunctions:
         )
         assert result.is_failure
         assert result.error is not None
-        assert (
-            result.error is not None and "Metric name cannot be empty" in result.error
-        )
+        assert result.error is not None
+        assert "Metric name cannot be empty" in result.error
 
     def test_flext_health_check_with_id(self) -> None:
         """Test flext_health_check with id provided."""

@@ -114,12 +114,6 @@
         from    = "src"
         include = "flext_observability"
 
-[tool.bandit]
-    extend = "../.bandit-shared.toml"
-
-[tool.coverage]
-    extend = "../.coverage-shared.toml"
-
 [tool.deptry]
     exclude = [
         ".archive",
@@ -153,22 +147,7 @@
 [tool.ruff]
     extend = "../ruff-shared.toml"
 
-[tool.pyrefly]
-    python-version = "3.13"
-    search-path = [
-        "../flext-core/src",
-        "examples",
-        "src",
-        "tests",
-    ]
 
-
-        # SubConfig: Disable unknown-name error for models.py
-        # This handles forward references to classes defined later in the same file
-        [[tool.pyrefly.sub-config]]
-            matches = "**/models.py"
-            [tool.pyrefly.sub-config.errors]
-                unknown-name = false
     [tool.ruff.lint.isort]
         known-first-party = [
             "flext_observability",

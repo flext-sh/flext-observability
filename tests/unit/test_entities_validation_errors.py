@@ -61,7 +61,8 @@ class TestEntityValidationErrors:
         result = log_entry.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert result.error is not None and "Invalid log level" in result.error
+        assert result.error is not None
+        assert "Invalid log level" in result.error
 
     def test_trace_invalid_trace_id_validation(self) -> None:
         """Test FlextTrace trace_id validation (empty string)."""
@@ -104,7 +105,8 @@ class TestEntityValidationErrors:
         result = alert.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert result.error is not None and "Invalid alert message" in result.error
+        assert result.error is not None
+        assert "Invalid alert message" in result.error
 
     def test_alert_invalid_severity_validation(self) -> None:
         """Test FlextAlert with invalid level."""
@@ -118,7 +120,8 @@ class TestEntityValidationErrors:
         result = alert.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert result.error is not None and "Invalid alert severity" in result.error
+        assert result.error is not None
+        assert "Invalid alert severity" in result.error
 
     def test_health_check_invalid_component_validation(self) -> None:
         """Test FlextHealthCheck with invalid service_name (empty string)."""

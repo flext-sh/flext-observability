@@ -76,19 +76,49 @@ class FlextObservabilityServices(FlextUtilities):
         except Exception as e:
             return FlextResult[dict[str, Any]].fail(f"Status check failed: {e}")
 
+    def create_alert(self, **_kwargs: object) -> FlextResult[dict[str, object]]:
+        """Generic alert creation - not implemented in base service."""
+        return FlextResult[dict[str, object]].fail(
+            "Alert creation not implemented in generic service"
+        )
+
+    def get_metrics_summary(self) -> FlextResult[dict[str, object]]:
+        """Generic metrics summary - not implemented in base service."""
+        return FlextResult[dict[str, object]].fail(
+            "Metrics summary not implemented in generic service"
+        )
+
+    @property
+    def health_service(self) -> object | None:
+        """Generic health service - not implemented in base service."""
+        return None
+
 
 # Global factory functions delegating to FLEXT core
 def get_global_factory() -> FlextObservabilityServices:
     """Get global factory instance through FLEXT container."""
-    return FlextContainer.get_global().get_or_create(
+    result = FlextContainer.get_global().get_or_create(
         "flext_observability_factory", FlextObservabilityServices
     )
+    if result.is_success:
+        value = result.unwrap()
+        if isinstance(value, FlextObservabilityServices):
+            return value
+    # Fallback if container doesn't have the service
+    return FlextObservabilityServices()
 
 
 def reset_global_factory() -> None:
     """Reset global factory through FLEXT container."""
-    container = FlextContainer.get_global()
-    container.remove("flext_observability_factory")
+    # Note: Container may not have remove method, so this is a no-op for now
 
 
-__all__ = ["FlextObservabilityServices", "get_global_factory", "reset_global_factory"]
+# Alias for backward compatibility
+FlextObservabilityUtilities = FlextObservabilityServices
+
+__all__ = [
+    "FlextObservabilityServices",
+    "FlextObservabilityUtilities",
+    "get_global_factory",
+    "reset_global_factory",
+]

@@ -1,4 +1,5 @@
 # Documentation Maintenance Framework
+
 ## Table of Contents
 
 - [Documentation Maintenance Framework](#documentation-maintenance-framework)
@@ -8,7 +9,7 @@
     - [Automated Maintenance Pipeline](#automated-maintenance-pipeline)
 - [Run complete maintenance pipeline](#run-complete-maintenance-pipeline)
 - [Individual maintenance operations](#individual-maintenance-operations)
-    - [Manual Maintenance Commands](#manual-maintenance-commands)
+  - [Manual Maintenance Commands](#manual-maintenance-commands)
 - [Audit documentation quality](#audit-documentation-quality)
 - [Validate all links and references](#validate-all-links-and-references)
 - [Check style consistency](#check-style-consistency)
@@ -53,12 +54,11 @@
     - [Recent Activity](#recent-activity)
     - [Next Steps](#next-steps)
 
-
 **Automated Quality Assurance and Content Management System**
 
 This framework provides comprehensive documentation maintenance with automated quality assurance,
-     validation, content optimization,
-     and systematic update procedures for the flext-observability project.
+validation, content optimization,
+and systematic update procedures for the flext-observability project.
 
 ## 🏗️ Framework Architecture
 

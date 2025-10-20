@@ -107,7 +107,8 @@ class TestFlextObservabilityMonitor:
         assert result.is_failure
         error = assert_failure_with_error(result)
         if "Monitor not initialized" not in error:
-            raise AssertionError(f"Expected {'Monitor not initialized'} in {error}")
+            msg = f"Expected {'Monitor not initialized'} in {error}"
+            raise AssertionError(msg)
 
     def test_start_monitoring_already_running(self) -> None:
         """Test monitoring start when already running."""
@@ -180,8 +181,9 @@ class TestFlextObservabilityMonitor:
         assert result.is_failure
         error = assert_failure_with_error(result)
         if "Health service not available" not in error:
+            msg = f"Expected {'Health service not available'} in {error}"
             raise AssertionError(
-                f"Expected {'Health service not available'} in {error}",
+                msg,
             )
 
     def test_get_health_status_with_real_initialization(self) -> None:
@@ -259,7 +261,8 @@ class TestFlextMonitorFunction:
 
         result = test_func(1, 2)
         if result != EXPECTED_DATA_COUNT:
-            raise AssertionError(f"Expected {3}, got {result}")
+            msg = f"Expected {3}, got {result}"
+            raise AssertionError(msg)
 
     def test_monitor_function_with_inactive_monitor(self) -> None:
         """Test function monitoring with inactive monitor."""
@@ -271,7 +274,8 @@ class TestFlextMonitorFunction:
 
         result = test_func(1, 2)
         if result != EXPECTED_DATA_COUNT:
-            raise AssertionError(f"Expected {3}, got {result}")
+            msg = f"Expected {3}, got {result}"
+            raise AssertionError(msg)
 
     def test_monitor_function_with_active_monitor(self) -> None:
         """Test function monitoring with active monitor."""
@@ -285,7 +289,8 @@ class TestFlextMonitorFunction:
 
         result = test_func(1, 2)
         if result != EXPECTED_DATA_COUNT:
-            raise AssertionError(f"Expected {3}, got {result}")
+            msg = f"Expected {3}, got {result}"
+            raise AssertionError(msg)
 
     def test_monitor_function_with_kwargs(self) -> None:
         """Test function monitoring with keyword arguments."""
@@ -299,7 +304,8 @@ class TestFlextMonitorFunction:
 
         result = test_func(5, y=15)
         if result != 20:
-            raise AssertionError(f"Expected {20}, got {result}")
+            msg = f"Expected {20}, got {result}"
+            raise AssertionError(msg)
 
     def test_monitor_function_exception_handling(self) -> None:
         """Test function monitoring with exception."""
@@ -324,7 +330,8 @@ class TestFlextMonitorFunction:
 
         result = test_func(5)
         if result != 10:
-            raise AssertionError(f"Expected {10}, got {result}")
+            msg = f"Expected {10}, got {result}"
+            raise AssertionError(msg)
 
     def test_monitor_function_return_types(self) -> None:
         """Test function monitoring preserves return types."""
@@ -343,6 +350,7 @@ class TestFlextMonitorFunction:
             return None
 
         if return_string() != "test":
-            raise AssertionError(f"Expected {'test'}, got {return_string()}")
+            msg = f"Expected {'test'}, got {return_string()}"
+            raise AssertionError(msg)
         assert return_dict() == {"key": "value"}
         assert return_none() is None
