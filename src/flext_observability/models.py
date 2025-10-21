@@ -1,6 +1,6 @@
 """Generic FLEXT Observability Models.
 
-Advanced Pydantic models with minimal code using composition and delegation.
+ Pydantic models with minimal code using composition and delegation.
 Single unified class for all observability entities with SOLID principles.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -19,14 +19,14 @@ from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
 class FlextObservabilityModels(FlextModels):
-    """Generic observability models with advanced Pydantic patterns.
+    """Generic observability models with Pydantic patterns.
 
     Single class providing generic base models using composition and delegation.
     Zero domain-specific logic - pure generic foundation with minimal code.
     """
 
     class GenericObservabilityEntry(FlextModels.Value):
-        """Generic base model for any observability entry using advanced Pydantic."""
+        """Generic base model for any observability entry using Pydantic."""
 
         model_config = ConfigDict(
             validate_assignment=True,
@@ -72,7 +72,7 @@ class FlextObservabilityModels(FlextModels):
             return list(self.data.keys()) if self.data else []
 
     class GenericObservabilityConfig(BaseModel):
-        """Generic configuration using advanced Pydantic patterns."""
+        """Generic configuration using Pydantic patterns."""
 
         model_config = ConfigDict(
             validate_assignment=True,

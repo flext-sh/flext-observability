@@ -19,7 +19,7 @@ from flext_observability.constants import FlextObservabilityConstants
 class FlextObservabilityConfig(FlextConfig):
     """Unified observability configuration extending FlextConfig.
 
-    Single consolidated class providing comprehensive monitoring, metrics, tracing,
+    Single consolidated class providing complete monitoring, metrics, tracing,
     and health check configuration for the FLEXT observability system using
     enhanced singleton pattern with inverse dependency injection.
     """
