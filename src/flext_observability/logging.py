@@ -27,13 +27,13 @@ from pydantic import (
 class FlextObservabilityLogging(FlextModels):
     """Focused logging models for observability operations extending FlextModels.
 
-    Provides comprehensive logging entities, configurations, and operations
+    Provides complete logging entities, configurations, and operations
     for structured logging, log management, and log analysis within the FLEXT ecosystem.
     """
 
     # Log Management Models
     class LogEntry(FlextModels.Value):
-        """Comprehensive log entry model."""
+        """Complete log entry model."""
 
         model_config = ConfigDict(
             validate_assignment=True,
@@ -136,7 +136,7 @@ class FlextObservabilityLogging(FlextModels):
     class FlextLogEntry(FlextModels.Entity):
         """Structured Logging Entity for FLEXT Ecosystem.
 
-        Enterprise-grade structured logging entity implementing comprehensive logging
+        structured logging entity implementing complete logging
         semantics with severity classification, rich contextual information, and
         correlation ID support.
         """

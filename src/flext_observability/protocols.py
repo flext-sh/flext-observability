@@ -12,18 +12,18 @@ class FlextObservabilityProtocols:
     re-exporting foundation protocols for backward compatibility and clean access.
 
     Architecture:
-        - RE-EXPORTS: Foundation protocols from flext-core for unified access
-        - EXTENDS: Observability-specific protocols in Observability namespace
-        - MAINTAINS: Zero breaking changes through explicit re-export pattern
+    - RE-EXPORTS: Foundation protocols from flext-core for unified access
+    - EXTENDS: Observability-specific protocols in Observability namespace
+    - MAINTAINS: Zero breaking changes through explicit re-export pattern
 
     Usage:
-        from flext_observability.protocols import FlextObservabilityProtocols
+    from flext_observability.protocols import FlextObservabilityProtocols
 
-        # Foundation access (re-exported)
-        FlextObservabilityProtocols.Foundation.ResultProtocol
+    # Foundation access (re-exported)
+    FlextObservabilityProtocols.Foundation.ResultProtocol
 
-        # Observability-specific access
-        FlextObservabilityProtocols.Observability.MetricsProtocol
+    # Observability-specific access
+    FlextObservabilityProtocols.Observability.MetricsProtocol
     """
 
     # =========================================================================

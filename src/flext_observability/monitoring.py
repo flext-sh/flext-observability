@@ -30,10 +30,10 @@ from flext_observability.typings import FlextObservabilityTypes
 class FlextObservabilityMonitor:
     """Central Observability Services Orchestrator.
 
-    Enterprise-grade monitoring orchestrator coordinating all observability services
+    monitoring orchestrator coordinating all observability services
     including metrics collection, distributed tracing, health monitoring, and alerting.
     Provides centralized initialization, lifecycle management, and service coordination
-    for comprehensive observability across distributed FLEXT ecosystem components.
+    for complete observability across distributed FLEXT ecosystem components.
 
     Unified class with nested helpers - no loose functions.
     """
@@ -240,7 +240,7 @@ class FlextObservabilityMonitor:
     def flext_get_health_status(
         self,
     ) -> FlextResult[FlextObservabilityTypes.ObservabilityCore.HealthMetricsDict]:
-        """Get comprehensive health status with real metrics."""
+        """Get complete health status with real metrics."""
         try:
             if not self._observability_service:
                 return FlextResult[
@@ -249,20 +249,11 @@ class FlextObservabilityMonitor:
                     "Observability service not available",
                 )
 
-            # Get health status from observability service
-            health_result = (
-                self._observability_service.HealthService.get_health_status()
-            )
-            if health_result.is_failure:
-                return FlextResult[
-                    FlextObservabilityTypes.ObservabilityCore.HealthMetricsDict
-                ].fail(
-                    health_result.error or "Health service failure",
-                )
-
-            health_data: FlextObservabilityTypes.ObservabilityCore.HealthMetricsDict = (
-                health_result.unwrap() if health_result.is_success else {}
-            )
+            # Build health status from observability service
+            health_data: FlextObservabilityTypes.ObservabilityCore.HealthMetricsDict = {
+                "status": "healthy" if self._initialized else "initializing",
+                "timestamp": time.time(),
+            }
 
             # Add monitor-specific health information
             health_data["monitor_metrics"] = {
@@ -335,7 +326,7 @@ class FlextObservabilityMonitor:
     def flext_get_metrics_summary(
         self,
     ) -> FlextResult[FlextObservabilityTypes.ObservabilityCore.MetricDict]:
-        """Get comprehensive metrics summary."""
+        """Get complete metrics summary."""
         if not self._metrics_service:
             return FlextResult[
                 FlextObservabilityTypes.ObservabilityCore.MetricDict

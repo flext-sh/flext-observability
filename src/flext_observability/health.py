@@ -27,13 +27,13 @@ from pydantic import (
 class FlextObservabilityHealth(FlextModels):
     """Focused health monitoring models for observability operations extending FlextModels.
 
-    Provides comprehensive health check entities, configurations, and operations
+    Provides complete health check entities, configurations, and operations
     for service health monitoring, status tracking, and health validation within the FLEXT ecosystem.
     """
 
     # Health Monitoring Models
     class HealthCheckEntry(FlextModels.Value):
-        """Comprehensive health check entry model."""
+        """Complete health check entry model."""
 
         model_config = ConfigDict(
             validate_assignment=True,
@@ -150,7 +150,7 @@ class FlextObservabilityHealth(FlextModels):
     class FlextHealthCheck(FlextModels.Entity):
         """Health Monitoring Entity for FLEXT Ecosystem Components.
 
-        Enterprise-grade health check entity implementing comprehensive service health
+        health check entity implementing complete service health
         semantics with status classification, diagnostic metrics, and dependency validation.
         """
 
