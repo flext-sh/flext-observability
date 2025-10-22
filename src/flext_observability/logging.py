@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import Self
+from typing import Literal, Self
 
 from flext_core import FlextModels, FlextResult
 from pydantic import (
@@ -46,7 +46,9 @@ class FlextObservabilityLogging(FlextModels):
         )
 
         log_id: str = Field(description="Unique log identifier")
-        level: str = Field(description="Log level")
+        level: Literal["debug", "info", "warning", "error", "critical"] = Field(
+            default="info", description="Log level"
+        )
         message: str = Field(description="Log message")
         logger_name: str = Field(description="Logger name")
         timestamp: datetime = Field(
@@ -141,32 +143,15 @@ class FlextObservabilityLogging(FlextModels):
         correlation ID support.
         """
 
-        message: str = Field(..., description="Log message")
-        level: str = Field(default="info", description="Log level")
+        message: str = Field(..., min_length=1, description="Log message")
+        level: Literal["debug", "info", "warning", "error", "critical"] = Field(
+            default="info", description="Log level"
+        )
         context: dict[str, object] = Field(
             default_factory=dict,
             description="Log context",
         )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
-
-        @field_validator("message")
-        @classmethod
-        def validate_log_message(cls, v: str) -> str:
-            """Validate log message is non-empty and meaningful."""
-            if not (v and str(v).strip()):
-                msg = "Log message cannot be empty"
-                raise ValueError(msg)
-            return v
-
-        @field_validator("level")
-        @classmethod
-        def validate_log_level(cls, v: str) -> str:
-            """Validate log level is a valid severity classification."""
-            valid_levels = {"debug", "info", "warning", "error", "critical"}
-            if v not in valid_levels:
-                msg = f"Invalid log level: {v}. Must be one of {valid_levels}"
-                raise ValueError(msg)
-            return v
 
         def validate_business_rules(self) -> FlextResult[bool]:
             """Validate structured logging business rules."""
