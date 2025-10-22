@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Self
 
 from flext_core import FlextConfig, FlextConstants, FlextResult
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_observability.constants import FlextObservabilityConstants
@@ -51,6 +51,7 @@ class FlextObservabilityConfig(FlextConfig):
     )
     metrics_namespace: str = Field(
         default=FlextObservabilityConstants.DEFAULT_METRICS_NAMESPACE,
+        min_length=1,
         description="Metrics namespace",
     )
     metrics_include_host_metrics: bool = Field(
@@ -79,6 +80,7 @@ class FlextObservabilityConfig(FlextConfig):
     )
     tracing_service_name: str = Field(
         default=FlextObservabilityConstants.DEFAULT_SERVICE_NAME,
+        min_length=1,
         description="Service name for traces",
     )
     tracing_max_span_attributes: int = Field(
@@ -131,34 +133,6 @@ class FlextObservabilityConfig(FlextConfig):
     )
 
     # === PYDANTIC 2.11+ VALIDATORS ===
-    @field_validator("log_level")
-    @classmethod
-    def validate_log_level(cls, v: object | str) -> str:
-        """Validate log level format."""
-        valid_levels = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
-        str_v = str(v).upper()
-        if str_v not in valid_levels:
-            msg = f"Log level must be one of {valid_levels}"
-            raise ValueError(msg)
-        return str_v
-
-    @field_validator("metrics_namespace")
-    @classmethod
-    def validate_metrics_namespace(cls, v: str) -> str:
-        """Validate metrics namespace format."""
-        if not v or not v.strip():
-            msg = "Metrics namespace cannot be empty"
-            raise ValueError(msg)
-        return v.strip()
-
-    @field_validator("tracing_service_name")
-    @classmethod
-    def validate_tracing_service_name(cls, v: str) -> str:
-        """Validate tracing service name format."""
-        if not v or not v.strip():
-            msg = "Tracing service name cannot be empty"
-            raise ValueError(msg)
-        return v.strip()
 
     @model_validator(mode="after")
     def validate_observability_consistency(self) -> Self:

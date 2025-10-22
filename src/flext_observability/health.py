@@ -154,41 +154,17 @@ class FlextObservabilityHealth(FlextModels):
         semantics with status classification, diagnostic metrics, and dependency validation.
         """
 
-        component: str = Field(..., description="Component name")
-        status: str = Field(default="unknown", description="Health status")
+        component: str = Field(..., min_length=1, description="Component name")
+        status: str = Field(
+            default="unknown",
+            pattern="^(healthy|degraded|unhealthy|unknown)$",
+            description="Health status",
+        )
         message: str = Field(default="", description="Health check message")
         metrics: dict[str, object] = Field(
             default_factory=dict, description="Health metrics"
         )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
-
-        @field_validator("component")
-        @classmethod
-        def validate_component_name(cls, v: str) -> str:
-            """Validate component name is non-empty and identifiable."""
-            if not (v and str(v).strip()):
-                msg = "Component name cannot be empty"
-                raise ValueError(msg)
-            return v
-
-        @field_validator("status")
-        @classmethod
-        def validate_health_status(cls, v: str) -> str:
-            """Validate health status is a valid classification."""
-            valid_statuses = {"healthy", "degraded", "unhealthy", "unknown"}
-            if v not in valid_statuses:
-                msg = f"Invalid health status: {v}. Must be one of {valid_statuses}"
-                raise ValueError(msg)
-            return v
-
-        @field_validator("message")
-        @classmethod
-        def validate_health_message(cls, v: str) -> str:
-            """Validate health message is a string."""
-            if not isinstance(v, str):
-                msg = "Health message must be a string"
-                raise TypeError(msg)
-            return v
 
         def validate_business_rules(self) -> FlextResult[bool]:
             """Validate health monitoring business rules."""

@@ -80,42 +80,6 @@ class FlextObservabilityFields:
                 raise ValueError(msg)
             return v
 
-    class AlertFields:
-        """Nested class for alert field validation."""
-
-        @field_validator("level")
-        @classmethod
-        def validate_alert_level(cls, v: str) -> str:
-            """Validate alert level is valid."""
-            if v not in FlextObservabilityFields.ALERT_VALID_LEVELS:
-                msg = f"Invalid alert level: {v}. Must be one of {FlextObservabilityFields.ALERT_VALID_LEVELS}"
-                raise ValueError(msg)
-            return v
-
-    class TraceFields:
-        """Nested class for trace field validation."""
-
-        @field_validator("status")
-        @classmethod
-        def validate_trace_status(cls, v: str) -> str:
-            """Validate trace status is valid."""
-            if v not in FlextObservabilityFields.TRACE_VALID_STATUSES:
-                msg = f"Invalid trace status: {v}. Must be one of {FlextObservabilityFields.TRACE_VALID_STATUSES}"
-                raise ValueError(msg)
-            return v
-
-    class HealthFields:
-        """Nested class for health field validation."""
-
-        @field_validator("status")
-        @classmethod
-        def validate_health_status(cls, v: str) -> str:
-            """Validate health status is valid."""
-            if v not in FlextObservabilityFields.HEALTH_VALID_STATUSES:
-                msg = f"Invalid health status: {v}. Must be one of {FlextObservabilityFields.HEALTH_VALID_STATUSES}"
-                raise ValueError(msg)
-            return v
-
     # Convenience field definitions as class methods
 
     @classmethod
