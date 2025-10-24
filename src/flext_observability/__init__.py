@@ -376,7 +376,7 @@ def flext_metric(
     value: float,
     unit: str = "count",
     metric_type: Literal["counter", "gauge", "histogram"] | None = None,
-    id: str | None = None,  # noqa: A002
+    id: str | None = None,
     tags: dict[str, str] | None = None,
     labels: dict[str, str] | None = None,
 ) -> FlextResult[FlextObservability.Metric]:
@@ -441,8 +441,8 @@ def flext_alert(
     title: str = "",
     message: str = "",
     severity: Literal["info", "warning", "error", "critical"] = "warning",
-    status: Literal["firing", "resolved"] = "firing",  # noqa: ARG001
-    id: str | None = None,  # noqa: A002
+    status: Literal["firing", "resolved"] = "firing",
+    id: str | None = None,
     source: str = "system",
     labels: dict[str, str] | None = None,
 ) -> FlextResult[FlextObservability.Alert]:
@@ -473,7 +473,7 @@ def flext_alert(
 def flext_health_check(
     component: str,
     status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
-    id: str | None = None,  # noqa: A002
+    id: str | None = None,
     details: dict[str, Any] | None = None,
 ) -> FlextResult[FlextObservability.HealthCheck]:
     """Create a health check entity directly."""
@@ -503,7 +503,7 @@ def flext_health_check(
 def flext_create_health_check(
     component: str,
     status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
-    id: str | None = None,  # noqa: A002
+    id: str | None = None,
     details: dict[str, Any] | None = None,
 ) -> FlextResult[FlextObservability.HealthCheck]:
     """Create a health check (alias for compatibility)."""
@@ -559,7 +559,7 @@ flext_create_alert = flext_alert
 flext_create_log_entry = flext_log_entry
 
 # Version info
-from flext_observability.__version__ import (  # noqa: E402
+from flext_observability.__version__ import (
     __version__,
     __version_info__,
 )
