@@ -172,6 +172,9 @@ class DocumentationAuditor:
             content: File content (currently not used for quality analysis)
 
         """
+        # Reserved for future content-based quality analysis
+        _ = content  # Reserved for future use
+
         score = 100.0
 
         # Word count penalty
@@ -255,6 +258,9 @@ class DocumentationAuditor:
 
     def run_audit(self, *, comprehensive: bool = False) -> AuditReport:
         """Run comprehensive documentation audit."""
+        # Reserved for future comprehensive audit features
+        _ = comprehensive  # Reserved for future use
+
         files = self.discover_files()
         self.report.total_files = len(files)
         self.report.freshness_threshold_days = self.config["freshness_threshold_days"]
