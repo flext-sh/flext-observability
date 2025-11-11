@@ -376,7 +376,7 @@ def flext_metric(
     value: float,
     unit: str = "count",
     metric_type: Literal["counter", "gauge", "histogram"] | None = None,
-    id: str | None = None,
+    metric_id: str | None = None,
     tags: dict[str, str] | None = None,
     labels: dict[str, str] | None = None,
 ) -> FlextResult[FlextObservability.Metric]:
@@ -442,11 +442,14 @@ def flext_alert(
     message: str = "",
     severity: Literal["info", "warning", "error", "critical"] = "warning",
     status: Literal["firing", "resolved"] = "firing",
-    id: str | None = None,
+    alert_id: str | None = None,
     source: str = "system",
     labels: dict[str, str] | None = None,
 ) -> FlextResult[FlextObservability.Alert]:
     """Create an alert entity directly."""
+    # Reserved for future status-based alert handling
+    _ = status  # Reserved for future use
+
     try:
         if not message and not title:
             return FlextResult[FlextObservability.Alert].fail(
@@ -458,7 +461,7 @@ def flext_alert(
             )
 
         alert = FlextObservability.Alert(
-            id=id or str(uuid4()),
+            id=alert_id or str(uuid4()),
             title=title,
             message=message,
             severity=severity,
@@ -473,7 +476,7 @@ def flext_alert(
 def flext_health_check(
     component: str,
     status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
-    id: str | None = None,
+    health_check_id: str | None = None,
     details: dict[str, Any] | None = None,
 ) -> FlextResult[FlextObservability.HealthCheck]:
     """Create a health check entity directly."""
@@ -503,12 +506,12 @@ def flext_health_check(
 def flext_create_health_check(
     component: str,
     status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
-    id: str | None = None,
+    health_check_id: str | None = None,
     details: dict[str, Any] | None = None,
 ) -> FlextResult[FlextObservability.HealthCheck]:
     """Create a health check (alias for compatibility)."""
     return flext_health_check(
-        component=component, status=status, id=id, details=details
+        component=component, status=status, health_check_id=health_check_id, details=details
     )
 
 
