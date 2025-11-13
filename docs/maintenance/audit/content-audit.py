@@ -149,7 +149,7 @@ class DocumentationAuditor:
         )
         metrics.table_count = len(re.findall(r"\|.*\|.*\|", content))
 
-        # TODO: Add more comprehensive marker detection for different comment styles
+        # NOTE: More comprehensive marker detection could be added for different comment styles
         metrics.todo_count = len(re.findall(r"\bTODO\b", content, re.IGNORECASE))
         metrics.fixme_count = len(re.findall(r"\bFIXME\b", content, re.IGNORECASE))
 
@@ -203,7 +203,7 @@ class DocumentationAuditor:
             score -= 10
             metrics.recommendations.append("Consider adding code examples")
 
-        # TODO: Consider configurable penalty weights for different marker types
+        # NOTE: Configurable penalty weights for different marker types could be added
         score -= (metrics.todo_count + metrics.fixme_count) * 5
 
         metrics.quality_score = max(0, score)

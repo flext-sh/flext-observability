@@ -26,7 +26,7 @@ from flext_core import FlextLogger, FlextResult
 
 # Type for JSON-serializable values (no Any allowed)
 JSONValue = Union[
-    str, int, float, bool, None, list["JSONValue"], dict[str, "JSONValue"]
+    str, int, float, bool, list["JSONValue"], dict[str, "JSONValue"], None
 ]
 
 

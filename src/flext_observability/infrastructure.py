@@ -72,7 +72,7 @@ class FlextObservabilityInfrastructure:
                     "opentelemetry-sdk not installed. "
                     "Install with: pip install opentelemetry-sdk"
                 )
-                raise ImportError(msg)
+                raise ImportError(msg) from None
 
         @staticmethod
         def setup_meter_provider(
@@ -109,7 +109,7 @@ class FlextObservabilityInfrastructure:
                     "opentelemetry-sdk not installed. "
                     "Install with: pip install opentelemetry-sdk"
                 )
-                raise ImportError(msg)
+                raise ImportError(msg) from None
 
         @staticmethod
         def set_global_providers() -> None:
@@ -134,7 +134,7 @@ class FlextObservabilityInfrastructure:
                     "opentelemetry-api not installed. "
                     "Install with: pip install opentelemetry-api"
                 )
-                raise ImportError(msg)
+                raise ImportError(msg) from None
 
     class Exporters:
         """Exporter configuration for OpenTelemetry providers."""
@@ -175,7 +175,7 @@ class FlextObservabilityInfrastructure:
                     "opentelemetry-exporter-otlp not installed. "
                     "Install with: pip install opentelemetry-exporter-otlp"
                 )
-                raise ImportError(msg)
+                raise ImportError(msg) from None
 
         @staticmethod
         def add_prometheus_metrics_exporter(
@@ -208,7 +208,7 @@ class FlextObservabilityInfrastructure:
                     "opentelemetry-exporter-prometheus not installed. "
                     "Install with: pip install opentelemetry-exporter-prometheus"
                 )
-                raise ImportError(msg)
+                raise ImportError(msg) from None
 
         @staticmethod
         def add_console_tracer_exporter() -> None:
@@ -241,7 +241,7 @@ class FlextObservabilityInfrastructure:
                     "opentelemetry-sdk not installed. "
                     "Install with: pip install opentelemetry-sdk"
                 )
-                raise ImportError(msg)
+                raise ImportError(msg) from None
 
     @classmethod
     def get_tracer_provider(cls) -> TracerProvider | None:
