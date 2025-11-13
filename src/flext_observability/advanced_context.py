@@ -20,9 +20,14 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Union
 
 from flext_core import FlextLogger, FlextResult
+
+# Type for JSON-serializable values (no Any allowed)
+JSONValue = Union[
+    str, int, float, bool, None, list["JSONValue"], dict[str, "JSONValue"]
+]
 
 
 @dataclass
@@ -32,11 +37,11 @@ class ContextSnapshot:
     correlation_id: str
     trace_id: str
     span_id: str
-    baggage: dict[str, Any] = field(default_factory=dict)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    baggage: dict[str, str] = field(default_factory=dict)
+    metadata: dict[str, JSONValue] = field(default_factory=dict)
     timestamp: float = field(default_factory=lambda: __import__("time").time())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, JSONValue]:
         """Convert snapshot to dictionary.
 
         Returns:
@@ -99,12 +104,12 @@ class FlextObservabilityAdvancedContext:
 
         def __init__(self) -> None:
             """Initialize advanced context."""
-            self._metadata: dict[str, Any] = {}
+            self._metadata: dict[str, JSONValue] = {}
             self._baggage: dict[str, str] = {}
             self._request_id: str = ""
             self._parent_context: ContextSnapshot | None = None
 
-        def set_metadata(self, key: str, value: Any) -> FlextResult[None]:
+        def set_metadata(self, key: str, value: JSONValue) -> FlextResult[None]:
             """Set request-local metadata.
 
             Args:
@@ -133,14 +138,14 @@ class FlextObservabilityAdvancedContext:
                     f"Metadata value not JSON serializable: {e}"
                 )
 
-        def get_metadata(self, key: str) -> Any | None:
+        def get_metadata(self, key: str) -> JSONValue | None:
             """Get request-local metadata.
 
             Args:
                 key: Metadata key
 
             Returns:
-                Any - Metadata value or None
+                JSONValue - Metadata value or None
 
             """
             return self._metadata.get(key)
@@ -176,7 +181,7 @@ class FlextObservabilityAdvancedContext:
             """
             return self._baggage.get(key)
 
-        def get_all_metadata(self) -> dict[str, Any]:
+        def get_all_metadata(self) -> dict[str, JSONValue]:
             """Get all request-local metadata.
 
             Returns:
@@ -301,7 +306,7 @@ class FlextObservabilityAdvancedContext:
         return FlextObservabilityAdvancedContext._context_instance
 
     @staticmethod
-    def set_metadata(key: str, value: Any) -> FlextResult[None]:
+    def set_metadata(key: str, value: JSONValue) -> FlextResult[None]:
         """Convenience function: set metadata.
 
         Args:
@@ -316,7 +321,7 @@ class FlextObservabilityAdvancedContext:
         return ctx.set_metadata(key, value)
 
     @staticmethod
-    def get_metadata(key: str) -> Any | None:
+    def get_metadata(key: str) -> JSONValue | None:
         """Convenience function: get metadata.
 
         Args:

@@ -25,6 +25,8 @@ from uuid import uuid4
 from flext_core import FlextContainer, FlextLogger, FlextResult
 from pydantic import BaseModel, ConfigDict, Field
 
+from flext_observability.__version__ import __version__, __version_info__
+
 
 class FlextObservability:
     """Main observability class - single Flext[Project] class pattern.
@@ -381,6 +383,8 @@ def flext_metric(
     labels: dict[str, str] | None = None,
 ) -> FlextResult[FlextObservability.Metric]:
     """Create a metric entity directly."""
+    # metric_id parameter reserved for future use
+    _ = metric_id
     try:
         if not name or not isinstance(name, str):
             return FlextResult[FlextObservability.Metric].fail(
@@ -480,6 +484,8 @@ def flext_health_check(
     details: dict[str, Any] | None = None,
 ) -> FlextResult[FlextObservability.HealthCheck]:
     """Create a health check entity directly."""
+    # health_check_id parameter reserved for future use
+    _ = health_check_id
     try:
         if not component or not isinstance(component, str):
             return FlextResult[FlextObservability.HealthCheck].fail(
@@ -511,7 +517,10 @@ def flext_create_health_check(
 ) -> FlextResult[FlextObservability.HealthCheck]:
     """Create a health check (alias for compatibility)."""
     return flext_health_check(
-        component=component, status=status, health_check_id=health_check_id, details=details
+        component=component,
+        status=status,
+        health_check_id=health_check_id,
+        details=details,
     )
 
 
@@ -560,12 +569,6 @@ flext_create_metric = flext_metric
 flext_create_trace = flext_trace
 flext_create_alert = flext_alert
 flext_create_log_entry = flext_log_entry
-
-# Version info
-from flext_observability.__version__ import (
-    __version__,
-    __version_info__,
-)
 
 __all__ = [
     "FlextAlert",
