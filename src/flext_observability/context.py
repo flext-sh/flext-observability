@@ -59,7 +59,7 @@ class FlextObservabilityContext:
     _correlation_id: ContextVar[str] = ContextVar("correlation_id", default="")
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
-    _baggage: ContextVar[dict[str, Any]] = ContextVar("baggage", default={})
+    _baggage: ContextVar[dict[str, Any] | None] = ContextVar("baggage", default=None)
 
     _logger = FlextLogger(__name__)
 

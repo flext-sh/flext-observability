@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from datetime import UTC, datetime
 
 import pytest
+from pydantic import ValidationError
 
 from flext_observability import (
     FlextMetric,
@@ -35,7 +36,10 @@ class TestRealFunctionalCoverage:
         assert validation_result.is_success
 
         # Test empty name validation through Pydantic validation
-        with pytest.raises(Exception):  # Pydantic should catch empty name
+        with pytest.raises((
+            ValueError,
+            ValidationError,
+        )):  # Pydantic should catch empty name
             FlextMetric(
                 name="",  # Empty name should fail at Pydantic level
                 value=1.0,
