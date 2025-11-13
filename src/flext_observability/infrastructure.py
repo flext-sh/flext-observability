@@ -179,12 +179,12 @@ class FlextObservabilityInfrastructure:
 
         @staticmethod
         def add_prometheus_metrics_exporter(
-            endpoint: str = "http://localhost:9090",
+            _endpoint: str = "http://localhost:9090",
         ) -> None:
             """Add Prometheus exporter for metrics.
 
             Args:
-                endpoint: Prometheus endpoint (default: localhost:9090)
+                _endpoint: Prometheus endpoint (default: localhost:9090) - Reserved for future use
 
             Example:
                 >>> Exporters.add_prometheus_metrics_exporter("http://prometheus:9090")

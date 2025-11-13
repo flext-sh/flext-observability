@@ -117,7 +117,7 @@ class FlextObservabilityHTTPClient:
                     )
 
                 # Avoid duplicate instrumentation
-                if client in FlextObservabilityHTTPClient.HTTPX._instrumented_clients:
+                if client in FlextObservabilityHTTPClient.HTTPX._instrumented_clients:  # noqa: SLF001
                     return FlextResult[None].ok(None)
 
                 # Determine if this is async client
@@ -125,7 +125,7 @@ class FlextObservabilityHTTPClient:
 
                 if is_async:
                     # Instrument async client
-                    original_send = client._send
+                    original_send = client._send  # noqa: SLF001
 
                     async def traced_send(request: Any) -> Any:
                         """Traced send wrapper for async httpx."""
@@ -203,7 +203,7 @@ class FlextObservabilityHTTPClient:
                             raise
 
                     # Replace send method
-                    client._send = traced_send
+                    client._send = traced_send  # noqa: SLF001
 
                 else:
                     # Instrument sync client
@@ -291,7 +291,7 @@ class FlextObservabilityHTTPClient:
                     client.request = traced_request
 
                 # Mark as instrumented
-                FlextObservabilityHTTPClient.HTTPX._instrumented_clients.add(client)
+                FlextObservabilityHTTPClient.HTTPX._instrumented_clients.add(client)  # noqa: SLF001
 
                 FlextObservabilityHTTPClient._logger.debug(
                     "httpx client instrumentation setup complete"
@@ -356,12 +356,12 @@ class FlextObservabilityHTTPClient:
                 # Avoid duplicate instrumentation
                 if (
                     session
-                    in FlextObservabilityHTTPClient.AIOHTTP._instrumented_sessions
+                    in FlextObservabilityHTTPClient.AIOHTTP._instrumented_sessions  # noqa: SLF001
                 ):
                     return FlextResult[None].ok(None)
 
                 # Store original request method
-                original_request = session._request
+                original_request = session._request  # noqa: SLF001
 
                 async def traced_request(
                     method: str, url: str, *args: Any, **kwargs: Any
@@ -445,10 +445,10 @@ class FlextObservabilityHTTPClient:
                         raise
 
                 # Replace request method
-                session._request = traced_request
+                session._request = traced_request  # noqa: SLF001
 
                 # Mark as instrumented
-                FlextObservabilityHTTPClient.AIOHTTP._instrumented_sessions.add(session)
+                FlextObservabilityHTTPClient.AIOHTTP._instrumented_sessions.add(session)  # noqa: SLF001
 
                 FlextObservabilityHTTPClient._logger.debug(
                     "aiohttp session instrumentation setup complete"
