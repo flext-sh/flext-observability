@@ -95,7 +95,7 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def enrich_log_context(
-        logger: FlextLogger, include_baggage: bool = False
+        _logger: FlextLogger, *, include_baggage: bool = False
     ) -> FlextResult[dict[str, Any]]:
         """Get trace context for log enrichment.
 
@@ -103,7 +103,7 @@ class FlextObservabilityLogging:
         that should be included in log entries. Can optionally include baggage.
 
         Args:
-            logger: FlextLogger instance to enrich
+            _logger: FlextLogger instance to enrich (reserved for future use)
             include_baggage: Whether to include baggage in context
 
         Returns:
@@ -207,6 +207,7 @@ class FlextObservabilityLogging:
         level: str,
         message: str,
         extra: dict[str, Any] | None = None,
+        *,
         include_baggage: bool = False,
     ) -> FlextResult[None]:
         """Log message with automatic trace context.

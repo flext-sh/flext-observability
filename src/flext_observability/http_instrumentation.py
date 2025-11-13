@@ -57,6 +57,9 @@ class FlextObservabilityHTTP:
 
     _logger = FlextLogger(__name__)
 
+    # HTTP status code threshold for errors (4xx and 5xx)
+    HTTP_ERROR_STATUS_THRESHOLD = 400
+
     # ========================================================================
     # FLASK MIDDLEWARE
     # ========================================================================
@@ -161,7 +164,10 @@ class FlextObservabilityHTTP:
                         )
 
                         # Determine if response indicates error
-                        is_error = response.status_code >= 400
+                        is_error = (
+                            response.status_code
+                            >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
+                        )
 
                         # Log response
                         FlextObservabilityLogging.log_with_context(
@@ -322,7 +328,10 @@ class FlextObservabilityHTTP:
                                 duration_ms = (time.time() - start_time) * 1000
 
                                 # Check for error
-                                is_error = response.status_code >= 400
+                                is_error = (
+                                    response.status_code
+                                    >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
+                                )
 
                                 # Log response
                                 await FlextObservabilityHTTP._async_log_with_context(
