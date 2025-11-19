@@ -16,22 +16,36 @@ from pydantic_settings import SettingsConfigDict
 from flext_observability.constants import FlextObservabilityConstants
 
 
-class FlextObservabilityConfig(FlextConfig):
-    """Unified observability configuration extending FlextConfig.
+@FlextConfig.auto_register("observability")
+class FlextObservabilityConfig(FlextConfig.AutoConfig):
+    """Unified observability configuration using AutoConfig pattern.
+
+    **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
+
+    This class uses FlextConfig.AutoConfig for automatic:
+    - Singleton pattern (thread-safe)
+    - Namespace registration (accessible via config.observability)
+    - Environment variable loading from FLEXT_OBSERVABILITY_* variables
+    - .env file loading (production/development)
+    - Automatic type conversion and validation via Pydantic v2
 
     Single consolidated class providing complete monitoring, metrics, tracing,
-    and health check configuration for the FLEXT observability system using
-    enhanced singleton pattern with inverse dependency injection.
+    and health check configuration for the FLEXT observability system.
     """
 
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_OBSERVABILITY_",
+        env_file=".env",
+        env_file_encoding="utf-8",
         case_sensitive=False,
         # Enhanced Pydantic v2.11+ features
         validate_assignment=True,
         str_strip_whitespace=True,
         str_to_lower=False,
         extra="ignore",  # Allow extra fields from environment
+        validate_default=True,
+        frozen=False,
+        strict=False,
         json_schema_extra={
             "title": "FLEXT Observability Configuration",
             "description": "Enterprise observability configuration extending FlextConfig",
