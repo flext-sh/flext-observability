@@ -25,6 +25,7 @@ import time
 from typing import Any, ClassVar
 
 from flext_core import FlextLogger, FlextResult
+from sqlalchemy import event
 
 from flext_observability.logging_integration import FlextObservabilityLogging
 
@@ -110,9 +111,6 @@ class FlextObservabilityDatabase:
                     in FlextObservabilityDatabase.SQLAlchemy._instrumented_engines  # noqa: SLF001
                 ):
                     return FlextResult[None].ok(None)
-
-                # Import here to avoid hard dependency on SQLAlchemy
-                from sqlalchemy import event
 
                 @event.listens_for(engine, "before_cursor_execute")
                 def before_cursor_execute(
