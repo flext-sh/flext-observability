@@ -13,6 +13,7 @@ FLEXT Pattern:
 
 from __future__ import annotations
 
+import json
 from contextvars import ContextVar
 from typing import Any
 from uuid import uuid4
@@ -215,8 +216,6 @@ class FlextObservabilityContext:
 
             # Validate value is serializable
             try:
-                import json
-
                 json.dumps(value)
             except (TypeError, ValueError):
                 return FlextResult[None].fail(

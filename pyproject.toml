@@ -93,6 +93,15 @@
             "pytest-xdist>=3.8.0",
             "pytest>=8.4.0",
         ]
+        sqlalchemy = [
+            "sqlalchemy>=2.0.0",
+        ]
+        flask = [
+            "flask>=3.0.0",
+        ]
+        fastapi = [
+            "fastapi>=0.115.0",
+        ]
         typings = [
             "django-stubs>=5.2.2",
             "types-ldap3>=2.9.13.20250622",

@@ -10,11 +10,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from opentelemetry.sdk.metrics import MeterProvider
-    from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry import metrics, trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.exporter.prometheus import PrometheusMetricReader
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcessor
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 
 class FlextObservabilityInfrastructure:
@@ -55,24 +58,14 @@ class FlextObservabilityInfrastructure:
                 >>> tracer = provider.get_tracer(__name__)
 
             """
-            try:
-                from opentelemetry.sdk.resources import Resource
-                from opentelemetry.sdk.trace import TracerProvider
+            resource = Resource.create({
+                "service.name": service_name,
+                "service.version": service_version,
+            })
+            provider = TracerProvider(resource=resource)
 
-                resource = Resource.create({
-                    "service.name": service_name,
-                    "service.version": service_version,
-                })
-                provider = TracerProvider(resource=resource)
-
-                FlextObservabilityInfrastructure._tracer_provider = provider
-                return provider
-            except ImportError:
-                msg = (
-                    "opentelemetry-sdk not installed. "
-                    "Install with: pip install opentelemetry-sdk"
-                )
-                raise ImportError(msg) from None
+            FlextObservabilityInfrastructure._tracer_provider = provider
+            return provider
 
         @staticmethod
         def setup_meter_provider(
@@ -92,24 +85,14 @@ class FlextObservabilityInfrastructure:
                 >>> meter = provider.get_meter(__name__)
 
             """
-            try:
-                from opentelemetry.sdk.metrics import MeterProvider
-                from opentelemetry.sdk.resources import Resource
+            resource = Resource.create({
+                "service.name": service_name,
+                "service.version": service_version,
+            })
+            provider = MeterProvider(resource=resource)
 
-                resource = Resource.create({
-                    "service.name": service_name,
-                    "service.version": service_version,
-                })
-                provider = MeterProvider(resource=resource)
-
-                FlextObservabilityInfrastructure._meter_provider = provider
-                return provider
-            except ImportError:
-                msg = (
-                    "opentelemetry-sdk not installed. "
-                    "Install with: pip install opentelemetry-sdk"
-                )
-                raise ImportError(msg) from None
+            FlextObservabilityInfrastructure._meter_provider = provider
+            return provider
 
         @staticmethod
         def set_global_providers() -> None:
@@ -117,24 +100,15 @@ class FlextObservabilityInfrastructure:
 
             This makes providers available to OpenTelemetry auto-instrumentation.
             """
-            try:
-                from opentelemetry import metrics, trace
-
-                if FlextObservabilityInfrastructure._tracer_provider:
-                    trace.set_tracer_provider(
-                        FlextObservabilityInfrastructure._tracer_provider
-                    )
-
-                if FlextObservabilityInfrastructure._meter_provider:
-                    metrics.set_meter_provider(
-                        FlextObservabilityInfrastructure._meter_provider
-                    )
-            except ImportError:
-                msg = (
-                    "opentelemetry-api not installed. "
-                    "Install with: pip install opentelemetry-api"
+            if FlextObservabilityInfrastructure._tracer_provider:
+                trace.set_tracer_provider(
+                    FlextObservabilityInfrastructure._tracer_provider
                 )
-                raise ImportError(msg) from None
+
+            if FlextObservabilityInfrastructure._meter_provider:
+                metrics.set_meter_provider(
+                    FlextObservabilityInfrastructure._meter_provider
+                )
 
     class Exporters:
         """Exporter configuration for OpenTelemetry providers."""
@@ -159,23 +133,11 @@ class FlextObservabilityInfrastructure:
                 )
                 raise RuntimeError(msg)
 
-            try:
-                from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
-                    OTLPSpanExporter,
-                )
-                from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
-                exporter = OTLPSpanExporter(endpoint=endpoint)
-                processor = BatchSpanProcessor(exporter)
-                FlextObservabilityInfrastructure._tracer_provider.add_span_processor(
-                    processor
-                )
-            except ImportError:
-                msg = (
-                    "opentelemetry-exporter-otlp not installed. "
-                    "Install with: pip install opentelemetry-exporter-otlp"
-                )
-                raise ImportError(msg) from None
+            exporter = OTLPSpanExporter(endpoint=endpoint)
+            processor = BatchSpanProcessor(exporter)
+            FlextObservabilityInfrastructure._tracer_provider.add_span_processor(
+                processor
+            )
 
         @staticmethod
         def add_prometheus_metrics_exporter(
@@ -197,18 +159,9 @@ class FlextObservabilityInfrastructure:
                 )
                 raise RuntimeError(msg)
 
-            try:
-                from opentelemetry.exporter.prometheus import PrometheusMetricReader
-
-                PrometheusMetricReader()
-                # Note: PrometheusMetricReader needs to be passed to MeterProvider
-                # This is typically done during provider initialization
-            except ImportError:
-                msg = (
-                    "opentelemetry-exporter-prometheus not installed. "
-                    "Install with: pip install opentelemetry-exporter-prometheus"
-                )
-                raise ImportError(msg) from None
+            PrometheusMetricReader()
+            # Note: PrometheusMetricReader needs to be passed to MeterProvider
+            # This is typically done during provider initialization
 
         @staticmethod
         def add_console_tracer_exporter() -> None:
@@ -225,23 +178,11 @@ class FlextObservabilityInfrastructure:
                 )
                 raise RuntimeError(msg)
 
-            try:
-                from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-                from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
-                    InMemorySpanExporter,
-                )
-
-                exporter = InMemorySpanExporter()
-                processor = SimpleSpanProcessor(exporter)
-                FlextObservabilityInfrastructure._tracer_provider.add_span_processor(
-                    processor
-                )
-            except ImportError:
-                msg = (
-                    "opentelemetry-sdk not installed. "
-                    "Install with: pip install opentelemetry-sdk"
-                )
-                raise ImportError(msg) from None
+            exporter = InMemorySpanExporter()
+            processor = SimpleSpanProcessor(exporter)
+            FlextObservabilityInfrastructure._tracer_provider.add_span_processor(
+                processor
+            )
 
     @classmethod
     def get_tracer_provider(cls) -> TracerProvider | None:

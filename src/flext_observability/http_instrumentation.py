@@ -23,9 +23,17 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from typing import Any
+
+
+from flask import g, request
 from flext_core import FlextLogger, FlextResult
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.logging_integration import FlextObservabilityLogging
@@ -111,9 +119,6 @@ class FlextObservabilityHTTP:
                         "Invalid Flask app - missing request hooks"
                     )
 
-                # Import here to avoid hard dependency on Flask
-                from flask import g, request
-
                 @app.before_request
                 def flext_before_request() -> None:
                     """Extract context and create span before request processing."""
@@ -153,7 +158,7 @@ class FlextObservabilityHTTP:
                         )
 
                 @app.after_request
-                def flext_after_request(response: Any) -> Any:
+                def flext_after_request(response: Response) -> Response:
                     """Record metrics and complete span after request processing."""
                     try:
                         # Calculate request duration
@@ -276,11 +281,6 @@ class FlextObservabilityHTTP:
                     return FlextResult[None].fail(
                         "Invalid FastAPI app - missing middleware method"
                     )
-
-                # Import here to avoid hard dependency on FastAPI
-                from starlette.middleware.base import BaseHTTPMiddleware
-                from starlette.requests import Request
-                from starlette.responses import Response
 
                 class FlextObservabilityMiddleware(BaseHTTPMiddleware):
                     """Starlette-based ASGI middleware for FastAPI."""
