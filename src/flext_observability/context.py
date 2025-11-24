@@ -223,7 +223,7 @@ class FlextObservabilityContext:
                 )
 
             # Get current baggage and update
-            current_baggage = FlextObservabilityContext._baggage.get({})
+            current_baggage = FlextObservabilityContext._baggage.get({}) or {}
             updated_baggage = {**current_baggage, key: value}
             FlextObservabilityContext._baggage.set(updated_baggage)
 
@@ -251,7 +251,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        baggage = FlextObservabilityContext._baggage.get({})
+        baggage = FlextObservabilityContext._baggage.get({}) or {}
 
         if key is None:
             return baggage

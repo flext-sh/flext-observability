@@ -2,7 +2,7 @@
 
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, FlextResult, FlextTypes
+from flext_core import FlextProtocols, FlextResult
 
 
 class FlextObservabilityProtocols:
@@ -82,7 +82,7 @@ class FlextObservabilityProtocols:
                 description: str,
                 *,
                 unit: str = "seconds",
-                buckets: FlextTypes.FloatList | None = None,
+                buckets: list[float] | None = None,
             ) -> FlextResult[object]:
                 """Create a histogram metric."""
                 ...

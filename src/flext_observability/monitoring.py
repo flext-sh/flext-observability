@@ -198,9 +198,7 @@ class FlextObservabilityMonitor:
             ]
 
             for service_name, service in services:
-                register_result = self._container.register(service_name, service)
-                if register_result.is_failure:
-                    return FlextResult[None].fail(f"Failed to register {service_name}")
+                self._container.with_service(service_name, service)
 
             self._initialized = True
             self._logger.info("Observability monitor initialized successfully")
