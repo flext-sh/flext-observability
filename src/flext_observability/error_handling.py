@@ -101,7 +101,7 @@ class FlextObservabilityErrorHandling:
             """Initialize error handler."""
             self._error_counts: dict[str, int] = {}  # fingerprint -> count
             self._last_alert_time: dict[str, float] = {}  # fingerprint -> timestamp
-            self._alert_cooldown_sec = 60  # Min seconds between alerts
+            self._alert_cooldown_sec = 60.0  # Min seconds between alerts
             self._escalation_threshold = 5  # Escalate after N errors
             self._deduplication_window_sec = 300  # 5 minutes
 

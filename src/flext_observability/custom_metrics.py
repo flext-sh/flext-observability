@@ -131,7 +131,7 @@ class FlextObservabilityCustomMetrics:
                     except ValueError:
                         return FlextResult[None].fail(
                             f"Invalid metric type: {metric_type}. "
-                            f"Must be one of {[t.value for t in MetricType]}"
+                            f"Must be one of {['counter', 'gauge', 'histogram']}"
                         )
                 else:
                     metric_type_enum = metric_type
