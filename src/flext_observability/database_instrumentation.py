@@ -64,7 +64,7 @@ class FlextObservabilityDatabase:
         _instrumented_engines: ClassVar[set[Any]] = set()
 
         @staticmethod
-        def setup_instrumentation(engine: Any) -> FlextResult[None]:
+        def setup_instrumentation(engine: object) -> FlextResult[None]:
             """Setup SQLAlchemy engine query instrumentation.
 
             Adds SQLAlchemy event listeners for automatic query tracing,
@@ -108,18 +108,18 @@ class FlextObservabilityDatabase:
                 # Avoid duplicate instrumentation
                 if (
                     engine
-                    in FlextObservabilityDatabase.SQLAlchemy._instrumented_engines  # noqa: SLF001
+                    in FlextObservabilityDatabase.SQLAlchemy._instrumented_engines
                 ):
                     return FlextResult[None].ok(None)
 
                 @event.listens_for(engine, "before_cursor_execute")
                 def before_cursor_execute(
-                    conn: Any,
-                    _cursor: Any,
+                    conn: object,
+                    _cursor: object,
                     statement: str,
-                    _parameters: Any,
-                    _context: Any,
-                    executemany: bool,  # noqa: FBT001
+                    _parameters: object,
+                    _context: object,
+                    executemany: bool,
                 ) -> None:
                     """Log query execution start."""
                     try:
@@ -154,12 +154,12 @@ class FlextObservabilityDatabase:
 
                 @event.listens_for(engine, "after_cursor_execute")
                 def after_cursor_execute(
-                    conn: Any,
-                    cursor: Any,
+                    conn: object,
+                    cursor: object,
                     statement: str,
-                    _parameters: Any,
-                    _context: Any,
-                    executemany: bool,  # noqa: FBT001
+                    _parameters: object,
+                    _context: object,
+                    executemany: bool,
                 ) -> None:
                     """Log query execution completion."""
                     try:
@@ -216,7 +216,7 @@ class FlextObservabilityDatabase:
                         )
 
                 # Mark as instrumented
-                FlextObservabilityDatabase.SQLAlchemy._instrumented_engines.add(engine)  # noqa: SLF001
+                FlextObservabilityDatabase.SQLAlchemy._instrumented_engines.add(engine)
 
                 FlextObservabilityDatabase._logger.debug(
                     "SQLAlchemy instrumentation setup complete"
@@ -238,7 +238,7 @@ class FlextObservabilityDatabase:
         _instrumented_pools: ClassVar[set[Any]] = set()
 
         @staticmethod
-        def setup_instrumentation(pool: Any) -> FlextResult[None]:
+        def setup_instrumentation(pool: object) -> FlextResult[None]:
             """Setup asyncpg connection pool query instrumentation.
 
             Wraps asyncpg pool to automatically trace all queries.
@@ -278,7 +278,7 @@ class FlextObservabilityDatabase:
                     )
 
                 # Avoid duplicate instrumentation
-                if pool in FlextObservabilityDatabase.AsyncPG._instrumented_pools:  # noqa: SLF001
+                if pool in FlextObservabilityDatabase.AsyncPG._instrumented_pools:
                     return FlextResult[None].ok(None)
 
                 # Store original execute method
@@ -286,7 +286,9 @@ class FlextObservabilityDatabase:
                 original_fetch = pool.fetch
                 original_fetchval = pool.fetchval
 
-                async def traced_execute(query: str, *args: Any, **kwargs: Any) -> Any:
+                async def traced_execute(
+                    query: str, *args: object, **kwargs: object
+                ) -> object:
                     """Traced execute wrapper."""
                     start_time = time.time()
                     query_type = (
@@ -338,7 +340,9 @@ class FlextObservabilityDatabase:
                         )
                         raise
 
-                async def traced_fetch(query: str, *args: Any, **kwargs: Any) -> Any:
+                async def traced_fetch(
+                    query: str, *args: object, **kwargs: object
+                ) -> object:
                     """Traced fetch wrapper."""
                     start_time = time.time()
                     query_type = (
@@ -394,7 +398,9 @@ class FlextObservabilityDatabase:
                         )
                         raise
 
-                async def traced_fetchval(query: str, *args: Any, **kwargs: Any) -> Any:
+                async def traced_fetchval(
+                    query: str, *args: object, **kwargs: object
+                ) -> object:
                     """Traced fetchval wrapper."""
                     start_time = time.time()
                     query_type = (
@@ -454,7 +460,7 @@ class FlextObservabilityDatabase:
                 pool.fetchval = traced_fetchval
 
                 # Mark as instrumented
-                FlextObservabilityDatabase.AsyncPG._instrumented_pools.add(pool)  # noqa: SLF001
+                FlextObservabilityDatabase.AsyncPG._instrumented_pools.add(pool)
 
                 FlextObservabilityDatabase._logger.debug(
                     "asyncpg pool instrumentation setup complete"
