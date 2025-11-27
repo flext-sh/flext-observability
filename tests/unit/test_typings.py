@@ -5,7 +5,10 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_observability import FlextObservabilityTypes
+from flext_observability import (
+    FlextObservabilityTypes,
+    FlextObservabilityTypesAlias,
+)
 
 
 class TestFlextObservabilityTypes:
@@ -92,8 +95,6 @@ class TestFlextObservabilityTypesAlias:
 
     def test_type_aliases_exist(self) -> None:
         """Test that key type aliases are defined."""
-        from flext_observability import FlextObservabilityTypesAlias
-
         aliases = [
             "MetricValue",
             "TagsDict",

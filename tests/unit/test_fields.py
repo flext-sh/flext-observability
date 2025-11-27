@@ -10,6 +10,7 @@ import pytest
 from flext_observability import (
     FlextObservabilityFields,
 )
+from flext_observability.constants import FlextObservabilityConstants
 
 
 class TestFlextObservabilityFields:
@@ -33,8 +34,6 @@ class TestFlextObservabilityFields:
 
     def test_alert_valid_levels_constant(self) -> None:
         """Test ALERT_VALID_LEVELS constant contains expected levels."""
-        from flext_observability.constants import FlextObservabilityConstants
-
         expected_levels = {
             FlextObservabilityConstants.ALERT_LEVEL_INFO,
             FlextObservabilityConstants.ALERT_LEVEL_WARNING,
@@ -45,8 +44,6 @@ class TestFlextObservabilityFields:
 
     def test_trace_valid_statuses_constant(self) -> None:
         """Test TRACE_VALID_STATUSES constant contains expected statuses."""
-        from flext_observability.constants import FlextObservabilityConstants
-
         expected_statuses = {
             FlextObservabilityConstants.TRACE_STATUS_STARTED,
             FlextObservabilityConstants.TRACE_STATUS_RUNNING,
@@ -57,8 +54,6 @@ class TestFlextObservabilityFields:
 
     def test_health_valid_statuses_constant(self) -> None:
         """Test HEALTH_VALID_STATUSES constant contains expected statuses."""
-        from flext_observability.constants import FlextObservabilityConstants
-
         expected_statuses = {
             FlextObservabilityConstants.HEALTH_STATUS_HEALTHY,
             FlextObservabilityConstants.HEALTH_STATUS_DEGRADED,
@@ -133,8 +128,6 @@ class TestAlertFields:
 
     def test_validate_alert_level_valid(self) -> None:
         """Test alert level validation with valid levels."""
-        from flext_observability.constants import FlextObservabilityConstants
-
         valid_levels = [
             FlextObservabilityConstants.ALERT_LEVEL_INFO,
             FlextObservabilityConstants.ALERT_LEVEL_WARNING,
@@ -158,8 +151,6 @@ class TestTraceFields:
 
     def test_validate_trace_status_valid(self) -> None:
         """Test trace status validation with valid statuses."""
-        from flext_observability.constants import FlextObservabilityConstants
-
         valid_statuses = [
             FlextObservabilityConstants.TRACE_STATUS_STARTED,
             FlextObservabilityConstants.TRACE_STATUS_RUNNING,
@@ -183,8 +174,6 @@ class TestHealthFields:
 
     def test_validate_health_status_valid(self) -> None:
         """Test health status validation with valid statuses."""
-        from flext_observability.constants import FlextObservabilityConstants
-
         valid_statuses = [
             FlextObservabilityConstants.HEALTH_STATUS_HEALTHY,
             FlextObservabilityConstants.HEALTH_STATUS_DEGRADED,

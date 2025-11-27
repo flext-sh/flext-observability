@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Phase 11: Integration Tests for Observability Components.
 
 Tests realistic scenarios combining:
