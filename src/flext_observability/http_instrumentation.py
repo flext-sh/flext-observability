@@ -26,7 +26,7 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any
+    
 
 
 from flask import g, request
@@ -200,7 +200,7 @@ class FlextObservabilityHTTP:
                     return response
 
                 @app.errorhandler(Exception)
-                def flext_error_handler(error: Exception) -> tuple[dict[str, Any], int]:
+                def flext_error_handler(error: Exception) -> tuple[dict[str, object], int]:
                     """Handle exceptions with logging and alerting."""
                     try:
                         FlextObservabilityLogging.log_with_context(
@@ -391,7 +391,7 @@ class FlextObservabilityHTTP:
     async def _async_log_with_context(
         message: str,
         level: str,
-        extra: dict[str, Any],
+        extra: dict[str, object],
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 

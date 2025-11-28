@@ -20,7 +20,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Any
 
 from flext_core import FlextLogger, FlextResult
 
@@ -86,7 +85,7 @@ class FlextObservabilityCustomMetrics:
         def __init__(self) -> None:
             """Initialize metric registry."""
             self._metrics: dict[str, CustomMetricDefinition] = {}
-            self._metric_instances: dict[str, Any] = {}
+            self._metric_instances: dict[str, object] = {}
             self._namespaces: dict[str, str] = {}  # Namespace prefixes
 
         def register_metric(
@@ -230,7 +229,7 @@ class FlextObservabilityCustomMetrics:
 
         def get_metric_info(
             self, name: str, namespace: str = "default"
-        ) -> dict[str, Any] | None:
+        ) -> dict[str, object] | None:
             """Get detailed metric information.
 
             Args:

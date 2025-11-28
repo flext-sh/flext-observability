@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import math
 from datetime import UTC, datetime
-from typing import Any, ClassVar, Literal
+from typing import ClassVar, Literal
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextLogger, FlextResult
@@ -117,7 +117,7 @@ class FlextObservability:
         id: str = Field(default_factory=lambda: str(uuid4()))
         component: str = Field(description="Component name")
         status: Literal["healthy", "degraded", "unhealthy"] = Field(default="healthy")
-        details: dict[str, Any] = Field(default_factory=dict)
+        details: dict[str, object] = Field(default_factory=dict)
         timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
 
     class LogEntry(BaseModel):
@@ -132,7 +132,7 @@ class FlextObservability:
         )
         component: str = Field(default="application")
         timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-        context: dict[str, Any] = Field(default_factory=dict)
+        context: dict[str, object] = Field(default_factory=dict)
 
     # ========================================================================
     # LAYER 2: APPLICATION SERVICES
@@ -292,7 +292,7 @@ class FlextObservability:
             self,
             component: str,
             status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
-            details: dict[str, Any] | None = None,
+            details: dict[str, object] | None = None,
         ) -> FlextResult[FlextObservability.HealthCheck]:
             """Create a health check."""
             try:
@@ -340,7 +340,7 @@ class FlextObservability:
             message: str,
             level: Literal["debug", "info", "warning", "error", "critical"] = "info",
             component: str = "application",
-            context: dict[str, Any] | None = None,
+            context: dict[str, object] | None = None,
         ) -> FlextResult[FlextObservability.LogEntry]:
             """Create a log entry."""
             try:
@@ -481,7 +481,7 @@ def flext_health_check(
     component: str,
     status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
     health_check_id: str | None = None,
-    details: dict[str, Any] | None = None,
+    details: dict[str, object] | None = None,
 ) -> FlextResult[FlextObservability.HealthCheck]:
     """Create a health check entity directly."""
     # health_check_id parameter reserved for future use
@@ -513,7 +513,7 @@ def flext_create_health_check(
     component: str,
     status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
     health_check_id: str | None = None,
-    details: dict[str, Any] | None = None,
+    details: dict[str, object] | None = None,
 ) -> FlextResult[FlextObservability.HealthCheck]:
     """Create a health check (alias for compatibility)."""
     return flext_health_check(
@@ -529,7 +529,7 @@ def flext_log_entry(
     level: Literal["debug", "info", "warning", "error", "critical"] = "info",
     component: str = "application",
     timestamp: datetime | None = None,
-    context: dict[str, Any] | None = None,
+    context: dict[str, object] | None = None,
 ) -> FlextResult[FlextObservability.LogEntry]:
     """Create a log entry entity directly."""
     try:

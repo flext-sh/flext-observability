@@ -11,7 +11,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import Any
 from uuid import uuid4
 
 from flext_core import FlextModels
@@ -46,10 +45,10 @@ class FlextObservabilityModels(FlextModels):
         timestamp: datetime = Field(
             default_factory=datetime.now, description="Entry timestamp"
         )
-        data: dict[str, Any] = Field(
+        data: dict[str, object] = Field(
             default_factory=dict, description="Generic data payload"
         )
-        metadata: dict[str, Any] = Field(
+        metadata: dict[str, object] = Field(
             default_factory=dict, description="Generic metadata"
         )
 
@@ -88,7 +87,7 @@ class FlextObservabilityModels(FlextModels):
         retention_days: int = Field(
             ge=1, le=365, default=30, description="Retention period"
         )
-        settings: dict[str, Any] = Field(
+        settings: dict[str, object] = Field(
             default_factory=dict, description="Type-specific settings"
         )
 
