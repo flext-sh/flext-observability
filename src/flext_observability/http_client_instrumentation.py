@@ -21,7 +21,7 @@ Key Features:
 from __future__ import annotations
 
 import time
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from flext_core import FlextLogger, FlextResult
 

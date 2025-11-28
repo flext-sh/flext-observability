@@ -19,8 +19,6 @@ Key Features:
 
 from __future__ import annotations
 
-from typing import Any
-
 from flext_core import FlextLogger, FlextResult
 
 from flext_observability.context import FlextObservabilityContext
@@ -96,7 +94,7 @@ class FlextObservabilityLogging:
     @staticmethod
     def enrich_log_context(
         _logger: FlextLogger, *, include_baggage: bool = False
-    ) -> FlextResult[dict[str, Any]]:
+    ) -> FlextResult[dict[str, object]]:
         """Get trace context for log enrichment.
 
         Retrieves current trace context (correlation ID, trace ID, span ID)
@@ -127,7 +125,7 @@ class FlextObservabilityLogging:
 
         """
         try:
-            context_dict: dict[str, Any] = {}
+            context_dict: dict[str, object] = {}
 
             # Extract correlation ID
             correlation_id = FlextObservabilityContext.get_correlation_id()
@@ -150,9 +148,11 @@ class FlextObservabilityLogging:
                 if baggage:
                     context_dict["baggage"] = baggage
 
-            return FlextResult[dict[str, Any]].ok(context_dict)
+            return FlextResult[dict[str, object]].ok(context_dict)
         except Exception as e:
-            return FlextResult[dict[str, Any]].fail(f"Context enrichment failed: {e}")
+            return FlextResult[dict[str, object]].fail(
+                f"Context enrichment failed: {e}"
+            )
 
     @staticmethod
     def inject_trace_context(logger: FlextLogger) -> FlextResult[None]:
@@ -206,7 +206,7 @@ class FlextObservabilityLogging:
         logger: FlextLogger,
         level: str,
         message: str,
-        extra: dict[str, Any] | None = None,
+        extra: dict[str, object] | None = None,
         *,
         include_baggage: bool = False,
     ) -> FlextResult[None]:
@@ -301,7 +301,7 @@ class FlextObservabilityLogging:
         return current_id
 
     @staticmethod
-    def validate_context() -> FlextResult[dict[str, Any]]:
+    def validate_context() -> FlextResult[dict[str, object]]:
         """Validate current trace context is properly configured.
 
         Checks that essential trace context (correlation ID) is set.
@@ -328,9 +328,11 @@ class FlextObservabilityLogging:
                 FlextObservabilityLogging.ensure_correlation_id()
                 context = FlextObservabilityContext.get_context()
 
-            return FlextResult[dict[str, Any]].ok(context)
+            return FlextResult[dict[str, object]].ok(context)
         except Exception as e:
-            return FlextResult[dict[str, Any]].fail(f"Context validation failed: {e}")
+            return FlextResult[dict[str, object]].fail(
+                f"Context validation failed: {e}"
+            )
 
 
 # ============================================================================

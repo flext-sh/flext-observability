@@ -22,7 +22,6 @@ import hashlib
 import time
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Any
 
 from flext_core import FlextLogger, FlextResult
 
@@ -47,7 +46,7 @@ class ErrorEvent:
     severity: ErrorSeverity
     timestamp: float = field(default_factory=time.time)
     correlation_id: str = ""
-    context: dict[str, Any] = field(default_factory=dict)
+    context: dict[str, object] = field(default_factory=dict)
     fingerprint: str = ""
 
     def calculate_fingerprint(self) -> str:

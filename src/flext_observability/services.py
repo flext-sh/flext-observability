@@ -10,8 +10,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any
-
 from flext_core import FlextContainer, FlextLogger, FlextResult, FlextUtilities
 
 from flext_observability.config import FlextObservabilityConfig
@@ -47,23 +45,25 @@ class FlextObservabilityServices(FlextUtilities):
         """Access observability config."""
         return self._config
 
-    def process_entry(self, entry_data: dict[str, Any]) -> FlextResult[dict[str, Any]]:
+    def process_entry(
+        self, entry_data: dict[str, object]
+    ) -> FlextResult[dict[str, object]]:
         """Process generic observability entry through FLEXT patterns."""
         try:
             # Delegate validation to FLEXT core
             if not entry_data:
-                return FlextResult[dict[str, Any]].fail("Entry data required")
+                return FlextResult[dict[str, object]].fail("Entry data required")
 
             # Use container for any service resolution
             processed = entry_data.copy()
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
 
-            return FlextResult[dict[str, Any]].ok(processed)
+            return FlextResult[dict[str, object]].ok(processed)
         except Exception as e:
-            return FlextResult[dict[str, Any]].fail(f"Entry processing failed: {e}")
+            return FlextResult[dict[str, object]].fail(f"Entry processing failed: {e}")
 
-    def get_status(self) -> FlextResult[dict[str, Any]]:
+    def get_status(self) -> FlextResult[dict[str, object]]:
         """Get generic service status through FLEXT patterns."""
         try:
             status = {
@@ -72,9 +72,9 @@ class FlextObservabilityServices(FlextUtilities):
                 "timestamp": "now",
                 "version": "generic",
             }
-            return FlextResult[dict[str, Any]].ok(status)
+            return FlextResult[dict[str, object]].ok(status)
         except Exception as e:
-            return FlextResult[dict[str, Any]].fail(f"Status check failed: {e}")
+            return FlextResult[dict[str, object]].fail(f"Status check failed: {e}")
 
     def create_alert(self, **_kwargs: object) -> FlextResult[dict[str, object]]:
         """Generic alert creation - not implemented in base service."""
