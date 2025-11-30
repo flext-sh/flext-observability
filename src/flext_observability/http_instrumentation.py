@@ -23,11 +23,6 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    
-
 
 from flask import g, request
 from flext_core import FlextLogger, FlextResult
@@ -200,7 +195,9 @@ class FlextObservabilityHTTP:
                     return response
 
                 @app.errorhandler(Exception)
-                def flext_error_handler(error: Exception) -> tuple[dict[str, object], int]:
+                def flext_error_handler(
+                    error: Exception,
+                ) -> tuple[dict[str, object], int]:
                     """Handle exceptions with logging and alerting."""
                     try:
                         FlextObservabilityLogging.log_with_context(
