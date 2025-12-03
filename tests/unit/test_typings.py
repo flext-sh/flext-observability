@@ -15,7 +15,7 @@ class TestFlextObservabilityTypes:
     """Test the FlextObservabilityTypes class."""
 
     def test_inherits_from_flext_types(self) -> None:
-        """Test that FlextObservabilityTypes inherits from FlextTypes."""
+        """Test that FlextObservabilityTypes inherits from t."""
         assert issubclass(FlextObservabilityTypes, dict[str, object])
 
     def test_nested_type_classes(self) -> None:

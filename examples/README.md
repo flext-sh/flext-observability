@@ -69,18 +69,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class UserService:
     """Example service with integrated observability."""
@@ -90,7 +90,7 @@ class UserService:
         self.metrics = FlextMetricsService(container)
         self.factory = FlextObservabilityMasterFactory()
 
-    def create_user(self, user_data: dict) -> FlextResult[FlextTypes.Dict]:
+    def create_user(self, user_data: dict) -> FlextResult[t.Dict]:
         """Create user with comprehensive observability."""
         # Create business metrics
         metric_result = self.factory.create_metric(
@@ -134,7 +134,7 @@ def process_order(order_data: dict) -> dict[str, object]:
 
 # Advanced monitoring with context
 @flext_monitor_function("payment_processing")
-def process_payment(amount: float, currency: str) -> FlextResult[FlextTypes.Dict]:
+def process_payment(amount: float, currency: str) -> FlextResult[t.Dict]:
     """Process payment with error handling and monitoring."""
     if amount <= 0:
         return FlextResult[None].fail("Invalid payment amount")
@@ -156,7 +156,7 @@ def process_payment(amount: float, currency: str) -> FlextResult[FlextTypes.Dict
 # Health check integration example
 from flext_observability import flext_create_health_check, FlextHealthService
 
-def monitor_database_health() -> FlextResult[FlextTypes.Dict]:
+def monitor_database_health() -> FlextResult[t.Dict]:
     """Monitor database connectivity and performance."""
     try:
         # Test database connection
@@ -197,7 +197,7 @@ def monitor_database_health() -> FlextResult[FlextTypes.Dict]:
 # Parent-child trace correlation
 from flext_observability import flext_create_trace
 
-def process_user_workflow(user_id: str) -> FlextResult[FlextTypes.Dict]:
+def process_user_workflow(user_id: str) -> FlextResult[t.Dict]:
     """Process user workflow with distributed tracing."""
 
     # Create parent trace
@@ -227,7 +227,7 @@ def process_user_workflow(user_id: str) -> FlextResult[FlextTypes.Dict]:
         "status": "completed"
     })
 
-def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[FlextTypes.Dict]:
+def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[t.Dict]:
     """Validate user with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="user_validation",
@@ -260,7 +260,7 @@ class FlextMeltanoTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> list[FlextTypes.Dict]:
+    def extract_records(self, table_name: str) -> list[t.Dict]:
         """Extract records with automatic monitoring."""
 
         # Extract data (business logic)
@@ -294,7 +294,7 @@ class FlextAPIService:
     """Example FastAPI service with observability."""
 
     @flext_monitor_function("api_endpoint")
-    def handle_user_request(self, request_data: dict) -> FlextResult[FlextTypes.Dict]:
+    def handle_user_request(self, request_data: dict) -> FlextResult[t.Dict]:
         """Handle API request with comprehensive observability."""
 
         # Request metrics

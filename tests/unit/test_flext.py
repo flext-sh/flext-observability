@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import cast
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextResult, t
 
 from flext_observability import (
     flext_create_alert,
@@ -20,7 +20,7 @@ from flext_observability import (
     flext_create_trace,
 )
 
-T = FlextTypes.T
+T = t.T
 
 
 def assert_success_with_data[T](result: FlextResult[T]) -> T:

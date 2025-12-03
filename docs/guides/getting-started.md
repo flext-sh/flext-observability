@@ -191,18 +191,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 # Initialize dependency injection container
 container = FlextContainer()
@@ -241,22 +241,22 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class UserService:
     @flext_monitor_function("user_service_create")
-    def create_user(self, user_data: dict) -> FlextResult[FlextTypes.Dict]:
+    def create_user(self, user_data: dict) -> FlextResult[t.Dict]:
         """Create user with automatic monitoring."""
 
         # Record custom metric
@@ -282,25 +282,25 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 class DatabaseConnectionService:
     def __init__(self):
         self.container = FlextContainer()
         self.health_service = FlextHealthService(self.container)
 
-    def check_database_health(self) -> FlextResult[FlextTypes.Dict]:
+    def check_database_health(self) -> FlextResult[t.Dict]:
         """Monitor database connection health."""
 
         # Create health check
@@ -326,7 +326,7 @@ from flext_observability import flext_monitor_function, flext_create_metric
 
 class FlextMeltanoTapOracle:
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> list[FlextTypes.Dict]:
+    def extract_records(self, table_name: str) -> list[t.Dict]:
         """Extract records with monitoring."""
 
         # Your extraction logic
@@ -479,18 +479,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 # Use proper typing
 def create_metric() -> FlextResult[FlextMetric]:

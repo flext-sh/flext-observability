@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import flext_tests
 import pytest
-from flext_core import FlextResult, FlextUtilities
+from flext_core import FlextResult
 from pydantic import ValidationError
 
 import flext_observability as entities_module
@@ -174,12 +174,12 @@ class TestSimpleCoverage:
 
 
 class TestFlextMixinsCoverage:
-    """Test FlextMixins methods for complete coverage."""
+    """Test x methods for complete coverage."""
 
     def test_generate_entity_id(self) -> None:
-        """Test FlextUtilities.Generators.generate_entity_id method."""
-        entity_id1 = FlextUtilities.Generators.generate_entity_id()
-        entity_id2 = FlextUtilities.Generators.generate_entity_id()
+        """Test uenerate_entity_id method."""
+        entity_id1 = uenerate_entity_id()
+        entity_id2 = uenerate_entity_id()
 
         assert isinstance(entity_id1, str)
         assert isinstance(entity_id2, str)
@@ -188,9 +188,9 @@ class TestFlextMixinsCoverage:
         assert entity_id1 != entity_id2  # Should be unique
 
     def test_generate_correlation_id(self) -> None:
-        """Test FlextUtilities.Generators.generate_correlation_id method."""
-        corr_id1 = FlextUtilities.Generators.generate_correlation_id()
-        corr_id2 = FlextUtilities.Generators.generate_correlation_id()
+        """Test uenerate_correlation_id method."""
+        corr_id1 = uenerate_correlation_id()
+        corr_id2 = uenerate_correlation_id()
 
         assert isinstance(corr_id1, str)
         assert isinstance(corr_id2, str)
@@ -199,19 +199,19 @@ class TestFlextMixinsCoverage:
         assert corr_id1 != corr_id2  # Should be unique
 
     def test_generate_timestamp_coverage(self) -> None:
-        """Test FlextUtilities.Generators.generate_timestamp method - covers linha 70."""
-        timestamp1 = FlextUtilities.Generators.generate_timestamp()
+        """Test uenerate_timestamp method - covers linha 70."""
+        timestamp1 = uenerate_timestamp()
         time.sleep(0.001)  # Pequeno delay para garantir diferença
-        timestamp2 = FlextUtilities.Generators.generate_timestamp()
+        timestamp2 = uenerate_timestamp()
 
         assert isinstance(timestamp1, float)
         assert isinstance(timestamp2, float)
         assert timestamp2 > timestamp1
 
     def test_generate_uuid_coverage(self) -> None:
-        """Test FlextUtilities.Generators.generate_uuid method - covers linha 74."""
-        uuid1 = FlextUtilities.Generators.generate_uuid()
-        uuid2 = FlextUtilities.Generators.generate_uuid()
+        """Test uenerate_uuid method - covers linha 74."""
+        uuid1 = uenerate_uuid()
+        uuid2 = uenerate_uuid()
 
         assert isinstance(uuid1, str)
         assert isinstance(uuid2, str)
@@ -220,9 +220,9 @@ class TestFlextMixinsCoverage:
         assert uuid1 != uuid2
 
     def test_generate_entity_id_coverage(self) -> None:
-        """Test FlextUtilities.Generators.generate_entity_id method - covers linha 78."""
-        entity_id1 = FlextUtilities.Generators.generate_entity_id()
-        entity_id2 = FlextUtilities.Generators.generate_entity_id()
+        """Test uenerate_entity_id method - covers linha 78."""
+        entity_id1 = uenerate_entity_id()
+        entity_id2 = uenerate_entity_id()
 
         assert isinstance(entity_id1, str)
         assert isinstance(entity_id2, str)
@@ -911,9 +911,9 @@ class TestFlextMixinsCoverage:
     def test_flext_alert_factory_with_id_and_version_coverage(self) -> None:
         """Test flext_alert factory function with id and version - covers lines 944-954."""
         # Test with both id and version in kwargs (triggers lines 944-954)
-        custom_id = FlextUtilities.Generators.generate_uuid()
+        custom_id = uenerate_uuid()
         custom_version = 2
-        FlextUtilities.Generators.generate_timestamp()
+        uenerate_timestamp()
         custom_tags = {"environment": "test", "priority": "high"}
 
         alert = flext_alert(
@@ -939,8 +939,8 @@ class TestFlextMixinsCoverage:
     def test_flext_alert_factory_with_id_only_coverage(self) -> None:
         """Test flext_alert factory function with id but no version - covers lines 955-964."""
         # Test with id but no version in kwargs (triggers lines 955-964)
-        custom_id = FlextUtilities.Generators.generate_uuid()
-        FlextUtilities.Generators.generate_timestamp()
+        custom_id = uenerate_uuid()
+        uenerate_timestamp()
 
         alert = flext_alert(
             title="Alert with ID only",
@@ -981,7 +981,7 @@ class TestFlextMixinsCoverage:
     def test_flext_metric_with_id_and_version_coverage(self) -> None:
         """Test flext_metric factory with id and version - covers lines 1025-1034."""
         # Test with both id and version in kwargs (triggers lines 1025-1034)
-        custom_id = FlextUtilities.Generators.generate_uuid()
+        custom_id = uenerate_uuid()
         custom_version = 3
         custom_tags = {"env": "prod", "region": "us-east"}
 
@@ -1010,7 +1010,7 @@ class TestFlextMixinsCoverage:
     def test_flext_metric_with_id_only_coverage(self) -> None:
         """Test flext_metric factory with id only - covers lines 1035-1043."""
         # Test with id but no version (triggers lines 1035-1043)
-        custom_id = FlextUtilities.Generators.generate_uuid()
+        custom_id = uenerate_uuid()
 
         result = flext_metric(name="memory.used", value=2048, unit="MB", id=custom_id)
 
@@ -1066,9 +1066,9 @@ class TestFlextMixinsCoverage:
     def test_flext_health_check_factory_with_id_coverage(self) -> None:
         """Test flext_health_check factory function with custom id - covers lines 1083-1091."""
         # Test with custom id in kwargs (triggers lines 1083-1091)
-        custom_id = FlextUtilities.Generators.generate_uuid()
+        custom_id = uenerate_uuid()
         custom_metrics = {"cpu": 75.5, "memory": 2048, "disk": 80.0}
-        custom_timestamp = FlextUtilities.Generators.generate_timestamp()
+        custom_timestamp = uenerate_timestamp()
 
         health = flext_health_check(
             component="database",

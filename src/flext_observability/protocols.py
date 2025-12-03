@@ -2,7 +2,7 @@
 
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextResult, p
 
 
 class FlextObservabilityProtocols:
@@ -40,7 +40,7 @@ class FlextObservabilityProtocols:
         """
 
         @runtime_checkable
-        class MetricsProtocol(FlextProtocols.Service, Protocol):
+        class MetricsProtocol(p.Service, Protocol):
             """Protocol for metrics collection and management operations."""
 
             def record_metric(
@@ -88,7 +88,7 @@ class FlextObservabilityProtocols:
                 ...
 
         @runtime_checkable
-        class TracingProtocol(FlextProtocols.Service, Protocol):
+        class TracingProtocol(p.Service, Protocol):
             """Protocol for distributed tracing operations."""
 
             def start_span(
@@ -129,7 +129,7 @@ class FlextObservabilityProtocols:
                 ...
 
         @runtime_checkable
-        class AlertingProtocol(FlextProtocols.Service, Protocol):
+        class AlertingProtocol(p.Service, Protocol):
             """Protocol for alerting and notification operations."""
 
             def create_alert(
@@ -169,7 +169,7 @@ class FlextObservabilityProtocols:
                 ...
 
         @runtime_checkable
-        class HealthCheckProtocol(FlextProtocols.Service, Protocol):
+        class HealthCheckProtocol(p.Service, Protocol):
             """Protocol for health check operations."""
 
             def check_health(self, service_name: str) -> FlextResult[dict[str, object]]:
@@ -193,7 +193,7 @@ class FlextObservabilityProtocols:
                 ...
 
         @runtime_checkable
-        class LoggingProtocol(FlextProtocols.Service, Protocol):
+        class LoggingProtocol(p.Service, Protocol):
             """Protocol for logging operations."""
 
             def log_message(
@@ -235,7 +235,7 @@ class FlextObservabilityProtocols:
                 ...
 
         @runtime_checkable
-        class DashboardProtocol(FlextProtocols.Service, Protocol):
+        class DashboardProtocol(p.Service, Protocol):
             """Protocol for dashboard and visualization operations."""
 
             def create_dashboard(

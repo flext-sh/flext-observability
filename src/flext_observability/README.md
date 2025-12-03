@@ -17,7 +17,7 @@ Core business entities with domain validation and business logic:
 - **FlextAlert**: Alert management entity with severity handling
 - **FlextHealthCheck**: Health monitoring entity with dependency validation
 - **FlextLogEntry**: Structured logging entity with correlation ID support
-- **FlextUtilities.Generators**: Utility functions for ID generation and timestamps
+- **u.Generators**: Utility functions for ID generation and timestamps
 
 ### Application Layer
 
@@ -131,18 +131,18 @@ from flext_core import FlextContext
 from flext_core import FlextDecorators
 from flext_core import FlextDispatcher
 from flext_core import FlextExceptions
-from flext_core import FlextHandlers
+from flext_core import h
 from flext_core import FlextLogger
-from flext_core import FlextMixins
+from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
-from flext_core import FlextProtocols
+from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import FlextResult
 from flext_core import FlextRuntime
 from flext_core import FlextService
-from flext_core import FlextTypes
-from flext_core import FlextUtilities
+from flext_core import t
+from flext_core import u
 
 container = FlextContainer()
 metrics_service = FlextMetricsService(container)
@@ -204,7 +204,7 @@ All modules follow FLEXT ecosystem standards:
 ```python
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
-def handle_user_request(request: dict) -> FlextResult[FlextTypes.Dict]:
+def handle_user_request(request: dict) -> FlextResult[t.Dict]:
     # Automatic metrics, tracing, and logging
     return FlextResult[None].ok({"status": "processed"})
 ```
