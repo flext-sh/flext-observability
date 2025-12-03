@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 import threading
 import time
 
-from flext_core import FlextContainer, FlextTypes
+from flext_core import FlextContainer, t
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -114,7 +114,7 @@ class TestCompleteIntegrationReal:
         start_result = self.monitor.flext_start_monitoring()
         assert start_result.is_success
 
-        results: FlextTypes.BoolList = []
+        results: t.BoolList = []
         errors: list[str] = []
 
         def worker_function(worker_id: int) -> None:
@@ -185,7 +185,7 @@ class TestCompleteIntegrationReal:
 
         # Create monitored functions
         @flext_monitor_function(monitor=self.monitor, metric_name="data_processing")
-        def process_data(data: FlextTypes.IntList) -> dict[str, object]:
+        def process_data(data: t.IntList) -> dict[str, object]:
             """Real data processing function."""
             # Simulate real processing
             time.sleep(0.1)
@@ -355,7 +355,7 @@ class TestCompleteIntegrationReal:
             return {"iterations": iterations, "result": result}
 
         @flext_monitor_function(monitor=self.monitor, metric_name="io_simulation")
-        def io_intensive_task(delay: float) -> FlextTypes.FloatDict:
+        def io_intensive_task(delay: float) -> t.FloatDict:
             """IO intensive task simulation."""
             start_time = time.time()
             time.sleep(delay)

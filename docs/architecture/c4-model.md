@@ -367,7 +367,7 @@ class FlextAlert(FlextModels.Entity):
 #### **Service Layer Classes**
 
 ```python
-class FlextObservabilityServices(FlextUtilities):
+class FlextObservabilityServices(u):
     """Unified service class with all observability operations."""
 
     @classmethod
