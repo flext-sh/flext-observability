@@ -76,7 +76,7 @@ class FlextObservabilityLogging:
         try:
             if not name or not isinstance(name, str):
                 return FlextResult[FlextLogger].fail(
-                    "Logger name must be non-empty string"
+                    "Logger name must be non-empty string",
                 )
 
             # Create FlextLogger from flext-core
@@ -93,7 +93,9 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def enrich_log_context(
-        _logger: FlextLogger, *, include_baggage: bool = False
+        _logger: FlextLogger,
+        *,
+        include_baggage: bool = False,
     ) -> FlextResult[dict[str, object]]:
         """Get trace context for log enrichment.
 
@@ -151,7 +153,7 @@ class FlextObservabilityLogging:
             return FlextResult[dict[str, object]].ok(context_dict)
         except Exception as e:
             return FlextResult[dict[str, object]].fail(
-                f"Context enrichment failed: {e}"
+                f"Context enrichment failed: {e}",
             )
 
     @staticmethod
@@ -190,7 +192,7 @@ class FlextObservabilityLogging:
             # We just verify the integration works
             if not context:
                 FlextObservabilityLogging._logger.debug(
-                    "No trace context currently set"
+                    "No trace context currently set",
                 )
 
             return FlextResult[None].ok(None)
@@ -251,12 +253,13 @@ class FlextObservabilityLogging:
 
             # Get trace context
             context_result = FlextObservabilityLogging.enrich_log_context(
-                logger, include_baggage=include_baggage
+                logger,
+                include_baggage=include_baggage,
             )
 
             if context_result.is_failure:
                 return FlextResult[None].fail(
-                    f"Failed to get trace context: {context_result.error}"
+                    f"Failed to get trace context: {context_result.error}",
                 )
 
             # Merge context with extra fields
@@ -331,7 +334,7 @@ class FlextObservabilityLogging:
             return FlextResult[dict[str, object]].ok(context)
         except Exception as e:
             return FlextResult[dict[str, object]].fail(
-                f"Context validation failed: {e}"
+                f"Context validation failed: {e}",
             )
 
 

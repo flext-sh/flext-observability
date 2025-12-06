@@ -130,7 +130,7 @@ class FlextObservabilityCustomMetrics:
                     except ValueError:
                         return FlextResult[None].fail(
                             f"Invalid metric type: {metric_type}. "
-                            f"Must be one of {['counter', 'gauge', 'histogram']}"
+                            f"Must be one of {['counter', 'gauge', 'histogram']}",
                         )
                 else:
                     metric_type_enum = metric_type
@@ -143,7 +143,7 @@ class FlextObservabilityCustomMetrics:
                 # Check for duplicates
                 if namespaced_name in self._metrics:
                     return FlextResult[None].fail(
-                        f"Metric '{namespaced_name}' already registered"
+                        f"Metric '{namespaced_name}' already registered",
                     )
 
                 # Create metric definition
@@ -159,7 +159,7 @@ class FlextObservabilityCustomMetrics:
                 self._namespaces[namespace] = namespace
 
                 FlextObservabilityCustomMetrics._logger.debug(
-                    f"Metric registered: {namespaced_name} ({metric_type_enum.value})"
+                    f"Metric registered: {namespaced_name} ({metric_type_enum.value})",
                 )
                 return FlextResult[None].ok(None)
 
@@ -167,7 +167,9 @@ class FlextObservabilityCustomMetrics:
                 return FlextResult[None].fail(f"Metric registration failed: {e}")
 
         def get_metric(
-            self, name: str, namespace: str = "default"
+            self,
+            name: str,
+            namespace: str = "default",
         ) -> CustomMetricDefinition | None:
             """Get metric definition by name.
 
@@ -183,7 +185,8 @@ class FlextObservabilityCustomMetrics:
             return self._metrics.get(namespaced_name)
 
         def get_all_metrics(
-            self, namespace: str | None = None
+            self,
+            namespace: str | None = None,
         ) -> dict[str, CustomMetricDefinition]:
             """Get all registered metrics.
 
@@ -203,7 +206,8 @@ class FlextObservabilityCustomMetrics:
             return self._metrics.copy()
 
         def get_metrics_by_type(
-            self, metric_type: MetricType
+            self,
+            metric_type: MetricType,
         ) -> dict[str, CustomMetricDefinition]:
             """Get all metrics of a specific type.
 
@@ -228,7 +232,9 @@ class FlextObservabilityCustomMetrics:
             return sorted(self._metrics.keys())
 
         def get_metric_info(
-            self, name: str, namespace: str = "default"
+            self,
+            name: str,
+            namespace: str = "default",
         ) -> dict[str, object] | None:
             """Get detailed metric information.
 
@@ -253,7 +259,9 @@ class FlextObservabilityCustomMetrics:
             }
 
         def unregister_metric(
-            self, name: str, namespace: str = "default"
+            self,
+            name: str,
+            namespace: str = "default",
         ) -> FlextResult[None]:
             """Unregister a metric.
 
@@ -272,13 +280,13 @@ class FlextObservabilityCustomMetrics:
 
                 if namespaced_name not in self._metrics:
                     return FlextResult[None].fail(
-                        f"Metric '{namespaced_name}' not found"
+                        f"Metric '{namespaced_name}' not found",
                     )
 
                 del self._metrics[namespaced_name]
 
                 FlextObservabilityCustomMetrics._logger.debug(
-                    f"Metric unregistered: {namespaced_name}"
+                    f"Metric unregistered: {namespaced_name}",
                 )
                 return FlextResult[None].ok(None)
 
@@ -306,7 +314,7 @@ class FlextObservabilityCustomMetrics:
                     self._metrics.clear()
 
                 FlextObservabilityCustomMetrics._logger.debug(
-                    f"Metrics cleared: {namespace or 'all'}"
+                    f"Metrics cleared: {namespace or 'all'}",
                 )
                 return FlextResult[None].ok(None)
 
@@ -360,7 +368,8 @@ class FlextObservabilityCustomMetrics:
 
     @staticmethod
     def get_metric(
-        name: str, namespace: str = "default"
+        name: str,
+        namespace: str = "default",
     ) -> CustomMetricDefinition | None:
         """Convenience function: get metric definition.
 

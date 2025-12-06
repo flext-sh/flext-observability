@@ -71,7 +71,8 @@ class FlextObservabilityTypes(t):
 
         # Observability-specific project configurations
         type ObservabilityProjectConfig = dict[
-            str, str | int | bool | list[str] | object
+            str,
+            str | int | bool | list[str] | object,
         ]
         type MonitoringConfig = dict[str, str | int | bool | list[str]]
         type MetricsConfig = dict[str, bool | str | dict[str, object]]
@@ -90,7 +91,8 @@ class FlextObservabilityTypes(t):
 
         # Metric collection and processing types
         type MetricCollection = dict[
-            str, float | int | Decimal | dict[str, t.JsonValue]
+            str,
+            float | int | Decimal | dict[str, t.JsonValue],
         ]
         type MetricAggregation = dict[str, float | dict[str, float | int | Decimal]]
         type MetricThresholds = dict[str, float | int | bool | dict[str, object]]

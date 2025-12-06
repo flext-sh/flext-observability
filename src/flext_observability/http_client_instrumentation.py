@@ -113,7 +113,7 @@ class FlextObservabilityHTTPClient:
             try:
                 if not hasattr(client, "request") and not hasattr(client, "_send"):
                     return FlextResult[None].fail(
-                        "Invalid httpx client - missing request method"
+                        "Invalid httpx client - missing request method",
                     )
 
                 # Avoid duplicate instrumentation
@@ -210,7 +210,10 @@ class FlextObservabilityHTTPClient:
                     original_request = client.request
 
                     def traced_request(
-                        method: str, url: str, *args: object, **kwargs: object
+                        method: str,
+                        url: str,
+                        *args: object,
+                        **kwargs: object,
                     ) -> object:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
@@ -294,13 +297,13 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient.HTTPX._instrumented_clients.add(client)
 
                 FlextObservabilityHTTPClient._logger.debug(
-                    "httpx client instrumentation setup complete"
+                    "httpx client instrumentation setup complete",
                 )
                 return FlextResult[None].ok(None)
 
             except Exception as e:
                 return FlextResult[None].fail(
-                    f"httpx instrumentation setup failed: {e}"
+                    f"httpx instrumentation setup failed: {e}",
                 )
 
     # ========================================================================
@@ -350,7 +353,7 @@ class FlextObservabilityHTTPClient:
             try:
                 if not hasattr(session, "_request"):
                     return FlextResult[None].fail(
-                        "Invalid aiohttp session - missing _request method"
+                        "Invalid aiohttp session - missing _request method",
                     )
 
                 # Avoid duplicate instrumentation
@@ -364,7 +367,10 @@ class FlextObservabilityHTTPClient:
                 original_request = session._request
 
                 async def traced_request(
-                    method: str, url: str, *args: object, **kwargs: object
+                    method: str,
+                    url: str,
+                    *args: object,
+                    **kwargs: object,
                 ) -> object:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()
@@ -451,13 +457,13 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient.AIOHTTP._instrumented_sessions.add(session)
 
                 FlextObservabilityHTTPClient._logger.debug(
-                    "aiohttp session instrumentation setup complete"
+                    "aiohttp session instrumentation setup complete",
                 )
                 return FlextResult[None].ok(None)
 
             except Exception as e:
                 return FlextResult[None].fail(
-                    f"aiohttp instrumentation setup failed: {e}"
+                    f"aiohttp instrumentation setup failed: {e}",
                 )
 
 

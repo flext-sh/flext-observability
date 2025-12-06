@@ -22,7 +22,7 @@ Key Features:
 from __future__ import annotations
 
 import time
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from flext_core import FlextLogger, FlextResult
 from sqlalchemy import event
@@ -102,13 +102,13 @@ class FlextObservabilityDatabase:
             try:
                 if not hasattr(engine, "dispatch"):
                     return FlextResult[None].fail(
-                        "Invalid SQLAlchemy engine - missing dispatch"
+                        "Invalid SQLAlchemy engine - missing dispatch",
                     )
 
                 # Avoid duplicate instrumentation
                 if (
                     engine
-                    in FlextObservabilityDatabase.SQLAlchemy._instrumented_engines
+                    in FlextObservabilityDatabase.SQLAlchemy._instrumented_engines  # noqa: SLF001
                 ):
                     return FlextResult[None].ok(None)
 
@@ -149,7 +149,7 @@ class FlextObservabilityDatabase:
                         )
                     except Exception as e:
                         FlextObservabilityDatabase._logger.warning(
-                            f"Error in before_cursor_execute: {e}"
+                            f"Error in before_cursor_execute: {e}",
                         )
 
                 @event.listens_for(engine, "after_cursor_execute")
@@ -179,7 +179,7 @@ class FlextObservabilityDatabase:
                         except Exception as e:
                             # Log but continue - rowcount is optional metric
                             logger = FlextLogger(__name__)
-                            logger.debug(f"Could not get cursor rowcount: {e}")
+                            logger.debug("Could not get cursor rowcount: %s", e)
                             row_count = 0
 
                         # Extract database info
@@ -212,20 +212,20 @@ class FlextObservabilityDatabase:
 
                     except Exception as e:
                         FlextObservabilityDatabase._logger.warning(
-                            f"Error in after_cursor_execute: {e}"
+                            f"Error in after_cursor_execute: {e}",
                         )
 
                 # Mark as instrumented
                 FlextObservabilityDatabase.SQLAlchemy._instrumented_engines.add(engine)
 
                 FlextObservabilityDatabase._logger.debug(
-                    "SQLAlchemy instrumentation setup complete"
+                    "SQLAlchemy instrumentation setup complete",
                 )
                 return FlextResult[None].ok(None)
 
             except Exception as e:
                 return FlextResult[None].fail(
-                    f"SQLAlchemy instrumentation setup failed: {e}"
+                    f"SQLAlchemy instrumentation setup failed: {e}",
                 )
 
     # ========================================================================
@@ -274,7 +274,7 @@ class FlextObservabilityDatabase:
             try:
                 if not hasattr(pool, "execute"):
                     return FlextResult[None].fail(
-                        "Invalid asyncpg pool - missing execute method"
+                        "Invalid asyncpg pool - missing execute method",
                     )
 
                 # Avoid duplicate instrumentation
@@ -287,7 +287,9 @@ class FlextObservabilityDatabase:
                 original_fetchval = pool.fetchval
 
                 async def traced_execute(
-                    query: str, *args: object, **kwargs: object
+                    query: str,
+                    *args: object,
+                    **kwargs: object,
                 ) -> object:
                     """Traced execute wrapper."""
                     start_time = time.time()
@@ -341,7 +343,9 @@ class FlextObservabilityDatabase:
                         raise
 
                 async def traced_fetch(
-                    query: str, *args: object, **kwargs: object
+                    query: str,
+                    *args: object,
+                    **kwargs: object,
                 ) -> object:
                     """Traced fetch wrapper."""
                     start_time = time.time()
@@ -399,7 +403,9 @@ class FlextObservabilityDatabase:
                         raise
 
                 async def traced_fetchval(
-                    query: str, *args: object, **kwargs: object
+                    query: str,
+                    *args: object,
+                    **kwargs: object,
                 ) -> object:
                     """Traced fetchval wrapper."""
                     start_time = time.time()
@@ -463,13 +469,13 @@ class FlextObservabilityDatabase:
                 FlextObservabilityDatabase.AsyncPG._instrumented_pools.add(pool)
 
                 FlextObservabilityDatabase._logger.debug(
-                    "asyncpg pool instrumentation setup complete"
+                    "asyncpg pool instrumentation setup complete",
                 )
                 return FlextResult[None].ok(None)
 
             except Exception as e:
                 return FlextResult[None].fail(
-                    f"asyncpg instrumentation setup failed: {e}"
+                    f"asyncpg instrumentation setup failed: {e}",
                 )
 
 

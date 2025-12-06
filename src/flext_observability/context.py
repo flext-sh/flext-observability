@@ -218,7 +218,7 @@ class FlextObservabilityContext:
                 json.dumps(value)
             except (TypeError, ValueError):
                 return FlextResult[None].fail(
-                    f"Baggage value for '{key}' must be JSON serializable"
+                    f"Baggage value for '{key}' must be JSON serializable",
                 )
 
             # Get current baggage and update
@@ -353,7 +353,7 @@ class FlextObservabilityContext:
             return FlextResult[None].ok(None)
         except Exception as e:
             FlextObservabilityContext._logger.warning(
-                f"Failed to extract context from headers: {e}"
+                f"Failed to extract context from headers: {e}",
             )
             # Still return ok - generate new IDs
             FlextObservabilityContext.set_correlation_id()

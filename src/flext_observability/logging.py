@@ -47,16 +47,19 @@ class FlextObservabilityLogging(FlextModels):
 
         log_id: str = Field(description="Unique log identifier")
         level: Literal["debug", "info", "warning", "error", "critical"] = Field(
-            default="info", description="Log level"
+            default="info",
+            description="Log level",
         )
         message: str = Field(description="Log message")
         logger_name: str = Field(description="Logger name")
         timestamp: datetime = Field(
-            default_factory=datetime.now, description="Log timestamp"
+            default_factory=datetime.now,
+            description="Log timestamp",
         )
         source: str = Field(description="Log source")
         context: dict[str, object] = Field(
-            default_factory=dict, description="Log context"
+            default_factory=dict,
+            description="Log context",
         )
 
         @computed_field
@@ -82,7 +85,9 @@ class FlextObservabilityLogging(FlextModels):
 
         @field_serializer("context", when_used="json")
         def serialize_context_with_log_metadata(
-            self, value: dict[str, object], _info: object
+            self,
+            value: dict[str, object],
+            _info: object,
         ) -> dict[str, object]:
             """Serialize context with log metadata."""
             return {
@@ -115,7 +120,8 @@ class FlextObservabilityLogging(FlextModels):
             description="Maximum log size in MB",
         )
         enable_structured_logging: bool = Field(
-            default=True, description="Enable structured logging"
+            default=True,
+            description="Enable structured logging",
         )
         log_format: str = Field(default="json", description="Log format")
 
@@ -145,7 +151,8 @@ class FlextObservabilityLogging(FlextModels):
 
         message: str = Field(..., min_length=1, description="Log message")
         level: Literal["debug", "info", "warning", "error", "critical"] = Field(
-            default="info", description="Log level"
+            default="info",
+            description="Log level",
         )
         context: dict[str, object] = Field(
             default_factory=dict,

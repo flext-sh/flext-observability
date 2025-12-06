@@ -42,7 +42,9 @@ try:
     # Simulate HTTP processing with metrics
     # Record request received
     metric_result = metrics_service.record_counter(
-        "http.requests.total", 1.0, labels={"method": "POST", "endpoint": "/api/users"}
+        "http.requests.total",
+        1.0,
+        labels={"method": "POST", "endpoint": "/api/users"},
     )
     assert metric_result.is_success
 
@@ -84,7 +86,9 @@ try:
 
     # Record database metrics
     result = metrics_service.record_counter(
-        "db.queries.total", 1.0, labels={"system": "postgresql", "operation": "SELECT"}
+        "db.queries.total",
+        1.0,
+        labels={"system": "postgresql", "operation": "SELECT"},
     )
     assert result.is_success
 
@@ -159,28 +163,36 @@ try:
 
     # Component 1: API Layer
     api_result = metrics_service.record_counter(
-        "api.requests", 1.0, labels={"component": "api"}
+        "api.requests",
+        1.0,
+        labels={"component": "api"},
     )
     assert api_result.is_success
     time.sleep(0.005)
 
     # Component 2: Business Logic
     business_result = metrics_service.record_counter(
-        "business.operations", 1.0, labels={"component": "business"}
+        "business.operations",
+        1.0,
+        labels={"component": "business"},
     )
     assert business_result.is_success
     time.sleep(0.005)
 
     # Component 3: Database Layer
     db_result = metrics_service.record_counter(
-        "database.queries", 1.0, labels={"component": "database"}
+        "database.queries",
+        1.0,
+        labels={"component": "database"},
     )
     assert db_result.is_success
     time.sleep(0.01)
 
     # Back to API layer
     api_success = metrics_service.record_counter(
-        "api.success", 1.0, labels={"component": "api"}
+        "api.success",
+        1.0,
+        labels={"component": "api"},
     )
     assert api_success.is_success
 
@@ -204,7 +216,9 @@ try:
 
     # Create snapshot for async operation
     snapshot = ctx.snapshot(
-        correlation_id="async-001", trace_id="trace-async-001", span_id="span-async-001"
+        correlation_id="async-001",
+        trace_id="trace-async-001",
+        span_id="span-async-001",
     )
 
     assert snapshot.correlation_id == "async-001"
@@ -357,7 +371,8 @@ try:
     assert result.is_success
 
     result = metrics_service.record_histogram(
-        "workflow.duration_ms", perf_metrics.duration_ms
+        "workflow.duration_ms",
+        perf_metrics.duration_ms,
     )
     assert result.is_success
 

@@ -46,7 +46,8 @@ class FlextObservabilityServices(u):
         return self._config
 
     def process_entry(
-        self, entry_data: dict[str, object]
+        self,
+        entry_data: dict[str, object],
     ) -> FlextResult[dict[str, object]]:
         """Process generic observability entry through FLEXT patterns."""
         try:
@@ -79,13 +80,13 @@ class FlextObservabilityServices(u):
     def create_alert(self, **_kwargs: object) -> FlextResult[dict[str, object]]:
         """Generic alert creation - not implemented in base service."""
         return FlextResult[dict[str, object]].fail(
-            "Alert creation not implemented in generic service"
+            "Alert creation not implemented in generic service",
         )
 
     def get_metrics_summary(self) -> FlextResult[dict[str, object]]:
         """Generic metrics summary - not implemented in base service."""
         return FlextResult[dict[str, object]].fail(
-            "Metrics summary not implemented in generic service"
+            "Metrics summary not implemented in generic service",
         )
 
     @property
@@ -98,7 +99,8 @@ class FlextObservabilityServices(u):
 def get_global_factory() -> FlextObservabilityServices:
     """Get global factory instance through FLEXT container."""
     result = FlextContainer.get_global().get_or_create(
-        "flext_observability_factory", FlextObservabilityServices
+        "flext_observability_factory",
+        FlextObservabilityServices,
     )
     if result.is_success:
         value = result.unwrap()

@@ -168,12 +168,12 @@ class FlextObservabilityConfig(FlextConfig.AutoConfig):
             # Cross-field business validations
             if self.metrics_enabled and not self.metrics_namespace.strip():
                 return FlextResult[None].fail(
-                    "Metrics namespace cannot be empty when enabled"
+                    "Metrics namespace cannot be empty when enabled",
                 )
 
             if self.tracing_enabled and not self.tracing_service_name.strip():
                 return FlextResult[None].fail(
-                    "Tracing service name cannot be empty when enabled"
+                    "Tracing service name cannot be empty when enabled",
                 )
 
             return FlextResult[None].ok(None)

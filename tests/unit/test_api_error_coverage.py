@@ -69,7 +69,9 @@ class TestApiErrorHandling:
         # Test with context parameters
         context = {"trace_id": "custom_trace_123", "span_id": "custom_span_456"}
         result = flext_create_trace(
-            "operation_with_context", "service", context=context
+            "operation_with_context",
+            "service",
+            context=context,
         )
         assert result.is_success
 

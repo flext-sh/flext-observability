@@ -42,7 +42,8 @@ class FlextObservabilityInfrastructure:
 
         @staticmethod
         def setup_tracer_provider(
-            service_name: str, service_version: str = "0.9.0"
+            service_name: str,
+            service_version: str = "0.9.0",
         ) -> TracerProvider:
             """Setup OpenTelemetry tracer provider.
 
@@ -69,7 +70,8 @@ class FlextObservabilityInfrastructure:
 
         @staticmethod
         def setup_meter_provider(
-            service_name: str, service_version: str = "0.9.0"
+            service_name: str,
+            service_version: str = "0.9.0",
         ) -> MeterProvider:
             """Setup OpenTelemetry meter provider.
 
@@ -102,12 +104,12 @@ class FlextObservabilityInfrastructure:
             """
             if FlextObservabilityInfrastructure._tracer_provider:
                 trace.set_tracer_provider(
-                    FlextObservabilityInfrastructure._tracer_provider
+                    FlextObservabilityInfrastructure._tracer_provider,
                 )
 
             if FlextObservabilityInfrastructure._meter_provider:
                 metrics.set_meter_provider(
-                    FlextObservabilityInfrastructure._meter_provider
+                    FlextObservabilityInfrastructure._meter_provider,
                 )
 
     class Exporters:
@@ -136,7 +138,7 @@ class FlextObservabilityInfrastructure:
             exporter = OTLPSpanExporter(endpoint=endpoint)
             processor = BatchSpanProcessor(exporter)
             FlextObservabilityInfrastructure._tracer_provider.add_span_processor(
-                processor
+                processor,
             )
 
         @staticmethod
@@ -181,7 +183,7 @@ class FlextObservabilityInfrastructure:
             exporter = InMemorySpanExporter()
             processor = SimpleSpanProcessor(exporter)
             FlextObservabilityInfrastructure._tracer_provider.add_span_processor(
-                processor
+                processor,
             )
 
     @classmethod
