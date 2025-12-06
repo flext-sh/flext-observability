@@ -189,7 +189,7 @@ class TestHealthFields:
         """Test health status validation rejects invalid statuses."""
         with pytest.raises(ValueError, match="Invalid health status"):
             FlextObservabilityFields.HealthFields.validate_health_status(
-                "invalid_status"
+                "invalid_status",
             )
 
 

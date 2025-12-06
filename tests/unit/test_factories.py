@@ -41,7 +41,8 @@ class TestFlextObservabilityFactories:
     def test_create_trace_success(self) -> None:
         """Test creating a trace successfully."""
         result = FlextObservabilityFactories.create_trace(
-            "test_operation", "test_service"
+            "test_operation",
+            "test_service",
         )
         assert result.is_success
         trace = result.unwrap()

@@ -43,13 +43,16 @@ class FlextObservabilityModels(FlextModels):
         name: str = Field(min_length=1, description="Entity name")
         type: str = Field(min_length=1, description="Entity type")
         timestamp: datetime = Field(
-            default_factory=datetime.now, description="Entry timestamp"
+            default_factory=datetime.now,
+            description="Entry timestamp",
         )
         data: dict[str, object] = Field(
-            default_factory=dict, description="Generic data payload"
+            default_factory=dict,
+            description="Generic data payload",
         )
         metadata: dict[str, object] = Field(
-            default_factory=dict, description="Generic metadata"
+            default_factory=dict,
+            description="Generic metadata",
         )
 
         @computed_field
@@ -82,13 +85,19 @@ class FlextObservabilityModels(FlextModels):
 
         enabled: bool = Field(default=True, description="Enable observability")
         interval_seconds: float = Field(
-            gt=0, default=60.0, description="Collection interval"
+            gt=0,
+            default=60.0,
+            description="Collection interval",
         )
         retention_days: int = Field(
-            ge=1, le=365, default=30, description="Retention period"
+            ge=1,
+            le=365,
+            default=30,
+            description="Retention period",
         )
         settings: dict[str, object] = Field(
-            default_factory=dict, description="Type-specific settings"
+            default_factory=dict,
+            description="Type-specific settings",
         )
 
         @computed_field

@@ -62,15 +62,19 @@ class TestFlextObservabilityModels:
         """Test that model classes inherit from correct base classes."""
         # Test that entry classes inherit from FlextModels.Value
         assert issubclass(
-            FlextObservabilityModels.Metrics.MetricEntry, FlextModels.Value
+            FlextObservabilityModels.Metrics.MetricEntry,
+            FlextModels.Value,
         )
         assert issubclass(
-            FlextObservabilityModels.Tracing.TraceEntry, FlextModels.Value
+            FlextObservabilityModels.Tracing.TraceEntry,
+            FlextModels.Value,
         )
         assert issubclass(
-            FlextObservabilityModels.Alerting.AlertEntry, FlextModels.Value
+            FlextObservabilityModels.Alerting.AlertEntry,
+            FlextModels.Value,
         )
         assert issubclass(
-            FlextObservabilityModels.Health.HealthCheckEntry, FlextModels.Value
+            FlextObservabilityModels.Health.HealthCheckEntry,
+            FlextModels.Value,
         )
         assert issubclass(FlextObservabilityModels.Logging.LogEntry, FlextModels.Value)

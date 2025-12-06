@@ -26,7 +26,13 @@ from flext_core import FlextLogger, FlextResult
 
 # Type for JSON-serializable values (no Any allowed)
 JSONValue = Union[
-    str, int, float, bool, list["JSONValue"], dict[str, "JSONValue"], None
+    str,
+    int,
+    float,
+    bool,
+    list["JSONValue"],
+    dict[str, "JSONValue"],
+    None,
 ]
 
 
@@ -135,7 +141,7 @@ class FlextObservabilityAdvancedContext:
 
             except (TypeError, ValueError) as e:
                 return FlextResult[None].fail(
-                    f"Metadata value not JSON serializable: {e}"
+                    f"Metadata value not JSON serializable: {e}",
                 )
 
         def get_metadata(self, key: str) -> JSONValue | None:
@@ -243,7 +249,7 @@ class FlextObservabilityAdvancedContext:
                 self._baggage = snapshot.baggage.copy()
 
                 FlextObservabilityAdvancedContext._logger.debug(
-                    "Context restored from snapshot"
+                    "Context restored from snapshot",
                 )
                 return FlextResult[None].ok(None)
 
@@ -269,7 +275,8 @@ class FlextObservabilityAdvancedContext:
                 return FlextResult[None].fail(f"Failed to clear context: {e}")
 
         def merge(
-            self, other: FlextObservabilityAdvancedContext.Context
+            self,
+            other: FlextObservabilityAdvancedContext.Context,
         ) -> FlextResult[None]:
             """Merge another context into this one.
 

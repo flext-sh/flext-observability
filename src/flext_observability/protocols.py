@@ -65,13 +65,21 @@ class FlextObservabilityProtocols:
                 ...
 
             def create_counter(
-                self, name: str, description: str, *, unit: str = "count"
+                self,
+                name: str,
+                description: str,
+                *,
+                unit: str = "count",
             ) -> FlextResult[object]:
                 """Create a counter metric."""
                 ...
 
             def create_gauge(
-                self, name: str, description: str, *, unit: str = "value"
+                self,
+                name: str,
+                description: str,
+                *,
+                unit: str = "value",
             ) -> FlextResult[object]:
                 """Create a gauge metric."""
                 ...
@@ -102,13 +110,20 @@ class FlextObservabilityProtocols:
                 ...
 
             def finish_span(
-                self, span: object, *, status: str = "ok", error: str | None = None
+                self,
+                span: object,
+                *,
+                status: str = "ok",
+                error: str | None = None,
             ) -> FlextResult[bool]:
                 """Finish a trace span."""
                 ...
 
             def add_span_tag(
-                self, span: object, key: str, value: str | float
+                self,
+                span: object,
+                key: str,
+                value: str | float,
             ) -> FlextResult[bool]:
                 """Add tag to trace span."""
                 ...
@@ -177,13 +192,18 @@ class FlextObservabilityProtocols:
                 ...
 
             def register_health_check(
-                self, service_name: str, check_function: object, *, interval: int = 60
+                self,
+                service_name: str,
+                check_function: object,
+                *,
+                interval: int = 60,
             ) -> FlextResult[bool]:
                 """Register a health check."""
                 ...
 
             def get_service_status(
-                self, service_name: str
+                self,
+                service_name: str,
             ) -> FlextResult[dict[str, object]]:
                 """Get service health status."""
                 ...
@@ -249,13 +269,16 @@ class FlextObservabilityProtocols:
                 ...
 
             def get_dashboard(
-                self, dashboard_id: str
+                self,
+                dashboard_id: str,
             ) -> FlextResult[dict[str, object]]:
                 """Get dashboard by ID."""
                 ...
 
             def add_widget(
-                self, dashboard_id: str, widget_config: dict[str, object]
+                self,
+                dashboard_id: str,
+                widget_config: dict[str, object],
             ) -> FlextResult[str]:
                 """Add widget to dashboard."""
                 ...
@@ -275,20 +298,54 @@ class FlextObservabilityProtocols:
     # =========================================================================
     # Maintain existing attribute names for zero breaking changes.
 
-    MetricsProtocol = Observability.MetricsProtocol
-    TracingProtocol = Observability.TracingProtocol
-    AlertingProtocol = Observability.AlertingProtocol
-    HealthCheckProtocol = Observability.HealthCheckProtocol
-    LoggingProtocol = Observability.LoggingProtocol
-    DashboardProtocol = Observability.DashboardProtocol
+    @runtime_checkable
+    class MetricsProtocol(Observability.MetricsProtocol):
+        """MetricsProtocol - real inheritance."""
+
+    @runtime_checkable
+    class TracingProtocol(Observability.TracingProtocol):
+        """TracingProtocol - real inheritance."""
+
+    @runtime_checkable
+    class AlertingProtocol(Observability.AlertingProtocol):
+        """AlertingProtocol - real inheritance."""
+
+    @runtime_checkable
+    class HealthCheckProtocol(Observability.HealthCheckProtocol):
+        """HealthCheckProtocol - real inheritance."""
+
+    @runtime_checkable
+    class LoggingProtocol(Observability.LoggingProtocol):
+        """LoggingProtocol - real inheritance."""
+
+    @runtime_checkable
+    class DashboardProtocol(Observability.DashboardProtocol):
+        """DashboardProtocol - real inheritance."""
 
     # Additional convenience aliases
-    ObservabilityMetricsProtocol = Observability.MetricsProtocol
-    ObservabilityTracingProtocol = Observability.TracingProtocol
-    ObservabilityAlertingProtocol = Observability.AlertingProtocol
-    ObservabilityHealthProtocol = Observability.HealthCheckProtocol
-    ObservabilityLoggingProtocol = Observability.LoggingProtocol
-    ObservabilityDashboardProtocol = Observability.DashboardProtocol
+    @runtime_checkable
+    class ObservabilityMetricsProtocol(Observability.MetricsProtocol):
+        """ObservabilityMetricsProtocol - real inheritance."""
+
+    @runtime_checkable
+    class ObservabilityTracingProtocol(Observability.TracingProtocol):
+        """ObservabilityTracingProtocol - real inheritance."""
+
+    @runtime_checkable
+    class ObservabilityAlertingProtocol(Observability.AlertingProtocol):
+        """ObservabilityAlertingProtocol - real inheritance."""
+
+    @runtime_checkable
+    class ObservabilityHealthProtocol(Observability.HealthCheckProtocol):
+        """ObservabilityHealthProtocol - real inheritance."""
+
+    @runtime_checkable
+    class ObservabilityLoggingProtocol(Observability.LoggingProtocol):
+        """ObservabilityLoggingProtocol - real inheritance."""
+
+    @runtime_checkable
+    class ObservabilityDashboardProtocol(Observability.DashboardProtocol):
+        """ObservabilityDashboardProtocol - real inheritance."""
 
 
 __all__ = [

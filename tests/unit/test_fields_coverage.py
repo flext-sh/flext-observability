@@ -34,18 +34,22 @@ class TestFlextObservabilityFields:
         """Test that field creation methods are available."""
         # Test metric field creation methods
         assert hasattr(
-            FlextObservabilityFields.MetricFields, "create_metric_name_field"
+            FlextObservabilityFields.MetricFields,
+            "create_metric_name_field",
         )
         assert hasattr(
-            FlextObservabilityFields.MetricFields, "create_metric_value_field"
+            FlextObservabilityFields.MetricFields,
+            "create_metric_value_field",
         )
         assert hasattr(
-            FlextObservabilityFields.MetricFields, "create_metric_unit_field"
+            FlextObservabilityFields.MetricFields,
+            "create_metric_unit_field",
         )
 
         # Test alert field creation methods
         assert hasattr(
-            FlextObservabilityFields.AlertFields, "create_alert_message_field"
+            FlextObservabilityFields.AlertFields,
+            "create_alert_message_field",
         )
 
         # Test trace field creation methods

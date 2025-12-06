@@ -119,7 +119,7 @@ class FlextObservabilityErrorHandling:
 
             self._alert_cooldown_sec = seconds
             FlextObservabilityErrorHandling._logger.debug(
-                f"Alert cooldown set to {seconds}s"
+                f"Alert cooldown set to {seconds}s",
             )
             return FlextResult[None].ok(None)
 
@@ -138,7 +138,7 @@ class FlextObservabilityErrorHandling:
 
             self._escalation_threshold = threshold
             FlextObservabilityErrorHandling._logger.debug(
-                f"Escalation threshold set to {threshold}"
+                f"Escalation threshold set to {threshold}",
             )
             return FlextResult[None].ok(None)
 
@@ -168,7 +168,7 @@ class FlextObservabilityErrorHandling:
                     )
                 except Exception as e:
                     FlextObservabilityErrorHandling._logger.debug(
-                        f"Could not set correlation_id: {e}"
+                        f"Could not set correlation_id: {e}",
                     )
                     error.correlation_id = ""
 
@@ -178,7 +178,7 @@ class FlextObservabilityErrorHandling:
                 )
 
                 FlextObservabilityErrorHandling._logger.debug(
-                    f"Error recorded: {error.error_type} (fingerprint: {error.fingerprint[:8]})"
+                    f"Error recorded: {error.error_type} (fingerprint: {error.fingerprint[:8]})",
                 )
 
                 return FlextResult[ErrorEvent].ok(error)
@@ -268,7 +268,8 @@ class FlextObservabilityErrorHandling:
             return self._error_counts.get(fingerprint, 0)
 
         def clear_error_counts(
-            self, older_than_sec: float | None = None
+            self,
+            older_than_sec: float | None = None,
         ) -> FlextResult[None]:
             """Clear error counts.
 

@@ -108,10 +108,11 @@ class FlextObservabilityHTTP:
             """
             try:
                 if not hasattr(app, "before_request") or not hasattr(
-                    app, "after_request"
+                    app,
+                    "after_request",
                 ):
                     return FlextResult[None].fail(
-                        "Invalid Flask app - missing request hooks"
+                        "Invalid Flask app - missing request hooks",
                     )
 
                 @app.before_request
@@ -149,7 +150,7 @@ class FlextObservabilityHTTP:
                         )
                     except Exception as e:
                         FlextObservabilityHTTP._logger.warning(
-                            f"Error in before_request hook: {e}"
+                            f"Error in before_request hook: {e}",
                         )
 
                 @app.after_request
@@ -189,7 +190,7 @@ class FlextObservabilityHTTP:
 
                     except Exception as e:
                         FlextObservabilityHTTP._logger.warning(
-                            f"Error in after_request hook: {e}"
+                            f"Error in after_request hook: {e}",
                         )
 
                     return response
@@ -213,19 +214,19 @@ class FlextObservabilityHTTP:
                         )
                     except Exception as log_error:
                         FlextObservabilityHTTP._logger.error(
-                            f"Error in error handler: {log_error}"
+                            f"Error in error handler: {log_error}",
                         )
 
                     return {"error": str(error)}, 500
 
                 FlextObservabilityHTTP._logger.debug(
-                    "Flask HTTP instrumentation setup complete"
+                    "Flask HTTP instrumentation setup complete",
                 )
                 return FlextResult[None].ok(None)
 
             except Exception as e:
                 return FlextResult[None].fail(
-                    f"Flask instrumentation setup failed: {e}"
+                    f"Flask instrumentation setup failed: {e}",
                 )
 
     # ========================================================================
@@ -276,14 +277,16 @@ class FlextObservabilityHTTP:
             try:
                 if not hasattr(app, "middleware"):
                     return FlextResult[None].fail(
-                        "Invalid FastAPI app - missing middleware method"
+                        "Invalid FastAPI app - missing middleware method",
                     )
 
                 class FlextObservabilityMiddleware(BaseHTTPMiddleware):
                     """Starlette-based ASGI middleware for FastAPI."""
 
                     async def dispatch(
-                        self, request: Request, call_next: Callable
+                        self,
+                        request: Request,
+                        call_next: Callable,
                     ) -> Response:
                         """Process HTTP request with instrumentation."""
                         try:
@@ -363,7 +366,7 @@ class FlextObservabilityHTTP:
 
                         except Exception as e:
                             FlextObservabilityHTTP._logger.warning(
-                                f"Middleware error: {e}"
+                                f"Middleware error: {e}",
                             )
                             raise
 
@@ -371,13 +374,13 @@ class FlextObservabilityHTTP:
                 app.add_middleware(FlextObservabilityMiddleware)
 
                 FlextObservabilityHTTP._logger.debug(
-                    "FastAPI HTTP instrumentation setup complete"
+                    "FastAPI HTTP instrumentation setup complete",
                 )
                 return FlextResult[None].ok(None)
 
             except Exception as e:
                 return FlextResult[None].fail(
-                    f"FastAPI instrumentation setup failed: {e}"
+                    f"FastAPI instrumentation setup failed: {e}",
                 )
 
     # ========================================================================
@@ -403,7 +406,7 @@ class FlextObservabilityHTTP:
             )
         except Exception as e:
             FlextObservabilityHTTP._logger.warning(
-                f"Error logging in async context: {e}"
+                f"Error logging in async context: {e}",
             )
 
 

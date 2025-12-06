@@ -50,13 +50,16 @@ class FlextObservabilityHealth(FlextModels):
         status: str = Field(description="Health check status")
         component: str = Field(description="Component being checked")
         timestamp: datetime = Field(
-            default_factory=datetime.now, description="Check timestamp"
+            default_factory=datetime.now,
+            description="Check timestamp",
         )
         response_time_ms: float | None = Field(
-            default=None, description="Response time in milliseconds"
+            default=None,
+            description="Response time in milliseconds",
         )
         details: dict[str, object] = Field(
-            default_factory=dict, description="Health check details"
+            default_factory=dict,
+            description="Health check details",
         )
 
         @computed_field
@@ -88,7 +91,9 @@ class FlextObservabilityHealth(FlextModels):
 
         @field_serializer("details", when_used="json")
         def serialize_details_with_health_context(
-            self, value: dict[str, object], _info: object
+            self,
+            value: dict[str, object],
+            _info: object,
         ) -> dict[str, object]:
             """Serialize details with health check context."""
             return {
@@ -125,7 +130,8 @@ class FlextObservabilityHealth(FlextModels):
             description="Failure threshold for unhealthy status",
         )
         enable_auto_recovery: bool = Field(
-            default=True, description="Enable automatic recovery"
+            default=True,
+            description="Enable automatic recovery",
         )
 
         @computed_field
@@ -162,7 +168,8 @@ class FlextObservabilityHealth(FlextModels):
         )
         message: str = Field(default="", description="Health check message")
         metrics: dict[str, object] = Field(
-            default_factory=dict, description="Health metrics"
+            default_factory=dict,
+            description="Health metrics",
         )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
@@ -173,7 +180,7 @@ class FlextObservabilityHealth(FlextModels):
                     return FlextResult[bool].fail("Component name is required")
                 if self.status not in {"healthy", "degraded", "unhealthy", "unknown"}:
                     return FlextResult[bool].fail(
-                        f"Invalid health status: {self.status}"
+                        f"Invalid health status: {self.status}",
                     )
                 return FlextResult[bool].ok(True)
             except Exception as e:
@@ -198,12 +205,14 @@ class FlextObservabilityHealth(FlextModels):
 
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(
                 FlextObservabilityHealth.FlextHealthCheck(
-                    component=component, status=status, message=message
-                )
+                    component=component,
+                    status=status,
+                    message=message,
+                ),
             )
         except Exception as e:
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].fail(
-                f"Failed to create health check: {e}"
+                f"Failed to create health check: {e}",
             )
 
 

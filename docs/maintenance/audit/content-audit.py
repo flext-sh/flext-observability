@@ -131,7 +131,8 @@ class DocumentationAuditor:
                 content = f.read()
         except Exception as e:
             return ContentMetrics(
-                file_path=str(file_path), issues=[f"Failed to read file: {e}"]
+                file_path=str(file_path),
+                issues=[f"Failed to read file: {e}"],
             )
 
         metrics = ContentMetrics(file_path=str(file_path))
@@ -145,7 +146,7 @@ class DocumentationAuditor:
         metrics.link_count = len(re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content))
         metrics.code_block_count = len(re.findall(r"```", content))
         metrics.list_item_count = len(
-            re.findall(r"^[\s]*[-*+]\s+", content, re.MULTILINE)
+            re.findall(r"^[\s]*[-*+]\s+", content, re.MULTILINE),
         )
         metrics.table_count = len(re.findall(r"\|.*\|.*\|", content))
 
@@ -181,7 +182,7 @@ class DocumentationAuditor:
         if metrics.word_count < self.config["min_words_per_file"]:
             score -= 20
             metrics.recommendations.append(
-                "Consider expanding content (minimum 50 words)"
+                "Consider expanding content (minimum 50 words)",
             )
 
         # Structure quality
@@ -224,7 +225,7 @@ class DocumentationAuditor:
 
         if metrics.freshness_score < GOOD_FRESHNESS_THRESHOLD:
             metrics.recommendations.append(
-                f"Consider updating (last modified {days_since_update} days ago)"
+                f"Consider updating (last modified {days_since_update} days ago)",
             )
 
     def _identify_issues(self, metrics: ContentMetrics, content: str) -> None:
@@ -298,7 +299,8 @@ class DocumentationAuditor:
         # Calculate overall quality score
         total_score = sum(m.quality_score for m in self.report.file_metrics.values())
         self.report.overall_quality_score = total_score / max(
-            len(self.report.file_metrics), 1
+            len(self.report.file_metrics),
+            1,
         )
 
         return self.report
@@ -375,7 +377,7 @@ class DocumentationAuditor:
 
             report_lines.append(
                 f"| `{relative_path}` | {quality_icon} {metrics.quality_score:.0f} | "
-                f"{freshness_icon} {metrics.freshness_score:.0f} | {issue_count} | {metrics.word_count:,} |"
+                f"{freshness_icon} {metrics.freshness_score:.0f} | {issue_count} | {metrics.word_count:,} |",
             )
 
         report_lines.extend([
@@ -476,10 +478,14 @@ def main() -> None:
         help="Output format for audit report",
     )
     parser.add_argument(
-        "--config", type=Path, help="Path to custom audit configuration file"
+        "--config",
+        type=Path,
+        help="Path to custom audit configuration file",
     )
     parser.add_argument(
-        "--output-file", type=Path, help="Save report to file instead of stdout"
+        "--output-file",
+        type=Path,
+        help="Save report to file instead of stdout",
     )
 
     args = parser.parse_args()
