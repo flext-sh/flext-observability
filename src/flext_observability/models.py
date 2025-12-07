@@ -13,18 +13,18 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from flext_core import FlextModels
+from flext_core import m as m_core
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
-class FlextObservabilityModels(FlextModels):
+class FlextObservabilityModels(m_core):
     """Generic observability models with Pydantic patterns.
 
     Single class providing generic base models using composition and delegation.
     Zero domain-specific logic - pure generic foundation with minimal code.
     """
 
-    class GenericObservabilityEntry(FlextModels.Value):
+    class GenericObservabilityEntry(m_core.Value):
         """Generic base model for any observability entry using Pydantic."""
 
         model_config = ConfigDict(
@@ -115,7 +115,7 @@ class FlextObservabilityModels(FlextModels):
     class Metrics:
         """Metrics domain models."""
 
-        class MetricEntry(FlextModels.Entity):
+        class MetricEntry(m_core.Entity):
             """Metric entry model."""
 
             metric_id: str = Field(default_factory=lambda: str(uuid4()))
