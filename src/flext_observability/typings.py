@@ -18,7 +18,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Literal, Protocol, TypeVar
 
-from flext_core import t
+from flext_core import FlextTypes, t
 
 # Define T TypeVar for generic programming
 T = TypeVar("T")
@@ -36,11 +36,11 @@ class FlextObservabilityTypes(t):
     # OBSERVABILITY PROJECT TYPES - Domain-specific project types extending t
     # =========================================================================
 
-    class ObservabilityProject(t):
-        """Observability-specific project types extending t.
+    class Project:
+        """Observability-specific project types.
 
-        Adds observability/monitoring-specific project types while inheriting
-        generic types from t. Follows domain separation principle:
+        Adds observability/monitoring-specific project types.
+        Follows domain separation principle:
         Observability domain owns monitoring-specific types.
         """
 
@@ -92,37 +92,49 @@ class FlextObservabilityTypes(t):
         # Metric collection and processing types
         type MetricCollection = dict[
             str,
-            float | int | Decimal | dict[str, t.JsonValue],
+            float | int | Decimal | dict[str, FlextTypes.Json.JsonValue],
         ]
         type MetricAggregation = dict[str, float | dict[str, float | int | Decimal]]
         type MetricThresholds = dict[str, float | int | bool | dict[str, object]]
         type MetricConfiguration = dict[str, bool | str | int | dict[str, object]]
 
         # Tracing and span types
-        type TraceConfiguration = dict[str, str | int | bool | dict[str, t.JsonValue]]
+        type TraceConfiguration = dict[
+            str, str | int | bool | dict[str, FlextTypes.Json.JsonValue]
+        ]
         type SpanAttributes = dict[str, str | int | float | bool | dict[str, object]]
-        type TraceContext = dict[str, str | int | dict[str, t.JsonValue]]
-        type SpanHierarchy = dict[str, list[dict[str, t.JsonValue]]]
+        type TraceContext = dict[str, str | int | dict[str, FlextTypes.Json.JsonValue]]
+        type SpanHierarchy = dict[str, list[dict[str, FlextTypes.Json.JsonValue]]]
 
         # Alerting and notification types
-        type AlertConfiguration = dict[str, str | int | bool | dict[str, t.JsonValue]]
+        type AlertConfiguration = dict[
+            str, str | int | bool | dict[str, FlextTypes.Json.JsonValue]
+        ]
         type AlertRules = list[dict[str, str | bool | int | float | dict[str, object]]]
         type AlertChannels = dict[str, str | dict[str, object]]
 
         # Health monitoring types
         type HealthChecks = dict[str, dict[str, float | str | bool]]
-        type ComponentStatus = dict[str, str | int | dict[str, t.JsonValue]]
-        type SystemMetrics = dict[str, float | int | dict[str, t.JsonValue]]
+        type ComponentStatus = dict[
+            str, str | int | dict[str, FlextTypes.Json.JsonValue]
+        ]
+        type SystemMetrics = dict[
+            str, float | int | dict[str, FlextTypes.Json.JsonValue]
+        ]
 
         # Log aggregation types
         type LogConfiguration = dict[str, str | int | bool | dict[str, object]]
-        type LogFilters = dict[str, str | list[str] | dict[str, t.JsonValue]]
-        type LogProcessing = dict[str, str | dict[str, t.JsonValue] | bool]
+        type LogFilters = dict[
+            str, str | list[str] | dict[str, FlextTypes.Json.JsonValue]
+        ]
+        type LogProcessing = dict[
+            str, str | dict[str, FlextTypes.Json.JsonValue] | bool
+        ]
 
         # Service discovery types
         type ServiceRegistry = dict[str, dict[str, str | int | dict[str, object]]]
-        type ServiceDiscovery = dict[str, list[dict[str, t.JsonValue]]]
-        type ServiceHealth = dict[str, str | dict[str, t.JsonValue]]
+        type ServiceDiscovery = dict[str, list[dict[str, FlextTypes.Json.JsonValue]]]
+        type ServiceHealth = dict[str, str | dict[str, FlextTypes.Json.JsonValue]]
 
         # Additional core types for monitoring
         type MetadataDict = dict[str, object]
@@ -261,16 +273,36 @@ class FlextObservabilityTypes(t):
                 """Get log timestamp."""
                 ...
 
-    # =========================================================================
-    # OBSERVABILITY PROJECT TYPES - Domain-specific project types extending t
-    # =========================================================================
+    class Observability:
+        """Observability types namespace for cross-project access.
+
+        Provides organized access to all Observability types for other FLEXT projects.
+        Usage: Other projects can reference `t.Observability.Core.*`, `t.Observability.Project.*`, etc.
+        This enables consistent namespace patterns for cross-project type access.
+
+        Examples:
+            from flext_observability.typings import t
+            metrics: t.Observability.Core.MetricCollection = ...
+            config: t.Observability.Project.ObservabilityProjectConfig = ...
+
+        Note: Namespace composition via inheritance - no aliases needed.
+        Access parent namespaces directly through inheritance.
+
+        """
 
 
-# =============================================================================
-# PUBLIC API EXPORTS - FlextObservabilityTypes and related types
-# =============================================================================
+# Alias for simplified usage
+t = FlextObservabilityTypes
+
+# Namespace composition via class inheritance
+# Observability namespace provides access to nested classes through inheritance
+# Access patterns:
+# - t.Observability.* for Observability-specific types
+# - t.Project.* for project types
+# - t.Core.* for core types (inherited from parent)
 
 __all__ = [
     "FlextObservabilityTypes",
     "T",
+    "t",
 ]

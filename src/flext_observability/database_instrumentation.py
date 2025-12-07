@@ -108,7 +108,7 @@ class FlextObservabilityDatabase:
                 # Avoid duplicate instrumentation
                 if (
                     engine
-                    in FlextObservabilityDatabase.SQLAlchemy._instrumented_engines  # noqa: SLF001
+                    in FlextObservabilityDatabase.SQLAlchemy._instrumented_engines
                 ):
                     return FlextResult[None].ok(None)
 
@@ -119,7 +119,7 @@ class FlextObservabilityDatabase:
                     statement: str,
                     _parameters: object,
                     _context: object,
-                    executemany: bool,  # noqa: FBT001
+                    executemany: bool,
                 ) -> None:
                     """Log query execution start."""
                     try:
@@ -159,7 +159,7 @@ class FlextObservabilityDatabase:
                     statement: str,
                     _parameters: object,
                     _context: object,
-                    executemany: bool,  # noqa: FBT001
+                    executemany: bool,
                 ) -> None:
                     """Log query execution completion."""
                     try:
@@ -216,7 +216,7 @@ class FlextObservabilityDatabase:
                         )
 
                 # Mark as instrumented
-                FlextObservabilityDatabase.SQLAlchemy._instrumented_engines.add(engine)  # noqa: SLF001
+                FlextObservabilityDatabase.SQLAlchemy._instrumented_engines.add(engine)
 
                 FlextObservabilityDatabase._logger.debug(
                     "SQLAlchemy instrumentation setup complete",
@@ -278,7 +278,7 @@ class FlextObservabilityDatabase:
                     )
 
                 # Avoid duplicate instrumentation
-                if pool in FlextObservabilityDatabase.AsyncPG._instrumented_pools:  # noqa: SLF001
+                if pool in FlextObservabilityDatabase.AsyncPG._instrumented_pools:
                     return FlextResult[None].ok(None)
 
                 # Store original execute method
@@ -466,7 +466,7 @@ class FlextObservabilityDatabase:
                 pool.fetchval = traced_fetchval
 
                 # Mark as instrumented
-                FlextObservabilityDatabase.AsyncPG._instrumented_pools.add(pool)  # noqa: SLF001
+                FlextObservabilityDatabase.AsyncPG._instrumented_pools.add(pool)
 
                 FlextObservabilityDatabase._logger.debug(
                     "asyncpg pool instrumentation setup complete",
