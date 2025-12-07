@@ -18,13 +18,13 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Literal, Protocol, TypeVar
 
-from flext_core import FlextTypes, t
+from flext_core import FlextTypes
 
 # Define T TypeVar for generic programming
 T = TypeVar("T")
 
 
-class FlextObservabilityTypes(t):
+class FlextObservabilityTypes(FlextTypes):
     """Observability-specific type definitions extending t.
 
     Domain-specific type system for observability and monitoring operations.

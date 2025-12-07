@@ -2,28 +2,30 @@
 
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextResult, p
+from flext_core import p as p_base
 
 
-class FlextObservabilityProtocols:
+class FlextObservabilityProtocols(p_base):
     """Unified observability protocols following FLEXT domain extension pattern.
 
-    This class consolidates observability and monitoring protocols while explicitly
-    re-exporting foundation protocols for backward compatibility and clean access.
+    Extends FlextProtocols to inherit all foundation protocols (Result, Service, etc.)
+    and adds observability-specific protocols in the Observability namespace.
 
     Architecture:
-    - RE-EXPORTS: Foundation protocols from flext-core for unified access
-    - EXTENDS: Observability-specific protocols in Observability namespace
-    - MAINTAINS: Zero breaking changes through explicit re-export pattern
+    - EXTENDS: FlextProtocols (inherits Foundation, Domain, Application, etc.)
+    - ADDS: Observability-specific protocols in Observability namespace
+    - PROVIDES: Root-level alias `p` for convenient access
 
     Usage:
-    from flext_observability.protocols import FlextObservabilityProtocols
+    from flext_observability.protocols import p
 
-    # Foundation access (re-exported)
-    FlextObservabilityProtocols.Foundation.ResultProtocol
+    # Foundation protocols (inherited)
+    result: p.Result[str]
+    service: p.Service[str]
 
-    # Observability-specific access
-    FlextObservabilityProtocols.Observability.MetricsProtocol
+    # Observability-specific protocols
+    metrics: p.Observability.MetricsProtocol
+    tracing: p.Observability.TracingProtocol
     """
 
     # =========================================================================
@@ -40,7 +42,7 @@ class FlextObservabilityProtocols:
         """
 
         @runtime_checkable
-        class MetricsProtocol(p.Service, Protocol):
+        class MetricsProtocol(p_base.Domain.Service[object], Protocol):
             """Protocol for metrics collection and management operations."""
 
             def record_metric(
@@ -50,7 +52,7 @@ class FlextObservabilityProtocols:
                 *,
                 unit: str = "count",
                 tags: dict[str, str] | None = None,
-            ) -> FlextResult[bool]:
+            ) -> p_base.Result[bool]:
                 """Record a metric value."""
                 ...
 
@@ -60,7 +62,7 @@ class FlextObservabilityProtocols:
                 *,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> FlextResult[list[dict[str, object]]]:
+            ) -> p_base.Result[list[dict[str, object]]]:
                 """Get collected metrics."""
                 ...
 
@@ -70,7 +72,7 @@ class FlextObservabilityProtocols:
                 description: str,
                 *,
                 unit: str = "count",
-            ) -> FlextResult[object]:
+            ) -> p_base.Result[object]:
                 """Create a counter metric."""
                 ...
 
@@ -80,7 +82,7 @@ class FlextObservabilityProtocols:
                 description: str,
                 *,
                 unit: str = "value",
-            ) -> FlextResult[object]:
+            ) -> p_base.Result[object]:
                 """Create a gauge metric."""
                 ...
 
@@ -91,12 +93,12 @@ class FlextObservabilityProtocols:
                 *,
                 unit: str = "seconds",
                 buckets: list[float] | None = None,
-            ) -> FlextResult[object]:
+            ) -> p_base.Result[object]:
                 """Create a histogram metric."""
                 ...
 
         @runtime_checkable
-        class TracingProtocol(p.Service, Protocol):
+        class TracingProtocol(p_base.Domain.Service[object], Protocol):
             """Protocol for distributed tracing operations."""
 
             def start_span(
@@ -105,7 +107,7 @@ class FlextObservabilityProtocols:
                 *,
                 service_name: str | None = None,
                 parent_span_id: str | None = None,
-            ) -> FlextResult[object]:
+            ) -> p_base.Result[object]:
                 """Start a new trace span."""
                 ...
 
@@ -115,7 +117,7 @@ class FlextObservabilityProtocols:
                 *,
                 status: str = "ok",
                 error: str | None = None,
-            ) -> FlextResult[bool]:
+            ) -> p_base.Result[bool]:
                 """Finish a trace span."""
                 ...
 
@@ -124,11 +126,11 @@ class FlextObservabilityProtocols:
                 span: object,
                 key: str,
                 value: str | float,
-            ) -> FlextResult[bool]:
+            ) -> p_base.Result[bool]:
                 """Add tag to trace span."""
                 ...
 
-            def get_trace(self, trace_id: str) -> FlextResult[dict[str, object]]:
+            def get_trace(self, trace_id: str) -> p_base.Result[dict[str, object]]:
                 """Get trace by ID."""
                 ...
 
@@ -139,12 +141,12 @@ class FlextObservabilityProtocols:
                 operation_name: str | None = None,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> FlextResult[list[dict[str, object]]]:
+            ) -> p_base.Result[list[dict[str, object]]]:
                 """Search traces by criteria."""
                 ...
 
         @runtime_checkable
-        class AlertingProtocol(p.Service, Protocol):
+        class AlertingProtocol(p_base.Domain.Service[object], Protocol):
             """Protocol for alerting and notification operations."""
 
             def create_alert(
@@ -154,11 +156,11 @@ class FlextObservabilityProtocols:
                 *,
                 service: str | None = None,
                 tags: dict[str, str] | None = None,
-            ) -> FlextResult[str]:
+            ) -> p_base.Result[str]:
                 """Create an alert."""
                 ...
 
-            def resolve_alert(self, alert_id: str) -> FlextResult[bool]:
+            def resolve_alert(self, alert_id: str) -> p_base.Result[bool]:
                 """Resolve an alert."""
                 ...
 
@@ -168,7 +170,7 @@ class FlextObservabilityProtocols:
                 level: str | None = None,
                 service: str | None = None,
                 resolved: bool | None = None,
-            ) -> FlextResult[list[dict[str, object]]]:
+            ) -> p_base.Result[list[dict[str, object]]]:
                 """Get alerts by criteria."""
                 ...
 
@@ -179,15 +181,17 @@ class FlextObservabilityProtocols:
                 *,
                 threshold: float | None = None,
                 duration: int | None = None,
-            ) -> FlextResult[str]:
+            ) -> p_base.Result[str]:
                 """Create an alert rule."""
                 ...
 
         @runtime_checkable
-        class HealthCheckProtocol(p.Service, Protocol):
+        class HealthCheckProtocol(p_base.Domain.Service[object], Protocol):
             """Protocol for health check operations."""
 
-            def check_health(self, service_name: str) -> FlextResult[dict[str, object]]:
+            def check_health(
+                self, service_name: str
+            ) -> p_base.Result[dict[str, object]]:
                 """Perform health check for a service."""
                 ...
 
@@ -197,23 +201,25 @@ class FlextObservabilityProtocols:
                 check_function: object,
                 *,
                 interval: int = 60,
-            ) -> FlextResult[bool]:
+            ) -> p_base.Result[bool]:
                 """Register a health check."""
                 ...
 
             def get_service_status(
                 self,
                 service_name: str,
-            ) -> FlextResult[dict[str, object]]:
+            ) -> p_base.Result[dict[str, object]]:
                 """Get service health status."""
                 ...
 
-            def get_all_services_status(self) -> FlextResult[dict[str, object]]:
+            def get_all_services_status(
+                self,
+            ) -> p_base.Result[dict[str, object]]:
                 """Get health status for all services."""
                 ...
 
         @runtime_checkable
-        class LoggingProtocol(p.Service, Protocol):
+        class LoggingProtocol(p_base.Domain.Service[object], Protocol):
             """Protocol for logging operations."""
 
             def log_message(
@@ -224,7 +230,7 @@ class FlextObservabilityProtocols:
                 service: str | None = None,
                 correlation_id: str | None = None,
                 extra: dict[str, object] | None = None,
-            ) -> FlextResult[bool]:
+            ) -> p_base.Result[bool]:
                 """Log a message."""
                 ...
 
@@ -236,7 +242,7 @@ class FlextObservabilityProtocols:
                 correlation_id: str | None = None,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> FlextResult[list[dict[str, object]]]:
+            ) -> p_base.Result[list[dict[str, object]]]:
                 """Get logs by criteria."""
                 ...
 
@@ -246,16 +252,18 @@ class FlextObservabilityProtocols:
                 *,
                 level: str = "info",
                 format_string: str | None = None,
-            ) -> FlextResult[object]:
+            ) -> p_base.Result[object]:
                 """Create a logger instance."""
                 ...
 
-            def configure_logging(self, config: dict[str, object]) -> FlextResult[bool]:
+            def configure_logging(
+                self, config: dict[str, object]
+            ) -> p_base.Result[bool]:
                 """Configure logging system."""
                 ...
 
         @runtime_checkable
-        class DashboardProtocol(p.Service, Protocol):
+        class DashboardProtocol(p_base.Domain.Service[object], Protocol):
             """Protocol for dashboard and visualization operations."""
 
             def create_dashboard(
@@ -264,14 +272,14 @@ class FlextObservabilityProtocols:
                 description: str,
                 *,
                 widgets: list[dict[str, object]] | None = None,
-            ) -> FlextResult[str]:
+            ) -> p_base.Result[str]:
                 """Create a dashboard."""
                 ...
 
             def get_dashboard(
                 self,
                 dashboard_id: str,
-            ) -> FlextResult[dict[str, object]]:
+            ) -> p_base.Result[dict[str, object]]:
                 """Get dashboard by ID."""
                 ...
 
@@ -279,7 +287,7 @@ class FlextObservabilityProtocols:
                 self,
                 dashboard_id: str,
                 widget_config: dict[str, object],
-            ) -> FlextResult[str]:
+            ) -> p_base.Result[str]:
                 """Add widget to dashboard."""
                 ...
 
@@ -289,65 +297,15 @@ class FlextObservabilityProtocols:
                 *,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> FlextResult[dict[str, object]]:
+            ) -> p_base.Result[dict[str, object]]:
                 """Get dashboard data."""
                 ...
 
-    # =========================================================================
-    # BACKWARD COMPATIBILITY ALIASES
-    # =========================================================================
-    # Maintain existing attribute names for zero breaking changes.
 
-    @runtime_checkable
-    class MetricsProtocol(Observability.MetricsProtocol):
-        """MetricsProtocol - real inheritance."""
-
-    @runtime_checkable
-    class TracingProtocol(Observability.TracingProtocol):
-        """TracingProtocol - real inheritance."""
-
-    @runtime_checkable
-    class AlertingProtocol(Observability.AlertingProtocol):
-        """AlertingProtocol - real inheritance."""
-
-    @runtime_checkable
-    class HealthCheckProtocol(Observability.HealthCheckProtocol):
-        """HealthCheckProtocol - real inheritance."""
-
-    @runtime_checkable
-    class LoggingProtocol(Observability.LoggingProtocol):
-        """LoggingProtocol - real inheritance."""
-
-    @runtime_checkable
-    class DashboardProtocol(Observability.DashboardProtocol):
-        """DashboardProtocol - real inheritance."""
-
-    # Additional convenience aliases
-    @runtime_checkable
-    class ObservabilityMetricsProtocol(Observability.MetricsProtocol):
-        """ObservabilityMetricsProtocol - real inheritance."""
-
-    @runtime_checkable
-    class ObservabilityTracingProtocol(Observability.TracingProtocol):
-        """ObservabilityTracingProtocol - real inheritance."""
-
-    @runtime_checkable
-    class ObservabilityAlertingProtocol(Observability.AlertingProtocol):
-        """ObservabilityAlertingProtocol - real inheritance."""
-
-    @runtime_checkable
-    class ObservabilityHealthProtocol(Observability.HealthCheckProtocol):
-        """ObservabilityHealthProtocol - real inheritance."""
-
-    @runtime_checkable
-    class ObservabilityLoggingProtocol(Observability.LoggingProtocol):
-        """ObservabilityLoggingProtocol - real inheritance."""
-
-    @runtime_checkable
-    class ObservabilityDashboardProtocol(Observability.DashboardProtocol):
-        """ObservabilityDashboardProtocol - real inheritance."""
-
+# Runtime alias for simplified usage
+p = FlextObservabilityProtocols
 
 __all__ = [
     "FlextObservabilityProtocols",
+    "p",
 ]
