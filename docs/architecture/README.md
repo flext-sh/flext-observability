@@ -389,11 +389,5 @@ class FlextObservabilityPlugin(Protocol):
 
 ---
 
-**Next Steps**: Review [Domain Model](domain-model.md) for detailed entity patterns,
-or [Integration Patterns](integration-patterns.md) for ecosystem integration details.
-
-**Related Documentation**:
-
-- [Service Layer Guide](../guides/service-layer.md)
-- [Factory Patterns Guide](../guides/factory-patterns.md)
+**Next Steps**: Review the [Architecture Overview](README.md) for detailed patterns and ecosystem integration details.
 - [FLEXT Ecosystem Architecture](../../../docs/architecture/)

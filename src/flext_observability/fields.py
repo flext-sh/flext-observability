@@ -36,25 +36,25 @@ class FlextObservabilityFields:
 
     # Alert field validation constants
     ALERT_VALID_LEVELS: ClassVar[set[str]] = {
-        FlextObservabilityConstants.ALERT_LEVEL_INFO,
-        FlextObservabilityConstants.ALERT_LEVEL_WARNING,
-        FlextObservabilityConstants.ALERT_LEVEL_ERROR,
-        FlextObservabilityConstants.ALERT_LEVEL_CRITICAL,
+        FlextObservabilityConstants.Observability.AlertLevel.INFO,
+        FlextObservabilityConstants.Observability.AlertLevel.WARNING,
+        FlextObservabilityConstants.Observability.AlertLevel.ERROR,
+        FlextObservabilityConstants.Observability.AlertLevel.CRITICAL,
     }
 
     # Trace field validation constants
     TRACE_VALID_STATUSES: ClassVar[set[str]] = {
-        FlextObservabilityConstants.TRACE_STATUS_STARTED,
-        FlextObservabilityConstants.TRACE_STATUS_RUNNING,
-        FlextObservabilityConstants.TRACE_STATUS_COMPLETED,
-        FlextObservabilityConstants.TRACE_STATUS_FAILED,
+        FlextObservabilityConstants.Observability.TraceStatus.STARTED,
+        FlextObservabilityConstants.Observability.TraceStatus.RUNNING,
+        FlextObservabilityConstants.Observability.TraceStatus.COMPLETED,
+        FlextObservabilityConstants.Observability.TraceStatus.FAILED,
     }
 
     # Health field validation constants
     HEALTH_VALID_STATUSES: ClassVar[set[str]] = {
-        FlextObservabilityConstants.HEALTH_STATUS_HEALTHY,
-        FlextObservabilityConstants.HEALTH_STATUS_DEGRADED,
-        FlextObservabilityConstants.HEALTH_STATUS_UNHEALTHY,
+        FlextObservabilityConstants.Observability.HealthStatus.HEALTHY,
+        FlextObservabilityConstants.Observability.HealthStatus.DEGRADED,
+        FlextObservabilityConstants.Observability.HealthStatus.UNHEALTHY,
     }
 
     class MetricFields:
@@ -96,7 +96,7 @@ class FlextObservabilityFields:
     def create_metric_unit_field(cls) -> object:
         """Create metric unit field."""
         return Field(
-            default=FlextObservabilityConstants.DEFAULT_METRIC_UNIT,
+            default=FlextObservabilityConstants.Observability.Defaults.DEFAULT_METRIC_UNIT,
             description="Metric unit",
         )
 

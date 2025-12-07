@@ -275,7 +275,7 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ## Links
 
-- **[flext-core](../flext-core)**: Foundation library
+- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)**: Foundation library
 - **[CLAUDE.md](CLAUDE.md)**: Development guidance
 - **[Documentation](docs/)**: Complete documentation
 

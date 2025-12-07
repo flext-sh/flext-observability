@@ -442,7 +442,6 @@ if __name__ == "__main__":
 
 ### For Basic Usage
 
-- **[Entity Patterns](entity-patterns.md)**: Learn detailed entity usage patterns
 - **[Basic Usage Examples](../examples/basic-usage.md)**: More comprehensive examples
 
 ### For Advanced Integration

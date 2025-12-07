@@ -46,18 +46,17 @@ and telemetry collection across all 33 projects in the FLEXT ecosystem.
 
 ### 📋 **Implementation Status**
 
-- [**Implementation Status**](implementation_status.md) - Current implementation status and critical path resolution
 - [**Python Module Organization**](standards/python-module-organization.md) - Code organization standards
 
 ## 🎯 Quick Navigation
 
 ### **For New Developers**
 
-Start with [Getting Started](guides/getting-started.md) → [Simple API](api/simple-api.md) → [Implementation Status](implementation_status.md)
+Start with [Getting Started](guides/getting-started.md) → [Simple API](api/simple-api.md)
 
 ### **For FLEXT Ecosystem Integration**
 
-Start with [Architecture Overview](architecture/README.md) → [Implementation Status](implementation_status.md) → [CLAUDE.md](../CLAUDE.md)
+Start with [Architecture Overview](architecture/README.md) → [CLAUDE.md](../CLAUDE.md)
 
 ### **For API Reference**
 
@@ -65,7 +64,6 @@ Quick functions: [Simple API](api/simple-api.md)
 
 ### **For Current Status**
 
-[Implementation Status](implementation_status.md) - Current state, blockers, and critical path
 
 ## 🔍 Current Implementation Status
 
@@ -123,7 +121,7 @@ All documentation in this project follows FLEXT ecosystem standards:
 ## 🔗 Related Documentation
 
 - **[FLEXT Ecosystem Documentation](../../docs/)** - Overall ecosystem architecture and patterns
-- **[flext-core Documentation](../../flext-core/docs/)** - Foundation library patterns and utilities
+- **[flext-core Documentation](https://github.com/organization/flext/tree/main/flext-core/docs/)** - Foundation library patterns and utilities
 - **[CLAUDE.md](../CLAUDE.md)** - Development guidance for Claude Code AI assistance
 
 ---
