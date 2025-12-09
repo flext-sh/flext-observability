@@ -42,7 +42,7 @@ class FlextObservabilityProtocols(p_base):
         """
 
         @runtime_checkable
-        class MetricsProtocol(p_base.Domain.Service[object], Protocol):
+        class MetricsProtocol(p_base.Service[object], Protocol):
             """Protocol for metrics collection and management operations."""
 
             def record_metric(
@@ -98,7 +98,7 @@ class FlextObservabilityProtocols(p_base):
                 ...
 
         @runtime_checkable
-        class TracingProtocol(p_base.Domain.Service[object], Protocol):
+        class TracingProtocol(p_base.Service[object], Protocol):
             """Protocol for distributed tracing operations."""
 
             def start_span(
@@ -146,7 +146,7 @@ class FlextObservabilityProtocols(p_base):
                 ...
 
         @runtime_checkable
-        class AlertingProtocol(p_base.Domain.Service[object], Protocol):
+        class AlertingProtocol(p_base.Service[object], Protocol):
             """Protocol for alerting and notification operations."""
 
             def create_alert(
@@ -186,7 +186,7 @@ class FlextObservabilityProtocols(p_base):
                 ...
 
         @runtime_checkable
-        class HealthCheckProtocol(p_base.Domain.Service[object], Protocol):
+        class HealthCheckProtocol(p_base.Service[object], Protocol):
             """Protocol for health check operations."""
 
             def check_health(
@@ -219,7 +219,7 @@ class FlextObservabilityProtocols(p_base):
                 ...
 
         @runtime_checkable
-        class LoggingProtocol(p_base.Domain.Service[object], Protocol):
+        class LoggingProtocol(p_base.Service[object], Protocol):
             """Protocol for logging operations."""
 
             def log_message(
@@ -263,7 +263,7 @@ class FlextObservabilityProtocols(p_base):
                 ...
 
         @runtime_checkable
-        class DashboardProtocol(p_base.Domain.Service[object], Protocol):
+        class DashboardProtocol(p_base.Service[object], Protocol):
             """Protocol for dashboard and visualization operations."""
 
             def create_dashboard(

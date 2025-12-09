@@ -5,10 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_observability import (
-    FlextObservabilityTypes,
-    FlextObservabilityTypesAlias,
-)
+from flext_observability.typings import t
 
 
 class TestFlextObservabilityTypes:
@@ -29,7 +26,7 @@ class TestFlextObservabilityTypes:
 
     def test_observability_core_types(self) -> None:
         """Test ObservabilityCore type definitions."""
-        core = FlextObservabilityTypes.ObservabilityCore
+        core = t.ObservabilityCore
         types = [
             "CountersDict",
             "GaugesDict",
@@ -44,14 +41,14 @@ class TestFlextObservabilityTypes:
 
     def test_metrics_types(self) -> None:
         """Test Metrics type definitions."""
-        metrics = FlextObservabilityTypes.Metrics
+        metrics = t.Metrics
         types = ["MetricValue", "MetricName", "MetricUnit", "MetricType", "MetricTags"]
         for type_name in types:
             assert hasattr(metrics, type_name)
 
     def test_tracing_types(self) -> None:
         """Test Tracing type definitions."""
-        tracing = FlextObservabilityTypes.Tracing
+        tracing = t.Tracing
         types = [
             "TraceId",
             "SpanId",
@@ -65,14 +62,14 @@ class TestFlextObservabilityTypes:
 
     def test_alerting_types(self) -> None:
         """Test Alerting type definitions."""
-        alerting = FlextObservabilityTypes.Alerting
+        alerting = t.Alerting
         types = ["AlertLevel", "AlertMessage", "AlertId", "AlertStatus"]
         for type_name in types:
             assert hasattr(alerting, type_name)
 
     def test_health_types(self) -> None:
         """Test Health type definitions."""
-        health = FlextObservabilityTypes.Health
+        health = t.Health
         types = [
             "HealthStatus",
             "HealthCheckId",
@@ -84,7 +81,7 @@ class TestFlextObservabilityTypes:
 
     def test_logging_types(self) -> None:
         """Test Logging type definitions."""
-        logging_types = FlextObservabilityTypes.Logging
+        logging_types = t.Logging
         types = ["LogLevel", "LogMessage", "LogEntryId", "LogTimestamp"]
         for type_name in types:
             assert hasattr(logging_types, type_name)

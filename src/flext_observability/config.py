@@ -33,9 +33,10 @@ class FlextObservabilityConfig(FlextConfig.AutoConfig):
     and health check configuration for the FLEXT observability system.
     """
 
+    # Use FlextConfig.resolve_env_file() to ensure all FLEXT configs use same .env
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_OBSERVABILITY_",
-        env_file=".env",
+        env_file=FlextConfig.resolve_env_file(),
         env_file_encoding="utf-8",
         case_sensitive=False,
         # Enhanced Pydantic v2.11+ features
