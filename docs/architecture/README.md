@@ -82,7 +82,7 @@ The observability domain is organized around core business concepts:
 
 - **Entities**: Core business objects with identity and lifecycle (FlextMetric, FlextTrace)
 - **Value Objects**: Immutable data structures (timestamps, measurements, metadata)
-- **Domain Services**: Business logic that doesn't naturally fit in entities
+- **Services**: Business logic that doesn't naturally fit in entities
 - **Factories**: Consistent creation patterns with domain validation
 - **Repositories**: Data access abstractions (currently in-memory implementations)
 

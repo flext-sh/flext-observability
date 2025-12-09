@@ -13,9 +13,7 @@ from flext_observability import (
     flext_create_metric,
     flext_create_trace,
 )
-from flext_observability.typings import (
-    FlextObservabilityTypes,
-)
+from flext_observability.typings import t
 
 
 class TestTypesModuleCoverage:
@@ -84,11 +82,11 @@ class TestTypesModuleCoverage:
         assert hasattr(FlextObservabilityTypes, "Protocols")
 
         # Test protocol structure
-        assert hasattr(FlextObservabilityTypes.Protocols, "MetricProtocol")
-        assert hasattr(FlextObservabilityTypes.Protocols, "TraceProtocol")
-        assert hasattr(FlextObservabilityTypes.Protocols, "AlertProtocol")
-        assert hasattr(FlextObservabilityTypes.Protocols, "HealthCheckProtocol")
-        assert hasattr(FlextObservabilityTypes.Protocols, "LogEntryProtocol")
+        assert hasattr(t.Protocols, "MetricProtocol")
+        assert hasattr(t.Protocols, "TraceProtocol")
+        assert hasattr(t.Protocols, "AlertProtocol")
+        assert hasattr(t.Protocols, "HealthCheckProtocol")
+        assert hasattr(t.Protocols, "LogEntryProtocol")
 
     def test_module_all_exports(self) -> None:
         """Test that all expected exports are available."""

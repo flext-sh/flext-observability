@@ -178,8 +178,8 @@ class TestFlextMixinsCoverage:
 
     def test_generate_entity_id(self) -> None:
         """Test u.generate_entity_id method."""
-        entity_id1 = u.generate_entity_id()
-        entity_id2 = u.generate_entity_id()
+        entity_id1 = u.generate("entity")
+        entity_id2 = u.generate("entity")
 
         assert isinstance(entity_id1, str)
         assert isinstance(entity_id2, str)
@@ -189,8 +189,8 @@ class TestFlextMixinsCoverage:
 
     def test_generate_correlation_id(self) -> None:
         """Test u.generate_correlation_id method."""
-        corr_id1 = u.generate_correlation_id()
-        corr_id2 = u.generate_correlation_id()
+        corr_id1 = u.generate("correlation")
+        corr_id2 = u.generate("correlation")
 
         assert isinstance(corr_id1, str)
         assert isinstance(corr_id2, str)
@@ -210,8 +210,8 @@ class TestFlextMixinsCoverage:
 
     def test_generate_uuid_coverage(self) -> None:
         """Test u.generate_entity_id method - covers linha 74."""
-        uuid1 = u.generate_entity_id()
-        uuid2 = u.generate_entity_id()
+        uuid1 = u.generate("entity")
+        uuid2 = u.generate("entity")
 
         assert isinstance(uuid1, str)
         assert isinstance(uuid2, str)
@@ -221,8 +221,8 @@ class TestFlextMixinsCoverage:
 
     def test_generate_entity_id_coverage(self) -> None:
         """Test u.generate_entity_id method - covers linha 78."""
-        entity_id1 = u.generate_entity_id()
-        entity_id2 = u.generate_entity_id()
+        entity_id1 = u.generate("entity")
+        entity_id2 = u.generate("entity")
 
         assert isinstance(entity_id1, str)
         assert isinstance(entity_id2, str)
@@ -913,7 +913,7 @@ class TestFlextMixinsCoverage:
     def test_flext_alert_factory_with_id_and_version_coverage(self) -> None:
         """Test flext_alert factory function with id and version - covers lines 944-954."""
         # Test with both id and version in kwargs (triggers lines 944-954)
-        custom_id = u.generate_entity_id()
+        custom_id = u.generate("entity")
         custom_version = 2
         u.generate_iso_timestamp()
         custom_tags = {"environment": "test", "priority": "high"}
@@ -941,7 +941,7 @@ class TestFlextMixinsCoverage:
     def test_flext_alert_factory_with_id_only_coverage(self) -> None:
         """Test flext_alert factory function with id but no version - covers lines 955-964."""
         # Test with id but no version in kwargs (triggers lines 955-964)
-        custom_id = u.generate_entity_id()
+        custom_id = u.generate("entity")
         u.generate_iso_timestamp()
 
         alert = flext_alert(
@@ -983,7 +983,7 @@ class TestFlextMixinsCoverage:
     def test_flext_metric_with_id_and_version_coverage(self) -> None:
         """Test flext_metric factory with id and version - covers lines 1025-1034."""
         # Test with both id and version in kwargs (triggers lines 1025-1034)
-        custom_id = u.generate_entity_id()
+        custom_id = u.generate("entity")
         custom_version = 3
         custom_tags = {"env": "prod", "region": "us-east"}
 
@@ -1012,7 +1012,7 @@ class TestFlextMixinsCoverage:
     def test_flext_metric_with_id_only_coverage(self) -> None:
         """Test flext_metric factory with id only - covers lines 1035-1043."""
         # Test with id but no version (triggers lines 1035-1043)
-        custom_id = u.generate_entity_id()
+        custom_id = u.generate("entity")
 
         result = flext_metric(name="memory.used", value=2048, unit="MB", id=custom_id)
 
@@ -1068,7 +1068,7 @@ class TestFlextMixinsCoverage:
     def test_flext_health_check_factory_with_id_coverage(self) -> None:
         """Test flext_health_check factory function with custom id - covers lines 1083-1091."""
         # Test with custom id in kwargs (triggers lines 1083-1091)
-        custom_id = u.generate_entity_id()
+        custom_id = u.generate("entity")
         custom_metrics = {"cpu": 75.5, "memory": 2048, "disk": 80.0}
         custom_timestamp = u.generate_iso_timestamp()
 
