@@ -416,11 +416,13 @@ class TestFlextMixinsCoverage:
         """Test FlextMetric value type validation - using Pydantic validation."""
         # Pydantic automatically validates value types during entity creation
         with pytest.raises(ValidationError):
-            FlextMetric.model_validate({
-                "id": "test-id",
-                "name": "valid_name",
-                "value": "not_a_number",
-            })
+            FlextMetric.model_validate(
+                {
+                    "id": "test-id",
+                    "name": "valid_name",
+                    "value": "not_a_number",
+                }
+            )
 
     def test_flext_metric_validate_business_rules_string_number_success_coverage(
         self,
@@ -505,11 +507,13 @@ class TestFlextMixinsCoverage:
         """Test FlextLogEntry level validation - using Pydantic validation."""
         # Pydantic automatically validates level during entity creation
         with pytest.raises(ValidationError):
-            FlextLogEntry.model_validate({
-                "id": "test-id",
-                "message": "Valid message",
-                "level": "invalid_level",
-            })
+            FlextLogEntry.model_validate(
+                {
+                    "id": "test-id",
+                    "message": "Valid message",
+                    "level": "invalid_level",
+                }
+            )
 
     def test_flext_trace_trace_id_validation_error_coverage(self) -> None:
         """Test FlextTrace trace_id field validation error - covers lines 522-525."""
@@ -810,12 +814,14 @@ class TestFlextMixinsCoverage:
         """Test FlextAlert severity validation - using Pydantic validation."""
         # Pydantic automatically validates severity during entity creation
         with pytest.raises(ValidationError):
-            FlextAlert.model_validate({
-                "id": "test-id",
-                "title": "Valid Title",
-                "message": "Valid message",
-                "severity": "invalid_severity",
-            })
+            FlextAlert.model_validate(
+                {
+                    "id": "test-id",
+                    "title": "Valid Title",
+                    "message": "Valid message",
+                    "severity": "invalid_severity",
+                }
+            )
 
     def test_flext_health_check_component_validation_error_coverage(self) -> None:
         """Test FlextHealthCheck component field validation error - covers lines 876-879."""
@@ -886,11 +892,13 @@ class TestFlextMixinsCoverage:
         """Test FlextHealthCheck status validation - using Pydantic validation."""
         # Pydantic automatically validates status during entity creation
         with pytest.raises(ValidationError):
-            FlextHealthCheck.model_validate({
-                "id": "test-id",
-                "component": "database",
-                "status": "invalid_status",
-            })
+            FlextHealthCheck.model_validate(
+                {
+                    "id": "test-id",
+                    "component": "database",
+                    "status": "invalid_status",
+                }
+            )
 
     def test_flext_health_check_validate_business_rules_success_coverage(self) -> None:
         """Test FlextHealthCheck validation success - using factory function."""

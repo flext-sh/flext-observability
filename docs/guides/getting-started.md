@@ -442,16 +442,16 @@ if __name__ == "__main__":
 
 ### For Basic Usage
 
-- **Basic Usage Examples**: More comprehensive examples (*Documentation coming soon*)
+- **Basic Usage Examples**: More comprehensive examples (_Documentation coming soon_)
 
 ### For Advanced Integration
 
-- **Service Layer Guide**: Deep dive into service patterns (*Documentation coming soon*)
-- **Factory Patterns**: Advanced entity creation patterns (*Documentation coming soon*)
+- **Service Layer Guide**: Deep dive into service patterns (_Documentation coming soon_)
+- **Factory Patterns**: Advanced entity creation patterns (_Documentation coming soon_)
 
 ### For FLEXT Ecosystem Integration
 
-- **Ecosystem Integration**: Cross-project patterns (*Documentation coming soon*)
+- **Ecosystem Integration**: Cross-project patterns (_Documentation coming soon_)
 - **[Architecture Overview](../architecture/README.md)**: Understand the full architecture
 
 ## 🚨 Common Issues & Solutions
@@ -515,4 +515,4 @@ else:
 
 **Congratulations!** You've successfully integrated FLEXT Observability into your project. You're now ready to implement comprehensive monitoring patterns across your FLEXT ecosystem service.
 
-**Next recommended reading**: Entity Patterns Guide (*Documentation coming soon*) for detailed entity usage patterns.
+**Next recommended reading**: Entity Patterns Guide (_Documentation coming soon_) for detailed entity usage patterns.

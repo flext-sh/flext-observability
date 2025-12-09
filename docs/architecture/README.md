@@ -390,4 +390,5 @@ class FlextObservabilityPlugin(Protocol):
 ---
 
 **Next Steps**: Review the [Architecture Overview](README.md) for detailed patterns and ecosystem integration details.
+
 - [FLEXT Ecosystem Architecture](../../../docs/architecture/)

@@ -59,10 +59,12 @@ class FlextObservabilityInfrastructure:
                 >>> tracer = provider.get_tracer(__name__)
 
             """
-            resource = Resource.create({
-                "service.name": service_name,
-                "service.version": service_version,
-            })
+            resource = Resource.create(
+                {
+                    "service.name": service_name,
+                    "service.version": service_version,
+                }
+            )
             provider = TracerProvider(resource=resource)
 
             FlextObservabilityInfrastructure._tracer_provider = provider
@@ -87,10 +89,12 @@ class FlextObservabilityInfrastructure:
                 >>> meter = provider.get_meter(__name__)
 
             """
-            resource = Resource.create({
-                "service.name": service_name,
-                "service.version": service_version,
-            })
+            resource = Resource.create(
+                {
+                    "service.name": service_name,
+                    "service.version": service_version,
+                }
+            )
             provider = MeterProvider(resource=resource)
 
             FlextObservabilityInfrastructure._meter_provider = provider

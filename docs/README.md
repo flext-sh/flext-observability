@@ -64,7 +64,6 @@ Quick functions: [Simple API](api/simple-api.md)
 
 ### **For Current Status**
 
-
 ## 🔍 Current Implementation Status
 
 ### ✅ **Implemented & Working**
