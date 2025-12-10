@@ -71,13 +71,13 @@ class TestCompleteIntegrationReal:
         assert health_result.is_success
 
         # Step 3: Validate entity properties
-        metric = metric_result.unwrap()
+        metric = metric_result.value
         assert metric.name == "pipeline_requests"
         assert metric.value == 150
         # System determines metric type based on heuristics, accept the real behavior
         assert metric.metric_type in {"counter", "gauge"}  # Accept actual behavior
 
-        trace = trace_result.unwrap()
+        trace = trace_result.value
         assert trace.operation == "process_pipeline"
         # Note: FlextTrace doesn't have service_name field
         assert trace.trace_id is not None
@@ -223,7 +223,7 @@ class TestCompleteIntegrationReal:
         # Verify monitoring captured the executions
         health_status = self.monitor.flext_get_health_status()
         assert health_status.is_success
-        health_data = health_status.unwrap()
+        health_data = health_status.value
         assert isinstance(health_data, dict)
         monitor_metrics = health_data["monitor_metrics"]
         assert isinstance(monitor_metrics, dict)
@@ -247,7 +247,7 @@ class TestCompleteIntegrationReal:
             assert "Invalid log level" in log_result.error
         else:
             # System accepts custom levels - verify it works
-            log_entry = log_result.unwrap()
+            log_entry = log_result.value
             assert log_entry.level == "CUSTOM_LEVEL"
 
         # 3. Test health status validation - check actual system behavior
@@ -257,7 +257,7 @@ class TestCompleteIntegrationReal:
             assert "Invalid health status" in health_result.error
         else:
             # System accepts custom statuses - verify it works
-            health_check = health_result.unwrap()
+            health_check = health_result.value
             assert health_check.status == "custom_status"
 
         # 4. Monitor operations without initialization
@@ -274,7 +274,7 @@ class TestCompleteIntegrationReal:
         # Valid metric
         metric_result = self.factory.create_metric("cpu_usage", 75.5, "gauge")
         assert metric_result.is_success
-        metric = metric_result.unwrap()
+        metric = metric_result.value
         validation = metric.validate_business_rules()
         assert validation.is_success
 
@@ -282,7 +282,7 @@ class TestCompleteIntegrationReal:
         metric_negative = self.factory.create_metric("error_rate", -5.0, "gauge")
         if metric_negative.is_success:
             # Business rule validation should catch negative values for certain metrics
-            metric_neg = metric_negative.unwrap()
+            metric_neg = metric_negative.value
             validation = metric_neg.validate_business_rules()
             # This might fail depending on business rules implementation
             # The test validates the integration works, regardless of the specific rule
@@ -290,14 +290,14 @@ class TestCompleteIntegrationReal:
         # Valid trace
         trace_result = self.factory.create_trace("user_login", "auth_service")
         assert trace_result.is_success
-        trace = trace_result.unwrap()
+        trace = trace_result.value
         trace_validation = trace.validate_business_rules()
         assert trace_validation.is_success
 
         # Valid alert
         alert_result = self.factory.create_alert("System alert", "monitoring", "high")
         assert alert_result.is_success
-        alert = alert_result.unwrap()
+        alert = alert_result.value
         alert_validation = alert.validate_business_rules()
         assert alert_validation.is_success
 
@@ -313,14 +313,14 @@ class TestCompleteIntegrationReal:
         # Perform operations through global factory
         metric_result = global_factory.metric("global_test_metric", 100.0)
         assert metric_result.is_success
-        metric = metric_result.unwrap()
+        metric = metric_result.value
         # Global factory returns object, so we need to check attributes exist
         assert hasattr(metric, "name")
         assert metric.name == "global_test_metric"
 
         log_result = global_factory.log("Global factory test")
         assert log_result.is_success
-        log_entry = log_result.unwrap()
+        log_entry = log_result.value
         # Global factory returns object, so we need to check attributes exist
         assert hasattr(log_entry, "message")
         assert log_entry.message == "Global factory test"
@@ -373,7 +373,7 @@ class TestCompleteIntegrationReal:
         # Verify performance metrics were captured
         health_status = self.monitor.flext_get_health_status()
         assert health_status.is_success
-        health_data = health_status.unwrap()
+        health_data = health_status.value
         assert isinstance(health_data, dict)
         monitor_metrics = health_data["monitor_metrics"]
         assert isinstance(monitor_metrics, dict)
@@ -458,7 +458,7 @@ class TestCompleteIntegrationReal:
         # Verify all operations succeeded and system is healthy
         final_health_status = self.monitor.flext_get_health_status()
         assert final_health_status.is_success
-        final_health_data = final_health_status.unwrap()
+        final_health_data = final_health_status.value
         assert isinstance(final_health_data, dict)
         final_monitor_metrics = final_health_data["monitor_metrics"]
         assert isinstance(final_monitor_metrics, dict)

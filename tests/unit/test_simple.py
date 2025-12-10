@@ -400,8 +400,8 @@ class TestFlextMixinsCoverage:
         # Test successful validation through factory function
         result = flext_create_metric("valid_metric_name", 42.0)
         assert result.is_success
-        assert result.unwrap().name == "valid_metric_name"
-        assert result.unwrap().value == 42.0
+        assert result.value.name == "valid_metric_name"
+        assert result.value.value == 42.0
 
     def test_flext_metric_validate_business_rules_name_failure_coverage(self) -> None:
         """Test FlextMetric name validation failure - using factory function."""
@@ -429,7 +429,7 @@ class TestFlextMixinsCoverage:
         # Pydantic automatically converts numeric strings to float
         result = flext_create_metric("test_metric", 123.456)
         assert result.is_success
-        assert result.unwrap().value == 123.456
+        assert result.value.value == 123.456
 
     def test_flext_log_entry_message_validation_error_coverage(self) -> None:
         """Test FlextLogEntry message field validation error - covers lines 356-359."""
@@ -487,8 +487,8 @@ class TestFlextMixinsCoverage:
         # Test successful validation through factory function
         result = flext_create_log_entry("Valid log message", "info")
         assert result.is_success
-        assert result.unwrap().message == "Valid log message"
-        assert result.unwrap().level == "info"
+        assert result.value.message == "Valid log message"
+        assert result.value.level == "info"
 
     def test_flext_log_entry_validate_business_rules_message_failure_coverage(
         self,
@@ -787,8 +787,8 @@ class TestFlextMixinsCoverage:
             "Valid alert message",
         )
         assert result.is_success
-        assert result.unwrap().title == "Valid Alert Title"
-        assert result.unwrap().severity == "warning"
+        assert result.value.title == "Valid Alert Title"
+        assert result.value.severity == "warning"
 
     def test_flext_alert_validate_business_rules_title_failure_coverage(self) -> None:
         """Test FlextAlert title validation failure - using factory function."""
@@ -897,8 +897,8 @@ class TestFlextMixinsCoverage:
         # Test successful validation through factory function
         result = flext_create_health_check("database", "healthy")
         assert result.is_success
-        assert result.unwrap().component == "database"
-        assert result.unwrap().status == "healthy"
+        assert result.value.component == "database"
+        assert result.value.status == "healthy"
 
     def test_flext_health_check_all_valid_statuses_coverage(self) -> None:
         """Test FlextHealthCheck with all valid statuses - using factory function."""
@@ -908,7 +908,7 @@ class TestFlextMixinsCoverage:
         for status in valid_statuses:
             result = flext_create_health_check("test-component", status)
             assert result.is_success, f"Status {status} should be valid"
-            assert result.unwrap().status == status
+            assert result.value.status == status
 
     def test_flext_alert_factory_with_id_and_version_coverage(self) -> None:
         """Test flext_alert factory function with id and version - covers lines 944-954."""

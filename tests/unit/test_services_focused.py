@@ -24,7 +24,7 @@ class TestServicesFocused:
         # Record some metrics first
         metric_result = flext_create_metric("test_metric", 100.0)
         assert metric_result.is_success
-        service.record_metric(metric_result.unwrap())
+        service.record_metric(metric_result.value)
 
         # Reset metrics
         result = service.reset_metrics()
@@ -38,13 +38,13 @@ class TestServicesFocused:
         # Record a simple metric
         metric_result = flext_create_metric("simple_metric", 42.0)
         assert metric_result.is_success
-        service.record_metric(metric_result.unwrap())
+        service.record_metric(metric_result.value)
 
         # Export in Prometheus format
         result = service.export_prometheus_format()
 
         assert result.is_success
-        prometheus_output = result.unwrap()
+        prometheus_output = result.value
         assert "simple_metric" in prometheus_output
 
     def test_metrics_service_get_value_paths(self) -> None:
@@ -54,7 +54,7 @@ class TestServicesFocused:
         # Test with recorded metric
         metric_result = flext_create_metric("test_gauge", 75.0)
         assert metric_result.is_success
-        service.record_metric(metric_result.unwrap())
+        service.record_metric(metric_result.value)
 
         # Get metric value
         result = service.get_metric_value("test_gauge")
@@ -72,7 +72,7 @@ class TestServicesFocused:
         for i in range(3):
             metric_result = flext_create_metric(f"metric_{i}", float(i * 10))
             assert metric_result.is_success
-            service.record_metric(metric_result.unwrap())
+            service.record_metric(metric_result.value)
 
         # Get summary
         result = service.get_metrics_summary()

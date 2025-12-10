@@ -106,10 +106,7 @@ class FlextObservabilityDatabase:
                     )
 
                 # Avoid duplicate instrumentation
-                if (
-                    engine
-                    in FlextObservabilityDatabase.SQLAlchemy.instrumented_engines
-                ):
+                if engine in FlextObservabilityDatabase.SQLAlchemy.instrumented_engines:
                     return FlextResult[None].ok(None)
 
                 @event.listens_for(engine, "before_cursor_execute")

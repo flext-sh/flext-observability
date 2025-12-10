@@ -91,7 +91,7 @@ class TestFactoryPattern:
 
         result = factory.create_metric("global_test", 100.0, "count")
         assert result.is_success
-        assert result.unwrap().name == "global_test"
+        assert result.value.name == "global_test"
 
     def test_custom_factory(self) -> None:
         """Test custom factory creation."""
@@ -102,7 +102,7 @@ class TestFactoryPattern:
 
         result = factory.create_metric("custom_test", 200.0, "count")
         assert result.is_success
-        assert result.unwrap().name == "custom_test"
+        assert result.value.name == "custom_test"
 
 
 class TestEntityValidation:
@@ -113,7 +113,7 @@ class TestEntityValidation:
         result = flext_create_metric("valid_metric", 50.0, "count")
         assert result.is_success
 
-        validation = result.unwrap().validate_business_rules()
+        validation = result.value.validate_business_rules()
         assert validation.is_success
 
     def test_metric_validation_empty_name(self) -> None:
@@ -122,7 +122,7 @@ class TestEntityValidation:
         # Should be caught by pydantic validation
         assert (
             not result.is_success
-            or not result.unwrap().validate_business_rules().is_success
+            or not result.value.validate_business_rules().is_success
         )
 
     def test_trace_validation_success(self) -> None:
@@ -130,7 +130,7 @@ class TestEntityValidation:
         result = flext_create_trace("valid_operation")
         assert result.is_success
 
-        validation = result.unwrap().validate_business_rules()
+        validation = result.value.validate_business_rules()
         assert validation.is_success
 
     def test_alert_validation_success(self) -> None:
@@ -138,7 +138,7 @@ class TestEntityValidation:
         result = flext_create_alert("Valid alert", "service", "low")
         assert result.is_success
 
-        validation = result.unwrap().validate_business_rules()
+        validation = result.value.validate_business_rules()
         assert validation.is_success
 
     def test_health_check_validation_success(self) -> None:
@@ -146,7 +146,7 @@ class TestEntityValidation:
         result = flext_create_health_check("service", "healthy")
         assert result.is_success
 
-        validation = result.unwrap().validate_business_rules()
+        validation = result.value.validate_business_rules()
         assert validation.is_success
 
 

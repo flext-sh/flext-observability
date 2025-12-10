@@ -32,7 +32,7 @@ class TestFlextObservabilityFactories:
         """Test creating a metric successfully."""
         result = FlextObservabilityFactories.create_metric("test_metric", 42.0)
         assert result.is_success
-        metric = result.unwrap()
+        metric = result.value
         assert metric.name == "test_metric"
         assert metric.value == 42.0
         assert metric.unit == "count"
@@ -45,7 +45,7 @@ class TestFlextObservabilityFactories:
             "test_service",
         )
         assert result.is_success
-        trace = result.unwrap()
+        trace = result.value
         assert trace.operation_name == "test_operation"
         assert trace.service_name == "test_service"
 
@@ -53,7 +53,7 @@ class TestFlextObservabilityFactories:
         """Test creating an alert successfully."""
         result = FlextObservabilityFactories.create_alert("test_alert", "test message")
         assert result.is_success
-        alert = result.unwrap()
+        alert = result.value
         assert alert.name == "test_alert"
         assert alert.message == "test message"
         assert alert.severity == "info"
@@ -62,7 +62,7 @@ class TestFlextObservabilityFactories:
         """Test creating a health check successfully."""
         result = FlextObservabilityFactories.create_health_check("test_check")
         assert result.is_success
-        health_check = result.unwrap()
+        health_check = result.value
         assert health_check.name == "test_check"
         assert health_check.status == "healthy"
 
@@ -70,7 +70,7 @@ class TestFlextObservabilityFactories:
         """Test creating a log entry successfully."""
         result = FlextObservabilityFactories.create_log_entry("test message")
         assert result.is_success
-        log_entry = result.unwrap()
+        log_entry = result.value
         assert log_entry.message == "test message"
         assert log_entry.level == "info"
 
