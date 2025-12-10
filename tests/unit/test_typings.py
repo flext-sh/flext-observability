@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_observability.typings import t
+from flext_observability.typings import FlextObservabilityTypes, t
 
 
 class TestFlextObservabilityTypes:
@@ -88,7 +88,7 @@ class TestFlextObservabilityTypes:
 
 
 class TestFlextObservabilityTypesAlias:
-    """Test the FlextObservabilityTypesAlias class."""
+    """Test the FlextObservabilityTypes type aliases."""
 
     def test_type_aliases_exist(self) -> None:
         """Test that key type aliases are defined."""
@@ -101,4 +101,5 @@ class TestFlextObservabilityTypesAlias:
             "HealthStatus",
         ]
         for alias in aliases:
-            assert hasattr(FlextObservabilityTypesAlias, alias)
+            # These aliases should be available as attributes or types within FlextObservabilityTypes
+            assert hasattr(FlextObservabilityTypes, alias) or hasattr(t, alias)
