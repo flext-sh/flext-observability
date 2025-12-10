@@ -66,7 +66,7 @@ class FlextObservabilityHTTPClient:
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
 
-        _instrumented_clients: ClassVar[set[Any]] = set()
+        instrumented_clients: ClassVar[set[Any]] = set()
 
         @staticmethod
         def setup_instrumentation(client: object) -> FlextResult[None]:
@@ -117,7 +117,7 @@ class FlextObservabilityHTTPClient:
                     )
 
                 # Avoid duplicate instrumentation
-                if client in FlextObservabilityHTTPClient.HTTPX._instrumented_clients:
+                if client in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
                     return FlextResult[None].ok(None)
 
                 # Determine if this is async client
@@ -294,7 +294,7 @@ class FlextObservabilityHTTPClient:
                     client.request = traced_request
 
                 # Mark as instrumented
-                FlextObservabilityHTTPClient.HTTPX._instrumented_clients.add(client)
+                FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client)
 
                 FlextObservabilityHTTPClient._logger.debug(
                     "httpx client instrumentation setup complete",
@@ -313,7 +313,7 @@ class FlextObservabilityHTTPClient:
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
 
-        _instrumented_sessions: ClassVar[set[Any]] = set()
+        instrumented_sessions: ClassVar[set[Any]] = set()
 
         @staticmethod
         def setup_instrumentation(session: object) -> FlextResult[None]:
@@ -359,7 +359,7 @@ class FlextObservabilityHTTPClient:
                 # Avoid duplicate instrumentation
                 if (
                     session
-                    in FlextObservabilityHTTPClient.AIOHTTP._instrumented_sessions
+                    in FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions
                 ):
                     return FlextResult[None].ok(None)
 
@@ -454,7 +454,7 @@ class FlextObservabilityHTTPClient:
                 session._request = traced_request
 
                 # Mark as instrumented
-                FlextObservabilityHTTPClient.AIOHTTP._instrumented_sessions.add(session)
+                FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions.add(session)
 
                 FlextObservabilityHTTPClient._logger.debug(
                     "aiohttp session instrumentation setup complete",

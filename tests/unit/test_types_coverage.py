@@ -13,7 +13,7 @@ from flext_observability import (
     flext_create_metric,
     flext_create_trace,
 )
-from flext_observability.typings import t
+from flext_observability.typings import FlextObservabilityTypes, t
 
 
 class TestTypesModuleCoverage:

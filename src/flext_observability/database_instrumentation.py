@@ -61,7 +61,7 @@ class FlextObservabilityDatabase:
     class SQLAlchemy:
         """SQLAlchemy event listener for automatic query instrumentation."""
 
-        _instrumented_engines: ClassVar[set[Any]] = set()
+        instrumented_engines: ClassVar[set[Any]] = set()
 
         @staticmethod
         def setup_instrumentation(engine: object) -> FlextResult[None]:
@@ -108,7 +108,7 @@ class FlextObservabilityDatabase:
                 # Avoid duplicate instrumentation
                 if (
                     engine
-                    in FlextObservabilityDatabase.SQLAlchemy._instrumented_engines
+                    in FlextObservabilityDatabase.SQLAlchemy.instrumented_engines
                 ):
                     return FlextResult[None].ok(None)
 
@@ -216,7 +216,7 @@ class FlextObservabilityDatabase:
                         )
 
                 # Mark as instrumented
-                FlextObservabilityDatabase.SQLAlchemy._instrumented_engines.add(engine)
+                FlextObservabilityDatabase.SQLAlchemy.instrumented_engines.add(engine)
 
                 FlextObservabilityDatabase._logger.debug(
                     "SQLAlchemy instrumentation setup complete",
@@ -235,7 +235,7 @@ class FlextObservabilityDatabase:
     class AsyncPG:
         """asyncpg pool instrumentation for automatic query tracing."""
 
-        _instrumented_pools: ClassVar[set[Any]] = set()
+        instrumented_pools: ClassVar[set[Any]] = set()
 
         @staticmethod
         def setup_instrumentation(pool: object) -> FlextResult[None]:
@@ -278,7 +278,7 @@ class FlextObservabilityDatabase:
                     )
 
                 # Avoid duplicate instrumentation
-                if pool in FlextObservabilityDatabase.AsyncPG._instrumented_pools:
+                if pool in FlextObservabilityDatabase.AsyncPG.instrumented_pools:
                     return FlextResult[None].ok(None)
 
                 # Store original execute method
@@ -466,7 +466,7 @@ class FlextObservabilityDatabase:
                 pool.fetchval = traced_fetchval
 
                 # Mark as instrumented
-                FlextObservabilityDatabase.AsyncPG._instrumented_pools.add(pool)
+                FlextObservabilityDatabase.AsyncPG.instrumented_pools.add(pool)
 
                 FlextObservabilityDatabase._logger.debug(
                     "asyncpg pool instrumentation setup complete",
