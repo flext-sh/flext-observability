@@ -1,11 +1,10 @@
-"""FLEXT Observability Utilities - Zero Tolerance CONSOLIDATION.
+"""FLEXT Observability Utilities - Tier 0 Foundation Module.
 
-IMPORTANT: FlextObservabilityUtilities was DUPLICATED between utilities.py and services.py.
-This was a Zero Tolerance violation of the user's explicit requirements.
+Utility functions and classes for observability operations.
+This module contains no service dependencies - pure utility functions only.
 
-RESOLUTION: FlextObservabilityUtilities is now ONLY in services.py and imported from there.
-This file is kept minimal to maintain import compatibility but all functionality
-is consolidated in services.py to eliminate duplication.
+For services (with FlextContainer, FlextLogger dependencies), use:
+    from flext_observability.services import FlextObservabilityServices
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -13,8 +12,18 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# Zero Tolerance CONSOLIDATION: Import from services.py to eliminate duplication
-from flext_observability.services import FlextObservabilityUtilities
+from flext_core import FlextUtilities
 
-# Export consolidated utilities class
+
+class FlextObservabilityUtilities(FlextUtilities):
+    """Observability utility functions.
+
+    Extends FlextUtilities with observability-specific helpers.
+    This is a Tier 0 module - no services dependencies allowed.
+
+    For service operations (container, logger, config), use:
+        from flext_observability.services import FlextObservabilityServices
+    """
+
+
 __all__ = ["FlextObservabilityUtilities"]

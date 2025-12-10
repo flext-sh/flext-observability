@@ -91,7 +91,7 @@ class TestEntityFactoryFunctions:
         )
         # Factory function returns FlextResult[FlextMetric]
         assert metric.is_success
-        metric_obj = metric.unwrap()
+        metric_obj = metric.value
         assert str(metric_obj.id)
         assert metric_obj.name == "test_metric"
         assert metric_obj.value == 42.5
@@ -105,7 +105,7 @@ class TestEntityFactoryFunctions:
         )
         # Factory function returns FlextResult[FlextMetric]
         assert metric.is_success
-        metric_obj = metric.unwrap()
+        metric_obj = metric.value
         assert str(metric_obj.id)
 
     def test_flext_metric_without_id(self) -> None:
@@ -117,7 +117,7 @@ class TestEntityFactoryFunctions:
             tags={"auto": "generated"},
         )
         assert metric.is_success
-        metric_obj = metric.unwrap()
+        metric_obj = metric.value
         assert metric_obj.id is not None
         assert str(metric_obj.id)
 
@@ -174,27 +174,27 @@ class TestEntityFactoryFunctions:
         # Test with extreme values - real boundary testing
         large_metric = flext_metric("large_value_metric", float("1e10"))
         assert large_metric.is_success
-        large_metric_obj = large_metric.unwrap()
+        large_metric_obj = large_metric.value
         assert large_metric_obj.value == 1e10
         assert large_metric_obj.name == "large_value_metric"
 
         # Test with very small positive values
         small_metric = flext_metric("small_value_metric", float("1e-10"))
         assert small_metric.is_success
-        small_metric_obj = small_metric.unwrap()
+        small_metric_obj = small_metric.value
         assert small_metric_obj.value == 1e-10
         assert small_metric_obj.name == "small_value_metric"
 
         # Test with zero value - boundary condition
         zero_metric = flext_metric("zero_metric", 0.0)
         assert zero_metric.is_success
-        zero_metric_obj = zero_metric.unwrap()
+        zero_metric_obj = zero_metric.value
         assert zero_metric_obj.value == 0.0
         assert zero_metric_obj.name == "zero_metric"
 
         # Test that negative values are allowed - current implementation allows them
         negative_metric = flext_metric("negative_metric", -42.5)
         assert negative_metric.is_success
-        negative_metric_obj = negative_metric.unwrap()
+        negative_metric_obj = negative_metric.value
         assert negative_metric_obj.value == -42.5
         assert negative_metric_obj.name == "negative_metric"

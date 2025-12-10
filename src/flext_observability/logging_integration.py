@@ -67,7 +67,7 @@ class FlextObservabilityLogging:
             ```python
             logger_result = FlextObservabilityLogging.create_logger(__name__)
             if logger_result.is_success:
-                logger = logger_result.unwrap()
+                logger = logger_result.value
                 logger.info("Application started")
                 # Log automatically includes correlation IDs
             ```
@@ -120,7 +120,7 @@ class FlextObservabilityLogging:
             # Get context to enrich log
             context_result = FlextObservabilityLogging.enrich_log_context(logger)
             if context_result.is_success:
-                context = context_result.unwrap()
+                context = context_result.value
                 logger.info("Processing", extra=context)
                 # Log output: [...] correlation_id=abc-123 trace_id=def-456
             ```
@@ -263,7 +263,7 @@ class FlextObservabilityLogging:
                 )
 
             # Merge context with extra fields
-            log_context = context_result.unwrap()
+            log_context = context_result.value
             if extra:
                 log_context.update(extra)
 

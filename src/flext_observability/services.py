@@ -104,7 +104,7 @@ def get_global_factory() -> FlextObservabilityServices:
         FlextObservabilityServices,
     )
     if result.is_success:
-        value = result.unwrap()
+        value = result.value
         if isinstance(value, FlextObservabilityServices):
             return value
     # Fallback if container doesn't have the service

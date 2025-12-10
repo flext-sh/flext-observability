@@ -91,7 +91,7 @@ class TestFlextObservabilityMasterFactoryReal:
             assert "Invalid log level" in custom_level_result.error
         else:
             # If system accepts it, verify it works correctly
-            assert custom_level_result.unwrap().level == "INVALID_LEVEL"
+            assert custom_level_result.value.level == "INVALID_LEVEL"
 
     def test_alert_creation_real_functionality(self) -> None:
         """Test alert creation with real functionality."""
@@ -150,7 +150,7 @@ class TestFlextObservabilityMasterFactoryReal:
         # Test shorthand metric method
         metric_result = factory.metric("cpu_usage", 85.2)
         assert metric_result.is_success
-        metric = metric_result.unwrap()
+        metric = metric_result.value
         assert hasattr(metric, "name")
         assert metric.name == "cpu_usage"
         assert hasattr(metric, "value")
@@ -159,21 +159,21 @@ class TestFlextObservabilityMasterFactoryReal:
         # Test shorthand log method
         log_result = factory.log("System started")
         assert log_result.is_success
-        log_entry = log_result.unwrap()
+        log_entry = log_result.value
         assert hasattr(log_entry, "message")
         assert log_entry.message == "System started"
 
         # Test shorthand alert method
         alert_result = factory.alert("High memory usage", "monitoring")
         assert alert_result.is_success
-        alert = alert_result.unwrap()
+        alert = alert_result.value
         assert hasattr(alert, "message")
         assert alert.message == "High memory usage"
 
         # Test shorthand trace method
         trace_result = factory.trace("trace-123", "api_request")
         assert trace_result.is_success
-        trace = trace_result.unwrap()
+        trace = trace_result.value
         assert hasattr(trace, "operation")
         assert trace.operation == "api_request"
 
@@ -223,14 +223,14 @@ class TestFlextObservabilityMasterFactoryReal:
         assert metric_result.is_success
 
         # Validate business rules on created entity
-        validation_result = metric_result.unwrap().validate_business_rules()
+        validation_result = metric_result.value.validate_business_rules()
         assert validation_result.is_success
 
         # Test with negative value (currently allowed by implementation)
         negative_metric = factory.create_metric("error_rate", -5.0)  # Negative value
         assert negative_metric.is_success
         # Current implementation allows negative values
-        validation_result = negative_metric.unwrap().validate_business_rules()
+        validation_result = negative_metric.value.validate_business_rules()
         assert validation_result.is_success
 
     def test_factory_error_handling_real(self) -> None:
@@ -291,7 +291,7 @@ class TestFlextObservabilityMasterFactoryReal:
         # Verify entities have proper timestamps
         for result in results:
             # Use hasattr to check for unwrap method
-            entity = result.unwrap() if hasattr(result, "unwrap") else result
+            entity = result.value if hasattr(result, "unwrap") else result
             assert hasattr(entity, "timestamp") or hasattr(entity, "created_at")
             timestamp_attr = getattr(
                 entity,

@@ -317,7 +317,7 @@ class FlextObservabilityMonitor:
                 )
 
             # For now, just log the metric since we don't have a persistent metrics service
-            metric_result.unwrap()  # Validate metric creation
+            metric_result.value  # Validate metric creation
             self._logger.debug("Recorded metric: %s=%s (%s)", name, value, metric_type)
             return r[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:

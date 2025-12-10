@@ -43,13 +43,13 @@ class TestMetricsServiceRealFunctionality:
         assert histogram_metric.is_success
 
         # Record metrics
-        counter_result = service.record_metric(counter_metric.unwrap())
+        counter_result = service.record_metric(counter_metric.value)
         assert counter_result.is_success
 
-        gauge_result = service.record_metric(gauge_metric.unwrap())
+        gauge_result = service.record_metric(gauge_metric.value)
         assert gauge_result.is_success
 
-        histogram_result = service.record_metric(histogram_metric.unwrap())
+        histogram_result = service.record_metric(histogram_metric.value)
         assert histogram_result.is_success
 
         # Get individual metric values
@@ -83,7 +83,7 @@ class TestMetricsServiceRealFunctionality:
         for _ in range(5):
             counter_metric = flext_create_metric("request_count", 1.0, "count")
             assert counter_metric.is_success
-            service.record_metric(counter_metric.unwrap())
+            service.record_metric(counter_metric.value)
 
         # Counter should sum values
         counter_value = service.get_metric_value("request_count")
@@ -94,7 +94,7 @@ class TestMetricsServiceRealFunctionality:
         for value in [10.0, 20.0, 30.0]:
             gauge_metric = flext_create_metric("temperature", value, "celsius")
             assert gauge_metric.is_success
-            service.record_metric(gauge_metric.unwrap())
+            service.record_metric(gauge_metric.value)
 
         gauge_value = service.get_metric_value("temperature")
         assert gauge_value.is_success
@@ -114,7 +114,7 @@ class TestMetricsServiceRealFunctionality:
         for name, value, unit in metrics_data:
             metric = flext_create_metric(name, value, unit)
             assert metric.is_success
-            service.record_metric(metric.unwrap())
+            service.record_metric(metric.value)
 
         # Export to Prometheus format
         export_result = service.export_prometheus_format()
@@ -140,12 +140,12 @@ class TestMetricsServiceRealFunctionality:
         for i in range(3):
             metric = flext_create_metric(f"test_metric_{i}", float(i), "count")
             assert metric.is_success
-            service.record_metric(metric.unwrap())
+            service.record_metric(metric.value)
 
         # Verify metrics exist
         summary_before = service.get_metrics_summary()
         assert summary_before.is_success
-        service_info = summary_before.unwrap()["service_info"]
+        service_info = summary_before.value["service_info"]
         assert isinstance(service_info, dict)
         assert service_info["metrics_recorded"] == 3
 
@@ -156,7 +156,7 @@ class TestMetricsServiceRealFunctionality:
         # Verify metrics are cleared
         summary_after = service.get_metrics_summary()
         assert summary_after.is_success
-        service_info_after = summary_after.unwrap()["service_info"]
+        service_info_after = summary_after.value["service_info"]
         assert isinstance(service_info_after, dict)
         assert service_info_after["metrics_recorded"] == 0
 
@@ -174,7 +174,7 @@ class TestMetricsServiceRealFunctionality:
                     "count",
                 )
                 if metric.is_success:
-                    result = service.record_metric(metric.unwrap())
+                    result = service.record_metric(metric.value)
                     results.append(result.is_success)
 
         # Start multiple threads
@@ -208,7 +208,7 @@ class TestTracingServiceRealFunctionality:
         trace = flext_create_trace("user_request", "api_service")
         assert trace.is_success
 
-        trace_obj = trace.unwrap()
+        trace_obj = trace.value
         start_result = service.start_trace(trace_obj)
         assert start_result.is_success
 
@@ -240,7 +240,7 @@ class TestTracingServiceRealFunctionality:
         trace = flext_create_trace("payment_processing", "payment_service")
         assert trace.is_success
 
-        trace_obj = trace.unwrap()
+        trace_obj = trace.value
         service.start_trace(trace_obj)
         service.add_span_to_trace(trace_obj.trace_id, "validate_payment")
         service.add_span_to_trace(trace_obj.trace_id, "process_payment")
@@ -250,7 +250,7 @@ class TestTracingServiceRealFunctionality:
         jaeger_result = service.export_jaeger_format(trace_obj.trace_id)
         assert jaeger_result.is_success
 
-        jaeger_data = jaeger_result.unwrap()
+        jaeger_data = jaeger_result.value
         assert isinstance(jaeger_data, dict)
         assert "traceID" in jaeger_data
         assert "spans" in jaeger_data
@@ -278,7 +278,7 @@ class TestAlertServiceRealFunctionality:
             )
             assert alert.is_success
 
-            result = service.create_alert(alert.unwrap())
+            result = service.create_alert(alert.value)
             assert result.is_success
 
 
@@ -296,7 +296,7 @@ class TestHealthServiceRealFunctionality:
             health_check = flext_create_health_check(component, "healthy")
             assert health_check.is_success
 
-            result = service.check_health(health_check.unwrap())
+            result = service.check_health(health_check.value)
             assert result.is_success
 
         # Get overall health
@@ -339,7 +339,7 @@ class TestHealthServiceRealFunctionality:
             health_check = flext_create_health_check("failing_component", "unhealthy")
             assert health_check.is_success
 
-            result = service.check_health(health_check.unwrap())
+            result = service.check_health(health_check.value)
             assert result.is_success
 
         # Verify component is tracked as persistently unhealthy
@@ -371,11 +371,11 @@ class TestServiceErrorHandlingRealFunctionality:
         # Test export with special characters in metric names
         special_metric = flext_create_metric("metric_with_underscores", 42.0)
         assert special_metric.is_success
-        service.record_metric(special_metric.unwrap())
+        service.record_metric(special_metric.value)
 
         export_result = service.export_prometheus_format()
         assert export_result.is_success
-        assert "metric_with_underscores 42.0" in export_result.unwrap()
+        assert "metric_with_underscores 42.0" in export_result.value
 
     def test_tracing_service_span_management(self) -> None:
         """Test tracing service span management with real operations."""
@@ -385,7 +385,7 @@ class TestServiceErrorHandlingRealFunctionality:
         trace = flext_create_trace("complex_operation", "service_a")
         assert trace.is_success
 
-        trace_obj = trace.unwrap()
+        trace_obj = trace.value
         start_result = service.start_trace(trace_obj)
         assert start_result.is_success
 

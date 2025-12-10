@@ -57,7 +57,7 @@ def demonstrate_solid_design() -> None:
         health_result,
     ]
     entities: list[object] = [
-        result.unwrap()
+        result.value
         for result in results
         if hasattr(result, "success")
         and result.is_success

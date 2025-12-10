@@ -94,13 +94,13 @@ def demonstrate_validation() -> None:
     # Valid metric
     metric_result = flext_create_metric("valid_metric", 100.0, "count")
     if metric_result.is_success:
-        print(f"Created metric: {metric_result.unwrap()}")
+        print(f"Created metric: {metric_result.value}")
 
     # Invalid metric (negative value should be caught by pydantic or business rules)
     try:
         invalid_metric_result = flext_create_metric("invalid_metric", -10.0, "count")
         if invalid_metric_result.is_success:
-            print(f"Created invalid metric: {invalid_metric_result.unwrap()}")
+            print(f"Created invalid metric: {invalid_metric_result.value}")
     except Exception as e:
         print(f"Validation error (expected): {e}")
 
