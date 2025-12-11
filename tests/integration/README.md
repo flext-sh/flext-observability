@@ -53,7 +53,7 @@ def test_metrics_service_with_factory_integration():
 def test_flext_core_container_integration():
     """Test integration with flext-core dependency injection."""
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

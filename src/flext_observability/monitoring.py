@@ -13,9 +13,9 @@ from uuid import uuid4
 
 from flext_core import FlextContainer, FlextLogger, r
 
-from flext_observability.config import FlextObservabilityConfig
 from flext_observability.models import FlextObservabilityModels
 from flext_observability.services import FlextObservabilityServices
+from flext_observability.settings import FlextObservabilitySettings
 from flext_observability.typings import t
 
 # ============================================================================
@@ -156,7 +156,7 @@ class FlextObservabilityMonitor:
         """Initialize monitor with real service orchestration and shared configuration."""
         self._container = container or FlextContainer.get_global()
         self._logger = FlextLogger(self.__class__.__name__)
-        self._config = FlextObservabilityConfig.get_global_instance()
+        self._config = FlextObservabilitySettings.get_global_instance()
         self._initialized = False
         self._running = False
 

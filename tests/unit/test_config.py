@@ -5,17 +5,17 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 
-from flext_observability import FlextObservabilityConfig
+from flext_observability import FlextObservabilitySettings
 
 
-class TestFlextObservabilityConfig:
-    """Test the FlextObservabilityConfig class."""
+class TestFlextObservabilitySettings:
+    """Test the FlextObservabilitySettings class."""
 
     def test_inherits_from_flext_config(self) -> None:
-        """Test that FlextObservabilityConfig inherits from FlextConfig."""
-        assert issubclass(FlextObservabilityConfig, FlextConfig)
+        """Test that FlextObservabilitySettings inherits from FlextSettings."""
+        assert issubclass(FlextObservabilitySettings, FlextSettings)
 
     def test_configuration_attributes(self) -> None:
         """Test configuration attributes are properly defined."""
@@ -31,11 +31,11 @@ class TestFlextObservabilityConfig:
             "logging_enabled",
         ]
         for attr in config_attrs:
-            assert hasattr(FlextObservabilityConfig, attr)
+            assert hasattr(FlextObservabilitySettings, attr)
 
     def test_default_values(self) -> None:
         """Test default configuration values."""
-        config = FlextObservabilityConfig()
+        config = FlextObservabilitySettings()
         assert config.service_name == "flext-observability"
         assert config.environment == "development"
         assert config.debug_mode is False
@@ -54,12 +54,12 @@ class TestFlextObservabilityConfig:
             "validate_credentials",
         ]
         for method in validation_methods:
-            assert hasattr(FlextObservabilityConfig, method)
-            assert callable(getattr(FlextObservabilityConfig, method))
+            assert hasattr(FlextObservabilitySettings, method)
+            assert callable(getattr(FlextObservabilitySettings, method))
 
     def test_endpoint_configuration(self) -> None:
         """Test endpoint configuration attributes."""
-        config = FlextObservabilityConfig()
+        config = FlextObservabilitySettings()
         endpoint_attrs = [
             "prometheus_url",
             "grafana_url",
@@ -71,7 +71,7 @@ class TestFlextObservabilityConfig:
 
     def test_credential_configuration(self) -> None:
         """Test credential configuration attributes."""
-        config = FlextObservabilityConfig()
+        config = FlextObservabilitySettings()
         cred_attrs = [
             "prometheus_username",
             "prometheus_password",

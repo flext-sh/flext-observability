@@ -184,7 +184,7 @@ For more advanced scenarios, use the service layer with flext-core patterns:
 ```python
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -234,7 +234,7 @@ For FLEXT ecosystem services (API, Auth, Web, CLI):
 # In your FLEXT service initialization
 from flext_observability import flext_monitor_function, flext_create_metric
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -275,7 +275,7 @@ For FLEXT infrastructure services (Oracle, LDAP, LDIF):
 ```python
 from flext_observability import FlextHealthService, flext_create_health_check
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -471,7 +471,7 @@ pip list | grep flext-observability
 # Solution: Ensure proper type imports
 from flext_observability import FlextMetric
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

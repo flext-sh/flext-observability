@@ -156,7 +156,7 @@ from flext_observability import FlextMetric, FlextTrace, flext_create_metric
 
 ```python
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -211,7 +211,7 @@ class FlextMetric(FlextModels.Entity):
 
 ```python
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -497,7 +497,7 @@ from flext_observability import (
     FlextObservabilityMasterFactory
 )
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1079,7 +1079,7 @@ class TestFlextTrace:
 ```python
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1413,7 +1413,7 @@ def create_business_observability_dashboard(
 ```python
 # ✅ Standard observability imports across ecosystem
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1509,7 +1509,7 @@ class OracleTrace:  # Use FlextTrace instead
 ```python
 # ✅ Extend observability configuration patterns
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -1529,7 +1529,7 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
-class ObservabilitySettings(FlextConfig):
+class ObservabilitySettings(FlextSettings):
     """Observability configuration extending core patterns."""
     metrics_enabled: bool = True
     tracing_enabled: bool = True
@@ -1539,7 +1539,7 @@ class ObservabilitySettings(FlextConfig):
     class Config:
         env_prefix = "OBSERVABILITY_"
 
-class UserServiceSettings(FlextConfig):
+class UserServiceSettings(FlextSettings):
     """User service configuration with observability."""
     service_name: str = "user-service"
     database_url: str = "postgresql://localhost/users"
