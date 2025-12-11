@@ -204,7 +204,7 @@ FLEXT Observability integrates with the ecosystem through standardized patterns:
 ```python
 # All services use flext-core patterns
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

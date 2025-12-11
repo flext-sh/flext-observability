@@ -92,7 +92,7 @@ class FlextObservabilityTypes(FlextTypes):
         # Metric collection and processing types
         type MetricCollection = dict[
             str,
-            float | int | Decimal | dict[str, FlextTypes.Json.JsonValue],
+            float | int | Decimal | dict[str, FlextTypes.JsonValue],
         ]
         type MetricAggregation = dict[str, float | dict[str, float | int | Decimal]]
         type MetricThresholds = dict[str, float | int | bool | dict[str, object]]
@@ -100,41 +100,33 @@ class FlextObservabilityTypes(FlextTypes):
 
         # Tracing and span types
         type TraceConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.Json.JsonValue]
+            str, str | int | bool | dict[str, FlextTypes.JsonValue]
         ]
         type SpanAttributes = dict[str, str | int | float | bool | dict[str, object]]
-        type TraceContext = dict[str, str | int | dict[str, FlextTypes.Json.JsonValue]]
-        type SpanHierarchy = dict[str, list[dict[str, FlextTypes.Json.JsonValue]]]
+        type TraceContext = dict[str, str | int | dict[str, FlextTypes.JsonValue]]
+        type SpanHierarchy = dict[str, list[dict[str, FlextTypes.JsonValue]]]
 
         # Alerting and notification types
         type AlertConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.Json.JsonValue]
+            str, str | int | bool | dict[str, FlextTypes.JsonValue]
         ]
         type AlertRules = list[dict[str, str | bool | int | float | dict[str, object]]]
         type AlertChannels = dict[str, str | dict[str, object]]
 
         # Health monitoring types
         type HealthChecks = dict[str, dict[str, float | str | bool]]
-        type ComponentStatus = dict[
-            str, str | int | dict[str, FlextTypes.Json.JsonValue]
-        ]
-        type SystemMetrics = dict[
-            str, float | int | dict[str, FlextTypes.Json.JsonValue]
-        ]
+        type ComponentStatus = dict[str, str | int | dict[str, FlextTypes.JsonValue]]
+        type SystemMetrics = dict[str, float | int | dict[str, FlextTypes.JsonValue]]
 
         # Log aggregation types
         type LogConfiguration = dict[str, str | int | bool | dict[str, object]]
-        type LogFilters = dict[
-            str, str | list[str] | dict[str, FlextTypes.Json.JsonValue]
-        ]
-        type LogProcessing = dict[
-            str, str | dict[str, FlextTypes.Json.JsonValue] | bool
-        ]
+        type LogFilters = dict[str, str | list[str] | dict[str, FlextTypes.JsonValue]]
+        type LogProcessing = dict[str, str | dict[str, FlextTypes.JsonValue] | bool]
 
         # Service discovery types
         type ServiceRegistry = dict[str, dict[str, str | int | dict[str, object]]]
-        type ServiceDiscovery = dict[str, list[dict[str, FlextTypes.Json.JsonValue]]]
-        type ServiceHealth = dict[str, str | dict[str, FlextTypes.Json.JsonValue]]
+        type ServiceDiscovery = dict[str, list[dict[str, FlextTypes.JsonValue]]]
+        type ServiceHealth = dict[str, str | dict[str, FlextTypes.JsonValue]]
 
         # Additional core types for monitoring
         type MetadataDict = dict[str, object]

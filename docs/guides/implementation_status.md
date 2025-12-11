@@ -121,7 +121,7 @@
 ```python
 # CURRENT: BROKEN - T not exported from flext-core
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -143,7 +143,7 @@ from flext_core import u, T  # ImportError
 
 # SHOULD BE: Fixed in flext-core __init__.py
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -183,7 +183,7 @@ but `T` is not exported in flext-core's `__init__.py`.
 
 1. **flext-core fix**: Export `T` in flext-core `__init__.py` OR
 2. **flext-observability fix**: Change import to `from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

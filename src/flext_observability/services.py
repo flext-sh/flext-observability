@@ -13,7 +13,7 @@ from __future__ import annotations
 from flext_core import FlextContainer, FlextLogger, FlextResult
 from flext_core.utilities import FlextUtilities as u_core
 
-from flext_observability.config import FlextObservabilityConfig
+from flext_observability.settings import FlextObservabilitySettings
 
 
 class FlextObservabilityServices(u_core):
@@ -29,7 +29,7 @@ class FlextObservabilityServices(u_core):
         super().__init__()
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
-        self._config = FlextObservabilityConfig.get_global_instance()
+        self._config = FlextObservabilitySettings.get_global_instance()
 
     @property
     def container(self) -> FlextContainer:
@@ -42,7 +42,7 @@ class FlextObservabilityServices(u_core):
         return self._logger
 
     @property
-    def config(self) -> FlextObservabilityConfig:
+    def config(self) -> FlextObservabilitySettings:
         """Access observability config."""
         return self._config
 

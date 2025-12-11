@@ -9,20 +9,20 @@ from __future__ import annotations
 
 from typing import Self
 
-from flext_core import FlextConfig, FlextConstants, FlextResult
+from flext_core import FlextConstants, FlextResult, FlextSettings
 from pydantic import Field, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_observability.constants import FlextObservabilityConstants
 
 
-@FlextConfig.auto_register("observability")
-class FlextObservabilityConfig(FlextConfig.AutoConfig):
+@FlextSettings.auto_register("observability")
+class FlextObservabilitySettings(FlextSettings.AutoConfig):
     """Unified observability configuration using AutoConfig pattern.
 
     **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
 
-    This class uses FlextConfig.AutoConfig for automatic:
+    This class uses FlextSettings.AutoConfig for automatic:
     - Singleton pattern (thread-safe)
     - Namespace registration (accessible via config.observability)
     - Environment variable loading from FLEXT_OBSERVABILITY_* variables
@@ -33,10 +33,10 @@ class FlextObservabilityConfig(FlextConfig.AutoConfig):
     and health check configuration for the FLEXT observability system.
     """
 
-    # Use FlextConfig.resolve_env_file() to ensure all FLEXT configs use same .env
+    # Use FlextSettings.resolve_env_file() to ensure all FLEXT configs use same .env
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_OBSERVABILITY_",
-        env_file=FlextConfig.resolve_env_file(),
+        env_file=FlextSettings.resolve_env_file(),
         env_file_encoding="utf-8",
         case_sensitive=False,
         # Enhanced Pydantic v2.11+ features
@@ -49,7 +49,7 @@ class FlextObservabilityConfig(FlextConfig.AutoConfig):
         strict=False,
         json_schema_extra={
             "title": "FLEXT Observability Configuration",
-            "description": "Enterprise observability configuration extending FlextConfig",
+            "description": "Enterprise observability configuration extending FlextSettings",
         },
     )
 
@@ -185,10 +185,10 @@ class FlextObservabilityConfig(FlextConfig.AutoConfig):
     def create_with_defaults(
         cls,
         **overrides: object,
-    ) -> FlextObservabilityConfig:
+    ) -> FlextObservabilitySettings:
         """Create configuration with intelligent defaults using direct instantiation.
 
-        Uses the newer FlextConfig features for proper configuration management
+        Uses the newer FlextSettings features for proper configuration management
         without relying on removed singleton methods.
         """
         instance = cls()
@@ -198,7 +198,7 @@ class FlextObservabilityConfig(FlextConfig.AutoConfig):
         return instance
 
     @classmethod
-    def get_global_instance(cls) -> FlextObservabilityConfig:
+    def get_global_instance(cls) -> FlextObservabilitySettings:
         """Get the global singleton instance using direct management.
 
         This method ensures that all components in flext-observability use the same
@@ -209,7 +209,7 @@ class FlextObservabilityConfig(FlextConfig.AutoConfig):
 
     @classmethod
     def reset_global_instance(cls) -> None:
-        """Reset the global FlextObservabilityConfig instance (mainly for testing).
+        """Reset the global FlextObservabilitySettings instance (mainly for testing).
 
         In Pydantic v2, we don't maintain a persistent global instance to avoid
         issues with model state and validation.
@@ -217,5 +217,5 @@ class FlextObservabilityConfig(FlextConfig.AutoConfig):
 
 
 __all__: list[str] = [
-    "FlextObservabilityConfig",
+    "FlextObservabilitySettings",
 ]
