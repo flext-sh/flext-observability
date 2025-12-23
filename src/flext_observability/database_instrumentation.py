@@ -22,7 +22,7 @@ Key Features:
 from __future__ import annotations
 
 import time
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from flext_core import FlextLogger, FlextResult
 from sqlalchemy import event
@@ -61,7 +61,7 @@ class FlextObservabilityDatabase:
     class SQLAlchemy:
         """SQLAlchemy event listener for automatic query instrumentation."""
 
-        instrumented_engines: ClassVar[set[Any]] = set()
+        instrumented_engines: ClassVar[set[object]] = set()
 
         @staticmethod
         def setup_instrumentation(engine: object) -> FlextResult[None]:
@@ -232,7 +232,7 @@ class FlextObservabilityDatabase:
     class AsyncPG:
         """asyncpg pool instrumentation for automatic query tracing."""
 
-        instrumented_pools: ClassVar[set[Any]] = set()
+        instrumented_pools: ClassVar[set[object]] = set()
 
         @staticmethod
         def setup_instrumentation(pool: object) -> FlextResult[None]:

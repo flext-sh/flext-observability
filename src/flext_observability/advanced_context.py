@@ -20,20 +20,14 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from typing import Union
 
 from flext_core import FlextLogger, FlextResult
 
 # Type for JSON-serializable values (no Any allowed)
-JSONValue = Union[
-    str,
-    int,
-    float,
-    bool,
-    list["JSONValue"],
-    dict[str, "JSONValue"],
-    None,
-]
+# Using PEP 695 type statement for recursive type (Python 3.12+)
+type JSONValue = (
+    str | int | float | bool | list[JSONValue] | dict[str, JSONValue] | None
+)
 
 
 @dataclass

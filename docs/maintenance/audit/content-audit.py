@@ -127,8 +127,7 @@ class DocumentationAuditor:
     def analyze_file(self, file_path: Path) -> ContentMetrics:
         """Analyze a single documentation file."""
         try:
-            with Path(file_path).open("r", encoding="utf-8") as f:
-                content = f.read()
+            content = Path(file_path).read_text(encoding="utf-8")
         except Exception as e:
             return ContentMetrics(
                 file_path=str(file_path),
@@ -503,8 +502,7 @@ def main() -> None:
     # Output report
     if args.output_file:
         args.output_file.parent.mkdir(parents=True, exist_ok=True)
-        with Path(args.output_file).open("w", encoding="utf-8") as f:
-            f.write(report_content)
+        Path(args.output_file).write_text(report_content, encoding="utf-8")
 
 
 if __name__ == "__main__":

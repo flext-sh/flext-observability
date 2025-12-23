@@ -21,7 +21,7 @@ Key Features:
 from __future__ import annotations
 
 import time
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from flext_core import FlextLogger, FlextResult
 
@@ -66,7 +66,7 @@ class FlextObservabilityHTTPClient:
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
 
-        instrumented_clients: ClassVar[set[Any]] = set()
+        instrumented_clients: ClassVar[set[object]] = set()
 
         @staticmethod
         def setup_instrumentation(client: object) -> FlextResult[None]:
@@ -313,7 +313,7 @@ class FlextObservabilityHTTPClient:
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
 
-        instrumented_sessions: ClassVar[set[Any]] = set()
+        instrumented_sessions: ClassVar[set[object]] = set()
 
         @staticmethod
         def setup_instrumentation(session: object) -> FlextResult[None]:
