@@ -23,7 +23,8 @@ from __future__ import annotations
 import time
 from typing import ClassVar
 
-from flext import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult
+
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.logging_integration import FlextObservabilityLogging
 

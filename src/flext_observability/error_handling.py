@@ -22,7 +22,8 @@ import hashlib
 import time
 from dataclasses import dataclass, field
 
-from flext import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult
+
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
 

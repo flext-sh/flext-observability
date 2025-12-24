@@ -13,10 +13,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import uuid4
 
+from flext_core import m as m_core
 from flext_core.utilities import u as flext_u
 from pydantic import BaseModel, ConfigDict, Field, computed_field
-
-from flext import m as m_core
 
 
 class FlextObservabilityModels(m_core):

@@ -17,7 +17,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Literal, TypeVar
 
-from flext import FlextTypes
+from flext_core import FlextTypes
 
 # Define T TypeVar for generic programming
 T = TypeVar("T")
@@ -99,7 +99,8 @@ class FlextObservabilityTypes(FlextTypes):
 
         # Tracing and span types
         type TraceConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.JsonValue],
+            str,
+            str | int | bool | dict[str, FlextTypes.JsonValue],
         ]
         type SpanAttributes = dict[str, str | int | float | bool | dict[str, object]]
         type TraceContext = dict[str, str | int | dict[str, FlextTypes.JsonValue]]
@@ -107,7 +108,8 @@ class FlextObservabilityTypes(FlextTypes):
 
         # Alerting and notification types
         type AlertConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.JsonValue],
+            str,
+            str | int | bool | dict[str, FlextTypes.JsonValue],
         ]
         type AlertRules = list[dict[str, str | bool | int | float | dict[str, object]]]
         type AlertChannels = dict[str, str | dict[str, object]]
