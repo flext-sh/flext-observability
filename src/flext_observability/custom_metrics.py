@@ -19,17 +19,12 @@ Key Features:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import StrEnum
 
-from flext_core import FlextLogger, FlextResult
+from flext import FlextLogger, FlextResult
+from flext_observability.constants import c
 
-
-class MetricType(StrEnum):
-    """Metric type enumeration."""
-
-    COUNTER = "counter"
-    GAUGE = "gauge"
-    HISTOGRAM = "histogram"
+# Alias for backward compatibility - MetricType is now centralized in constants.py
+MetricType = c.Observability.MetricType
 
 
 @dataclass

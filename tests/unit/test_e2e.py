@@ -9,7 +9,7 @@ import time
 from datetime import UTC, datetime
 
 import pytest
-from flext_core import FlextContainer
+from flext import FlextContainer
 
 from flext_observability import (
     FlextObservabilityMasterFactory,

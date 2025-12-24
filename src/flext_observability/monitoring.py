@@ -11,8 +11,7 @@ from collections.abc import Callable
 from typing import cast, override
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextLogger, r
-
+from flext import FlextContainer, FlextLogger, r
 from flext_observability.models import FlextObservabilityModels
 from flext_observability.services import FlextObservabilityServices
 from flext_observability.settings import FlextObservabilitySettings
@@ -305,11 +304,11 @@ class FlextObservabilityMonitor:
                     source="monitoring_system",
                 )
                 metric_result = r[FlextObservabilityModels.Metrics.MetricEntry].ok(
-                    metric
+                    metric,
                 )
             except Exception as e:
                 metric_result = r[FlextObservabilityModels.Metrics.MetricEntry].fail(
-                    str(e)
+                    str(e),
                 )
             if metric_result.is_failure:
                 return r[None].fail(

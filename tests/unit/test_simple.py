@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import flext_tests
 import pytest
-from flext_core import FlextResult, u
+from flext import FlextResult, u
 from pydantic import ValidationError
 
 import flext_observability as entities_module

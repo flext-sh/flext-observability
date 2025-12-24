@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from flext_core import FlextContainer, FlextResult
+from flext import FlextContainer, FlextResult
 
 from flext_observability import (
     FlextObservabilityMonitor,

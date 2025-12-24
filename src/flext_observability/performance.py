@@ -16,7 +16,8 @@ import time
 from dataclasses import dataclass, field
 
 import psutil
-from flext_core import FlextLogger, FlextResult
+
+from flext import FlextLogger, FlextResult
 
 
 @dataclass
