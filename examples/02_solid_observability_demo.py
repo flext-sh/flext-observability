@@ -12,7 +12,8 @@ SPDX-License-Identifier: MIT
 
 import time
 
-from flext import FlextContainer, FlextResult
+from flext_core import FlextContainer, FlextResult
+
 from flext_observability import (
     FlextObservabilityMasterFactory,
     flext_create_alert,

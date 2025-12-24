@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext import FlextUtilities
+from flext_core import FlextUtilities
 
 
 class FlextObservabilityUtilities(FlextUtilities):

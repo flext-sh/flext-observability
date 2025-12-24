@@ -21,7 +21,8 @@ from __future__ import annotations
 
 import random
 
-from flext import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult
+
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
 

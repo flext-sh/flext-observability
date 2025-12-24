@@ -12,6 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
+from flext_core import FlextModels, FlextResult
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -21,8 +22,6 @@ from pydantic import (
     field_validator,
     model_validator,
 )
-
-from flext import FlextModels, FlextResult
 
 
 class FlextObservabilityHealth(FlextModels):
