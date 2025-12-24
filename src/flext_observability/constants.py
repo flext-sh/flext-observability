@@ -12,7 +12,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Final, Literal
 
-from flext_core import c as c_core
+from flext import c as c_core
 
 
 class FlextObservabilityConstants(c_core):
@@ -124,6 +124,30 @@ class FlextObservabilityConstants(c_core):
             ALERTS = "alerts"
             HEALTH = "health"
             LOGGING = "logging"
+
+        class SamplingDecision(StrEnum):
+            """Sampling decision enumeration.
+
+            DRY Pattern:
+                StrEnum is the single source of truth. Use SamplingDecision.SAMPLED.value
+                or SamplingDecision.SAMPLED directly - no base strings needed.
+            """
+
+            SAMPLED = "sampled"
+            NOT_SAMPLED = "not_sampled"
+
+        class ErrorSeverity(StrEnum):
+            """Error severity enumeration.
+
+            DRY Pattern:
+                StrEnum is the single source of truth. Use ErrorSeverity.INFO.value
+                or ErrorSeverity.INFO directly - no base strings needed.
+            """
+
+            INFO = "info"
+            WARNING = "warning"
+            ERROR = "error"
+            CRITICAL = "critical"
 
         # =============================================================================
         # LITERAL TYPES - Type-safe string literals (PEP 695)

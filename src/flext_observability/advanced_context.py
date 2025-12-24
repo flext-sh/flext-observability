@@ -21,7 +21,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-from flext_core import FlextLogger, FlextResult
+from flext import FlextLogger, FlextResult
 
 # Type for JSON-serializable values (no Any allowed)
 # Using PEP 695 type statement for recursive type (Python 3.12+)

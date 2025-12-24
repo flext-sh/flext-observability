@@ -22,9 +22,9 @@ from datetime import UTC, datetime
 from typing import ClassVar, Literal
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextLogger, FlextResult
 from pydantic import BaseModel, ConfigDict, Field
 
+from flext import FlextContainer, FlextLogger, FlextResult
 from flext_observability.__version__ import __version__, __version_info__
 
 

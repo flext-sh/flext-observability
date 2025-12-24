@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import cast
 
-from flext_core import FlextResult, t
+from flext import FlextResult, t
 
 from flext_observability import (
     flext_create_alert,

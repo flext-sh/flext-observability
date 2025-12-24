@@ -2,7 +2,7 @@
 
 from typing import Protocol, runtime_checkable
 
-from flext_core import p as p_base
+from flext import p as p_base
 
 
 class FlextObservabilityProtocols(p_base):
@@ -190,7 +190,7 @@ class FlextObservabilityProtocols(p_base):
             """Protocol for health check operations."""
 
             def check_health(
-                self, service_name: str
+                self, service_name: str,
             ) -> p_base.Result[dict[str, object]]:
                 """Perform health check for a service."""
                 ...
@@ -257,7 +257,7 @@ class FlextObservabilityProtocols(p_base):
                 ...
 
             def configure_logging(
-                self, config: dict[str, object]
+                self, config: dict[str, object],
             ) -> p_base.Result[bool]:
                 """Configure logging system."""
                 ...

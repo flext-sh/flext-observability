@@ -14,11 +14,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import datetime
 from decimal import Decimal
-from typing import Literal, Protocol, TypeVar
+from typing import Literal, TypeVar
 
-from flext_core import FlextTypes
+from flext import FlextTypes
 
 # Define T TypeVar for generic programming
 T = TypeVar("T")
@@ -100,7 +99,7 @@ class FlextObservabilityTypes(FlextTypes):
 
         # Tracing and span types
         type TraceConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.JsonValue]
+            str, str | int | bool | dict[str, FlextTypes.JsonValue],
         ]
         type SpanAttributes = dict[str, str | int | float | bool | dict[str, object]]
         type TraceContext = dict[str, str | int | dict[str, FlextTypes.JsonValue]]
@@ -108,7 +107,7 @@ class FlextObservabilityTypes(FlextTypes):
 
         # Alerting and notification types
         type AlertConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.JsonValue]
+            str, str | int | bool | dict[str, FlextTypes.JsonValue],
         ]
         type AlertRules = list[dict[str, str | bool | int | float | dict[str, object]]]
         type AlertChannels = dict[str, str | dict[str, object]]
@@ -135,135 +134,9 @@ class FlextObservabilityTypes(FlextTypes):
         type MetricDict = dict[str, object]
         type StringList = list[str]
 
-    # =========================================================================
-    # OBSERVABILITY PROTOCOLS - Protocol definitions for observability interfaces
-    # =========================================================================
-
-    class Protocols:
-        """Protocol definitions for observability interfaces and contracts."""
-
-        class MetricProtocol(Protocol):
-            """Protocol for metric collection and reporting."""
-
-            def name(self) -> str:
-                """Get metric name."""
-                ...
-
-            def value(self) -> float | int | Decimal:
-                """Get metric value."""
-                ...
-
-            def unit(self) -> str:
-                """Get metric unit."""
-                ...
-
-            def timestamp(self) -> datetime:
-                """Get metric timestamp."""
-                ...
-
-            def tags(self) -> dict[str, str | int | float]:
-                """Get metric tags."""
-                ...
-
-        class TraceProtocol(Protocol):
-            """Protocol for distributed tracing."""
-
-            def operation(self) -> str:
-                """Get operation name."""
-                ...
-
-            def span_id(self) -> str:
-                """Get span ID."""
-                ...
-
-            def trace_id(self) -> str:
-                """Get trace ID."""
-                ...
-
-            def span_attributes(self) -> dict[str, object]:
-                """Get span attributes."""
-                ...
-
-            def duration_ms(self) -> float | None:
-                """Get duration in milliseconds."""
-                ...
-
-            def status(self) -> str:
-                """Get trace status."""
-                ...
-
-            def timestamp(self) -> datetime:
-                """Get trace timestamp."""
-                ...
-
-        class AlertProtocol(Protocol):
-            """Protocol for alerting and notifications."""
-
-            def title(self) -> str:
-                """Get alert title."""
-                ...
-
-            def message(self) -> str:
-                """Get alert message."""
-                ...
-
-            def severity(self) -> str:
-                """Get alert severity."""
-                ...
-
-            def status(self) -> str:
-                """Get alert status."""
-                ...
-
-            def tags(self) -> dict[str, str | int | float]:
-                """Get alert tags."""
-                ...
-
-            def timestamp(self) -> datetime:
-                """Get alert timestamp."""
-                ...
-
-        class HealthCheckProtocol(Protocol):
-            """Protocol for health monitoring."""
-
-            def component(self) -> str:
-                """Get component name."""
-                ...
-
-            def status(self) -> str:
-                """Get health status."""
-                ...
-
-            def message(self) -> str:
-                """Get health message."""
-                ...
-
-            def metrics(self) -> dict[str, object]:
-                """Get health metrics."""
-                ...
-
-            def timestamp(self) -> datetime:
-                """Get health check timestamp."""
-                ...
-
-        class LogEntryProtocol(Protocol):
-            """Protocol for log aggregation."""
-
-            def message(self) -> str:
-                """Get log message."""
-                ...
-
-            def level(self) -> str:
-                """Get log level."""
-                ...
-
-            def context(self) -> dict[str, object]:
-                """Get log context."""
-                ...
-
-            def timestamp(self) -> datetime:
-                """Get log timestamp."""
-                ...
+    # Note: All protocol definitions are centralized in protocols.py
+    # Use p.Observability.* for protocols (MetricsProtocol, TracingProtocol, etc.)
+    # This follows FLEXT SOLID principles - protocols in protocols.py, types in typings.py
 
     class Observability:
         """Observability types namespace for cross-project access.

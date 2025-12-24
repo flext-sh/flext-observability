@@ -19,8 +19,7 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_core import FlextLogger, FlextResult
-
+from flext import FlextLogger, FlextResult
 from flext_observability.context import FlextObservabilityContext
 
 

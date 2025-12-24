@@ -21,20 +21,13 @@ from __future__ import annotations
 import hashlib
 import time
 from dataclasses import dataclass, field
-from enum import StrEnum
 
-from flext_core import FlextLogger, FlextResult
-
+from flext import FlextLogger, FlextResult
+from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
 
-
-class ErrorSeverity(StrEnum):
-    """Error severity enumeration."""
-
-    INFO = "info"
-    WARNING = "warning"
-    ERROR = "error"
-    CRITICAL = "critical"
+# Alias for backward compatibility - ErrorSeverity is now centralized in constants.py
+ErrorSeverity = c.Observability.ErrorSeverity
 
 
 @dataclass

@@ -20,21 +20,16 @@ Key Features:
 from __future__ import annotations
 
 import random
-from enum import StrEnum
 
-from flext_core import FlextLogger, FlextResult
-
+from flext import FlextLogger, FlextResult
+from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
+
+# Alias for backward compatibility - SamplingDecision is now centralized in constants.py
+SamplingDecision = c.Observability.SamplingDecision
 
 # Use SystemRandom for cryptographically stronger sampling decisions
 _secure_random = random.SystemRandom()
-
-
-class SamplingDecision(StrEnum):
-    """Sampling decision enumeration."""
-
-    SAMPLED = "sampled"
-    NOT_SAMPLED = "not_sampled"
 
 
 class FlextObservabilitySampling:

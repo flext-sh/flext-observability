@@ -25,11 +25,11 @@ import time
 from collections.abc import Callable
 
 from flask import g, request
-from flext_core import FlextLogger, FlextResult
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
 
+from flext import FlextLogger, FlextResult
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.logging_integration import FlextObservabilityLogging
 
