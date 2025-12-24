@@ -3,8 +3,9 @@
 ## Table of Contents
 
 - [FLEXT Observability - Documentation Hub](#flext-observability---documentation-hub)
+  - [Table of Contents](#table-of-contents)
   - [📚 Documentation Index](#-documentation-index)
-    - [🏗️ **Architecture & Design**](#-architecture--design)
+    - [🏗️ **Architecture \& Design**](#️-architecture--design)
     - [🚀 **Development Guides**](#-development-guides)
     - [🔧 **API Reference**](#-api-reference)
     - [📋 **Implementation Status**](#-implementation-status)
@@ -14,9 +15,9 @@
     - [**For API Reference**](#for-api-reference)
     - [**For Current Status**](#for-current-status)
   - [🔍 Current Implementation Status](#-current-implementation-status)
-    - [✅ **Implemented & Working**](#-implemented--working)
-    - [⚠️ **Implemented & Blocked**](#-implemented--blocked)
-    - [📋 **Planned & Documented**](#-planned--documented)
+    - [✅ **Implemented \& Working**](#-implemented--working)
+    - [⚠️ **Implemented \& Blocked**](#️-implemented--blocked)
+    - [📋 **Planned \& Documented**](#-planned--documented)
   - [📝 Documentation Standards](#-documentation-standards)
   - [🤝 Contributing to Documentation](#-contributing-to-documentation)
     - [Documentation Structure](#documentation-structure)
