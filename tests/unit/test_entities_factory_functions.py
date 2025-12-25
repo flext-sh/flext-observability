@@ -7,7 +7,8 @@ SPDX-License-Identifier: MIT
 
 from decimal import Decimal
 
-from flext_observability import (
+
+
     flext_alert,
     flext_health_check,
     flext_metric,

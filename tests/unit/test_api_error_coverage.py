@@ -8,7 +8,8 @@ SPDX-License-Identifier: MIT
 import math
 from datetime import UTC, datetime
 
-from flext_observability import (
+
+
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,

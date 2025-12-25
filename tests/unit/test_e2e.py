@@ -11,7 +11,8 @@ from datetime import UTC, datetime
 import pytest
 from flext import FlextContainer
 
-from flext_observability import (
+
+
     FlextObservabilityMasterFactory,
     flext_create_alert,
     flext_create_health_check,

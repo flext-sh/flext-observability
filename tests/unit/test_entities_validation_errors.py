@@ -8,7 +8,8 @@ SPDX-License-Identifier: MIT
 import pytest
 from pydantic import ValidationError
 
-from flext_observability import (
+
+
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,

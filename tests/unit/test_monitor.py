@@ -11,7 +11,8 @@ import time
 import pytest
 from flext import t
 
-from flext_observability import (
+
+
     FlextObservabilityMonitor,
     flext_monitor_function,
 )

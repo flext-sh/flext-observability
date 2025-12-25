@@ -6,7 +6,8 @@ SPDX-License-Identifier: MIT
 """
 
 import flext_observability.fields as fields_module
-from flext_observability import (
+
+
     FlextObservabilityFields,
 )
 
