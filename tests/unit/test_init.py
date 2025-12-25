@@ -8,7 +8,8 @@ SPDX-License-Identifier: MIT
 from flext import FlextConstants, FlextContainer, FlextLogger
 
 import flext_observability
-from flext_observability import (
+
+
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,

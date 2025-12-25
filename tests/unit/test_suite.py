@@ -10,7 +10,8 @@ import time
 
 from flext import FlextContainer, t
 
-from flext_observability import (
+
+
     FlextObservabilityMasterFactory,
     FlextObservabilityMonitor,
     flext_monitor_function,

@@ -6,7 +6,8 @@ SPDX-License-Identifier: MIT
 """
 
 import flext_observability.typings as types_module
-from flext_observability import (
+
+
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,

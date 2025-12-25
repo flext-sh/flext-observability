@@ -17,7 +17,8 @@ from flext import FlextResult, u
 from pydantic import ValidationError
 
 import flext_observability as entities_module
-from flext_observability import (
+
+
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,

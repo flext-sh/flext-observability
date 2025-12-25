@@ -8,7 +8,8 @@ SPDX-License-Identifier: MIT
 import pytest
 from flext import FlextContainer, FlextResult
 
-from flext_observability import (
+
+
     FlextObservabilityMonitor,
     flext_monitor_function,
 )

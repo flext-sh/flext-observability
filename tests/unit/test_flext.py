@@ -12,7 +12,8 @@ from typing import cast
 
 from flext import FlextResult, t
 
-from flext_observability import (
+
+
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,

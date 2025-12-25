@@ -7,7 +7,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_observability import (
+
+
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,

@@ -13,7 +13,8 @@ from __future__ import annotations
 import pytest
 from flext import FlextContainer
 
-from flext_observability import (
+
+
     FlextAlert,
     FlextHealthCheck,
     FlextLogEntry,

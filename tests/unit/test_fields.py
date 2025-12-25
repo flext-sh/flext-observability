@@ -7,7 +7,8 @@ SPDX-License-Identifier: MIT
 
 import pytest
 
-from flext_observability import (
+
+
     FlextObservabilityFields,
 )
 from flext_observability.constants import FlextObservabilityConstants
