@@ -14,7 +14,9 @@ from flext_tests.protocols import FlextTestsProtocols
 from flext_observability.protocols import FlextObservabilityProtocols
 
 
-class TestsFlextObservabilityProtocols(FlextTestsProtocols, FlextObservabilityProtocols):
+class TestsFlextObservabilityProtocols(
+    FlextTestsProtocols, FlextObservabilityProtocols
+):
     """Test protocols combining FlextTestsProtocols and FlextObservabilityProtocols.
 
     Provides access to:
