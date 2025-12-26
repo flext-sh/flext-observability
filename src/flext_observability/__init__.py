@@ -585,12 +585,18 @@ flext_create_trace = flext_trace
 flext_create_alert = flext_alert
 flext_create_log_entry = flext_log_entry
 
+# Alias classes for backward compatibility
+FlextObservabilityAlerting = FlextObservability.AlertingService
+FlextObservabilitySettings = None  # Settings not implemented yet
+
 __all__ = [
     "FlextAlert",
     "FlextHealthCheck",
     "FlextLogEntry",
     "FlextMetric",
     "FlextObservability",
+    "FlextObservabilityAlerting",
+    "FlextObservabilitySettings",
     "FlextTrace",
     "__version__",
     "__version_info__",
