@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext import FlextConstants
+from flext_core import FlextConstants
 
 from flext_observability import FlextObservabilityConstants
 

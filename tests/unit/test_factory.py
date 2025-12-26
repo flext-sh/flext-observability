@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from datetime import datetime
 
-from flext import FlextContainer
+from flext_core import FlextContainer
 
 
 

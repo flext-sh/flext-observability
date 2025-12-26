@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 import threading
 import time
 
-from flext import FlextContainer, t
+from flext_core import FlextContainer, t
 
 
 

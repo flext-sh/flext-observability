@@ -52,7 +52,7 @@ class TestsFlextObservabilityModels(FlextTestsModels, FlextObservabilityModels):
 
 # Short aliases per FLEXT convention
 tm = TestsFlextObservabilityModels  # Primary test models alias
-m = TestsFlextObservabilityModels   # Alternative alias for production model access
+m = TestsFlextObservabilityModels  # Alternative alias for production model access
 
 __all__ = [
     "TestsFlextObservabilityModels",
