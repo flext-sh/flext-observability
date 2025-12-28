@@ -23,6 +23,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import yaml
+from flext_core import FlextTypes as t
 
 # Constants for magic values
 MAX_LINK_DENSITY_PERCENT = 5
@@ -94,7 +95,7 @@ class DocumentationAuditor:
         self.config = self._load_config(config_path)
         self.report = AuditReport()
 
-    def _load_config(self, config_path: Path | None) -> dict[str, object]:
+    def _load_config(self, config_path: Path | None) -> dict[str, t.GeneralValueType]:
         """Load audit configuration."""
         default_config = {
             "freshness_threshold_days": 30,
@@ -445,7 +446,9 @@ class DocumentationAuditor:
             "fresh_files": self.report.fresh_files,
             "stale_files": self.report.stale_files,
             "file_metrics": file_metrics,
-            "category_breakdown": dict[str, object](self.report.category_breakdown),
+            "category_breakdown": dict[str, t.GeneralValueType](
+                self.report.category_breakdown
+            ),
             "overall_quality_score": self.report.overall_quality_score,
         }
 

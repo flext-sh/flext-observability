@@ -13,11 +13,11 @@ from flext_core import FlextConstants, FlextResult, FlextSettings
 from pydantic import Field, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_observability.constants import FlextObservabilityConstants
+from flext_observability.constants import c
 
 
 @FlextSettings.auto_register("observability")
-class FlextObservabilitySettings(FlextSettings.AutoConfig):
+class FlextObservabilitySettings(FlextSettings):
     """Unified observability configuration using AutoConfig pattern.
 
     **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
@@ -59,13 +59,13 @@ class FlextObservabilitySettings(FlextSettings.AutoConfig):
         description="Enable metrics collection",
     )
     metrics_export_interval_seconds: int = Field(
-        default=FlextObservabilityConstants.Observability.Defaults.DEFAULT_METRICS_EXPORT_INTERVAL_SECONDS,
+        default=c.Observability.Defaults.DEFAULT_METRICS_EXPORT_INTERVAL_SECONDS,
         description="Metrics export interval in seconds",
         gt=0,
         le=3600,
     )
     metrics_namespace: str = Field(
-        default=FlextObservabilityConstants.Observability.Defaults.DEFAULT_METRICS_NAMESPACE,
+        default=c.Observability.Defaults.DEFAULT_METRICS_NAMESPACE,
         min_length=1,
         description="Metrics namespace",
     )
@@ -84,7 +84,7 @@ class FlextObservabilitySettings(FlextSettings.AutoConfig):
         description="Enable distributed tracing",
     )
     tracing_sampling_rate: float = Field(
-        default=FlextObservabilityConstants.Observability.Defaults.DEFAULT_TRACING_SAMPLING_RATE,
+        default=c.Observability.Defaults.DEFAULT_TRACING_SAMPLING_RATE,
         description="Trace sampling rate (0.0 to 1.0)",
         ge=0.0,
         le=1.0,
@@ -94,12 +94,12 @@ class FlextObservabilitySettings(FlextSettings.AutoConfig):
         description="Trace exporter endpoint URL",
     )
     tracing_service_name: str = Field(
-        default=FlextObservabilityConstants.Observability.Defaults.DEFAULT_SERVICE_NAME,
+        default=c.Observability.Defaults.DEFAULT_SERVICE_NAME,
         min_length=1,
         description="Service name for traces",
     )
     tracing_max_span_attributes: int = Field(
-        default=FlextObservabilityConstants.Observability.Defaults.DEFAULT_MAX_SPAN_ATTRIBUTES,
+        default=c.Observability.Defaults.DEFAULT_MAX_SPAN_ATTRIBUTES,
         description="Maximum number of span attributes",
         gt=0,
         le=1000,

@@ -25,7 +25,7 @@ import time
 from collections.abc import Callable
 
 from flask import g, request
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes as t
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
@@ -198,7 +198,7 @@ class FlextObservabilityHTTP:
                 @app.errorhandler(Exception)
                 def flext_error_handler(
                     error: Exception,
-                ) -> tuple[dict[str, object], int]:
+                ) -> tuple[dict[str, t.GeneralValueType], int]:
                     """Handle exceptions with logging and alerting."""
                     try:
                         FlextObservabilityLogging.log_with_context(
@@ -391,7 +391,7 @@ class FlextObservabilityHTTP:
     async def _async_log_with_context(
         message: str,
         level: str,
-        extra: dict[str, object],
+        extra: dict[str, t.GeneralValueType],
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 

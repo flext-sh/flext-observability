@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 import time
 
-from flext_core import FlextContainer, FlextResult
+from flext_core import FlextContainer, FlextResult, FlextTypes as t
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -24,13 +24,13 @@ from flext_observability import (
 )
 
 
-def database_query(query: str) -> dict[str, object]:
+def database_query(query: str) -> dict[str, t.GeneralValueType]:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)  # Simulate database latency
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> dict[str, object]:
+def process_api_request(endpoint: str) -> dict[str, t.GeneralValueType]:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)  # Simulate processing time
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
@@ -56,7 +56,7 @@ def demonstrate_solid_design() -> None:
         alert_result,
         health_result,
     ]
-    entities: list[object] = [
+    entities: list[t.GeneralValueType] = [
         result.value
         for result in results
         if hasattr(result, "success")
@@ -166,7 +166,7 @@ def demonstrate_factory_patterns() -> None:
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     # Create various entities and validate them
-    entities_to_validate: list[FlextResult[dict[str, object]]] = [
+    entities_to_validate: list[FlextResult[dict[str, t.GeneralValueType]]] = [
         flext_create_metric("valid_metric", 100.0, "count"),
         flext_create_trace("valid_operation", "valid_service"),
         flext_create_alert("Valid alert", "system", "info"),

@@ -8,12 +8,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import cast
 
 from flext_core import FlextResult, t
 
-
-
+from flext_observability import (
     flext_create_alert,
     flext_create_health_check,
     flext_create_log_entry,
@@ -170,7 +168,9 @@ class TestSimpleApiErrorHandling:
         exception_occurred = False
         result_obtained = False
         try:
-            result = flext_create_metric("test", cast("float", "invalid"))
+            # Type narrowing: we're intentionally passing invalid type for testing
+            invalid_value: float = "invalid"  # type: ignore[assignment]
+            result = flext_create_metric("test", invalid_value)
             # Function should handle this gracefully
             result_obtained = True
             assert result.is_success or result.is_failure

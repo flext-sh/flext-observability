@@ -17,7 +17,7 @@ import json
 from contextvars import ContextVar
 from uuid import uuid4
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes as t
 
 
 class FlextObservabilityContext:
@@ -59,7 +59,9 @@ class FlextObservabilityContext:
     _correlation_id: ContextVar[str] = ContextVar("correlation_id", default="")
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
-    _baggage: ContextVar[dict[str, object] | None] = ContextVar("baggage", default=None)
+    _baggage: ContextVar[dict[str, t.GeneralValueType] | None] = ContextVar(
+        "baggage", default=None
+    )
 
     _logger = FlextLogger(__name__)
 
@@ -364,7 +366,7 @@ class FlextObservabilityContext:
     # ========================================================================
 
     @staticmethod
-    def get_context() -> dict[str, object]:
+    def get_context() -> dict[str, t.GeneralValueType]:
         """Get complete context snapshot.
 
         Returns all context variables as a dictionary. Useful for

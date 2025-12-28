@@ -9,7 +9,7 @@ import threading
 import time
 
 import pytest
-from flext_core import t
+from flext_core import t, FlextTypes as t
 
 
 

@@ -13,7 +13,7 @@ class TestFlextObservabilityTypes:
 
     def test_inherits_from_flext_types(self) -> None:
         """Test that FlextObservabilityTypes inherits from t."""
-        assert issubclass(FlextObservabilityTypes, dict[str, object])
+        assert issubclass(FlextObservabilityTypes, dict[str, t.GeneralValueType])
 
     def test_nested_type_classes(self) -> None:
         """Test that nested type classes exist."""

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import cast, override
+from typing import override
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextLogger, r
@@ -399,7 +399,9 @@ class FlextObservabilityMonitor:
                 wrapper.__doc__ = getattr(func, "__doc__", wrapper.__doc__)
                 wrapper.__module__ = getattr(func, "__module__", __name__)
 
-                return cast("FlextObservabilityMonitor.object_callable", wrapper)
+                return (
+                    wrapper  # Type is already FlextObservabilityMonitor.object_callable
+                )
 
             return decorator
 

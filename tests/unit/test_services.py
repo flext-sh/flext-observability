@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 import threading
 
-from flext_core import t
+from flext_core import t, FlextTypes as t
 
 
 

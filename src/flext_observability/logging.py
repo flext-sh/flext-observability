@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Literal, Self
 
-from flext_core import FlextModels, FlextResult
+from flext_core import FlextModels, FlextResult, FlextTypes as t
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -57,7 +57,7 @@ class FlextObservabilityLogging(FlextModels):
             description="Log timestamp",
         )
         source: str = Field(description="Log source")
-        context: dict[str, object] = Field(
+        context: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Log context",
         )
@@ -86,9 +86,9 @@ class FlextObservabilityLogging(FlextModels):
         @field_serializer("context", when_used="json")
         def serialize_context_with_log_metadata(
             self,
-            value: dict[str, object],
+            value: dict[str, t.GeneralValueType],
             _info: object,
-        ) -> dict[str, object]:
+        ) -> dict[str, t.GeneralValueType]:
             """Serialize context with log metadata."""
             return {
                 "context": value,
@@ -154,7 +154,7 @@ class FlextObservabilityLogging(FlextModels):
             default="info",
             description="Log level",
         )
-        context: dict[str, object] = Field(
+        context: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Log context",
         )

@@ -9,7 +9,7 @@ import time
 from datetime import UTC, datetime
 
 import pytest
-from flext_core import FlextContainer
+from flext_core import FlextTypes as t, FlextContainer
 
 
 
@@ -52,7 +52,7 @@ class TestE2EComprehensiveObservability:
 
     def test_e2e_logging_with_context(self) -> None:
         """E2E test: Create logs with rich context, validate structure."""
-        contexts: list[dict[str, object]] = [
+        contexts: list[dict[str, t.GeneralValueType]] = [
             {"user_id": "12345", "session": "abc-def", "ip": "192.168.1.1"},
             {"trace_id": "trace-123", "span_id": "span-456", "operation": "db_query"},
             {"error_code": 500, "stack_trace": "Error in line 42", "component": "auth"},
@@ -124,7 +124,7 @@ class TestE2EComprehensiveObservability:
         assert parent_result.is_success
 
         # Child spans
-        child_operations: list[tuple[str, int, dict[str, object]]] = [
+        child_operations: list[tuple[str, int, dict[str, t.GeneralValueType]]] = [
             ("auth_validation", 25, {"user_id": "12345", "auth_method": "jwt"}),
             ("database_query", 180, {"query": "SELECT * FROM users", "rows": 1}),
             ("response_formatting", 45, {"format": "json", "size_bytes": 1024}),
@@ -144,7 +144,7 @@ class TestE2EComprehensiveObservability:
 
     def test_e2e_health_monitoring_comprehensive(self) -> None:
         """E2E test: Health monitoring across multiple components."""
-        components: list[tuple[str, str, str, dict[str, object]]] = [
+        components: list[tuple[str, str, str, dict[str, t.GeneralValueType]]] = [
             (
                 "database",
                 "healthy",
