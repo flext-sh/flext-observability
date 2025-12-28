@@ -22,7 +22,7 @@ import hashlib
 import time
 from dataclasses import dataclass, field
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes as t
 
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
@@ -40,7 +40,7 @@ class ErrorEvent:
     severity: ErrorSeverity
     timestamp: float = field(default_factory=time.time)
     correlation_id: str = ""
-    context: dict[str, object] = field(default_factory=dict)
+    context: dict[str, t.GeneralValueType] = field(default_factory=dict)
     fingerprint: str = ""
 
     def calculate_fingerprint(self) -> str:

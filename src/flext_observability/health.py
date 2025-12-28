@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextModels, FlextResult
+from flext_core import FlextModels, FlextResult, FlextTypes as t
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -57,7 +57,7 @@ class FlextObservabilityHealth(FlextModels):
             default=None,
             description="Response time in milliseconds",
         )
-        details: dict[str, object] = Field(
+        details: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Health check details",
         )
@@ -92,9 +92,9 @@ class FlextObservabilityHealth(FlextModels):
         @field_serializer("details", when_used="json")
         def serialize_details_with_health_context(
             self,
-            value: dict[str, object],
+            value: dict[str, t.GeneralValueType],
             _info: object,
-        ) -> dict[str, object]:
+        ) -> dict[str, t.GeneralValueType]:
             """Serialize details with health check context."""
             return {
                 "details": value,
@@ -167,7 +167,7 @@ class FlextObservabilityHealth(FlextModels):
             description="Health status",
         )
         message: str = Field(default="", description="Health check message")
-        metrics: dict[str, object] = Field(
+        metrics: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Health metrics",
         )
@@ -197,7 +197,7 @@ class FlextObservabilityHealth(FlextModels):
         """Create a FlextHealthCheck entity directly."""
         try:
             # Filter kwargs to only include valid FlextHealthCheck parameters
-            valid_kwargs: dict[str, object] = {}
+            valid_kwargs: dict[str, t.GeneralValueType] = {}
             if "metrics" in kwargs and isinstance(kwargs["metrics"], dict):
                 valid_kwargs["metrics"] = kwargs["metrics"]
             if "timestamp" in kwargs and isinstance(kwargs["timestamp"], datetime):

@@ -39,7 +39,7 @@ class TestsFlextObservabilityModels(FlextTestsModels, FlextObservabilityModels):
     - All production models come from FlextObservabilityModels
     """
 
-    class Tests:
+    # class Tests:
         """Project-specific test fixtures namespace.
 
         Provides test fixtures for flext-observability testing.

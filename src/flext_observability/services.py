@@ -10,7 +10,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextContainer, FlextLogger, FlextResult
+from typing import cast
+
+from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes as t
 from flext_core.utilities import u_core
 
 from flext_observability.settings import FlextObservabilitySettings
@@ -48,24 +50,28 @@ class FlextObservabilityServices(u_core):
 
     def process_entry(
         self,
-        entry_data: dict[str, object],
-    ) -> FlextResult[dict[str, object]]:
+        entry_data: dict[str, t.GeneralValueType],
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Process generic observability entry through FLEXT patterns."""
         try:
             # Delegate validation to FLEXT core
             if not entry_data:
-                return FlextResult[dict[str, object]].fail("Entry data required")
+                return FlextResult[dict[str, t.GeneralValueType]].fail(
+                    "Entry data required"
+                )
 
             # Use container for any service resolution
             processed = entry_data.copy()
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
 
-            return FlextResult[dict[str, object]].ok(processed)
+            return FlextResult[dict[str, t.GeneralValueType]].ok(processed)
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(f"Entry processing failed: {e}")
+            return FlextResult[dict[str, t.GeneralValueType]].fail(
+                f"Entry processing failed: {e}"
+            )
 
-    def get_status(self) -> FlextResult[dict[str, object]]:
+    def get_status(self) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Get generic service status through FLEXT patterns."""
         try:
             status = {
@@ -74,19 +80,25 @@ class FlextObservabilityServices(u_core):
                 "timestamp": "now",
                 "version": "generic",
             }
-            return FlextResult[dict[str, object]].ok(status)
+            return FlextResult[dict[str, t.GeneralValueType]].ok(
+                cast("dict[str, t.GeneralValueType]", status)
+            )
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(f"Status check failed: {e}")
+            return FlextResult[dict[str, t.GeneralValueType]].fail(
+                f"Status check failed: {e}"
+            )
 
-    def create_alert(self, **_kwargs: object) -> FlextResult[dict[str, object]]:
+    def create_alert(
+        self, **_kwargs: object
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Generic alert creation - not implemented in base service."""
-        return FlextResult[dict[str, object]].fail(
+        return FlextResult[dict[str, t.GeneralValueType]].fail(
             "Alert creation not implemented in generic service",
         )
 
-    def get_metrics_summary(self) -> FlextResult[dict[str, object]]:
+    def get_metrics_summary(self) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Generic metrics summary - not implemented in base service."""
-        return FlextResult[dict[str, object]].fail(
+        return FlextResult[dict[str, t.GeneralValueType]].fail(
             "Metrics summary not implemented in generic service",
         )
 
@@ -98,16 +110,9 @@ class FlextObservabilityServices(u_core):
 
 # Global factory functions delegating to FLEXT core
 def get_global_factory() -> FlextObservabilityServices:
-    """Get global factory instance through FLEXT container."""
-    result = FlextContainer.get_global().get_or_create(
-        "flext_observability_factory",
-        FlextObservabilityServices,
-    )
-    if result.is_success:
-        value = result.value
-        if isinstance(value, FlextObservabilityServices):
-            return value
-    # Fallback if container doesn't have the service
+    """Get global factory instance."""
+    # For now, return new instance directly - container registration
+    # would require protocol implementation
     return FlextObservabilityServices()
 
 

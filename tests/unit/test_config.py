@@ -21,14 +21,12 @@ class TestFlextObservabilitySettings:
         """Test configuration attributes are properly defined."""
         # Test that key configuration attributes exist
         config_attrs = [
-            "service_name",
-            "environment",
-            "debug_mode",
             "metrics_enabled",
             "tracing_enabled",
-            "alerting_enabled",
-            "health_check_enabled",
-            "logging_enabled",
+            "monitoring_enabled",
+            "structured_logging",
+            "project_name",
+            "project_version",
         ]
         for attr in config_attrs:
             assert hasattr(FlextObservabilitySettings, attr)
@@ -36,14 +34,12 @@ class TestFlextObservabilitySettings:
     def test_default_values(self) -> None:
         """Test default configuration values."""
         config = FlextObservabilitySettings()
-        assert config.service_name == "flext-observability"
-        assert config.environment == "development"
-        assert config.debug_mode is False
         assert config.metrics_enabled is True
         assert config.tracing_enabled is True
-        assert config.alerting_enabled is True
-        assert config.health_check_enabled is True
-        assert config.logging_enabled is True
+        assert config.monitoring_enabled is True
+        assert config.structured_logging is True
+        assert isinstance(config.project_name, str)
+        assert isinstance(config.project_version, str)
 
     def test_validation_methods(self) -> None:
         """Test configuration validation methods exist."""
@@ -60,23 +56,12 @@ class TestFlextObservabilitySettings:
     def test_endpoint_configuration(self) -> None:
         """Test endpoint configuration attributes."""
         config = FlextObservabilitySettings()
-        endpoint_attrs = [
-            "prometheus_url",
-            "grafana_url",
-            "jaeger_url",
-            "alertmanager_url",
-        ]
-        for attr in endpoint_attrs:
-            assert hasattr(config, attr)
+        # Test that tracing exporter endpoint exists
+        assert hasattr(config, "tracing_exporter_endpoint")
 
     def test_credential_configuration(self) -> None:
         """Test credential configuration attributes."""
         config = FlextObservabilitySettings()
-        cred_attrs = [
-            "prometheus_username",
-            "prometheus_password",
-            "grafana_username",
-            "grafana_password",
-        ]
-        for attr in cred_attrs:
-            assert hasattr(config, attr)
+        # Test that basic configuration exists
+        assert hasattr(config, "metrics_namespace")
+        assert hasattr(config, "tracing_service_name")

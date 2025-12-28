@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 import threading
 import time
 
-from flext_core import FlextContainer, t
+from flext_core import FlextContainer, t, FlextTypes as t
 
 
 
@@ -186,7 +186,7 @@ class TestCompleteIntegrationReal:
 
         # Create monitored functions
         @flext_monitor_function(monitor=self.monitor, metric_name="data_processing")
-        def process_data(data: t.IntList) -> dict[str, object]:
+        def process_data(data: t.IntList) -> dict[str, t.GeneralValueType]:
             """Real data processing function."""
             # Simulate real processing
             time.sleep(0.1)

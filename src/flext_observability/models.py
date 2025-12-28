@@ -13,7 +13,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from flext_core import m as m_core
+from flext_core import FlextTypes as t, m as m_core
 from flext_core.utilities import u as flext_u
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
@@ -55,11 +55,11 @@ class FlextObservabilityModels(m_core):
             default_factory=datetime.now,
             description="Entry timestamp",
         )
-        data: dict[str, object] = Field(
+        data: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Generic data payload",
         )
-        metadata: dict[str, object] = Field(
+        metadata: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Generic metadata",
         )
@@ -104,7 +104,7 @@ class FlextObservabilityModels(m_core):
             default=30,
             description="Retention period",
         )
-        settings: dict[str, object] = Field(
+        settings: dict[str, t.GeneralValueType] = Field(
             default_factory=dict,
             description="Type-specific settings",
         )

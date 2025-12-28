@@ -9,8 +9,7 @@ from datetime import datetime
 
 from flext_core import FlextContainer
 
-
-
+from flext_observability.factory import (
     FlextObservabilityMasterFactory,
     get_global_factory,
     reset_global_factory,

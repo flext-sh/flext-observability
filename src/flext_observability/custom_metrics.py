@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes as t
 
 from flext_observability.constants import c
 
@@ -81,7 +81,7 @@ class FlextObservabilityCustomMetrics:
         def __init__(self) -> None:
             """Initialize metric registry."""
             self._metrics: dict[str, CustomMetricDefinition] = {}
-            self._metric_instances: dict[str, object] = {}
+            self._metric_instances: dict[str, t.GeneralValueType] = {}
             self._namespaces: dict[str, str] = {}  # Namespace prefixes
 
         def register_metric(
@@ -231,7 +231,7 @@ class FlextObservabilityCustomMetrics:
             self,
             name: str,
             namespace: str = "default",
-        ) -> dict[str, object] | None:
+        ) -> dict[str, t.GeneralValueType] | None:
             """Get detailed metric information.
 
             Args:
