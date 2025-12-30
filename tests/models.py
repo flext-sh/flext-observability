@@ -40,6 +40,7 @@ class TestsFlextObservabilityModels(FlextTestsModels, FlextObservabilityModels):
     """
 
     # class Tests:
+    class Tests(FlextTestsModels.Tests):
         """Project-specific test fixtures namespace.
 
         Provides test fixtures for flext-observability testing.
