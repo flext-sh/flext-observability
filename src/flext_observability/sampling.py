@@ -65,7 +65,7 @@ class FlextObservabilitySampling:
         Sampler: Sampling strategy configuration and decisions
     """
 
-    _logger = FlextLogger(__name__)
+    _logger = FlextLogger.get_logger(__name__)
     _sampler_instance: FlextObservabilitySampling.Sampler | None = None
 
     class Sampler:

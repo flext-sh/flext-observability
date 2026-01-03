@@ -20,6 +20,7 @@ Key Features:
 from __future__ import annotations
 
 from flext_core import FlextLogger, FlextResult, FlextTypes as t
+from flext_core.protocols import p
 
 from flext_observability.context import FlextObservabilityContext
 
@@ -44,24 +45,24 @@ class FlextObservabilityLogging:
         ```
     """
 
-    _logger = FlextLogger(__name__)
+    _logger: p.Log.StructlogLogger = FlextLogger.get_logger(__name__)
 
     # ========================================================================
     # LOGGER CREATION WITH CONTEXT
     # ========================================================================
 
     @staticmethod
-    def create_logger(name: str) -> FlextResult[FlextLogger]:
+    def create_logger(name: str) -> FlextResult[p.Log.StructlogLogger]:
         """Create logger with trace context enrichment.
 
-        Creates a FlextLogger that automatically includes correlation ID,
+        Creates a logger that automatically includes correlation ID,
         trace ID, and span ID in all log entries.
 
         Args:
             name: Logger name (typically __name__)
 
         Returns:
-            FlextResult[FlextLogger] - Logger instance with context enrichment
+            FlextResult[StructlogLogger] - Logger instance with context enrichment
 
         Example:
             ```python
@@ -74,18 +75,20 @@ class FlextObservabilityLogging:
 
         """
         try:
-            if not name or not isinstance(name, str):
-                return FlextResult[FlextLogger].fail(
+            if not name:
+                return FlextResult[p.Log.StructlogLogger].fail(
                     "Logger name must be non-empty string",
                 )
 
-            # Create FlextLogger from flext-core
-            logger = FlextLogger(name)
+            # Create logger from flext-core
+            logger = FlextLogger.get_logger(name)
 
             # Logger is returned with capability to be enriched
-            return FlextResult[FlextLogger].ok(logger)
+            return FlextResult[p.Log.StructlogLogger].ok(logger)
         except Exception as e:
-            return FlextResult[FlextLogger].fail(f"Logger creation failed: {e}")
+            return FlextResult[p.Log.StructlogLogger].fail(
+                f"Logger creation failed: {e}",
+            )
 
     # ========================================================================
     # CONTEXT ENRICHMENT
@@ -93,7 +96,7 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def enrich_log_context(
-        _logger: FlextLogger,
+        _logger: p.Log.StructlogLogger,
         *,
         include_baggage: bool = False,
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
@@ -103,7 +106,7 @@ class FlextObservabilityLogging:
         that should be included in log entries. Can optionally include baggage.
 
         Args:
-            _logger: FlextLogger instance to enrich (reserved for future use)
+            _logger: Logger instance to enrich (reserved for future use)
             include_baggage: Whether to include baggage in context
 
         Returns:
@@ -147,8 +150,9 @@ class FlextObservabilityLogging:
             # Optionally include baggage
             if include_baggage:
                 baggage = FlextObservabilityContext.get_baggage()
-                if baggage:
-                    context_dict["baggage"] = baggage
+                if baggage is not None:
+                    # Store baggage as string representation for type safety
+                    context_dict["baggage"] = str(baggage)
 
             return FlextResult[dict[str, t.GeneralValueType]].ok(context_dict)
         except Exception as e:
@@ -157,21 +161,21 @@ class FlextObservabilityLogging:
             )
 
     @staticmethod
-    def inject_trace_context(logger: FlextLogger) -> FlextResult[None]:
+    def inject_trace_context(logger: p.Log.StructlogLogger) -> FlextResult[None]:
         """Inject trace context into logger for structured logging.
 
         Configures logger to automatically include trace context in all
         log entries. This is typically called once per logger.
 
         Args:
-            logger: FlextLogger instance to configure
+            logger: Logger instance to configure
 
         Returns:
             FlextResult[None] - Ok if successful
 
         Example:
             ```python
-            logger = FlextLogger("mymodule")
+            logger = FlextLogger.get_logger("mymodule")
             result = FlextObservabilityLogging.inject_trace_context(logger)
 
             # Now all logs from this logger include trace context
@@ -181,9 +185,6 @@ class FlextObservabilityLogging:
 
         """
         try:
-            if not isinstance(logger, FlextLogger):
-                return FlextResult[None].fail("Logger must be FlextLogger instance")
-
             # Get current trace context
             context = FlextObservabilityContext.get_context()
 
@@ -195,6 +196,9 @@ class FlextObservabilityLogging:
                     "No trace context currently set",
                 )
 
+            # Use logger parameter to avoid unused variable warning
+            _ = logger
+
             return FlextResult[None].ok(None)
         except Exception as e:
             return FlextResult[None].fail(f"Trace context injection failed: {e}")
@@ -205,7 +209,7 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def log_with_context(
-        logger: FlextLogger,
+        logger: p.Log.StructlogLogger,
         level: str,
         message: str,
         extra: dict[str, t.GeneralValueType] | None = None,
@@ -218,7 +222,7 @@ class FlextObservabilityLogging:
         trace ID, and span ID from current context.
 
         Args:
-            logger: FlextLogger instance
+            logger: Logger instance
             level: Log level ("debug", "info", "warning", "error", "critical")
             message: Log message
             extra: Additional context fields to include
@@ -229,7 +233,7 @@ class FlextObservabilityLogging:
 
         Example:
             ```python
-            logger = FlextLogger("myapp")
+            logger = FlextLogger.get_logger("myapp")
             result = FlextObservabilityLogging.log_with_context(
                 logger,
                 "info",
@@ -242,10 +246,7 @@ class FlextObservabilityLogging:
 
         """
         try:
-            if not isinstance(logger, FlextLogger):
-                return FlextResult[None].fail("Logger must be FlextLogger instance")
-
-            if not message or not isinstance(message, str):
+            if not message:
                 return FlextResult[None].fail("Message must be non-empty string")
 
             if level not in {"debug", "info", "warning", "error", "critical"}:
@@ -328,7 +329,7 @@ class FlextObservabilityLogging:
 
             # At minimum, correlation ID should be set
             if not context.get("correlation_id"):
-                FlextObservabilityLogging.ensure_correlation_id()
+                _ = FlextObservabilityLogging.ensure_correlation_id()
                 context = FlextObservabilityContext.get_context()
 
             return FlextResult[dict[str, t.GeneralValueType]].ok(context)

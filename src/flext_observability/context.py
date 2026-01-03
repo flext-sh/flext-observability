@@ -63,7 +63,7 @@ class FlextObservabilityContext:
         "baggage", default=None
     )
 
-    _logger = FlextLogger(__name__)
+    _logger = FlextLogger.get_logger(__name__)
 
     # ========================================================================
     # CORRELATION ID MANAGEMENT

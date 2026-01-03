@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 
 import psutil
 from flext_core import FlextLogger, FlextResult
+from flext_core.protocols import p
 
 
 @dataclass
@@ -66,11 +67,15 @@ class FlextObservabilityPerformance:
         Monitor: Performance monitoring for individual operations
     """
 
-    _logger = FlextLogger(__name__)
-    _process = psutil.Process()
+    _logger: p.Log.StructlogLogger = FlextLogger.get_logger(__name__)
+    _process: psutil.Process = psutil.Process()
 
     class Monitor:
         """Individual operation performance monitor."""
+
+        metrics: PerformanceMetrics
+        _initial_memory: float
+        _initial_cpu: float
 
         def __init__(self, operation: str) -> None:
             """Initialize monitor for operation.
@@ -86,18 +91,19 @@ class FlextObservabilityPerformance:
         def _get_memory_usage(self) -> float:
             """Get current memory usage in MB."""
             try:
-                return (
-                    FlextObservabilityPerformance._process.memory_info().rss
-                    / 1024
-                    / 1024
-                )
+                memory_info = FlextObservabilityPerformance._process.memory_info()
+                rss_bytes: int = memory_info.rss
+                return float(rss_bytes) / 1024 / 1024
             except Exception:
                 return 0.0
 
         def _get_cpu_percent(self) -> float:
             """Get current CPU usage percent."""
             try:
-                return FlextObservabilityPerformance._process.cpu_percent(interval=0.01)
+                cpu: float = FlextObservabilityPerformance._process.cpu_percent(
+                    interval=0.01,
+                )
+                return cpu
             except Exception:
                 return 0.0
 
@@ -194,7 +200,7 @@ class FlextObservabilityPerformance:
 
         """
         try:
-            status = "✅ OK" if metrics.success else "❌ ERROR"
+            status = "OK" if metrics.success else "ERROR"
             level = "debug" if metrics.success else "warning"
 
             message = (
@@ -230,7 +236,8 @@ class FlextObservabilityPerformance:
         """
         try:
             memory_info = FlextObservabilityPerformance._process.memory_info()
-            memory_mb = memory_info.rss / 1024 / 1024
+            rss_bytes: int = memory_info.rss
+            memory_mb: float = float(rss_bytes) / 1024 / 1024
 
             return {
                 "memory_mb": memory_mb,

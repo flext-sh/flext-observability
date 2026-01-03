@@ -10,9 +10,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import cast
-
 from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes as t
+from flext_core.protocols import p
 from flext_core.utilities import u_core
 
 from flext_observability.settings import FlextObservabilitySettings
@@ -30,7 +29,7 @@ class FlextObservabilityServices(u_core):
         """Initialize with FLEXT core components."""
         super().__init__()
         self._container = FlextContainer.get_global()
-        self._logger = FlextLogger(__name__)
+        self._logger = FlextLogger.get_logger(__name__)
         self._config = FlextObservabilitySettings.get_global_instance()
 
     @property
@@ -39,7 +38,7 @@ class FlextObservabilityServices(u_core):
         return self._container
 
     @property
-    def logger(self) -> FlextLogger:
+    def logger(self) -> p.Log.StructlogLogger:
         """Access FLEXT logger."""
         return self._logger
 
@@ -80,9 +79,13 @@ class FlextObservabilityServices(u_core):
                 "timestamp": "now",
                 "version": "generic",
             }
-            return FlextResult[dict[str, t.GeneralValueType]].ok(
-                cast("dict[str, t.GeneralValueType]", status)
-            )
+            status_result: dict[str, t.GeneralValueType] = {
+                "service": status["service"],
+                "status": status["status"],
+                "timestamp": status["timestamp"],
+                "version": status["version"],
+            }
+            return FlextResult[dict[str, t.GeneralValueType]].ok(status_result)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(
                 f"Status check failed: {e}"

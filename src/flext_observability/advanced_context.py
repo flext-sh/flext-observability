@@ -96,7 +96,7 @@ class FlextObservabilityAdvancedContext:
         Context: Request-local context management
     """
 
-    _logger = FlextLogger(__name__)
+    _logger = FlextLogger.get_logger(__name__)
     _context_instance: FlextObservabilityAdvancedContext.Context | None = None
 
     class Context:

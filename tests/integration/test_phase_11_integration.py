@@ -17,12 +17,9 @@ import time
 
 # Test 1: HTTP + Metrics + Tracing Integration
 try:
-    
-
-        FlextObservability,
-        FlextObservabilityContext,
-        FlextObservabilitySampling,
-    )
+    from flext_observability import FlextObservability
+    from flext_observability.context import FlextObservabilityContext
+    from flext_observability.sampling import FlextObservabilitySampling
 
     # Setup context for HTTP request
     FlextObservabilityContext.set_correlation_id("http-req-001")
@@ -113,8 +110,7 @@ except Exception:
 
 # Test 3: Error Handling with Alerting
 try:
-    
-
+    from flext_observability import (
         ErrorEvent,
         ErrorSeverity,
         FlextObservabilityContext,
@@ -151,8 +147,7 @@ except Exception:
 
 # Test 4: Distributed Tracing Across Components
 try:
-    
-
+    from flext_observability import (
         FlextObservability,
         FlextObservabilityContext,
     )
@@ -245,8 +240,7 @@ except Exception:
 
 # Test 6: Custom Metrics with Sampling
 try:
-    
-
+    from flext_observability import (
         FlextObservabilityCustomMetrics,
         FlextObservabilitySampling,
         MetricType,
@@ -285,8 +279,7 @@ except Exception:
 
 # Test 7: Performance Optimization with Sampling
 try:
-    
-
+    from flext_observability import (
         FlextObservabilityPerformance,
         FlextObservabilitySampling,
     )
@@ -316,8 +309,7 @@ except Exception:
 
 # Test 8: Complete End-to-End Workflow
 try:
-    
-
+    from flext_observability import (
         ErrorEvent,
         ErrorSeverity,
         FlextObservability,
@@ -411,8 +403,7 @@ except Exception:
 
 # Test 9: Multi-Service Correlation
 try:
-    
-
+    from flext_observability import (
         FlextObservabilityAdvancedContext,
         FlextObservabilityContext,
     )
@@ -454,8 +445,7 @@ except Exception:
 
 # Test 10: Integration with Ecosystem Projects
 try:
-    
-
+    from flext_observability import (
         FlextObservability,
         FlextObservabilityAdvancedContext,
         FlextObservabilityContext,

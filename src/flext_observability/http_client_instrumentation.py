@@ -21,12 +21,69 @@ Key Features:
 from __future__ import annotations
 
 import time
-from typing import ClassVar
+from collections.abc import Awaitable, Callable, MutableMapping
+from typing import ClassVar, Protocol
 
 from flext_core import FlextLogger, FlextResult
+from flext_core.protocols import p
 
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.logging_integration import FlextObservabilityLogging
+
+# ============================================================================
+# PROTOCOL DEFINITIONS FOR HTTP CLIENTS
+# ============================================================================
+
+
+class HTTPXURLProtocol(Protocol):
+    """Protocol for httpx URL object."""
+
+    @property
+    def scheme(self) -> str:
+        """URL scheme (http/https)."""
+        ...
+
+    @property
+    def host(self) -> str | None:
+        """URL host."""
+        ...
+
+
+class HTTPXRequestProtocol(Protocol):
+    """Protocol for httpx Request object."""
+
+    @property
+    def method(self) -> str:
+        """HTTP method."""
+        ...
+
+    @property
+    def url(self) -> HTTPXURLProtocol:
+        """Request URL."""
+        ...
+
+    @property
+    def headers(self) -> MutableMapping[str, str]:
+        """Request headers."""
+        ...
+
+
+class HTTPXResponseProtocol(Protocol):
+    """Protocol for httpx Response object."""
+
+    @property
+    def status_code(self) -> int:
+        """HTTP status code."""
+        ...
+
+
+class AIOHTTPResponseProtocol(Protocol):
+    """Protocol for aiohttp ClientResponse."""
+
+    @property
+    def status(self) -> int:
+        """HTTP status code."""
+        ...
 
 
 class FlextObservabilityHTTPClient:
@@ -57,7 +114,7 @@ class FlextObservabilityHTTPClient:
         AIOHTTP: aiohttp client instrumentation (async)
     """
 
-    _logger = FlextLogger(__name__)
+    _logger: p.Log.StructlogLogger = FlextLogger.get_logger(__name__)
 
     # ========================================================================
     # HTTPX INSTRUMENTATION
@@ -124,10 +181,16 @@ class FlextObservabilityHTTPClient:
                 is_async = hasattr(client, "_send")
 
                 if is_async:
-                    # Instrument async client
-                    original_send = client._send
+                    # Get original send method - Any from getattr is assignable
+                    # to typed Callable with Awaitable return
+                    original_send: Callable[
+                        [HTTPXRequestProtocol],
+                        Awaitable[HTTPXResponseProtocol],
+                    ] = getattr(client, "_send")
 
-                    async def traced_send(request: object) -> object:
+                    async def traced_send(
+                        request: HTTPXRequestProtocol,
+                    ) -> HTTPXResponseProtocol:
                         """Traced send wrapper for async httpx."""
                         start_time = time.time()
 
@@ -145,7 +208,7 @@ class FlextObservabilityHTTPClient:
                             request.headers["X-Span-ID"] = span_id
 
                         # Log request start
-                        FlextObservabilityLogging.log_with_context(
+                        _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
                             "debug",
                             f"HTTP client request: {request.method} {request.url}",
@@ -160,14 +223,14 @@ class FlextObservabilityHTTPClient:
                         )
 
                         try:
-                            # Send request
+                            # Send request - await the properly typed coroutine
                             response = await original_send(request)
 
                             # Calculate duration
                             duration_ms = (time.time() - start_time) * 1000
 
                             # Log response
-                            FlextObservabilityLogging.log_with_context(
+                            _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
                                 "debug",
                                 f"HTTP client response: {request.method} {request.url} -> {response.status_code}",
@@ -186,7 +249,7 @@ class FlextObservabilityHTTPClient:
                         except Exception as e:
                             # Log error
                             duration_ms = (time.time() - start_time) * 1000
-                            FlextObservabilityLogging.log_with_context(
+                            _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
                                 "error",
                                 f"HTTP client error: {request.method} {request.url}",
@@ -202,19 +265,22 @@ class FlextObservabilityHTTPClient:
                             )
                             raise
 
-                    # Replace send method
-                    client._send = traced_send
+                    # Replace send method using setattr
+                    setattr(client, "_send", traced_send)
 
                 else:
-                    # Instrument sync client
-                    original_request = client.request
+                    # Get original request method using getattr for dynamic access
+                    original_request: Callable[..., HTTPXResponseProtocol] = getattr(
+                        client,
+                        "request",
+                    )
 
                     def traced_request(
                         method: str,
                         url: str,
                         *args: object,
                         **kwargs: object,
-                    ) -> object:
+                    ) -> HTTPXResponseProtocol:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
 
@@ -235,7 +301,7 @@ class FlextObservabilityHTTPClient:
                             kwargs["headers"] = headers
 
                         # Log request start
-                        FlextObservabilityLogging.log_with_context(
+                        _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
                             "debug",
                             f"HTTP client request: {method} {url}",
@@ -255,7 +321,7 @@ class FlextObservabilityHTTPClient:
                             duration_ms = (time.time() - start_time) * 1000
 
                             # Log response
-                            FlextObservabilityLogging.log_with_context(
+                            _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
                                 "debug",
                                 f"HTTP client response: {method} {url} -> {response.status_code}",
@@ -274,7 +340,7 @@ class FlextObservabilityHTTPClient:
                         except Exception as e:
                             # Log error
                             duration_ms = (time.time() - start_time) * 1000
-                            FlextObservabilityLogging.log_with_context(
+                            _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
                                 "error",
                                 f"HTTP client error: {method} {url}",
@@ -290,8 +356,8 @@ class FlextObservabilityHTTPClient:
                             )
                             raise
 
-                    # Replace request method
-                    client.request = traced_request
+                    # Replace request method using setattr
+                    setattr(client, "request", traced_request)
 
                 # Mark as instrumented
                 FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client)
@@ -363,15 +429,18 @@ class FlextObservabilityHTTPClient:
                 ):
                     return FlextResult[None].ok(None)
 
-                # Store original request method
-                original_request = session._request
+                # Get original request method using getattr for dynamic access
+                original_request: Callable[
+                    ...,
+                    Awaitable[AIOHTTPResponseProtocol],
+                ] = getattr(session, "_request")
 
                 async def traced_request(
                     method: str,
                     url: str,
                     *args: object,
                     **kwargs: object,
-                ) -> object:
+                ) -> AIOHTTPResponseProtocol:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()
 
@@ -392,7 +461,7 @@ class FlextObservabilityHTTPClient:
                     kwargs["headers"] = headers
 
                     # Log request start
-                    FlextObservabilityLogging.log_with_context(
+                    _ = FlextObservabilityLogging.log_with_context(
                         FlextObservabilityHTTPClient._logger,
                         "debug",
                         f"HTTP client request: {method} {url}",
@@ -405,8 +474,13 @@ class FlextObservabilityHTTPClient:
                     )
 
                     try:
-                        # Send request
-                        response = await original_request(method, url, *args, **kwargs)
+                        # Send request - await the coroutine
+                        response = await original_request(
+                            method,
+                            url,
+                            *args,
+                            **kwargs,
+                        )
 
                         # Calculate duration
                         duration_ms = (time.time() - start_time) * 1000
@@ -415,7 +489,7 @@ class FlextObservabilityHTTPClient:
                         status = response.status
 
                         # Log response
-                        FlextObservabilityLogging.log_with_context(
+                        _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
                             "debug",
                             f"HTTP client response: {method} {url} -> {status}",
@@ -434,7 +508,7 @@ class FlextObservabilityHTTPClient:
                     except Exception as e:
                         # Log error
                         duration_ms = (time.time() - start_time) * 1000
-                        FlextObservabilityLogging.log_with_context(
+                        _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
                             "error",
                             f"HTTP client error: {method} {url}",
@@ -450,8 +524,8 @@ class FlextObservabilityHTTPClient:
                         )
                         raise
 
-                # Replace request method
-                session._request = traced_request
+                # Replace request method using setattr
+                setattr(session, "_request", traced_request)
 
                 # Mark as instrumented
                 FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions.add(session)
