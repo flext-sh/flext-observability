@@ -17,19 +17,22 @@
         "Typing :: Typed",
     ]
     dependencies = [
-        "flext-core @ file:../flext-core",
-        "opentelemetry-api (>=1.35.0)",
-        "opentelemetry-sdk (>=1.35.0)",
-        "opentelemetry-exporter-otlp-proto-grpc (>=1.35.0)",
-        "opentelemetry-exporter-prometheus (>=0.59b0,<0.60)",
+        "opentelemetry-api (>=1.39.1,<2.0.0)",
+        "opentelemetry-sdk (>=1.39.1,<2.0.0)",
+        "opentelemetry-exporter-otlp-proto-grpc (>=1.39.1,<2.0.0)",
+        "opentelemetry-exporter-prometheus (>=0.60b1,<0.61)",
         "prometheus-client (>=0.23.0)",
         "psutil>=6.1.0",
         "pydantic-settings>=2.10.1",
         "pydantic (>=2.12.3)",
-        "rich>=14.0.0",
+        "rich (>=14.2.0,<15.0.0)",
         "structlog>=25.4.0",
         "typer>=0.15.0",
         "pydantic-core (>=2.41.4)",
+        "pytest (>=9.0.2,<10.0.0)",
+        "pytest-cov (>=7.0.0,<8.0.0)",
+        "pytest-randomly (>=4.0.1,<5.0.0)",
+        "faker (>=40.1.0,<41.0.0)",
     ]
     description = "FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry"
     keywords = [
@@ -166,5 +169,14 @@
         ]
 
     [tool.poetry.group.dev.dependencies]
-        pyrefly      = "^0.34.0"
+        pyrefly      = "^0.46.3"
         types-psutil = "^7.0.0.20250801"
+    pytest = "^9.0.2"
+    opentelemetry-api = ">=1.39.1"
+    opentelemetry-sdk = ">=1.39.1"
+    prompt-toolkit = ">=3.0.52"
+    sqlparse = ">=0.5.5"
+    opentelemetry-exporter-prometheus = ">=0.60b1"
+    pytest-randomly = "^4.0.1"
+    pytest-cov = "^7.0.0"
+    commitizen = "^4.8.3"

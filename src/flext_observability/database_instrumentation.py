@@ -22,12 +22,30 @@ Key Features:
 from __future__ import annotations
 
 import time
-from typing import ClassVar
+from typing import ClassVar, Protocol
 
 from flext_core import FlextLogger, FlextResult
+from flext_core.protocols import p
 from sqlalchemy import event
+from sqlalchemy.engine import Connection, Engine
 
 from flext_observability.logging_integration import FlextObservabilityLogging
+
+
+class AsyncPGPoolProtocol(Protocol):
+    """Protocol for asyncpg connection pool."""
+
+    async def execute(self, query: str, *args: object, **kwargs: object) -> object:
+        """Execute a query."""
+        ...
+
+    async def fetch(self, query: str, *args: object, **kwargs: object) -> list[object]:
+        """Fetch rows."""
+        ...
+
+    async def fetchval(self, query: str, *args: object, **kwargs: object) -> object:
+        """Fetch a single value."""
+        ...
 
 
 class FlextObservabilityDatabase:
@@ -52,7 +70,7 @@ class FlextObservabilityDatabase:
         AsyncPG: asyncpg connection instrumentation
     """
 
-    _logger = FlextLogger(__name__)
+    _logger: p.Log.StructlogLogger = FlextLogger.get_logger(__name__)
 
     # ========================================================================
     # SQLALCHEMY INSTRUMENTATION
@@ -61,10 +79,10 @@ class FlextObservabilityDatabase:
     class SQLAlchemy:
         """SQLAlchemy event listener for automatic query instrumentation."""
 
-        instrumented_engines: ClassVar[set[object]] = set()
+        instrumented_engines: ClassVar[set[Engine]] = set()
 
         @staticmethod
-        def setup_instrumentation(engine: object) -> FlextResult[None]:
+        def setup_instrumentation(engine: Engine) -> FlextResult[None]:
             """Setup SQLAlchemy engine query instrumentation.
 
             Adds SQLAlchemy event listeners for automatic query tracing,
@@ -111,7 +129,7 @@ class FlextObservabilityDatabase:
 
                 @event.listens_for(engine, "before_cursor_execute")
                 def before_cursor_execute(
-                    conn: object,
+                    conn: Connection,
                     _cursor: object,
                     statement: str,
                     _parameters: object,
@@ -151,7 +169,7 @@ class FlextObservabilityDatabase:
 
                 @event.listens_for(engine, "after_cursor_execute")
                 def after_cursor_execute(
-                    conn: object,
+                    conn: Connection,
                     cursor: object,
                     statement: str,
                     _parameters: object,
@@ -161,23 +179,29 @@ class FlextObservabilityDatabase:
                     """Log query execution completion."""
                     try:
                         # Calculate query duration
-                        start_time = conn.info.get("_flext_query_start", time.time())
+                        start_time_val = conn.info.get(
+                            "_flext_query_start",
+                            time.time(),
+                        )
+                        start_time = (
+                            float(start_time_val)
+                            if start_time_val is not None
+                            else time.time()
+                        )
                         duration_ms = (time.time() - start_time) * 1000
 
                         # Get row count
                         row_count = 0
-                        try:
-                            row_count = (
-                                cursor.rowcount if hasattr(cursor, "rowcount") else 0
-                            )
-                        except AttributeError:
-                            # rowcount not available for this cursor type
-                            row_count = 0
-                        except Exception as e:
-                            # Log but continue - rowcount is optional metric
-                            logger = FlextLogger(__name__)
-                            logger.debug("Could not get cursor rowcount: %s", e)
-                            row_count = 0
+                        if hasattr(cursor, "rowcount"):
+                            try:
+                                rowcount_val = getattr(cursor, "rowcount", 0)
+                                row_count = (
+                                    int(rowcount_val)
+                                    if rowcount_val is not None and rowcount_val >= 0
+                                    else 0
+                                )
+                            except (AttributeError, TypeError, ValueError):
+                                row_count = 0
 
                         # Extract database info
                         db_url = str(conn.engine.url)
@@ -235,7 +259,7 @@ class FlextObservabilityDatabase:
         instrumented_pools: ClassVar[set[object]] = set()
 
         @staticmethod
-        def setup_instrumentation(pool: object) -> FlextResult[None]:
+        def setup_instrumentation(pool: AsyncPGPoolProtocol) -> FlextResult[None]:
             """Setup asyncpg connection pool query instrumentation.
 
             Wraps asyncpg pool to automatically trace all queries.
@@ -278,7 +302,7 @@ class FlextObservabilityDatabase:
                 if pool in FlextObservabilityDatabase.AsyncPG.instrumented_pools:
                     return FlextResult[None].ok(None)
 
-                # Store original execute method
+                # Store original methods
                 original_execute = pool.execute
                 original_fetch = pool.fetch
                 original_fetchval = pool.fetchval
@@ -343,7 +367,7 @@ class FlextObservabilityDatabase:
                     query: str,
                     *args: object,
                     **kwargs: object,
-                ) -> object:
+                ) -> list[object]:
                     """Traced fetch wrapper."""
                     start_time = time.time()
                     query_type = (
@@ -457,10 +481,10 @@ class FlextObservabilityDatabase:
                         )
                         raise
 
-                # Replace methods with traced versions
-                pool.execute = traced_execute
-                pool.fetch = traced_fetch
-                pool.fetchval = traced_fetchval
+                # Replace methods with traced versions using setattr
+                setattr(pool, "execute", traced_execute)
+                setattr(pool, "fetch", traced_fetch)
+                setattr(pool, "fetchval", traced_fetchval)
 
                 # Mark as instrumented
                 FlextObservabilityDatabase.AsyncPG.instrumented_pools.add(pool)

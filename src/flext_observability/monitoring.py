@@ -125,7 +125,7 @@ class FlextObservabilityMonitor:
             )
 
             # Create alert if observability service is available
-            logger = FlextLogger(__name__)
+            logger = FlextLogger.get_logger(__name__)
             observability_service = monitor.get_observability_service()
             if observability_service:
                 try:
@@ -155,7 +155,7 @@ class FlextObservabilityMonitor:
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
         self._container = container or FlextContainer.get_global()
-        self._logger = FlextLogger(self.__class__.__name__)
+        self._logger = FlextLogger.get_logger(self.__class__.__name__)
         self._config = FlextObservabilitySettings.get_global_instance()
         self._initialized = False
         self._running = False

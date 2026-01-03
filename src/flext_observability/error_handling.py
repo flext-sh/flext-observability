@@ -84,7 +84,7 @@ class FlextObservabilityErrorHandling:
         Handler: Error handling and deduplication logic
     """
 
-    _logger = FlextLogger(__name__)
+    _logger = FlextLogger.get_logger(__name__)
     _handler_instance: FlextObservabilityErrorHandling.Handler | None = None
 
     class Handler:

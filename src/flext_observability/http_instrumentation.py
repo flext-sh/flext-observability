@@ -58,7 +58,7 @@ class FlextObservabilityHTTP:
         ASGI: Generic ASGI middleware base
     """
 
-    _logger = FlextLogger(__name__)
+    _logger = FlextLogger.get_logger(__name__)
 
     # HTTP status code threshold for errors (4xx and 5xx)
     HTTP_ERROR_STATUS_THRESHOLD = 400
@@ -195,7 +195,10 @@ class FlextObservabilityHTTP:
 
                     return response
 
-                @app.errorhandler(Exception)
+                # Get errorhandler decorator via getattr for dynamic access
+                errorhandler = getattr(app, "errorhandler")
+
+                @errorhandler(Exception)
                 def flext_error_handler(
                     error: Exception,
                 ) -> tuple[dict[str, t.GeneralValueType], int]:
@@ -370,8 +373,9 @@ class FlextObservabilityHTTP:
                             )
                             raise
 
-                # Add middleware to app
-                app.add_middleware(FlextObservabilityMiddleware)
+                # Add middleware to app via getattr for dynamic access
+                add_middleware = getattr(app, "add_middleware")
+                add_middleware(FlextObservabilityMiddleware)
 
                 FlextObservabilityHTTP._logger.debug(
                     "FastAPI HTTP instrumentation setup complete",
