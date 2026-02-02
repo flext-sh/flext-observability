@@ -145,18 +145,60 @@
         "htmlcov",
         "node_modules",
         "reports",
-            "tests",
+        "tests",
         "vendor",
         "venv",
     ]
     known_first_party = [
         "flext_observability",
+        "flext_core",
     ]
     pep621_dev_dependency_groups = [
         "dev",
-        "security",
         "test",
         "typings",
+        "security",
+    ]
+
+[tool.deptry.per_rule_ignores]
+    DEP002 = [
+        # CLI tools (invoked from command line, not imported)
+        "autoflake",
+        "bandit",
+        "black",
+        "codespell",
+        "commitizen",
+        "deptry",
+        "detect-secrets",
+        "isort",
+        "pip-audit",
+        "pre-commit",
+        "pylint",
+        "pyrefly",
+        "pyupgrade",
+        "radon",
+        "ruff",
+        "vulture",
+        # Type stubs
+        "django-stubs",
+        "types-ldap3",
+        "types-protobuf",
+        "types-psutil",
+        "types-psycopg2",
+        "types-python-dateutil",
+        "types-pyyaml",
+        "types-redis",
+        "types-requests",
+        "types-setuptools",
+        "types-toml",
+        # Runtime deps used indirectly (via pydantic, opentelemetry)
+        "faker",
+        "pydantic-core",
+        "pytest",
+        "pytest-cov",
+        "pytest-randomly",
+        "rich",
+        "typer",
     ]
 
 [tool.ruff]

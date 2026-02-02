@@ -22,15 +22,108 @@ Key Features:
 from __future__ import annotations
 
 import time
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 
-from flask import g, request
 from flext_core import FlextLogger, FlextResult, FlextTypes as t
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import Response
 
 from flext_observability.context import FlextObservabilityContext
+
+# Optional dependency: Flask
+try:
+    from flask import Flask as FlaskApp, g, request
+
+    _flask_available = True
+except ImportError:
+
+    class _StubUserAgent:
+        """Stub user agent for type checking."""
+
+        string: str = "unknown"
+
+    class _StubFlaskRequest:
+        """Stub Flask request for type checking."""
+
+        headers: dict[str, str]
+        method: str = "GET"
+        path: str = "/"
+        remote_addr: str | None = None
+        user_agent: _StubUserAgent
+
+        def __init__(self) -> None:
+            self.headers = {}
+            self.user_agent = _StubUserAgent()
+
+    class _StubAppCtxGlobals:
+        """Stub Flask g object for type checking."""
+
+        def __setattr__(self, name: str, value: object) -> None:
+            object.__setattr__(self, name, value)
+
+        def __getattr__(self, name: str) -> object:
+            return None
+
+    FlaskApp = object  # type: ignore[misc, assignment]
+    g: _StubAppCtxGlobals = _StubAppCtxGlobals()  # type: ignore[assignment]
+    request: _StubFlaskRequest = _StubFlaskRequest()  # type: ignore[assignment]
+    _flask_available = False
+
+# Optional dependency: Starlette (for FastAPI)
+try:
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from starlette.requests import Request
+    from starlette.responses import Response
+
+    _starlette_available = True
+except ImportError:
+
+    class _StubURL:
+        """Stub URL for type checking."""
+
+        path: str = "/"
+
+    class _StubClient:
+        """Stub client for type checking."""
+
+        host: str = "unknown"
+
+    class _StubHeaders(dict[str, str]):  # noqa: FURB189
+        """Stub headers for type checking."""
+
+        def get(  # type: ignore[override]
+            self,
+            key: str,
+            default: str = "",
+        ) -> str:
+            return super().get(key, default)
+
+    class BaseHTTPMiddleware:  # type: ignore[no-redef]
+        """Stub for when starlette is not installed."""
+
+        pass
+
+    class Request:  # type: ignore[no-redef]
+        """Stub for when starlette is not installed."""
+
+        headers: _StubHeaders
+        method: str = "GET"
+        url: _StubURL
+        client: _StubClient | None
+
+        def __init__(self) -> None:
+            self.headers = _StubHeaders()
+            self.url = _StubURL()
+            self.client = _StubClient()
+
+    class Response:  # type: ignore[no-redef]
+        """Stub for when starlette is not installed."""
+
+        status_code: int = 200
+        headers: dict[str, str]
+
+        def __init__(self) -> None:
+            self.headers = {}
+
+    _starlette_available = False
 from flext_observability.logging_integration import FlextObservabilityLogging
 
 
@@ -158,10 +251,11 @@ class FlextObservabilityHTTP:
                     """Record metrics and complete span after request processing."""
                     try:
                         # Calculate request duration
+                        start_time = getattr(g, "flext_start_time", None)
                         duration_ms = (
-                            (time.time() - g.flext_start_time) * 1000
-                            if hasattr(g, "flext_start_time")
-                            else 0
+                            (time.time() - start_time) * 1000
+                            if isinstance(start_time, float)
+                            else 0.0
                         )
 
                         # Determine if response indicates error
@@ -283,13 +377,13 @@ class FlextObservabilityHTTP:
                         "Invalid FastAPI app - missing middleware method",
                     )
 
-                class FlextObservabilityMiddleware(BaseHTTPMiddleware):
+                class FlextObservabilityMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
                     """Starlette-based ASGI middleware for FastAPI."""
 
                     async def dispatch(
                         self,
                         request: Request,
-                        call_next: Callable,
+                        call_next: Callable[[Request], Awaitable[Response]],
                     ) -> Response:
                         """Process HTTP request with instrumentation."""
                         try:

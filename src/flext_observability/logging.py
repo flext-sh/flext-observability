@@ -88,7 +88,7 @@ class FlextObservabilityLogging(FlextModels):
             self,
             value: dict[str, t.GeneralValueType],
             _info: object,
-        ) -> dict[str, t.GeneralValueType]:
+        ) -> dict[str, dict[str, t.GeneralValueType] | dict[str, str | bool]]:
             """Serialize context with log metadata."""
             return {
                 "context": value,
