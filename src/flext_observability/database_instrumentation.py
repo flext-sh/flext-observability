@@ -22,12 +22,83 @@ Key Features:
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from typing import ClassVar, Protocol
 
 from flext_core import FlextLogger, FlextResult
 from flext_core.protocols import p
-from sqlalchemy import event
-from sqlalchemy.engine import Connection, Engine
+
+# Optional dependency: SQLAlchemy
+try:
+    from sqlalchemy import event
+    from sqlalchemy.engine import Connection, Engine
+
+    _sqlalchemy_available = True
+except ImportError:
+
+    class _StubURLProtocol:
+        """Stub URL for type checking."""
+
+        database: str | None = None
+
+        def __str__(self) -> str:
+            return "stub://localhost"
+
+    class _StubEngineProtocol:
+        """Stub Engine for type checking."""
+
+        url: _StubURLProtocol
+        dispatch: object
+
+        def __init__(self) -> None:
+            self.url = _StubURLProtocol()
+            self.dispatch = object()
+
+    class _StubInfoDict(dict[str, object]):  # noqa: FURB189
+        """Stub info dict for type checking."""
+
+        pass
+
+    class Connection:  # type: ignore[no-redef]
+        """Stub for when sqlalchemy is not installed."""
+
+        info: _StubInfoDict
+        engine: _StubEngineProtocol
+
+        def __init__(self) -> None:
+            self.info = _StubInfoDict()
+            self.engine = _StubEngineProtocol()
+
+    class Engine:  # type: ignore[no-redef]
+        """Stub for when sqlalchemy is not installed."""
+
+        dispatch: object
+        url: _StubURLProtocol
+
+        def __init__(self) -> None:
+            self.dispatch = object()
+            self.url = _StubURLProtocol()
+
+    class event:  # type: ignore[no-redef]  # noqa: N801
+        """Stub for when sqlalchemy is not installed."""
+
+        @staticmethod
+        def listens_for(
+            _target: object,
+            _identifier: str,
+            *_args: object,
+            **_kwargs: object,
+        ) -> Callable[[Callable[..., object]], Callable[..., object]]:
+            """Stub decorator."""
+
+            def decorator(
+                f: Callable[..., object],
+            ) -> Callable[..., object]:
+                return f
+
+            return decorator
+
+    _sqlalchemy_available = False
 
 from flext_observability.logging_integration import FlextObservabilityLogging
 
@@ -181,11 +252,12 @@ class FlextObservabilityDatabase:
                         # Calculate query duration
                         start_time_val = conn.info.get(
                             "_flext_query_start",
-                            time.time(),
+                            None,
                         )
+                        # Type narrow to float for arithmetic
                         start_time = (
-                            float(start_time_val)
-                            if start_time_val is not None
+                            start_time_val
+                            if isinstance(start_time_val, float)
                             else time.time()
                         )
                         duration_ms = (time.time() - start_time) * 1000

@@ -121,7 +121,7 @@ class FlextObservabilityModels(m_core):
             """Computed retention in hours."""
             return self.retention_days * 24.0
 
-    class Metrics:
+    class Observability:
         """Metrics domain models."""
 
         class MetricEntry(m_core.Entity):

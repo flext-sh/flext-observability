@@ -94,7 +94,7 @@ class FlextObservabilityHealth(FlextModels):
             self,
             value: dict[str, t.GeneralValueType],
             _info: object,
-        ) -> dict[str, t.GeneralValueType]:
+        ) -> dict[str, dict[str, t.GeneralValueType] | dict[str, str | bool]]:
             """Serialize details with health check context."""
             return {
                 "details": value,

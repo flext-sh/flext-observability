@@ -188,7 +188,7 @@ class FlextObservabilityContext:
     # ========================================================================
 
     @staticmethod
-    def set_baggage(key: str, value: object) -> FlextResult[None]:
+    def set_baggage(key: str, value: t.GeneralValueType) -> FlextResult[None]:
         """Set baggage value for metadata propagation.
 
         Baggage allows passing metadata across service boundaries
@@ -233,7 +233,7 @@ class FlextObservabilityContext:
             return FlextResult[None].fail(f"Baggage set failed: {e}")
 
     @staticmethod
-    def get_baggage(key: str | None = None) -> object:
+    def get_baggage(key: str | None = None) -> t.GeneralValueType | dict[str, t.GeneralValueType] | None:
         """Get baggage value.
 
         Args:

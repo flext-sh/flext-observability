@@ -35,7 +35,7 @@ class FlextObservabilityTypes(FlextTypes):
     # OBSERVABILITY PROJECT TYPES - Domain-specific project types extending t
     # =========================================================================
 
-    class Project:
+    class Observability:
         """Observability-specific project types.
 
         Adds observability/monitoring-specific project types.
@@ -153,23 +153,6 @@ class FlextObservabilityTypes(FlextTypes):
     # Note: All protocol definitions are centralized in protocols.py
     # Use p.Observability.* for protocols (MetricsProtocol, TracingProtocol, etc.)
     # This follows FLEXT SOLID principles - protocols in protocols.py, types in typings.py
-
-    class Observability:
-        """Observability types namespace for cross-project access.
-
-        Provides organized access to all Observability types for other FLEXT projects.
-        Usage: Other projects can reference `t.Observability.Core.*`, `t.Observability.Project.*`, etc.
-        This enables consistent namespace patterns for cross-project type access.
-
-        Examples:
-            from flext_observability.typings import t
-            metrics: t.Observability.Core.MetricCollection = ...
-            config: t.Observability.Project.ObservabilityProjectConfig = ...
-
-        Note: Namespace composition via inheritance - no aliases needed.
-        Access parent namespaces directly through inheritance.
-
-        """
 
 
 # Alias for simplified usage

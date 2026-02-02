@@ -25,5 +25,8 @@ class FlextObservabilityUtilities(FlextUtilities):
         from flext_observability.services import FlextObservabilityServices
     """
 
+    class Observability:
+        """Observability domain namespace."""
+
 
 __all__ = ["FlextObservabilityUtilities"]

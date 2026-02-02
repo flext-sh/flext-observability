@@ -54,7 +54,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[object, ...],
-            kwargs: t.ObservabilityCore.MetadataDict,
+            kwargs: dict[str, object],
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> object:
@@ -140,17 +140,6 @@ class FlextObservabilityMonitor:
                 except (ValueError, TypeError, AttributeError) as e:
                     logger.warning("Alert creation failed: %s", e)
 
-    # Class attributes with proper type annotations
-    container: FlextContainer
-    logger: FlextLogger
-    _initialized: bool
-    _running: bool
-    _observability_service: FlextObservabilityServices | None
-    _monitor_start_time: float
-    _functions_monitored: int
-    _health_service: FlextObservabilityServices | None
-    _metrics_service: FlextObservabilityServices | None
-
     @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
@@ -200,13 +189,9 @@ class FlextObservabilityMonitor:
                     f"Observability initialization failed: {e}",
                 )
 
-            # Register unified service in container (Dependency Inversion)
-            services: t.ObservabilityCore.ServicesList = [
-                ("flext_observability_service", self._observability_service),
-            ]
-
-            for service_name, service in services:
-                self._container.with_service(service_name, service)
+            # Note: Service registration in container skipped since
+            # FlextObservabilityServices extends u_core not FlextService.
+            # Access service directly via self._observability_service property.
 
             self._initialized = True
             self._logger.info("Observability monitor initialized successfully")
@@ -295,20 +280,20 @@ class FlextObservabilityMonitor:
                 self._logger.debug("Metrics recording disabled in configuration")
                 return r[None].ok(None)  # Silently succeed when disabled
 
-            # Create metric using the Metrics domain
+            # Create metric using the Observability domain
             try:
-                metric = FlextObservabilityModels.Metrics.MetricEntry(
+                metric = FlextObservabilityModels.Observability.MetricEntry(
                     metric_id=str(uuid4()),
                     name=name,
                     value=value,
                     unit=metric_type,
                     source="monitoring_system",
                 )
-                metric_result = r[FlextObservabilityModels.Metrics.MetricEntry].ok(
+                metric_result = r[FlextObservabilityModels.Observability.MetricEntry].ok(
                     metric,
                 )
             except Exception as e:
-                metric_result = r[FlextObservabilityModels.Metrics.MetricEntry].fail(
+                metric_result = r[FlextObservabilityModels.Observability.MetricEntry].fail(
                     str(e),
                 )
             if metric_result.is_failure:

@@ -41,7 +41,9 @@ class ContextSnapshot:
     metadata: dict[str, JSONValue] = field(default_factory=dict)
     timestamp: float = field(default_factory=lambda: __import__("time").time())
 
-    def to_dict(self) -> dict[str, JSONValue]:
+    def to_dict(
+        self,
+    ) -> dict[str, str | float | dict[str, str] | dict[str, JSONValue]]:
         """Convert snapshot to dictionary.
 
         Returns:
