@@ -212,5 +212,12 @@ class FlextObservabilityConstants(c_core):
 
 
 c = FlextObservabilityConstants
+ErrorSeverity = FlextObservabilityConstants.Observability.ErrorSeverity
+MetricType = FlextObservabilityConstants.Observability.MetricType
 
-__all__ = ["FlextObservabilityConstants", "c"]
+__all__ = [
+    "ErrorSeverity",
+    "FlextObservabilityConstants",
+    "MetricType",
+    "c",
+]
