@@ -233,7 +233,9 @@ class FlextObservabilityContext:
             return FlextResult[None].fail(f"Baggage set failed: {e}")
 
     @staticmethod
-    def get_baggage(key: str | None = None) -> t.GeneralValueType | dict[str, t.GeneralValueType] | None:
+    def get_baggage(
+        key: str | None = None,
+    ) -> t.GeneralValueType | dict[str, t.GeneralValueType] | None:
         """Get baggage value.
 
         Args:

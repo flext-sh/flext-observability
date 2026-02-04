@@ -289,11 +289,15 @@ class FlextObservabilityMonitor:
                     unit=metric_type,
                     source="monitoring_system",
                 )
-                metric_result = r[FlextObservabilityModels.Observability.MetricEntry].ok(
+                metric_result = r[
+                    FlextObservabilityModels.Observability.MetricEntry
+                ].ok(
                     metric,
                 )
             except Exception as e:
-                metric_result = r[FlextObservabilityModels.Observability.MetricEntry].fail(
+                metric_result = r[
+                    FlextObservabilityModels.Observability.MetricEntry
+                ].fail(
                     str(e),
                 )
             if metric_result.is_failure:

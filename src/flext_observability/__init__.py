@@ -36,9 +36,7 @@ from flext_observability.__version__ import __version__, __version_info__
 
 # Import from submodules for re-export
 from flext_observability.advanced_context import FlextObservabilityAdvancedContext
-from flext_observability.constants import (
-    FlextObservabilityConstants as _constants_module,
-)
+from flext_observability.constants import ErrorSeverity, MetricType
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.custom_metrics import (
     CustomMetricDefinition,
@@ -65,10 +63,6 @@ from flext_observability.protocols import FlextObservabilityProtocols
 from flext_observability.sampling import FlextObservabilitySampling
 from flext_observability.settings import FlextObservabilitySettings
 from flext_observability.typings import FlextObservabilityTypes
-
-# Aliases from constants for convenience
-ErrorSeverity = _constants_module.Observability.ErrorSeverity
-MetricType = _constants_module.Observability.MetricType
 
 
 class FlextObservability:
@@ -931,6 +925,7 @@ flext_health_status = flext_health_check
 __all__ = [
     "CustomMetricDefinition",
     "ErrorEvent",
+    "ErrorSeverity",
     "FlextAlert",
     "FlextHealthCheck",
     "FlextLogEntry",
@@ -956,9 +951,9 @@ __all__ = [
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextTrace",
+    "MetricType",
     "__version__",
     "__version_info__",
-    "_constants_module",
     "flext_alert",
     "flext_create_alert",
     "flext_create_health_check",
