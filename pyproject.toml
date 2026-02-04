@@ -203,7 +203,27 @@
 
 [tool.ruff]
     extend = "../ruff-shared.toml"
+    exclude = [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv",
+        "__pycache__",
+        "archive",
+        "backup",
+        "build",
+        "dist",
+        "docs",
+        "examples",
+        "htmlcov",
+        "temp-backup",
+        "typings",
+        "venv",
+    ]
 
+    [tool.ruff.lint.per-file-ignores]
+    "src/flext_observability/database_instrumentation.py" = ["FBT001"]
 
     [tool.ruff.lint.isort]
         known-first-party = [
