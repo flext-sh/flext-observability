@@ -98,43 +98,43 @@ class FlextObservabilityErrorHandling:
             self._escalation_threshold = 5  # Escalate after N errors
             self._deduplication_window_sec = 300  # 5 minutes
 
-        def set_alert_cooldown(self, seconds: float) -> FlextResult[None]:
+        def set_alert_cooldown(self, seconds: float) -> FlextResult[bool]:
             """Set minimum seconds between alerts for same error.
 
             Args:
                 seconds: Cooldown duration in seconds
 
             Returns:
-                FlextResult[None] - Ok if valid
+                FlextResult[bool] - Ok if valid
 
             """
             if seconds < 0:
-                return FlextResult[None].fail("Cooldown must be >= 0")
+                return FlextResult[bool].fail("Cooldown must be >= 0")
 
             self._alert_cooldown_sec = seconds
             FlextObservabilityErrorHandling._logger.debug(
                 f"Alert cooldown set to {seconds}s",
             )
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
 
-        def set_escalation_threshold(self, threshold: int) -> FlextResult[None]:
+        def set_escalation_threshold(self, threshold: int) -> FlextResult[bool]:
             """Set threshold for error escalation.
 
             Args:
                 threshold: Number of errors before escalation
 
             Returns:
-                FlextResult[None] - Ok if valid
+                FlextResult[bool] - Ok if valid
 
             """
             if threshold < 1:
-                return FlextResult[None].fail("Threshold must be >= 1")
+                return FlextResult[bool].fail("Threshold must be >= 1")
 
             self._escalation_threshold = threshold
             FlextObservabilityErrorHandling._logger.debug(
                 f"Escalation threshold set to {threshold}",
             )
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
 
         def record_error(self, error: ErrorEvent) -> FlextResult[ErrorEvent]:
             """Record an error event.
@@ -264,14 +264,14 @@ class FlextObservabilityErrorHandling:
         def clear_error_counts(
             self,
             older_than_sec: float | None = None,
-        ) -> FlextResult[None]:
+        ) -> FlextResult[bool]:
             """Clear error counts.
 
             Args:
                 older_than_sec: Clear only counts older than N seconds (None = clear all)
 
             Returns:
-                FlextResult[None] - Ok if successful
+                FlextResult[bool] - Ok if successful
 
             """
             try:
@@ -283,10 +283,10 @@ class FlextObservabilityErrorHandling:
                     self._error_counts.clear()
 
                 FlextObservabilityErrorHandling._logger.debug("Error counts cleared")
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(f"Failed to clear error counts: {e}")
+                return FlextResult[bool].fail(f"Failed to clear error counts: {e}")
 
     @staticmethod
     def get_handler() -> FlextObservabilityErrorHandling.Handler:

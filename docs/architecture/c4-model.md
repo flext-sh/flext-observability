@@ -373,7 +373,7 @@ class FlextObservabilityServices(u):
     """Unified service class with all observability operations."""
 
     @classmethod
-    def record_counter(cls, name: str, value: float = 1.0) -> FlextResult[None]:
+    def record_counter(cls, name: str, value: float = 1.0) -> FlextResult[bool]:
         """Record counter metric with thread safety."""
 
     @classmethod

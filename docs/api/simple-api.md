@@ -398,12 +398,12 @@ def process_business_operation(data: dict) -> FlextResult[t.Dict]:
     # Create metric - handle potential failure
     metric_result = flext_create_metric("operations_started", 1, "count")
     if not metric_result.success:
-        return FlextResult[None].fail(f"Failed to create metric: {metric_result.error}")
+        return FlextResult[bool].fail(f"Failed to create metric: {metric_result.error}")
 
     # Create trace - handle potential failure
     trace_result = flext_create_trace("business_operation", "main-service")
     if not trace_result.success:
-        return FlextResult[None].fail(f"Failed to create trace: {trace_result.error}")
+        return FlextResult[bool].fail(f"Failed to create trace: {trace_result.error}")
 
     # Business logic here
     result_data = {"status": "processed", "data": data}
@@ -412,7 +412,7 @@ def process_business_operation(data: dict) -> FlextResult[t.Dict]:
     success_metric = flext_create_metric("operations_completed", 1, "count")
     # Note: In production, you might want to handle this error too
 
-    return FlextResult[None].ok(result_data)
+    return FlextResult[bool].ok(result_data)
 ```
 
 ### Pattern 2: Batch Observability Creation
@@ -456,7 +456,7 @@ def handle_user_request(user_id: str, operation: str) -> FlextResult[t.Dict]:
     )
 
     if not trace_result.success:
-        return FlextResult[None].fail(f"Tracing failed: {trace_result.error}")
+        return FlextResult[bool].fail(f"Tracing failed: {trace_result.error}")
 
     trace_id = trace_result.data.id
 
@@ -476,7 +476,7 @@ def handle_user_request(user_id: str, operation: str) -> FlextResult[t.Dict]:
         correlation_id=trace_id
     )
 
-    return FlextResult[None].ok({
+    return FlextResult[bool].ok({
         "trace_id": trace_id,
         "status": "success",
         "context": context

@@ -265,7 +265,7 @@ class UserService:
         # Your business logic
         user = {"id": "user123", "email": user_data["email"]}
 
-        return FlextResult[None].ok(user)
+        return FlextResult[bool].ok(user)
 ```
 
 ### Pattern 2: Infrastructure Service Integration

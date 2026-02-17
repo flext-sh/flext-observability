@@ -126,7 +126,7 @@ class FlextObservabilityHTTPClient:
         instrumented_clients: ClassVar[set[object]] = set()
 
         @staticmethod
-        def setup_instrumentation(client: object) -> FlextResult[None]:
+        def setup_instrumentation(client: object) -> FlextResult[bool]:
             """Setup httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -136,7 +136,7 @@ class FlextObservabilityHTTPClient:
                 client: httpx.Client or httpx.AsyncClient instance
 
             Returns:
-                FlextResult[None] - Ok if setup successful
+                FlextResult[bool] - Ok if setup successful
 
             Behavior:
                 - Injects correlation ID into request headers
@@ -169,13 +169,13 @@ class FlextObservabilityHTTPClient:
             """
             try:
                 if not hasattr(client, "request") and not hasattr(client, "_send"):
-                    return FlextResult[None].fail(
+                    return FlextResult[bool].fail(
                         "Invalid httpx client - missing request method",
                     )
 
                 # Avoid duplicate instrumentation
                 if client in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
-                    return FlextResult[None].ok(None)
+                    return FlextResult[bool].ok(value=True)
 
                 # Determine if this is async client
                 is_async = hasattr(client, "_send")
@@ -365,10 +365,10 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient._logger.debug(
                     "httpx client instrumentation setup complete",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"httpx instrumentation setup failed: {e}",
                 )
 
@@ -382,7 +382,7 @@ class FlextObservabilityHTTPClient:
         instrumented_sessions: ClassVar[set[object]] = set()
 
         @staticmethod
-        def setup_instrumentation(session: object) -> FlextResult[None]:
+        def setup_instrumentation(session: object) -> FlextResult[bool]:
             """Setup aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests
@@ -392,7 +392,7 @@ class FlextObservabilityHTTPClient:
                 session: aiohttp.ClientSession instance
 
             Returns:
-                FlextResult[None] - Ok if setup successful
+                FlextResult[bool] - Ok if setup successful
 
             Behavior:
                 - Injects correlation ID into request headers
@@ -418,7 +418,7 @@ class FlextObservabilityHTTPClient:
             """
             try:
                 if not hasattr(session, "_request"):
-                    return FlextResult[None].fail(
+                    return FlextResult[bool].fail(
                         "Invalid aiohttp session - missing _request method",
                     )
 
@@ -427,7 +427,7 @@ class FlextObservabilityHTTPClient:
                     session
                     in FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions
                 ):
-                    return FlextResult[None].ok(None)
+                    return FlextResult[bool].ok(value=True)
 
                 # Get original request method using getattr for dynamic access
                 original_request: Callable[
@@ -533,10 +533,10 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient._logger.debug(
                     "aiohttp session instrumentation setup complete",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"aiohttp instrumentation setup failed: {e}",
                 )
 

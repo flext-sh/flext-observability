@@ -154,7 +154,7 @@ class FlextObservabilityDatabase:
         instrumented_engines: ClassVar[set[Engine]] = set()
 
         @staticmethod
-        def setup_instrumentation(engine: Engine) -> FlextResult[None]:
+        def setup_instrumentation(engine: Engine) -> FlextResult[bool]:
             """Setup SQLAlchemy engine query instrumentation.
 
             Adds SQLAlchemy event listeners for automatic query tracing,
@@ -164,7 +164,7 @@ class FlextObservabilityDatabase:
                 engine: SQLAlchemy Engine instance
 
             Returns:
-                FlextResult[None] - Ok if setup successful
+                FlextResult[bool] - Ok if setup successful
 
             Behavior:
                 - Creates span for each SQL query execution
@@ -191,13 +191,13 @@ class FlextObservabilityDatabase:
             """
             try:
                 if not hasattr(engine, "dispatch"):
-                    return FlextResult[None].fail(
+                    return FlextResult[bool].fail(
                         "Invalid SQLAlchemy engine - missing dispatch",
                     )
 
                 # Avoid duplicate instrumentation
                 if engine in FlextObservabilityDatabase.SQLAlchemy.instrumented_engines:
-                    return FlextResult[None].ok(None)
+                    return FlextResult[bool].ok(value=True)
 
                 @event.listens_for(engine, "before_cursor_execute")
                 def before_cursor_execute(
@@ -315,10 +315,10 @@ class FlextObservabilityDatabase:
                 FlextObservabilityDatabase._logger.debug(
                     "SQLAlchemy instrumentation setup complete",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"SQLAlchemy instrumentation setup failed: {e}",
                 )
 
@@ -332,7 +332,7 @@ class FlextObservabilityDatabase:
         instrumented_pools: ClassVar[set[object]] = set()
 
         @staticmethod
-        def setup_instrumentation(pool: AsyncPGPoolProtocol) -> FlextResult[None]:
+        def setup_instrumentation(pool: AsyncPGPoolProtocol) -> FlextResult[bool]:
             """Setup asyncpg connection pool query instrumentation.
 
             Wraps asyncpg pool to automatically trace all queries.
@@ -341,7 +341,7 @@ class FlextObservabilityDatabase:
                 pool: asyncpg connection pool instance
 
             Returns:
-                FlextResult[None] - Ok if setup successful
+                FlextResult[bool] - Ok if setup successful
 
             Behavior:
                 - Creates span for each asyncpg query execution
@@ -367,13 +367,13 @@ class FlextObservabilityDatabase:
             """
             try:
                 if not hasattr(pool, "execute"):
-                    return FlextResult[None].fail(
+                    return FlextResult[bool].fail(
                         "Invalid asyncpg pool - missing execute method",
                     )
 
                 # Avoid duplicate instrumentation
                 if pool in FlextObservabilityDatabase.AsyncPG.instrumented_pools:
-                    return FlextResult[None].ok(None)
+                    return FlextResult[bool].ok(value=True)
 
                 # Store original methods
                 original_execute = pool.execute
@@ -565,10 +565,10 @@ class FlextObservabilityDatabase:
                 FlextObservabilityDatabase._logger.debug(
                     "asyncpg pool instrumentation setup complete",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"asyncpg instrumentation setup failed: {e}",
                 )
 

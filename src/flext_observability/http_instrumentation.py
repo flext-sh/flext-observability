@@ -165,7 +165,7 @@ class FlextObservabilityHTTP:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: object) -> FlextResult[None]:
+        def setup_instrumentation(app: object) -> FlextResult[bool]:
             """Setup Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -175,7 +175,7 @@ class FlextObservabilityHTTP:
                 app: Flask application instance
 
             Returns:
-                FlextResult[None] - Ok if setup successful
+                FlextResult[bool] - Ok if setup successful
 
             Behavior:
                 - Extracts correlation ID from X-Correlation-ID header
@@ -205,7 +205,7 @@ class FlextObservabilityHTTP:
                     app,
                     "after_request",
                 ):
-                    return FlextResult[None].fail(
+                    return FlextResult[bool].fail(
                         "Invalid Flask app - missing request hooks",
                     )
 
@@ -320,10 +320,10 @@ class FlextObservabilityHTTP:
                 FlextObservabilityHTTP._logger.debug(
                     "Flask HTTP instrumentation setup complete",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"Flask instrumentation setup failed: {e}",
                 )
 
@@ -335,7 +335,7 @@ class FlextObservabilityHTTP:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: object) -> FlextResult[None]:
+        def setup_instrumentation(app: object) -> FlextResult[bool]:
             """Setup FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,
@@ -346,7 +346,7 @@ class FlextObservabilityHTTP:
                 app: FastAPI application instance
 
             Returns:
-                FlextResult[None] - Ok if setup successful
+                FlextResult[bool] - Ok if setup successful
 
             Behavior:
                 - Extracts correlation ID from X-Correlation-ID header
@@ -374,7 +374,7 @@ class FlextObservabilityHTTP:
             """
             try:
                 if not hasattr(app, "middleware"):
-                    return FlextResult[None].fail(
+                    return FlextResult[bool].fail(
                         "Invalid FastAPI app - missing middleware method",
                     )
 
@@ -475,10 +475,10 @@ class FlextObservabilityHTTP:
                 FlextObservabilityHTTP._logger.debug(
                     "FastAPI HTTP instrumentation setup complete",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"FastAPI instrumentation setup failed: {e}",
                 )
 
