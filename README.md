@@ -6,6 +6,8 @@
 
 **FLEXT-Observability** is the universal monitoring, tracing, and health check library for the FLEXT ecosystem. Built on **OpenTelemetry** and structured logging, it provides a unified layer for capturing performance metrics, distributed traces, and service health status across all FLEXT components.
 
+Part of the [FLEXT](https://github.com/flext/flext) ecosystem.
+
 ## 🚀 Key Features
 
 - **Unified Monitoring**: Centralized collection of application metrics, logs, and traces.
