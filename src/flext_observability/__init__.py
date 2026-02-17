@@ -904,7 +904,7 @@ class FlextObservabilityMasterFactory:
 
 def get_global_factory() -> FlextObservabilityMasterFactory:
     """Get or create the global factory instance."""
-    global _global_factory  # noqa: PLW0603
+    global _global_factory
     if _global_factory is None:
         _global_factory = FlextObservabilityMasterFactory()
     return _global_factory
@@ -912,7 +912,7 @@ def get_global_factory() -> FlextObservabilityMasterFactory:
 
 def reset_global_factory() -> None:
     """Reset the global factory instance."""
-    global _global_factory  # noqa: PLW0603
+    global _global_factory
     _global_factory = None
 
 
