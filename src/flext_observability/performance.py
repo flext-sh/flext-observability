@@ -189,14 +189,14 @@ class FlextObservabilityPerformance:
         return metrics.duration_ms < threshold
 
     @staticmethod
-    def log_performance_metrics(metrics: PerformanceMetrics) -> FlextResult[None]:
+    def log_performance_metrics(metrics: PerformanceMetrics) -> FlextResult[bool]:
         """Log performance metrics for operation.
 
         Args:
             metrics: Performance metrics to log
 
         Returns:
-            FlextResult[None] - Ok always
+            FlextResult[bool] - Ok always
 
         """
         try:
@@ -218,10 +218,10 @@ class FlextObservabilityPerformance:
             else:
                 FlextObservabilityPerformance._logger.warning(message)
 
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
 
         except Exception as e:
-            return FlextResult[None].fail(f"Failed to log metrics: {e}")
+            return FlextResult[bool].fail(f"Failed to log metrics: {e}")
 
     @staticmethod
     def get_system_resources() -> dict[str, float]:

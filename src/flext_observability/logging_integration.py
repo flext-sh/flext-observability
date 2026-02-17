@@ -161,7 +161,7 @@ class FlextObservabilityLogging:
             )
 
     @staticmethod
-    def inject_trace_context(logger: p.Log.StructlogLogger) -> FlextResult[None]:
+    def inject_trace_context(logger: p.Log.StructlogLogger) -> FlextResult[bool]:
         """Inject trace context into logger for structured logging.
 
         Configures logger to automatically include trace context in all
@@ -171,7 +171,7 @@ class FlextObservabilityLogging:
             logger: Logger instance to configure
 
         Returns:
-            FlextResult[None] - Ok if successful
+            FlextResult[bool] - Ok if successful
 
         Example:
             ```python
@@ -199,9 +199,9 @@ class FlextObservabilityLogging:
             # Use logger parameter to avoid unused variable warning
             _ = logger
 
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
         except Exception as e:
-            return FlextResult[None].fail(f"Trace context injection failed: {e}")
+            return FlextResult[bool].fail(f"Trace context injection failed: {e}")
 
     # ========================================================================
     # LOGGING WITH CONTEXT
@@ -215,7 +215,7 @@ class FlextObservabilityLogging:
         extra: dict[str, t.GeneralValueType] | None = None,
         *,
         include_baggage: bool = False,
-    ) -> FlextResult[None]:
+    ) -> FlextResult[bool]:
         """Log message with automatic trace context.
 
         Logs a message while automatically enriching it with correlation ID,
@@ -229,7 +229,7 @@ class FlextObservabilityLogging:
             include_baggage: Whether to include baggage in logs
 
         Returns:
-            FlextResult[None] - Ok if logging succeeded
+            FlextResult[bool] - Ok if logging succeeded
 
         Example:
             ```python
@@ -247,10 +247,10 @@ class FlextObservabilityLogging:
         """
         try:
             if not message:
-                return FlextResult[None].fail("Message must be non-empty string")
+                return FlextResult[bool].fail("Message must be non-empty string")
 
             if level not in {"debug", "info", "warning", "error", "critical"}:
-                return FlextResult[None].fail(f"Invalid log level: {level}")
+                return FlextResult[bool].fail(f"Invalid log level: {level}")
 
             # Get trace context
             context_result = FlextObservabilityLogging.enrich_log_context(
@@ -259,7 +259,7 @@ class FlextObservabilityLogging:
             )
 
             if context_result.is_failure:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"Failed to get trace context: {context_result.error}",
                 )
 
@@ -271,9 +271,9 @@ class FlextObservabilityLogging:
             # Log with context
             getattr(logger, level)(message, extra=log_context)
 
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
         except Exception as e:
-            return FlextResult[None].fail(f"Logging with context failed: {e}")
+            return FlextResult[bool].fail(f"Logging with context failed: {e}")
 
     # ========================================================================
     # CONTEXT VALIDATION

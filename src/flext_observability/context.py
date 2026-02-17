@@ -188,7 +188,7 @@ class FlextObservabilityContext:
     # ========================================================================
 
     @staticmethod
-    def set_baggage(key: str, value: t.GeneralValueType) -> FlextResult[None]:
+    def set_baggage(key: str, value: t.GeneralValueType) -> FlextResult[bool]:
         """Set baggage value for metadata propagation.
 
         Baggage allows passing metadata across service boundaries
@@ -199,7 +199,7 @@ class FlextObservabilityContext:
             value: Baggage value (must be serializable)
 
         Returns:
-            FlextResult[None] - Ok if successful, Fail if validation error
+            FlextResult[bool] - Ok if successful, Fail if validation error
 
         Example:
             ```python
@@ -213,13 +213,13 @@ class FlextObservabilityContext:
         """
         try:
             if not isinstance(key, str) or not key:
-                return FlextResult[None].fail("Baggage key must be non-empty string")
+                return FlextResult[bool].fail("Baggage key must be non-empty string")
 
             # Validate value is serializable
             try:
                 json.dumps(value)
             except (TypeError, ValueError):
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"Baggage value for '{key}' must be JSON serializable",
                 )
 
@@ -228,9 +228,9 @@ class FlextObservabilityContext:
             updated_baggage = {**current_baggage, key: value}
             FlextObservabilityContext._baggage.set(updated_baggage)
 
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
         except Exception as e:
-            return FlextResult[None].fail(f"Baggage set failed: {e}")
+            return FlextResult[bool].fail(f"Baggage set failed: {e}")
 
     @staticmethod
     def get_baggage(
@@ -314,7 +314,7 @@ class FlextObservabilityContext:
         return headers
 
     @staticmethod
-    def from_headers(headers: dict[str, str]) -> FlextResult[None]:
+    def from_headers(headers: dict[str, str]) -> FlextResult[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -324,7 +324,7 @@ class FlextObservabilityContext:
             headers: HTTP request headers dict
 
         Returns:
-            FlextResult[None] - Always Ok, generates IDs if not found
+            FlextResult[bool] - Always Ok, generates IDs if not found
 
         Example:
             ```python
@@ -354,14 +354,14 @@ class FlextObservabilityContext:
             if span_id := normalized_headers.get("x-span-id"):
                 FlextObservabilityContext.set_span_id(span_id)
 
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
         except Exception as e:
             FlextObservabilityContext._logger.warning(
                 f"Failed to extract context from headers: {e}",
             )
             # Still return ok - generate new IDs
             FlextObservabilityContext.set_correlation_id()
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
 
     # ========================================================================
     # COMPLETE CONTEXT RETRIEVAL

@@ -182,7 +182,7 @@ class FlextObservabilityHealth(FlextModels):
                     return FlextResult[bool].fail(
                         f"Invalid health status: {self.status}",
                     )
-                return FlextResult[bool].ok(True)
+                return FlextResult[bool].ok(value=True)
             except Exception as e:
                 return FlextResult[bool].fail(f"Business rule validation failed: {e}")
 

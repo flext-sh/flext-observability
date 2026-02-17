@@ -84,14 +84,14 @@ class FlextObservabilitySampling:
             self._operation_overrides: dict[str, float] = {}  # Per-operation rates
             self._sampled_trace_ids: set[str] = set()  # For deterministic sampling
 
-        def set_environment(self, environment: str) -> FlextResult[None]:
+        def set_environment(self, environment: str) -> FlextResult[bool]:
             """Set current environment for sampling configuration.
 
             Args:
                 environment: Environment name (development, staging, production)
 
             Returns:
-                FlextResult[None] - Ok if valid environment
+                FlextResult[bool] - Ok if valid environment
 
             Behavior:
                 - Updates default sampling rate based on environment
@@ -101,7 +101,7 @@ class FlextObservabilitySampling:
             """
             valid_envs = ["development", "staging", "production"]
             if environment not in valid_envs:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"Invalid environment: {environment}. Must be one of {valid_envs}",
                 )
 
@@ -111,16 +111,16 @@ class FlextObservabilitySampling:
             FlextObservabilitySampling._logger.debug(
                 f"Sampling environment set to {environment} (rate: {self._default_rate})",
             )
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
 
-        def set_default_rate(self, rate: float) -> FlextResult[None]:
+        def set_default_rate(self, rate: float) -> FlextResult[bool]:
             """Set default sampling rate (0.0 to 1.0).
 
             Args:
                 rate: Sampling rate (0.0 = never sample, 1.0 = always sample)
 
             Returns:
-                FlextResult[None] - Ok if rate is valid
+                FlextResult[bool] - Ok if rate is valid
 
             Behavior:
                 - Overrides environment-based rate
@@ -130,7 +130,7 @@ class FlextObservabilitySampling:
 
             """
             if not 0.0 <= rate <= 1.0:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
 
@@ -138,9 +138,9 @@ class FlextObservabilitySampling:
             FlextObservabilitySampling._logger.debug(
                 f"Default sampling rate set to {rate}",
             )
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
 
-        def set_service_rate(self, service: str, rate: float) -> FlextResult[None]:
+        def set_service_rate(self, service: str, rate: float) -> FlextResult[bool]:
             """Set sampling rate for specific service.
 
             Args:
@@ -148,7 +148,7 @@ class FlextObservabilitySampling:
                 rate: Sampling rate for this service (0.0 to 1.0)
 
             Returns:
-                FlextResult[None] - Ok if rate is valid
+                FlextResult[bool] - Ok if rate is valid
 
             Behavior:
                 - Per-service rate overrides default rate
@@ -157,7 +157,7 @@ class FlextObservabilitySampling:
 
             """
             if not 0.0 <= rate <= 1.0:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
 
@@ -165,9 +165,9 @@ class FlextObservabilitySampling:
             FlextObservabilitySampling._logger.debug(
                 f"Sampling rate for service '{service}' set to {rate}",
             )
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
 
-        def set_operation_rate(self, operation: str, rate: float) -> FlextResult[None]:
+        def set_operation_rate(self, operation: str, rate: float) -> FlextResult[bool]:
             """Set sampling rate for specific operation.
 
             Args:
@@ -175,7 +175,7 @@ class FlextObservabilitySampling:
                 rate: Sampling rate for this operation (0.0 to 1.0)
 
             Returns:
-                FlextResult[None] - Ok if rate is valid
+                FlextResult[bool] - Ok if rate is valid
 
             Behavior:
                 - Per-operation rate overrides service and default rates
@@ -183,7 +183,7 @@ class FlextObservabilitySampling:
 
             """
             if not 0.0 <= rate <= 1.0:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
 
@@ -191,7 +191,7 @@ class FlextObservabilitySampling:
             FlextObservabilitySampling._logger.debug(
                 f"Sampling rate for operation '{operation}' set to {rate}",
             )
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
 
         def should_sample(
             self,

@@ -111,7 +111,7 @@ class FlextObservabilityAdvancedContext:
             self._request_id: str = ""
             self._parent_context: ContextSnapshot | None = None
 
-        def set_metadata(self, key: str, value: JSONValue) -> FlextResult[None]:
+        def set_metadata(self, key: str, value: JSONValue) -> FlextResult[bool]:
             """Set request-local metadata.
 
             Args:
@@ -119,7 +119,7 @@ class FlextObservabilityAdvancedContext:
                 value: Metadata value (must be JSON serializable)
 
             Returns:
-                FlextResult[None] - Ok if successful
+                FlextResult[bool] - Ok if successful
 
             Behavior:
                 - Stores in request-local storage
@@ -133,10 +133,10 @@ class FlextObservabilityAdvancedContext:
                 self._metadata[key] = value
 
                 FlextObservabilityAdvancedContext._logger.debug(f"Metadata set: {key}")
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except (TypeError, ValueError) as e:
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     f"Metadata value not JSON serializable: {e}",
                 )
 
@@ -152,7 +152,7 @@ class FlextObservabilityAdvancedContext:
             """
             return self._metadata.get(key)
 
-        def set_baggage(self, key: str, value: str) -> FlextResult[None]:
+        def set_baggage(self, key: str, value: str) -> FlextResult[bool]:
             """Set baggage item (W3C Baggage API).
 
             Args:
@@ -160,16 +160,16 @@ class FlextObservabilityAdvancedContext:
                 value: Baggage value (string)
 
             Returns:
-                FlextResult[None] - Ok if successful
+                FlextResult[bool] - Ok if successful
 
             """
             try:
                 self._baggage[key] = value
                 FlextObservabilityAdvancedContext._logger.debug(f"Baggage set: {key}")
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(f"Failed to set baggage: {e}")
+                return FlextResult[bool].fail(f"Failed to set baggage: {e}")
 
         def get_baggage(self, key: str) -> str | None:
             """Get baggage item.
@@ -226,14 +226,14 @@ class FlextObservabilityAdvancedContext:
                 metadata=self.get_all_metadata(),
             )
 
-        def restore(self, snapshot: ContextSnapshot) -> FlextResult[None]:
+        def restore(self, snapshot: ContextSnapshot) -> FlextResult[bool]:
             """Restore context from snapshot.
 
             Args:
                 snapshot: Context snapshot to restore
 
             Returns:
-                FlextResult[None] - Ok if successful
+                FlextResult[bool] - Ok if successful
 
             Behavior:
                 - Restores all metadata and baggage
@@ -247,16 +247,16 @@ class FlextObservabilityAdvancedContext:
                 FlextObservabilityAdvancedContext._logger.debug(
                     "Context restored from snapshot",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(f"Failed to restore context: {e}")
+                return FlextResult[bool].fail(f"Failed to restore context: {e}")
 
-        def clear(self) -> FlextResult[None]:
+        def clear(self) -> FlextResult[bool]:
             """Clear all request-local context.
 
             Returns:
-                FlextResult[None] - Ok always
+                FlextResult[bool] - Ok always
 
             """
             try:
@@ -265,22 +265,22 @@ class FlextObservabilityAdvancedContext:
                 self._request_id = ""
 
                 FlextObservabilityAdvancedContext._logger.debug("Context cleared")
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(f"Failed to clear context: {e}")
+                return FlextResult[bool].fail(f"Failed to clear context: {e}")
 
         def merge(
             self,
             other: FlextObservabilityAdvancedContext.Context,
-        ) -> FlextResult[None]:
+        ) -> FlextResult[bool]:
             """Merge another context into this one.
 
             Args:
                 other: Other context to merge
 
             Returns:
-                FlextResult[None] - Ok if successful
+                FlextResult[bool] - Ok if successful
 
             """
             try:
@@ -288,10 +288,10 @@ class FlextObservabilityAdvancedContext:
                 self._baggage.update(other.get_all_baggage())
 
                 FlextObservabilityAdvancedContext._logger.debug("Context merged")
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(f"Failed to merge context: {e}")
+                return FlextResult[bool].fail(f"Failed to merge context: {e}")
 
     @staticmethod
     def get_context() -> FlextObservabilityAdvancedContext.Context:
@@ -309,7 +309,7 @@ class FlextObservabilityAdvancedContext:
         return FlextObservabilityAdvancedContext._context_instance
 
     @staticmethod
-    def set_metadata(key: str, value: JSONValue) -> FlextResult[None]:
+    def set_metadata(key: str, value: JSONValue) -> FlextResult[bool]:
         """Convenience function: set metadata.
 
         Args:
@@ -317,7 +317,7 @@ class FlextObservabilityAdvancedContext:
             value: Metadata value
 
         Returns:
-            FlextResult[None] - Ok if successful
+            FlextResult[bool] - Ok if successful
 
         """
         ctx = FlextObservabilityAdvancedContext.get_context()

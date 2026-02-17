@@ -91,7 +91,7 @@ class FlextObservabilityCustomMetrics:
             description: str,
             unit: str = "1",
             namespace: str = "default",
-        ) -> FlextResult[None]:
+        ) -> FlextResult[bool]:
             """Register a custom metric.
 
             Args:
@@ -102,7 +102,7 @@ class FlextObservabilityCustomMetrics:
                 namespace: Namespace for metric organization
 
             Returns:
-                FlextResult[None] - Ok if registration successful
+                FlextResult[bool] - Ok if registration successful
 
             Behavior:
                 - Validates metric name and type
@@ -114,17 +114,17 @@ class FlextObservabilityCustomMetrics:
             try:
                 # Validate inputs
                 if not name or not name.strip():
-                    return FlextResult[None].fail("Metric name cannot be empty")
+                    return FlextResult[bool].fail("Metric name cannot be empty")
 
                 if not description or not description.strip():
-                    return FlextResult[None].fail("Metric description cannot be empty")
+                    return FlextResult[bool].fail("Metric description cannot be empty")
 
                 # Convert metric_type to enum
                 if isinstance(metric_type, str):
                     try:
                         metric_type_enum = MetricType(metric_type.lower())
                     except ValueError:
-                        return FlextResult[None].fail(
+                        return FlextResult[bool].fail(
                             f"Invalid metric type: {metric_type}. "
                             f"Must be one of {['counter', 'gauge', 'histogram']}",
                         )
@@ -138,7 +138,7 @@ class FlextObservabilityCustomMetrics:
 
                 # Check for duplicates
                 if namespaced_name in self._metrics:
-                    return FlextResult[None].fail(
+                    return FlextResult[bool].fail(
                         f"Metric '{namespaced_name}' already registered",
                     )
 
@@ -157,10 +157,10 @@ class FlextObservabilityCustomMetrics:
                 FlextObservabilityCustomMetrics._logger.debug(
                     f"Metric registered: {namespaced_name} ({metric_type_enum.value})",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(f"Metric registration failed: {e}")
+                return FlextResult[bool].fail(f"Metric registration failed: {e}")
 
         def get_metric(
             self,
@@ -258,7 +258,7 @@ class FlextObservabilityCustomMetrics:
             self,
             name: str,
             namespace: str = "default",
-        ) -> FlextResult[None]:
+        ) -> FlextResult[bool]:
             """Unregister a metric.
 
             Args:
@@ -266,7 +266,7 @@ class FlextObservabilityCustomMetrics:
                 namespace: Namespace (default "default")
 
             Returns:
-                FlextResult[None] - Ok if unregistered
+                FlextResult[bool] - Ok if unregistered
 
             """
             try:
@@ -275,7 +275,7 @@ class FlextObservabilityCustomMetrics:
                 )
 
                 if namespaced_name not in self._metrics:
-                    return FlextResult[None].fail(
+                    return FlextResult[bool].fail(
                         f"Metric '{namespaced_name}' not found",
                     )
 
@@ -284,19 +284,19 @@ class FlextObservabilityCustomMetrics:
                 FlextObservabilityCustomMetrics._logger.debug(
                     f"Metric unregistered: {namespaced_name}",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(f"Metric unregistration failed: {e}")
+                return FlextResult[bool].fail(f"Metric unregistration failed: {e}")
 
-        def clear_metrics(self, namespace: str | None = None) -> FlextResult[None]:
+        def clear_metrics(self, namespace: str | None = None) -> FlextResult[bool]:
             """Clear metrics from registry.
 
             Args:
                 namespace: Optional namespace to clear (clears all if None)
 
             Returns:
-                FlextResult[None] - Ok if successful
+                FlextResult[bool] - Ok if successful
 
             """
             try:
@@ -312,10 +312,10 @@ class FlextObservabilityCustomMetrics:
                 FlextObservabilityCustomMetrics._logger.debug(
                     f"Metrics cleared: {namespace or 'all'}",
                 )
-                return FlextResult[None].ok(None)
+                return FlextResult[bool].ok(value=True)
 
             except Exception as e:
-                return FlextResult[None].fail(f"Failed to clear metrics: {e}")
+                return FlextResult[bool].fail(f"Failed to clear metrics: {e}")
 
     @staticmethod
     def get_registry() -> FlextObservabilityCustomMetrics.Registry:
@@ -339,7 +339,7 @@ class FlextObservabilityCustomMetrics:
         description: str,
         unit: str = "1",
         namespace: str = "default",
-    ) -> FlextResult[None]:
+    ) -> FlextResult[bool]:
         """Convenience function: register a metric.
 
         Args:
@@ -350,7 +350,7 @@ class FlextObservabilityCustomMetrics:
             namespace: Namespace (default "default")
 
         Returns:
-            FlextResult[None] - Ok if successful
+            FlextResult[bool] - Ok if successful
 
         """
         registry = FlextObservabilityCustomMetrics.get_registry()

@@ -163,23 +163,23 @@ class FlextObservabilitySettings(FlextSettings):
 
         return self
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[bool]:
         """Validate observability business rules."""
         try:
             # Cross-field business validations
             if self.metrics_enabled and not self.metrics_namespace.strip():
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     "Metrics namespace cannot be empty when enabled",
                 )
 
             if self.tracing_enabled and not self.tracing_service_name.strip():
-                return FlextResult[None].fail(
+                return FlextResult[bool].fail(
                     "Tracing service name cannot be empty when enabled",
                 )
 
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
         except Exception as e:
-            return FlextResult[None].fail(f"Business rules validation failed: {e}")
+            return FlextResult[bool].fail(f"Business rules validation failed: {e}")
 
     @classmethod
     def create_with_defaults(

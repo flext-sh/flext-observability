@@ -184,7 +184,7 @@ FlextResult[T] Response
 ```
 Domain Validation Error
        ↓
-FlextResult[None].fail()
+FlextResult[bool].fail()
        ↓
 Service Layer Handling
        ↓
@@ -277,7 +277,7 @@ class FlextObservabilityMasterFactory:
         # Domain validation
         # Entity creation
         # FlextResult wrapping
-        return FlextResult[None].ok(metric)
+        return FlextResult[bool].ok(metric)
 ```
 
 ### Service Layer Pattern
@@ -295,7 +295,7 @@ class FlextMetricsService:
         # Business validation
         # Storage operations
         # Event publication
-        return FlextResult[None].ok(metric)
+        return FlextResult[bool].ok(metric)
 ```
 
 ### Repository Pattern (Future Implementation)
@@ -304,7 +304,7 @@ class FlextMetricsService:
 class FlextMetricsRepository(Protocol):
     """Repository interface for metrics persistence."""
 
-    def store_metric(self, metric: FlextMetric) -> FlextResult[None]:
+    def store_metric(self, metric: FlextMetric) -> FlextResult[bool]:
         """Store metric with persistence abstraction."""
         ...
 
@@ -378,11 +378,11 @@ class FlextMetricsRepository(Protocol):
 class FlextObservabilityPlugin(Protocol):
     """Plugin interface for extending observability."""
 
-    def on_metric_created(self, metric: FlextMetric) -> FlextResult[None]:
+    def on_metric_created(self, metric: FlextMetric) -> FlextResult[bool]:
         """Hook called when metrics are created."""
         ...
 
-    def on_trace_started(self, trace: FlextTrace) -> FlextResult[None]:
+    def on_trace_started(self, trace: FlextTrace) -> FlextResult[bool]:
         """Hook called when traces are started."""
         ...
 ```
