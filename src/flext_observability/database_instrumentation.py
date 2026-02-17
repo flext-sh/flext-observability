@@ -22,6 +22,7 @@ Key Features:
 from __future__ import annotations
 
 import time
+from collections import UserDict
 from collections.abc import Callable
 from typing import ClassVar, Protocol
 
@@ -54,12 +55,12 @@ except ImportError:
             self.url = _StubURLProtocol()
             self.dispatch = object()
 
-    class _StubInfoDict(dict[str, object]):  # noqa: FURB189
+    class _StubInfoDict(UserDict[str, object]):
         """Stub info dict for type checking."""
 
         pass
 
-    class Connection:  # type: ignore[no-redef]
+    class Connection:
         """Stub for when sqlalchemy is not installed."""
 
         info: _StubInfoDict
@@ -69,7 +70,7 @@ except ImportError:
             self.info = _StubInfoDict()
             self.engine = _StubEngineProtocol()
 
-    class Engine:  # type: ignore[no-redef]
+    class Engine:
         """Stub for when sqlalchemy is not installed."""
 
         dispatch: object
@@ -79,7 +80,7 @@ except ImportError:
             self.dispatch = object()
             self.url = _StubURLProtocol()
 
-    class event:  # type: ignore[no-redef]  # noqa: N801
+    class event:
         """Stub for when sqlalchemy is not installed."""
 
         @staticmethod

@@ -22,6 +22,7 @@ Key Features:
 from __future__ import annotations
 
 import time
+from collections import UserDict
 from collections.abc import Awaitable, Callable
 
 from flext_core import FlextLogger, FlextResult, FlextTypes as t
@@ -62,9 +63,9 @@ except ImportError:
         def __getattr__(self, name: str) -> object:
             return None
 
-    FlaskApp = object  # type: ignore[misc, assignment]
-    g: _StubAppCtxGlobals = _StubAppCtxGlobals()  # type: ignore[assignment]
-    request: _StubFlaskRequest = _StubFlaskRequest()  # type: ignore[assignment]
+    FlaskApp = object
+    g: _StubAppCtxGlobals = _StubAppCtxGlobals()
+    request: _StubFlaskRequest = _StubFlaskRequest()
     _flask_available = False
 
 # Optional dependency: Starlette (for FastAPI)
@@ -86,22 +87,22 @@ except ImportError:
 
         host: str = "unknown"
 
-    class _StubHeaders(dict[str, str]):  # noqa: FURB189
+    class _StubHeaders(UserDict[str, str]):
         """Stub headers for type checking."""
 
-        def get(  # type: ignore[override]
+        def get(
             self,
             key: str,
             default: str = "",
         ) -> str:
             return super().get(key, default)
 
-    class BaseHTTPMiddleware:  # type: ignore[no-redef]
+    class BaseHTTPMiddleware:
         """Stub for when starlette is not installed."""
 
         pass
 
-    class Request:  # type: ignore[no-redef]
+    class Request:
         """Stub for when starlette is not installed."""
 
         headers: _StubHeaders
@@ -114,7 +115,7 @@ except ImportError:
             self.url = _StubURL()
             self.client = _StubClient()
 
-    class Response:  # type: ignore[no-redef]
+    class Response:
         """Stub for when starlette is not installed."""
 
         status_code: int = 200
@@ -377,7 +378,7 @@ class FlextObservabilityHTTP:
                         "Invalid FastAPI app - missing middleware method",
                     )
 
-                class FlextObservabilityMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
+                class FlextObservabilityMiddleware(BaseHTTPMiddleware):
                     """Starlette-based ASGI middleware for FastAPI."""
 
                     async def dispatch(
