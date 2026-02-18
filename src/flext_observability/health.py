@@ -32,7 +32,7 @@ class FlextObservabilityHealth(FlextModels):
     """
 
     # Health Monitoring Models
-    class HealthCheckEntry(FlextModels.Value):
+    class HealthCheckEntry(m.Value):
         """Complete health check entry model."""
 
         model_config = ConfigDict(
