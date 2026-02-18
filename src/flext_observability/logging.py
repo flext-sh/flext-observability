@@ -32,7 +32,7 @@ class FlextObservabilityLogging(FlextModels):
     """
 
     # Log Management Models
-    class LogEntry(FlextModels.Value):
+    class LogEntry(m.Value):
         """Complete log entry model."""
 
         model_config = ConfigDict(
