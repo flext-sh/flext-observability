@@ -7,15 +7,13 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
-from flext_core import m
-from flext_observability.models import m
-from flext_core.models import m
 from __future__ import annotations
 
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextModels, FlextResult, FlextTypes as t
+from flext_core import FlextModels, FlextResult, FlextTypes as t, m
+from flext_core.models import m
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -25,6 +23,8 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+
+from flext_observability.models import m
 
 
 class FlextObservabilityHealth(FlextModels):
