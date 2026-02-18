@@ -7,6 +7,9 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
+from flext_core import m
+from flext_observability.models import m
+from flext_core.models import m
 from __future__ import annotations
 
 from datetime import UTC, datetime
