@@ -19,8 +19,10 @@ Key Features:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import cast
 
 from flext_core import FlextLogger, FlextResult, FlextTypes as t
+from flext_core.protocols import p
 
 from flext_observability.constants import c
 
@@ -72,7 +74,7 @@ class FlextObservabilityCustomMetrics:
         Registry: Metric registry management
     """
 
-    _logger = FlextLogger.get_logger(__name__)
+    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
     _registry_instance: FlextObservabilityCustomMetrics.Registry | None = None
 
     class Registry:

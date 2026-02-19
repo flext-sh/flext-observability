@@ -15,9 +15,11 @@ from __future__ import annotations
 
 import json
 from contextvars import ContextVar
+from typing import cast
 from uuid import uuid4
 
 from flext_core import FlextLogger, FlextResult, FlextTypes as t
+from flext_core.protocols import p
 
 
 class FlextObservabilityContext:
@@ -63,7 +65,7 @@ class FlextObservabilityContext:
         "baggage", default=None
     )
 
-    _logger = FlextLogger.get_logger(__name__)
+    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
 
     # ========================================================================
     # CORRELATION ID MANAGEMENT

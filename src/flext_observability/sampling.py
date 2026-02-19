@@ -20,8 +20,10 @@ Key Features:
 from __future__ import annotations
 
 import random
+from typing import cast
 
 from flext_core import FlextLogger, FlextResult
+from flext_core.protocols import p
 
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
@@ -65,7 +67,7 @@ class FlextObservabilitySampling:
         Sampler: Sampling strategy configuration and decisions
     """
 
-    _logger = FlextLogger.get_logger(__name__)
+    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
     _sampler_instance: FlextObservabilitySampling.Sampler | None = None
 
     class Sampler:
