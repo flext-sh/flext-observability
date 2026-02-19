@@ -1,5 +1,53 @@
 # Python Module Organization & Semantic Patterns
 
+
+<!-- TOC START -->
+- [Table of Contents](#table-of-contents)
+- [🏗️ **Module Architecture Overview**](#-module-architecture-overview)
+  - [**Core Design Principles**](#core-design-principles)
+- [📁 **Module Structure & Responsibilities**](#-module-structure-responsibilities)
+  - [**Foundation Layer**](#foundation-layer)
+  - [**Domain Entity Layer**](#domain-entity-layer)
+  - [**Application Services Layer**](#application-services-layer)
+  - [**Factory & Creation Layer**](#factory-creation-layer)
+  - [**Interface Adapters Layer**](#interface-adapters-layer)
+  - [**Infrastructure & Utilities Layer**](#infrastructure-utilities-layer)
+- [🎯 **Semantic Naming Conventions**](#-semantic-naming-conventions)
+  - [**Public API Naming (FlextXxx)**](#public-api-naming-flextxxx)
+  - [**Module-Level Naming**](#module-level-naming)
+  - [**Function Naming Patterns**](#function-naming-patterns)
+- [📦 **Import Patterns & Best Practices**](#-import-patterns-best-practices)
+  - [**Recommended Import Styles**](#recommended-import-styles)
+  - [**Anti-Patterns (Forbidden)**](#anti-patterns-forbidden)
+- [🏛️ **Architectural Patterns**](#-architectural-patterns)
+  - [**Layer Separation**](#layer-separation)
+  - [**Dependency Direction**](#dependency-direction)
+  - [**Cross-Cutting Observability Concerns**](#cross-cutting-observability-concerns)
+- [🔄 **Observability-Specific Patterns**](#-observability-specific-patterns)
+  - [**Metric Creation Patterns**](#metric-creation-patterns)
+  - [**Distributed Tracing Patterns**](#distributed-tracing-patterns)
+  - [**Health Monitoring Patterns**](#health-monitoring-patterns)
+  - [**Alert Management Patterns**](#alert-management-patterns)
+- [🧪 **Testing Patterns**](#-testing-patterns)
+  - [**Test Organization**](#test-organization)
+  - [**FlextResult Testing Patterns for Observability**](#flextresult-testing-patterns-for-observability)
+  - [**Observability Entity Testing Patterns**](#observability-entity-testing-patterns)
+  - [**Service Testing Patterns**](#service-testing-patterns)
+  - [**Monitoring Decorator Testing Patterns**](#monitoring-decorator-testing-patterns)
+- [📏 **Code Quality Standards**](#-code-quality-standards)
+  - [**Type Annotation Requirements**](#type-annotation-requirements)
+  - [**Error Handling Standards**](#error-handling-standards)
+  - [**Documentation Standards**](#documentation-standards)
+- [🌐 **Ecosystem Integration Guidelines**](#-ecosystem-integration-guidelines)
+  - [**Cross-Project Observability Standards**](#cross-project-observability-standards)
+  - [**Configuration Integration Across Services**](#configuration-integration-across-services)
+  - [**Monitoring Integration Patterns**](#monitoring-integration-patterns)
+- [📋 **Checklist for New Observability Modules**](#-checklist-for-new-observability-modules)
+  - [**Module Creation Checklist**](#module-creation-checklist)
+  - [**Observability Quality Gate Checklist**](#observability-quality-gate-checklist)
+  - [**Observability-Specific Standards**](#observability-specific-standards)
+<!-- TOC END -->
+
 ## Table of Contents
 
 - Python Module Organization & Semantic Patterns

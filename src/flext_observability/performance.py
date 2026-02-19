@@ -12,6 +12,7 @@ FLEXT Pattern:
 
 from __future__ import annotations
 
+import math
 import time
 from dataclasses import dataclass, field
 
@@ -35,7 +36,7 @@ class PerformanceMetrics:
 
     def calculate_duration(self) -> None:
         """Calculate operation duration."""
-        if self.end_time == 0.0:
+        if math.isclose(self.end_time, 0.0):
             self.end_time = time.time()
         self.duration_ms = (self.end_time - self.start_time) * 1000
 

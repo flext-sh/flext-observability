@@ -1,5 +1,26 @@
 # FLEXT Observability Package
 
+
+<!-- TOC START -->
+- [Package Architecture](#package-architecture)
+  - [Domain Layer](#domain-layer)
+  - [Application Layer](#application-layer)
+  - [Interface Adapters Layer](#interface-adapters-layer)
+  - [Infrastructure Layer](#infrastructure-layer)
+  - [Foundation Layer](#foundation-layer)
+- [Usage Examples](#usage-examples)
+  - [Basic Entity Creation](#basic-entity-creation)
+  - [Service Layer Usage](#service-layer-usage)
+  - [Factory Pattern Usage](#factory-pattern-usage)
+  - [Simple API Usage](#simple-api-usage)
+  - [Monitoring Decorator Usage](#monitoring-decorator-usage)
+- [Integration Patterns](#integration-patterns)
+  - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
+  - [Cross-Service Observability](#cross-service-observability)
+- [Quality Standards](#quality-standards)
+- [Development Guidelines](#development-guidelines)
+<!-- TOC END -->
+
 **Core observability implementation providing monitoring, metrics, tracing, and health check capabilities for the FLEXT ecosystem.**
 
 This package implements Clean Architecture and Domain-Driven Design patterns specifically for observability concerns, delivering monitoring solutions that integrate seamlessly across all 33 FLEXT ecosystem projects.

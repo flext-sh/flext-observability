@@ -1,5 +1,25 @@
 # Simple API Reference
 
+
+<!-- TOC START -->
+- [Table of Contents](#table-of-contents)
+- [📋 API Overview](#-api-overview)
+- [🔍 Core Functions](#-core-functions)
+  - [`flext_create_metric()`](#flextcreatemetric)
+  - [`flext_create_trace()`](#flextcreatetrace)
+  - [`flext_create_alert()`](#flextcreatealert)
+  - [`flext_create_health_check()`](#flextcreatehealthcheck)
+  - [`flext_create_log_entry()`](#flextcreatelogentry)
+- [🔄 Common Usage Patterns](#-common-usage-patterns)
+  - [Pattern 1: Error Handling with Railway-Oriented Programming](#pattern-1-error-handling-with-railway-oriented-programming)
+  - [Pattern 2: Batch Observability Creation](#pattern-2-batch-observability-creation)
+  - [Pattern 3: Observability Context Propagation](#pattern-3-observability-context-propagation)
+- [🚨 Error Reference](#-error-reference)
+  - [Common Validation Errors](#common-validation-errors)
+  - [Type Safety Errors](#type-safety-errors)
+- [🔗 Related APIs](#-related-apis)
+<!-- TOC END -->
+
 ## Table of Contents
 
 - [Simple API Reference](#simple-api-reference)

@@ -1,5 +1,50 @@
 # Documentation Maintenance Framework
 
+
+<!-- TOC START -->
+- [Table of Contents](#table-of-contents)
+- [🏗️ Framework Architecture](#-framework-architecture)
+  - [Core Components](#core-components)
+- [🚀 Quick Start](#-quick-start)
+  - [Automated Maintenance Pipeline](#automated-maintenance-pipeline)
+  - [Manual Maintenance Commands](#manual-maintenance-commands)
+- [📊 Quality Audit System](#-quality-audit-system)
+  - [Content Quality Metrics](#content-quality-metrics)
+  - [Content Freshness Analysis](#content-freshness-analysis)
+- [🔗 Link and Reference Validation](#-link-and-reference-validation)
+  - [External Link Health Monitoring](#external-link-health-monitoring)
+  - [Internal Reference Validation](#internal-reference-validation)
+- [📝 Style and Consistency Checking](#-style-and-consistency-checking)
+  - [Markdown Standards](#markdown-standards)
+  - [Accessibility Compliance](#accessibility-compliance)
+- [⚡ Content Optimization](#-content-optimization)
+  - [Automated Enhancements](#automated-enhancements)
+  - [Content Enhancement Features](#content-enhancement-features)
+- [🔄 Synchronization System](#-synchronization-system)
+  - [Git Integration](#git-integration)
+  - [Automated Updates](#automated-updates)
+- [📈 Quality Assurance Reporting](#-quality-assurance-reporting)
+  - [Audit Report Categories](#audit-report-categories)
+  - [Monitoring Dashboard](#monitoring-dashboard)
+- [🛠️ Configuration and Customization](#-configuration-and-customization)
+  - [Audit Configuration (`docs/maintenance/config/audit-config.yaml`)](#audit-configuration-docsmaintenanceconfigaudit-configyaml)
+  - [Automation Scheduling](#automation-scheduling)
+- [🤝 Team Integration](#-team-integration)
+  - [Workflow Integration](#workflow-integration)
+  - [Collaboration Features](#collaboration-features)
+- [📋 Maintenance Procedures](#-maintenance-procedures)
+  - [Daily Maintenance](#daily-maintenance)
+  - [Weekly Maintenance](#weekly-maintenance)
+  - [Monthly Maintenance](#monthly-maintenance)
+- [🔧 Troubleshooting and Best Practices](#-troubleshooting-and-best-practices)
+  - [Common Issues](#common-issues)
+  - [Best Practices](#best-practices)
+- [📊 Current Status Dashboard](#-current-status-dashboard)
+  - [Quality Metrics (Real-time)](#quality-metrics-real-time)
+  - [Recent Activity](#recent-activity)
+  - [Next Steps](#next-steps)
+<!-- TOC END -->
+
 ## Table of Contents
 
 - [Documentation Maintenance Framework](#documentation-maintenance-framework)
@@ -95,8 +140,8 @@ docs/maintenance/
 make docs-maintain
 
 # Individual maintenance operations
-make docs-audit          # Quality audit and validation
-make docs-optimize       # Content optimization and formatting
+make docs DOCS_PHASE=audit          # Quality audit and validation
+make docs DOCS_PHASE=fix FIX=1      # Content optimization and formatting
 make docs-sync           # Synchronization with version control
 make docs-report         # Generate quality reports
 ```
@@ -259,7 +304,7 @@ validation_rules:
 0 2 * * * make docs-maintain
 
 # Weekly comprehensive audit
-0 3 * * 1 make docs-audit-comprehensive
+0 3 * * 1 make docs
 
 # Monthly quality reporting
 0 4 1 * * make docs-generate-reports

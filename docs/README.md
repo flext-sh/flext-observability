@@ -1,5 +1,29 @@
 # FLEXT Observability - Documentation Hub
 
+
+<!-- TOC START -->
+- [Table of Contents](#table-of-contents)
+- [📚 Documentation Index](#-documentation-index)
+  - [🏗️ **Architecture & Design**](#-architecture-design)
+  - [🚀 **Development Guides**](#-development-guides)
+  - [🔧 **API Reference**](#-api-reference)
+  - [📋 **Implementation Status**](#-implementation-status)
+- [🎯 Quick Navigation](#-quick-navigation)
+  - [**For New Developers**](#for-new-developers)
+  - [**For FLEXT Ecosystem Integration**](#for-flext-ecosystem-integration)
+  - [**For API Reference**](#for-api-reference)
+  - [**For Current Status**](#for-current-status)
+- [🔍 Current Implementation Status](#-current-implementation-status)
+  - [✅ **Implemented & Working**](#-implemented-working)
+  - [⚠️ **Implemented & Blocked**](#-implemented-blocked)
+  - [📋 **Planned & Documented**](#-planned-documented)
+- [📝 Documentation Standards](#-documentation-standards)
+- [🤝 Contributing to Documentation](#-contributing-to-documentation)
+  - [Documentation Structure](#documentation-structure)
+  - [Standards for New Documentation](#standards-for-new-documentation)
+- [🔗 Related Documentation](#-related-documentation)
+<!-- TOC END -->
+
 ## Table of Contents
 
 - [FLEXT Observability - Documentation Hub](#flext-observability---documentation-hub)

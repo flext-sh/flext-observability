@@ -1,5 +1,28 @@
 # FLEXT Observability - Examples
 
+
+<!-- TOC START -->
+- [Example Files](#example-files)
+  - [[01_functional.py](01_functional.py) - Core Functionality](#01functionalpy01functionalpy-core-functionality)
+  - [[02_solid_observability_demo.py](02_solid_observability_demo.py) - SOLID Principles](#02solidobservabilitydemopy02solidobservabilitydemopy-solid-principles)
+- [Usage Patterns Demonstrated](#usage-patterns-demonstrated)
+  - [Basic Observability Integration](#basic-observability-integration)
+  - [Service Layer Integration](#service-layer-integration)
+  - [Monitoring Decorator Patterns](#monitoring-decorator-patterns)
+  - [Health Monitoring Patterns](#health-monitoring-patterns)
+  - [Distributed Tracing Patterns](#distributed-tracing-patterns)
+- [FLEXT Ecosystem Integration Examples](#flext-ecosystem-integration-examples)
+  - [Singer Tap Integration](#singer-tap-integration)
+  - [FastAPI Service Integration](#fastapi-service-integration)
+- [Running Examples](#running-examples)
+  - [Execute Individual Examples](#execute-individual-examples)
+  - [Integration Testing](#integration-testing)
+- [Example Development Guidelines](#example-development-guidelines)
+  - [Creating New Examples](#creating-new-examples)
+  - [Example Quality Standards](#example-quality-standards)
+- [Integration Scenarios Covered](#integration-scenarios-covered)
+<!-- TOC END -->
+
 **Comprehensive examples demonstrating observability patterns and integration within the FLEXT ecosystem.**
 
 This directory contains practical examples showing how to integrate FLEXT Observability into real-world scenarios, from basic usage to advanced enterprise patterns. All examples are functional, tested, and demonstrate best practices for observability across the FLEXT ecosystem.

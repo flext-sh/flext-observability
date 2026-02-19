@@ -1,5 +1,23 @@
 # Test Fixtures Directory
 
+
+<!-- TOC START -->
+- [Purpose](#purpose)
+- [Organization](#organization)
+  - [Planned Structure](#planned-structure)
+- [Fixture Categories](#fixture-categories)
+  - [Entity Test Fixtures](#entity-test-fixtures)
+  - [Service Mock Fixtures](#service-mock-fixtures)
+  - [Test Data Factories](#test-data-factories)
+- [Usage Patterns](#usage-patterns)
+  - [Using Fixtures in Tests](#using-fixtures-in-tests)
+  - [Fixture Composition](#fixture-composition)
+- [Test Environment Setup](#test-environment-setup)
+  - [Shared Configuration](#shared-configuration)
+  - [Cleanup Fixtures](#cleanup-fixtures)
+- [Current Status](#current-status)
+<!-- TOC END -->
+
 **Shared test fixtures and utilities for FLEXT Observability testing.**
 
 ## Purpose

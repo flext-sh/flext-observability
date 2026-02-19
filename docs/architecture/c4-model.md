@@ -1,5 +1,30 @@
 # FLEXT Observability - C4 Model Architecture
 
+
+<!-- TOC START -->
+- [Table of Contents](#table-of-contents)
+- [📋 C4 Model Overview](#-c4-model-overview)
+- [🌍 Level 1: System Context](#-level-1-system-context)
+  - [System Purpose](#system-purpose)
+  - [Context Diagram](#context-diagram)
+  - [External Interfaces](#external-interfaces)
+- [🏗️ Level 2: Container Architecture](#-level-2-container-architecture)
+  - [Container Diagram](#container-diagram)
+  - [Container Descriptions](#container-descriptions)
+- [🔧 Level 3: Component Architecture](#-level-3-component-architecture)
+  - [Component Diagram](#component-diagram)
+  - [Key Components](#key-components)
+- [💻 Level 4: Code Architecture](#-level-4-code-architecture)
+  - [Code Package Structure](#code-package-structure)
+  - [Key Classes and Relationships](#key-classes-and-relationships)
+- [🔄 Dynamic Behavior](#-dynamic-behavior)
+  - [Observability Data Flow](#observability-data-flow)
+  - [Error Handling Flow](#error-handling-flow)
+- [🏛️ Architectural Decisions](#-architectural-decisions)
+  - [ADRs Referenced](#adrs-referenced)
+  - [Key Architectural Principles](#key-architectural-principles)
+<!-- TOC END -->
+
 ## Table of Contents
 
 - [FLEXT Observability - C4 Model Architecture](#flext-observability---c4-model-architecture)
