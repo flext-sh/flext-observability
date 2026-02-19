@@ -1,7 +1,7 @@
 # FLEXT Observability Package
 
-
 <!-- TOC START -->
+
 - [Package Architecture](#package-architecture)
   - [Domain Layer](#domain-layer)
   - [Application Layer](#application-layer)
@@ -19,6 +19,7 @@
   - [Cross-Service Observability](#cross-service-observability)
 - [Quality Standards](#quality-standards)
 - [Development Guidelines](#development-guidelines)
+
 <!-- TOC END -->
 
 **Core observability implementation providing monitoring, metrics, tracing, and health check capabilities for the FLEXT ecosystem.**
@@ -243,11 +244,11 @@ All modules in this package maintain:
 ## Development Guidelines
 
 1. **Follow Clean Architecture**: Maintain clear layer separation
-2. **Use FlextResult**: All operations return FlextResult[T]
-3. **Domain Validation**: Implement validate_business_rules() for entities
-4. **Type Safety**: Complete type annotations required
-5. **Test Coverage**: 95% minimum coverage for all new code
+1. **Use FlextResult**: All operations return FlextResult[T]
+1. **Domain Validation**: Implement validate_business_rules() for entities
+1. **Type Safety**: Complete type annotations required
+1. **Test Coverage**: 95% minimum coverage for all new code
 
----
+______________________________________________________________________
 
 **For detailed module documentation, see individual module files with comprehensive docstrings and usage examples.**

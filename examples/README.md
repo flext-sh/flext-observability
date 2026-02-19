@@ -1,10 +1,10 @@
 # FLEXT Observability - Examples
 
-
 <!-- TOC START -->
+
 - [Example Files](#example-files)
-  - [[01_functional.py](01_functional.py) - Core Functionality](#01functionalpy01functionalpy-core-functionality)
-  - [[02_solid_observability_demo.py](02_solid_observability_demo.py) - SOLID Principles](#02solidobservabilitydemopy02solidobservabilitydemopy-solid-principles)
+  - \[[01_functional.py](01_functional.py) - Core Functionality\](#01functionalpy01functionalpy-core-functionality)
+  - \[[02_solid_observability_demo.py](02_solid_observability_demo.py) - SOLID Principles\](#02solidobservabilitydemopy02solidobservabilitydemopy-solid-principles)
 - [Usage Patterns Demonstrated](#usage-patterns-demonstrated)
   - [Basic Observability Integration](#basic-observability-integration)
   - [Service Layer Integration](#service-layer-integration)
@@ -21,6 +21,7 @@
   - [Creating New Examples](#creating-new-examples)
   - [Example Quality Standards](#example-quality-standards)
 - [Integration Scenarios Covered](#integration-scenarios-covered)
+
 <!-- TOC END -->
 
 **Comprehensive examples demonstrating observability patterns and integration within the FLEXT ecosystem.**
@@ -384,10 +385,10 @@ make type-check examples/
 ### Creating New Examples
 
 1. **Real-world Scenarios**: Examples should reflect actual usage patterns
-2. **Complete Integration**: Show full observability integration, not just API calls
-3. **Error Handling**: Demonstrate both success and failure paths
-4. **Documentation**: Comprehensive docstrings explaining patterns
-5. **Testing**: All examples should be testable and validated
+1. **Complete Integration**: Show full observability integration, not just API calls
+1. **Error Handling**: Demonstrate both success and failure paths
+1. **Documentation**: Comprehensive docstrings explaining patterns
+1. **Testing**: All examples should be testable and validated
 
 ### Example Quality Standards
 
@@ -400,16 +401,16 @@ make type-check examples/
 ## Integration Scenarios Covered
 
 1. **Basic Usage**: Simple metric and trace creation
-2. **Service Integration**: Full service layer observability
-3. **Monitoring Automation**: Decorator-based automatic monitoring
-4. **Health Monitoring**: Service health check patterns
-5. **Distributed Tracing**: Cross-service trace correlation
-6. **Business Metrics**: Domain-specific observability patterns
-7. **Error Scenarios**: Comprehensive error handling examples
-8. **Performance Monitoring**: Response time and throughput tracking
-9. **Ecosystem Integration**: FLEXT-specific integration patterns
-10. **Enterprise Patterns**: Production-ready observability implementations
+1. **Service Integration**: Full service layer observability
+1. **Monitoring Automation**: Decorator-based automatic monitoring
+1. **Health Monitoring**: Service health check patterns
+1. **Distributed Tracing**: Cross-service trace correlation
+1. **Business Metrics**: Domain-specific observability patterns
+1. **Error Scenarios**: Comprehensive error handling examples
+1. **Performance Monitoring**: Response time and throughput tracking
+1. **Ecosystem Integration**: FLEXT-specific integration patterns
+1. **Enterprise Patterns**: Production-ready observability implementations
 
----
+______________________________________________________________________
 
 **All examples are production-ready patterns that can be adapted for real-world FLEXT ecosystem integration scenarios.**

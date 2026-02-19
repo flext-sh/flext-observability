@@ -210,7 +210,17 @@ per_rule_ignores.DEP002 = [
 ]
 
 [tool.pytest]
-ini_options.addopts = [ "--strict-config", "--strict-markers", "--tb=short", "-p no:sugar", "-q", "-ra" ]
+ini_options.addopts = [
+  "--strict-config",
+  "--strict-markers",
+  "--tb=short",
+  "-p no:sugar",
+  "-q",
+  "-ra",
+  "--timeout=30",
+  "--timeout-method=signal",
+  "--durations=0",
+]
 
 [tool.coverage]
 run.source = [ "src/flext_observability" ]

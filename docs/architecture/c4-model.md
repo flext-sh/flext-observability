@@ -1,28 +1,29 @@
 # FLEXT Observability - C4 Model Architecture
 
-
 <!-- TOC START -->
+
 - [Table of Contents](#table-of-contents)
-- [📋 C4 Model Overview](#-c4-model-overview)
-- [🌍 Level 1: System Context](#-level-1-system-context)
+- [📋 C4 Model Overview](#c4-model-overview)
+- [🌍 Level 1: System Context](#level-1-system-context)
   - [System Purpose](#system-purpose)
   - [Context Diagram](#context-diagram)
   - [External Interfaces](#external-interfaces)
-- [🏗️ Level 2: Container Architecture](#-level-2-container-architecture)
+- [🏗️ Level 2: Container Architecture](#level-2-container-architecture)
   - [Container Diagram](#container-diagram)
   - [Container Descriptions](#container-descriptions)
-- [🔧 Level 3: Component Architecture](#-level-3-component-architecture)
+- [🔧 Level 3: Component Architecture](#level-3-component-architecture)
   - [Component Diagram](#component-diagram)
   - [Key Components](#key-components)
-- [💻 Level 4: Code Architecture](#-level-4-code-architecture)
+- [💻 Level 4: Code Architecture](#level-4-code-architecture)
   - [Code Package Structure](#code-package-structure)
   - [Key Classes and Relationships](#key-classes-and-relationships)
-- [🔄 Dynamic Behavior](#-dynamic-behavior)
+- [🔄 Dynamic Behavior](#dynamic-behavior)
   - [Observability Data Flow](#observability-data-flow)
   - [Error Handling Flow](#error-handling-flow)
-- [🏛️ Architectural Decisions](#-architectural-decisions)
+- [🏛️ Architectural Decisions](#architectural-decisions)
   - [ADRs Referenced](#adrs-referenced)
   - [Key Architectural Principles](#key-architectural-principles)
+
 <!-- TOC END -->
 
 ## Table of Contents
@@ -75,11 +76,11 @@ showing how it fits into the broader FLEXT ecosystem and its internal structure.
 The C4 Model provides four levels of architectural abstraction:
 
 1. **Context** (Level 1): System in its environment
-2. **Container** (Level 2): High-level technology choices
-3. **Component** (Level 3): Major building blocks
-4. **Code** (Level 4): Implementation details
+1. **Container** (Level 2): High-level technology choices
+1. **Component** (Level 3): Major building blocks
+1. **Code** (Level 4): Implementation details
 
----
+______________________________________________________________________
 
 ## 🌍 Level 1: System Context
 
@@ -146,7 +147,7 @@ providing consistent observability patterns across 33+ projects.
 - **Jaeger**: Distributed tracing backend
 - **OpenTelemetry**: Telemetry data collection standard
 
----
+______________________________________________________________________
 
 ## 🏗️ Level 2: Container Architecture
 
@@ -248,7 +249,7 @@ providing consistent observability patterns across 33+ projects.
 - **Interfaces**: Prometheus client, OpenTelemetry SDK, Storage adapters
 - **Characteristics**: Pluggable implementations, abstraction layers
 
----
+______________________________________________________________________
 
 ## 🔧 Level 3: Component Architecture
 
@@ -329,7 +330,7 @@ providing consistent observability patterns across 33+ projects.
 - **FlextAlert**: Alert definition with severity and routing
 - **FlextHealthCheck**: Health status with dependency tracking
 
----
+______________________________________________________________________
 
 ## 💻 Level 4: Code Architecture
 
@@ -423,7 +424,7 @@ class FlextObservabilityMasterFactory:
         """Create validated trace entity."""
 ```
 
----
+______________________________________________________________________
 
 ## 🔄 Dynamic Behavior
 
@@ -459,7 +460,7 @@ Structured Error Logging
 External System Notification
 ```
 
----
+______________________________________________________________________
 
 ## 🏛️ Architectural Decisions
 
@@ -474,15 +475,15 @@ External System Notification
 ### Key Architectural Principles
 
 1. **Railway Pattern**: All operations return `FlextResult[T]` for composable error handling
-2. **Clean Architecture**: Strict layer separation (Domain → Application → Infrastructure)
-3. **Domain-Driven Design**: Rich domain entities with business logic validation
-4. **Type Safety**: Complete Python 3.13+ type annotations throughout
-5. **Unified API**: Single service class with flattened method structure
-6. **Factory Pattern**: Consistent entity creation through factory functions
-7. **Thread Safety**: All shared state protected with appropriate locking
-8. **Pluggable Architecture**: External system integrations through abstraction layers
+1. **Clean Architecture**: Strict layer separation (Domain → Application → Infrastructure)
+1. **Domain-Driven Design**: Rich domain entities with business logic validation
+1. **Type Safety**: Complete Python 3.13+ type annotations throughout
+1. **Unified API**: Single service class with flattened method structure
+1. **Factory Pattern**: Consistent entity creation through factory functions
+1. **Thread Safety**: All shared state protected with appropriate locking
+1. **Pluggable Architecture**: External system integrations through abstraction layers
 
----
+______________________________________________________________________
 
 **C4 Model Views**: This documentation provides comprehensive architectural views at all four C4 levels,
 showing how FLEXT Observability serves as the foundation for enterprise observability across the entire FLEXT ecosystem.
