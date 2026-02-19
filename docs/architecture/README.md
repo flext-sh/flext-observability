@@ -1,36 +1,37 @@
 # FLEXT Observability - Architecture Overview
 
-
 <!-- TOC START -->
+
 - [Table of Contents](#table-of-contents)
-- [🏗️ Architectural Principles](#-architectural-principles)
+- [🏗️ Architectural Principles](#architectural-principles)
   - [Clean Architecture Implementation](#clean-architecture-implementation)
   - [Domain-Driven Design Structure](#domain-driven-design-structure)
-- [📁 Project Structure](#-project-structure)
+- [📁 Project Structure](#project-structure)
   - [Source Code Organization](#source-code-organization)
   - [Layer Responsibilities](#layer-responsibilities)
-- [🔄 Data Flow Architecture](#-data-flow-architecture)
+- [🔄 Data Flow Architecture](#data-flow-architecture)
   - [Request Processing Flow](#request-processing-flow)
   - [Error Handling Flow](#error-handling-flow)
-- [🔗 Integration Architecture](#-integration-architecture)
+- [🔗 Integration Architecture](#integration-architecture)
   - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
   - [Dependency Management](#dependency-management)
-- [🎯 Design Patterns](#-design-patterns)
+- [🎯 Design Patterns](#design-patterns)
   - [Factory Pattern Implementation](#factory-pattern-implementation)
   - [Service Layer Pattern](#service-layer-pattern)
   - [Repository Pattern (Future Implementation)](#repository-pattern-future-implementation)
-- [🚀 Scalability Architecture](#-scalability-architecture)
+- [🚀 Scalability Architecture](#scalability-architecture)
   - [Current Implementation Characteristics](#current-implementation-characteristics)
   - [Future Scalability Patterns](#future-scalability-patterns)
-- [📊 Performance Considerations](#-performance-considerations)
+- [📊 Performance Considerations](#performance-considerations)
   - [Current Performance Profile](#current-performance-profile)
   - [Optimization Strategies](#optimization-strategies)
-- [🔐 Security Architecture](#-security-architecture)
+- [🔐 Security Architecture](#security-architecture)
   - [Current Security Measures](#current-security-measures)
   - [Security Patterns](#security-patterns)
-- [🔄 Extension Points](#-extension-points)
+- [🔄 Extension Points](#extension-points)
   - [Planned Extension Mechanisms](#planned-extension-mechanisms)
   - [Integration Hooks](#integration-hooks)
+
 <!-- TOC END -->
 
 ## Table of Contents
@@ -81,8 +82,10 @@
 FLEXT Observability implements Clean Architecture with Domain-Driven Design (DDD) patterns,
 serving as the foundational observability library for all 33 projects in the FLEXT ecosystem. This document outlines the architectural decisions,
 
-     layer responsibilities,
-     and integration patterns that enable consistent monitoring across the entire data integration platform.
+```
+ layer responsibilities,
+ and integration patterns that enable consistent monitoring across the entire data integration platform.
+```
 
 ## 🏗️ Architectural Principles
 
@@ -366,10 +369,10 @@ class FlextMetricsRepository(Protocol):
 
 ### Current Performance Profile
 
-- **Entity Creation**: <1ms per entity with validation
-- **Service Operations**: <5ms per operation including storage
+- **Entity Creation**: \<1ms per entity with validation
+- **Service Operations**: \<5ms per operation including storage
 - **Memory Usage**: ~10MB baseline, ~1KB per stored metric
-- **Monitoring Overhead**: <2ms per decorated function call
+- **Monitoring Overhead**: \<2ms per decorated function call
 
 ### Optimization Strategies
 
@@ -399,10 +402,10 @@ class FlextMetricsRepository(Protocol):
 ### Planned Extension Mechanisms
 
 1. **Plugin Architecture**: Load external monitoring plugins
-2. **Custom Exporters**: Implement custom metrics export formats
-3. **Event Handlers**: React to observability events across the system
-4. **Storage Adapters**: Pluggable storage implementations
-5. **Sampling Strategies**: Configurable sampling algorithms
+1. **Custom Exporters**: Implement custom metrics export formats
+1. **Event Handlers**: React to observability events across the system
+1. **Storage Adapters**: Pluggable storage implementations
+1. **Sampling Strategies**: Configurable sampling algorithms
 
 ### Integration Hooks
 
@@ -420,7 +423,7 @@ class FlextObservabilityPlugin(Protocol):
         ...
 ```
 
----
+______________________________________________________________________
 
 **Next Steps**: Review the [Architecture Overview](README.md) for detailed patterns and ecosystem integration details.
 

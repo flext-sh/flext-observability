@@ -1,15 +1,16 @@
 # FLEXT Observability - Source Code
 
-
 <!-- TOC START -->
+
 - [Module Organization](#module-organization)
-  - [[flext_observability/](flext_observability/) - Core Package](#flextobservabilityflextobservability-core-package)
+  - \[[flext_observability/](flext_observability/) - Core Package\](#flextobservabilityflextobservability-core-package)
 - [Architecture Overview](#architecture-overview)
 - [Key Design Principles](#key-design-principles)
 - [Integration Points](#integration-points)
 - [Development Standards](#development-standards)
 - [Usage Patterns](#usage-patterns)
 - [Quality Assurance](#quality-assurance)
+
 <!-- TOC END -->
 
 **Foundation library source code implementing observability patterns for the FLEXT ecosystem.**
@@ -50,10 +51,10 @@ src/flext_observability/
 ## Key Design Principles
 
 1. **Clean Architecture**: Clear separation between domain, application, and infrastructure layers
-2. **Domain-Driven Design**: Rich domain models with business logic encapsulation
-3. **Railway-Oriented Programming**: FlextResult[T] patterns throughout
-4. **Type Safety**: MyPy strict mode adoption; aiming for complete annotations
-5. **Enterprise Standards**: Professional code quality and documentation
+1. **Domain-Driven Design**: Rich domain models with business logic encapsulation
+1. **Railway-Oriented Programming**: FlextResult[T] patterns throughout
+1. **Type Safety**: MyPy strict mode adoption; aiming for complete annotations
+1. **Enterprise Standards**: Professional code quality and documentation
 
 ## Integration Points
 
@@ -101,6 +102,6 @@ All source code passes:
 - **95% test coverage** minimum
 - **Documentation standards** compliance
 
----
+______________________________________________________________________
 
 **Next Steps**: Explore the [flext_observability/](flext_observability/) package for detailed module documentation and implementation patterns.
