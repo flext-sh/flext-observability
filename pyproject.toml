@@ -1,38 +1,33 @@
 [build-system]
     build-backend = "poetry.core.masonry.api"
     requires = [
-        "poetry-core>=1.9.0",
+        "poetry-core>=2",
     ]
 
 [project]
     classifiers = [
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.13",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: System :: Monitoring",
-        "Typing :: Typed",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Monitoring",
+    "Typing :: Typed"
     ]
     dependencies = [
-        "opentelemetry-api (>=1.39.1,<2.0.0)",
-        "opentelemetry-sdk (>=1.39.1,<2.0.0)",
-        "opentelemetry-exporter-otlp-proto-grpc (>=1.39.1,<2.0.0)",
-        "opentelemetry-exporter-prometheus (>=0.60b1,<0.61)",
-        "prometheus-client (>=0.23.0)",
-        "psutil>=6.1.0",
-        "pydantic-settings>=2.10.1",
-        "pydantic (>=2.12.3)",
-        "rich (>=14.2.0,<15.0.0)",
-        "structlog>=25.4.0",
-        "typer>=0.15.0",
-        "pydantic-core (>=2.41.4)",
-        "pytest (>=9.0.2,<10.0.0)",
-        "pytest-cov (>=7.0.0,<8.0.0)",
-        "pytest-randomly (>=4.0.1,<5.0.0)",
-        "faker (>=40.1.0,<41.0.0)",
+    "opentelemetry-api (>=1.39.1,<2.0.0)",
+    "opentelemetry-sdk (>=1.39.1,<2.0.0)",
+    "opentelemetry-exporter-otlp-proto-grpc (>=1.39.1,<2.0.0)",
+    "opentelemetry-exporter-prometheus (>=0.60b1,<0.61)",
+    "prometheus-client (>=0.23.0)",
+    "psutil>=6.1.0",
+    "pydantic-settings>=2.10.1",
+    "pydantic (>=2.12.3)",
+    "rich (>=14.2.0,<15.0.0)",
+    "structlog>=25.4.0",
+    "typer>=0.15.0",
+    "pydantic-core (>=2.41.4)"
     ]
     description = "FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry"
     keywords = [
@@ -48,6 +43,7 @@
     readme = "README.md"
     requires-python = ">=3.13,<3.14"
     version = "0.10.0-dev"
+    license = "MIT"
     [[project.authors]]
         email = "team@flext.sh"
         name  = "FLEXT Team"
@@ -55,9 +51,6 @@
     [[project.maintainers]]
         email = "team@flext.sh"
         name  = "FLEXT Team"
-
-    [project.license]
-        text = "MIT"
 
     [project.urls]
         Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
@@ -163,6 +156,8 @@
 [tool.deptry.per_rule_ignores]
     DEP002 = [
         # CLI tools (invoked from command line, not imported)
+        # Type stubs
+        # Runtime deps used indirectly (via pydantic, opentelemetry)
         "autoflake",
         "bandit",
         "black",
@@ -179,7 +174,6 @@
         "radon",
         "ruff",
         "vulture",
-        # Type stubs
         "django-stubs",
         "types-ldap3",
         "types-protobuf",
@@ -191,14 +185,9 @@
         "types-requests",
         "types-setuptools",
         "types-toml",
-        # Runtime deps used indirectly (via pydantic, opentelemetry)
-        "faker",
         "pydantic-core",
-        "pytest",
-        "pytest-cov",
-        "pytest-randomly",
         "rich",
-        "typer",
+        "typer"
     ]
 
 [tool.ruff]
@@ -242,3 +231,16 @@
     pytest-randomly = "^4.0.1"
     pytest-cov = "^7.0.0"
     commitizen = "^4.8.3"
+
+[tool.coverage.run]
+source = ["src/flext_observability"]
+
+[tool.coverage.report]
+fail_under = 49
+precision = 2
+
+[tool.pytest.ini_options]
+addopts = ["--strict-config", "--strict-markers", "--tb=short", "-p no:sugar", "-q", "-ra"]
+
+[tool.bandit]
+skips = ["B404", "B603", "B607", "B105", "B608"]
