@@ -1,5 +1,27 @@
 # End-to-End Tests Directory
 
+
+<!-- TOC START -->
+- [Purpose](#purpose)
+- [Organization](#organization)
+  - [Planned Structure](#planned-structure)
+- [Test Patterns](#test-patterns)
+  - [Complete Workflow Testing](#complete-workflow-testing)
+  - [Real-World Scenario Testing](#real-world-scenario-testing)
+  - [Cross-Component Integration](#cross-component-integration)
+- [Test Environment Setup](#test-environment-setup)
+  - [Realistic Test Environment](#realistic-test-environment)
+  - [Test Configuration](#test-configuration)
+- [Execution](#execution)
+- [Test Scenarios](#test-scenarios)
+  - [Business Workflow Scenarios](#business-workflow-scenarios)
+  - [Technical Integration Scenarios](#technical-integration-scenarios)
+- [Performance Validation](#performance-validation)
+  - [Performance Metrics](#performance-metrics)
+  - [Benchmarking](#benchmarking)
+- [Current Status](#current-status)
+<!-- TOC END -->
+
 **Complete workflow validation testing for FLEXT Observability end-to-end scenarios.**
 
 ## Purpose

@@ -80,7 +80,7 @@ except ImportError:
             self.dispatch = object()
             self.url = _StubURLProtocol()
 
-    class event:
+    class _Event:
         """Stub for when sqlalchemy is not installed."""
 
         @staticmethod
@@ -99,6 +99,7 @@ except ImportError:
 
             return decorator
 
+    event = _Event
     _sqlalchemy_available = False
 
 from flext_observability.logging_integration import FlextObservabilityLogging

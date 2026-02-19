@@ -1,188 +1,129 @@
-# Getting Started with FLEXT Observability
+<!-- Generated from docs/guides/getting-started.md for flext-observability. -->
+<!-- Source of truth: workspace docs/guides/. -->
+
+# flext-observability - Getting Started with FLEXT
+
+> Project profile: `flext-observability`
+
+
+
 
 ## Table of Contents
 
-- [Getting Started with FLEXT Observability](#getting-started-with-flext-observability)
-  - [🎯 Prerequisites](#-prerequisites)
-    - [FLEXT Ecosystem Requirements](#flext-ecosystem-requirements)
-    - [Development Environment](#development-environment)
-- [Verify Python version](#verify-python-version)
-- [Verify Poetry installation](#verify-poetry-installation)
-- [Verify you're in a FLEXT ecosystem project](#verify-youre-in-a-flext-ecosystem-project)
-  - [🚀 Installation](#-installation)
-    - [Via Poetry (Recommended for FLEXT Projects)](#via-poetry-recommended-for-flext-projects)
-- [Add flext-observability to your FLEXT project](#add-flext-observability-to-your-flext-project)
-- [Install development dependencies if contributing](#install-development-dependencies-if-contributing)
-- [Verify installation](#verify-installation)
-  - [Via pip (Alternative)](#via-pip-alternative)
-- [Direct installation](#direct-installation)
-- [Verify installation](#verify-installation)
-  - [🏁 First Observability Integration](#-first-observability-integration)
-    - [1. Basic Metric Creation](#1-basic-metric-creation)
-- [Create a simple metric](#create-a-simple-metric)
-  - [2. Basic Trace Creation](#2-basic-trace-creation)
-- [Create a trace for an operation](#create-a-trace-for-an-operation)
-  - [3. Function Monitoring Decorator](#3-function-monitoring-decorator)
-- [Use the function normally - monitoring happens automatically](#use-the-function-normally---monitoring-happens-automatically)
-  - [🏛️ Service Layer Integration](#-service-layer-integration)
-    - [Using Services with Dependency Injection](#using-services-with-dependency-injection)
-- [Initialize dependency injection container](#initialize-dependency-injection-container)
-- [Create observability services](#create-observability-services)
-- [Create and record a metric](#create-and-record-a-metric)
-  - [🔧 Integration Patterns](#-integration-patterns)
-    - [Pattern 1: FLEXT Service Integration](#pattern-1-flext-service-integration)
-- [In your FLEXT service initialization](#in-your-flext-service-initialization)
-  - [Pattern 2: Infrastructure Service Integration](#pattern-2-infrastructure-service-integration)
-  - [Pattern 3: Singer Ecosystem Integration](#pattern-3-singer-ecosystem-integration)
-  - [🧪 Testing Your Integration](#-testing-your-integration)
-    - [Create Test File](#create-test-file)
-    - [Run Tests](#run-tests)
-- [Run your integration test](#run-your-integration-test)
-- [Expected output:](#expected-output)
-- [✅ All observability integration tests passed!](#-all-observability-integration-tests-passed)
-  - [📊 Verify Integration](#-verify-integration)
-    - [Check Quality Gates](#check-quality-gates)
-- [Ensure your integration passes FLEXT quality standards](#ensure-your-integration-passes-flext-quality-standards)
-  - [Monitor Integration](#monitor-integration)
-  - [🔄 Next Steps](#-next-steps)
-    - [For Basic Usage](#for-basic-usage)
-    - [For Advanced Integration](#for-advanced-integration)
-    - [For FLEXT Ecosystem Integration](#for-flext-ecosystem-integration)
-  - [🚨 Common Issues & Solutions](#-common-issues--solutions)
-    - [ImportError: No module named 'flext_observability'](#importerror-no-module-named-flext_observability)
-- [Solution: Verify installation](#solution-verify-installation)
-- [or](#or)
-  - [Type checking errors with MyPy](#type-checking-errors-with-mypy)
-- [Solution: Ensure proper type imports](#solution-ensure-proper-type-imports)
-- [Use proper typing](#use-proper-typing)
-  - [FlextResult pattern confusion](#flextresult-pattern-confusion)
-- [❌ Wrong: Directly accessing data without checking success](#-wrong-directly-accessing-data-without-checking-success)
-- [✅ Correct: Always check success first](#-correct-always-check-success-first)
+- [Getting Started with FLEXT](#getting-started-with-flext)
+  - [What is FLEXT](#what-is-flext)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+    - [Basic Installation](#basic-installation)
+- [Install core framework](#install-core-framework)
+- [Install LDIF processing (most common use case)](#install-ldif-processing-most-common-use-case)
+- [Install additional libraries as needed](#install-additional-libraries-as-needed)
+  - [Development Installation](#development-installation)
+- [Clone the repository](#clone-the-repository)
+- [Create virtual environment](#create-virtual-environment)
+- [Install in development mode](#install-in-development-mode)
+- [Install development dependencies](#install-development-dependencies)
+  - [Docker Installation](#docker-installation)
+- [Build FLEXT image](#build-flext-image)
+- [Run FLEXT container](#run-flext-container)
+  - [Your First FLEXT Application](#your-first-flext-application)
+    - [1. Basic Setup](#1-basic-setup)
+- [Create dependency injection container](#create-dependency-injection-container)
+- [Register services (example)](#register-services-example)
+- [container.register(IService, ServiceImplementation())](#containerregisteriservice-serviceimplementation)
+  - [2. Using flext-ldif for LDIF Processing](#2-using-flext-ldif-for-ldif-processing)
+- [Initialize LDIF API](#initialize-ldif-api)
+- [Parse LDIF content](#parse-ldif-content)
+  - [3. Railway-Oriented Error Handling](#3-railway-oriented-error-handling)
+- [Usage](#usage)
+  - [4. CQRS Pattern with Commands and Queries](#4-cqrs-pattern-with-commands-and-queries)
+- [Setup dispatcher](#setup-dispatcher)
+- [Use the dispatcher](#use-the-dispatcher)
+  - [Configuration](#configuration)
+    - [Basic Configuration](#basic-configuration)
+- [Set configuration](#set-configuration)
+  - [Programmatic Configuration](#programmatic-configuration)
+- [Create custom configuration](#create-custom-configuration)
+- [Use configuration](#use-configuration)
+  - [Next Steps](#next-steps)
+    - [Explore the Ecosystem](#explore-the-ecosystem)
+    - [Learn Key Patterns](#learn-key-patterns)
+    - [Build Real Applications](#build-real-applications)
+  - [Getting Help](#getting-help)
+  - [What's Next](#whats-next)
 
-**Quick Start Guide for Integrating Observability Patterns in FLEXT Projects**
+Welcome to FLEXT! This guide will help you get started with the FLEXT ecosystem quickly and efficiently.
 
-This guide will walk you through the essential steps to integrate FLEXT Observability into your FLEXT ecosystem project,
-from installation to your first working observability implementation.
+## What is FLEXT
 
-## 🎯 Prerequisites
+FLEXT is an enterprise-grade data integration platform built with Python 3.13+ and modern architectural patterns. It provides:
 
-### FLEXT Ecosystem Requirements
+- **Unified API**: Single facade pattern across all libraries
+- **Type Safety**: Full Pydantic v2 integration
+- **Enterprise Patterns**: CQRS, Railway-oriented programming, Dependency Injection
+- **Extensible**: Plugin architecture with flext-core patterns
+- **Production Ready**: Comprehensive testing, monitoring, and error handling
 
-- **flext-core**: Foundation library (automatically included as dependency)
-- **Python 3.13+**: Required for all FLEXT ecosystem projects
-- **Poetry**: Package management (recommended for FLEXT projects)
+## Prerequisites
 
-### Development Environment
+- **Python 3.13+**: FLEXT requires Python 3.13 or higher
+- **pip**: For package installation
+- **virtualenv** (recommended): For isolated environments
+
+## Installation
+
+### Basic Installation
+
+Install FLEXT core and commonly used libraries:
 
 ```bash
-# Verify Python version
-python --version  # Should be 3.13+
+# Install core framework
+pip install flext-core
 
-# Verify Poetry installation
-poetry --version
+# Install LDIF processing (most common use case)
+pip install flext-ldif
 
-# Verify you're in a FLEXT ecosystem project
-ls pyproject.toml  # Should exist with FLEXT project configuration
+# Install additional libraries as needed
+pip install flext-api flext-auth flext-ldap
 ```
 
-## 🚀 Installation
+### Development Installation
 
-### Via Poetry (Recommended for FLEXT Projects)
+For development and testing:
 
 ```bash
-# Add flext-observability to your FLEXT project
-poetry add flext-observability
+# Clone the repository
+git clone https://github.com/flext-sh/flext.git
+cd flext
 
-# Install development dependencies if contributing
-poetry add --group dev flext-observability
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\\Scripts\\activate
 
-# Verify installation
-poetry run python -c "import flext_observability; print('Success!')"
+# Install in development mode
+pip install -e .
+
+# Install development dependencies
+pip install -e ".[dev]"
 ```
 
-### Via pip (Alternative)
+### Docker Installation
+
+For containerized deployments:
 
 ```bash
-# Direct installation
-pip install flext-observability
+# Build FLEXT image
+docker build -t flext:latest -f docker/Dockerfile .
 
-# Verify installation
-python -c "import flext_observability; print('Success!')"
+# Run FLEXT container
+docker run -v $(pwd)/data:/app/data flext:latest
 ```
 
-## 🏁 First Observability Integration
+## Your First FLEXT Application
 
-### 1. Basic Metric Creation
-
-Create your first metric using the Simple API:
+### 1. Basic Setup
 
 ```python
-from flext_observability import flext_create_metric
-
-# Create a simple metric
-result = flext_create_metric("api_response_time", 150.5, "milliseconds")
-
-if result.success:
-    metric = result.data
-    print(f"✅ Created metric: {metric.name} = {metric.value} {metric.unit}")
-    print(f"📊 Metric ID: {metric.id}")
-else:
-    print(f"❌ Failed to create metric: {result.error}")
-```
-
-**Expected Output**:
-
-```
-✅ Created metric: api_response_time = 150.5 milliseconds
-📊 Metric ID: flext_metric_abc123...
-```
-
-### 2. Basic Trace Creation
-
-Create distributed tracing spans:
-
-```python
-from flext_observability import flext_create_trace
-
-# Create a trace for an operation
-result = flext_create_trace("user_authentication", "validate_credentials")
-
-if result.success:
-    trace = result.data
-    print(f"🔍 Started trace: {trace.operation_name}")
-    print(f"🏷️  Service: {trace.service_name}")
-    print(f"📋 Trace ID: {trace.id}")
-else:
-    print(f"❌ Failed to create trace: {result.error}")
-```
-
-### 3. Function Monitoring Decorator
-
-Automatically monitor function execution:
-
-```python
-from flext_observability import flext_monitor_function
-
-@flext_monitor_function("user_data_processing")
-def process_user_data(user_id: str, data: dict) -> dict[str, object]:
-    """This function is automatically monitored."""
-    # Your business logic here
-    processed_data = {"user_id": user_id, "status": "processed"}
-    return processed_data
-
-# Use the function normally - monitoring happens automatically
-result = process_user_data("user123", {"name": "John", "email": "john@example.com"})
-print(f"📈 Processed data: {result}")
-```
-
-## 🏛️ Service Layer Integration
-
-### Using Services with Dependency Injection
-
-For more advanced scenarios, use the service layer with flext-core patterns:
-
-```python
-from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -204,35 +145,40 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
-# Initialize dependency injection container
+# Create dependency injection container
 container = FlextContainer()
 
-# Create observability services
-metrics_service = FlextMetricsService(container)
-factory = FlextObservabilityMasterFactory()
+# Register services (example)
+# container.register(IService, ServiceImplementation())
 
-# Create and record a metric
-metric_result = factory.create_metric("database_connections", 42, "connections")
-
-if metric_result.success:
-    # Record the metric using the service
-    record_result = metrics_service.record_metric(metric_result.data)
-
-    if record_result.success:
-        print(f"✅ Metric recorded successfully: {record_result.data.name}")
-    else:
-        print(f"❌ Failed to record metric: {record_result.error}")
+print("FLEXT application initialized!")
 ```
 
-## 🔧 Integration Patterns
-
-### Pattern 1: FLEXT Service Integration
-
-For FLEXT ecosystem services (API, Auth, Web, CLI):
+### 2. Using flext-ldif for LDIF Processing
 
 ```python
-# In your FLEXT service initialization
-from flext_observability import flext_monitor_function, flext_create_metric
+from flext_ldif import FlextLdif
+
+# Initialize LDIF API
+ldif = FlextLdif()
+
+# Parse LDIF content
+ldif_content = """dn: cn=test,dc=example,dc=com
+cn: test
+sn: user
+objectClass: inetOrgPerson"""
+
+result = ldif.parse(ldif_content)
+if result.is_success:
+    entries = result.unwrap()
+    print(f"Successfully parsed {len(entries)} LDIF entries")
+else:
+    print(f"Failed to parse LDIF: {result.failure()}")
+```
+
+### 3. Railway-Oriented Error Handling
+
+```python
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -253,266 +199,157 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
+def process_ldif_data(content: str) -> FlextResult[str, Exception]:
+    # Parse LDIF
+    parse_result = ldif.parse(content)
+    if parse_result.is_failure:
+        return FlextResult.failure(parse_result.failure())
+
+    entries = parse_result.unwrap()
+
+    # Process entries
+    try:
+        processed_data = process_entries(entries)
+        return FlextResult.success(processed_data)
+    except Exception as e:
+        return FlextResult.failure(e)
+
+def process_entries(entries: list) -> str:
+    # Your processing logic here
+    return f"Processed {len(entries)} entries"
+
+# Usage
+result = process_ldif_data(ldif_content)
+if result.is_success:
+    print(f"Success: {result.unwrap()}")
+else:
+    print(f"Error: {result.failure()}")
+```
+
+### 4. CQRS Pattern with Commands and Queries
+
+```python
+from flext_core import FlextBus
+from flext_core import FlextSettings
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import h
+from flext_core import FlextLogger
+from flext_core import x
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import p
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import t
+from flext_core import u
+from dataclasses import dataclass
+
+@dataclass
+class CreateUserCommand:
+    username: str
+    email: str
+
+@dataclass
+class GetUserQuery:
+    user_id: str
 
 class UserService:
-    @flext_monitor_function("user_service_create")
-    def create_user(self, user_data: dict) -> FlextResult[t.Dict]:
-        """Create user with automatic monitoring."""
+    def create_user(self, cmd: CreateUserCommand) -> FlextResult[str, Exception]:
+        # Create user logic
+        return FlextResult.success(f"User {cmd.username} created")
 
-        # Record custom metric
-        metric_result = flext_create_metric("users_created", 1, "count")
+    def get_user(self, query: GetUserQuery) -> FlextResult[str, Exception]:
+        # Get user logic
+        return FlextResult.success(f"User {query.user_id} data")
 
-        # Your business logic
-        user = {"id": "user123", "email": user_data["email"]}
+# Setup dispatcher
+dispatcher = FlextDispatcher()
+user_service = UserService()
 
-        return FlextResult[bool].ok(user)
+dispatcher.register_handler(CreateUserCommand, user_service.create_user)
+dispatcher.register_handler(GetUserQuery, user_service.get_user)
+
+# Use the dispatcher
+create_result = dispatcher.dispatch(CreateUserCommand("john", "john@example.com"))
+get_result = dispatcher.dispatch(GetUserQuery("user123"))
 ```
 
-### Pattern 2: Infrastructure Service Integration
+## Configuration
 
-For FLEXT infrastructure services (Oracle, LDAP, LDIF):
+### Basic Configuration
 
-```python
-from flext_observability import FlextHealthService, flext_create_health_check
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import FlextDecorators
-from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
-from flext_core import h
-from flext_core import FlextLogger
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import FlextResult
-from flext_core import FlextRuntime
-from flext_core import FlextService
-from flext_core import t
-from flext_core import u
+FLEXT uses environment variables for configuration:
 
-class DatabaseConnectionService:
-    def __init__(self):
-        self.container = FlextContainer()
-        self.health_service = FlextHealthService(self.container)
-
-    def check_database_health(self) -> FlextResult[t.Dict]:
-        """Monitor database connection health."""
-
-        # Create health check
-        health_result = flext_create_health_check(
-            name="postgresql_connection",
-            status="healthy",
-            message="Database responding normally"
-        )
-
-        if health_result.success:
-            # Process health check through service
-            return self.health_service.process_health_check(health_result.data)
-
-        return health_result
+```bash
+# Set configuration
+export FLEXT_LOG_LEVEL=INFO
+export FLEXT_LDIF_DEFAULT_ENCODING=utf-8
+export FLEXT_LDIF_STRICT_VALIDATION=true
 ```
 
-### Pattern 3: Singer Ecosystem Integration
-
-For Singer taps, targets, and DBT projects:
+### Programmatic Configuration
 
 ```python
-from flext_observability import flext_monitor_function, flext_create_metric
+from flext_ldif import FlextLdifSettings
 
-class FlextMeltanoTapOracle:
-    @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> list[t.Dict]:
-        """Extract records with monitoring."""
-
-        # Your extraction logic
-        records = self._query_oracle_table(table_name)
-
-        # Record extraction metrics
-        flext_create_metric("records_extracted", len(records), "count")
-        flext_create_metric("extraction_table", 1, "count", tags={"table": table_name})
-
-        return records
-```
-
-## 🧪 Testing Your Integration
-
-### Create Test File
-
-Create `test_observability_integration.py`:
-
-```python
-from flext_observability import (
-    flext_create_metric,
-    flext_create_trace,
-    flext_monitor_function
+# Create custom configuration
+config = FlextLdifSettings(
+    default_encoding="utf-8",
+    strict_validation=True,
+    servers_enabled=True,
+    batch_size=1000
 )
 
-def test_basic_metric_creation():
-    """Test basic metric creation works."""
-    result = flext_create_metric("test_metric", 100.0, "count")
-
-    assert result.success
-    assert result.data.name == "test_metric"
-    assert result.data.value == 100.0
-    assert result.data.unit == "count"
-
-def test_basic_trace_creation():
-    """Test basic trace creation works."""
-    result = flext_create_trace("test_operation", "test_service")
-
-    assert result.success
-    assert result.data.operation_name == "test_operation"
-    assert result.data.service_name == "test_service"
-
-@flext_monitor_function("test_function")
-def monitored_test_function():
-    """Test function with monitoring."""
-    return {"status": "success"}
-
-def test_function_monitoring():
-    """Test function monitoring works."""
-    result = monitored_test_function()
-    assert result["status"] == "success"
-
-if __name__ == "__main__":
-    test_basic_metric_creation()
-    test_basic_trace_creation()
-    test_function_monitoring()
-    print("✅ All observability integration tests passed!")
+# Use configuration
+ldif = FlextLdif(config=config)
 ```
 
-### Run Tests
+## Next Steps
 
-```bash
-# Run your integration test
-python test_observability_integration.py
+### Explore the Ecosystem
 
-# Expected output:
-# ✅ All observability integration tests passed!
-```
+1. **flext-core**: Master the core patterns and abstractions
+2. **flext-ldif**: Learn LDIF processing and migration
+3. **flext-api**: Build REST APIs with FLEXT
+4. **flext-auth**: Implement authentication and authorization
+5. **flext-ldap**: Integrate with LDAP servers
 
-## 📊 Verify Integration
+### Learn Key Patterns
 
-### Check Quality Gates
+- **Railway-Oriented Programming**: Functional error handling
+- **CQRS**: Command Query Responsibility Segregation
+- **Dependency Injection**: Managing component dependencies
+- **Domain Events**: Event-driven architecture
 
-```bash
-# Ensure your integration passes FLEXT quality standards
-make check    # Lint + type check + test
-make validate # Complete validation including security
-```
+### Build Real Applications
 
-### Monitor Integration
+- **Data Migration**: Migrate LDIF data between LDAP servers
+- **API Development**: Create REST APIs with automatic documentation
+- **Data Processing**: Build data pipelines with FLEXT patterns
+- **Enterprise Integration**: Connect with existing enterprise systems
 
-Create a simple monitoring dashboard:
+## Getting Help
 
-```python
-from flext_observability import FlextObservabilityMasterFactory
+- 📖 **Documentation**: Browse the complete documentation
+- 🐛 **Issues**: Report bugs and request features
+- 💬 **Discussions**: Ask questions and share knowledge
+- 📧 **Support**: Contact the development team
 
-def display_observability_status():
-    """Display current observability status."""
-    factory = FlextObservabilityMasterFactory()
+## What's Next
 
-    # Create some sample observability data
-    metrics = [
-        factory.create_metric("cpu_usage", 75.2, "percent"),
-        factory.create_metric("memory_usage", 1024, "MB"),
-        factory.create_metric("active_connections", 15, "connections")
-    ]
+Now that you have FLEXT installed and running, explore these areas:
 
-    print("📊 FLEXT Observability Status:")
-    print("=" * 40)
+1. **[Architecture Guide](../architecture/README.md)**: Understand FLEXT's design principles
+2. **[API Reference](../api-reference/README.md)**: Complete API documentation
+3. **[Project Guides](../projects/README.md)**: Deep dive into specific libraries
+4. **[Examples](../../../examples/)**: Real-world usage examples
 
-    for metric_result in metrics:
-        if metric_result.success:
-            m = metric_result.data
-            print(f"📈 {m.name}: {m.value} {m.unit}")
-        else:
-            print(f"❌ Failed to create metric: {metric_result.error}")
-
-if __name__ == "__main__":
-    display_observability_status()
-```
-
-## 🔄 Next Steps
-
-### For Basic Usage
-
-- **Basic Usage Examples**: More comprehensive examples (_Documentation coming soon_)
-
-### For Advanced Integration
-
-- **Service Layer Guide**: Deep dive into service patterns (_Documentation coming soon_)
-- **Factory Patterns**: Advanced entity creation patterns (_Documentation coming soon_)
-
-### For FLEXT Ecosystem Integration
-
-- **Ecosystem Integration**: Cross-project patterns (_Documentation coming soon_)
-- **[Architecture Overview](../architecture/README.md)**: Understand the full architecture
-
-## 🚨 Common Issues & Solutions
-
-### ImportError: No module named 'flext_observability'
-
-```bash
-# Solution: Verify installation
-poetry show flext-observability
-# or
-pip list | grep flext-observability
-```
-
-### Type checking errors with MyPy
-
-```bash
-# Solution: Ensure proper type imports
-from flext_observability import FlextMetric
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import FlextDecorators
-from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
-from flext_core import h
-from flext_core import FlextLogger
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import FlextResult
-from flext_core import FlextRuntime
-from flext_core import FlextService
-from flext_core import t
-from flext_core import u
-
-# Use proper typing
-def create_metric() -> FlextResult[FlextMetric]:
-    return flext_create_metric("test", 1.0, "count")
-```
-
-### FlextResult pattern confusion
-
-```python
-# ❌ Wrong: Directly accessing data without checking success
-result = flext_create_metric("test", 1.0, "count")
-metric = result.data  # May fail if result contains error
-
-# ✅ Correct: Always check success first
-result = flext_create_metric("test", 1.0, "count")
-if result.success:
-    metric = result.data  # Safe to access
-else:
-    print(f"Error: {result.error}")
-```
-
----
-
-**Congratulations!** You've successfully integrated FLEXT Observability into your project. You're now ready to implement comprehensive monitoring patterns across your FLEXT ecosystem service.
-
-**Next recommended reading**: Entity Patterns Guide (_Documentation coming soon_) for detailed entity usage patterns.
+Happy coding with FLEXT! 🚀

@@ -1,5 +1,17 @@
 # Unit Tests Directory
 
+
+<!-- TOC START -->
+- [Purpose](#purpose)
+- [Organization](#organization)
+  - [Planned Structure](#planned-structure)
+- [Test Patterns](#test-patterns)
+  - [Domain Entity Testing](#domain-entity-testing)
+  - [Service Layer Testing](#service-layer-testing)
+- [Execution](#execution)
+- [Current Status](#current-status)
+<!-- TOC END -->
+
 **Fast, isolated unit tests for individual FLEXT Observability components.**
 
 ## Purpose

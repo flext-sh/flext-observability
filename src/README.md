@@ -1,5 +1,17 @@
 # FLEXT Observability - Source Code
 
+
+<!-- TOC START -->
+- [Module Organization](#module-organization)
+  - [[flext_observability/](flext_observability/) - Core Package](#flextobservabilityflextobservability-core-package)
+- [Architecture Overview](#architecture-overview)
+- [Key Design Principles](#key-design-principles)
+- [Integration Points](#integration-points)
+- [Development Standards](#development-standards)
+- [Usage Patterns](#usage-patterns)
+- [Quality Assurance](#quality-assurance)
+<!-- TOC END -->
+
 **Foundation library source code implementing observability patterns for the FLEXT ecosystem.**
 
 This directory contains the complete implementation of FLEXT Observability, organized following Clean Architecture and Domain-Driven Design principles. All modules implement observability patterns with type safety, domain validation, and railway-oriented programming error handling.

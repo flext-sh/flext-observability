@@ -1,5 +1,35 @@
 # FLEXT Observability - Test Suite
 
+
+<!-- TOC START -->
+- [Test Organization](#test-organization)
+  - [Test Structure](#test-structure)
+  - [Test Categories](#test-categories)
+- [Test Configuration](#test-configuration)
+  - [[conftest.py](conftest.py) - Test Configuration](#conftestpyconftestpy-test-configuration)
+  - [Test Fixtures Available](#test-fixtures-available)
+- [Testing Patterns](#testing-patterns)
+  - [Railway-Oriented Testing](#railway-oriented-testing)
+  - [Domain Entity Testing](#domain-entity-testing)
+  - [Service Integration Testing](#service-integration-testing)
+  - [Monitoring Decorator Testing](#monitoring-decorator-testing)
+- [Test Execution](#test-execution)
+  - [Run All Tests](#run-all-tests)
+  - [Run Specific Test Categories](#run-specific-test-categories)
+  - [Coverage Analysis](#coverage-analysis)
+- [Test Quality Standards](#test-quality-standards)
+  - [Coverage Requirements](#coverage-requirements)
+  - [Test Categories Validated](#test-categories-validated)
+  - [Quality Assurance](#quality-assurance)
+- [Test Development Guidelines](#test-development-guidelines)
+  - [Writing New Tests](#writing-new-tests)
+  - [Test Naming Conventions](#test-naming-conventions)
+- [Current Status](#current-status)
+  - [Test Results](#test-results)
+  - [Known Issues](#known-issues)
+  - [Improvement Opportunities](#improvement-opportunities)
+<!-- TOC END -->
+
 **Comprehensive test suite ensuring 95%+ coverage and enterprise-grade quality for FLEXT Observability.**
 
 This test suite implements comprehensive testing strategies including unit tests, integration tests, end-to-end tests, and specialized coverage tests. All tests follow FLEXT ecosystem standards with railway-oriented programming patterns and FlextResult validation.

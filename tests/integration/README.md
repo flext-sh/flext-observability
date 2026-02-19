@@ -1,5 +1,22 @@
 # Integration Tests Directory
 
+
+<!-- TOC START -->
+- [Purpose](#purpose)
+- [Organization](#organization)
+  - [Planned Structure](#planned-structure)
+- [Test Patterns](#test-patterns)
+  - [Service Integration Testing](#service-integration-testing)
+  - [External System Integration](#external-system-integration)
+- [Test Environment Setup](#test-environment-setup)
+  - [Required Dependencies](#required-dependencies)
+  - [Configuration](#configuration)
+- [Execution](#execution)
+- [Test Data Management](#test-data-management)
+  - [Test Data Strategy](#test-data-strategy)
+- [Current Status](#current-status)
+<!-- TOC END -->
+
 **Integration tests for FLEXT Observability component interactions and external system integration.**
 
 ## Purpose
