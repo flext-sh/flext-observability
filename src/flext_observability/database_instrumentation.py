@@ -24,7 +24,7 @@ from __future__ import annotations
 import time
 from collections import UserDict
 from collections.abc import Callable
-from typing import ClassVar, Protocol
+from typing import ClassVar, Protocol, cast
 
 from flext_core import FlextLogger, FlextResult
 from flext_core.protocols import p
@@ -32,7 +32,6 @@ from flext_core.protocols import p
 # Optional dependency: SQLAlchemy
 try:
     from sqlalchemy import event
-    from sqlalchemy.engine import Connection, Engine
 
     _sqlalchemy_available = True
 except ImportError:
@@ -60,7 +59,7 @@ except ImportError:
 
         pass
 
-    class Connection:
+    class _SQLAlchemyConnectionStub:
         """Stub for when sqlalchemy is not installed."""
 
         info: _StubInfoDict
@@ -70,7 +69,7 @@ except ImportError:
             self.info = _StubInfoDict()
             self.engine = _StubEngineProtocol()
 
-    class Engine:
+    class _SQLAlchemyEngineStub:
         """Stub for when sqlalchemy is not installed."""
 
         dispatch: object
@@ -100,6 +99,8 @@ except ImportError:
             return decorator
 
     event = _Event
+    SQLAlchemyConnection = _SQLAlchemyConnectionStub
+    SQLAlchemyEngine = _SQLAlchemyEngineStub
     _sqlalchemy_available = False
 
 from flext_observability.logging_integration import FlextObservabilityLogging
@@ -143,7 +144,10 @@ class FlextObservabilityDatabase:
         AsyncPG: asyncpg connection instrumentation
     """
 
-    _logger: p.Log.StructlogLogger = FlextLogger.get_logger(__name__)
+    _logger: p.Log.StructlogLogger = cast(
+        "p.Log.StructlogLogger",
+        FlextLogger.get_logger(__name__),
+    )
 
     # ========================================================================
     # SQLALCHEMY INSTRUMENTATION
@@ -152,10 +156,10 @@ class FlextObservabilityDatabase:
     class SQLAlchemy:
         """SQLAlchemy event listener for automatic query instrumentation."""
 
-        instrumented_engines: ClassVar[set[Engine]] = set()
+        instrumented_engines: ClassVar[set[object]] = set()
 
         @staticmethod
-        def setup_instrumentation(engine: Engine) -> FlextResult[bool]:
+        def setup_instrumentation(engine: object) -> FlextResult[bool]:
             """Setup SQLAlchemy engine query instrumentation.
 
             Adds SQLAlchemy event listeners for automatic query tracing,
@@ -200,9 +204,15 @@ class FlextObservabilityDatabase:
                 if engine in FlextObservabilityDatabase.SQLAlchemy.instrumented_engines:
                     return FlextResult[bool].ok(value=True)
 
-                @event.listens_for(engine, "before_cursor_execute")
+                listens_for = getattr(
+                    event,
+                    "listens_for",
+                    lambda *_args, **_kwargs: lambda fn: fn,
+                )
+
+                @listens_for(engine, "before_cursor_execute")
                 def before_cursor_execute(
-                    conn: Connection,
+                    conn: object,
                     _cursor: object,
                     statement: str,
                     _parameters: object,
@@ -212,11 +222,18 @@ class FlextObservabilityDatabase:
                     """Log query execution start."""
                     try:
                         # Store start time on connection for after hook
-                        conn.info.setdefault("_flext_query_start", time.time())
+                        conn_info = getattr(conn, "info", None)
+                        if isinstance(conn_info, dict):
+                            conn_info.setdefault("_flext_query_start", time.time())
 
                         # Extract database info
-                        db_url = str(conn.engine.url)
-                        db_name = conn.engine.url.database or "unknown"
+                        engine_obj = getattr(conn, "engine", None)
+                        url_obj = getattr(engine_obj, "url", None)
+                        db_url = str(url_obj) if url_obj is not None else "unknown"
+                        db_name_raw = getattr(url_obj, "database", None)
+                        db_name = (
+                            db_name_raw if isinstance(db_name_raw, str) else "unknown"
+                        )
 
                         # Log query start with context
                         FlextObservabilityLogging.log_with_context(
@@ -240,9 +257,9 @@ class FlextObservabilityDatabase:
                             f"Error in before_cursor_execute: {e}",
                         )
 
-                @event.listens_for(engine, "after_cursor_execute")
+                @listens_for(engine, "after_cursor_execute")
                 def after_cursor_execute(
-                    conn: Connection,
+                    conn: object,
                     cursor: object,
                     statement: str,
                     _parameters: object,
@@ -252,9 +269,11 @@ class FlextObservabilityDatabase:
                     """Log query execution completion."""
                     try:
                         # Calculate query duration
-                        start_time_val = conn.info.get(
-                            "_flext_query_start",
-                            None,
+                        conn_info = getattr(conn, "info", None)
+                        start_time_val = (
+                            conn_info.get("_flext_query_start", None)
+                            if isinstance(conn_info, dict)
+                            else None
                         )
                         # Type narrow to float for arithmetic
                         start_time = (
@@ -278,8 +297,13 @@ class FlextObservabilityDatabase:
                                 row_count = 0
 
                         # Extract database info
-                        db_url = str(conn.engine.url)
-                        db_name = conn.engine.url.database or "unknown"
+                        engine_obj = getattr(conn, "engine", None)
+                        url_obj = getattr(engine_obj, "url", None)
+                        db_url = str(url_obj) if url_obj is not None else "unknown"
+                        db_name_raw = getattr(url_obj, "database", None)
+                        db_name = (
+                            db_name_raw if isinstance(db_name_raw, str) else "unknown"
+                        )
                         query_type = (
                             statement.strip().split()[0].upper()
                             if statement.strip()
@@ -303,7 +327,8 @@ class FlextObservabilityDatabase:
                         )
 
                         # Clean up
-                        conn.info.pop("_flext_query_start", None)
+                        if isinstance(conn_info, dict):
+                            conn_info.pop("_flext_query_start", None)
 
                     except Exception as e:
                         FlextObservabilityDatabase._logger.warning(

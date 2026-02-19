@@ -15,6 +15,7 @@ from __future__ import annotations
 import math
 import time
 from dataclasses import dataclass, field
+from typing import cast
 
 import psutil
 from flext_core import FlextLogger, FlextResult
@@ -68,7 +69,10 @@ class FlextObservabilityPerformance:
         Monitor: Performance monitoring for individual operations
     """
 
-    _logger: p.Log.StructlogLogger = FlextLogger.get_logger(__name__)
+    _logger: p.Log.StructlogLogger = cast(
+        "p.Log.StructlogLogger",
+        FlextLogger.get_logger(__name__),
+    )
     _process: psutil.Process = psutil.Process()
 
     class Monitor:

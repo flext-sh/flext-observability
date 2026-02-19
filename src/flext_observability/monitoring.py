@@ -8,10 +8,11 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import override
+from typing import cast, override
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextLogger, r
+from flext_core.protocols import p
 
 from flext_observability.models import FlextObservabilityModels
 from flext_observability.services import FlextObservabilityServices
@@ -36,6 +37,7 @@ class FlextObservabilityMonitor:
 
     # Function type alias - simplified for monitoring
     object_callable = Callable[..., object]
+    logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""
@@ -125,7 +127,6 @@ class FlextObservabilityMonitor:
             )
 
             # Create alert if observability service is available
-            logger = FlextLogger.get_logger(__name__)
             observability_service = monitor.get_observability_service()
             if observability_service:
                 try:
@@ -136,15 +137,22 @@ class FlextObservabilityMonitor:
                         source="monitoring",
                     )
                     if alert_result.is_failure:
-                        logger.warning(f"Alert creation failed: {alert_result.error}")
+                        FlextObservabilityMonitor.logger.warning(
+                            f"Alert creation failed: {alert_result.error}",
+                        )
                 except (ValueError, TypeError, AttributeError) as e:
-                    logger.warning("Alert creation failed: %s", e)
+                    FlextObservabilityMonitor.logger.warning(
+                        f"Alert creation failed: {e}",
+                    )
 
     @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
         self._container = container or FlextContainer.get_global()
-        self._logger = FlextLogger.get_logger(self.__class__.__name__)
+        self._logger = cast(
+            "p.Log.StructlogLogger",
+            FlextLogger.get_logger(self.__class__.__name__),
+        )
         self._config = FlextObservabilitySettings.get_global_instance()
         self._initialized = False
         self._running = False

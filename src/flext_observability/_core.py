@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import math
 from datetime import UTC, datetime
-from typing import ClassVar, Literal
+from typing import ClassVar, Literal, cast
 from uuid import uuid4
 
 from flext_core import (
@@ -145,7 +145,10 @@ class FlextObservability:
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize metrics service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextLogger.get_logger(__name__)
+            self._logger = cast(
+                "p.Log.StructlogLogger",
+                FlextLogger.get_logger(__name__),
+            )
             self._metrics = []
 
         def record_metric(
@@ -202,7 +205,10 @@ class FlextObservability:
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize tracing service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextLogger.get_logger(__name__)
+            self._logger = cast(
+                "p.Log.StructlogLogger",
+                FlextLogger.get_logger(__name__),
+            )
             self._traces = []
 
         def start_trace(
@@ -243,7 +249,10 @@ class FlextObservability:
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize alerting service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextLogger.get_logger(__name__)
+            self._logger = cast(
+                "p.Log.StructlogLogger",
+                FlextLogger.get_logger(__name__),
+            )
             self._alerts = []
 
         def create_alert(
@@ -294,7 +303,10 @@ class FlextObservability:
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize health service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextLogger.get_logger(__name__)
+            self._logger = cast(
+                "p.Log.StructlogLogger",
+                FlextLogger.get_logger(__name__),
+            )
             self._checks = []
 
         def check_component(
@@ -345,7 +357,10 @@ class FlextObservability:
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize logging service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextLogger.get_logger(__name__)
+            self._logger = cast(
+                "p.Log.StructlogLogger",
+                FlextLogger.get_logger(__name__),
+            )
             self._entries = []
 
         def log_entry(
@@ -879,3 +894,4 @@ def reset_global_factory() -> None:
 FlextObservabilityFactories = FlextObservabilityMasterFactory
 
 # Alias flext_health_status to flext_health_check
+flext_health_status = flext_health_check

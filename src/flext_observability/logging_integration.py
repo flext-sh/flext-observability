@@ -19,6 +19,8 @@ Key Features:
 
 from __future__ import annotations
 
+from typing import cast
+
 from flext_core import FlextLogger, FlextResult, FlextTypes as t
 from flext_core.protocols import p
 
@@ -45,7 +47,10 @@ class FlextObservabilityLogging:
         ```
     """
 
-    _logger: p.Log.StructlogLogger = FlextLogger.get_logger(__name__)
+    _logger: p.Log.StructlogLogger = cast(
+        "p.Log.StructlogLogger",
+        FlextLogger.get_logger(__name__),
+    )
 
     # ========================================================================
     # LOGGER CREATION WITH CONTEXT
@@ -81,7 +86,7 @@ class FlextObservabilityLogging:
                 )
 
             # Create logger from flext-core
-            logger = FlextLogger.get_logger(name)
+            logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(name))
 
             # Logger is returned with capability to be enriched
             return FlextResult[p.Log.StructlogLogger].ok(logger)

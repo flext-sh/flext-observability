@@ -20,8 +20,10 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
+from typing import cast
 
 from flext_core import FlextLogger, FlextResult
+from flext_core.protocols import p
 
 # Type for JSON-serializable values (no Any allowed)
 # Using PEP 695 type statement for recursive type (Python 3.12+)
@@ -98,7 +100,7 @@ class FlextObservabilityAdvancedContext:
         Context: Request-local context management
     """
 
-    _logger = FlextLogger.get_logger(__name__)
+    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
     _context_instance: FlextObservabilityAdvancedContext.Context | None = None
 
     class Context:

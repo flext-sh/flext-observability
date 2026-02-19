@@ -24,14 +24,21 @@ from __future__ import annotations
 import time
 from collections import UserDict
 from collections.abc import Awaitable, Callable
+from typing import Protocol, cast
 
 from flext_core import FlextLogger, FlextResult, FlextTypes as t
+from flext_core.protocols import p
 
 from flext_observability.context import FlextObservabilityContext
+from flext_observability.logging_integration import FlextObservabilityLogging
 
 # Optional dependency: Flask
 try:
-    from flask import Flask as FlaskApp, g, request
+    import flask as _flask
+
+    FlaskApp = getattr(_flask, "Flask", object)
+    g = getattr(_flask, "g")
+    request = getattr(_flask, "request")
 
     _flask_available = True
 except ImportError:
@@ -70,9 +77,7 @@ except ImportError:
 
 # Optional dependency: Starlette (for FastAPI)
 try:
-    from starlette.middleware.base import BaseHTTPMiddleware
-    from starlette.requests import Request
-    from starlette.responses import Response
+    import starlette  # noqa: F401
 
     _starlette_available = True
 except ImportError:
@@ -90,19 +95,7 @@ except ImportError:
     class _StubHeaders(UserDict[str, str]):
         """Stub headers for type checking."""
 
-        def get(
-            self,
-            key: str,
-            default: str = "",
-        ) -> str:
-            return super().get(key, default)
-
-    class BaseHTTPMiddleware:
-        """Stub for when starlette is not installed."""
-
-        pass
-
-    class Request:
+    class _StubRequest:
         """Stub for when starlette is not installed."""
 
         headers: _StubHeaders
@@ -115,7 +108,7 @@ except ImportError:
             self.url = _StubURL()
             self.client = _StubClient()
 
-    class Response:
+    class _StubResponse:
         """Stub for when starlette is not installed."""
 
         status_code: int = 200
@@ -125,7 +118,34 @@ except ImportError:
             self.headers = {}
 
     _starlette_available = False
-from flext_observability.logging_integration import FlextObservabilityLogging
+
+
+class RequestURLProtocol(Protocol):
+    """Protocol for request URL objects."""
+
+    path: str
+
+
+class RequestClientProtocol(Protocol):
+    """Protocol for request client objects."""
+
+    host: str
+
+
+class RequestProtocol(Protocol):
+    """Protocol for HTTP request objects used by middleware."""
+
+    headers: dict[str, str] | UserDict[str, str]
+    method: str
+    url: RequestURLProtocol
+    client: RequestClientProtocol | None
+
+
+class ResponseProtocol(Protocol):
+    """Protocol for HTTP response objects used by middleware."""
+
+    status_code: int
+    headers: dict[str, str] | UserDict[str, str]
 
 
 class FlextObservabilityHTTP:
@@ -152,7 +172,7 @@ class FlextObservabilityHTTP:
         ASGI: Generic ASGI middleware base
     """
 
-    _logger = FlextLogger.get_logger(__name__)
+    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
 
     # HTTP status code threshold for errors (4xx and 5xx)
     HTTP_ERROR_STATUS_THRESHOLD = 400
@@ -248,7 +268,7 @@ class FlextObservabilityHTTP:
                         )
 
                 @app.after_request
-                def flext_after_request(response: Response) -> Response:
+                def flext_after_request(response: ResponseProtocol) -> ResponseProtocol:
                     """Record metrics and complete span after request processing."""
                     try:
                         # Calculate request duration
@@ -260,8 +280,9 @@ class FlextObservabilityHTTP:
                         )
 
                         # Determine if response indicates error
+                        status_code = int(getattr(response, "status_code", 200))
                         is_error = (
-                            response.status_code
+                            status_code
                             >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
                         )
 
@@ -269,11 +290,11 @@ class FlextObservabilityHTTP:
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
                             "info" if not is_error else "warning",
-                            f"HTTP {request.method} {request.path} -> {response.status_code}",
+                            f"HTTP {request.method} {request.path} -> {status_code}",
                             extra={
                                 "http_method": request.method,
                                 "http_path": request.path,
-                                "http_status": response.status_code,
+                                "http_status": status_code,
                                 "http_duration_ms": duration_ms,
                             },
                         )
@@ -378,14 +399,19 @@ class FlextObservabilityHTTP:
                         "Invalid FastAPI app - missing middleware method",
                     )
 
-                class FlextObservabilityMiddleware(BaseHTTPMiddleware):
+                class FlextObservabilityMiddleware:
                     """Starlette-based ASGI middleware for FastAPI."""
+
+                    def __init__(self, app: object) -> None:
+                        _ = app
 
                     async def dispatch(
                         self,
-                        request: Request,
-                        call_next: Callable[[Request], Awaitable[Response]],
-                    ) -> Response:
+                        request: RequestProtocol,
+                        call_next: Callable[
+                            [RequestProtocol], Awaitable[ResponseProtocol]
+                        ],
+                    ) -> ResponseProtocol:
                         """Process HTTP request with instrumentation."""
                         try:
                             # Extract or create correlation ID from headers
@@ -426,19 +452,20 @@ class FlextObservabilityHTTP:
                                 duration_ms = (time.time() - start_time) * 1000
 
                                 # Check for error
+                                status_code = int(getattr(response, "status_code", 200))
                                 is_error = (
-                                    response.status_code
+                                    status_code
                                     >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
                                 )
 
                                 # Log response
                                 await FlextObservabilityHTTP._async_log_with_context(
-                                    f"HTTP {request.method} {request.url.path} -> {response.status_code}",
+                                    f"HTTP {request.method} {request.url.path} -> {status_code}",
                                     "info" if not is_error else "warning",
                                     {
                                         "http_method": request.method,
                                         "http_path": request.url.path,
-                                        "http_status": response.status_code,
+                                        "http_status": status_code,
                                         "http_duration_ms": duration_ms,
                                     },
                                 )

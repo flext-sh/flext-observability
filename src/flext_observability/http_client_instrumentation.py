@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Awaitable, Callable, MutableMapping
-from typing import ClassVar, Protocol
+from typing import ClassVar, Protocol, cast
 
 from flext_core import FlextLogger, FlextResult
 from flext_core.protocols import p
@@ -114,7 +114,10 @@ class FlextObservabilityHTTPClient:
         AIOHTTP: aiohttp client instrumentation (async)
     """
 
-    _logger: p.Log.StructlogLogger = FlextLogger.get_logger(__name__)
+    _logger: p.Log.StructlogLogger = cast(
+        "p.Log.StructlogLogger",
+        FlextLogger.get_logger(__name__),
+    )
 
     # ========================================================================
     # HTTPX INSTRUMENTATION

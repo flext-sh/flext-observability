@@ -10,6 +10,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import cast
+
 from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes as t
 from flext_core.protocols import p
 from flext_core.utilities import u_core
@@ -29,7 +31,7 @@ class FlextObservabilityServices(u_core):
         """Initialize with FLEXT core components."""
         super().__init__()
         self._container = FlextContainer.get_global()
-        self._logger = FlextLogger.get_logger(__name__)
+        self._logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
         self._config = FlextObservabilitySettings.get_global_instance()
 
     @property
