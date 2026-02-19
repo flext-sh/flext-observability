@@ -137,13 +137,13 @@ docs/maintenance/
 
 ```bash
 # Run complete maintenance pipeline
-make docs-maintain
+make docs
 
 # Individual maintenance operations
 make docs DOCS_PHASE=audit          # Quality audit and validation
 make docs DOCS_PHASE=fix FIX=1      # Content optimization and formatting
-make docs-sync           # Synchronization with version control
-make docs-report         # Generate quality reports
+make docs           # Synchronization with version control
+make docs         # Generate quality reports
 ```
 
 ### Manual Maintenance Commands
@@ -301,13 +301,13 @@ validation_rules:
 
 ```bash
 # Daily maintenance (CI/CD integration)
-0 2 * * * make docs-maintain
+0 2 * * * make docs
 
 # Weekly comprehensive audit
 0 3 * * 1 make docs
 
 # Monthly quality reporting
-0 4 1 * * make docs-generate-reports
+0 4 1 * * make docs
 ```
 
 ## 🤝 Team Integration
