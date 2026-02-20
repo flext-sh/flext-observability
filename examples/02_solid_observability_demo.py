@@ -16,10 +16,10 @@ from flext_core import FlextContainer, FlextResult, FlextTypes as t
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
-    flext_create_alert,
+    flext_alert,
     flext_create_health_check,
-    flext_create_metric,
-    flext_create_trace,
+    flext_metric,
+    flext_trace,
     get_global_factory,
 )
 
@@ -39,9 +39,9 @@ def process_api_request(endpoint: str) -> dict[str, t.GeneralValueType]:
 def demonstrate_solid_design() -> None:
     """Demonstrate SOLID design principles in action."""
     # Single Responsibility: Each entity has one clear purpose
-    metric_result = flext_create_metric("cpu_usage", 75.5, "percent")
-    trace_result = flext_create_trace("user_login", "auth-service")
-    alert_result = flext_create_alert("High CPU usage", "monitoring", "warning")
+    metric_result = flext_metric("cpu_usage", 75.5, "percent")
+    trace_result = flext_trace("user_login")
+    alert_result = flext_alert("monitoring", "High CPU usage", "warning")
     health_result = flext_create_health_check("database", "healthy")
 
     # Open/Closed: Extensible without modification
@@ -83,7 +83,7 @@ def demonstrate_metrics_collection() -> None:
     ]
 
     for name, value, unit in metrics:
-        result = flext_create_metric(name, value, unit)
+        result = flext_metric(name, value, unit)
         if result.is_success:
             pass
 
@@ -100,7 +100,7 @@ def demonstrate_distributed_tracing() -> None:
     ]
 
     for service, operation in services:
-        result = flext_create_trace(operation, service)
+        result = flext_trace(operation)
         if result.is_success:
             pass
 
@@ -132,7 +132,7 @@ def demonstrate_alerting_system() -> None:
     ]
 
     for level, message, service in alerts:
-        result = flext_create_alert(message, service, level)
+        result = flext_alert(service, message, level)
         if result.is_success:
             icons = {
                 "info": "[INFO]",
@@ -167,9 +167,9 @@ def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     # Create various entities and validate them
     entities_to_validate: list[FlextResult[dict[str, t.GeneralValueType]]] = [
-        flext_create_metric("valid_metric", 100.0, "count"),
-        flext_create_trace("valid_operation", "valid_service"),
-        flext_create_alert("Valid alert", "system", "info"),
+        flext_metric("valid_metric", 100.0, "count"),
+        flext_trace("valid_operation"),
+        flext_alert("system", "Valid alert", "info"),
         flext_create_health_check("service", "healthy"),
     ]
 

@@ -607,16 +607,6 @@ class FlextLogEntry(FlextObservability.LogEntry):
     """FlextLogEntry - real inheritance from FlextObservability.LogEntry."""
 
 
-# Factory function aliases for backward compatibility
-flext_create_metric = flext_metric
-flext_create_trace = flext_trace
-flext_create_alert = flext_alert
-flext_create_log_entry = flext_log_entry
-
-# Alias classes for backward compatibility
-FlextObservabilityAlerting = FlextObservability.AlertingService
-
-
 # ============================================================================
 # FLEXT OBSERVABILITY CONSTANTS
 # ============================================================================
@@ -888,10 +878,3 @@ def get_global_factory() -> FlextObservabilityMasterFactory:
 def reset_global_factory() -> None:
     """Reset the global factory instance."""
     _global_factory_state.factory = None
-
-
-# Alias for backward compatibility with test expectations
-FlextObservabilityFactories = FlextObservabilityMasterFactory
-
-# Alias flext_health_status to flext_health_check
-flext_health_status = flext_health_check

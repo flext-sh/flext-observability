@@ -126,12 +126,8 @@ def reset_global_factory() -> None:
     # Note: Container may not have remove method, so this is a no-op for now
 
 
-# Alias for backward compatibility
-FlextObservabilityUtilities = FlextObservabilityServices
-
 __all__ = [
     "FlextObservabilityServices",
-    "FlextObservabilityUtilities",
     "get_global_factory",
     "reset_global_factory",
 ]

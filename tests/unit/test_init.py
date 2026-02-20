@@ -17,13 +17,8 @@ from flext_observability import (
     FlextObservabilityMasterFactory,
     FlextTrace,
     flext_alert,
-    flext_create_alert,
     flext_create_health_check,
-    flext_create_log_entry,
-    flext_create_metric,
-    flext_create_trace,
     flext_health_check,
-    flext_health_status,
     flext_metric,
     flext_trace,
     get_global_factory,
@@ -35,8 +30,8 @@ class TestInitCoverage:
     """Test coverage for __init__.py public API exports."""
 
     def test_flext_health_status_function(self) -> None:
-        """Test flext_health_status function coverage."""
-        result = flext_health_status("flext-observability", "healthy")
+        """Test health check function coverage."""
+        result = flext_health_check("flext-observability", "healthy")
         assert result.is_success
         health_check = result.value
         assert health_check.status == "healthy"
@@ -78,12 +73,7 @@ class TestInitCoverage:
 
     def test_api_functions_imports(self) -> None:
         """Test that API functions can be imported."""
-        # Test that functions are available and callable
-        assert callable(flext_create_alert)
         assert callable(flext_create_health_check)
-        assert callable(flext_create_log_entry)
-        assert callable(flext_create_metric)
-        assert callable(flext_create_trace)
 
     def test_factory_class_imports(self) -> None:
         """Test that factory classes can be imported."""

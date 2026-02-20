@@ -16,11 +16,11 @@ from flext_core import FlextContainer
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
-    flext_create_alert,
+    flext_alert,
     flext_create_health_check,
-    flext_create_log_entry,
-    flext_create_metric,
-    flext_create_trace,
+    flext_log_entry,
+    flext_metric,
+    flext_trace,
     get_global_factory,
     reset_global_factory,
 )
@@ -29,21 +29,17 @@ from flext_observability import (
 def demonstrate_simple_api() -> None:
     """Demonstrate the simple API for creating observability entities."""
     # Create metrics
-    metric_result = flext_create_metric("api_requests", 150.0, "count")
+    metric_result = flext_metric("api_requests", 150.0, "count")
     if metric_result.is_success:
         pass
 
     # Create traces
-    trace_result = flext_create_trace("user_registration", "auth-service")
+    trace_result = flext_trace("user_registration")
     if trace_result.is_success:
         pass
 
     # Create alerts
-    alert_result = flext_create_alert(
-        "High CPU usage detected",
-        "monitoring",
-        "warning",
-    )
+    alert_result = flext_alert("monitoring", "High CPU usage detected", "warning")
     if alert_result.is_success:
         pass
 
@@ -53,7 +49,7 @@ def demonstrate_simple_api() -> None:
         pass
 
     # Create log entries
-    log_result = flext_create_log_entry(
+    log_result = flext_log_entry(
         "User authentication successful",
         "INFO",
         "auth-service",
@@ -92,13 +88,13 @@ def demonstrate_monitoring() -> None:
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     # Valid metric
-    metric_result = flext_create_metric("valid_metric", 100.0, "count")
+    metric_result = flext_metric("valid_metric", 100.0, "count")
     if metric_result.is_success:
         print(f"Created metric: {metric_result.value}")
 
     # Invalid metric (negative value should be caught by pydantic or business rules)
     try:
-        invalid_metric_result = flext_create_metric("invalid_metric", -10.0, "count")
+        invalid_metric_result = flext_metric("invalid_metric", -10.0, "count")
         if invalid_metric_result.is_success:
             print(f"Created invalid metric: {invalid_metric_result.value}")
     except Exception as e:
@@ -126,7 +122,7 @@ def demonstrate_alerting_scenario() -> None:
     ]
 
     for level, message, service in alert_scenarios:
-        alert_result = flext_create_alert(message, service, level)
+        alert_result = flext_alert(service, message, level)
         if alert_result.is_success:
             icons = {
                 "info": "[INFO]",
