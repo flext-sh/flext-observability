@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "poetry.core.masonry.api"
-requires = [ "poetry-core>=2.0", "poetry-core>=2" ]
+requires = [ "poetry-core>=2" ]
 
 [project]
 name = "flext-observability"
@@ -17,19 +17,19 @@ keywords = [
   "typed",
 ]
 license = "MIT"
-maintainers = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
-authors = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
+maintainers = [ { email = "team@flext.sh", name = "FLEXT Team" } ]
+authors = [ { email = "team@flext.sh", name = "FLEXT Team" } ]
 requires-python = ">=3.13,<3.14"
 classifiers = [
   "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Libraries :: Python Modules",
-  "Typing :: Typed",
-  "Development Status :: 5 - Production/Stable",
   "Topic :: System :: Monitoring",
+  "Typing :: Typed",
 ]
 dependencies = [
   "opentelemetry-api>=1.39.1,<2",
@@ -116,9 +116,10 @@ group.dev.dependencies.opentelemetry-exporter-prometheus = ">=0.60b1"
 group.dev.dependencies.pytest-randomly = "^4.0.1"
 group.dev.dependencies.pytest-cov = "^7.0.0"
 group.dev.dependencies.commitizen = "^4.8.3"
-packages = [ {from = "src", include = "flext_observability"} ]
+packages = [ { from = "src", include = "flext_observability" } ]
 
 [tool.ruff]
+extend = "../ruff-shared.toml"
 exclude = [
   ".git",
   ".mypy_cache",
@@ -137,7 +138,6 @@ exclude = [
   "typings",
   "venv",
 ]
-extend = "../ruff-shared.toml"
 lint.isort.known-first-party = [
   "flext_observability",
 ]
@@ -223,9 +223,9 @@ ini_options.addopts = [
 ini_options.minversion = "8.0"
 
 [tool.coverage]
+run.source = [ "src/flext_observability" ]
 report.fail_under = 100
 report.precision = 2
-run.source = [ "src/flext_observability" ]
 
 [tool.pyrefly]
 project-excludes = [ "**/*_pb2*.py", "**/*_pb2_grpc*.py" ]
