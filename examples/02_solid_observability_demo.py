@@ -99,7 +99,7 @@ def demonstrate_distributed_tracing() -> None:
         ("cache", "result_caching"),
     ]
 
-    for service, operation in services:
+    for _service, operation in services:
         result = flext_trace(operation)
         if result.is_success:
             pass
