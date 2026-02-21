@@ -98,7 +98,7 @@ class FlextObservabilityLogging(FlextModels):
                     "level": self.level,
                     "source": self.source,
                     "logger": self.logger_name,
-                    "is_error": self.is_error_level,
+                    "is_error": str(self.is_error_level),
                 },
             }
 

@@ -71,8 +71,8 @@ except ImportError:
             return None
 
     FlaskApp = object
-    g: _StubAppCtxGlobals = _StubAppCtxGlobals()
-    request: _StubFlaskRequest = _StubFlaskRequest()
+    g = _StubAppCtxGlobals()
+    request = _StubFlaskRequest()
     _flask_available = False
 
 # Optional dependency: Starlette (for FastAPI)
@@ -229,7 +229,10 @@ class FlextObservabilityHTTP:
                         "Invalid Flask app - missing request hooks",
                     )
 
-                @app.before_request
+                before_request_hook = getattr(app, "before_request")
+                after_request_hook = getattr(app, "after_request")
+
+                @before_request_hook
                 def flext_before_request() -> None:
                     """Extract context and create span before request processing."""
                     try:
@@ -267,7 +270,7 @@ class FlextObservabilityHTTP:
                             f"Error in before_request hook: {e}",
                         )
 
-                @app.after_request
+                @after_request_hook
                 def flext_after_request(response: ResponseProtocol) -> ResponseProtocol:
                     """Record metrics and complete span after request processing."""
                     try:

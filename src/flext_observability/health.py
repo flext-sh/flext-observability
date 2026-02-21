@@ -103,8 +103,8 @@ class FlextObservabilityHealth(FlextModels):
                 "health_context": {
                     "component": self.component,
                     "status": self.status,
-                    "is_healthy": self.is_healthy,
-                    "response_time": self.formatted_response_time,
+                    "is_healthy": str(self.is_healthy),
+                    "response_time": str(self.formatted_response_time),
                 },
             }
 

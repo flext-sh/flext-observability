@@ -65,19 +65,16 @@ class FlextObservabilityModels(m_core):
         )
 
         @computed_field
-        @property
         def age_seconds(self) -> float:
             """Computed age in seconds since creation."""
             return (datetime.now(tz=UTC) - self.timestamp).total_seconds()
 
         @computed_field
-        @property
         def has_data(self) -> bool:
             """Check if entry has any data."""
             return bool(self.data)
 
         @computed_field
-        @property
         def data_keys(self) -> list[str]:
             """List of data keys for introspection."""
             return list(self.data.keys()) if self.data else []
@@ -110,13 +107,11 @@ class FlextObservabilityModels(m_core):
         )
 
         @computed_field
-        @property
         def interval_minutes(self) -> float:
             """Computed interval in minutes."""
             return self.interval_seconds / 60.0
 
         @computed_field
-        @property
         def retention_hours(self) -> float:
             """Computed retention in hours."""
             return self.retention_days * 24.0
