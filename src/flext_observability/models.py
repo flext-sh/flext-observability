@@ -130,6 +130,5 @@ class FlextObservabilityModels(m):
 
 
 m = FlextObservabilityModels
-m_observability = FlextObservabilityModels
 
-__all__ = ["FlextObservabilityModels", "m", "m_observability"]
+__all__ = ["FlextObservabilityModels", "m"]
