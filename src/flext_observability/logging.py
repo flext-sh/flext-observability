@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Literal, Self
 
-from flext_core import FlextModels, FlextResult, FlextTypes as t
+from flext_core import FlextModels, FlextResult, t
 from pydantic import (
     BaseModel,
     ConfigDict,

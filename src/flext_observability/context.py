@@ -18,7 +18,7 @@ from contextvars import ContextVar
 from typing import cast
 from uuid import uuid4
 
-from flext_core import FlextLogger, FlextResult, FlextTypes as t
+from flext_core import FlextLogger, FlextResult, t
 from flext_core.protocols import p
 
 

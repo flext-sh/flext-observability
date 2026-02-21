@@ -198,7 +198,7 @@ class FlextObservabilityMonitor:
                 )
 
             # Note: Service registration in container skipped since
-            # FlextObservabilityServices extends u_core not FlextService.
+            # FlextObservabilityServices extends u not FlextService.
             # Access service directly via self._observability_service property.
 
             self._initialized = True

@@ -26,7 +26,7 @@ from collections import UserDict
 from collections.abc import Awaitable, Callable
 from typing import Protocol, cast
 
-from flext_core import FlextLogger, FlextResult, FlextTypes as t
+from flext_core import FlextLogger, FlextResult, t
 from flext_core.protocols import p
 
 from flext_observability.context import FlextObservabilityContext

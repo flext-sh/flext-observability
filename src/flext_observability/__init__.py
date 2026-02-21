@@ -65,7 +65,7 @@ from flext_observability.performance import FlextObservabilityPerformance
 from flext_observability.protocols import FlextObservabilityProtocols
 from flext_observability.sampling import FlextObservabilitySampling
 from flext_observability.settings import FlextObservabilitySettings
-from flext_observability.typings import FlextObservabilityTypes
+from flext_observability.typings import FlextObservabilityTypes, t
 
 __all__ = [
     "CustomMetricDefinition",
@@ -107,4 +107,5 @@ __all__ = [
     "flext_trace",
     "get_global_factory",
     "reset_global_factory",
+    "t",
 ]

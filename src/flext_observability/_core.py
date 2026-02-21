@@ -16,7 +16,7 @@ from flext_core import (
     FlextLogger,
     FlextProtocols as p,
     FlextResult,
-    FlextTypes as t,
+    t,
 )
 from pydantic import BaseModel, ConfigDict, Field
 

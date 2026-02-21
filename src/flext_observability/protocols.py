@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextTypes as t, p as p_base
+from flext_core import p, t
 
 
-class FlextObservabilityProtocols(p_base):
+class FlextObservabilityProtocols(p):
     """Unified observability protocols following FLEXT domain extension pattern.
 
     Extends FlextProtocols to inherit all foundation protocols (Result, Service, etc.)
@@ -48,7 +48,7 @@ class FlextObservabilityProtocols(p_base):
         """
 
         @runtime_checkable
-        class MetricsProtocol(p_base.Service[object], Protocol):
+        class MetricsProtocol(p.Service[object], Protocol):
             """Protocol for metrics collection and management operations."""
 
             def record_metric(
@@ -58,7 +58,7 @@ class FlextObservabilityProtocols(p_base):
                 *,
                 unit: str = "count",
                 tags: dict[str, str] | None = None,
-            ) -> p_base.Result[bool]:
+            ) -> p.Result[bool]:
                 """Record a metric value."""
                 ...
 
@@ -68,7 +68,7 @@ class FlextObservabilityProtocols(p_base):
                 *,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> p_base.Result[list[dict[str, t.GeneralValueType]]]:
+            ) -> p.Result[list[dict[str, t.GeneralValueType]]]:
                 """Get collected metrics."""
                 ...
 
@@ -78,7 +78,7 @@ class FlextObservabilityProtocols(p_base):
                 description: str,
                 *,
                 unit: str = "count",
-            ) -> p_base.Result[object]:
+            ) -> p.Result[object]:
                 """Create a counter metric."""
                 ...
 
@@ -88,7 +88,7 @@ class FlextObservabilityProtocols(p_base):
                 description: str,
                 *,
                 unit: str = "value",
-            ) -> p_base.Result[object]:
+            ) -> p.Result[object]:
                 """Create a gauge metric."""
                 ...
 
@@ -99,12 +99,12 @@ class FlextObservabilityProtocols(p_base):
                 *,
                 unit: str = "seconds",
                 buckets: list[float] | None = None,
-            ) -> p_base.Result[object]:
+            ) -> p.Result[object]:
                 """Create a histogram metric."""
                 ...
 
         @runtime_checkable
-        class TracingProtocol(p_base.Service[object], Protocol):
+        class TracingProtocol(p.Service[object], Protocol):
             """Protocol for distributed tracing operations."""
 
             def start_span(
@@ -113,7 +113,7 @@ class FlextObservabilityProtocols(p_base):
                 *,
                 service_name: str | None = None,
                 parent_span_id: str | None = None,
-            ) -> p_base.Result[object]:
+            ) -> p.Result[object]:
                 """Start a new trace span."""
                 ...
 
@@ -123,7 +123,7 @@ class FlextObservabilityProtocols(p_base):
                 *,
                 status: str = "ok",
                 error: str | None = None,
-            ) -> p_base.Result[bool]:
+            ) -> p.Result[bool]:
                 """Finish a trace span."""
                 ...
 
@@ -132,13 +132,13 @@ class FlextObservabilityProtocols(p_base):
                 span: object,
                 key: str,
                 value: str | float,
-            ) -> p_base.Result[bool]:
+            ) -> p.Result[bool]:
                 """Add tag to trace span."""
                 ...
 
             def get_trace(
                 self, trace_id: str
-            ) -> p_base.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[dict[str, t.GeneralValueType]]:
                 """Get trace by ID."""
                 ...
 
@@ -149,12 +149,12 @@ class FlextObservabilityProtocols(p_base):
                 operation_name: str | None = None,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> p_base.Result[list[dict[str, t.GeneralValueType]]]:
+            ) -> p.Result[list[dict[str, t.GeneralValueType]]]:
                 """Search traces by criteria."""
                 ...
 
         @runtime_checkable
-        class AlertingProtocol(p_base.Service[object], Protocol):
+        class AlertingProtocol(p.Service[object], Protocol):
             """Protocol for alerting and notification operations."""
 
             def create_alert(
@@ -164,11 +164,11 @@ class FlextObservabilityProtocols(p_base):
                 *,
                 service: str | None = None,
                 tags: dict[str, str] | None = None,
-            ) -> p_base.Result[str]:
+            ) -> p.Result[str]:
                 """Create an alert."""
                 ...
 
-            def resolve_alert(self, alert_id: str) -> p_base.Result[bool]:
+            def resolve_alert(self, alert_id: str) -> p.Result[bool]:
                 """Resolve an alert."""
                 ...
 
@@ -178,7 +178,7 @@ class FlextObservabilityProtocols(p_base):
                 level: str | None = None,
                 service: str | None = None,
                 resolved: bool | None = None,
-            ) -> p_base.Result[list[dict[str, t.GeneralValueType]]]:
+            ) -> p.Result[list[dict[str, t.GeneralValueType]]]:
                 """Get alerts by criteria."""
                 ...
 
@@ -189,18 +189,18 @@ class FlextObservabilityProtocols(p_base):
                 *,
                 threshold: float | None = None,
                 duration: int | None = None,
-            ) -> p_base.Result[str]:
+            ) -> p.Result[str]:
                 """Create an alert rule."""
                 ...
 
         @runtime_checkable
-        class HealthCheckProtocol(p_base.Service[object], Protocol):
+        class HealthCheckProtocol(p.Service[object], Protocol):
             """Protocol for health check operations."""
 
             def check_health(
                 self,
                 service_name: str,
-            ) -> p_base.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[dict[str, t.GeneralValueType]]:
                 """Perform health check for a service."""
                 ...
 
@@ -210,25 +210,25 @@ class FlextObservabilityProtocols(p_base):
                 check_function: object,
                 *,
                 interval: int = 60,
-            ) -> p_base.Result[bool]:
+            ) -> p.Result[bool]:
                 """Register a health check."""
                 ...
 
             def get_service_status(
                 self,
                 service_name: str,
-            ) -> p_base.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[dict[str, t.GeneralValueType]]:
                 """Get service health status."""
                 ...
 
             def get_all_services_status(
                 self,
-            ) -> p_base.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[dict[str, t.GeneralValueType]]:
                 """Get health status for all services."""
                 ...
 
         @runtime_checkable
-        class LoggingProtocol(p_base.Service[object], Protocol):
+        class LoggingProtocol(p.Service[object], Protocol):
             """Protocol for logging operations."""
 
             def log_message(
@@ -239,7 +239,7 @@ class FlextObservabilityProtocols(p_base):
                 service: str | None = None,
                 correlation_id: str | None = None,
                 extra: dict[str, t.GeneralValueType] | None = None,
-            ) -> p_base.Result[bool]:
+            ) -> p.Result[bool]:
                 """Log a message."""
                 ...
 
@@ -251,7 +251,7 @@ class FlextObservabilityProtocols(p_base):
                 correlation_id: str | None = None,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> p_base.Result[list[dict[str, t.GeneralValueType]]]:
+            ) -> p.Result[list[dict[str, t.GeneralValueType]]]:
                 """Get logs by criteria."""
                 ...
 
@@ -261,19 +261,19 @@ class FlextObservabilityProtocols(p_base):
                 *,
                 level: str = "info",
                 format_string: str | None = None,
-            ) -> p_base.Result[object]:
+            ) -> p.Result[object]:
                 """Create a logger instance."""
                 ...
 
             def configure_logging(
                 self,
                 config: dict[str, t.GeneralValueType],
-            ) -> p_base.Result[bool]:
+            ) -> p.Result[bool]:
                 """Configure logging system."""
                 ...
 
         @runtime_checkable
-        class DashboardProtocol(p_base.Service[object], Protocol):
+        class DashboardProtocol(p.Service[object], Protocol):
             """Protocol for dashboard and visualization operations."""
 
             def create_dashboard(
@@ -282,14 +282,14 @@ class FlextObservabilityProtocols(p_base):
                 description: str,
                 *,
                 widgets: list[dict[str, t.GeneralValueType]] | None = None,
-            ) -> p_base.Result[str]:
+            ) -> p.Result[str]:
                 """Create a dashboard."""
                 ...
 
             def get_dashboard(
                 self,
                 dashboard_id: str,
-            ) -> p_base.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[dict[str, t.GeneralValueType]]:
                 """Get dashboard by ID."""
                 ...
 
@@ -297,7 +297,7 @@ class FlextObservabilityProtocols(p_base):
                 self,
                 dashboard_id: str,
                 widget_config: dict[str, t.GeneralValueType],
-            ) -> p_base.Result[str]:
+            ) -> p.Result[str]:
                 """Add widget to dashboard."""
                 ...
 
@@ -307,7 +307,7 @@ class FlextObservabilityProtocols(p_base):
                 *,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> p_base.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[dict[str, t.GeneralValueType]]:
                 """Get dashboard data."""
                 ...
 

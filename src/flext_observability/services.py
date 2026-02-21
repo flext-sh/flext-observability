@@ -12,14 +12,14 @@ from __future__ import annotations
 
 from typing import cast
 
-from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes as t
+from flext_core import FlextContainer, FlextLogger, FlextResult, t
 from flext_core.protocols import p
-from flext_core.utilities import u_core
+from flext_core.utilities import u
 
 from flext_observability.settings import FlextObservabilitySettings
 
 
-class FlextObservabilityServices(u_core):
+class FlextObservabilityServices(u):
     """Generic observability services delegating to FLEXT core patterns.
 
     Single unified class providing generic observability operations through
