@@ -13,9 +13,9 @@ from uuid import uuid4
 from flext_core import (
     FlextConstants,
     FlextContainer,
-    p,
     FlextResult,
     FlextRuntime,
+    p,
 )
 from pydantic import BaseModel, ConfigDict, Field
 

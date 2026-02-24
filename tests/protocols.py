@@ -38,4 +38,4 @@ class TestsFlextObservabilityProtocols(
 p = TestsFlextObservabilityProtocols
 p = TestsFlextObservabilityProtocols
 
-__all__ = ["TestsFlextObservabilityProtocols", "p", "p"]
+__all__ = ["TestsFlextObservabilityProtocols", "p"]

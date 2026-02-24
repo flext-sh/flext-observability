@@ -17,6 +17,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from flext_core import (
+    FlextDecorators,
+    FlextExceptions,
+    FlextHandlers,
+    FlextMixins,
+    FlextResult,
+    FlextService,
+)
+
 from flext_observability.__version__ import __version__, __version_info__
 from flext_observability._core import (
     FlextObservability,
@@ -61,6 +70,17 @@ from flext_observability.sampling import FlextObservabilitySampling
 from flext_observability.settings import FlextObservabilitySettings
 from flext_observability.typings import FlextObservabilityTypes, t
 
+# ruff: noqa: RUF067  # Standard FLEXT aliases (11 total)
+c = FlextObservabilityConstants
+d = FlextDecorators
+e = FlextExceptions
+h = FlextHandlers
+m = FlextObservabilityModels
+p = FlextObservabilityProtocols
+r = FlextResult
+s = FlextService
+x = FlextMixins
+
 __all__ = [
     "CustomMetricDefinition",
     "ErrorEvent",
@@ -87,6 +107,9 @@ __all__ = [
     "MetricType",
     "__version__",
     "__version_info__",
+    "c",
+    "d",
+    "e",
     "flext_alert",
     "flext_health_check",
     "flext_log_entry",
@@ -94,6 +117,12 @@ __all__ = [
     "flext_monitor_function",
     "flext_trace",
     "get_global_factory",
+    "h",
+    "m",
+    "p",
+    "r",
     "reset_global_factory",
+    "s",
     "t",
+    "x",
 ]
