@@ -70,7 +70,7 @@ from flext_observability.sampling import FlextObservabilitySampling
 from flext_observability.settings import FlextObservabilitySettings
 from flext_observability.typings import FlextObservabilityTypes, t
 
-# ruff: noqa: RUF067  # Standard FLEXT aliases (11 total)
+# Standard FLEXT aliases (11 total)
 c = FlextObservabilityConstants
 d = FlextDecorators
 e = FlextExceptions
