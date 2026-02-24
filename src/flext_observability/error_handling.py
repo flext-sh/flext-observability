@@ -20,11 +20,10 @@ from __future__ import annotations
 
 import hashlib
 import time
+from collections.abc import MutableMapping
 from dataclasses import dataclass, field
-from typing import cast
 
-from flext_core import FlextLogger, FlextResult, t
-from flext_core.protocols import p
+from flext_core import FlextLogger, FlextResult
 
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
@@ -42,7 +41,9 @@ class ErrorEvent:
     severity: ErrorSeverity
     timestamp: float = field(default_factory=time.time)
     correlation_id: str = ""
-    context: dict[str, t.GeneralValueType] = field(default_factory=dict)
+    context: MutableMapping[str, str | int | float | bool | None] = field(
+        default_factory=dict
+    )
     fingerprint: str = ""
 
     def calculate_fingerprint(self) -> str:
@@ -86,7 +87,7 @@ class FlextObservabilityErrorHandling:
         Handler: Error handling and deduplication logic
     """
 
-    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
+    _logger = FlextLogger(__name__)
     _handler_instance: FlextObservabilityErrorHandling.Handler | None = None
 
     class Handler:
@@ -94,8 +95,8 @@ class FlextObservabilityErrorHandling:
 
         def __init__(self) -> None:
             """Initialize error handler."""
-            self._error_counts: dict[str, int] = {}  # fingerprint -> count
-            self._last_alert_time: dict[str, float] = {}  # fingerprint -> timestamp
+            self._error_counts: MutableMapping[str, int] = {}  # fingerprint -> count
+            self._last_alert_time: MutableMapping[str, float] = {}
             self._alert_cooldown_sec = 60.0  # Min seconds between alerts
             self._escalation_threshold = 5  # Escalate after N errors
             self._deduplication_window_sec = 300  # 5 minutes

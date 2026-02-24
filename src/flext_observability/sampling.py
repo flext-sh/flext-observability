@@ -20,10 +20,9 @@ Key Features:
 from __future__ import annotations
 
 import random
-from typing import cast
+from collections.abc import MutableMapping
 
 from flext_core import FlextLogger, FlextResult
-from flext_core.protocols import p
 
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
@@ -67,7 +66,7 @@ class FlextObservabilitySampling:
         Sampler: Sampling strategy configuration and decisions
     """
 
-    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
+    _logger = FlextLogger(__name__)
     _sampler_instance: FlextObservabilitySampling.Sampler | None = None
 
     class Sampler:
@@ -77,13 +76,13 @@ class FlextObservabilitySampling:
             """Initialize sampler with default settings."""
             self._environment = "development"
             self._default_rate = 1.0  # 100% in development
-            self._environment_rates: dict[str, float] = {
+            self._environment_rates: MutableMapping[str, float] = {
                 "development": 1.0,  # 100% in dev
                 "staging": 0.5,  # 50% in staging
                 "production": 0.1,  # 10% in production
             }
-            self._service_overrides: dict[str, float] = {}  # Per-service rates
-            self._operation_overrides: dict[str, float] = {}  # Per-operation rates
+            self._service_overrides: MutableMapping[str, float] = {}
+            self._operation_overrides: MutableMapping[str, float] = {}
             self._sampled_trace_ids: set[str] = set()  # For deterministic sampling
 
         def set_environment(self, environment: str) -> FlextResult[bool]:

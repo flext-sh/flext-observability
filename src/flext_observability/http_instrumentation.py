@@ -24,13 +24,19 @@ from __future__ import annotations
 import time
 from collections import UserDict
 from collections.abc import Awaitable, Callable
-from typing import Protocol, cast
+from typing import Protocol
 
-from flext_core import FlextLogger, FlextResult, t
-from flext_core.protocols import p
+from flext_core import FlextResult, FlextRuntime
+from pydantic import BaseModel, ValidationError
 
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.logging_integration import FlextObservabilityLogging
+from flext_observability.typings import t
+
+
+class _StartTimePayload(BaseModel):
+    value: float
+
 
 # Optional dependency: Flask
 try:
@@ -51,14 +57,14 @@ except ImportError:
     class _StubFlaskRequest:
         """Stub Flask request for type checking."""
 
-        headers: dict[str, str]
+        headers: t.Dict
         method: str = "GET"
         path: str = "/"
         remote_addr: str | None = None
         user_agent: _StubUserAgent
 
         def __init__(self) -> None:
-            self.headers = {}
+            self.headers = t.Dict()
             self.user_agent = _StubUserAgent()
 
     class _StubAppCtxGlobals:
@@ -112,10 +118,10 @@ except ImportError:
         """Stub for when starlette is not installed."""
 
         status_code: int = 200
-        headers: dict[str, str]
+        headers: t.Dict
 
         def __init__(self) -> None:
-            self.headers = {}
+            self.headers = t.Dict()
 
     _starlette_available = False
 
@@ -135,7 +141,7 @@ class RequestClientProtocol(Protocol):
 class RequestProtocol(Protocol):
     """Protocol for HTTP request objects used by middleware."""
 
-    headers: dict[str, str] | UserDict[str, str]
+    headers: t.Dict | UserDict[str, str]
     method: str
     url: RequestURLProtocol
     client: RequestClientProtocol | None
@@ -145,7 +151,7 @@ class ResponseProtocol(Protocol):
     """Protocol for HTTP response objects used by middleware."""
 
     status_code: int
-    headers: dict[str, str] | UserDict[str, str]
+    headers: t.Dict | UserDict[str, str]
 
 
 class FlextObservabilityHTTP:
@@ -172,7 +178,7 @@ class FlextObservabilityHTTP:
         ASGI: Generic ASGI middleware base
     """
 
-    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
+    _logger = FlextRuntime.get_logger(__name__)
 
     # HTTP status code threshold for errors (4xx and 5xx)
     HTTP_ERROR_STATUS_THRESHOLD = 400
@@ -276,11 +282,14 @@ class FlextObservabilityHTTP:
                     try:
                         # Calculate request duration
                         start_time = getattr(g, "flext_start_time", None)
-                        duration_ms = (
-                            (time.time() - start_time) * 1000
-                            if isinstance(start_time, float)
-                            else 0.0
-                        )
+                        duration_ms = 0.0
+                        try:
+                            validated_start = _StartTimePayload.model_validate(
+                                {"value": start_time},
+                            ).value
+                            duration_ms = (time.time() - validated_start) * 1000
+                        except ValidationError:
+                            duration_ms = 0.0
 
                         # Determine if response indicates error
                         status_code = int(getattr(response, "status_code", 200))
@@ -320,7 +329,7 @@ class FlextObservabilityHTTP:
                 @errorhandler(Exception)
                 def flext_error_handler(
                     error: Exception,
-                ) -> tuple[dict[str, t.GeneralValueType], int]:
+                ) -> tuple[t.Dict, int]:
                     """Handle exceptions with logging and alerting."""
                     try:
                         FlextObservabilityLogging.log_with_context(
@@ -339,7 +348,7 @@ class FlextObservabilityHTTP:
                             f"Error in error handler: {log_error}",
                         )
 
-                    return {"error": str(error)}, 500
+                    return t.Dict.model_validate({"error": str(error)}), 500
 
                 FlextObservabilityHTTP._logger.debug(
                     "Flask HTTP instrumentation setup complete",
@@ -520,7 +529,7 @@ class FlextObservabilityHTTP:
     async def _async_log_with_context(
         message: str,
         level: str,
-        extra: dict[str, t.GeneralValueType],
+        extra: t.Dict,
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 

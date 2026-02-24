@@ -8,11 +8,10 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import cast, override
+from typing import override
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextLogger, r
-from flext_core.protocols import p
+from flext_core import FlextContainer, FlextRuntime, r
 
 from flext_observability.models import FlextObservabilityModels
 from flext_observability.services import FlextObservabilityServices
@@ -37,7 +36,7 @@ class FlextObservabilityMonitor:
 
     # Function type alias - simplified for monitoring
     object_callable = Callable[..., object]
-    logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
+    logger = FlextRuntime.get_logger(__name__)
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""
@@ -56,7 +55,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[object, ...],
-            kwargs: dict[str, object],
+            kwargs: t.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> object:
@@ -149,10 +148,7 @@ class FlextObservabilityMonitor:
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
         self._container = container or FlextContainer.get_global()
-        self._logger = cast(
-            "p.Log.StructlogLogger",
-            FlextLogger.get_logger(self.__class__.__name__),
-        )
+        self._logger = FlextRuntime.get_logger(self.__class__.__name__)
         self._config = FlextObservabilitySettings.get_global_instance()
         self._initialized = False
         self._running = False
@@ -403,10 +399,18 @@ class FlextObservabilityMonitor:
             return decorator
 
 
-# Backward compatibility alias - maintain ABI stability
-flext_monitor_function = (
-    FlextObservabilityMonitor.MonitoringDecorators.flext_monitor_function
-)
+def flext_monitor_function(
+    monitor: FlextObservabilityMonitor | None = None,
+    metric_name: str | None = None,
+) -> Callable[
+    [FlextObservabilityMonitor.object_callable],
+    FlextObservabilityMonitor.object_callable,
+]:
+    return FlextObservabilityMonitor.MonitoringDecorators.flext_monitor_function(
+        monitor=monitor,
+        metric_name=metric_name,
+    )
+
 
 __all__: list[str] = [
     "FlextObservabilityMonitor",

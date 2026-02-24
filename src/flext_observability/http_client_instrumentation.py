@@ -22,10 +22,10 @@ from __future__ import annotations
 
 import time
 from collections.abc import Awaitable, Callable, MutableMapping
-from typing import ClassVar, Protocol, cast
+from typing import ClassVar, Protocol
 
-from flext_core import FlextLogger, FlextResult
-from flext_core.protocols import p
+from flext_core import FlextResult, FlextRuntime
+from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.logging_integration import FlextObservabilityLogging
@@ -86,6 +86,10 @@ class AIOHTTPResponseProtocol(Protocol):
         ...
 
 
+class _HeadersPayload(BaseModel):
+    headers: MutableMapping[str, str] = Field(default_factory=dict)
+
+
 class FlextObservabilityHTTPClient:
     """HTTP client auto-instrumentation for service-to-service communication.
 
@@ -114,10 +118,14 @@ class FlextObservabilityHTTPClient:
         AIOHTTP: aiohttp client instrumentation (async)
     """
 
-    _logger: p.Log.StructlogLogger = cast(
-        "p.Log.StructlogLogger",
-        FlextLogger.get_logger(__name__),
-    )
+    _logger = FlextRuntime.get_logger(__name__)
+
+    @staticmethod
+    def _validated_headers(payload: object) -> MutableMapping[str, str]:
+        try:
+            return _HeadersPayload.model_validate({"headers": payload}).headers
+        except ValidationError:
+            return {}
 
     # ========================================================================
     # HTTPX INSTRUMENTATION
@@ -293,15 +301,16 @@ class FlextObservabilityHTTPClient:
                         span_id = FlextObservabilityContext.get_span_id()
 
                         # Add trace headers to request
-                        headers = kwargs.get("headers", {})
-                        if isinstance(headers, dict):
-                            if correlation_id:
-                                headers["X-Correlation-ID"] = correlation_id
-                            if trace_id:
-                                headers["X-Trace-ID"] = trace_id
-                            if span_id:
-                                headers["X-Span-ID"] = span_id
-                            kwargs["headers"] = headers
+                        headers = FlextObservabilityHTTPClient._validated_headers(
+                            kwargs.get("headers", {}),
+                        )
+                        if correlation_id:
+                            headers["X-Correlation-ID"] = correlation_id
+                        if trace_id:
+                            headers["X-Trace-ID"] = trace_id
+                        if span_id:
+                            headers["X-Span-ID"] = span_id
+                        kwargs["headers"] = headers
 
                         # Log request start
                         _ = FlextObservabilityLogging.log_with_context(
@@ -453,14 +462,15 @@ class FlextObservabilityHTTPClient:
                     span_id = FlextObservabilityContext.get_span_id()
 
                     # Add trace headers to request
-                    headers = kwargs.get("headers", {})
-                    if isinstance(headers, dict):
-                        if correlation_id:
-                            headers["X-Correlation-ID"] = correlation_id
-                        if trace_id:
-                            headers["X-Trace-ID"] = trace_id
-                        if span_id:
-                            headers["X-Span-ID"] = span_id
+                    headers = FlextObservabilityHTTPClient._validated_headers(
+                        kwargs.get("headers", {}),
+                    )
+                    if correlation_id:
+                        headers["X-Correlation-ID"] = correlation_id
+                    if trace_id:
+                        headers["X-Trace-ID"] = trace_id
+                    if span_id:
+                        headers["X-Span-ID"] = span_id
                     kwargs["headers"] = headers
 
                     # Log request start

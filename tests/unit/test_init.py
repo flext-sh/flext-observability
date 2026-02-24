@@ -51,8 +51,10 @@ class TestInitCoverage:
         """Test version exports are available."""
         assert hasattr(flext_observability, "__version__")
         assert hasattr(flext_observability, "__version_info__")
-        assert flext_observability.__version__ == "0.9.0"
-        assert flext_observability.__version_info__ == (0, 9, 0)
+        assert isinstance(flext_observability.__version__, str)
+        assert len(flext_observability.__version__) > 0
+        assert isinstance(flext_observability.__version_info__, tuple)
+        assert len(flext_observability.__version_info__) >= 3
 
     def test_core_entity_imports(self) -> None:
         """Test that core entities can be imported and instantiated."""

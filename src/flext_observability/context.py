@@ -15,11 +15,16 @@ from __future__ import annotations
 
 import json
 from contextvars import ContextVar
-from typing import cast
 from uuid import uuid4
 
-from flext_core import FlextLogger, FlextResult, t
-from flext_core.protocols import p
+from flext_core import FlextResult, FlextRuntime
+from pydantic import BaseModel, Field, ValidationError
+
+from flext_observability.typings import t
+
+
+class _BaggageKeyModel(BaseModel):
+    key: str = Field(min_length=1)
 
 
 class FlextObservabilityContext:
@@ -61,11 +66,9 @@ class FlextObservabilityContext:
     _correlation_id: ContextVar[str] = ContextVar("correlation_id", default="")
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
-    _baggage: ContextVar[dict[str, t.GeneralValueType] | None] = ContextVar(
-        "baggage", default=None
-    )
+    _baggage: ContextVar[t.Dict | None] = ContextVar("baggage", default=None)
 
-    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
+    _logger = FlextRuntime.get_logger(__name__)
 
     # ========================================================================
     # CORRELATION ID MANAGEMENT
@@ -214,7 +217,9 @@ class FlextObservabilityContext:
 
         """
         try:
-            if not isinstance(key, str) or not key:
+            try:
+                _BaggageKeyModel.model_validate({"key": key})
+            except ValidationError:
                 return FlextResult[bool].fail("Baggage key must be non-empty string")
 
             # Validate value is serializable
@@ -226,8 +231,13 @@ class FlextObservabilityContext:
                 )
 
             # Get current baggage and update
-            current_baggage = FlextObservabilityContext._baggage.get({}) or {}
-            updated_baggage = {**current_baggage, key: value}
+            current_baggage = FlextObservabilityContext._baggage.get() or t.Dict()
+            updated_baggage = t.Dict.model_validate(
+                {
+                    **dict(current_baggage.items()),
+                    key: value,
+                },
+            )
             FlextObservabilityContext._baggage.set(updated_baggage)
 
             return FlextResult[bool].ok(value=True)
@@ -237,7 +247,7 @@ class FlextObservabilityContext:
     @staticmethod
     def get_baggage(
         key: str | None = None,
-    ) -> t.GeneralValueType | dict[str, t.GeneralValueType] | None:
+    ) -> t.GeneralValueType | t.Dict | None:
         """Get baggage value.
 
         Args:
@@ -256,7 +266,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        baggage = FlextObservabilityContext._baggage.get({}) or {}
+        baggage = FlextObservabilityContext._baggage.get() or t.Dict()
 
         if key is None:
             return baggage
@@ -266,14 +276,14 @@ class FlextObservabilityContext:
     @staticmethod
     def clear_baggage() -> None:
         """Clear all baggage from context."""
-        FlextObservabilityContext._baggage.set({})
+        FlextObservabilityContext._baggage.set(t.Dict())
 
     # ========================================================================
     # HTTP HEADER MANAGEMENT - W3C Trace Context
     # ========================================================================
 
     @staticmethod
-    def to_headers() -> dict[str, str]:
+    def to_headers() -> t.Dict:
         """Get context as HTTP headers.
 
         Converts current context (correlation ID, trace ID, span ID) to
@@ -299,7 +309,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        headers: dict[str, str] = {}
+        headers = t.Dict()
 
         correlation_id = FlextObservabilityContext.get_correlation_id()
         if correlation_id:
@@ -316,7 +326,7 @@ class FlextObservabilityContext:
         return headers
 
     @staticmethod
-    def from_headers(headers: dict[str, str]) -> FlextResult[bool]:
+    def from_headers(headers: t.Dict) -> FlextResult[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -342,7 +352,10 @@ class FlextObservabilityContext:
         """
         try:
             # Normalize header names (case-insensitive)
-            normalized_headers = {k.lower(): v for k, v in headers.items()}
+            normalized_headers = {
+                header_key.lower(): str(header_value)
+                for header_key, header_value in headers.items()
+            }
 
             # Extract correlation ID (generate if not found)
             correlation_id = normalized_headers.get("x-correlation-id") or str(uuid4())
@@ -370,7 +383,7 @@ class FlextObservabilityContext:
     # ========================================================================
 
     @staticmethod
-    def get_context() -> dict[str, t.GeneralValueType]:
+    def get_context() -> t.Dict:
         """Get complete context snapshot.
 
         Returns all context variables as a dictionary. Useful for
@@ -392,12 +405,14 @@ class FlextObservabilityContext:
             ```
 
         """
-        return {
-            "correlation_id": FlextObservabilityContext.get_correlation_id(),
-            "trace_id": FlextObservabilityContext.get_trace_id(),
-            "span_id": FlextObservabilityContext.get_span_id(),
-            "baggage": FlextObservabilityContext.get_baggage(),
-        }
+        return t.Dict.model_validate(
+            {
+                "correlation_id": FlextObservabilityContext.get_correlation_id(),
+                "trace_id": FlextObservabilityContext.get_trace_id(),
+                "span_id": FlextObservabilityContext.get_span_id(),
+                "baggage": FlextObservabilityContext.get_baggage(),
+            },
+        )
 
     @staticmethod
     def clear_context() -> None:

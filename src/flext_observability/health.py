@@ -12,11 +12,12 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextModels, FlextResult, t
+from flext_core import FlextModels, FlextResult
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    ValidationError,
     computed_field,
     field_serializer,
     field_validator,
@@ -24,6 +25,12 @@ from pydantic import (
 )
 
 from flext_observability.models import m
+from flext_observability.typings import t
+
+
+class _HealthCheckFactoryKwargs(BaseModel):
+    metrics: t.Dict | None = None
+    timestamp: datetime | None = None
 
 
 class FlextObservabilityHealth(FlextModels):
@@ -59,8 +66,8 @@ class FlextObservabilityHealth(FlextModels):
             default=None,
             description="Response time in milliseconds",
         )
-        details: dict[str, t.GeneralValueType] = Field(
-            default_factory=dict,
+        details: t.Dict = Field(
+            default_factory=t.Dict,
             description="Health check details",
         )
 
@@ -94,19 +101,21 @@ class FlextObservabilityHealth(FlextModels):
         @field_serializer("details", when_used="json")
         def serialize_details_with_health_context(
             self,
-            value: dict[str, t.GeneralValueType],
+            value: t.Dict,
             _info: object,
-        ) -> dict[str, t.GeneralValueType]:
+        ) -> t.Dict:
             """Serialize details with health check context."""
-            return {
-                "details": value,
-                "health_context": {
-                    "component": self.component,
-                    "status": self.status,
-                    "is_healthy": str(self.is_healthy),
-                    "response_time": str(self.formatted_response_time),
+            return t.Dict.model_validate(
+                {
+                    "details": value,
+                    "health_context": {
+                        "component": self.component,
+                        "status": self.status,
+                        "is_healthy": str(self.is_healthy),
+                        "response_time": str(self.formatted_response_time),
+                    },
                 },
-            }
+            )
 
     class HealthConfig(BaseModel):
         """Health monitoring configuration model."""
@@ -169,8 +178,8 @@ class FlextObservabilityHealth(FlextModels):
             description="Health status",
         )
         message: str = Field(default="", description="Health check message")
-        metrics: dict[str, t.GeneralValueType] = Field(
-            default_factory=dict,
+        metrics: t.Dict = Field(
+            default_factory=t.Dict,
             description="Health metrics",
         )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -198,18 +207,22 @@ class FlextObservabilityHealth(FlextModels):
     ) -> FlextResult[FlextObservabilityHealth.FlextHealthCheck]:
         """Create a FlextHealthCheck entity directly."""
         try:
-            # Filter kwargs to only include valid FlextHealthCheck parameters
-            valid_kwargs: dict[str, t.GeneralValueType] = {}
-            if "metrics" in kwargs and isinstance(kwargs["metrics"], dict):
-                valid_kwargs["metrics"] = kwargs["metrics"]
-            if "timestamp" in kwargs and isinstance(kwargs["timestamp"], datetime):
-                valid_kwargs["timestamp"] = kwargs["timestamp"]
+            valid_kwargs = {}
+            try:
+                parsed_kwargs = _HealthCheckFactoryKwargs.model_validate(kwargs)
+                if parsed_kwargs.metrics is not None:
+                    valid_kwargs["metrics"] = parsed_kwargs.metrics
+                if parsed_kwargs.timestamp is not None:
+                    valid_kwargs["timestamp"] = parsed_kwargs.timestamp
+            except ValidationError:
+                valid_kwargs = {}
 
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(
                 FlextObservabilityHealth.FlextHealthCheck(
                     component=component,
                     status=status,
                     message=message,
+                    **valid_kwargs,
                 ),
             )
         except Exception as e:

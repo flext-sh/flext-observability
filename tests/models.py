@@ -13,9 +13,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests.models import FlextTestsModels
-
 from flext_observability.models import FlextObservabilityModels
+from flext_tests.models import FlextTestsModels
 
 
 class TestsFlextObservabilityModels(FlextTestsModels, FlextObservabilityModels):
