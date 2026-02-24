@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Protocol, runtime_checkable
 
 from flext_core import p, t
@@ -57,7 +58,7 @@ class FlextObservabilityProtocols(p):
                 value: float,
                 *,
                 unit: str = "count",
-                tags: dict[str, str] | None = None,
+                tags: Mapping[str, str] | None = None,
             ) -> p.Result[bool]:
                 """Record a metric value."""
                 ...
@@ -68,7 +69,7 @@ class FlextObservabilityProtocols(p):
                 *,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> p.Result[list[dict[str, t.GeneralValueType]]]:
+            ) -> p.Result[list[Mapping[str, t.GeneralValueType]]]:
                 """Get collected metrics."""
                 ...
 
@@ -138,7 +139,7 @@ class FlextObservabilityProtocols(p):
 
             def get_trace(
                 self, trace_id: str
-            ) -> p.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[Mapping[str, t.GeneralValueType]]:
                 """Get trace by ID."""
                 ...
 
@@ -149,7 +150,7 @@ class FlextObservabilityProtocols(p):
                 operation_name: str | None = None,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> p.Result[list[dict[str, t.GeneralValueType]]]:
+            ) -> p.Result[list[Mapping[str, t.GeneralValueType]]]:
                 """Search traces by criteria."""
                 ...
 
@@ -163,7 +164,7 @@ class FlextObservabilityProtocols(p):
                 level: str,
                 *,
                 service: str | None = None,
-                tags: dict[str, str] | None = None,
+                tags: Mapping[str, str] | None = None,
             ) -> p.Result[str]:
                 """Create an alert."""
                 ...
@@ -178,7 +179,7 @@ class FlextObservabilityProtocols(p):
                 level: str | None = None,
                 service: str | None = None,
                 resolved: bool | None = None,
-            ) -> p.Result[list[dict[str, t.GeneralValueType]]]:
+            ) -> p.Result[list[Mapping[str, t.GeneralValueType]]]:
                 """Get alerts by criteria."""
                 ...
 
@@ -200,7 +201,7 @@ class FlextObservabilityProtocols(p):
             def check_health(
                 self,
                 service_name: str,
-            ) -> p.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[Mapping[str, t.GeneralValueType]]:
                 """Perform health check for a service."""
                 ...
 
@@ -217,13 +218,13 @@ class FlextObservabilityProtocols(p):
             def get_service_status(
                 self,
                 service_name: str,
-            ) -> p.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[Mapping[str, t.GeneralValueType]]:
                 """Get service health status."""
                 ...
 
             def get_all_services_status(
                 self,
-            ) -> p.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[Mapping[str, t.GeneralValueType]]:
                 """Get health status for all services."""
                 ...
 
@@ -238,7 +239,7 @@ class FlextObservabilityProtocols(p):
                 *,
                 service: str | None = None,
                 correlation_id: str | None = None,
-                extra: dict[str, t.GeneralValueType] | None = None,
+                extra: Mapping[str, t.GeneralValueType] | None = None,
             ) -> p.Result[bool]:
                 """Log a message."""
                 ...
@@ -251,7 +252,7 @@ class FlextObservabilityProtocols(p):
                 correlation_id: str | None = None,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> p.Result[list[dict[str, t.GeneralValueType]]]:
+            ) -> p.Result[list[Mapping[str, t.GeneralValueType]]]:
                 """Get logs by criteria."""
                 ...
 
@@ -267,7 +268,7 @@ class FlextObservabilityProtocols(p):
 
             def configure_logging(
                 self,
-                config: dict[str, t.GeneralValueType],
+                config: Mapping[str, t.GeneralValueType],
             ) -> p.Result[bool]:
                 """Configure logging system."""
                 ...
@@ -281,7 +282,7 @@ class FlextObservabilityProtocols(p):
                 name: str,
                 description: str,
                 *,
-                widgets: list[dict[str, t.GeneralValueType]] | None = None,
+                widgets: list[Mapping[str, t.GeneralValueType]] | None = None,
             ) -> p.Result[str]:
                 """Create a dashboard."""
                 ...
@@ -289,14 +290,14 @@ class FlextObservabilityProtocols(p):
             def get_dashboard(
                 self,
                 dashboard_id: str,
-            ) -> p.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[Mapping[str, t.GeneralValueType]]:
                 """Get dashboard by ID."""
                 ...
 
             def add_widget(
                 self,
                 dashboard_id: str,
-                widget_config: dict[str, t.GeneralValueType],
+                widget_config: Mapping[str, t.GeneralValueType],
             ) -> p.Result[str]:
                 """Add widget to dashboard."""
                 ...
@@ -307,7 +308,7 @@ class FlextObservabilityProtocols(p):
                 *,
                 start_time: str | None = None,
                 end_time: str | None = None,
-            ) -> p.Result[dict[str, t.GeneralValueType]]:
+            ) -> p.Result[Mapping[str, t.GeneralValueType]]:
                 """Get dashboard data."""
                 ...
 

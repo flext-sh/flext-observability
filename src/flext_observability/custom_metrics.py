@@ -121,11 +121,11 @@ class FlextObservabilityCustomMetrics:
                 if not description or not description.strip():
                     return FlextResult[bool].fail("Metric description cannot be empty")
 
-                metric_input: str | MetricType = (
-                    metric_type.lower()
-                    if hasattr(metric_type, "lower")
-                    else metric_type
-                )
+                match metric_type:
+                    case str() as metric_str:
+                        metric_input: str | MetricType = metric_str.lower()
+                    case _:
+                        metric_input = metric_type
                 try:
                     metric_type_enum = _MetricTypeInput.model_validate(
                         {"metric_type": metric_input},

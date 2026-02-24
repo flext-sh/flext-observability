@@ -19,13 +19,11 @@ Key Features:
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import cast
-
 from flext_core import FlextLogger, FlextResult
-from flext_core.protocols import p
 
-# Type for JSON-serializable values (no Any allowed)
+# Type for JSON-serializable values
 # Using PEP 695 type statement for recursive type (Python 3.12+)
 type JSONValue = (
     str | int | float | bool | list[JSONValue] | dict[str, JSONValue] | None
@@ -45,7 +43,7 @@ class ContextSnapshot:
 
     def to_dict(
         self,
-    ) -> dict[str, str | float | dict[str, str] | dict[str, JSONValue]]:
+    ) -> Mapping[str, str | float | Mapping[str, str] | Mapping[str, JSONValue]]:
         """Convert snapshot to dictionary.
 
         Returns:
@@ -100,7 +98,7 @@ class FlextObservabilityAdvancedContext:
         Context: Request-local context management
     """
 
-    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
+    _logger = FlextLogger.get_logger(__name__)
     _context_instance: FlextObservabilityAdvancedContext.Context | None = None
 
     class Context:
@@ -185,7 +183,7 @@ class FlextObservabilityAdvancedContext:
             """
             return self._baggage.get(key)
 
-        def get_all_metadata(self) -> dict[str, JSONValue]:
+        def get_all_metadata(self) -> Mapping[str, JSONValue]:
             """Get all request-local metadata.
 
             Returns:
@@ -194,7 +192,7 @@ class FlextObservabilityAdvancedContext:
             """
             return self._metadata.copy()
 
-        def get_all_baggage(self) -> dict[str, str]:
+        def get_all_baggage(self) -> Mapping[str, str]:
             """Get all baggage items.
 
             Returns:
@@ -224,8 +222,8 @@ class FlextObservabilityAdvancedContext:
                 correlation_id=correlation_id,
                 trace_id=trace_id,
                 span_id=span_id,
-                baggage=self.get_all_baggage(),
-                metadata=self.get_all_metadata(),
+                baggage=dict(self.get_all_baggage()),
+                metadata=dict(self.get_all_metadata()),
             )
 
         def restore(self, snapshot: ContextSnapshot) -> FlextResult[bool]:
@@ -333,7 +331,7 @@ class FlextObservabilityAdvancedContext:
             key: Metadata key
 
         Returns:
-            Any - Metadata value or None
+            JSONValue - Metadata value or None
 
         """
         ctx = FlextObservabilityAdvancedContext.get_context()

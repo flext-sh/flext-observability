@@ -179,7 +179,10 @@ class FlextObservabilityHTTPClient:
 
             """
             try:
-                if not hasattr(client, "request") and not hasattr(client, "_send"):
+                if (
+                    getattr(client, "request", None) is None
+                    and getattr(client, "_send", None) is None
+                ):
                     return FlextResult[bool].fail(
                         "Invalid httpx client - missing request method",
                     )
@@ -189,10 +192,10 @@ class FlextObservabilityHTTPClient:
                     return FlextResult[bool].ok(value=True)
 
                 # Determine if this is async client
-                is_async = hasattr(client, "_send")
+                is_async = getattr(client, "_send", None) is not None
 
                 if is_async:
-                    # Get original send method - Any from getattr is assignable
+                    # Get original send method from dynamic getattr result
                     # to typed Callable with Awaitable return
                     original_send: Callable[
                         [HTTPXRequestProtocol],
@@ -429,7 +432,7 @@ class FlextObservabilityHTTPClient:
 
             """
             try:
-                if not hasattr(session, "_request"):
+                if getattr(session, "_request", None) is None:
                     return FlextResult[bool].fail(
                         "Invalid aiohttp session - missing _request method",
                     )

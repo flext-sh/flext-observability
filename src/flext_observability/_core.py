@@ -13,7 +13,7 @@ from uuid import uuid4
 from flext_core import (
     FlextConstants,
     FlextContainer,
-    FlextProtocols as p,
+    p,
     FlextResult,
     FlextRuntime,
 )

@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from tests.models import TestsFlextObservabilityModels, m, tm
-from tests.protocols import TestsFlextObservabilityProtocols, p, tp
+from tests.protocols import TestsFlextObservabilityProtocols, p, p
 
 __all__ = [
     "TestsFlextObservabilityModels",
@@ -18,5 +18,5 @@ __all__ = [
     "m",
     "p",
     "tm",
-    "tp",
+    "p",
 ]

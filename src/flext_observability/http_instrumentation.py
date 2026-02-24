@@ -227,9 +227,14 @@ class FlextObservabilityHTTP:
 
             """
             try:
-                if not hasattr(app, "before_request") or not hasattr(
-                    app,
-                    "after_request",
+                if (
+                    getattr(app, "before_request", None) is None
+                    or getattr(
+                        app,
+                        "after_request",
+                        None,
+                    )
+                    is None
                 ):
                     return FlextResult[bool].fail(
                         "Invalid Flask app - missing request hooks",
@@ -406,7 +411,7 @@ class FlextObservabilityHTTP:
 
             """
             try:
-                if not hasattr(app, "middleware"):
+                if getattr(app, "middleware", None) is None:
                     return FlextResult[bool].fail(
                         "Invalid FastAPI app - missing middleware method",
                     )

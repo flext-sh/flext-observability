@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from typing import Literal, Self
 
@@ -88,9 +89,9 @@ class FlextObservabilityLogging(FlextModels):
         @field_serializer("context", when_used="json")
         def serialize_context_with_log_metadata(
             self,
-            value: dict[str, t.GeneralValueType],
+            value: Mapping[str, t.GeneralValueType],
             _info: object,
-        ) -> dict[str, t.GeneralValueType]:
+        ) -> Mapping[str, t.GeneralValueType]:
             """Serialize context with log metadata."""
             return {
                 "context": value,

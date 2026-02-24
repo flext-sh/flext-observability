@@ -193,7 +193,7 @@ class FlextObservabilitySettings(FlextSettings):
         """
         instance = cls()
         for key, value in overrides.items():
-            if hasattr(instance, key):
+            if key in instance.model_fields:
                 setattr(instance, key, value)
         return instance
 

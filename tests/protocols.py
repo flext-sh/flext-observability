@@ -19,9 +19,9 @@ class TestsFlextObservabilityProtocols(
     """Test protocols combining FlextTestsProtocols and FlextObservabilityProtocols.
 
     Provides access to:
-    - tp.Tests.Docker.* (from FlextTestsProtocols)
-    - tp.Tests.Factory.* (from FlextTestsProtocols)
-    - tp.Observability.* (from FlextObservabilityProtocols)
+    - p.Tests.Docker.* (from FlextTestsProtocols)
+    - p.Tests.Factory.* (from FlextTestsProtocols)
+    - p.Observability.* (from FlextObservabilityProtocols)
     """
 
     class Tests:
@@ -36,6 +36,6 @@ class TestsFlextObservabilityProtocols(
 
 # Runtime aliases
 p = TestsFlextObservabilityProtocols
-tp = TestsFlextObservabilityProtocols
+p = TestsFlextObservabilityProtocols
 
-__all__ = ["TestsFlextObservabilityProtocols", "p", "tp"]
+__all__ = ["TestsFlextObservabilityProtocols", "p", "p"]
