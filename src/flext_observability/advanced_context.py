@@ -169,7 +169,7 @@ class FlextObservabilityAdvancedContext:
                 FlextObservabilityAdvancedContext._logger.debug(f"Baggage set: {key}")
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to set baggage: {e}")
 
         def get_baggage(self, key: str) -> str | None:
@@ -250,7 +250,7 @@ class FlextObservabilityAdvancedContext:
                 )
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to restore context: {e}")
 
         def clear(self) -> FlextResult[bool]:
@@ -268,7 +268,7 @@ class FlextObservabilityAdvancedContext:
                 FlextObservabilityAdvancedContext._logger.debug("Context cleared")
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to clear context: {e}")
 
         def merge(
@@ -291,7 +291,7 @@ class FlextObservabilityAdvancedContext:
                 FlextObservabilityAdvancedContext._logger.debug("Context merged")
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to merge context: {e}")
 
     @staticmethod

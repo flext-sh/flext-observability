@@ -82,7 +82,7 @@ class FlextObservabilityMonitor:
 
                 return result
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 # Record error metrics and handle alerting
                 execution_time = time.time() - start_time
                 FlextObservabilityMonitor.MonitoringHelpers.record_error_metrics(
@@ -188,7 +188,7 @@ class FlextObservabilityMonitor:
                 self._observability_service = FlextObservabilityServices()
                 self._metrics_service = self._observability_service
                 self._health_service = self._observability_service
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return r[None].fail(
                     f"Observability initialization failed: {e}",
                 )
@@ -298,7 +298,7 @@ class FlextObservabilityMonitor:
                 ].ok(
                     metric,
                 )
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 metric_result = r[
                     FlextObservabilityModels.Observability.MetricEntry
                 ].fail(

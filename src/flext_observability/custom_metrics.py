@@ -164,7 +164,7 @@ class FlextObservabilityCustomMetrics:
                 )
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Metric registration failed: {e}")
 
         def get_metric(
@@ -298,7 +298,7 @@ class FlextObservabilityCustomMetrics:
                 )
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Metric unregistration failed: {e}")
 
         def clear_metrics(self, namespace: str | None = None) -> FlextResult[bool]:
@@ -326,7 +326,7 @@ class FlextObservabilityCustomMetrics:
                 )
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to clear metrics: {e}")
 
     @staticmethod

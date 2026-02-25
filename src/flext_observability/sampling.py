@@ -238,7 +238,7 @@ class FlextObservabilitySampling:
                 # Hash correlation ID to get deterministic random value
                 hash_val = hash(correlation_id) % 100
                 return (hash_val / 100) < sampling_rate
-            except Exception:
+            except (ValueError, TypeError, KeyError):
                 # Fallback to secure random sampling if context not available
                 return _secure_random.random() < sampling_rate
 

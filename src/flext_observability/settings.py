@@ -178,7 +178,7 @@ class FlextObservabilitySettings(FlextSettings):
                 )
 
             return FlextResult[bool].ok(value=True)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Business rules validation failed: {e}")
 
     @classmethod

@@ -57,7 +57,7 @@ class FlextObservabilityPerformance:
         try:
             trace_handler.trace_request(...)
             monitor.mark_success()
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             monitor.mark_error(str(e))
         finally:
             metrics = monitor.finish()
@@ -95,7 +95,7 @@ class FlextObservabilityPerformance:
                 memory_info = FlextObservabilityPerformance._process.memory_info()
                 rss_bytes: int = memory_info.rss
                 return float(rss_bytes) / 1024 / 1024
-            except Exception:
+            except (ValueError, TypeError, KeyError):
                 return 0.0
 
         def _get_cpu_percent(self) -> float:
@@ -105,7 +105,7 @@ class FlextObservabilityPerformance:
                     interval=0.01,
                 )
                 return cpu
-            except Exception:
+            except (ValueError, TypeError, KeyError):
                 return 0.0
 
         def mark_success(self) -> None:
@@ -221,7 +221,7 @@ class FlextObservabilityPerformance:
 
             return FlextResult[bool].ok(value=True)
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Failed to log metrics: {e}")
 
     @staticmethod
@@ -245,7 +245,7 @@ class FlextObservabilityPerformance:
                 "memory_percent": FlextObservabilityPerformance._process.memory_percent(),
                 "cpu_percent": FlextObservabilityPerformance._process.cpu_percent(),
             }
-        except Exception:
+        except (ValueError, TypeError, KeyError):
             return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
 
 

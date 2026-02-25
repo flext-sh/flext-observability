@@ -171,7 +171,7 @@ class FlextObservabilityLogging(FlextModels):
                 if self.level not in {"debug", "info", "warning", "error", "critical"}:
                     return FlextResult[bool].fail(f"Invalid log level: {self.level}")
                 return FlextResult[bool].ok(value=True)
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Business rule validation failed: {e}")
 
 

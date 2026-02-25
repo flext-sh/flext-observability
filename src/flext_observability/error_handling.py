@@ -166,7 +166,7 @@ class FlextObservabilityErrorHandling:
                     error.correlation_id = (
                         FlextObservabilityContext.get_correlation_id()
                     )
-                except Exception as e:
+                except (ValueError, TypeError, KeyError) as e:
                     FlextObservabilityErrorHandling._logger.warning(
                         f"Could not set correlation_id, falling back to empty: {e}",
                     )
@@ -183,7 +183,7 @@ class FlextObservabilityErrorHandling:
 
                 return FlextResult[ErrorEvent].ok(error)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 FlextObservabilityErrorHandling._logger.warning(
                     f"Failed to record error event: {e}",
                 )
@@ -294,7 +294,7 @@ class FlextObservabilityErrorHandling:
                 FlextObservabilityErrorHandling._logger.debug("Error counts cleared")
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 FlextObservabilityErrorHandling._logger.warning(
                     f"Failed to clear error counts: {e}",
                 )

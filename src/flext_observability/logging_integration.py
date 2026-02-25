@@ -101,7 +101,7 @@ class FlextObservabilityLogging:
 
             # Logger is returned with capability to be enriched
             return FlextResult[BindableLogger].ok(logger)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[BindableLogger].fail(
                 f"Logger creation failed: {e}",
             )
@@ -171,7 +171,7 @@ class FlextObservabilityLogging:
                     context_payload.baggage = str(baggage)
 
             return FlextResult[FlextObservabilityLogging.LogContext].ok(context_payload)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityLogging.LogContext].fail(
                 f"Context enrichment failed: {e}",
             )
@@ -216,7 +216,7 @@ class FlextObservabilityLogging:
             _ = logger
 
             return FlextResult[bool].ok(value=True)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Trace context injection failed: {e}")
 
     # ========================================================================
@@ -290,7 +290,7 @@ class FlextObservabilityLogging:
             getattr(logger, level)(message, extra=log_context)
 
             return FlextResult[bool].ok(value=True)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Logging with context failed: {e}")
 
     # ========================================================================
@@ -369,7 +369,7 @@ class FlextObservabilityLogging:
                     ),
                 )
             )
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityLogging.LogContext].fail(
                 f"Context validation failed: {e}",
             )

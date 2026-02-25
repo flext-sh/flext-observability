@@ -197,7 +197,7 @@ class FlextObservabilityHTTP:
                                 ),
                             },
                         )
-                    except Exception as e:
+                    except (ValueError, TypeError, KeyError) as e:
                         FlextObservabilityHTTP._logger.warning(
                             f"Error in before_request hook: {e}",
                         )
@@ -242,7 +242,7 @@ class FlextObservabilityHTTP:
                         # flext_create_metric("http_requests_total", 1.0, ...)
                         # flext_create_metric("http_request_duration_ms", duration_ms, ...)
 
-                    except Exception as e:
+                    except (ValueError, TypeError, KeyError) as e:
                         FlextObservabilityHTTP._logger.warning(
                             f"Error in after_request hook: {e}",
                         )
@@ -269,7 +269,7 @@ class FlextObservabilityHTTP:
                                 "error_message": str(error),
                             },
                         )
-                    except Exception as log_error:
+                    except (ValueError, TypeError, KeyError) as log_error:
                         FlextObservabilityHTTP._logger.error(
                             f"Error in error handler: {log_error}",
                         )
@@ -281,7 +281,7 @@ class FlextObservabilityHTTP:
                 )
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(
                     f"Flask instrumentation setup failed: {e}",
                 )
@@ -413,7 +413,7 @@ class FlextObservabilityHTTP:
 
                                 return response
 
-                            except Exception as e:
+                            except (ValueError, TypeError, KeyError) as e:
                                 # Log error
                                 await FlextObservabilityHTTP._async_log_with_context(
                                     f"HTTP request error: {e!s}",
@@ -427,7 +427,7 @@ class FlextObservabilityHTTP:
                                 )
                                 raise
 
-                        except Exception as e:
+                        except (ValueError, TypeError, KeyError) as e:
                             FlextObservabilityHTTP._logger.warning(
                                 f"Middleware error: {e}",
                             )
@@ -442,7 +442,7 @@ class FlextObservabilityHTTP:
                 )
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(
                     f"FastAPI instrumentation setup failed: {e}",
                 )
@@ -468,7 +468,7 @@ class FlextObservabilityHTTP:
                 message,
                 extra=extra,
             )
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             FlextObservabilityHTTP._logger.warning(
                 f"Error logging in async context: {e}",
             )

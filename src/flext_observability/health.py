@@ -194,7 +194,7 @@ class FlextObservabilityHealth(FlextModels):
                         f"Invalid health status: {self.status}",
                     )
                 return FlextResult[bool].ok(value=True)
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Business rule validation failed: {e}")
 
     # Factory methods for direct entity creation
@@ -225,7 +225,7 @@ class FlextObservabilityHealth(FlextModels):
                     **valid_kwargs,
                 ),
             )
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].fail(
                 f"Failed to create health check: {e}",
             )

@@ -241,7 +241,7 @@ class FlextObservabilityContext:
             FlextObservabilityContext._baggage.set(updated_baggage)
 
             return FlextResult[bool].ok(value=True)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Baggage set failed: {e}")
 
     @staticmethod
@@ -370,7 +370,7 @@ class FlextObservabilityContext:
                 FlextObservabilityContext.set_span_id(span_id)
 
             return FlextResult[bool].ok(value=True)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             FlextObservabilityContext._logger.warning(
                 f"Failed to extract context from headers: {e}",
             )

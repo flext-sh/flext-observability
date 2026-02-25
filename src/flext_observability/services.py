@@ -63,7 +63,7 @@ class FlextObservabilityServices(u):
             processed["processor"] = "flext_observability"
 
             return FlextResult[t.Dict].ok(processed)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[t.Dict].fail(f"Entry processing failed: {e}")
 
     def get_status(self) -> FlextResult[t.Dict]:
@@ -84,7 +84,7 @@ class FlextObservabilityServices(u):
                 },
             )
             return FlextResult[t.Dict].ok(status_result)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             return FlextResult[t.Dict].fail(f"Status check failed: {e}")
 
     def create_alert(self, **_kwargs: object) -> FlextResult[t.Dict]:

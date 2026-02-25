@@ -260,7 +260,7 @@ class FlextObservabilityHTTPClient:
 
                             return response
 
-                        except Exception as e:
+                        except (ValueError, TypeError, KeyError) as e:
                             # Log error
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
@@ -352,7 +352,7 @@ class FlextObservabilityHTTPClient:
 
                             return response
 
-                        except Exception as e:
+                        except (ValueError, TypeError, KeyError) as e:
                             # Log error
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
@@ -382,7 +382,7 @@ class FlextObservabilityHTTPClient:
                 )
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(
                     f"httpx instrumentation setup failed: {e}",
                 )
@@ -521,7 +521,7 @@ class FlextObservabilityHTTPClient:
 
                         return response
 
-                    except Exception as e:
+                    except (ValueError, TypeError, KeyError) as e:
                         # Log error
                         duration_ms = (time.time() - start_time) * 1000
                         _ = FlextObservabilityLogging.log_with_context(
@@ -551,7 +551,7 @@ class FlextObservabilityHTTPClient:
                 )
                 return FlextResult[bool].ok(value=True)
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(
                     f"aiohttp instrumentation setup failed: {e}",
                 )
