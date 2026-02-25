@@ -14,7 +14,6 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from flext_core import m, t
-from flext_core.utilities import u
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
@@ -24,14 +23,6 @@ class FlextObservabilityModels(m):
     Single class providing generic base models using composition and delegation.
     Zero domain-specific logic - pure generic foundation with minimal code.
     """
-
-    def __init_subclass__(cls, **kwargs: object) -> None:
-        """Warn when FlextObservabilityModels is subclassed directly."""
-        super().__init_subclass__(**kwargs)
-        u.Deprecation.warn_once(
-            f"subclass:{cls.__name__}",
-            "Subclassing FlextObservabilityModels is deprecated. Use FlextModels directly with composition instead.",
-        )
 
     class GenericObservabilityEntry(m.Value):
         """Generic base model for any observability entry using Pydantic."""
