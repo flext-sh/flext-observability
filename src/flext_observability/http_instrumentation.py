@@ -26,6 +26,7 @@ from collections import UserDict
 from collections.abc import Awaitable, Callable
 from typing import Protocol
 
+import flask
 from flext_core import FlextResult, FlextRuntime
 from pydantic import BaseModel, ValidationError
 
@@ -38,92 +39,12 @@ class _StartTimePayload(BaseModel):
     value: float
 
 
-# Optional dependency: Flask
-try:
-    import flask as _flask
+FlaskApp = getattr(flask, "Flask", object)
+g = getattr(flask, "g")
+request = getattr(flask, "request")
 
-    FlaskApp = getattr(_flask, "Flask", object)
-    g = getattr(_flask, "g")
-    request = getattr(_flask, "request")
-
-    _flask_available = True
-except ImportError:
-
-    class _StubUserAgent:
-        """Stub user agent for type checking."""
-
-        string: str = "unknown"
-
-    class _StubFlaskRequest:
-        """Stub Flask request for type checking."""
-
-        headers: t.Dict
-        method: str = "GET"
-        path: str = "/"
-        remote_addr: str | None = None
-        user_agent: _StubUserAgent
-
-        def __init__(self) -> None:
-            self.headers = t.Dict()
-            self.user_agent = _StubUserAgent()
-
-    class _StubAppCtxGlobals:
-        """Stub Flask g object for type checking."""
-
-        def __setattr__(self, name: str, value: object) -> None:
-            object.__setattr__(self, name, value)
-
-        def __getattr__(self, name: str) -> object:
-            return None
-
-    FlaskApp = object
-    g = _StubAppCtxGlobals()
-    request = _StubFlaskRequest()
-    _flask_available = False
-
-# Optional dependency: Starlette (for FastAPI)
-try:
-    import starlette  # noqa: F401
-
-    _starlette_available = True
-except ImportError:
-
-    class _StubURL:
-        """Stub URL for type checking."""
-
-        path: str = "/"
-
-    class _StubClient:
-        """Stub client for type checking."""
-
-        host: str = "unknown"
-
-    class _StubHeaders(UserDict[str, str]):
-        """Stub headers for type checking."""
-
-    class _StubRequest:
-        """Stub for when starlette is not installed."""
-
-        headers: _StubHeaders
-        method: str = "GET"
-        url: _StubURL
-        client: _StubClient | None
-
-        def __init__(self) -> None:
-            self.headers = _StubHeaders()
-            self.url = _StubURL()
-            self.client = _StubClient()
-
-    class _StubResponse:
-        """Stub for when starlette is not installed."""
-
-        status_code: int = 200
-        headers: t.Dict
-
-        def __init__(self) -> None:
-            self.headers = t.Dict()
-
-    _starlette_available = False
+_flask_available = True
+_starlette_available = True
 
 
 class RequestURLProtocol(Protocol):

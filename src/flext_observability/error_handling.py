@@ -158,14 +158,17 @@ class FlextObservabilityErrorHandling:
                 # Calculate fingerprint
                 error.calculate_fingerprint()
 
-                # Get correlation ID - optional enrichment
+                # Get correlation ID - optional enrichment.
+                # Fallback to empty string when context is unavailable (e.g., no active
+                # request context or context provider not initialized). This is expected
+                # in standalone/batch usage where correlation tracking is not configured.
                 try:
                     error.correlation_id = (
                         FlextObservabilityContext.get_correlation_id()
                     )
                 except Exception as e:
-                    FlextObservabilityErrorHandling._logger.debug(
-                        f"Could not set correlation_id: {e}",
+                    FlextObservabilityErrorHandling._logger.warning(
+                        f"Could not set correlation_id, falling back to empty: {e}",
                     )
                     error.correlation_id = ""
 
@@ -181,6 +184,9 @@ class FlextObservabilityErrorHandling:
                 return FlextResult[ErrorEvent].ok(error)
 
             except Exception as e:
+                FlextObservabilityErrorHandling._logger.warning(
+                    f"Failed to record error event: {e}",
+                )
                 return FlextResult[ErrorEvent].fail(f"Failed to record error: {e}")
 
         def should_alert_for_error(self, error: ErrorEvent) -> bool:
@@ -289,6 +295,9 @@ class FlextObservabilityErrorHandling:
                 return FlextResult[bool].ok(value=True)
 
             except Exception as e:
+                FlextObservabilityErrorHandling._logger.warning(
+                    f"Failed to clear error counts: {e}",
+                )
                 return FlextResult[bool].fail(f"Failed to clear error counts: {e}")
 
     @staticmethod
