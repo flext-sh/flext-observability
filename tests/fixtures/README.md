@@ -177,6 +177,6 @@ def cleanup_test_state():
 **Status**: Directory created, fixtures to be organized from conftest.py · 1.0.0 Release Preparation
 **Next Steps**: Move shared fixtures from conftest.py to organized fixture modules
 
-______________________________________________________________________
+---
 
 **Note**: This directory is currently empty. Shared fixtures and test utilities will be organized here to improve test maintainability and reduce duplication across the test suite.

@@ -253,19 +253,16 @@ python docs/maintenance/reports/generate-reports.py
 ### Audit Report Categories
 
 1. **Critical Issues** 🔴
-
    - Broken external links
    - Missing critical sections
    - Inaccurate technical information
 
 1. **Warning Issues** 🟡
-
    - Outdated content (>30 days)
    - Inconsistent formatting
    - Missing alt text
 
 1. **Info Items** 🔵
-
    - Optimization suggestions
    - Readability improvements
    - Minor formatting issues
@@ -369,7 +366,7 @@ validation_rules:
 - **Backup Strategy**: Maintain documentation snapshots
 - **Team Communication**: Clear communication of maintenance activities
 
-______________________________________________________________________
+---
 
 ## 📊 Current Status Dashboard
 
@@ -393,6 +390,6 @@ ______________________________________________________________________
 1. **Team Training**: Documentation maintenance workflow training
 1. **Monitoring Setup**: Configure dashboards and alerting
 
-______________________________________________________________________
+---
 
 **Documentation Maintenance Framework** - Enterprise-grade quality assurance and content management for flext-observability documentation.

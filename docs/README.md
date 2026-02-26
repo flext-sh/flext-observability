@@ -149,7 +149,7 @@ All documentation in this project follows FLEXT ecosystem standards:
 - **[flext-core Documentation](https://github.com/organization/flext/tree/main/flext-core/docs/)** - Foundation library patterns and utilities
 - **[CLAUDE.md](../CLAUDE.md)** - Development guidance for Claude Code AI assistance
 
-______________________________________________________________________
+---
 
 **Last Updated**: 2025-10-10
 **Version**: 0.9.0

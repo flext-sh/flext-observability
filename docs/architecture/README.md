@@ -423,7 +423,7 @@ class FlextObservabilityPlugin(Protocol):
         ...
 ```
 
-______________________________________________________________________
+---
 
 **Next Steps**: Review the [Architecture Overview](README.md) for detailed patterns and ecosystem integration details.
 

@@ -146,6 +146,6 @@ pytest tests/integration/ -m integration -v
 **Status**: Directory created, tests to be organized from main test directory · 1.0.0 Release Preparation
 **Next Steps**: Move integration-focused tests from root test directory and create new integration tests for component interactions
 
-______________________________________________________________________
+---
 
 **Note**: This directory is currently empty as integration tests are mixed with unit tests in the root tests directory. As part of test organization improvements, relevant integration tests will be moved here to maintain proper separation of concerns.
