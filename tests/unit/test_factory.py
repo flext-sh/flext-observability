@@ -7,8 +7,8 @@ SPDX-License-Identifier: MIT
 
 from datetime import datetime
 
+import pytest
 from flext_core import FlextContainer
-
 from flext_observability import (
     FlextObservabilityMasterFactory,
     get_global_factory,
@@ -44,7 +44,7 @@ class TestFlextObservabilityMasterFactoryReal:
         )
         assert metric_result.data is not None
         assert metric_result.data.name == "test_metric"
-        assert metric_result.data.value == 42.5
+        assert metric_result.data.value == pytest.approx(42.5)
         assert metric_result.data.unit == "gauge"
 
     def test_metric_creation_with_validation_real(self) -> None:
@@ -89,7 +89,7 @@ class TestFlextObservabilityMasterFactoryReal:
             assert custom_level_result.error is not None
         else:
             # System accepts/normalizes - either uses provided value or defaults to 'info'
-            assert custom_level_result.value.level in ("INVALID_LEVEL", "info")
+            assert custom_level_result.value.level in {"INVALID_LEVEL", "info"}
 
     def test_alert_creation_real_functionality(self) -> None:
         """Test alert creation with real functionality."""
@@ -151,7 +151,7 @@ class TestFlextObservabilityMasterFactoryReal:
         assert hasattr(metric, "name")
         assert metric.name == "cpu_usage"
         assert hasattr(metric, "value")
-        assert metric.value == 85.2
+        assert metric.value == pytest.approx(85.2)
 
         # Test shorthand log method
         log_result = factory.log("System started")
@@ -245,7 +245,9 @@ class TestFlextObservabilityMasterFactoryReal:
         results = [metric, log, alert, trace, health]
         for i, result in enumerate(results):
             # FlextResult uses is_success property
-            assert hasattr(result, "is_success"), f"Entity {i} missing is_success property"
+            assert hasattr(result, "is_success"), (
+                f"Entity {i} missing is_success property"
+            )
             assert result.is_success, (
                 f"Entity {i} creation failed: {getattr(result, 'error', 'Unknown error')}"
             )
@@ -256,7 +258,9 @@ class TestFlextObservabilityMasterFactoryReal:
         for result in results:
             entity = result.value if hasattr(result, "unwrap") else result
             has_timestamp = any(hasattr(entity, f) for f in timestamp_fields)
-            assert has_timestamp, f"Entity {type(entity).__name__} has no timestamp field"
+            assert has_timestamp, (
+                f"Entity {type(entity).__name__} has no timestamp field"
+            )
 
             # Get the timestamp value from whichever field exists
             timestamp_attr = None
