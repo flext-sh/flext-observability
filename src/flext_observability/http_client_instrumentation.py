@@ -180,8 +180,8 @@ class FlextObservabilityHTTPClient:
             """
             try:
                 if (
-                    getattr(client, "request", None) is None
-                    and getattr(client, "_send", None) is None
+                    hasattr(client, "request") is False
+                    and hasattr(client, "_send") is False
                 ):
                     return FlextResult[bool].fail(
                         "Invalid httpx client - missing request method",
@@ -192,7 +192,7 @@ class FlextObservabilityHTTPClient:
                     return FlextResult[bool].ok(value=True)
 
                 # Determine if this is async client
-                is_async = getattr(client, "_send", None) is not None
+                is_async = hasattr(client, "_send")
 
                 if is_async:
                     # Get original send method from dynamic getattr result
@@ -200,7 +200,7 @@ class FlextObservabilityHTTPClient:
                     original_send: Callable[
                         [HTTPXRequestProtocol],
                         Awaitable[HTTPXResponseProtocol],
-                    ] = getattr(client, "_send")
+                    ] = client._send
 
                     async def traced_send(
                         request: HTTPXRequestProtocol,
@@ -284,9 +284,8 @@ class FlextObservabilityHTTPClient:
 
                 else:
                     # Get original request method using getattr for dynamic access
-                    original_request: Callable[..., HTTPXResponseProtocol] = getattr(
-                        client,
-                        "request",
+                    original_request: Callable[..., HTTPXResponseProtocol] = (
+                        client.request
                     )
 
                     def traced_request(

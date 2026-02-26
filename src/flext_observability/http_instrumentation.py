@@ -39,9 +39,9 @@ class _StartTimePayload(BaseModel):
     value: float
 
 
-FlaskApp = getattr(flask, "Flask", object)
-g = getattr(flask, "g")
-request = getattr(flask, "request")
+FlaskApp = flask.Flask if hasattr(flask, "Flask") else object
+g = flask.g if hasattr(flask, "g") else None
+request = flask.request if hasattr(flask, "request") else None
 
 _flask_available = True
 _starlette_available = True
@@ -148,21 +148,15 @@ class FlextObservabilityHTTP:
 
             """
             try:
-                if (
-                    getattr(app, "before_request", None) is None
-                    or getattr(
-                        app,
-                        "after_request",
-                        None,
-                    )
-                    is None
+                if not hasattr(app, "before_request") or not hasattr(
+                    app, "after_request"
                 ):
                     return FlextResult[bool].fail(
                         "Invalid Flask app - missing request hooks",
                     )
 
-                before_request_hook = getattr(app, "before_request")
-                after_request_hook = getattr(app, "after_request")
+                before_request_hook = app.before_request
+                after_request_hook = app.after_request
 
                 @before_request_hook
                 def flext_before_request() -> None:
@@ -207,7 +201,11 @@ class FlextObservabilityHTTP:
                     """Record metrics and complete span after request processing."""
                     try:
                         # Calculate request duration
-                        start_time = getattr(g, "flext_start_time", None)
+                        start_time = (
+                            g.flext_start_time
+                            if hasattr(g, "flext_start_time")
+                            else None
+                        )
                         duration_ms = 0.0
                         try:
                             validated_start = _StartTimePayload.model_validate(
@@ -218,7 +216,11 @@ class FlextObservabilityHTTP:
                             duration_ms = 0.0
 
                         # Determine if response indicates error
-                        status_code = int(getattr(response, "status_code", 200))
+                        status_code = int(
+                            response.status_code
+                            if hasattr(response, "status_code")
+                            else 200
+                        )
                         is_error = (
                             status_code
                             >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
@@ -250,7 +252,7 @@ class FlextObservabilityHTTP:
                     return response
 
                 # Get errorhandler decorator via getattr for dynamic access
-                errorhandler = getattr(app, "errorhandler")
+                errorhandler = app.errorhandler
 
                 @errorhandler(Exception)
                 def flext_error_handler(
@@ -332,7 +334,7 @@ class FlextObservabilityHTTP:
 
             """
             try:
-                if getattr(app, "middleware", None) is None:
+                if not hasattr(app, "middleware"):
                     return FlextResult[bool].fail(
                         "Invalid FastAPI app - missing middleware method",
                     )
@@ -390,7 +392,11 @@ class FlextObservabilityHTTP:
                                 duration_ms = (time.time() - start_time) * 1000
 
                                 # Check for error
-                                status_code = int(getattr(response, "status_code", 200))
+                                status_code = int(
+                                    response.status_code
+                                    if hasattr(response, "status_code")
+                                    else 200
+                                )
                                 is_error = (
                                     status_code
                                     >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
@@ -434,7 +440,7 @@ class FlextObservabilityHTTP:
                             raise
 
                 # Add middleware to app via getattr for dynamic access
-                add_middleware = getattr(app, "add_middleware")
+                add_middleware = app.add_middleware
                 add_middleware(FlextObservabilityMiddleware)
 
                 FlextObservabilityHTTP._logger.debug(
