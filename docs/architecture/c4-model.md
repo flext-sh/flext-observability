@@ -80,7 +80,7 @@ The C4 Model provides four levels of architectural abstraction:
 1. **Component** (Level 3): Major building blocks
 1. **Code** (Level 4): Implementation details
 
----
+______________________________________________________________________
 
 ## 🌍 Level 1: System Context
 
@@ -147,7 +147,7 @@ providing consistent observability patterns across 33+ projects.
 - **Jaeger**: Distributed tracing backend
 - **OpenTelemetry**: Telemetry data collection standard
 
----
+______________________________________________________________________
 
 ## 🏗️ Level 2: Container Architecture
 
@@ -249,7 +249,7 @@ providing consistent observability patterns across 33+ projects.
 - **Interfaces**: Prometheus client, OpenTelemetry SDK, Storage adapters
 - **Characteristics**: Pluggable implementations, abstraction layers
 
----
+______________________________________________________________________
 
 ## 🔧 Level 3: Component Architecture
 
@@ -330,7 +330,7 @@ providing consistent observability patterns across 33+ projects.
 - **FlextAlert**: Alert definition with severity and routing
 - **FlextHealthCheck**: Health status with dependency tracking
 
----
+______________________________________________________________________
 
 ## 💻 Level 4: Code Architecture
 
@@ -424,7 +424,7 @@ class FlextObservabilityMasterFactory:
         """Create validated trace entity."""
 ```
 
----
+______________________________________________________________________
 
 ## 🔄 Dynamic Behavior
 
@@ -460,7 +460,7 @@ Structured Error Logging
 External System Notification
 ```
 
----
+______________________________________________________________________
 
 ## 🏛️ Architectural Decisions
 
@@ -483,7 +483,7 @@ External System Notification
 1. **Thread Safety**: All shared state protected with appropriate locking
 1. **Pluggable Architecture**: External system integrations through abstraction layers
 
----
+______________________________________________________________________
 
 **C4 Model Views**: This documentation provides comprehensive architectural views at all four C4 levels,
 showing how FLEXT Observability serves as the foundation for enterprise observability across the entire FLEXT ecosystem.
