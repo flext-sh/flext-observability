@@ -21,9 +21,9 @@ from __future__ import annotations
 import hashlib
 import time
 from collections.abc import MutableMapping
-from dataclasses import dataclass, field
 
 from flext_core import FlextLogger, FlextResult
+from pydantic import BaseModel, ConfigDict, Field
 
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
@@ -32,19 +32,21 @@ from flext_observability.context import FlextObservabilityContext
 ErrorSeverity = c.Observability.ErrorSeverity
 
 
-@dataclass
-class ErrorEvent:
+class ErrorEvent(BaseModel):
     """Represents an error event."""
 
-    error_type: str
-    message: str
-    severity: ErrorSeverity
-    timestamp: float = field(default_factory=time.time)
-    correlation_id: str = ""
-    context: MutableMapping[str, str | int | float | bool | None] = field(
-        default_factory=dict
+    model_config = ConfigDict(extra="forbid")
+
+    error_type: str = Field(description="Error type")
+    message: str = Field(description="Error message")
+    severity: ErrorSeverity = Field(description="Error severity")
+    timestamp: float = Field(default_factory=time.time, description="Event timestamp")
+    correlation_id: str = Field(default="", description="Correlation ID")
+    context: MutableMapping[str, str | int | float | bool | None] = Field(
+        default_factory=dict,
+        description="Error context",
     )
-    fingerprint: str = ""
+    fingerprint: str = Field(default="", description="Error fingerprint")
 
     def calculate_fingerprint(self) -> str:
         """Calculate fingerprint for error deduplication.

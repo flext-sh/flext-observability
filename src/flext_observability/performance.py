@@ -15,24 +15,27 @@ from __future__ import annotations
 import math
 import time
 from collections.abc import Mapping
-from dataclasses import dataclass, field
 
 import psutil
 from flext_core import FlextLogger, FlextResult
+from pydantic import BaseModel, ConfigDict, Field
 
 
-@dataclass
-class PerformanceMetrics:
+class PerformanceMetrics(BaseModel):
     """Performance metrics for observability operations."""
 
-    operation: str
-    start_time: float = field(default_factory=time.time)
-    end_time: float = 0.0
-    duration_ms: float = 0.0
-    memory_used_mb: float = 0.0
-    cpu_percent: float = 0.0
-    success: bool = True
-    error_message: str | None = None
+    model_config = ConfigDict(extra="forbid")
+
+    operation: str = Field(description="Operation name")
+    start_time: float = Field(default_factory=time.time, description="Start time")
+    end_time: float = Field(default=0.0, description="End time")
+    duration_ms: float = Field(default=0.0, description="Duration in milliseconds")
+    memory_used_mb: float = Field(default=0.0, description="Memory used in MB")
+    cpu_percent: float = Field(default=0.0, description="CPU usage percentage")
+    success: bool = Field(default=True, description="Operation success status")
+    error_message: str | None = Field(
+        default=None, description="Error message if failed"
+    )
 
     def calculate_duration(self) -> None:
         """Calculate operation duration."""

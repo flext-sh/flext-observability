@@ -19,10 +19,11 @@ Key Features:
 from __future__ import annotations
 
 import json
+import time
 from collections.abc import Mapping
-from dataclasses import dataclass, field
 
 from flext_core import FlextLogger, FlextResult
+from pydantic import BaseModel, ConfigDict, Field
 
 # Type for JSON-serializable values
 # Using PEP 695 type statement for recursive type (Python 3.12+)
@@ -31,16 +32,23 @@ type JSONValue = (
 )
 
 
-@dataclass
-class ContextSnapshot:
+class ContextSnapshot(BaseModel):
     """Snapshot of current observability context."""
 
-    correlation_id: str
-    trace_id: str
-    span_id: str
-    baggage: dict[str, str] = field(default_factory=dict)
-    metadata: dict[str, JSONValue] = field(default_factory=dict)
-    timestamp: float = field(default_factory=lambda: __import__("time").time())
+    model_config = ConfigDict(extra="forbid")
+
+    correlation_id: str = Field(description="Correlation ID")
+    trace_id: str = Field(description="Trace ID")
+    span_id: str = Field(description="Span ID")
+    baggage: dict[str, str] = Field(default_factory=dict, description="Baggage items")
+    metadata: dict[str, JSONValue] = Field(
+        default_factory=dict,
+        description="Context metadata",
+    )
+    timestamp: float = Field(
+        default_factory=time.time,
+        description="Snapshot timestamp",
+    )
 
     def to_dict(
         self,
