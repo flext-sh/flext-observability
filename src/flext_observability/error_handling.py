@@ -35,7 +35,9 @@ ErrorSeverity = c.Observability.ErrorSeverity
 class ErrorEvent(FlextModels.Event):
     """Represents an error event."""
 
-    event_type: str = Field(default="error", frozen=True, description="Event type identifier")
+    event_type: str = Field(
+        default="error", frozen=True, description="Event type identifier"
+    )
     error_type: str = Field(description="Error type")
     message: str = Field(description="Error message")
     severity: ErrorSeverity = Field(description="Error severity")
