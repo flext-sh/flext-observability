@@ -82,9 +82,9 @@ class FlextObservabilityCustomMetrics:
 
         def __init__(self) -> None:
             """Initialize metric registry."""
-            self._metrics: t.Dict = t.Dict()
-            self._metric_instances: t.Dict = t.Dict()
-            self._namespaces: t.Dict = t.Dict()  # Namespace prefixes
+            self._metrics: t.Dict = t.Dict({})
+            self._metric_instances: t.Dict = t.Dict({})
+            self._namespaces: t.Dict = t.Dict({})  # Namespace prefixes
 
         def register_metric(
             self,

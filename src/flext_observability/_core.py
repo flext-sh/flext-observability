@@ -179,7 +179,7 @@ class FlextObservability:
                     value=float(value),
                     unit=unit,
                     metric_type=metric_type,
-                    labels=labels or t.Dict(),
+                    labels=labels or t.Dict({}),
                 )
                 self._metrics.append(metric)
                 return FlextResult[FlextObservability.Metric].ok(metric)
@@ -220,7 +220,7 @@ class FlextObservability:
 
                 trace = FlextObservability.Trace(
                     name=name,
-                    attributes=attributes or t.Dict(),
+                    attributes=attributes or t.Dict({}),
                 )
                 self._traces.append(trace)
                 return FlextResult[FlextObservability.Trace].ok(trace)
@@ -271,7 +271,7 @@ class FlextObservability:
                     message=message,
                     severity=severity,
                     source=source,
-                    labels=labels or t.Dict(),
+                    labels=labels or t.Dict({}),
                 )
                 self._alerts.append(alert)
                 return FlextResult[FlextObservability.Alert].ok(alert)
@@ -322,7 +322,7 @@ class FlextObservability:
                 health = FlextObservability.HealthCheck(
                     component=component,
                     status=status,
-                    details=details or t.Dict(),
+                    details=details or t.Dict({}),
                 )
                 self._checks.append(health)
                 return FlextResult[FlextObservability.HealthCheck].ok(health)
@@ -367,7 +367,7 @@ class FlextObservability:
                     message=message,
                     level=level,
                     component=component,
-                    context=context or t.Dict(),
+                    context=context or t.Dict({}),
                 )
                 self._entries.append(entry)
                 return FlextResult[FlextObservability.LogEntry].ok(entry)
@@ -453,7 +453,7 @@ def flext_trace(
         trace = FlextObservability.Trace(
             name=name,
             trace_id=trace_id or str(uuid4()),
-            attributes=attributes or t.Dict(),
+            attributes=attributes or t.Dict({}),
         )
         return FlextResult[FlextObservability.Trace].ok(trace)
     except (ValueError, TypeError, AttributeError) as e:
@@ -489,7 +489,7 @@ def flext_alert(
             message=message,
             severity=severity,
             source=source,
-            labels=labels or t.Dict(),
+            labels=labels or t.Dict({}),
         )
         return FlextResult[FlextObservability.Alert].ok(alert)
     except (ValueError, TypeError, AttributeError) as e:
@@ -519,7 +519,7 @@ def flext_health_check(
             id=health_check_id or str(uuid4()),
             component=component,
             status=status,
-            details=details or t.Dict(),
+            details=details or t.Dict({}),
         )
         return FlextResult[FlextObservability.HealthCheck].ok(health)
     except (ValueError, TypeError, AttributeError) as e:
@@ -548,7 +548,7 @@ def flext_log_entry(
             level=level,
             component=component,
             timestamp=timestamp or datetime.now(tz=UTC),
-            context=context or t.Dict(),
+            context=context or t.Dict({}),
         )
         return FlextResult[FlextObservability.LogEntry].ok(entry)
     except (ValueError, TypeError, AttributeError) as e:
@@ -740,7 +740,7 @@ class FlextObservabilityMasterFactory:
         _ = span_id  # Reserved for future use
         _ = duration_ms  # Reserved for future use
         _ = status  # Reserved for future use
-        str_attributes = t.Dict()
+        str_attributes = t.Dict({})
         if span_attributes:
             str_attributes = t.Dict.model_validate(
                 {k: str(v) for k, v in span_attributes.items()},

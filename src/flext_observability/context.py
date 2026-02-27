@@ -231,7 +231,7 @@ class FlextObservabilityContext:
                 )
 
             # Get current baggage and update
-            current_baggage = FlextObservabilityContext._baggage.get() or t.Dict()
+            current_baggage = FlextObservabilityContext._baggage.get() or t.Dict({})
             updated_baggage = t.Dict.model_validate(
                 {
                     **dict(current_baggage.items()),
@@ -266,7 +266,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        baggage = FlextObservabilityContext._baggage.get() or t.Dict()
+        baggage = FlextObservabilityContext._baggage.get() or t.Dict({})
 
         if key is None:
             return baggage
@@ -276,7 +276,7 @@ class FlextObservabilityContext:
     @staticmethod
     def clear_baggage() -> None:
         """Clear all baggage from context."""
-        FlextObservabilityContext._baggage.set(t.Dict())
+        FlextObservabilityContext._baggage.set(t.Dict({}))
 
     # ========================================================================
     # HTTP HEADER MANAGEMENT - W3C Trace Context
@@ -309,7 +309,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        headers = t.Dict()
+        headers = t.Dict({})
 
         correlation_id = FlextObservabilityContext.get_correlation_id()
         if correlation_id:
