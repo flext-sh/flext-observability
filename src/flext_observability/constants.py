@@ -12,10 +12,10 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Final, Literal
 
-from flext_core import c
+from flext_core.constants import FlextConstants
 
 
-class FlextObservabilityConstants(c):
+class FlextObservabilityConstants(FlextConstants):
     """Observability-specific constants extending flext-core patterns.
 
     Usage:
