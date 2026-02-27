@@ -22,8 +22,8 @@ import hashlib
 import time
 from collections.abc import MutableMapping
 
-from flext_core import FlextLogger, FlextResult
-from pydantic import BaseModel, ConfigDict, Field
+from flext_core import FlextLogger, FlextModels, FlextResult
+from pydantic import Field
 
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
@@ -32,11 +32,10 @@ from flext_observability.context import FlextObservabilityContext
 ErrorSeverity = c.Observability.ErrorSeverity
 
 
-class ErrorEvent(BaseModel):
+class ErrorEvent(FlextModels.Event):
     """Represents an error event."""
 
-    model_config = ConfigDict(extra="forbid")
-
+    event_type: str = Field(default="error", frozen=True, description="Event type identifier")
     error_type: str = Field(description="Error type")
     message: str = Field(description="Error message")
     severity: ErrorSeverity = Field(description="Error severity")
