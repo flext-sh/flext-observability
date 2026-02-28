@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from flext_core import FlextContainer, FlextResult, FlextRuntime, t
 
-from flext_observability.settings import FlextObservabilitySettings
+from flext_observability import FlextObservabilitySettings
 
 
 class FlextObservabilityServices:

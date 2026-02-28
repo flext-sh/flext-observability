@@ -224,7 +224,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
-from flext_observability.entities import FlextMetric, FlextTrace
+from flext_observability import FlextMetric, FlextTrace
 
 class FlextMetric(FlextModels.Entity):
     """Observability metric with domain validation."""
@@ -279,7 +279,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
-from flext_observability.services import FlextMetricsService
+from flext_observability import FlextMetricsService
 
 class FlextMetricsService:
     """Application service for metrics operations."""
@@ -315,7 +315,7 @@ class FlextMetricsService:
 **Factory Pattern**:
 
 ```python
-from flext_observability.factory import FlextObservabilityMasterFactory
+from flext_observability import FlextObservabilityMasterFactory
 
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
@@ -365,7 +365,7 @@ class FlextObservabilityMasterFactory:
 **Simple API Pattern**:
 
 ```python
-from flext_observability.flext_simple import flext_create_metric, flext_create_trace
+from flext_observability import flext_create_metric, flext_create_trace
 
 def flext_create_metric(name: str, value: float, unit: str = "") -> FlextResult[FlextMetric]:
     """Simple API for metric creation."""
@@ -381,7 +381,7 @@ def flext_create_trace(operation_name: str, service_name: str) -> FlextResult[Fl
 **Monitoring Decorator Pattern**:
 
 ```python
-from flext_observability.flext_monitor import flext_monitor_function
+from flext_observability import flext_monitor_function
 
 @flext_monitor_function("user_processing")
 def process_user_data(user_data: dict) -> dict[str, object]:
@@ -410,7 +410,7 @@ def process_user_data(user_data: dict) -> dict[str, object]:
 **Repository Pattern**:
 
 ```python
-from flext_observability.repos import FlextObservabilityRepository
+from flext_observability import FlextObservabilityRepository
 
 class FlextObservabilityRepository:
     """Repository for observability data access."""
@@ -640,10 +640,10 @@ class DatabaseConnectionService:
 from flext_observability import *
 
 # ❌ Don't import internal implementations
-from flext_observability.validation import _internal_validation_function
+from flext_observability import _internal_validation_function
 
 # ❌ Don't bypass simple API without reason
-from flext_observability.factory import FlextObservabilityMasterFactory
+from flext_observability import FlextObservabilityMasterFactory
 factory = FlextObservabilityMasterFactory()
 metric = factory.create_metric("test", 1.0)  # Use flext_create_metric instead
 
@@ -1042,7 +1042,7 @@ def test_observability_failure_propagation():
 ### **Observability Entity Testing Patterns**
 
 ```python
-from flext_observability.entities import FlextMetric, FlextTrace
+from flext_observability import FlextMetric, FlextTrace
 from decimal import Decimal
 
 class TestFlextMetric:

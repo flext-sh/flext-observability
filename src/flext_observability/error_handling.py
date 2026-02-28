@@ -25,8 +25,7 @@ from collections.abc import MutableMapping
 from flext_core import FlextLogger, FlextModels, FlextResult
 from pydantic import Field
 
-from flext_observability.constants import c
-from flext_observability.context import FlextObservabilityContext
+from flext_observability import FlextObservabilityContext, c
 
 
 class ErrorEvent(FlextModels.Event):
@@ -221,7 +220,9 @@ class FlextObservabilityErrorHandling:
             count = self._error_counts.get(error.fingerprint, 0)
             return not count < self._escalation_threshold
 
-        def get_escalated_severity(self, error: ErrorEvent) -> c.Observability.ErrorSeverity:
+        def get_escalated_severity(
+            self, error: ErrorEvent
+        ) -> c.Observability.ErrorSeverity:
             """Get escalated severity based on error count.
 
             Args:

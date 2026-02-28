@@ -21,8 +21,7 @@ from __future__ import annotations
 from flext_core import FlextResult, FlextRuntime
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from flext_observability.constants import c
-from flext_observability.typings import t
+from flext_observability import c, t
 
 MetricType = c.Observability.MetricType
 
@@ -229,7 +228,8 @@ class FlextObservabilityCustomMetrics:
                 {
                     metric_name: metric
                     for metric_name, metric in self._metrics.root.items()
-                    if isinstance(metric, CustomMetricDefinition) and metric.metric_type == metric_type
+                    if isinstance(metric, CustomMetricDefinition)
+                    and metric.metric_type == metric_type
                 },
             )
 

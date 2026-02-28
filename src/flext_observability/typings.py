@@ -77,7 +77,9 @@ class FlextObservabilityTypes(FlextTypes):
         type MetricsConfig = dict[
             str, bool | str | dict[str, FlextTypes.GeneralValueType]
         ]
-        type TracingConfig = dict[str, str | int | bool | list[str] | _t.GeneralValueType]
+        type TracingConfig = dict[
+            str, str | int | bool | list[str] | _t.GeneralValueType
+        ]
 
     # =========================================================================
     # OBSERVABILITY CORE TYPES - Commonly used observability-specific types

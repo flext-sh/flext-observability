@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
     from flext_core import (
@@ -31,59 +31,44 @@ if TYPE_CHECKING:
         FlextService as s,
     )
 
-    from flext_observability.__version__ import __version__, __version_info__
-    from flext_observability._core import (
+    from flext_observability import (
+        CustomMetricDefinition,
+        ErrorEvent,
         FlextObservability,
+        FlextObservabilityAdvancedContext,
         FlextObservabilityConstants,
         FlextObservabilityConstants as c,
+        FlextObservabilityContext,
+        FlextObservabilityCustomMetrics,
+        FlextObservabilityErrorHandling,
+        FlextObservabilityFields,
+        FlextObservabilityHealth,
+        FlextObservabilityHTTP,
+        FlextObservabilityHTTPClient,
+        FlextObservabilityLogging,
         FlextObservabilityMasterFactory,
+        FlextObservabilityModels,
+        FlextObservabilityModels as m,
+        FlextObservabilityMonitor,
+        FlextObservabilityPerformance,
+        FlextObservabilityProtocols,
+        FlextObservabilityProtocols as p,
+        FlextObservabilitySampling,
+        FlextObservabilitySettings,
+        FlextObservabilityTypes,
+        FlextObservabilityTypes as t,
+        FlextObservabilityUtilities,
+        FlextObservabilityUtilities as u,
+        __version__,
+        __version_info__,
         flext_alert,
         flext_health_check,
         flext_log_entry,
         flext_metric,
+        flext_monitor_function,
         flext_trace,
         get_global_factory,
         reset_global_factory,
-    )
-    from flext_observability.advanced_context import FlextObservabilityAdvancedContext
-    from flext_observability.context import FlextObservabilityContext
-    from flext_observability.custom_metrics import (
-        CustomMetricDefinition,
-        FlextObservabilityCustomMetrics,
-    )
-    from flext_observability.error_handling import (
-        ErrorEvent,
-        FlextObservabilityErrorHandling,
-    )
-    from flext_observability.fields import FlextObservabilityFields
-    from flext_observability.health import FlextObservabilityHealth
-    from flext_observability.http_client_instrumentation import (
-        FlextObservabilityHTTPClient,
-    )
-    from flext_observability.http_instrumentation import FlextObservabilityHTTP
-    from flext_observability.logging_integration import FlextObservabilityLogging
-    from flext_observability.models import (
-        FlextObservabilityModels,
-        FlextObservabilityModels as m,
-    )
-    from flext_observability.monitoring import (
-        FlextObservabilityMonitor,
-        flext_monitor_function,
-    )
-    from flext_observability.performance import FlextObservabilityPerformance
-    from flext_observability.protocols import (
-        FlextObservabilityProtocols,
-        FlextObservabilityProtocols as p,
-    )
-    from flext_observability.sampling import FlextObservabilitySampling
-    from flext_observability.settings import FlextObservabilitySettings
-    from flext_observability.typings import (
-        FlextObservabilityTypes,
-        FlextObservabilityTypes as t,
-    )
-    from flext_observability.utilities import (
-        FlextObservabilityUtilities,
-        FlextObservabilityUtilities as u,
     )
 
 # Lazy import mapping: export_name -> (module_path, attr_name)

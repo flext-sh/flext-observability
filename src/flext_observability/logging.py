@@ -24,7 +24,7 @@ from pydantic import (
     model_validator,
 )
 
-from flext_observability.models import m
+from flext_observability import m
 
 
 class FlextObservabilityLogging(FlextModels):

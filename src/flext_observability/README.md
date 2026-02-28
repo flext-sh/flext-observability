@@ -144,7 +144,7 @@ if validation.success:
 ### Service Layer Usage
 
 ```python
-from flext_observability.services import FlextMetricsService
+from flext_observability import FlextMetricsService
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -177,7 +177,7 @@ if result.success:
 ### Factory Pattern Usage
 
 ```python
-from flext_observability.factory import FlextObservabilityMasterFactory
+from flext_observability import FlextObservabilityMasterFactory
 
 factory = FlextObservabilityMasterFactory()
 metric_result = factory.create_metric("cpu_usage", 75.2, "percent")
@@ -190,7 +190,7 @@ if metric_result.success:
 ### Simple API Usage
 
 ```python
-from flext_observability.flext_simple import flext_create_metric, flext_create_trace
+from flext_observability import flext_create_metric, flext_create_trace
 
 # Quick metric creation
 metric_result = flext_create_metric("requests_total", 1, "count")
@@ -202,7 +202,7 @@ trace_result = flext_create_trace("user_login", "auth-service")
 ### Monitoring Decorator Usage
 
 ```python
-from flext_observability.flext_monitor import flext_monitor_function
+from flext_observability import flext_monitor_function
 
 @flext_monitor_function("order_processing")
 def process_order(order_data: dict) -> dict[str, object]:

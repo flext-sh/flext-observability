@@ -24,8 +24,7 @@ from collections.abc import MutableMapping
 
 from flext_core import FlextLogger, FlextResult
 
-from flext_observability.constants import c
-from flext_observability.context import FlextObservabilityContext
+from flext_observability import FlextObservabilityContext, c
 
 # Use SystemRandom for cryptographically stronger sampling decisions
 _secure_random = random.SystemRandom()

@@ -17,9 +17,11 @@ import time
 
 # Test 1: HTTP + Metrics + Tracing Integration
 try:
-    from flext_observability import FlextObservability
-    from flext_observability.context import FlextObservabilityContext
-    from flext_observability.sampling import FlextObservabilitySampling
+    from flext_observability import (
+        FlextObservability,
+        FlextObservabilityContext,
+        FlextObservabilitySampling,
+    )
 
     # Setup context for HTTP request
     FlextObservabilityContext.set_correlation_id("http-req-001")
@@ -114,8 +116,8 @@ try:
         ErrorEvent,
         FlextObservabilityContext,
         FlextObservabilityErrorHandling,
+        c,
     )
-    from flext_observability.constants import c
 
     FlextObservabilityContext.set_correlation_id("error-test-001")
 
@@ -318,8 +320,8 @@ try:
         FlextObservabilityErrorHandling,
         FlextObservabilityPerformance,
         FlextObservabilitySampling,
+        c,
     )
-    from flext_observability.constants import c
 
     # 1. Initialize context
     FlextObservabilityContext.set_correlation_id("e2e-test-001")

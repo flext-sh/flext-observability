@@ -9,11 +9,11 @@ from __future__ import annotations
 
 from typing import Self, override
 
-from flext_core import FlextConstants, FlextResult, FlextSettings
+from flext_core import FlextConstants, FlextResult, FlextSettings, t
 from pydantic import Field, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_observability.constants import c
+from flext_observability import c
 
 
 @FlextSettings.auto_register("observability")

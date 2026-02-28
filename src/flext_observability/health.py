@@ -24,8 +24,7 @@ from pydantic import (
     model_validator,
 )
 
-from flext_observability.constants import c as _obs_c
-from flext_observability.models import m
+from flext_observability import c as _obs_c, m
 
 
 class _HealthCheckFactoryKwargs(BaseModel):
@@ -222,11 +221,17 @@ class FlextObservabilityHealth(FlextModels):
                 status=status,
                 message=message,
             )
-            if valid_kwargs.get("metrics") and isinstance(valid_kwargs["metrics"], t.Dict):
+            if valid_kwargs.get("metrics") and isinstance(
+                valid_kwargs["metrics"], t.Dict
+            ):
                 health_check.metrics = valid_kwargs["metrics"]
-            if valid_kwargs.get("timestamp") and isinstance(valid_kwargs["timestamp"], datetime):
+            if valid_kwargs.get("timestamp") and isinstance(
+                valid_kwargs["timestamp"], datetime
+            ):
                 health_check.timestamp = valid_kwargs["timestamp"]
-            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(health_check)
+            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(
+                health_check
+            )
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].fail(
                 f"Failed to create health check: {e}",

@@ -11,7 +11,7 @@ from typing import ClassVar
 from flext_core import t
 from pydantic import Field, field_validator
 
-from flext_observability.constants import FlextObservabilityConstants
+from flext_observability import FlextObservabilityConstants
 
 
 class FlextObservabilityFields:

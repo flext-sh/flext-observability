@@ -30,8 +30,7 @@ import flask
 from flext_core import FlextResult, FlextRuntime, t
 from pydantic import BaseModel, ValidationError
 
-from flext_observability.context import FlextObservabilityContext
-from flext_observability.logging_integration import FlextObservabilityLogging
+from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
 
 
 class _StartTimePayload(BaseModel):

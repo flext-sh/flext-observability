@@ -20,7 +20,7 @@ from uuid import uuid4
 from flext_core import FlextResult, FlextRuntime
 from pydantic import BaseModel, Field, ValidationError
 
-from flext_observability.typings import t
+from flext_observability import t
 
 
 class _BaggageKeyModel(BaseModel):
@@ -42,7 +42,7 @@ class FlextObservabilityContext:
 
     Example:
         ```python
-        from flext_observability.context import FlextObservabilityContext
+        from flext_observability import FlextObservabilityContext
 
         # Set correlation ID for request
         correlation_id = FlextObservabilityContext.set_correlation_id()
@@ -326,7 +326,9 @@ class FlextObservabilityContext:
         return headers
 
     @staticmethod
-    def from_headers(headers: t.Dict | dict[str, t.GeneralValueType]) -> FlextResult[bool]:
+    def from_headers(
+        headers: t.Dict | dict[str, t.GeneralValueType],
+    ) -> FlextResult[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -341,7 +343,7 @@ class FlextObservabilityContext:
         Example:
             ```python
             # Extract context from incoming request
-            from flext_observability.context import FlextObservabilityContext
+            from flext_observability import FlextObservabilityContext
 
             FlextObservabilityContext.from_headers(dict(request.headers))
 

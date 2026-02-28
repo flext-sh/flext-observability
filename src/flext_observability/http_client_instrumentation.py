@@ -27,8 +27,7 @@ from typing import ClassVar, Protocol
 from flext_core import FlextResult, FlextRuntime, t
 from pydantic import BaseModel, Field, ValidationError
 
-from flext_observability.context import FlextObservabilityContext
-from flext_observability.logging_integration import FlextObservabilityLogging
+from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
 
 # ============================================================================
 # PROTOCOL DEFINITIONS FOR HTTP CLIENTS
@@ -284,8 +283,8 @@ class FlextObservabilityHTTPClient:
 
                 else:
                     # Get original request method using getattr for dynamic access
-                    original_request: Callable[..., HTTPXResponseProtocol] = (
-                        getattr(client, "request")
+                    original_request: Callable[..., HTTPXResponseProtocol] = getattr(
+                        client, "request"
                     )
 
                     def traced_request(
@@ -304,7 +303,9 @@ class FlextObservabilityHTTPClient:
 
                         # Add trace headers to request
                         headers = FlextObservabilityHTTPClient._validated_headers(
-                            (kwargs if isinstance(kwargs, dict) else {}).get("headers", {}),
+                            (kwargs if isinstance(kwargs, dict) else {}).get(
+                                "headers", {}
+                            ),
                         )
                         if correlation_id:
                             headers["X-Correlation-ID"] = correlation_id

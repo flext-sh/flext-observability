@@ -13,11 +13,13 @@ from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
 
-from flext_observability.constants import c as _obs_c
-from flext_observability.models import FlextObservabilityModels
-from flext_observability.services import FlextObservabilityServices
-from flext_observability.settings import FlextObservabilitySettings
-from flext_observability.typings import t
+from flext_observability import (
+    FlextObservabilityModels,
+    FlextObservabilityServices,
+    FlextObservabilitySettings,
+    c as _obs_c,
+    t,
+)
 
 # ============================================================================
 # OBSERVABILITY MONITORING ORCHESTRATION - Real Implementation with SOLID
@@ -107,7 +109,11 @@ class FlextObservabilityMonitor:
                 execution_time,
                 _obs_c.Observability.MetricType.HISTOGRAM,
             )
-            monitor.flext_record_metric(f"{metric_name}_success_total", 1, _obs_c.Observability.MetricType.COUNTER)
+            monitor.flext_record_metric(
+                f"{metric_name}_success_total",
+                1,
+                _obs_c.Observability.MetricType.COUNTER,
+            )
             monitor.increment_functions_monitored()
 
         @staticmethod
@@ -119,7 +125,9 @@ class FlextObservabilityMonitor:
             error: Exception,
         ) -> None:
             """Record metrics and alerts for function execution errors."""
-            monitor.flext_record_metric(f"{metric_name}_error_total", 1, _obs_c.Observability.MetricType.COUNTER)
+            monitor.flext_record_metric(
+                f"{metric_name}_error_total", 1, _obs_c.Observability.MetricType.COUNTER
+            )
             monitor.flext_record_metric(
                 f"{metric_name}_error_duration_seconds",
                 execution_time,
@@ -245,7 +253,9 @@ class FlextObservabilityMonitor:
 
             # Build health status from observability service
             health_data: t.ObservabilityCore.HealthMetricsDict = {
-                "status": _obs_c.Observability.HealthStatus.HEALTHY if self._initialized else "initializing",
+                "status": _obs_c.Observability.HealthStatus.HEALTHY
+                if self._initialized
+                else "initializing",
                 "timestamp": time.time(),
             }
 
@@ -354,7 +364,9 @@ class FlextObservabilityMonitor:
             def decorator(
                 func: FlextObservabilityMonitor.object_callable,
             ) -> FlextObservabilityMonitor.object_callable:
-                def wrapper(*args: t.GeneralValueType, **kwargs: t.GeneralValueType) -> t.GeneralValueType:
+                def wrapper(
+                    *args: t.GeneralValueType, **kwargs: t.GeneralValueType
+                ) -> t.GeneralValueType:
                     # Use provided monitor or create simple one
                     active_monitor = monitor or FlextObservabilityMonitor()
 

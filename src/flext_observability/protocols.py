@@ -9,8 +9,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from typing import Protocol, runtime_checkable
 
-from flext_core.protocols import FlextProtocols
-from flext_core.typings import FlextTypes as t
+from flext_core import FlextProtocols, FlextTypes as t
 
 
 @runtime_checkable
@@ -41,7 +40,7 @@ class FlextObservabilityProtocols(FlextProtocols):
     - PROVIDES: Root-level alias `p` for convenient access
 
     Usage:
-    from flext_observability.protocols import p
+    from flext_observability import p
 
     # Foundation protocols (inherited)
     result: p.Result[str]
