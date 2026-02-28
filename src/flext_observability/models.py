@@ -11,6 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import ClassVar
 from uuid import uuid4
 
 from flext_core import FlextModels, t
@@ -27,7 +28,7 @@ class FlextObservabilityModels(FlextModels):
     class GenericObservabilityEntry(FlextModels.Value):
         """Generic base model for any observability entry using Pydantic."""
 
-        model_config: ConfigDict = ConfigDict(
+        model_config: ClassVar[ConfigDict] = ConfigDict(
             validate_assignment=True,
             extra="allow",
             frozen=False,
@@ -73,7 +74,7 @@ class FlextObservabilityModels(FlextModels):
     class GenericObservabilityConfig(FlextModels.Value):
         """Generic configuration using Pydantic patterns."""
 
-        model_config: ConfigDict = ConfigDict(
+        model_config: ClassVar[ConfigDict] = ConfigDict(
             validate_assignment=True,
             extra="allow",
             frozen=False,
