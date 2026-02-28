@@ -112,10 +112,10 @@ except Exception:
 try:
     from flext_observability import (
         ErrorEvent,
-        ErrorSeverity,
         FlextObservabilityContext,
         FlextObservabilityErrorHandling,
     )
+    from flext_observability.constants import c
 
     FlextObservabilityContext.set_correlation_id("error-test-001")
 
@@ -128,7 +128,7 @@ try:
         error = ErrorEvent(
             error_type="DatabaseConnectionError",
             message="Failed to connect to database",
-            severity=ErrorSeverity.ERROR,
+            severity=c.Observability.ErrorSeverity.ERROR,
             context={"attempt": i + 1},
         )
 
@@ -311,7 +311,6 @@ except Exception:
 try:
     from flext_observability import (
         ErrorEvent,
-        ErrorSeverity,
         FlextObservability,
         FlextObservabilityAdvancedContext,
         FlextObservabilityContext,
@@ -319,8 +318,8 @@ try:
         FlextObservabilityErrorHandling,
         FlextObservabilityPerformance,
         FlextObservabilitySampling,
-        MetricType,
     )
+    from flext_observability.constants import c
 
     # 1. Initialize context
     FlextObservabilityContext.set_correlation_id("e2e-test-001")
@@ -351,7 +350,7 @@ try:
     registry = FlextObservabilityCustomMetrics.get_registry()
     metric_result = registry.register_metric(
         name="e2e_tests",
-        metric_type=MetricType.COUNTER,
+        metric_type=c.Observability.MetricType.COUNTER,
         description="E2E workflow tests",
         namespace="integration",
     )
@@ -390,7 +389,7 @@ try:
     test_error = ErrorEvent(
         error_type="IntegrationTestError",
         message="Simulated error in workflow",
-        severity=ErrorSeverity.WARNING,
+        severity=c.Observability.ErrorSeverity.WARNING,
     )
     error_result = error_handler.record_error(test_error)
     assert error_result.is_success

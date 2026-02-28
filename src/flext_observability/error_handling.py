@@ -28,9 +28,6 @@ from pydantic import Field
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
 
-# Alias for backward compatibility - ErrorSeverity is now centralized in constants.py
-ErrorSeverity = c.Observability.ErrorSeverity
-
 
 class ErrorEvent(FlextModels.Event):
     """Represents an error event."""
@@ -40,7 +37,7 @@ class ErrorEvent(FlextModels.Event):
     )
     error_type: str = Field(description="Error type")
     message: str = Field(description="Error message")
-    severity: ErrorSeverity = Field(description="Error severity")
+    severity: c.Observability.ErrorSeverity = Field(description="Error severity")
     timestamp: float = Field(default_factory=time.time, description="Event timestamp")
     correlation_id: str = Field(default="", description="Correlation ID")
     context: MutableMapping[str, str | int | float | bool | None] = Field(
@@ -77,7 +74,7 @@ class FlextObservabilityErrorHandling:
         error = ErrorEvent(
             error_type="DatabaseError",
             message="Connection timeout",
-            severity=ErrorSeverity.ERROR,
+            severity=c.Observability.ErrorSeverity.ERROR,
         )
 
         # Check if error should be alerted
@@ -212,7 +209,7 @@ class FlextObservabilityErrorHandling:
                 error.calculate_fingerprint()
 
             # Critical errors always alert
-            if error.severity == ErrorSeverity.CRITICAL:
+            if error.severity == c.Observability.ErrorSeverity.CRITICAL:
                 return True
 
             # Check cooldown period
@@ -224,14 +221,14 @@ class FlextObservabilityErrorHandling:
             count = self._error_counts.get(error.fingerprint, 0)
             return not count < self._escalation_threshold
 
-        def get_escalated_severity(self, error: ErrorEvent) -> ErrorSeverity:
+        def get_escalated_severity(self, error: ErrorEvent) -> c.Observability.ErrorSeverity:
             """Get escalated severity based on error count.
 
             Args:
                 error: Error event
 
             Returns:
-                ErrorSeverity - Escalated severity
+                c.Observability.ErrorSeverity - Escalated severity
 
             """
             if not error.fingerprint:
@@ -241,11 +238,11 @@ class FlextObservabilityErrorHandling:
 
             # Escalate based on count
             if count >= self._escalation_threshold * 3:
-                return ErrorSeverity.CRITICAL
+                return c.Observability.ErrorSeverity.CRITICAL
             if count >= self._escalation_threshold * 2:
-                return ErrorSeverity.ERROR
+                return c.Observability.ErrorSeverity.ERROR
             if count >= self._escalation_threshold:
-                return ErrorSeverity.WARNING
+                return c.Observability.ErrorSeverity.WARNING
 
             return error.severity
 
@@ -353,6 +350,5 @@ class FlextObservabilityErrorHandling:
 
 __all__ = [
     "ErrorEvent",
-    "ErrorSeverity",
     "FlextObservabilityErrorHandling",
 ]

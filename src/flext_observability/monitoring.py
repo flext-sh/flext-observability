@@ -11,13 +11,12 @@ from collections.abc import Callable
 from typing import override
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextRuntime, r
+from flext_core import FlextContainer, FlextRuntime, r, t
 
 from flext_observability.constants import c as _obs_c
 from flext_observability.models import FlextObservabilityModels
 from flext_observability.services import FlextObservabilityServices
 from flext_observability.settings import FlextObservabilitySettings
-from flext_observability.typings import t
 
 # ============================================================================
 # OBSERVABILITY MONITORING ORCHESTRATION - Real Implementation with SOLID
@@ -36,7 +35,7 @@ class FlextObservabilityMonitor:
     """
 
     # Function type alias - simplified for monitoring
-    object_callable = Callable[..., object]
+    object_callable = Callable[..., t.GeneralValueType]
     logger = FlextRuntime.get_logger(__name__)
 
     class MonitoringHelpers:

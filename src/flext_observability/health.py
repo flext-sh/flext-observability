@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Self
 
-from flext_core import FlextModels, FlextResult
+from flext_core import FlextModels, FlextResult, t
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -26,7 +26,6 @@ from pydantic import (
 
 from flext_observability.constants import c as _obs_c
 from flext_observability.models import m
-from flext_observability.typings import t
 
 
 class _HealthCheckFactoryKwargs(BaseModel):

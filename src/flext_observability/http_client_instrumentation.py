@@ -24,7 +24,7 @@ import time
 from collections.abc import Awaitable, Callable, MutableMapping
 from typing import ClassVar, Protocol
 
-from flext_core import FlextResult, FlextRuntime
+from flext_core import FlextResult, FlextRuntime, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability.context import FlextObservabilityContext
@@ -121,7 +121,7 @@ class FlextObservabilityHTTPClient:
     _logger = FlextRuntime.get_logger(__name__)
 
     @staticmethod
-    def _validated_headers(payload: object) -> MutableMapping[str, str]:
+    def _validated_headers(payload: t.GeneralValueType) -> MutableMapping[str, str]:
         try:
             return _HeadersPayload.model_validate({"headers": payload}).headers
         except ValidationError:

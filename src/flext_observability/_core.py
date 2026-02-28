@@ -16,11 +16,11 @@ from flext_core import (
     FlextResult,
     FlextRuntime,
     p,
+    t,
 )
 from pydantic import BaseModel, ConfigDict, Field
 
 from flext_observability.constants import c as _obs_c
-from flext_observability.typings import t
 
 
 class FlextObservability:

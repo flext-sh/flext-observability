@@ -17,7 +17,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Literal, TypeVar
 
-from flext_core import FlextTypes
+from flext_core import FlextTypes, t as _t
 
 # Define T TypeVar for generic programming
 T = TypeVar("T")
@@ -71,13 +71,13 @@ class FlextObservabilityTypes(FlextTypes):
         # Observability-specific project configurations
         type ObservabilityProjectConfig = dict[
             str,
-            str | int | bool | list[str] | object,
+            str | int | bool | list[str] | _t.GeneralValueType,
         ]
         type MonitoringConfig = dict[str, str | int | bool | list[str]]
         type MetricsConfig = dict[
             str, bool | str | dict[str, FlextTypes.GeneralValueType]
         ]
-        type TracingConfig = dict[str, str | int | bool | list[str] | object]
+        type TracingConfig = dict[str, str | int | bool | list[str] | _t.GeneralValueType]
 
     # =========================================================================
     # OBSERVABILITY CORE TYPES - Commonly used observability-specific types
@@ -145,7 +145,7 @@ class FlextObservabilityTypes(FlextTypes):
 
         # Additional core types for monitoring
         type MetadataDict = dict[str, FlextTypes.GeneralValueType]
-        type ServicesList = list[tuple[str, object]]
+        type ServicesList = list[tuple[str, _t.GeneralValueType]]
         type HealthMetricsDict = dict[str, FlextTypes.GeneralValueType]
         type MetricDict = dict[str, FlextTypes.GeneralValueType]
         type StringList = list[str]

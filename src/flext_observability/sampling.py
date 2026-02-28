@@ -27,9 +27,6 @@ from flext_core import FlextLogger, FlextResult
 from flext_observability.constants import c
 from flext_observability.context import FlextObservabilityContext
 
-# Alias for backward compatibility - SamplingDecision is now centralized in constants.py
-SamplingDecision = c.Observability.SamplingDecision
-
 # Use SystemRandom for cryptographically stronger sampling decisions
 _secure_random = random.SystemRandom()
 
@@ -246,7 +243,7 @@ class FlextObservabilitySampling:
             self,
             operation: str | None = None,
             service: str | None = None,
-        ) -> SamplingDecision:
+        ) -> c.Observability.SamplingDecision:
             """Get sampling decision as enum.
 
             Args:
@@ -254,12 +251,12 @@ class FlextObservabilitySampling:
                 service: Service name
 
             Returns:
-                SamplingDecision - SAMPLED or NOT_SAMPLED
+                c.Observability.SamplingDecision - SAMPLED or NOT_SAMPLED
 
             """
             if self.should_sample(operation=operation, service=service):
-                return SamplingDecision.SAMPLED
-            return SamplingDecision.NOT_SAMPLED
+                return c.Observability.SamplingDecision.SAMPLED
+            return c.Observability.SamplingDecision.NOT_SAMPLED
 
         def get_current_rate(
             self,
@@ -329,7 +326,7 @@ class FlextObservabilitySampling:
     def get_sampling_decision(
         operation: str | None = None,
         service: str | None = None,
-    ) -> SamplingDecision:
+    ) -> c.Observability.SamplingDecision:
         """Convenience function: get sampling decision as enum.
 
         Args:
@@ -337,7 +334,7 @@ class FlextObservabilitySampling:
             service: Service name
 
         Returns:
-            SamplingDecision - SAMPLED or NOT_SAMPLED
+            c.Observability.SamplingDecision - SAMPLED or NOT_SAMPLED
 
         """
         sampler = FlextObservabilitySampling.get_sampler()
@@ -350,5 +347,4 @@ class FlextObservabilitySampling:
 
 __all__ = [
     "FlextObservabilitySampling",
-    "SamplingDecision",
 ]
