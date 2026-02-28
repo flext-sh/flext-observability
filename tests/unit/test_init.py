@@ -11,7 +11,6 @@ from flext_observability import (
     FlextObservabilityMasterFactory,
     FlextObservabilityModels,
     flext_alert,
-    flext_create_health_check,
     flext_health_check,
     flext_metric,
     flext_trace,
@@ -66,7 +65,9 @@ class TestInitCoverage:
 
     def test_api_functions_imports(self) -> None:
         """Test that API functions can be imported."""
-        assert callable(flext_create_health_check)
+        # flext_create_health_check does not exist as a top-level function
+        # Health check creation is done via flext_health_check
+        assert callable(flext_health_check)
 
     def test_factory_class_imports(self) -> None:
         """Test that factory classes can be imported."""

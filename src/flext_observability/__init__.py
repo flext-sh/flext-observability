@@ -106,6 +106,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextObservabilityMasterFactory": ("flext_observability._core", "FlextObservabilityMasterFactory"),
     "FlextObservabilityModels": ("flext_observability.models", "FlextObservabilityModels"),
     "FlextObservabilityMonitor": ("flext_observability.monitoring", "FlextObservabilityMonitor"),
+    "FlextObservabilityServices": ("flext_observability.services", "FlextObservabilityServices"),
     "FlextObservabilityPerformance": ("flext_observability.performance", "FlextObservabilityPerformance"),
     "FlextObservabilityProtocols": ("flext_observability.protocols", "FlextObservabilityProtocols"),
     "FlextObservabilitySampling": ("flext_observability.sampling", "FlextObservabilitySampling"),
