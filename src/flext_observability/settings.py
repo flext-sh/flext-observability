@@ -205,7 +205,6 @@ class FlextObservabilitySettings(FlextSettings):
         This method ensures that all components in flext-observability use the same
         configuration instance, avoiding duplication and ensuring consistency.
         """
-        # Use a simpler approach for Pydantic v2 compatibility
         return cls.create_with_defaults()
 
     @override

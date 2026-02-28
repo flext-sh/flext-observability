@@ -117,7 +117,6 @@ class FlextObservabilityFields:
         return Field(default_factory=lambda: datetime.now(UTC), description="Timestamp")
 
 
-# Removed unused backward compatibility classes and field instances
 # All field functionality is now available through FlextObservabilityFields
 
 
