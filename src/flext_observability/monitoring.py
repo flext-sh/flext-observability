@@ -13,6 +13,7 @@ from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
 
+from flext_observability.constants import c as _obs_c
 from flext_observability.models import FlextObservabilityModels
 from flext_observability.services import FlextObservabilityServices
 from flext_observability.settings import FlextObservabilitySettings
@@ -104,9 +105,9 @@ class FlextObservabilityMonitor:
             monitor.flext_record_metric(
                 f"{metric_name}_duration_seconds",
                 execution_time,
-                "histogram",
+                _obs_c.Observability.MetricType.HISTOGRAM,
             )
-            monitor.flext_record_metric(f"{metric_name}_success_total", 1, "counter")
+            monitor.flext_record_metric(f"{metric_name}_success_total", 1, _obs_c.Observability.MetricType.COUNTER)
             monitor.increment_functions_monitored()
 
         @staticmethod
@@ -118,11 +119,11 @@ class FlextObservabilityMonitor:
             error: Exception,
         ) -> None:
             """Record metrics and alerts for function execution errors."""
-            monitor.flext_record_metric(f"{metric_name}_error_total", 1, "counter")
+            monitor.flext_record_metric(f"{metric_name}_error_total", 1, _obs_c.Observability.MetricType.COUNTER)
             monitor.flext_record_metric(
                 f"{metric_name}_error_duration_seconds",
                 execution_time,
-                "histogram",
+                _obs_c.Observability.MetricType.HISTOGRAM,
             )
 
             # Create alert if observability service is available
@@ -244,7 +245,7 @@ class FlextObservabilityMonitor:
 
             # Build health status from observability service
             health_data: t.ObservabilityCore.HealthMetricsDict = {
-                "status": "healthy" if self._initialized else "initializing",
+                "status": _obs_c.Observability.HealthStatus.HEALTHY if self._initialized else "initializing",
                 "timestamp": time.time(),
             }
 
@@ -275,7 +276,7 @@ class FlextObservabilityMonitor:
         self,
         name: str,
         value: float,
-        metric_type: str = "gauge",
+        metric_type: str = _obs_c.Observability.MetricType.GAUGE,
     ) -> r[None]:
         """Record metric through the monitoring system with config validation."""
         try:

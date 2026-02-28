@@ -24,6 +24,7 @@ from pydantic import (
     model_validator,
 )
 
+from flext_observability.constants import c as _obs_c
 from flext_observability.models import m
 from flext_observability.typings import t
 
@@ -79,7 +80,7 @@ class FlextObservabilityHealth(FlextModels):
         @computed_field
         def is_healthy(self) -> bool:
             """Computed field indicating if component is healthy."""
-            return self.status.lower() == "healthy"
+            return self.status.lower() == _obs_c.Observability.HealthStatus.HEALTHY
 
         @computed_field
         def formatted_response_time(self) -> str:
@@ -92,7 +93,7 @@ class FlextObservabilityHealth(FlextModels):
         @classmethod
         def validate_status(cls, v: str) -> str:
             """Validate health check status is one of the valid statuses."""
-            valid_statuses = ["healthy", "degraded", "unhealthy", "unknown"]
+            valid_statuses = [*_obs_c.Observability.HealthStatus, "unknown"]
             if v.lower() not in valid_statuses:
                 msg = f"Status must be one of: {valid_statuses}"
                 raise ValueError(msg)
@@ -189,7 +190,7 @@ class FlextObservabilityHealth(FlextModels):
             try:
                 if not self.component:
                     return FlextResult[bool].fail("Component name is required")
-                if self.status not in {"healthy", "degraded", "unhealthy", "unknown"}:
+                if self.status not in {*_obs_c.Observability.HealthStatus, "unknown"}:
                     return FlextResult[bool].fail(
                         f"Invalid health status: {self.status}",
                     )

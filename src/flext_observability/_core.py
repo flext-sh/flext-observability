@@ -77,7 +77,7 @@ class FlextObservability:
         name: str = Field(description="Metric name")
         value: float = Field(description="Metric value")
         unit: str = Field(default="count")
-        metric_type: Literal["counter", "gauge", "histogram"] = Field(
+        metric_type: _obs_c.Observability.MetricType = Field(
             default=_obs_c.Observability.MetricType.GAUGE
         )
         labels: t.Dict = Field(default_factory=t.Dict)
@@ -92,7 +92,7 @@ class FlextObservability:
         name: str = Field(description="Span name")
         trace_id: str = Field(default_factory=lambda: str(uuid4()))
         parent_span_id: str | None = Field(default=None)
-        status: Literal["unset", "ok", "error"] = Field(
+        status: _obs_c.Observability.TraceStatus = Field(
             default=_obs_c.Observability.TraceStatus.UNSET
         )
         attributes: t.Dict = Field(default_factory=t.Dict)
@@ -109,7 +109,7 @@ class FlextObservability:
         id: str = Field(default_factory=lambda: str(uuid4()))
         title: str = Field(default="", description="Alert title")
         message: str = Field(description="Alert message")
-        severity: Literal["info", "warning", "error", "critical"] = Field(
+        severity: _obs_c.Observability.AlertSeverity = Field(
             default=_obs_c.Observability.AlertSeverity.WARNING,
         )
         source: str = Field(default="system")
@@ -123,7 +123,7 @@ class FlextObservability:
 
         id: str = Field(default_factory=lambda: str(uuid4()))
         component: str = Field(description="Component name")
-        status: Literal["healthy", "degraded", "unhealthy"] = Field(
+        status: _obs_c.Observability.HealthStatus = Field(
             default=_obs_c.Observability.HealthStatus.HEALTHY
         )
         details: t.Dict = Field(default_factory=t.Dict)
@@ -136,7 +136,7 @@ class FlextObservability:
 
         id: str = Field(default_factory=lambda: str(uuid4()))
         message: str = Field(description="Log message")
-        level: Literal["debug", "info", "warning", "error", "critical"] = Field(
+        level: _obs_c.Observability.ErrorSeverity = Field(
             default=_obs_c.Observability.ErrorSeverity.INFO,
         )
         component: str = Field(default="application")
@@ -183,7 +183,7 @@ class FlextObservability:
                     )
 
                 # Auto-detect metric type from name
-                metric_type: Literal["counter", "gauge", "histogram"] = (
+                metric_type: _obs_c.Observability.MetricType = (
                     _obs_c.Observability.MetricType.GAUGE
                 )
                 if name.endswith(("_total", "_count")):
@@ -408,7 +408,7 @@ def flext_metric(
     name: str,
     value: float,
     unit: str = "count",
-    metric_type: Literal["counter", "gauge", "histogram"] | None = None,
+    metric_type: _obs_c.Observability.MetricType | None = None,
     metric_id: str | None = None,
     tags: t.Dict | None = None,
     labels: t.Dict | None = None,
@@ -433,7 +433,7 @@ def flext_metric(
             all_labels_data.update(labels.items())
         all_labels = t.Dict.model_validate(all_labels_data)
 
-        detected_type: Literal["counter", "gauge", "histogram"] = (
+        detected_type: _obs_c.Observability.MetricType = (
             metric_type or _obs_c.Observability.MetricType.GAUGE
         )
         if not metric_type:

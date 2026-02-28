@@ -13,21 +13,21 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from flext_core import m, t
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from flext_core import FlextModels, t
+from pydantic import ConfigDict, Field, computed_field
 
 
-class FlextObservabilityModels(m):
+class FlextObservabilityModels(FlextModels):
     """Generic observability models with Pydantic patterns.
 
     Single class providing generic base models using composition and delegation.
     Zero domain-specific logic - pure generic foundation with minimal code.
     """
 
-    class GenericObservabilityEntry(m.Value):
+    class GenericObservabilityEntry(FlextModels.Value):
         """Generic base model for any observability entry using Pydantic."""
 
-        model_config = ConfigDict(
+        model_config: ConfigDict = ConfigDict(
             validate_assignment=True,
             extra="allow",
             frozen=False,
@@ -70,10 +70,10 @@ class FlextObservabilityModels(m):
             """List of data keys for introspection."""
             return list(self.data.keys()) if self.data else []
 
-    class GenericObservabilityConfig(BaseModel):
+    class GenericObservabilityConfig(FlextModels.Value):
         """Generic configuration using Pydantic patterns."""
 
-        model_config = ConfigDict(
+        model_config: ConfigDict = ConfigDict(
             validate_assignment=True,
             extra="allow",
             frozen=False,
@@ -110,7 +110,7 @@ class FlextObservabilityModels(m):
     class Observability:
         """Metrics domain models."""
 
-        class MetricEntry(m.Entity):
+        class MetricEntry(FlextModels.Entity):
             """Metric entry model."""
 
             metric_id: str = Field(default_factory=lambda: str(uuid4()))

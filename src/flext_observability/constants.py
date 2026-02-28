@@ -171,6 +171,7 @@ class FlextObservabilityConstants(FlextConstants):
                 or ErrorSeverity.INFO directly - no base strings needed.
             """
 
+            DEBUG = "debug"
             INFO = "info"
             WARNING = "warning"
             ERROR = "error"
