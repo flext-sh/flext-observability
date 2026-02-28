@@ -10,13 +10,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextContainer, FlextResult, FlextRuntime, u
+from flext_core import FlextContainer, FlextResult, FlextRuntime
 
 from flext_observability.settings import FlextObservabilitySettings
 from flext_observability.typings import t
 
 
-class FlextObservabilityServices(u):
+class FlextObservabilityServices:
     """Generic observability services delegating to FLEXT core patterns.
 
     Single unified class providing generic observability operations through

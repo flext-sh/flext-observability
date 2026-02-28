@@ -81,6 +81,10 @@ if TYPE_CHECKING:
         FlextObservabilityTypes,
         FlextObservabilityTypes as t,
     )
+    from flext_observability.utilities import (
+        FlextObservabilityUtilities,
+        FlextObservabilityUtilities as u,
+    )
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -185,6 +189,14 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "s": ("flext_core", "FlextService"),
     "t": ("flext_observability.typings", "FlextObservabilityTypes"),
     "x": ("flext_core", "FlextMixins"),
+    "FlextObservabilityUtilities": (
+        "flext_observability.utilities",
+        "FlextObservabilityUtilities",
+    ),
+    "u": (
+        "flext_observability.utilities",
+        "FlextObservabilityUtilities",
+    ),
 }
 
 __all__ = [
@@ -209,6 +221,7 @@ __all__ = [
     "FlextObservabilitySampling",
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
+    "FlextObservabilityUtilities",
     "__version__",
     "__version_info__",
     "c",
@@ -228,6 +241,7 @@ __all__ = [
     "reset_global_factory",
     "s",
     "t",
+    "u",
     "x",
 ]
 
