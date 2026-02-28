@@ -9,23 +9,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, FlextTypes as t
-
-
-@runtime_checkable
-class _SpanProtocol(Protocol):
-    """Protocol for OpenTelemetry Span interface."""
-
-    def set_attribute(self, key: str, *, value: t.ScalarValue) -> None:
-        """Set span attribute."""
-        ...
-
-    def set_status(self, status: int) -> None:
-        """Set span status."""
-        ...
-
-
-Span = _SpanProtocol
+from flext_core import FlextProtocols, t
 
 
 class FlextObservabilityProtocols(FlextProtocols):
@@ -50,6 +34,18 @@ class FlextObservabilityProtocols(FlextProtocols):
     metrics: p.Observability.MetricsProtocol
     tracing: p.Observability.TracingProtocol
     """
+
+    @runtime_checkable
+    class _SpanProtocol(Protocol):
+        """Protocol for OpenTelemetry Span interface."""
+
+        def set_attribute(self, key: str, *, value: t.ScalarValue) -> None:
+            """Set span attribute."""
+            ...
+
+        def set_status(self, status: int) -> None:
+            """Set span status."""
+            ...
 
     # =========================================================================
     # OBSERVABILITY-SPECIFIC PROTOCOLS
