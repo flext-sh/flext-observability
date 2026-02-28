@@ -149,7 +149,7 @@ class FlextObservabilityUtilities(FlextUtilities):
                 return "auth"
             return "unknown"
 
-    class Context:
+    class TraceContext:
         """Context management helpers."""
 
         @staticmethod
