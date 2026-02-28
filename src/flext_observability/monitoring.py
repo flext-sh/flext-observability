@@ -45,9 +45,9 @@ class FlextObservabilityMonitor:
         @staticmethod
         def call_any_function(
             func: FlextObservabilityMonitor.object_callable,
-            *args: object,
-            **kwargs: object,
-        ) -> object:
+            *args: t.GeneralValueType,
+            **kwargs: t.GeneralValueType,
+        ) -> t.GeneralValueType:
             """Helper to call function with flexible arguments."""
             # Cast to object to avoid type checking issues with arbitrary function calls
             return func(*args, **kwargs)
@@ -55,11 +55,11 @@ class FlextObservabilityMonitor:
         @staticmethod
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
-            args: tuple[object, ...],
+            args: tuple[t.GeneralValueType, ...],
             kwargs: t.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
-        ) -> object:
+        ) -> t.GeneralValueType:
             """Execute function with monitoring."""
             function_name = getattr(func, "__name__", "unknown_function")
             actual_metric_name = metric_name or f"function_execution_{function_name}"
@@ -354,7 +354,7 @@ class FlextObservabilityMonitor:
             def decorator(
                 func: FlextObservabilityMonitor.object_callable,
             ) -> FlextObservabilityMonitor.object_callable:
-                def wrapper(*args: object, **kwargs: object) -> object:
+                def wrapper(*args: t.GeneralValueType, **kwargs: t.GeneralValueType) -> t.GeneralValueType:
                     # Use provided monitor or create simple one
                     active_monitor = monitor or FlextObservabilityMonitor()
 

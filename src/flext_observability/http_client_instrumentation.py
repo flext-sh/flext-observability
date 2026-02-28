@@ -134,10 +134,10 @@ class FlextObservabilityHTTPClient:
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
 
-        instrumented_clients: ClassVar[set[object]] = set()
+        instrumented_clients: ClassVar[set[t.GeneralValueType]] = set()
 
         @staticmethod
-        def setup_instrumentation(client: object) -> FlextResult[bool]:
+        def setup_instrumentation(client: t.GeneralValueType) -> FlextResult[bool]:
             """Setup httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -291,8 +291,8 @@ class FlextObservabilityHTTPClient:
                     def traced_request(
                         method: str,
                         url: str,
-                        *args: object,
-                        **kwargs: object,
+                        *args: t.GeneralValueType,
+                        **kwargs: t.GeneralValueType,
                     ) -> HTTPXResponseProtocol:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
@@ -393,10 +393,10 @@ class FlextObservabilityHTTPClient:
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
 
-        instrumented_sessions: ClassVar[set[object]] = set()
+        instrumented_sessions: ClassVar[set[t.GeneralValueType]] = set()
 
         @staticmethod
-        def setup_instrumentation(session: object) -> FlextResult[bool]:
+        def setup_instrumentation(session: t.GeneralValueType) -> FlextResult[bool]:
             """Setup aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests
@@ -452,8 +452,8 @@ class FlextObservabilityHTTPClient:
                 async def traced_request(
                     method: str,
                     url: str,
-                    *args: object,
-                    **kwargs: object,
+                    *args: t.GeneralValueType,
+                    **kwargs: t.GeneralValueType,
                 ) -> AIOHTTPResponseProtocol:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()

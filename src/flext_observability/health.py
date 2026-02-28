@@ -102,7 +102,7 @@ class FlextObservabilityHealth(FlextModels):
         def serialize_details_with_health_context(
             self,
             value: t.Dict,
-            _info: object,
+            _info: t.GeneralValueType,
         ) -> t.Dict:
             """Serialize details with health check context."""
             return t.Dict.model_validate(
@@ -203,7 +203,7 @@ class FlextObservabilityHealth(FlextModels):
         component: str,
         status: str = "unknown",
         message: str = "",
-        **kwargs: object,
+        **kwargs: t.GeneralValueType,
     ) -> FlextResult[FlextObservabilityHealth.FlextHealthCheck]:
         """Create a FlextHealthCheck entity directly."""
         try:

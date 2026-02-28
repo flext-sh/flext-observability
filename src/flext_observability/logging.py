@@ -90,7 +90,7 @@ class FlextObservabilityLogging(FlextModels):
         def serialize_context_with_log_metadata(
             self,
             value: Mapping[str, t.GeneralValueType],
-            _info: object,
+            _info: t.GeneralValueType,
         ) -> Mapping[str, t.GeneralValueType]:
             """Serialize context with log metadata."""
             return {

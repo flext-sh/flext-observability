@@ -111,7 +111,7 @@ class FlextObservabilityHTTP:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: object) -> FlextResult[bool]:
+        def setup_instrumentation(app: t.GeneralValueType) -> FlextResult[bool]:
             """Setup Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -298,7 +298,7 @@ class FlextObservabilityHTTP:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: object) -> FlextResult[bool]:
+        def setup_instrumentation(app: t.GeneralValueType) -> FlextResult[bool]:
             """Setup FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,
@@ -344,7 +344,7 @@ class FlextObservabilityHTTP:
                 class FlextObservabilityMiddleware:
                     """Starlette-based ASGI middleware for FastAPI."""
 
-                    def __init__(self, app: object) -> None:
+                    def __init__(self, app: t.GeneralValueType) -> None:
                         _ = app
 
                     async def dispatch(

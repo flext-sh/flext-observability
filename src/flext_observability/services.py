@@ -85,7 +85,7 @@ class FlextObservabilityServices:
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[t.Dict].fail(f"Status check failed: {e}")
 
-    def create_alert(self, **_kwargs: object) -> FlextResult[t.Dict]:
+    def create_alert(self, **_kwargs: t.GeneralValueType) -> FlextResult[t.Dict]:
         """Generic alert creation - not implemented in base service."""
         return FlextResult[t.Dict].fail(
             "Alert creation not implemented in generic service",
@@ -98,7 +98,7 @@ class FlextObservabilityServices:
         )
 
     @property
-    def health_service(self) -> object | None:
+    def health_service(self) -> t.GeneralValueType | None:
         """Generic health service - not implemented in base service."""
         return None
 
