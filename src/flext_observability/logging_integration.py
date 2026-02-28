@@ -58,7 +58,7 @@ class FlextObservabilityLogging:
         span_id: str | None = None
         baggage: str | None = None
         extra: MutableMapping[str, str | int | float | bool | None] = Field(
-            default_factory=dict
+            default_factory=dict,
         )
 
     _logger = FlextLogger(__name__)
@@ -367,7 +367,7 @@ class FlextObservabilityLogging:
                         if context.get("span_id") is not None
                         else None
                     ),
-                )
+                ),
             )
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityLogging.LogContext].fail(

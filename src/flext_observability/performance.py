@@ -34,7 +34,8 @@ class PerformanceMetrics(BaseModel):
     cpu_percent: float = Field(default=0.0, description="CPU usage percentage")
     success: bool = Field(default=True, description="Operation success status")
     error_message: str | None = Field(
-        default=None, description="Error message if failed"
+        default=None,
+        description="Error message if failed",
     )
 
     def calculate_duration(self) -> None:

@@ -126,7 +126,9 @@ class FlextObservabilityMonitor:
         ) -> None:
             """Record metrics and alerts for function execution errors."""
             monitor.flext_record_metric(
-                f"{metric_name}_error_total", 1, _obs_c.Observability.MetricType.COUNTER
+                f"{metric_name}_error_total",
+                1,
+                _obs_c.Observability.MetricType.COUNTER,
             )
             monitor.flext_record_metric(
                 f"{metric_name}_error_duration_seconds",
@@ -365,7 +367,8 @@ class FlextObservabilityMonitor:
                 func: FlextObservabilityMonitor.object_callable,
             ) -> FlextObservabilityMonitor.object_callable:
                 def wrapper(
-                    *args: t.GeneralValueType, **kwargs: t.GeneralValueType
+                    *args: t.GeneralValueType,
+                    **kwargs: t.GeneralValueType,
                 ) -> t.GeneralValueType:
                     # Use provided monitor or create simple one
                     active_monitor = monitor or FlextObservabilityMonitor()

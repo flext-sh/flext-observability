@@ -154,7 +154,8 @@ class FlextObservabilityProtocols(FlextProtocols):
                 ...
 
             def get_trace(
-                self, trace_id: str
+                self,
+                trace_id: str,
             ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
                 """Get trace by ID."""
                 ...

@@ -199,7 +199,7 @@ class FlextObservabilityHTTPClient:
                     original_send: Callable[
                         [HTTPXRequestProtocol],
                         Awaitable[HTTPXResponseProtocol],
-                    ] = getattr(client, "_send")
+                    ] = client._send
 
                     async def traced_send(
                         request: HTTPXRequestProtocol,
@@ -279,12 +279,12 @@ class FlextObservabilityHTTPClient:
                             raise
 
                     # Replace send method using setattr
-                    setattr(client, "_send", traced_send)
+                    client._send = traced_send
 
                 else:
                     # Get original request method using getattr for dynamic access
-                    original_request: Callable[..., HTTPXResponseProtocol] = getattr(
-                        client, "request"
+                    original_request: Callable[..., HTTPXResponseProtocol] = (
+                        client.request
                     )
 
                     def traced_request(
@@ -304,7 +304,8 @@ class FlextObservabilityHTTPClient:
                         # Add trace headers to request
                         headers = FlextObservabilityHTTPClient._validated_headers(
                             (kwargs if isinstance(kwargs, dict) else {}).get(
-                                "headers", {}
+                                "headers",
+                                {},
                             ),
                         )
                         if correlation_id:
@@ -372,7 +373,7 @@ class FlextObservabilityHTTPClient:
                             raise
 
                     # Replace request method using setattr
-                    setattr(client, "request", traced_request)
+                    client.request = traced_request
 
                 # Mark as instrumented
                 FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client)
@@ -448,7 +449,7 @@ class FlextObservabilityHTTPClient:
                 original_request: Callable[
                     ...,
                     Awaitable[AIOHTTPResponseProtocol],
-                ] = getattr(session, "_request")
+                ] = session._request
 
                 async def traced_request(
                     method: str,
@@ -541,7 +542,7 @@ class FlextObservabilityHTTPClient:
                         raise
 
                 # Replace request method using setattr
-                setattr(session, "_request", traced_request)
+                session._request = traced_request
 
                 # Mark as instrumented
                 FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions.add(session)

@@ -32,7 +32,9 @@ class ErrorEvent(FlextModels.Event):
     """Represents an error event."""
 
     event_type: str = Field(
-        default="error", frozen=True, description="Event type identifier"
+        default="error",
+        frozen=True,
+        description="Event type identifier",
     )
     error_type: str = Field(description="Error type")
     message: str = Field(description="Error message")
@@ -221,7 +223,8 @@ class FlextObservabilityErrorHandling:
             return not count < self._escalation_threshold
 
         def get_escalated_severity(
-            self, error: ErrorEvent
+            self,
+            error: ErrorEvent,
         ) -> c.Observability.ErrorSeverity:
             """Get escalated severity based on error count.
 

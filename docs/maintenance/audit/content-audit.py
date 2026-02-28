@@ -447,7 +447,7 @@ class DocumentationAuditor:
             "stale_files": self.report.stale_files,
             "file_metrics": file_metrics,
             "category_breakdown": dict[str, t.GeneralValueType](
-                self.report.category_breakdown
+                self.report.category_breakdown,
             ),
             "overall_quality_score": self.report.overall_quality_score,
         }

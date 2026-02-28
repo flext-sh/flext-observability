@@ -222,15 +222,17 @@ class FlextObservabilityHealth(FlextModels):
                 message=message,
             )
             if valid_kwargs.get("metrics") and isinstance(
-                valid_kwargs["metrics"], t.Dict
+                valid_kwargs["metrics"],
+                t.Dict,
             ):
                 health_check.metrics = valid_kwargs["metrics"]
             if valid_kwargs.get("timestamp") and isinstance(
-                valid_kwargs["timestamp"], datetime
+                valid_kwargs["timestamp"],
+                datetime,
             ):
                 health_check.timestamp = valid_kwargs["timestamp"]
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(
-                health_check
+                health_check,
             )
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].fail(

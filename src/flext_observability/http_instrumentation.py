@@ -147,7 +147,8 @@ class FlextObservabilityHTTP:
             """
             try:
                 if not hasattr(app, "before_request") or not hasattr(
-                    app, "after_request"
+                    app,
+                    "after_request",
                 ):
                     return FlextResult[bool].fail(
                         "Invalid Flask app - missing request hooks",
@@ -220,7 +221,7 @@ class FlextObservabilityHTTP:
                         status_code = int(
                             response.status_code
                             if hasattr(response, "status_code")
-                            else 200
+                            else 200,
                         )
                         is_error = (
                             status_code
@@ -350,7 +351,8 @@ class FlextObservabilityHTTP:
                         self,
                         request: RequestProtocol,
                         call_next: Callable[
-                            [RequestProtocol], Awaitable[ResponseProtocol]
+                            [RequestProtocol],
+                            Awaitable[ResponseProtocol],
                         ],
                     ) -> ResponseProtocol:
                         """Process HTTP request with instrumentation."""
@@ -396,7 +398,7 @@ class FlextObservabilityHTTP:
                                 status_code = int(
                                     response.status_code
                                     if hasattr(response, "status_code")
-                                    else 200
+                                    else 200,
                                 )
                                 is_error = (
                                     status_code

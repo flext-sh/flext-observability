@@ -75,10 +75,12 @@ class FlextObservabilityTypes(FlextTypes):
         ]
         type MonitoringConfig = dict[str, str | int | bool | list[str]]
         type MetricsConfig = dict[
-            str, bool | str | dict[str, FlextTypes.GeneralValueType]
+            str,
+            bool | str | dict[str, FlextTypes.GeneralValueType],
         ]
         type TracingConfig = dict[
-            str, str | int | bool | list[str] | _t.GeneralValueType
+            str,
+            str | int | bool | list[str] | _t.GeneralValueType,
         ]
 
     # =========================================================================
@@ -99,10 +101,12 @@ class FlextObservabilityTypes(FlextTypes):
         ]
         type MetricAggregation = dict[str, float | dict[str, float | int | Decimal]]
         type MetricThresholds = dict[
-            str, float | int | bool | dict[str, FlextTypes.GeneralValueType]
+            str,
+            float | int | bool | dict[str, FlextTypes.GeneralValueType],
         ]
         type MetricConfiguration = dict[
-            str, bool | str | int | dict[str, FlextTypes.GeneralValueType]
+            str,
+            bool | str | int | dict[str, FlextTypes.GeneralValueType],
         ]
 
         # Tracing and span types
@@ -111,7 +115,8 @@ class FlextObservabilityTypes(FlextTypes):
             str | int | bool | dict[str, FlextTypes.JsonValue],
         ]
         type SpanAttributes = dict[
-            str, str | int | float | bool | dict[str, FlextTypes.GeneralValueType]
+            str,
+            str | int | float | bool | dict[str, FlextTypes.GeneralValueType],
         ]
         type TraceContext = dict[str, str | int | dict[str, FlextTypes.JsonValue]]
         type SpanHierarchy = dict[str, list[dict[str, FlextTypes.JsonValue]]]
@@ -133,14 +138,16 @@ class FlextObservabilityTypes(FlextTypes):
 
         # Log aggregation types
         type LogConfiguration = dict[
-            str, str | int | bool | dict[str, FlextTypes.GeneralValueType]
+            str,
+            str | int | bool | dict[str, FlextTypes.GeneralValueType],
         ]
         type LogFilters = dict[str, str | list[str] | dict[str, FlextTypes.JsonValue]]
         type LogProcessing = dict[str, str | dict[str, FlextTypes.JsonValue] | bool]
 
         # Service discovery types
         type ServiceRegistry = dict[
-            str, dict[str, str | int | dict[str, FlextTypes.GeneralValueType]]
+            str,
+            dict[str, str | int | dict[str, FlextTypes.GeneralValueType]],
         ]
         type ServiceDiscovery = dict[str, list[dict[str, FlextTypes.JsonValue]]]
         type ServiceHealth = dict[str, str | dict[str, FlextTypes.JsonValue]]

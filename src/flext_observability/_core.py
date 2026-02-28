@@ -78,7 +78,7 @@ class FlextObservability:
         value: float = Field(description="Metric value")
         unit: str = Field(default="count")
         metric_type: _obs_c.Observability.MetricType = Field(
-            default=_obs_c.Observability.MetricType.GAUGE
+            default=_obs_c.Observability.MetricType.GAUGE,
         )
         labels: t.Dict = Field(default_factory=t.Dict)
         timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
@@ -93,7 +93,7 @@ class FlextObservability:
         trace_id: str = Field(default_factory=lambda: str(uuid4()))
         parent_span_id: str | None = Field(default=None)
         status: _obs_c.Observability.TraceStatus = Field(
-            default=_obs_c.Observability.TraceStatus.UNSET
+            default=_obs_c.Observability.TraceStatus.UNSET,
         )
         attributes: t.Dict = Field(default_factory=t.Dict)
         start_time: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
@@ -124,7 +124,7 @@ class FlextObservability:
         id: str = Field(default_factory=lambda: str(uuid4()))
         component: str = Field(description="Component name")
         status: _obs_c.Observability.HealthStatus = Field(
-            default=_obs_c.Observability.HealthStatus.HEALTHY
+            default=_obs_c.Observability.HealthStatus.HEALTHY,
         )
         details: t.Dict = Field(default_factory=t.Dict)
         timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
@@ -205,7 +205,7 @@ class FlextObservability:
                 TypeError,
                 AttributeError,
             ) as e:
-                self._logger.warning(f"Metric recording failed: {e}", exc_info=True)
+                self._logger.warning("Metric recording failed: %s", e, exc_info=True)
                 return FlextResult[FlextObservability.Metric].fail(
                     f"Metric recording failed: {e}",
                 )
@@ -246,7 +246,7 @@ class FlextObservability:
                 TypeError,
                 AttributeError,
             ) as e:
-                self._logger.warning(f"Trace creation failed: {e}", exc_info=True)
+                self._logger.warning("Trace creation failed: %s", e, exc_info=True)
                 return FlextResult[FlextObservability.Trace].fail(
                     f"Trace creation failed: {e}",
                 )
@@ -297,7 +297,7 @@ class FlextObservability:
                 TypeError,
                 AttributeError,
             ) as e:
-                self._logger.warning(f"Alert creation failed: {e}", exc_info=True)
+                self._logger.warning("Alert creation failed: %s", e, exc_info=True)
                 return FlextResult[FlextObservability.Alert].fail(
                     f"Alert creation failed: {e}",
                 )
@@ -319,7 +319,9 @@ class FlextObservability:
             self,
             component: str,
             status: Literal[
-                "healthy", "degraded", "unhealthy"
+                "healthy",
+                "degraded",
+                "unhealthy",
             ] = _obs_c.Observability.HealthStatus.HEALTHY.value,
             details: t.Dict | None = None,
         ) -> FlextResult[FlextObservability.HealthCheck]:
@@ -346,7 +348,7 @@ class FlextObservability:
                 TypeError,
                 AttributeError,
             ) as e:
-                self._logger.warning(f"Health check failed: {e}", exc_info=True)
+                self._logger.warning("Health check failed: %s", e, exc_info=True)
                 return FlextResult[FlextObservability.HealthCheck].fail(
                     f"Health check failed: {e}",
                 )
@@ -368,7 +370,11 @@ class FlextObservability:
             self,
             message: str,
             level: Literal[
-                "debug", "info", "warning", "error", "critical"
+                "debug",
+                "info",
+                "warning",
+                "error",
+                "critical",
             ] = _obs_c.Observability.ErrorSeverity.INFO.value,
             component: str = "application",
             context: t.Dict | None = None,
@@ -393,7 +399,7 @@ class FlextObservability:
                 TypeError,
                 AttributeError,
             ) as e:
-                self._logger.warning(f"Log entry creation failed: {e}", exc_info=True)
+                self._logger.warning("Log entry creation failed: %s", e, exc_info=True)
                 return FlextResult[FlextObservability.LogEntry].fail(
                     f"Log entry creation failed: {e}",
                 )
@@ -483,7 +489,10 @@ def flext_alert(
     title: str = "",
     message: str = "",
     severity: Literal[
-        "info", "warning", "error", "critical"
+        "info",
+        "warning",
+        "error",
+        "critical",
     ] = _obs_c.Observability.AlertSeverity.WARNING.value,
     status: Literal["firing", "resolved"] = "firing",
     alert_id: str | None = None,
@@ -520,7 +529,9 @@ def flext_alert(
 def flext_health_check(
     component: str,
     status: Literal[
-        "healthy", "degraded", "unhealthy"
+        "healthy",
+        "degraded",
+        "unhealthy",
     ] = _obs_c.Observability.HealthStatus.HEALTHY.value,
     health_check_id: str | None = None,
     details: t.Dict | None = None,
@@ -554,7 +565,11 @@ def flext_health_check(
 def flext_log_entry(
     message: str,
     level: Literal[
-        "debug", "info", "warning", "error", "critical"
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical",
     ] = _obs_c.Observability.ErrorSeverity.INFO.value,
     component: str = "application",
     timestamp: datetime | None = None,
@@ -710,7 +725,10 @@ class FlextObservabilityMasterFactory:
             case _:
                 valid_level = "info"
         return flext_log_entry(
-            message, level=valid_level, context=context, timestamp=timestamp
+            message,
+            level=valid_level,
+            context=context,
+            timestamp=timestamp,
         )
 
     def alert(
