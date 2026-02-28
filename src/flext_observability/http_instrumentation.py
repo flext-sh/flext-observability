@@ -162,23 +162,26 @@ class FlextObservabilityHTTP:
                     """Extract context and create span before request processing."""
                     try:
                         # Extract or create correlation ID from headers
-                        headers_dict = dict(request.headers)
-                        FlextObservabilityContext.from_headers(headers_dict)
+                        headers_dict = dict(request.headers) if request else {}
+                        if request:
+                            FlextObservabilityContext.from_headers(headers_dict)
 
                         # Set trace ID from context
                         correlation_id = FlextObservabilityContext.get_correlation_id()
 
                         # Store request start time for duration calculation
-                        g.flext_start_time = time.time()
+                        if g:
+                            g.flext_start_time = time.time()
 
                         # Store request metadata in g for after_request access
-                        g.flext_correlation_id = correlation_id
+                        if g:
+                            g.flext_correlation_id = correlation_id
 
                         # Log request start
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
                             "debug",
-                            f"HTTP {request.method} {request.path}",
+                            f"HTTP {request.method if request else 'UNKNOWN'} {request.path if request else 'UNKNOWN'}",
                             extra={
                                 "http_method": request.method,
                                 "http_path": request.path,
@@ -229,10 +232,10 @@ class FlextObservabilityHTTP:
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
                             "info" if not is_error else "warning",
-                            f"HTTP {request.method} {request.path} -> {status_code}",
+                            f"HTTP {request.method if request else 'UNKNOWN'} {request.path if request else 'UNKNOWN'} -> {status_code}",
                             extra={
-                                "http_method": request.method,
-                                "http_path": request.path,
+                                "http_method": request.method if request else "UNKNOWN",
+                                "http_path": request.path if request else "UNKNOWN",
                                 "http_status": status_code,
                                 "http_duration_ms": duration_ms,
                             },
@@ -264,8 +267,8 @@ class FlextObservabilityHTTP:
                             "error",
                             f"HTTP request error: {error!s}",
                             extra={
-                                "http_method": request.method,
-                                "http_path": request.path,
+                                "http_method": request.method if request else "UNKNOWN",
+                                "http_path": request.path if request else "UNKNOWN",
                                 "error_type": type(error).__name__,
                                 "error_message": str(error),
                             },
@@ -460,7 +463,7 @@ class FlextObservabilityHTTP:
     async def _async_log_with_context(
         message: str,
         level: str,
-        extra: t.Dict,
+        extra: t.Dict | dict[str, t.GeneralValueType] | None = None,
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 

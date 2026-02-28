@@ -320,7 +320,7 @@ class FlextObservability:
             component: str,
             status: Literal[
                 "healthy", "degraded", "unhealthy"
-            ] = _obs_c.Observability.HealthStatus.HEALTHY,
+            ] = _obs_c.Observability.HealthStatus.HEALTHY.value,
             details: t.Dict | None = None,
         ) -> FlextResult[FlextObservability.HealthCheck]:
             """Create a health check."""
@@ -369,7 +369,7 @@ class FlextObservability:
             message: str,
             level: Literal[
                 "debug", "info", "warning", "error", "critical"
-            ] = _obs_c.Observability.ErrorSeverity.INFO,
+            ] = _obs_c.Observability.ErrorSeverity.INFO.value,
             component: str = "application",
             context: t.Dict | None = None,
         ) -> FlextResult[FlextObservability.LogEntry]:
@@ -484,7 +484,7 @@ def flext_alert(
     message: str = "",
     severity: Literal[
         "info", "warning", "error", "critical"
-    ] = _obs_c.Observability.AlertSeverity.WARNING,
+    ] = _obs_c.Observability.AlertSeverity.WARNING.value,
     status: Literal["firing", "resolved"] = "firing",
     alert_id: str | None = None,
     source: str = "system",
@@ -521,7 +521,7 @@ def flext_health_check(
     component: str,
     status: Literal[
         "healthy", "degraded", "unhealthy"
-    ] = _obs_c.Observability.HealthStatus.HEALTHY,
+    ] = _obs_c.Observability.HealthStatus.HEALTHY.value,
     health_check_id: str | None = None,
     details: t.Dict | None = None,
 ) -> FlextResult[FlextObservability.HealthCheck]:
@@ -555,7 +555,7 @@ def flext_log_entry(
     message: str,
     level: Literal[
         "debug", "info", "warning", "error", "critical"
-    ] = _obs_c.Observability.ErrorSeverity.INFO,
+    ] = _obs_c.Observability.ErrorSeverity.INFO.value,
     component: str = "application",
     timestamp: datetime | None = None,
     context: t.Dict | None = None,

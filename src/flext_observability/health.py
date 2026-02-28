@@ -207,7 +207,7 @@ class FlextObservabilityHealth(FlextModels):
     ) -> FlextResult[FlextObservabilityHealth.FlextHealthCheck]:
         """Create a FlextHealthCheck entity directly."""
         try:
-            valid_kwargs = {}
+            valid_kwargs: dict[str, t.GeneralValueType] = {}
             try:
                 parsed_kwargs = _HealthCheckFactoryKwargs.model_validate(kwargs)
                 if parsed_kwargs.metrics is not None:
@@ -217,14 +217,16 @@ class FlextObservabilityHealth(FlextModels):
             except ValidationError:
                 valid_kwargs = {}
 
-            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(
-                FlextObservabilityHealth.FlextHealthCheck(
-                    component=component,
-                    status=status,
-                    message=message,
-                    **valid_kwargs,
-                ),
+            health_check = FlextObservabilityHealth.FlextHealthCheck(
+                component=component,
+                status=status,
+                message=message,
             )
+            if valid_kwargs.get("metrics") and isinstance(valid_kwargs["metrics"], t.Dict):
+                health_check.metrics = valid_kwargs["metrics"]
+            if valid_kwargs.get("timestamp") and isinstance(valid_kwargs["timestamp"], datetime):
+                health_check.timestamp = valid_kwargs["timestamp"]
+            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(health_check)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].fail(
                 f"Failed to create health check: {e}",

@@ -200,7 +200,7 @@ class FlextObservabilityHTTPClient:
                     original_send: Callable[
                         [HTTPXRequestProtocol],
                         Awaitable[HTTPXResponseProtocol],
-                    ] = client._send
+                    ] = getattr(client, "_send")
 
                     async def traced_send(
                         request: HTTPXRequestProtocol,
@@ -285,7 +285,7 @@ class FlextObservabilityHTTPClient:
                 else:
                     # Get original request method using getattr for dynamic access
                     original_request: Callable[..., HTTPXResponseProtocol] = (
-                        client.request
+                        getattr(client, "request")
                     )
 
                     def traced_request(
@@ -304,7 +304,7 @@ class FlextObservabilityHTTPClient:
 
                         # Add trace headers to request
                         headers = FlextObservabilityHTTPClient._validated_headers(
-                            kwargs.get("headers", {}),
+                            (kwargs if isinstance(kwargs, dict) else {}).get("headers", {}),
                         )
                         if correlation_id:
                             headers["X-Correlation-ID"] = correlation_id
@@ -465,7 +465,7 @@ class FlextObservabilityHTTPClient:
 
                     # Add trace headers to request
                     headers = FlextObservabilityHTTPClient._validated_headers(
-                        kwargs.get("headers", {}),
+                        (kwargs if isinstance(kwargs, dict) else {}).get("headers", {}),
                     )
                     if correlation_id:
                         headers["X-Correlation-ID"] = correlation_id

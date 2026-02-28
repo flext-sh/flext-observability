@@ -17,7 +17,7 @@ from flext_core.typings import FlextTypes as t
 class _SpanProtocol(Protocol):
     """Protocol for OpenTelemetry Span interface."""
 
-    def set_attribute(self, key: str, *, value: str | float | bool) -> None:
+    def set_attribute(self, key: str, *, value: t.ScalarValue) -> None:
         """Set span attribute."""
         ...
 
@@ -75,17 +75,17 @@ class FlextObservabilityProtocols(FlextProtocols):
                 value: float,
                 *,
                 unit: str = "count",
-                tags: Mapping[str, str] | None = None,
+                tags: Mapping[str, t.ScalarValue] | None = None,
             ) -> FlextProtocols.Result[bool]:
                 """Record a metric value."""
                 ...
 
             def get_metrics(
                 self,
-                name_pattern: str | None = None,
+                name_pattern: t.ScalarValue | None = None,
                 *,
-                start_time: str | None = None,
-                end_time: str | None = None,
+                start_time: t.ScalarValue | None = None,
+                end_time: t.ScalarValue | None = None,
             ) -> FlextProtocols.Result[list[Mapping[str, t.GeneralValueType]]]:
                 """Get collected metrics."""
                 ...
@@ -116,7 +116,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 description: str,
                 *,
                 unit: str = "seconds",
-                buckets: list[float] | None = None,
+                buckets: list[t.ScalarValue] | None = None,
             ) -> FlextProtocols.Result[t.GeneralValueType]:
                 """Create a histogram metric."""
                 ...
@@ -129,8 +129,8 @@ class FlextObservabilityProtocols(FlextProtocols):
                 self,
                 operation_name: str,
                 *,
-                service_name: str | None = None,
-                parent_span_id: str | None = None,
+                service_name: t.ScalarValue | None = None,
+                parent_span_id: t.ScalarValue | None = None,
             ) -> FlextProtocols.Result[t.GeneralValueType]:
                 """Start a new trace span."""
                 ...
@@ -140,7 +140,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 span: Span,
                 *,
                 status: str = "ok",
-                error: str | None = None,
+                error: t.ScalarValue | None = None,
             ) -> FlextProtocols.Result[bool]:
                 """Finish a trace span."""
                 ...
@@ -149,7 +149,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 self,
                 span: Span,
                 key: str,
-                value: str | float,
+                value: t.ScalarValue,
             ) -> FlextProtocols.Result[bool]:
                 """Add tag to trace span."""
                 ...
@@ -163,10 +163,10 @@ class FlextObservabilityProtocols(FlextProtocols):
             def search_traces(
                 self,
                 *,
-                service_name: str | None = None,
-                operation_name: str | None = None,
-                start_time: str | None = None,
-                end_time: str | None = None,
+                service_name: t.ScalarValue | None = None,
+                operation_name: t.ScalarValue | None = None,
+                start_time: t.ScalarValue | None = None,
+                end_time: t.ScalarValue | None = None,
             ) -> FlextProtocols.Result[list[Mapping[str, t.GeneralValueType]]]:
                 """Search traces by criteria."""
                 ...
@@ -180,8 +180,8 @@ class FlextObservabilityProtocols(FlextProtocols):
                 message: str,
                 level: str,
                 *,
-                service: str | None = None,
-                tags: Mapping[str, str] | None = None,
+                service: t.ScalarValue | None = None,
+                tags: Mapping[str, t.ScalarValue] | None = None,
             ) -> FlextProtocols.Result[str]:
                 """Create an alert."""
                 ...
@@ -193,9 +193,9 @@ class FlextObservabilityProtocols(FlextProtocols):
             def get_alerts(
                 self,
                 *,
-                level: str | None = None,
-                service: str | None = None,
-                resolved: bool | None = None,
+                level: t.ScalarValue | None = None,
+                service: t.ScalarValue | None = None,
+                resolved: t.ScalarValue | None = None,
             ) -> FlextProtocols.Result[list[Mapping[str, t.GeneralValueType]]]:
                 """Get alerts by criteria."""
                 ...
@@ -205,8 +205,8 @@ class FlextObservabilityProtocols(FlextProtocols):
                 name: str,
                 condition: str,
                 *,
-                threshold: float | None = None,
-                duration: int | None = None,
+                threshold: t.ScalarValue | None = None,
+                duration: t.ScalarValue | None = None,
             ) -> FlextProtocols.Result[str]:
                 """Create an alert rule."""
                 ...
@@ -254,8 +254,8 @@ class FlextObservabilityProtocols(FlextProtocols):
                 message: str,
                 level: str,
                 *,
-                service: str | None = None,
-                correlation_id: str | None = None,
+                service: t.ScalarValue | None = None,
+                correlation_id: t.ScalarValue | None = None,
                 extra: Mapping[str, t.GeneralValueType] | None = None,
             ) -> FlextProtocols.Result[bool]:
                 """Log a message."""
@@ -264,11 +264,11 @@ class FlextObservabilityProtocols(FlextProtocols):
             def get_logs(
                 self,
                 *,
-                level: str | None = None,
-                service: str | None = None,
-                correlation_id: str | None = None,
-                start_time: str | None = None,
-                end_time: str | None = None,
+                level: t.ScalarValue | None = None,
+                service: t.ScalarValue | None = None,
+                correlation_id: t.ScalarValue | None = None,
+                start_time: t.ScalarValue | None = None,
+                end_time: t.ScalarValue | None = None,
             ) -> FlextProtocols.Result[list[Mapping[str, t.GeneralValueType]]]:
                 """Get logs by criteria."""
                 ...
@@ -278,7 +278,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 name: str,
                 *,
                 level: str = "info",
-                format_string: str | None = None,
+                format_string: t.ScalarValue | None = None,
             ) -> FlextProtocols.Result[t.GeneralValueType]:
                 """Create a logger instance."""
                 ...
@@ -323,8 +323,8 @@ class FlextObservabilityProtocols(FlextProtocols):
                 self,
                 dashboard_id: str,
                 *,
-                start_time: str | None = None,
-                end_time: str | None = None,
+                start_time: t.ScalarValue | None = None,
+                end_time: t.ScalarValue | None = None,
             ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
                 """Get dashboard data."""
                 ...

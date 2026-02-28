@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Self
+from typing import Self, override
 
 from flext_core import FlextConstants, FlextResult, FlextSettings
 from pydantic import Field, model_validator
@@ -197,6 +197,7 @@ class FlextObservabilitySettings(FlextSettings):
                 setattr(instance, key, value)
         return instance
 
+    @override
     @classmethod
     def get_global_instance(cls) -> FlextObservabilitySettings:
         """Get the global singleton instance using direct management.
@@ -207,6 +208,7 @@ class FlextObservabilitySettings(FlextSettings):
         # Use a simpler approach for Pydantic v2 compatibility
         return cls.create_with_defaults()
 
+    @override
     @classmethod
     def reset_global_instance(cls) -> None:
         """Reset the global FlextObservabilitySettings instance (mainly for testing).

@@ -326,7 +326,7 @@ class FlextObservabilityContext:
         return headers
 
     @staticmethod
-    def from_headers(headers: t.Dict) -> FlextResult[bool]:
+    def from_headers(headers: t.Dict | dict[str, t.GeneralValueType]) -> FlextResult[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming

@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, MutableMapping
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, t
 from pydantic import BaseModel, ConfigDict, Field
 from structlog.typing import BindableLogger
 
@@ -228,7 +228,7 @@ class FlextObservabilityLogging:
         logger: BindableLogger,
         level: str,
         message: str,
-        extra: Mapping[str, str | int | float | bool | None] | None = None,
+        extra: Mapping[str, str | int | float | bool | None] | t.Dict | None = None,
         *,
         include_baggage: bool = False,
     ) -> FlextResult[bool]:

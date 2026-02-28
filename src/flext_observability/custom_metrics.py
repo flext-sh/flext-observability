@@ -185,7 +185,10 @@ class FlextObservabilityCustomMetrics:
 
             """
             namespaced_name = f"{namespace}:{name}" if namespace != "default" else name
-            return self._metrics.get(namespaced_name)
+            value = self._metrics.root.get(namespaced_name)
+            if isinstance(value, CustomMetricDefinition):
+                return value
+            return None
 
         def get_all_metrics(
             self,
@@ -225,8 +228,8 @@ class FlextObservabilityCustomMetrics:
             return t.Dict.model_validate(
                 {
                     metric_name: metric
-                    for metric_name, metric in self._metrics.items()
-                    if metric.metric_type == metric_type
+                    for metric_name, metric in self._metrics.root.items()
+                    if isinstance(metric, CustomMetricDefinition) and metric.metric_type == metric_type
                 },
             )
 
@@ -316,12 +319,12 @@ class FlextObservabilityCustomMetrics:
             try:
                 if namespace:
                     keys_to_remove = [
-                        k for k in self._metrics if k.startswith(f"{namespace}:")
+                        k for k in self._metrics.root if k.startswith(f"{namespace}:")
                     ]
                     for key in keys_to_remove:
-                        del self._metrics[key]
+                        del self._metrics.root[key]
                 else:
-                    self._metrics.clear()
+                    self._metrics.root.clear()
 
                 FlextObservabilityCustomMetrics._logger.debug(
                     f"Metrics cleared: {namespace or 'all'}",
