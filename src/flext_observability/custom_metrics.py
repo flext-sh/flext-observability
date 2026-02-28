@@ -21,8 +21,10 @@ from __future__ import annotations
 from flext_core import FlextResult, FlextRuntime
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from flext_observability.constants import MetricType
+from flext_observability.constants import c
 from flext_observability.typings import t
+
+MetricType = c.Observability.MetricType
 
 
 class _MetricTypeInput(BaseModel):

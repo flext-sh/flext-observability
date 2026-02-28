@@ -92,6 +92,9 @@ class FlextObservabilityConstants(FlextConstants):
             RUNNING = "running"
             COMPLETED = "completed"
             FAILED = "failed"
+            UNSET = "unset"
+            OK = "ok"
+            ERROR = "error"
 
         class HealthStatus(StrEnum):
             """Health check status enumeration.
@@ -104,6 +107,30 @@ class FlextObservabilityConstants(FlextConstants):
             HEALTHY = "healthy"
             DEGRADED = "degraded"
             UNHEALTHY = "unhealthy"
+
+        class AlertSeverity(StrEnum):
+            """Alert severity enumeration.
+
+            DRY Pattern:
+                StrEnum is the single source of truth. Use AlertSeverity.INFO.value
+                or AlertSeverity.INFO directly - no base strings needed.
+            """
+
+            INFO = "info"
+            WARNING = "warning"
+            ERROR = "error"
+            CRITICAL = "critical"
+
+        class AlertStatus(StrEnum):
+            """Alert status enumeration.
+
+            DRY Pattern:
+                StrEnum is the single source of truth. Use AlertStatus.FIRING.value
+                or AlertStatus.FIRING directly - no base strings needed.
+            """
+
+            FIRING = "firing"
+            RESOLVED = "resolved"
 
         class Storage:
             """Storage limits for metrics service."""
@@ -212,12 +239,8 @@ class FlextObservabilityConstants(FlextConstants):
 
 
 c = FlextObservabilityConstants
-ErrorSeverity = FlextObservabilityConstants.Observability.ErrorSeverity
-MetricType = FlextObservabilityConstants.Observability.MetricType
 
 __all__ = [
-    "ErrorSeverity",
     "FlextObservabilityConstants",
-    "MetricType",
     "c",
 ]

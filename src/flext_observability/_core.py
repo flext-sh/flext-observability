@@ -19,6 +19,7 @@ from flext_core import (
 )
 from pydantic import BaseModel, ConfigDict, Field
 
+from flext_observability.constants import c as _obs_c
 from flext_observability.typings import t
 
 
@@ -42,11 +43,19 @@ class FlextObservability:
     class Constants:
         """Domain constants and enumerations."""
 
-        METRIC_TYPES: ClassVar[set[str]] = {"counter", "gauge", "histogram"}
-        TRACE_STATUSES: ClassVar[set[str]] = {"unset", "ok", "error"}
-        ALERT_SEVERITIES: ClassVar[set[str]] = {"info", "warning", "error", "critical"}
-        ALERT_STATUSES: ClassVar[set[str]] = {"firing", "resolved"}
-        HEALTH_STATUSES: ClassVar[set[str]] = {"healthy", "degraded", "unhealthy"}
+        METRIC_TYPES: ClassVar[set[str]] = {
+            _obs_c.Observability.MetricType.COUNTER,
+            _obs_c.Observability.MetricType.GAUGE,
+            _obs_c.Observability.MetricType.HISTOGRAM,
+        }
+        TRACE_STATUSES: ClassVar[set[str]] = {
+            _obs_c.Observability.TraceStatus.UNSET,
+            _obs_c.Observability.TraceStatus.OK,
+            _obs_c.Observability.TraceStatus.ERROR,
+        }
+        ALERT_SEVERITIES: ClassVar[set[str]] = set(_obs_c.Observability.AlertSeverity)
+        ALERT_STATUSES: ClassVar[set[str]] = set(_obs_c.Observability.AlertStatus)
+        HEALTH_STATUSES: ClassVar[set[str]] = set(_obs_c.Observability.HealthStatus)
         LOG_LEVELS: ClassVar[set[str]] = {
             "debug",
             "info",
@@ -310,11 +319,7 @@ class FlextObservability:
                     return FlextResult[FlextObservability.HealthCheck].fail(
                         "Component name cannot be empty",
                     )
-                if status not in {
-                    "healthy",
-                    "degraded",
-                    "unhealthy",
-                }:
+                if status not in FlextObservability.Constants.HEALTH_STATUSES:
                     return FlextResult[FlextObservability.HealthCheck].fail(
                         f"Invalid health status: {status}",
                     )
@@ -510,7 +515,7 @@ def flext_health_check(
             return FlextResult[FlextObservability.HealthCheck].fail(
                 "Component name cannot be empty",
             )
-        if status not in {"healthy", "degraded", "unhealthy"}:
+        if status not in FlextObservability.Constants.HEALTH_STATUSES:
             return FlextResult[FlextObservability.HealthCheck].fail(
                 f"Invalid health status: {status}",
             )
