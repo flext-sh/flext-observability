@@ -7,13 +7,26 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 from flext_core.protocols import FlextProtocols
 from flext_core.typings import FlextTypes as t
 
-if TYPE_CHECKING:
-    from opentelemetry.trace import Span
+
+@runtime_checkable
+class _SpanProtocol(Protocol):
+    """Protocol for OpenTelemetry Span interface."""
+
+    def set_attribute(self, key: str, *, value: str | float | bool) -> None:
+        """Set span attribute."""
+        ...
+
+    def set_status(self, status: int) -> None:
+        """Set span status."""
+        ...
+
+
+Span = _SpanProtocol
 
 
 class FlextObservabilityProtocols(FlextProtocols):
