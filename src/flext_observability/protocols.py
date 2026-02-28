@@ -132,7 +132,7 @@ class FlextObservabilityProtocols(FlextProtocols):
 
             def finish_span(
                 self,
-                span: Span,
+                span: FlextObservabilityProtocols._SpanProtocol,
                 *,
                 status: str = "ok",
                 error: t.ScalarValue | None = None,
@@ -142,7 +142,7 @@ class FlextObservabilityProtocols(FlextProtocols):
 
             def add_span_tag(
                 self,
-                span: Span,
+                span: FlextObservabilityProtocols._SpanProtocol,
                 key: str,
                 value: t.ScalarValue,
             ) -> FlextProtocols.Result[bool]:
