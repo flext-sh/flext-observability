@@ -53,7 +53,9 @@ class TestInitCoverage:
         """Test that core entities can be accessed via FlextObservabilityModels."""
         m = FlextObservabilityModels
         # These are nested classes on models/facades, not top-level exports
-        assert hasattr(m, "Observability") or hasattr(m, "Health") or True  # models structure varies
+        assert (
+            hasattr(m, "Observability") or hasattr(m, "Health") or True
+        )  # models structure varies
 
     def test_factory_functions_imports(self) -> None:
         """Test that factory functions can be imported."""
