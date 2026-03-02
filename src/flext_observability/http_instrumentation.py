@@ -24,7 +24,7 @@ from __future__ import annotations
 import time
 from collections import UserDict
 from collections.abc import Awaitable, Callable
-from typing import Protocol
+from typing import Any, Protocol, TypeGuard
 
 import flask
 from flext_core import FlextResult, FlextRuntime, t
@@ -43,6 +43,10 @@ request = flask.request if hasattr(flask, "request") else None
 
 _flask_available = True
 _starlette_available = True
+
+def _is_flask_app(obj: Any) -> TypeGuard[Any]:
+    """Type guard to check if object is a Flask app."""
+    return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
 
 class RequestURLProtocol(Protocol):
@@ -146,9 +150,9 @@ class FlextObservabilityHTTP:
 
             """
             try:
-                if not hasattr(app, "before_request") or not hasattr(
-                    app,
-                    "after_request",
+                if not _is_flask_app(app):
+
+
                 ):
                     return FlextResult[bool].fail(
                         "Invalid Flask app - missing request hooks",

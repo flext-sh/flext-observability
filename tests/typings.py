@@ -9,5 +9,5 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 
-class TestsFlextObservabilityTypes(FlextTestsTypes):
+class TestsFlextObservabilityTypes:
     """Test type aliases for flextobservability."""

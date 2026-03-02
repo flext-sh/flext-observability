@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Awaitable, Callable, MutableMapping
-from typing import ClassVar, Protocol
+from typing import Any, ClassVar, Protocol, TypeGuard
 
 from flext_core import FlextResult, FlextRuntime, t
 from pydantic import BaseModel, Field, ValidationError
@@ -130,6 +130,16 @@ class FlextObservabilityHTTPClient:
     # HTTPX INSTRUMENTATION
     # ========================================================================
 
+    @staticmethod
+    def _is_httpx_async_client(obj: Any) -> TypeGuard[Any]:
+        """Type guard to check if object is an async httpx client."""
+        return hasattr(obj, "_send")
+
+    @staticmethod
+    def _is_httpx_client(obj: Any) -> TypeGuard[Any]:
+        """Type guard to check if object is an httpx client."""
+        return hasattr(obj, "request") or hasattr(obj, "_send")
+
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
 
@@ -191,7 +201,7 @@ class FlextObservabilityHTTPClient:
                     return FlextResult[bool].ok(value=True)
 
                 # Determine if this is async client
-                is_async = hasattr(client, "_send")
+                is_async = FlextObservabilityHTTPClient.HTTPX._is_httpx_async_client(client)
 
                 if is_async:
                     # Get original send method from dynamic getattr result
@@ -199,7 +209,7 @@ class FlextObservabilityHTTPClient:
                     original_send: Callable[
                         [HTTPXRequestProtocol],
                         Awaitable[HTTPXResponseProtocol],
-                    ] = client._send
+                    ] = getattr(client, "_send")
 
                     async def traced_send(
                         request: HTTPXRequestProtocol,
@@ -279,12 +289,12 @@ class FlextObservabilityHTTPClient:
                             raise
 
                     # Replace send method using setattr
-                    client._send = traced_send
+                    setattr(client, "_send", traced_send)
 
                 else:
                     # Get original request method using getattr for dynamic access
                     original_request: Callable[..., HTTPXResponseProtocol] = (
-                        client.request
+                        getattr(client, "request")
                     )
 
                     def traced_request(
@@ -373,7 +383,7 @@ class FlextObservabilityHTTPClient:
                             raise
 
                     # Replace request method using setattr
-                    client.request = traced_request
+                    setattr(client, "request", traced_request)
 
                 # Mark as instrumented
                 FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client)

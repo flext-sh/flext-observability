@@ -58,7 +58,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[t.GeneralValueType, ...],
-            kwargs: t.Dict,
+            kwargs: dict[str, t.GeneralValueType] | t.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> t.GeneralValueType:
@@ -72,7 +72,7 @@ class FlextObservabilityMonitor:
                 result = FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
                     func,
                     *args,
-                    **(kwargs.root if isinstance(kwargs, t.Dict) else kwargs),
+                    **(kwargs if isinstance(kwargs, dict) else kwargs),
                 )
 
                 # Record success metrics
