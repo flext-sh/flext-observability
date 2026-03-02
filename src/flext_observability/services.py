@@ -56,7 +56,7 @@ class FlextObservabilityServices:
                 return FlextResult[t.Dict].fail("Entry data required")
 
             # Use container for any service resolution
-            processed = t.Dict.model_validate(dict(entry_data.items()))
+            processed: t.Dict = dict(entry_data.items())
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
 
@@ -73,14 +73,13 @@ class FlextObservabilityServices:
                 "timestamp": "now",
                 "version": "generic",
             }
-            status_result = t.Dict.model_validate(
-                {
-                    "service": status["service"],
-                    "status": status["status"],
-                    "timestamp": status["timestamp"],
-                    "version": status["version"],
-                },
-            )
+            status_result: t.Dict = {
+                "service": status["service"],
+                "status": status["status"],
+                "timestamp": status["timestamp"],
+                "version": status["version"],
+            }
+
             return FlextResult[t.Dict].ok(status_result)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[t.Dict].fail(f"Status check failed: {e}")

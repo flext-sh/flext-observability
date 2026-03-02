@@ -72,7 +72,7 @@ class FlextObservabilityMonitor:
                 result = FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
                     func,
                     *args,
-                    **(kwargs if isinstance(kwargs, dict) else kwargs),
+                    **kwargs,
                 )
 
                 # Record success metrics

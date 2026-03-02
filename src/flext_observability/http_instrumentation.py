@@ -44,7 +44,8 @@ request = flask.request if hasattr(flask, "request") else None
 _flask_available = True
 _starlette_available = True
 
-def _is_flask_app(obj: Any) -> TypeGuard[Any]:
+
+def _is_flask_app(obj: object) -> TypeGuard[Any]:
     """Type guard to check if object is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
@@ -151,9 +152,9 @@ class FlextObservabilityHTTP:
             """
             try:
                 if not _is_flask_app(app):
-
-
-                ):
+                    return FlextResult[bool].fail(
+                        "Invalid Flask app - missing request hooks",
+                    )
                     return FlextResult[bool].fail(
                         "Invalid Flask app - missing request hooks",
                     )
