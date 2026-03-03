@@ -27,9 +27,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # Type for JSON-serializable values
 # Using PEP 695 type statement for recursive type (Python 3.12+)
-type JSONValue = (
-    t.JsonPrimitive | list[JSONValue] | dict[str, JSONValue] | None
-)
+
 
 
 class ContextSnapshot(BaseModel):
@@ -41,7 +39,7 @@ class ContextSnapshot(BaseModel):
     trace_id: str = Field(description="Trace ID")
     span_id: str = Field(description="Span ID")
     baggage: dict[str, str] = Field(default_factory=dict, description="Baggage items")
-    metadata: dict[str, JSONValue] = Field(
+    metadata: dict[str, t.JsonValue] = Field(
         default_factory=dict,
         description="Context metadata",
     )
@@ -52,7 +50,7 @@ class ContextSnapshot(BaseModel):
 
     def to_dict(
         self,
-    ) -> Mapping[str, str | float | Mapping[str, str] | Mapping[str, JSONValue]]:
+    ) -> Mapping[str, str | float | Mapping[str, str] | Mapping[str, t.JsonValue]]:
         """Convert snapshot to dictionary.
 
         Returns:
@@ -115,12 +113,12 @@ class FlextObservabilityAdvancedContext:
 
         def __init__(self) -> None:
             """Initialize advanced context."""
-            self._metadata: dict[str, JSONValue] = {}
+            self._metadata: dict[str, t.JsonValue] = {}
             self._baggage: dict[str, str] = {}
             self._request_id: str = ""
             self._parent_context: ContextSnapshot | None = None
 
-        def set_metadata(self, key: str, value: JSONValue) -> FlextResult[bool]:
+        def set_metadata(self, key: str, value: t.JsonValue) -> FlextResult[bool]:
             """Set request-local metadata.
 
             Args:
@@ -149,7 +147,7 @@ class FlextObservabilityAdvancedContext:
                     f"Metadata value not JSON serializable: {e}",
                 )
 
-        def get_metadata(self, key: str) -> JSONValue | None:
+        def get_metadata(self, key: str) -> t.JsonValue | None:
             """Get request-local metadata.
 
             Args:
@@ -192,7 +190,7 @@ class FlextObservabilityAdvancedContext:
             """
             return self._baggage.get(key)
 
-        def get_all_metadata(self) -> Mapping[str, JSONValue]:
+        def get_all_metadata(self) -> Mapping[str, t.JsonValue]:
             """Get all request-local metadata.
 
             Returns:
@@ -318,7 +316,7 @@ class FlextObservabilityAdvancedContext:
         return FlextObservabilityAdvancedContext._context_instance
 
     @staticmethod
-    def set_metadata(key: str, value: JSONValue) -> FlextResult[bool]:
+    def set_metadata(key: str, value: t.JsonValue) -> FlextResult[bool]:
         """Convenience function: set metadata.
 
         Args:
@@ -333,7 +331,7 @@ class FlextObservabilityAdvancedContext:
         return ctx.set_metadata(key, value)
 
     @staticmethod
-    def get_metadata(key: str) -> JSONValue | None:
+    def get_metadata(key: str) -> t.JsonValue | None:
         """Convenience function: get metadata.
 
         Args:
