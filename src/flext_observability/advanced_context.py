@@ -22,7 +22,7 @@ import json
 import time
 from collections.abc import Mapping
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, t
 from pydantic import BaseModel, ConfigDict, Field
 
 # Type for JSON-serializable values

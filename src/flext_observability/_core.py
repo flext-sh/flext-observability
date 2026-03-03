@@ -15,11 +15,12 @@ from flext_core import (
     FlextContainer,
     FlextResult,
     FlextRuntime,
+    m,
     p,
 )
 from pydantic import BaseModel, ConfigDict, Field
 
-from flext_observability import c as _obs_c
+from flext_observability import c
 
 
 class FlextObservability:
@@ -43,18 +44,18 @@ class FlextObservability:
         """Domain constants and enumerations."""
 
         METRIC_TYPES: ClassVar[set[str]] = {
-            _obs_c.Observability.MetricType.COUNTER,
-            _obs_c.Observability.MetricType.GAUGE,
-            _obs_c.Observability.MetricType.HISTOGRAM,
+            c.Observability.MetricType.COUNTER,
+            c.Observability.MetricType.GAUGE,
+            c.Observability.MetricType.HISTOGRAM,
         }
         TRACE_STATUSES: ClassVar[set[str]] = {
-            _obs_c.Observability.TraceStatus.UNSET,
-            _obs_c.Observability.TraceStatus.OK,
-            _obs_c.Observability.TraceStatus.ERROR,
+            c.Observability.TraceStatus.UNSET,
+            c.Observability.TraceStatus.OK,
+            c.Observability.TraceStatus.ERROR,
         }
-        ALERT_SEVERITIES: ClassVar[set[str]] = set(_obs_c.Observability.AlertSeverity)
-        ALERT_STATUSES: ClassVar[set[str]] = set(_obs_c.Observability.AlertStatus)
-        HEALTH_STATUSES: ClassVar[set[str]] = set(_obs_c.Observability.HealthStatus)
+        ALERT_SEVERITIES: ClassVar[set[str]] = set(c.Observability.AlertSeverity)
+        ALERT_STATUSES: ClassVar[set[str]] = set(c.Observability.AlertStatus)
+        HEALTH_STATUSES: ClassVar[set[str]] = set(c.Observability.HealthStatus)
         LOG_LEVELS: ClassVar[set[str]] = {
             "debug",
             "info",
@@ -76,8 +77,8 @@ class FlextObservability:
         name: str = Field(description="Metric name")
         value: float = Field(description="Metric value")
         unit: str = Field(default="count")
-        metric_type: _obs_c.Observability.MetricType = Field(
-            default=_obs_c.Observability.MetricType.GAUGE,
+        metric_type: c.Observability.MetricType = Field(
+            default=c.Observability.MetricType.GAUGE,
         )
         labels: m.Dict = Field(default_factory=dict)
         timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
@@ -91,8 +92,8 @@ class FlextObservability:
         name: str = Field(description="Span name")
         trace_id: str = Field(default_factory=lambda: str(uuid4()))
         parent_span_id: str | None = Field(default=None)
-        status: _obs_c.Observability.TraceStatus = Field(
-            default=_obs_c.Observability.TraceStatus.UNSET,
+        status: c.Observability.TraceStatus = Field(
+            default=c.Observability.TraceStatus.UNSET,
         )
         attributes: m.Dict = Field(default_factory=dict)
         start_time: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
@@ -108,8 +109,8 @@ class FlextObservability:
         id: str = Field(default_factory=lambda: str(uuid4()))
         title: str = Field(default="", description="Alert title")
         message: str = Field(description="Alert message")
-        severity: _obs_c.Observability.AlertSeverity = Field(
-            default=_obs_c.Observability.AlertSeverity.WARNING,
+        severity: c.Observability.AlertSeverity = Field(
+            default=c.Observability.AlertSeverity.WARNING,
         )
         source: str = Field(default="system")
         labels: m.Dict = Field(default_factory=dict)
@@ -122,8 +123,8 @@ class FlextObservability:
 
         id: str = Field(default_factory=lambda: str(uuid4()))
         component: str = Field(description="Component name")
-        status: _obs_c.Observability.HealthStatus = Field(
-            default=_obs_c.Observability.HealthStatus.HEALTHY,
+        status: c.Observability.HealthStatus = Field(
+            default=c.Observability.HealthStatus.HEALTHY,
         )
         details: m.Dict = Field(default_factory=dict)
         timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
@@ -135,8 +136,8 @@ class FlextObservability:
 
         id: str = Field(default_factory=lambda: str(uuid4()))
         message: str = Field(description="Log message")
-        level: _obs_c.Observability.ErrorSeverity = Field(
-            default=_obs_c.Observability.ErrorSeverity.INFO,
+        level: c.Observability.ErrorSeverity = Field(
+            default=c.Observability.ErrorSeverity.INFO,
         )
         component: str = Field(default="application")
         timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
@@ -182,13 +183,13 @@ class FlextObservability:
                     )
 
                 # Auto-detect metric type from name
-                metric_type: _obs_c.Observability.MetricType = (
-                    _obs_c.Observability.MetricType.GAUGE
+                metric_type: c.Observability.MetricType = (
+                    c.Observability.MetricType.GAUGE
                 )
                 if name.endswith(("_total", "_count")):
-                    metric_type = _obs_c.Observability.MetricType.COUNTER
+                    metric_type = c.Observability.MetricType.COUNTER
                 elif name.endswith(("_duration", "_seconds")):
-                    metric_type = _obs_c.Observability.MetricType.HISTOGRAM
+                    metric_type = c.Observability.MetricType.HISTOGRAM
 
                 metric = FlextObservability.Metric(
                     name=name,
@@ -415,7 +416,7 @@ def flext_metric(
     name: str,
     value: float,
     unit: str = "count",
-    metric_type: _obs_c.Observability.MetricType | None = None,
+    metric_type: c.Observability.MetricType | None = None,
     metric_id: str | None = None,
     tags: m.Dict | None = None,
     labels: m.Dict | None = None,
@@ -440,14 +441,14 @@ def flext_metric(
             all_labels_data.update(labels.items())
         all_labels: m.Dict = all_labels_data
 
-        detected_type: _obs_c.Observability.MetricType = (
-            metric_type or _obs_c.Observability.MetricType.GAUGE
+        detected_type: c.Observability.MetricType = (
+            metric_type or c.Observability.MetricType.GAUGE
         )
         if not metric_type:
             if name.endswith(("_total", "_count")):
-                detected_type = _obs_c.Observability.MetricType.COUNTER
+                detected_type = c.Observability.MetricType.COUNTER
             elif name.endswith(("_duration", "_seconds")):
-                detected_type = _obs_c.Observability.MetricType.HISTOGRAM
+                detected_type = c.Observability.MetricType.HISTOGRAM
 
         metric = FlextObservability.Metric(
             id=metric_id or str(uuid4()),
@@ -494,7 +495,7 @@ def flext_alert(
         "warning",
         "error",
         "critical",
-    ] = _obs_c.Observability.AlertSeverity.WARNING.value,
+    ] = c.Observability.AlertSeverity.WARNING.value,
     status: Literal["firing", "resolved"] = "firing",
     alert_id: str | None = None,
     source: str = "system",
@@ -625,15 +626,15 @@ class FlextObservabilityConstants(FlextConstants):
     ALERT_LEVEL_CRITICAL: ClassVar[str] = "critical"
 
     # Trace status constants
-    TRACE_STATUS_STARTED: ClassVar[str] = _obs_c.Observability.TraceStatus.STARTED
-    TRACE_STATUS_RUNNING: ClassVar[str] = _obs_c.Observability.TraceStatus.RUNNING
-    TRACE_STATUS_COMPLETED: ClassVar[str] = _obs_c.Observability.TraceStatus.COMPLETED
-    TRACE_STATUS_FAILED: ClassVar[str] = _obs_c.Observability.TraceStatus.FAILED
+    TRACE_STATUS_STARTED: ClassVar[str] = c.Observability.TraceStatus.STARTED
+    TRACE_STATUS_RUNNING: ClassVar[str] = c.Observability.TraceStatus.RUNNING
+    TRACE_STATUS_COMPLETED: ClassVar[str] = c.Observability.TraceStatus.COMPLETED
+    TRACE_STATUS_FAILED: ClassVar[str] = c.Observability.TraceStatus.FAILED
 
     # Health status constants
-    HEALTH_STATUS_HEALTHY: ClassVar[str] = _obs_c.Observability.HealthStatus.HEALTHY
-    HEALTH_STATUS_DEGRADED: ClassVar[str] = _obs_c.Observability.HealthStatus.DEGRADED
-    HEALTH_STATUS_UNHEALTHY: ClassVar[str] = _obs_c.Observability.HealthStatus.UNHEALTHY
+    HEALTH_STATUS_HEALTHY: ClassVar[str] = c.Observability.HealthStatus.HEALTHY
+    HEALTH_STATUS_DEGRADED: ClassVar[str] = c.Observability.HealthStatus.DEGRADED
+    HEALTH_STATUS_UNHEALTHY: ClassVar[str] = c.Observability.HealthStatus.UNHEALTHY
 
     # Log level constants
     LOG_LEVEL_DEBUG: ClassVar[str] = "debug"
@@ -706,7 +707,7 @@ class FlextObservabilityMasterFactory:
     def log(
         self,
         message: str,
-        level: str = _obs_c.Observability.ErrorSeverity.INFO,
+        level: str = c.Observability.ErrorSeverity.INFO,
         context: m.Dict | None = None,
         timestamp: datetime | None = None,
     ) -> FlextResult[FlextObservability.LogEntry]:
@@ -738,7 +739,7 @@ class FlextObservabilityMasterFactory:
         message: str,
         severity: str = "warning",
         tags: m.Dict | None = None,
-        status: str = _obs_c.Observability.AlertStatus.FIRING,
+        status: str = c.Observability.AlertStatus.FIRING,
         timestamp: datetime | None = None,
     ) -> FlextResult[FlextObservability.Alert]:
         """Create an alert."""
@@ -793,7 +794,7 @@ class FlextObservabilityMasterFactory:
     def health_check(
         self,
         component: str,
-        status: str = _obs_c.Observability.HealthStatus.HEALTHY,
+        status: str = c.Observability.HealthStatus.HEALTHY,
         message: str | None = None,
         metrics: m.Dict | None = None,
         timestamp: datetime | None = None,
@@ -861,7 +862,7 @@ class FlextObservabilityMasterFactory:
     def create_health_check(
         self,
         component: str,
-        status: str = _obs_c.Observability.HealthStatus.HEALTHY,
+        status: str = c.Observability.HealthStatus.HEALTHY,
         details: m.Dict | None = None,
     ) -> FlextResult[FlextObservability.HealthCheck]:
         """Create a health check (alias)."""

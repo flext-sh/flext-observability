@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, MutableMapping
 
-from flext_core import FlextLogger, FlextResult, t
+from flext_core import FlextLogger, FlextResult, m, t
 from pydantic import BaseModel, ConfigDict, Field
 from structlog.typing import BindableLogger
 

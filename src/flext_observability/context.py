@@ -17,7 +17,7 @@ import json
 from contextvars import ContextVar
 from uuid import uuid4
 
-from flext_core import FlextResult, FlextRuntime
+from flext_core import FlextResult, FlextRuntime, m
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import t

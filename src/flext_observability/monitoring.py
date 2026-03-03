@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import override
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextRuntime, r
+from flext_core import FlextContainer, FlextRuntime, m, r
 
 from flext_observability import (
     FlextObservabilityModels,

@@ -22,7 +22,7 @@ import hashlib
 import time
 from collections.abc import MutableMapping
 
-from flext_core import FlextLogger, FlextModels, FlextResult
+from flext_core import FlextLogger, FlextModels, FlextResult, t
 from pydantic import Field
 
 from flext_observability import FlextObservabilityContext, c
