@@ -41,7 +41,7 @@ class ErrorEvent(FlextModels.Event):
     severity: c.Observability.ErrorSeverity = Field(description="Error severity")
     timestamp: float = Field(default_factory=time.time, description="Event timestamp")
     correlation_id: str = Field(default="", description="Correlation ID")
-    context: MutableMapping[str, t.JsonPrimitive | None] = Field(
+    context: MutableMapping[str, t.Scalar | None] = Field(
         default_factory=dict,
         description="Error context",
     )

@@ -57,7 +57,7 @@ class FlextObservabilityLogging:
         trace_id: str | None = None
         span_id: str | None = None
         baggage: str | None = None
-        extra: MutableMapping[str, t.JsonPrimitive | None] = Field(
+        extra: MutableMapping[str, t.Scalar | None] = Field(
             default_factory=dict,
         )
 
@@ -228,7 +228,7 @@ class FlextObservabilityLogging:
         logger: BindableLogger,
         level: str,
         message: str,
-        extra: Mapping[str, t.JsonPrimitive | None] | m.Dict | None = None,
+        extra: Mapping[str, t.Scalar | None] | m.Dict | None = None,
         *,
         include_baggage: bool = False,
     ) -> FlextResult[bool]:

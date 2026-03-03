@@ -116,7 +116,7 @@ class FlextObservabilityTypes(FlextTypes):
         ]
         type SpanAttributes = dict[
             str,
-            t.JsonPrimitive | dict[str, FlextTypes.ContainerValue],
+            t.Scalar | dict[str, FlextTypes.ContainerValue],
         ]
         type TraceContext = dict[str, str | int | dict[str, FlextTypes.JsonValue]]
         type SpanHierarchy = dict[str, list[dict[str, FlextTypes.JsonValue]]]
