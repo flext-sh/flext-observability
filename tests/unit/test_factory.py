@@ -9,6 +9,7 @@ from datetime import datetime
 
 import pytest
 from flext_core import FlextContainer
+
 from flext_observability import (
     FlextObservabilityMasterFactory,
     get_global_factory,

@@ -399,7 +399,9 @@ class FlextObservability:
                 TypeError,
                 AttributeError,
             ) as e:
-                self._logger.warning(f"Log entry creation failed: %s: {e}", exc_info=True)
+                self._logger.warning(
+                    f"Log entry creation failed: %s: {e}", exc_info=True
+                )
                 return FlextResult[FlextObservability.LogEntry].fail(
                     f"Log entry creation failed: {e}",
                 )

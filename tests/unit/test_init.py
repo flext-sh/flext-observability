@@ -5,8 +5,9 @@ SPDX-License-Identifier: MIT
 
 """
 
-import flext_observability
 from flext_core import FlextConstants, FlextContainer, FlextLogger
+
+import flext_observability
 from flext_observability import (
     FlextObservabilityMasterFactory,
     FlextObservabilityModels,

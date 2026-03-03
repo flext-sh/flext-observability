@@ -201,7 +201,9 @@ class FlextObservabilityHTTPClient:
                     return FlextResult[bool].ok(value=True)
 
                 # Determine if this is async client
-                is_async = FlextObservabilityHTTPClient.HTTPX._is_httpx_async_client(client)
+                is_async = FlextObservabilityHTTPClient.HTTPX._is_httpx_async_client(
+                    client
+                )
 
                 if is_async:
                     # Get original send method from dynamic getattr result
@@ -293,8 +295,8 @@ class FlextObservabilityHTTPClient:
 
                 else:
                     # Get original request method using getattr for dynamic access
-                    original_request: Callable[..., HTTPXResponseProtocol] = (
-                        getattr(client, "request")
+                    original_request: Callable[..., HTTPXResponseProtocol] = getattr(
+                        client, "request"
                     )
 
                     def traced_request(
