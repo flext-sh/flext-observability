@@ -29,7 +29,6 @@ from pydantic import BaseModel, ConfigDict, Field
 # Using PEP 695 type statement for recursive type (Python 3.12+)
 
 
-
 class ContextSnapshot(BaseModel):
     """Snapshot of current observability context."""
 
