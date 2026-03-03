@@ -327,7 +327,7 @@ class FlextObservabilityContext:
 
     @staticmethod
     def from_headers(
-        headers: m.Dict | dict[str, t.ContainerValue],
+        headers: m.Dict | t.ConfigurationMapping,
     ) -> FlextResult[bool]:
         """Set context from HTTP headers.
 

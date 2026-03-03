@@ -446,7 +446,7 @@ class DocumentationAuditor:
             "fresh_files": self.report.fresh_files,
             "stale_files": self.report.stale_files,
             "file_metrics": file_metrics,
-            "category_breakdown": dict[str, t.ContainerValue](
+            "category_breakdown": t.ConfigurationMapping(
                 self.report.category_breakdown,
             ),
             "overall_quality_score": self.report.overall_quality_score,
