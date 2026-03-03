@@ -38,7 +38,7 @@ class FlextObservabilityMonitor:
     """
 
     # Function type alias - simplified for monitoring
-    object_callable = Callable[..., t.GeneralValueType]
+    object_callable = Callable[..., t.ContainerValue]
     logger = FlextRuntime.get_logger(__name__)
 
     class MonitoringHelpers:
@@ -47,9 +47,9 @@ class FlextObservabilityMonitor:
         @staticmethod
         def call_any_function(
             func: FlextObservabilityMonitor.object_callable,
-            *args: t.GeneralValueType,
-            **kwargs: t.GeneralValueType,
-        ) -> t.GeneralValueType:
+            *args: t.ContainerValue,
+            **kwargs: t.ContainerValue,
+        ) -> t.ContainerValue:
             """Helper to call function with flexible arguments."""
             # Cast to object to avoid type checking issues with arbitrary function calls
             return func(*args, **kwargs)
@@ -57,11 +57,11 @@ class FlextObservabilityMonitor:
         @staticmethod
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
-            args: tuple[t.GeneralValueType, ...],
-            kwargs: dict[str, t.GeneralValueType] | t.Dict,
+            args: tuple[t.ContainerValue, ...],
+            kwargs: dict[str, t.ContainerValue] | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
-        ) -> t.GeneralValueType:
+        ) -> t.ContainerValue:
             """Execute function with monitoring."""
             function_name = getattr(func, "__name__", "unknown_function")
             actual_metric_name = metric_name or f"function_execution_{function_name}"
@@ -367,9 +367,9 @@ class FlextObservabilityMonitor:
                 func: FlextObservabilityMonitor.object_callable,
             ) -> FlextObservabilityMonitor.object_callable:
                 def wrapper(
-                    *args: t.GeneralValueType,
-                    **kwargs: t.GeneralValueType,
-                ) -> t.GeneralValueType:
+                    *args: t.ContainerValue,
+                    **kwargs: t.ContainerValue,
+                ) -> t.ContainerValue:
                     # Use provided monitor or create simple one
                     active_monitor = monitor or FlextObservabilityMonitor()
 

@@ -60,7 +60,7 @@ class FlextObservabilityLogging(FlextModels):
             description="Log timestamp",
         )
         source: str = Field(description="Log source")
-        context: dict[str, t.GeneralValueType] = Field(
+        context: dict[str, t.ContainerValue] = Field(
             default_factory=dict,
             description="Log context",
         )
@@ -89,9 +89,9 @@ class FlextObservabilityLogging(FlextModels):
         @field_serializer("context", when_used="json")
         def serialize_context_with_log_metadata(
             self,
-            value: Mapping[str, t.GeneralValueType],
-            _info: t.GeneralValueType,
-        ) -> Mapping[str, t.GeneralValueType]:
+            value: Mapping[str, t.ContainerValue],
+            _info: t.ContainerValue,
+        ) -> Mapping[str, t.ContainerValue]:
             """Serialize context with log metadata."""
             return {
                 "context": value,
@@ -157,7 +157,7 @@ class FlextObservabilityLogging(FlextModels):
             default="info",
             description="Log level",
         )
-        context: dict[str, t.GeneralValueType] = Field(
+        context: dict[str, t.ContainerValue] = Field(
             default_factory=dict,
             description="Log context",
         )

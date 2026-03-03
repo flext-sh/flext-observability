@@ -184,7 +184,7 @@ class FlextObservabilitySettings(FlextSettings):
     @classmethod
     def create_with_defaults(
         cls,
-        **overrides: t.GeneralValueType,
+        **overrides: t.ContainerValue,
     ) -> FlextObservabilitySettings:
         """Create configuration with intelligent defaults using direct instantiation.
 

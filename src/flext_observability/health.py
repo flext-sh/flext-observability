@@ -28,7 +28,7 @@ from flext_observability import c as _obs_c, m
 
 
 class _HealthCheckFactoryKwargs(BaseModel):
-    metrics: t.Dict | None = None
+    metrics: m.Dict | None = None
     timestamp: datetime | None = None
 
 
@@ -65,8 +65,8 @@ class FlextObservabilityHealth(FlextModels):
             default=None,
             description="Response time in milliseconds",
         )
-        details: t.Dict = Field(
-            default_factory=t.Dict,
+        details: m.Dict = Field(
+            default_factory=m.Dict,
             description="Health check details",
         )
 
@@ -100,11 +100,11 @@ class FlextObservabilityHealth(FlextModels):
         @field_serializer("details", when_used="json")
         def serialize_details_with_health_context(
             self,
-            value: t.Dict,
-            _info: t.GeneralValueType,
-        ) -> t.Dict:
+            value: m.Dict,
+            _info: t.ContainerValue,
+        ) -> m.Dict:
             """Serialize details with health check context."""
-            return t.Dict.model_validate(
+            return m.Dict.model_validate(
                 {
                     "details": value,
                     "health_context": {
@@ -177,8 +177,8 @@ class FlextObservabilityHealth(FlextModels):
             description="Health status",
         )
         message: str = Field(default="", description="Health check message")
-        metrics: t.Dict = Field(
-            default_factory=t.Dict,
+        metrics: m.Dict = Field(
+            default_factory=m.Dict,
             description="Health metrics",
         )
         timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -202,11 +202,11 @@ class FlextObservabilityHealth(FlextModels):
         component: str,
         status: str = "unknown",
         message: str = "",
-        **kwargs: t.GeneralValueType,
+        **kwargs: t.ContainerValue,
     ) -> FlextResult[FlextObservabilityHealth.FlextHealthCheck]:
         """Create a FlextHealthCheck entity directly."""
         try:
-            valid_kwargs: dict[str, t.GeneralValueType] = {}
+            valid_kwargs: dict[str, t.ContainerValue] = {}
             try:
                 parsed_kwargs = _HealthCheckFactoryKwargs.model_validate(kwargs)
                 if parsed_kwargs.metrics is not None:
@@ -223,7 +223,7 @@ class FlextObservabilityHealth(FlextModels):
             )
             if valid_kwargs.get("metrics") and isinstance(
                 valid_kwargs["metrics"],
-                t.Dict,
+                m.Dict,
             ):
                 health_check.metrics = valid_kwargs["metrics"]
             if valid_kwargs.get("timestamp") and isinstance(

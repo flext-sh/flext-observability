@@ -28,7 +28,7 @@ from pydantic import BaseModel, ConfigDict, Field
 # Type for JSON-serializable values
 # Using PEP 695 type statement for recursive type (Python 3.12+)
 type JSONValue = (
-    str | int | float | bool | list[JSONValue] | dict[str, JSONValue] | None
+    t.JsonPrimitive | list[JSONValue] | dict[str, JSONValue] | None
 )
 
 

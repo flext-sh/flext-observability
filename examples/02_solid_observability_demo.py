@@ -24,13 +24,13 @@ from flext_observability import (
 )
 
 
-def database_query(query: str) -> dict[str, t.GeneralValueType]:
+def database_query(query: str) -> dict[str, t.ContainerValue]:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)  # Simulate database latency
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> dict[str, t.GeneralValueType]:
+def process_api_request(endpoint: str) -> dict[str, t.ContainerValue]:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)  # Simulate processing time
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
@@ -56,7 +56,7 @@ def demonstrate_solid_design() -> None:
         alert_result,
         health_result,
     ]
-    entities: list[t.GeneralValueType] = [
+    entities: list[t.ContainerValue] = [
         result.value
         for result in results
         if hasattr(result, "success")
@@ -166,7 +166,7 @@ def demonstrate_factory_patterns() -> None:
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     # Create various entities and validate them
-    entities_to_validate: list[FlextResult[dict[str, t.GeneralValueType]]] = [
+    entities_to_validate: list[FlextResult[dict[str, t.ContainerValue]]] = [
         flext_metric("valid_metric", 100.0, "count"),
         flext_trace("valid_operation"),
         flext_alert("system", "Valid alert", "info"),

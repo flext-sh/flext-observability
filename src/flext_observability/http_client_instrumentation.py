@@ -120,7 +120,7 @@ class FlextObservabilityHTTPClient:
     _logger = FlextRuntime.get_logger(__name__)
 
     @staticmethod
-    def _validated_headers(payload: t.GeneralValueType) -> MutableMapping[str, str]:
+    def _validated_headers(payload: t.ContainerValue) -> MutableMapping[str, str]:
         try:
             return _HeadersPayload.model_validate({"headers": payload}).headers
         except ValidationError:
@@ -143,10 +143,10 @@ class FlextObservabilityHTTPClient:
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
 
-        instrumented_clients: ClassVar[set[t.GeneralValueType]] = set()
+        instrumented_clients: ClassVar[set[t.ContainerValue]] = set()
 
         @staticmethod
-        def setup_instrumentation(client: t.GeneralValueType) -> FlextResult[bool]:
+        def setup_instrumentation(client: t.ContainerValue) -> FlextResult[bool]:
             """Setup httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -302,8 +302,8 @@ class FlextObservabilityHTTPClient:
                     def traced_request(
                         method: str,
                         url: str,
-                        *args: t.GeneralValueType,
-                        **kwargs: t.GeneralValueType,
+                        *args: t.ContainerValue,
+                        **kwargs: t.ContainerValue,
                     ) -> HTTPXResponseProtocol:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
@@ -407,10 +407,10 @@ class FlextObservabilityHTTPClient:
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
 
-        instrumented_sessions: ClassVar[set[t.GeneralValueType]] = set()
+        instrumented_sessions: ClassVar[set[t.ContainerValue]] = set()
 
         @staticmethod
-        def setup_instrumentation(session: t.GeneralValueType) -> FlextResult[bool]:
+        def setup_instrumentation(session: t.ContainerValue) -> FlextResult[bool]:
             """Setup aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests
@@ -466,8 +466,8 @@ class FlextObservabilityHTTPClient:
                 async def traced_request(
                     method: str,
                     url: str,
-                    *args: t.GeneralValueType,
-                    **kwargs: t.GeneralValueType,
+                    *args: t.ContainerValue,
+                    **kwargs: t.ContainerValue,
                 ) -> AIOHTTPResponseProtocol:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()

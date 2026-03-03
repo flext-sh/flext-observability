@@ -95,7 +95,7 @@ class DocumentationAuditor:
         self.config = self._load_config(config_path)
         self.report = AuditReport()
 
-    def _load_config(self, config_path: Path | None) -> dict[str, t.GeneralValueType]:
+    def _load_config(self, config_path: Path | None) -> dict[str, t.ContainerValue]:
         """Load audit configuration."""
         default_config = {
             "freshness_threshold_days": 30,
@@ -446,7 +446,7 @@ class DocumentationAuditor:
             "fresh_files": self.report.fresh_files,
             "stale_files": self.report.stale_files,
             "file_metrics": file_metrics,
-            "category_breakdown": dict[str, t.GeneralValueType](
+            "category_breakdown": dict[str, t.ContainerValue](
                 self.report.category_breakdown,
             ),
             "overall_quality_score": self.report.overall_quality_score,

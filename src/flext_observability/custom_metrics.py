@@ -39,7 +39,7 @@ class CustomMetricDefinition(BaseModel):
     metric_type: MetricType
     description: str = Field(min_length=1)
     unit: str = Field(default="1")
-    labels: t.Dict = Field(default_factory=t.Dict)
+    labels: m.Dict = Field(default_factory=m.Dict)
 
 
 class FlextObservabilityCustomMetrics:
@@ -83,9 +83,9 @@ class FlextObservabilityCustomMetrics:
 
         def __init__(self) -> None:
             """Initialize metric registry."""
-            self._metrics: t.Dict = t.Dict({})
-            self._metric_instances: t.Dict = t.Dict({})
-            self._namespaces: t.Dict = t.Dict({})  # Namespace prefixes
+            self._metrics: m.Dict = m.Dict({})
+            self._metric_instances: m.Dict = m.Dict({})
+            self._namespaces: m.Dict = m.Dict({})  # Namespace prefixes
 
         def register_metric(
             self,
@@ -192,7 +192,7 @@ class FlextObservabilityCustomMetrics:
         def get_all_metrics(
             self,
             namespace: str | None = None,
-        ) -> t.Dict:
+        ) -> m.Dict:
             """Get all registered metrics.
 
             Args:
@@ -208,13 +208,13 @@ class FlextObservabilityCustomMetrics:
                     for metric_name, metric in self._metrics.items()
                     if metric_name.startswith(f"{namespace}:")
                 }
-                return t.Dict.model_validate(filtered)
-            return t.Dict.model_validate(dict(self._metrics.items()))
+                return m.Dict.model_validate(filtered)
+            return m.Dict.model_validate(dict(self._metrics.items()))
 
         def get_metrics_by_type(
             self,
             metric_type: MetricType,
-        ) -> t.Dict:
+        ) -> m.Dict:
             """Get all metrics of a specific type.
 
             Args:
@@ -224,7 +224,7 @@ class FlextObservabilityCustomMetrics:
                 dict - Metrics matching the type
 
             """
-            return t.Dict.model_validate(
+            return m.Dict.model_validate(
                 {
                     metric_name: metric
                     for metric_name, metric in self._metrics.root.items()
@@ -246,7 +246,7 @@ class FlextObservabilityCustomMetrics:
             self,
             name: str,
             namespace: str = "default",
-        ) -> t.Dict | None:
+        ) -> m.Dict | None:
             """Get detailed metric information.
 
             Args:
@@ -261,7 +261,7 @@ class FlextObservabilityCustomMetrics:
             if not metric:
                 return None
 
-            return t.Dict.model_validate(
+            return m.Dict.model_validate(
                 {
                     "name": metric.name,
                     "type": metric.metric_type.value,

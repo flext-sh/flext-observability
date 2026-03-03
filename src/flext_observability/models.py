@@ -47,11 +47,11 @@ class FlextObservabilityModels(FlextModels):
             default_factory=datetime.now,
             description="Entry timestamp",
         )
-        data: dict[str, t.GeneralValueType] = Field(
+        data: dict[str, t.ContainerValue] = Field(
             default_factory=dict,
             description="Generic data payload",
         )
-        metadata: dict[str, t.GeneralValueType] = Field(
+        metadata: dict[str, t.ContainerValue] = Field(
             default_factory=dict,
             description="Generic metadata",
         )
@@ -93,7 +93,7 @@ class FlextObservabilityModels(FlextModels):
             default=30,
             description="Retention period",
         )
-        settings: dict[str, t.GeneralValueType] = Field(
+        settings: dict[str, t.ContainerValue] = Field(
             default_factory=dict,
             description="Type-specific settings",
         )

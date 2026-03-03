@@ -61,7 +61,7 @@ class FlextObservabilityProtocols(FlextProtocols):
         """
 
         @runtime_checkable
-        class MetricsProtocol(FlextProtocols.Service[t.GeneralValueType], Protocol):
+        class MetricsProtocol(FlextProtocols.Service[t.ContainerValue], Protocol):
             """Protocol for metrics collection and management operations."""
 
             def record_metric(
@@ -81,7 +81,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 start_time: t.ScalarValue | None = None,
                 end_time: t.ScalarValue | None = None,
-            ) -> FlextProtocols.Result[list[Mapping[str, t.GeneralValueType]]]:
+            ) -> FlextProtocols.Result[list[t.ConfigurationMapping]]:
                 """Get collected metrics."""
                 ...
 
@@ -91,7 +91,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 description: str,
                 *,
                 unit: str = "count",
-            ) -> FlextProtocols.Result[t.GeneralValueType]:
+            ) -> FlextProtocols.Result[t.ContainerValue]:
                 """Create a counter metric."""
                 ...
 
@@ -101,7 +101,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 description: str,
                 *,
                 unit: str = "value",
-            ) -> FlextProtocols.Result[t.GeneralValueType]:
+            ) -> FlextProtocols.Result[t.ContainerValue]:
                 """Create a gauge metric."""
                 ...
 
@@ -112,12 +112,12 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 unit: str = "seconds",
                 buckets: list[t.ScalarValue] | None = None,
-            ) -> FlextProtocols.Result[t.GeneralValueType]:
+            ) -> FlextProtocols.Result[t.ContainerValue]:
                 """Create a histogram metric."""
                 ...
 
         @runtime_checkable
-        class TracingProtocol(FlextProtocols.Service[t.GeneralValueType], Protocol):
+        class TracingProtocol(FlextProtocols.Service[t.ContainerValue], Protocol):
             """Protocol for distributed tracing operations."""
 
             def start_span(
@@ -126,7 +126,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 service_name: t.ScalarValue | None = None,
                 parent_span_id: t.ScalarValue | None = None,
-            ) -> FlextProtocols.Result[t.GeneralValueType]:
+            ) -> FlextProtocols.Result[t.ContainerValue]:
                 """Start a new trace span."""
                 ...
 
@@ -152,7 +152,7 @@ class FlextObservabilityProtocols(FlextProtocols):
             def get_trace(
                 self,
                 trace_id: str,
-            ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Get trace by ID."""
                 ...
 
@@ -163,12 +163,12 @@ class FlextObservabilityProtocols(FlextProtocols):
                 operation_name: t.ScalarValue | None = None,
                 start_time: t.ScalarValue | None = None,
                 end_time: t.ScalarValue | None = None,
-            ) -> FlextProtocols.Result[list[Mapping[str, t.GeneralValueType]]]:
+            ) -> FlextProtocols.Result[list[t.ConfigurationMapping]]:
                 """Search traces by criteria."""
                 ...
 
         @runtime_checkable
-        class AlertingProtocol(FlextProtocols.Service[t.GeneralValueType], Protocol):
+        class AlertingProtocol(FlextProtocols.Service[t.ContainerValue], Protocol):
             """Protocol for alerting and notification operations."""
 
             def create_alert(
@@ -192,7 +192,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 level: t.ScalarValue | None = None,
                 service: t.ScalarValue | None = None,
                 resolved: t.ScalarValue | None = None,
-            ) -> FlextProtocols.Result[list[Mapping[str, t.GeneralValueType]]]:
+            ) -> FlextProtocols.Result[list[t.ConfigurationMapping]]:
                 """Get alerts by criteria."""
                 ...
 
@@ -208,13 +208,13 @@ class FlextObservabilityProtocols(FlextProtocols):
                 ...
 
         @runtime_checkable
-        class HealthCheckProtocol(FlextProtocols.Service[t.GeneralValueType], Protocol):
+        class HealthCheckProtocol(FlextProtocols.Service[t.ContainerValue], Protocol):
             """Protocol for health check operations."""
 
             def check_health(
                 self,
                 service_name: str,
-            ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Perform health check for a service."""
                 ...
 
@@ -231,18 +231,18 @@ class FlextObservabilityProtocols(FlextProtocols):
             def get_service_status(
                 self,
                 service_name: str,
-            ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Get service health status."""
                 ...
 
             def get_all_services_status(
                 self,
-            ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Get health status for all services."""
                 ...
 
         @runtime_checkable
-        class LoggingProtocol(FlextProtocols.Service[t.GeneralValueType], Protocol):
+        class LoggingProtocol(FlextProtocols.Service[t.ContainerValue], Protocol):
             """Protocol for logging operations."""
 
             def log_message(
@@ -252,7 +252,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 service: t.ScalarValue | None = None,
                 correlation_id: t.ScalarValue | None = None,
-                extra: Mapping[str, t.GeneralValueType] | None = None,
+                extra: Mapping[str, t.ContainerValue] | None = None,
             ) -> FlextProtocols.Result[bool]:
                 """Log a message."""
                 ...
@@ -265,7 +265,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 correlation_id: t.ScalarValue | None = None,
                 start_time: t.ScalarValue | None = None,
                 end_time: t.ScalarValue | None = None,
-            ) -> FlextProtocols.Result[list[Mapping[str, t.GeneralValueType]]]:
+            ) -> FlextProtocols.Result[list[t.ConfigurationMapping]]:
                 """Get logs by criteria."""
                 ...
 
@@ -275,19 +275,19 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 level: str = "info",
                 format_string: t.ScalarValue | None = None,
-            ) -> FlextProtocols.Result[t.GeneralValueType]:
+            ) -> FlextProtocols.Result[t.ContainerValue]:
                 """Create a logger instance."""
                 ...
 
             def configure_logging(
                 self,
-                config: Mapping[str, t.GeneralValueType],
+                config: Mapping[str, t.ContainerValue],
             ) -> FlextProtocols.Result[bool]:
                 """Configure logging system."""
                 ...
 
         @runtime_checkable
-        class DashboardProtocol(FlextProtocols.Service[t.GeneralValueType], Protocol):
+        class DashboardProtocol(FlextProtocols.Service[t.ContainerValue], Protocol):
             """Protocol for dashboard and visualization operations."""
 
             def create_dashboard(
@@ -295,7 +295,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 name: str,
                 description: str,
                 *,
-                widgets: list[Mapping[str, t.GeneralValueType]] | None = None,
+                widgets: list[Mapping[str, t.ContainerValue]] | None = None,
             ) -> FlextProtocols.Result[str]:
                 """Create a dashboard."""
                 ...
@@ -303,14 +303,14 @@ class FlextObservabilityProtocols(FlextProtocols):
             def get_dashboard(
                 self,
                 dashboard_id: str,
-            ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Get dashboard by ID."""
                 ...
 
             def add_widget(
                 self,
                 dashboard_id: str,
-                widget_config: Mapping[str, t.GeneralValueType],
+                widget_config: Mapping[str, t.ContainerValue],
             ) -> FlextProtocols.Result[str]:
                 """Add widget to dashboard."""
                 ...
@@ -321,7 +321,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 start_time: t.ScalarValue | None = None,
                 end_time: t.ScalarValue | None = None,
-            ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
+            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Get dashboard data."""
                 ...
 

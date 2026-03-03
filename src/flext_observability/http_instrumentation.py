@@ -65,7 +65,7 @@ class RequestClientProtocol(Protocol):
 class RequestProtocol(Protocol):
     """Protocol for HTTP request objects used by middleware."""
 
-    headers: t.Dict | UserDict[str, str]
+    headers: m.Dict | UserDict[str, str]
     method: str
     url: RequestURLProtocol
     client: RequestClientProtocol | None
@@ -75,7 +75,7 @@ class ResponseProtocol(Protocol):
     """Protocol for HTTP response objects used by middleware."""
 
     status_code: int
-    headers: t.Dict | UserDict[str, str]
+    headers: m.Dict | UserDict[str, str]
 
 
 class FlextObservabilityHTTP:
@@ -115,7 +115,7 @@ class FlextObservabilityHTTP:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: t.GeneralValueType) -> FlextResult[bool]:
+        def setup_instrumentation(app: t.ContainerValue) -> FlextResult[bool]:
             """Setup Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -264,7 +264,7 @@ class FlextObservabilityHTTP:
                 @errorhandler(Exception)
                 def flext_error_handler(
                     error: Exception,
-                ) -> tuple[t.Dict, int]:
+                ) -> tuple[m.Dict, int]:
                     """Handle exceptions with logging and alerting."""
                     try:
                         FlextObservabilityLogging.log_with_context(
@@ -283,7 +283,7 @@ class FlextObservabilityHTTP:
                             f"Error in error handler: {log_error}",
                         )
 
-                    return t.Dict.model_validate({"error": str(error)}), 500
+                    return m.Dict.model_validate({"error": str(error)}), 500
 
                 FlextObservabilityHTTP._logger.debug(
                     "Flask HTTP instrumentation setup complete",
@@ -303,7 +303,7 @@ class FlextObservabilityHTTP:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: t.GeneralValueType) -> FlextResult[bool]:
+        def setup_instrumentation(app: t.ContainerValue) -> FlextResult[bool]:
             """Setup FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,
@@ -349,7 +349,7 @@ class FlextObservabilityHTTP:
                 class FlextObservabilityMiddleware:
                     """Starlette-based ASGI middleware for FastAPI."""
 
-                    def __init__(self, app: t.GeneralValueType) -> None:
+                    def __init__(self, app: t.ContainerValue) -> None:
                         _ = app
 
                     async def dispatch(
@@ -469,7 +469,7 @@ class FlextObservabilityHTTP:
     async def _async_log_with_context(
         message: str,
         level: str,
-        extra: t.Dict | dict[str, t.GeneralValueType] | None = None,
+        extra: m.Dict | dict[str, t.ContainerValue] | None = None,
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 
