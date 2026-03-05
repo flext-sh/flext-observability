@@ -692,47 +692,6 @@ class FlextObservabilityMasterFactory:
         """Return the container."""
         return self._container
 
-    def metric(
-        self,
-        name: str,
-        value: float,
-        unit: str = "count",
-        tags: m.Dict | None = None,
-        timestamp: datetime | None = None,
-    ) -> FlextResult[FlextObservability.Metric]:
-        """Create a metric."""
-        _ = timestamp  # Reserved for future use
-        return flext_metric(name, value, unit=unit, tags=tags)
-
-    def log(
-        self,
-        message: str,
-        level: str = c.Observability.ErrorSeverity.INFO,
-        context: m.Dict | None = None,
-        timestamp: datetime | None = None,
-    ) -> FlextResult[FlextObservability.LogEntry]:
-        """Create a log entry."""
-        valid_level: Literal["debug", "info", "warning", "error", "critical"]
-        match level:
-            case "debug":
-                valid_level = "debug"
-            case "info":
-                valid_level = "info"
-            case "warning":
-                valid_level = "warning"
-            case "error":
-                valid_level = "error"
-            case "critical":
-                valid_level = "critical"
-            case _:
-                valid_level = "info"
-        return flext_log_entry(
-            message,
-            level=valid_level,
-            context=context,
-            timestamp=timestamp,
-        )
-
     def alert(
         self,
         title: str,
@@ -772,24 +731,55 @@ class FlextObservabilityMasterFactory:
             labels=tags,
         )
 
-    def trace(
+    def create_alert(
         self,
-        trace_id: str,
-        operation: str,
-        span_id: str | None = None,
-        span_attributes: m.Dict | None = None,
-        duration_ms: float | None = None,
-        status: str = "unset",
-    ) -> FlextResult[FlextObservability.Trace]:
-        """Create a trace span."""
-        _ = span_id  # Reserved for future use
-        _ = duration_ms  # Reserved for future use
-        _ = status  # Reserved for future use
-        str_attributes: m.Dict = {}
-        if span_attributes:
-            str_attributes = {k: str(v) for k, v in span_attributes.items()}
+        message: str,
+        service: str = "default",
+        severity: str = "warning",
+        tags: m.Dict | None = None,
+    ) -> FlextResult[FlextObservability.Alert]:
+        """Create an alert (alias)."""
+        return self.alert(f"Alert: {service}", message, severity=severity, tags=tags)
 
-        return flext_trace(operation, attributes=str_attributes, trace_id=trace_id)
+    def create_health_check(
+        self,
+        component: str,
+        status: str = c.Observability.HealthStatus.HEALTHY,
+        details: m.Dict | None = None,
+    ) -> FlextResult[FlextObservability.HealthCheck]:
+        """Create a health check (alias)."""
+        return self.health_check(component, status=status, metrics=details)
+
+    def create_log_entry(
+        self,
+        message: str,
+        level: str = "info",
+        context: m.Dict | None = None,
+    ) -> FlextResult[FlextObservability.LogEntry]:
+        """Create a log entry (alias)."""
+        return self.log(message, level=level, context=context)
+
+    def create_metric(
+        self,
+        name: str,
+        value: float,
+        unit: str = "count",
+        tags: m.Dict | None = None,
+    ) -> FlextResult[FlextObservability.Metric]:
+        """Create a metric (alias)."""
+        return self.metric(name, value, unit=unit, tags=tags)
+
+    def create_trace(
+        self,
+        operation: str,
+        service: str = "default",
+        tags: m.Dict | None = None,
+    ) -> FlextResult[FlextObservability.Trace]:
+        """Create a trace (alias)."""
+        attrs: m.Dict | None = None
+        if tags is not None:
+            attrs = dict(tags.items())
+        return self.trace(f"trace-{service}", operation, span_attributes=attrs)
 
     def health_check(
         self,
@@ -818,55 +808,65 @@ class FlextObservabilityMasterFactory:
         """Get overall health status."""
         return flext_health_check("system", status="healthy")
 
-    def create_metric(
+    def log(
+        self,
+        message: str,
+        level: str = c.Observability.ErrorSeverity.INFO,
+        context: m.Dict | None = None,
+        timestamp: datetime | None = None,
+    ) -> FlextResult[FlextObservability.LogEntry]:
+        """Create a log entry."""
+        valid_level: Literal["debug", "info", "warning", "error", "critical"]
+        match level:
+            case "debug":
+                valid_level = "debug"
+            case "info":
+                valid_level = "info"
+            case "warning":
+                valid_level = "warning"
+            case "error":
+                valid_level = "error"
+            case "critical":
+                valid_level = "critical"
+            case _:
+                valid_level = "info"
+        return flext_log_entry(
+            message,
+            level=valid_level,
+            context=context,
+            timestamp=timestamp,
+        )
+
+    def metric(
         self,
         name: str,
         value: float,
         unit: str = "count",
         tags: m.Dict | None = None,
+        timestamp: datetime | None = None,
     ) -> FlextResult[FlextObservability.Metric]:
-        """Create a metric (alias)."""
-        return self.metric(name, value, unit=unit, tags=tags)
+        """Create a metric."""
+        _ = timestamp  # Reserved for future use
+        return flext_metric(name, value, unit=unit, tags=tags)
 
-    def create_log_entry(
+    def trace(
         self,
-        message: str,
-        level: str = "info",
-        context: m.Dict | None = None,
-    ) -> FlextResult[FlextObservability.LogEntry]:
-        """Create a log entry (alias)."""
-        return self.log(message, level=level, context=context)
-
-    def create_trace(
-        self,
+        trace_id: str,
         operation: str,
-        service: str = "default",
-        tags: m.Dict | None = None,
+        span_id: str | None = None,
+        span_attributes: m.Dict | None = None,
+        duration_ms: float | None = None,
+        status: str = "unset",
     ) -> FlextResult[FlextObservability.Trace]:
-        """Create a trace (alias)."""
-        attrs: m.Dict | None = None
-        if tags is not None:
-            attrs = dict(tags.items())
-        return self.trace(f"trace-{service}", operation, span_attributes=attrs)
+        """Create a trace span."""
+        _ = span_id  # Reserved for future use
+        _ = duration_ms  # Reserved for future use
+        _ = status  # Reserved for future use
+        str_attributes: m.Dict = {}
+        if span_attributes:
+            str_attributes = {k: str(v) for k, v in span_attributes.items()}
 
-    def create_alert(
-        self,
-        message: str,
-        service: str = "default",
-        severity: str = "warning",
-        tags: m.Dict | None = None,
-    ) -> FlextResult[FlextObservability.Alert]:
-        """Create an alert (alias)."""
-        return self.alert(f"Alert: {service}", message, severity=severity, tags=tags)
-
-    def create_health_check(
-        self,
-        component: str,
-        status: str = c.Observability.HealthStatus.HEALTHY,
-        details: m.Dict | None = None,
-    ) -> FlextResult[FlextObservability.HealthCheck]:
-        """Create a health check (alias)."""
-        return self.health_check(component, status=status, metrics=details)
+        return flext_trace(operation, attributes=str_attributes, trace_id=trace_id)
 
 
 def get_global_factory() -> FlextObservabilityMasterFactory:

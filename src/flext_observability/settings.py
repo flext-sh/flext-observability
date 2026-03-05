@@ -147,40 +147,6 @@ class FlextObservabilitySettings(FlextSettings):
         description="Project version",
     )
 
-    # === PYDANTIC 2.11+ VALIDATORS ===
-
-    @model_validator(mode="after")
-    def validate_observability_consistency(self) -> Self:
-        """Validate observability configuration consistency."""
-        # Additional cross-field validations beyond Field constraints
-        if self.tracing_enabled and not self.tracing_service_name:
-            msg = "Tracing service name required when tracing is enabled"
-            raise ValueError(msg)
-
-        if self.monitoring_enabled and not self.monitoring_failure_threshold:
-            msg = "Monitoring failure threshold required when monitoring is enabled"
-            raise ValueError(msg)
-
-        return self
-
-    def validate_business_rules(self) -> FlextResult[bool]:
-        """Validate observability business rules."""
-        try:
-            # Cross-field business validations
-            if self.metrics_enabled and not self.metrics_namespace.strip():
-                return FlextResult[bool].fail(
-                    "Metrics namespace cannot be empty when enabled",
-                )
-
-            if self.tracing_enabled and not self.tracing_service_name.strip():
-                return FlextResult[bool].fail(
-                    "Tracing service name cannot be empty when enabled",
-                )
-
-            return FlextResult[bool].ok(value=True)
-        except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[bool].fail(f"Business rules validation failed: {e}")
-
     @classmethod
     def create_with_defaults(
         cls,
@@ -215,6 +181,40 @@ class FlextObservabilitySettings(FlextSettings):
         In Pydantic v2, we don't maintain a persistent global instance to avoid
         issues with model state and validation.
         """
+
+    def validate_business_rules(self) -> FlextResult[bool]:
+        """Validate observability business rules."""
+        try:
+            # Cross-field business validations
+            if self.metrics_enabled and not self.metrics_namespace.strip():
+                return FlextResult[bool].fail(
+                    "Metrics namespace cannot be empty when enabled",
+                )
+
+            if self.tracing_enabled and not self.tracing_service_name.strip():
+                return FlextResult[bool].fail(
+                    "Tracing service name cannot be empty when enabled",
+                )
+
+            return FlextResult[bool].ok(value=True)
+        except (ValueError, TypeError, KeyError) as e:
+            return FlextResult[bool].fail(f"Business rules validation failed: {e}")
+
+    # === PYDANTIC 2.11+ VALIDATORS ===
+
+    @model_validator(mode="after")
+    def validate_observability_consistency(self) -> Self:
+        """Validate observability configuration consistency."""
+        # Additional cross-field validations beyond Field constraints
+        if self.tracing_enabled and not self.tracing_service_name:
+            msg = "Tracing service name required when tracing is enabled"
+            raise ValueError(msg)
+
+        if self.monitoring_enabled and not self.monitoring_failure_threshold:
+            msg = "Monitoring failure threshold required when monitoring is enabled"
+            raise ValueError(msg)
+
+        return self
 
 
 __all__: list[str] = [

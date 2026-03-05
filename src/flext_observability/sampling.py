@@ -81,6 +81,78 @@ class FlextObservabilitySampling:
             self._operation_overrides: MutableMapping[str, float] = {}
             self._sampled_trace_ids: set[str] = set()  # For deterministic sampling
 
+        def get_current_rate(
+            self,
+            operation: str | None = None,
+            service: str | None = None,
+        ) -> float:
+            """Get effective sampling rate for given operation/service.
+
+            Args:
+                operation: Operation name
+                service: Service name
+
+            Returns:
+                float - Effective sampling rate (0.0 to 1.0)
+
+            """
+            # Determine effective rate (priority: operation > service > default)
+            rate = self._default_rate
+
+            if service and service in self._service_overrides:
+                rate = self._service_overrides[service]
+
+            if operation and operation in self._operation_overrides:
+                rate = self._operation_overrides[operation]
+
+            return rate
+
+        def get_sampling_decision(
+            self,
+            operation: str | None = None,
+            service: str | None = None,
+        ) -> c.Observability.SamplingDecision:
+            """Get sampling decision as enum.
+
+            Args:
+                operation: Operation name
+                service: Service name
+
+            Returns:
+                c.Observability.SamplingDecision - SAMPLED or NOT_SAMPLED
+
+            """
+            if self.should_sample(operation=operation, service=service):
+                return c.Observability.SamplingDecision.SAMPLED
+            return c.Observability.SamplingDecision.NOT_SAMPLED
+
+        def set_default_rate(self, rate: float) -> FlextResult[bool]:
+            """Set default sampling rate (0.0 to 1.0).
+
+            Args:
+                rate: Sampling rate (0.0 = never sample, 1.0 = always sample)
+
+            Returns:
+                FlextResult[bool] - Ok if rate is valid
+
+            Behavior:
+                - Overrides environment-based rate
+                - 0.0 = minimal observability
+                - 0.1 = 10% (typical production)
+                - 1.0 = 100% (full observability)
+
+            """
+            if not 0.0 <= rate <= 1.0:
+                return FlextResult[bool].fail(
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                )
+
+            self._default_rate = rate
+            FlextObservabilitySampling._logger.debug(
+                f"Default sampling rate set to {rate}",
+            )
+            return FlextResult[bool].ok(value=True)
+
         def set_environment(self, environment: str) -> FlextResult[bool]:
             """Set current environment for sampling configuration.
 
@@ -110,20 +182,19 @@ class FlextObservabilitySampling:
             )
             return FlextResult[bool].ok(value=True)
 
-        def set_default_rate(self, rate: float) -> FlextResult[bool]:
-            """Set default sampling rate (0.0 to 1.0).
+        def set_operation_rate(self, operation: str, rate: float) -> FlextResult[bool]:
+            """Set sampling rate for specific operation.
 
             Args:
-                rate: Sampling rate (0.0 = never sample, 1.0 = always sample)
+                operation: Operation name (e.g., "POST /api/users")
+                rate: Sampling rate for this operation (0.0 to 1.0)
 
             Returns:
                 FlextResult[bool] - Ok if rate is valid
 
             Behavior:
-                - Overrides environment-based rate
-                - 0.0 = minimal observability
-                - 0.1 = 10% (typical production)
-                - 1.0 = 100% (full observability)
+                - Per-operation rate overrides service and default rates
+                - Useful for critical endpoints or expensive operations
 
             """
             if not 0.0 <= rate <= 1.0:
@@ -131,9 +202,9 @@ class FlextObservabilitySampling:
                     f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
 
-            self._default_rate = rate
+            self._operation_overrides[operation] = rate
             FlextObservabilitySampling._logger.debug(
-                f"Default sampling rate set to {rate}",
+                f"Sampling rate for operation '{operation}' set to {rate}",
             )
             return FlextResult[bool].ok(value=True)
 
@@ -161,32 +232,6 @@ class FlextObservabilitySampling:
             self._service_overrides[service] = rate
             FlextObservabilitySampling._logger.debug(
                 f"Sampling rate for service '{service}' set to {rate}",
-            )
-            return FlextResult[bool].ok(value=True)
-
-        def set_operation_rate(self, operation: str, rate: float) -> FlextResult[bool]:
-            """Set sampling rate for specific operation.
-
-            Args:
-                operation: Operation name (e.g., "POST /api/users")
-                rate: Sampling rate for this operation (0.0 to 1.0)
-
-            Returns:
-                FlextResult[bool] - Ok if rate is valid
-
-            Behavior:
-                - Per-operation rate overrides service and default rates
-                - Useful for critical endpoints or expensive operations
-
-            """
-            if not 0.0 <= rate <= 1.0:
-                return FlextResult[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
-                )
-
-            self._operation_overrides[operation] = rate
-            FlextObservabilitySampling._logger.debug(
-                f"Sampling rate for operation '{operation}' set to {rate}",
             )
             return FlextResult[bool].ok(value=True)
 
@@ -238,51 +283,6 @@ class FlextObservabilitySampling:
                 # Fallback to secure random sampling if context not available
                 return _secure_random.random() < sampling_rate
 
-        def get_sampling_decision(
-            self,
-            operation: str | None = None,
-            service: str | None = None,
-        ) -> c.Observability.SamplingDecision:
-            """Get sampling decision as enum.
-
-            Args:
-                operation: Operation name
-                service: Service name
-
-            Returns:
-                c.Observability.SamplingDecision - SAMPLED or NOT_SAMPLED
-
-            """
-            if self.should_sample(operation=operation, service=service):
-                return c.Observability.SamplingDecision.SAMPLED
-            return c.Observability.SamplingDecision.NOT_SAMPLED
-
-        def get_current_rate(
-            self,
-            operation: str | None = None,
-            service: str | None = None,
-        ) -> float:
-            """Get effective sampling rate for given operation/service.
-
-            Args:
-                operation: Operation name
-                service: Service name
-
-            Returns:
-                float - Effective sampling rate (0.0 to 1.0)
-
-            """
-            # Determine effective rate (priority: operation > service > default)
-            rate = self._default_rate
-
-            if service and service in self._service_overrides:
-                rate = self._service_overrides[service]
-
-            if operation and operation in self._operation_overrides:
-                rate = self._operation_overrides[operation]
-
-            return rate
-
     @staticmethod
     def get_sampler() -> FlextObservabilitySampling.Sampler:
         """Get global sampler instance (singleton).
@@ -304,24 +304,6 @@ class FlextObservabilitySampling:
         return FlextObservabilitySampling._sampler_instance
 
     @staticmethod
-    def should_sample(
-        operation: str | None = None,
-        service: str | None = None,
-    ) -> bool:
-        """Convenience function: make sampling decision.
-
-        Args:
-            operation: Operation name
-            service: Service name
-
-        Returns:
-            bool - True if request should be sampled
-
-        """
-        sampler = FlextObservabilitySampling.get_sampler()
-        return sampler.should_sample(operation=operation, service=service)
-
-    @staticmethod
     def get_sampling_decision(
         operation: str | None = None,
         service: str | None = None,
@@ -338,6 +320,24 @@ class FlextObservabilitySampling:
         """
         sampler = FlextObservabilitySampling.get_sampler()
         return sampler.get_sampling_decision(operation=operation, service=service)
+
+    @staticmethod
+    def should_sample(
+        operation: str | None = None,
+        service: str | None = None,
+    ) -> bool:
+        """Convenience function: make sampling decision.
+
+        Args:
+            operation: Operation name
+            service: Service name
+
+        Returns:
+            bool - True if request should be sampled
+
+        """
+        sampler = FlextObservabilitySampling.get_sampler()
+        return sampler.should_sample(operation=operation, service=service)
 
 
 # ============================================================================

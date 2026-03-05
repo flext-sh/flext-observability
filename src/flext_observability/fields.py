@@ -61,6 +61,15 @@ class FlextObservabilityFields:
     class MetricFields:
         """Nested class for metric field validation."""
 
+        @field_validator("unit")
+        @classmethod
+        def validate_metric_unit(cls, v: str) -> str:
+            """Validate metric unit is from allowed set."""
+            if v not in FlextObservabilityFields.METRIC_VALID_UNITS:
+                msg = f"Invalid metric unit: {v}. Must be one of {FlextObservabilityFields.METRIC_VALID_UNITS}"
+                raise ValueError(msg)
+            return v
+
         @field_validator("value")
         @classmethod
         def validate_metric_value(cls, v: float) -> float:
@@ -72,14 +81,10 @@ class FlextObservabilityFields:
                 raise ValueError(msg)
             return numeric_value
 
-        @field_validator("unit")
-        @classmethod
-        def validate_metric_unit(cls, v: str) -> str:
-            """Validate metric unit is from allowed set."""
-            if v not in FlextObservabilityFields.METRIC_VALID_UNITS:
-                msg = f"Invalid metric unit: {v}. Must be one of {FlextObservabilityFields.METRIC_VALID_UNITS}"
-                raise ValueError(msg)
-            return v
+    @classmethod
+    def create_alert_message_field(cls) -> t.ContainerValue:
+        """Create alert message field."""
+        return Field(min_length=1, max_length=1000, description="Alert message")
 
     # Convenience field definitions as class methods
 
@@ -87,11 +92,6 @@ class FlextObservabilityFields:
     def create_metric_name_field(cls) -> t.ContainerValue:
         """Create metric name field."""
         return Field(min_length=1, max_length=255, description="Metric name")
-
-    @classmethod
-    def create_metric_value_field(cls) -> t.ContainerValue:
-        """Create metric value field."""
-        return Field(ge=0.0, description="Metric value (non-negative)")
 
     @classmethod
     def create_metric_unit_field(cls) -> t.ContainerValue:
@@ -102,19 +102,19 @@ class FlextObservabilityFields:
         )
 
     @classmethod
-    def create_trace_name_field(cls) -> t.ContainerValue:
-        """Create trace name field."""
-        return Field(min_length=1, max_length=255, description="Trace operation name")
-
-    @classmethod
-    def create_alert_message_field(cls) -> t.ContainerValue:
-        """Create alert message field."""
-        return Field(min_length=1, max_length=1000, description="Alert message")
+    def create_metric_value_field(cls) -> t.ContainerValue:
+        """Create metric value field."""
+        return Field(ge=0.0, description="Metric value (non-negative)")
 
     @classmethod
     def create_timestamp_field(cls) -> t.ContainerValue:
         """Create timestamp field."""
         return Field(default_factory=lambda: datetime.now(UTC), description="Timestamp")
+
+    @classmethod
+    def create_trace_name_field(cls) -> t.ContainerValue:
+        """Create trace name field."""
+        return Field(min_length=1, max_length=255, description="Trace operation name")
 
 
 # All field functionality is now available through FlextObservabilityFields

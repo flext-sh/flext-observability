@@ -38,18 +38,23 @@ class HTTPXURLProtocol(Protocol):
     """Protocol for httpx URL object."""
 
     @property
-    def scheme(self) -> str:
-        """URL scheme (http/https)."""
+    def host(self) -> str | None:
+        """URL host."""
         ...
 
     @property
-    def host(self) -> str | None:
-        """URL host."""
+    def scheme(self) -> str:
+        """URL scheme (http/https)."""
         ...
 
 
 class HTTPXRequestProtocol(Protocol):
     """Protocol for httpx Request object."""
+
+    @property
+    def headers(self) -> MutableMapping[str, str]:
+        """Request headers."""
+        ...
 
     @property
     def method(self) -> str:
@@ -59,11 +64,6 @@ class HTTPXRequestProtocol(Protocol):
     @property
     def url(self) -> HTTPXURLProtocol:
         """Request URL."""
-        ...
-
-    @property
-    def headers(self) -> MutableMapping[str, str]:
-        """Request headers."""
         ...
 
 
@@ -119,13 +119,6 @@ class FlextObservabilityHTTPClient:
 
     _logger = FlextRuntime.get_logger(__name__)
 
-    @staticmethod
-    def _validated_headers(payload: t.ContainerValue) -> MutableMapping[str, str]:
-        try:
-            return _HeadersPayload.model_validate({"headers": payload}).headers
-        except ValidationError:
-            return {}
-
     # ========================================================================
     # HTTPX INSTRUMENTATION
     # ========================================================================
@@ -139,6 +132,13 @@ class FlextObservabilityHTTPClient:
     def _is_httpx_client(obj: object) -> TypeGuard[Any]:
         """Type guard to check if object is an httpx client."""
         return hasattr(obj, "request") or hasattr(obj, "_send")
+
+    @staticmethod
+    def _validated_headers(payload: t.ContainerValue) -> MutableMapping[str, str]:
+        try:
+            return _HeadersPayload.model_validate({"headers": payload}).headers
+        except ValidationError:
+            return {}
 
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""

@@ -62,14 +62,14 @@ class FlextObservabilityModels(FlextModels):
             return (datetime.now(tz=UTC) - self.timestamp).total_seconds()
 
         @computed_field
-        def has_data(self) -> bool:
-            """Check if entry has any data."""
-            return bool(self.data)
-
-        @computed_field
         def data_keys(self) -> list[str]:
             """List of data keys for introspection."""
             return list(self.data.keys()) if self.data else []
+
+        @computed_field
+        def has_data(self) -> bool:
+            """Check if entry has any data."""
+            return bool(self.data)
 
     class GenericObservabilityConfig(FlextModels.Value):
         """Generic configuration using Pydantic patterns."""

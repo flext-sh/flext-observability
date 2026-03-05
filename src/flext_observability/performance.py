@@ -93,39 +93,6 @@ class FlextObservabilityPerformance:
             self._initial_memory = self._get_memory_usage()
             self._initial_cpu = self._get_cpu_percent()
 
-        def _get_memory_usage(self) -> float:
-            """Get current memory usage in MB."""
-            try:
-                memory_info = FlextObservabilityPerformance._process.memory_info()
-                rss_bytes: int = memory_info.rss
-                return float(rss_bytes) / 1024 / 1024
-            except (ValueError, TypeError, KeyError):
-                return 0.0
-
-        def _get_cpu_percent(self) -> float:
-            """Get current CPU usage percent."""
-            try:
-                cpu: float = FlextObservabilityPerformance._process.cpu_percent(
-                    interval=0.01,
-                )
-                return cpu
-            except (ValueError, TypeError, KeyError):
-                return 0.0
-
-        def mark_success(self) -> None:
-            """Mark operation as successful."""
-            self.metrics.success = True
-
-        def mark_error(self, error_message: str) -> None:
-            """Mark operation as failed.
-
-            Args:
-                error_message: Error description
-
-            """
-            self.metrics.success = False
-            self.metrics.error_message = error_message
-
         def finish(self) -> PerformanceMetrics:
             """Finish monitoring and return metrics.
 
@@ -143,18 +110,62 @@ class FlextObservabilityPerformance:
 
             return self.metrics
 
-    @staticmethod
-    def start_monitoring(operation: str) -> FlextObservabilityPerformance.Monitor:
-        """Start monitoring an operation.
+        def mark_error(self, error_message: str) -> None:
+            """Mark operation as failed.
 
-        Args:
-            operation: Operation name
+            Args:
+                error_message: Error description
+
+            """
+            self.metrics.success = False
+            self.metrics.error_message = error_message
+
+        def mark_success(self) -> None:
+            """Mark operation as successful."""
+            self.metrics.success = True
+
+        def _get_cpu_percent(self) -> float:
+            """Get current CPU usage percent."""
+            try:
+                cpu: float = FlextObservabilityPerformance._process.cpu_percent(
+                    interval=0.01,
+                )
+                return cpu
+            except (ValueError, TypeError, KeyError):
+                return 0.0
+
+        def _get_memory_usage(self) -> float:
+            """Get current memory usage in MB."""
+            try:
+                memory_info = FlextObservabilityPerformance._process.memory_info()
+                rss_bytes: int = memory_info.rss
+                return float(rss_bytes) / 1024 / 1024
+            except (ValueError, TypeError, KeyError):
+                return 0.0
+
+    @staticmethod
+    def get_system_resources() -> Mapping[str, float]:
+        """Get current system resource usage.
 
         Returns:
-            Monitor - Performance monitor for the operation
+            dict - Resource usage metrics
+                - memory_mb: Current memory usage
+                - memory_percent: Memory usage percentage
+                - cpu_percent: CPU usage percentage
 
         """
-        return FlextObservabilityPerformance.Monitor(operation)
+        try:
+            memory_info = FlextObservabilityPerformance._process.memory_info()
+            rss_bytes: int = memory_info.rss
+            memory_mb: float = float(rss_bytes) / 1024 / 1024
+
+            return {
+                "memory_mb": memory_mb,
+                "memory_percent": FlextObservabilityPerformance._process.memory_percent(),
+                "cpu_percent": FlextObservabilityPerformance._process.cpu_percent(),
+            }
+        except (ValueError, TypeError, KeyError):
+            return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
 
     @staticmethod
     def is_performance_acceptable(metrics: PerformanceMetrics) -> bool:
@@ -229,28 +240,17 @@ class FlextObservabilityPerformance:
             return FlextResult[bool].fail(f"Failed to log metrics: {e}")
 
     @staticmethod
-    def get_system_resources() -> Mapping[str, float]:
-        """Get current system resource usage.
+    def start_monitoring(operation: str) -> FlextObservabilityPerformance.Monitor:
+        """Start monitoring an operation.
+
+        Args:
+            operation: Operation name
 
         Returns:
-            dict - Resource usage metrics
-                - memory_mb: Current memory usage
-                - memory_percent: Memory usage percentage
-                - cpu_percent: CPU usage percentage
+            Monitor - Performance monitor for the operation
 
         """
-        try:
-            memory_info = FlextObservabilityPerformance._process.memory_info()
-            rss_bytes: int = memory_info.rss
-            memory_mb: float = float(rss_bytes) / 1024 / 1024
-
-            return {
-                "memory_mb": memory_mb,
-                "memory_percent": FlextObservabilityPerformance._process.memory_percent(),
-                "cpu_percent": FlextObservabilityPerformance._process.cpu_percent(),
-            }
-        except (ValueError, TypeError, KeyError):
-            return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
+        return FlextObservabilityPerformance.Monitor(operation)
 
 
 # ============================================================================

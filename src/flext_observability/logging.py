@@ -66,15 +66,15 @@ class FlextObservabilityLogging(FlextModels):
         )
 
         @computed_field
-        def log_key(self) -> str:
-            """Computed field for unique log key."""
-            return f"{self.source}.{self.logger_name}.{self.level}"
-
-        @computed_field
         def is_error_level(self) -> bool:
             """Computed field indicating if log is error level or higher."""
             error_levels = ["error", "critical"]
             return self.level.lower() in error_levels
+
+        @computed_field
+        def log_key(self) -> str:
+            """Computed field for unique log key."""
+            return f"{self.source}.{self.logger_name}.{self.level}"
 
         @field_validator("level")
         @classmethod

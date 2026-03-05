@@ -176,6 +176,35 @@ class FlextObservabilityLogging:
                 f"Context enrichment failed: {e}",
             )
 
+    # ========================================================================
+    # CONTEXT VALIDATION
+    # ========================================================================
+
+    @staticmethod
+    def ensure_correlation_id() -> str:
+        """Ensure correlation ID exists, generating if needed.
+
+        Checks if correlation ID is set in context. If not, generates
+        and sets a new one. Always returns a valid correlation ID.
+
+        Returns:
+            The correlation ID (existing or newly generated)
+
+        Example:
+            ```python
+            # At start of request processing
+            correlation_id = FlextObservabilityLogging.ensure_correlation_id()
+            logger.info(f"Processing request {correlation_id}")
+            ```
+
+        """
+        current_id = FlextObservabilityContext.get_correlation_id()
+
+        if not current_id:
+            return FlextObservabilityContext.set_correlation_id()
+
+        return current_id
+
     @staticmethod
     def inject_trace_context(logger: BindableLogger) -> FlextResult[bool]:
         """Inject trace context into logger for structured logging.
@@ -292,35 +321,6 @@ class FlextObservabilityLogging:
             return FlextResult[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Logging with context failed: {e}")
-
-    # ========================================================================
-    # CONTEXT VALIDATION
-    # ========================================================================
-
-    @staticmethod
-    def ensure_correlation_id() -> str:
-        """Ensure correlation ID exists, generating if needed.
-
-        Checks if correlation ID is set in context. If not, generates
-        and sets a new one. Always returns a valid correlation ID.
-
-        Returns:
-            The correlation ID (existing or newly generated)
-
-        Example:
-            ```python
-            # At start of request processing
-            correlation_id = FlextObservabilityLogging.ensure_correlation_id()
-            logger.info(f"Processing request {correlation_id}")
-            ```
-
-        """
-        current_id = FlextObservabilityContext.get_correlation_id()
-
-        if not current_id:
-            return FlextObservabilityContext.set_correlation_id()
-
-        return current_id
 
     @staticmethod
     def validate_context() -> FlextResult[LogContext]:

@@ -71,6 +71,13 @@ class FlextObservabilityHealth(FlextModels):
         )
 
         @computed_field
+        def formatted_response_time(self) -> str:
+            """Computed field for formatted response time."""
+            if self.response_time_ms is None:
+                return "unknown"
+            return f"{self.response_time_ms:.2f}ms"
+
+        @computed_field
         def health_key(self) -> str:
             """Computed field for unique health check key."""
             return f"{self.component}.{self.name}"
@@ -79,13 +86,6 @@ class FlextObservabilityHealth(FlextModels):
         def is_healthy(self) -> bool:
             """Computed field indicating if component is healthy."""
             return self.status.lower() == _obs_c.Observability.HealthStatus.HEALTHY
-
-        @computed_field
-        def formatted_response_time(self) -> str:
-            """Computed field for formatted response time."""
-            if self.response_time_ms is None:
-                return "unknown"
-            return f"{self.response_time_ms:.2f}ms"
 
         @field_validator("status")
         @classmethod

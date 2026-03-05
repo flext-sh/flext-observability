@@ -31,38 +31,36 @@ class FlextObservabilityServices:
         self._config = FlextObservabilitySettings.get_global_instance()
 
     @property
+    def config(self) -> FlextObservabilitySettings:
+        """Access observability config."""
+        return self._config
+
+    @property
     def container(self) -> FlextContainer:
         """Access FLEXT container."""
         return self._container
+
+    @property
+    def health_service(self) -> t.ContainerValue | None:
+        """Generic health service - not implemented in base service."""
+        return None
 
     @property
     def logger(self) -> t.ContainerValue:
         """Access FLEXT logger."""
         return self._logger
 
-    @property
-    def config(self) -> FlextObservabilitySettings:
-        """Access observability config."""
-        return self._config
+    def create_alert(self, **_kwargs: t.ContainerValue) -> FlextResult[m.Dict]:
+        """Generic alert creation - not implemented in base service."""
+        return FlextResult[m.Dict].fail(
+            "Alert creation not implemented in generic service",
+        )
 
-    def process_entry(
-        self,
-        entry_data: m.Dict,
-    ) -> FlextResult[m.Dict]:
-        """Process generic observability entry through FLEXT patterns."""
-        try:
-            # Delegate validation to FLEXT core
-            if not entry_data:
-                return FlextResult[m.Dict].fail("Entry data required")
-
-            # Use container for any service resolution
-            processed: m.Dict = dict(entry_data.items())
-            processed["processed_at"] = "now"
-            processed["processor"] = "flext_observability"
-
-            return FlextResult[m.Dict].ok(processed)
-        except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[m.Dict].fail(f"Entry processing failed: {e}")
+    def get_metrics_summary(self) -> FlextResult[m.Dict]:
+        """Generic metrics summary - not implemented in base service."""
+        return FlextResult[m.Dict].fail(
+            "Metrics summary not implemented in generic service",
+        )
 
     def get_status(self) -> FlextResult[m.Dict]:
         """Get generic service status through FLEXT patterns."""
@@ -84,22 +82,24 @@ class FlextObservabilityServices:
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[m.Dict].fail(f"Status check failed: {e}")
 
-    def create_alert(self, **_kwargs: t.ContainerValue) -> FlextResult[m.Dict]:
-        """Generic alert creation - not implemented in base service."""
-        return FlextResult[m.Dict].fail(
-            "Alert creation not implemented in generic service",
-        )
+    def process_entry(
+        self,
+        entry_data: m.Dict,
+    ) -> FlextResult[m.Dict]:
+        """Process generic observability entry through FLEXT patterns."""
+        try:
+            # Delegate validation to FLEXT core
+            if not entry_data:
+                return FlextResult[m.Dict].fail("Entry data required")
 
-    def get_metrics_summary(self) -> FlextResult[m.Dict]:
-        """Generic metrics summary - not implemented in base service."""
-        return FlextResult[m.Dict].fail(
-            "Metrics summary not implemented in generic service",
-        )
+            # Use container for any service resolution
+            processed: m.Dict = dict(entry_data.items())
+            processed["processed_at"] = "now"
+            processed["processor"] = "flext_observability"
 
-    @property
-    def health_service(self) -> t.ContainerValue | None:
-        """Generic health service - not implemented in base service."""
-        return None
+            return FlextResult[m.Dict].ok(processed)
+        except (ValueError, TypeError, KeyError) as e:
+            return FlextResult[m.Dict].fail(f"Entry processing failed: {e}")
 
 
 # Global factory functions delegating to FLEXT core
