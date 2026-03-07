@@ -319,7 +319,7 @@ class DocumentationAuditor:
             return "Standards"
         if "examples" in path_str:
             return "Examples"
-        if file_path.name in {"README.md", "CLAUDE.md"}:
+        if file_path.name in {"README.md", "AGENTS.md"}:
             return "Root Documentation"
         return "General"
 

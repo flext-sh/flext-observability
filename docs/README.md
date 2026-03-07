@@ -82,7 +82,7 @@ Start with [Getting Started](guides/getting-started.md) → [Simple API](api/sim
 
 ### **For FLEXT Ecosystem Integration**
 
-Start with [Architecture Overview](architecture/README.md) → [CLAUDE.md](../CLAUDE.md)
+Start with [Architecture Overview](architecture/README.md) → [AGENTS.md](../AGENTS.md)
 
 ### **For API Reference**
 
@@ -147,7 +147,7 @@ All documentation in this project follows FLEXT ecosystem standards:
 
 - **[FLEXT Ecosystem Documentation](../../docs/)** - Overall ecosystem architecture and patterns
 - **[flext-core Documentation](https://github.com/organization/flext/tree/main/flext-core/docs/)** - Foundation library patterns and utilities
-- **[CLAUDE.md](../CLAUDE.md)** - Development guidance for Claude Code AI assistance
+- **[AGENTS.md](../AGENTS.md)** - Development guidance for Claude Code AI assistance
 
 ______________________________________________________________________
 
