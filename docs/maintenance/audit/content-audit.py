@@ -446,9 +446,7 @@ class DocumentationAuditor:
             "fresh_files": self.report.fresh_files,
             "stale_files": self.report.stale_files,
             "file_metrics": file_metrics,
-            "category_breakdown": t.ConfigurationMapping(
-                self.report.category_breakdown,
-            ),
+            "category_breakdown": dict(self.report.category_breakdown),
             "overall_quality_score": self.report.overall_quality_score,
         }
 
@@ -497,7 +495,7 @@ def main() -> None:
     auditor = DocumentationAuditor(docs_root, args.config)
 
     # Run audit
-    auditor.run_audit(args.comprehensive)
+    auditor.run_audit(comprehensive=args.comprehensive)
 
     # Generate report
     report_content = auditor.generate_report(args.output_format)
