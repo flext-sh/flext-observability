@@ -468,23 +468,23 @@ class DocumentationAuditor:
 def main() -> None:
     """Main entry point for documentation audit."""
     parser = argparse.ArgumentParser(description="Documentation Content Audit System")
-    parser.add_argument(
+    _ = parser.add_argument(
         "--comprehensive",
         action="store_true",
         help="Run comprehensive analysis with detailed recommendations",
     )
-    parser.add_argument(
+    _ = parser.add_argument(
         "--output-format",
         choices=["markdown", "json"],
         default="markdown",
         help="Output format for audit report",
     )
-    parser.add_argument(
+    _ = parser.add_argument(
         "--config",
         type=Path,
         help="Path to custom audit configuration file",
     )
-    parser.add_argument(
+    _ = parser.add_argument(
         "--output-file",
         type=Path,
         help="Save report to file instead of stdout",
