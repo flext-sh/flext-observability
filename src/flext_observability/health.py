@@ -12,9 +12,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from flext_core import FlextModels, FlextResult, t
-from pydantic import (
-    ValidationError,
-)
+from pydantic import ValidationError
 
 from flext_observability import m
 
@@ -26,9 +24,6 @@ class FlextObservabilityHealth(FlextModels):
     for service health monitoring, status tracking, and health validation within the FLEXT ecosystem.
     """
 
-    # Health Monitoring Models
-
-    # Factory methods for direct entity creation
     @staticmethod
     def flext_health_check(
         component: str,
@@ -47,32 +42,24 @@ class FlextObservabilityHealth(FlextModels):
                     valid_kwargs["timestamp"] = parsed_kwargs.timestamp
             except ValidationError:
                 valid_kwargs = {}
-
             health_check = FlextObservabilityHealth.FlextHealthCheck(
-                component=component,
-                status=status,
-                message=message,
+                component=component, status=status, message=message
             )
             if valid_kwargs.get("metrics") and isinstance(
-                valid_kwargs["metrics"],
-                m.Dict,
+                valid_kwargs["metrics"], m.Dict
             ):
                 health_check.metrics = valid_kwargs["metrics"]
             if valid_kwargs.get("timestamp") and isinstance(
-                valid_kwargs["timestamp"],
-                datetime,
+                valid_kwargs["timestamp"], datetime
             ):
                 health_check.timestamp = valid_kwargs["timestamp"]
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(
-                health_check,
+                health_check
             )
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityHealth.FlextHealthCheck].fail(
-                f"Failed to create health check: {e}",
+                f"Failed to create health check: {e}"
             )
 
 
-# Export the focused health namespace class
-__all__ = [
-    "FlextObservabilityHealth",
-]
+__all__ = ["FlextObservabilityHealth"]

@@ -19,7 +19,6 @@ from typing import Literal, TypeVar
 
 from flext_core import FlextTypes, t as _t
 
-# Define T TypeVar for generic programming
 T = TypeVar("T")
 
 
@@ -31,10 +30,6 @@ class FlextObservabilityTypes(FlextTypes):
     Uses Python 3.13+ type syntax and patterns.
     """
 
-    # =========================================================================
-    # OBSERVABILITY PROJECT TYPES - Domain-specific project types extending t
-    # =========================================================================
-
     class Observability:
         """Observability-specific project types.
 
@@ -43,13 +38,10 @@ class FlextObservabilityTypes(FlextTypes):
         Observability domain owns monitoring-specific types.
         """
 
-        # Observability-specific project types extending the generic ones
         type ObservabilityProjectType = Literal[
-            # Generic types inherited from t
             "library",
             "application",
             "service",
-            # Observability-specific types
             "monitoring-service",
             "metrics-collector",
             "tracing-service",
@@ -67,115 +59,60 @@ class FlextObservabilityTypes(FlextTypes):
             "observability-gateway",
             "telemetry-service",
         ]
-
-        # Observability-specific project configurations
         type ObservabilityProjectConfig = dict[
-            str,
-            str | int | bool | list[str] | _t.ContainerValue,
+            str, str | int | bool | list[str] | _t.ContainerValue
         ]
         type MonitoringConfig = dict[str, str | int | bool | list[str]]
         type MetricsConfig = dict[
-            str,
-            bool | str | dict[str, FlextTypes.ContainerValue],
+            str, bool | str | dict[str, FlextTypes.ContainerValue]
         ]
-        type TracingConfig = dict[
-            str,
-            str | int | bool | list[str] | _t.ContainerValue,
-        ]
-
-    # =========================================================================
-    # OBSERVABILITY CORE TYPES - Commonly used observability-specific types
-    # =========================================================================
-
-    # =========================================================================
-    # OBSERVABILITY CORE TYPES - Domain-specific core types
-    # =========================================================================
+        type TracingConfig = dict[str, str | int | bool | list[str] | _t.ContainerValue]
 
     class ObservabilityCore:
         """Core observability types extending t for complex domain operations."""
 
-        # Metric collection and processing types
         type MetricCollection = dict[
-            str,
-            float | int | Decimal | dict[str, FlextTypes.JsonValue],
+            str, float | int | Decimal | dict[str, FlextTypes.JsonValue]
         ]
         type MetricAggregation = dict[str, float | dict[str, float | int | Decimal]]
         type MetricThresholds = dict[
-            str,
-            float | int | bool | dict[str, FlextTypes.ContainerValue],
+            str, float | int | bool | dict[str, FlextTypes.ContainerValue]
         ]
         type MetricConfiguration = dict[
-            str,
-            bool | str | int | dict[str, FlextTypes.ContainerValue],
+            str, bool | str | int | dict[str, FlextTypes.ContainerValue]
         ]
-
-        # Tracing and span types
         type TraceConfiguration = dict[
-            str,
-            str | int | bool | dict[str, FlextTypes.JsonValue],
+            str, str | int | bool | dict[str, FlextTypes.JsonValue]
         ]
-        type SpanAttributes = dict[
-            str,
-            t.Scalar | dict[str, FlextTypes.ContainerValue],
-        ]
+        type SpanAttributes = dict[str, t.Scalar | dict[str, FlextTypes.ContainerValue]]
         type TraceContext = dict[str, str | int | dict[str, FlextTypes.JsonValue]]
         type SpanHierarchy = dict[str, list[dict[str, FlextTypes.JsonValue]]]
-
-        # Alerting and notification types
         type AlertConfiguration = dict[
-            str,
-            str | int | bool | dict[str, FlextTypes.JsonValue],
+            str, str | int | bool | dict[str, FlextTypes.JsonValue]
         ]
         type AlertRules = list[
             dict[str, str | bool | int | float | dict[str, FlextTypes.ContainerValue]]
         ]
         type AlertChannels = dict[str, str | dict[str, FlextTypes.ContainerValue]]
-
-        # Health monitoring types
         type HealthChecks = dict[str, dict[str, float | str | bool]]
         type ComponentStatus = dict[str, str | int | dict[str, FlextTypes.JsonValue]]
         type SystemMetrics = dict[str, float | int | dict[str, FlextTypes.JsonValue]]
-
-        # Log aggregation types
         type LogConfiguration = dict[
-            str,
-            str | int | bool | dict[str, FlextTypes.ContainerValue],
+            str, str | int | bool | dict[str, FlextTypes.ContainerValue]
         ]
         type LogFilters = dict[str, str | list[str] | dict[str, FlextTypes.JsonValue]]
         type LogProcessing = dict[str, str | dict[str, FlextTypes.JsonValue] | bool]
-
-        # Service discovery types
         type ServiceRegistry = dict[
-            str,
-            dict[str, str | int | dict[str, FlextTypes.ContainerValue]],
+            str, dict[str, str | int | dict[str, FlextTypes.ContainerValue]]
         ]
         type ServiceDiscovery = dict[str, list[dict[str, FlextTypes.JsonValue]]]
         type ServiceHealth = dict[str, str | dict[str, FlextTypes.JsonValue]]
-
-        # Additional core types for monitoring
         type MetadataDict = dict[str, FlextTypes.ContainerValue]
         type ServicesList = list[tuple[str, _t.ContainerValue]]
         type HealthMetricsDict = dict[str, FlextTypes.ContainerValue]
         type MetricDict = dict[str, FlextTypes.ContainerValue]
         type StringList = list[str]
 
-    # Note: All protocol definitions are centralized in protocols.py
-    # Use p.Observability.* for protocols (MetricsProtocol, TracingProtocol, etc.)
-    # This follows FLEXT SOLID principles - protocols in protocols.py, types in typings.py
 
-
-# Alias for simplified usage
 t = FlextObservabilityTypes
-
-# Namespace composition via class inheritance
-# Observability namespace provides access to nested classes through inheritance
-# Access patterns:
-# - t.Observability.* for Observability-specific types
-# - t.Project.* for project types
-# - t.Core.* for core types (inherited from parent)
-
-__all__ = [
-    "FlextObservabilityTypes",
-    "T",
-    "t",
-]
+__all__ = ["FlextObservabilityTypes", "T", "t"]

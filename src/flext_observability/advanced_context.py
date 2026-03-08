@@ -23,9 +23,6 @@ from collections.abc import Mapping
 
 from flext_core import FlextLogger, FlextResult, t
 
-# Type for JSON-serializable values
-# Using PEP 695 type statement for recursive type (Python 3.12+)
-
 
 class FlextObservabilityAdvancedContext:
     """Advanced context management for rich metadata propagation.
@@ -77,10 +74,8 @@ class FlextObservabilityAdvancedContext:
                 self._metadata.clear()
                 self._baggage.clear()
                 self._request_id = ""
-
                 FlextObservabilityAdvancedContext._logger.debug("Context cleared")
                 return FlextResult[bool].ok(value=True)
-
             except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to clear context: {e}")
 
@@ -127,8 +122,7 @@ class FlextObservabilityAdvancedContext:
             return self._metadata.get(key)
 
         def merge(
-            self,
-            other: FlextObservabilityAdvancedContext.Context,
+            self, other: FlextObservabilityAdvancedContext.Context
         ) -> FlextResult[bool]:
             """Merge another context into this one.
 
@@ -142,10 +136,8 @@ class FlextObservabilityAdvancedContext:
             try:
                 self._metadata.update(other.get_all_metadata())
                 self._baggage.update(other.get_all_baggage())
-
                 FlextObservabilityAdvancedContext._logger.debug("Context merged")
                 return FlextResult[bool].ok(value=True)
-
             except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to merge context: {e}")
 
@@ -166,12 +158,10 @@ class FlextObservabilityAdvancedContext:
             try:
                 self._metadata = snapshot.metadata.copy()
                 self._baggage = snapshot.baggage.copy()
-
                 FlextObservabilityAdvancedContext._logger.debug(
-                    "Context restored from snapshot",
+                    "Context restored from snapshot"
                 )
                 return FlextResult[bool].ok(value=True)
-
             except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to restore context: {e}")
 
@@ -190,7 +180,6 @@ class FlextObservabilityAdvancedContext:
                 self._baggage[key] = value
                 FlextObservabilityAdvancedContext._logger.debug(f"Baggage set: {key}")
                 return FlextResult[bool].ok(value=True)
-
             except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to set baggage: {e}")
 
@@ -211,23 +200,17 @@ class FlextObservabilityAdvancedContext:
 
             """
             try:
-                # Validate JSON serializability
                 json.dumps(value)
                 self._metadata[key] = value
-
                 FlextObservabilityAdvancedContext._logger.debug(f"Metadata set: {key}")
                 return FlextResult[bool].ok(value=True)
-
             except (TypeError, ValueError) as e:
                 return FlextResult[bool].fail(
-                    f"Metadata value not JSON serializable: {e}",
+                    f"Metadata value not JSON serializable: {e}"
                 )
 
         def snapshot(
-            self,
-            correlation_id: str = "",
-            trace_id: str = "",
-            span_id: str = "",
+            self, correlation_id: str = "", trace_id: str = "", span_id: str = ""
         ) -> ContextSnapshot:
             """Create snapshot of current context.
 
@@ -260,7 +243,6 @@ class FlextObservabilityAdvancedContext:
             FlextObservabilityAdvancedContext._context_instance = (
                 FlextObservabilityAdvancedContext.Context()
             )
-
         return FlextObservabilityAdvancedContext._context_instance
 
     @staticmethod
@@ -293,11 +275,4 @@ class FlextObservabilityAdvancedContext:
         return ctx.set_metadata(key, value)
 
 
-# ============================================================================
-# MODULE EXPORTS
-# ============================================================================
-
-__all__ = [
-    "ContextSnapshot",
-    "FlextObservabilityAdvancedContext",
-]
+__all__ = ["ContextSnapshot", "FlextObservabilityAdvancedContext"]

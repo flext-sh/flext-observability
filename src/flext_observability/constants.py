@@ -50,10 +50,6 @@ class FlextObservabilityConstants(FlextConstants):
             DEFAULT_MAX_SPAN_ATTRIBUTES: Final[int] = 128
             DEFAULT_MONITORING_ENDPOINT: Final[str] = "http://localhost:9090"
 
-        # =============================================================================
-        # STRENUM CLASSES - Single source of truth for string enumerations
-        # =============================================================================
-
         class MetricType(StrEnum):
             """Metric type enumeration.
 
@@ -177,11 +173,6 @@ class FlextObservabilityConstants(FlextConstants):
             ERROR = "error"
             CRITICAL = "critical"
 
-        # =============================================================================
-        # LITERAL TYPES - Type-safe string literals (PEP 695)
-        # =============================================================================
-        # All Literal types reference StrEnum members - NO string duplication!
-
         class Literals:
             """Type-safe string literals for observability (Python 3.13+ best practices).
 
@@ -191,38 +182,29 @@ class FlextObservabilityConstants(FlextConstants):
             Using PEP 695 type statement for better type checking and IDE support.
             """
 
-            # Metric type literal - references MetricType StrEnum members
             type MetricTypeLiteral = Literal[
                 FlextObservabilityConstants.Observability.MetricType.COUNTER,
                 FlextObservabilityConstants.Observability.MetricType.GAUGE,
                 FlextObservabilityConstants.Observability.MetricType.HISTOGRAM,
                 FlextObservabilityConstants.Observability.MetricType.SUMMARY,
             ]
-
-            # Alert level literal - references AlertLevel StrEnum members
             type AlertLevelLiteral = Literal[
                 FlextObservabilityConstants.Observability.AlertLevel.INFO,
                 FlextObservabilityConstants.Observability.AlertLevel.WARNING,
                 FlextObservabilityConstants.Observability.AlertLevel.ERROR,
                 FlextObservabilityConstants.Observability.AlertLevel.CRITICAL,
             ]
-
-            # Trace status literal - references TraceStatus StrEnum members
             type TraceStatusLiteral = Literal[
                 FlextObservabilityConstants.Observability.TraceStatus.STARTED,
                 FlextObservabilityConstants.Observability.TraceStatus.RUNNING,
                 FlextObservabilityConstants.Observability.TraceStatus.COMPLETED,
                 FlextObservabilityConstants.Observability.TraceStatus.FAILED,
             ]
-
-            # Health status literal - references HealthStatus StrEnum members
             type HealthStatusLiteral = Literal[
                 FlextObservabilityConstants.Observability.HealthStatus.HEALTHY,
                 FlextObservabilityConstants.Observability.HealthStatus.DEGRADED,
                 FlextObservabilityConstants.Observability.HealthStatus.UNHEALTHY,
             ]
-
-            # Service literal - references Service StrEnum members
             type ServiceLiteral = Literal[
                 FlextObservabilityConstants.Observability.Service.METRICS,
                 FlextObservabilityConstants.Observability.Service.TRACING,
@@ -234,14 +216,10 @@ class FlextObservabilityConstants(FlextConstants):
         class FunctionArgs:
             """Function argument length constants."""
 
-            NO_ARGS: Final[int] = 0  # No arguments
-            ONE_ARG: Final[int] = 1  # One argument
-            TWO_ARGS: Final[int] = 2  # Two arguments
+            NO_ARGS: Final[int] = 0
+            ONE_ARG: Final[int] = 1
+            TWO_ARGS: Final[int] = 2
 
 
 c = FlextObservabilityConstants
-
-__all__ = [
-    "FlextObservabilityConstants",
-    "c",
-]
+__all__ = ["FlextObservabilityConstants", "c"]

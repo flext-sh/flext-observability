@@ -47,12 +47,6 @@ class FlextObservabilityProtocols(FlextProtocols):
             """Set span status."""
             ...
 
-    # =========================================================================
-    # OBSERVABILITY-SPECIFIC PROTOCOLS
-    # =========================================================================
-    # Domain-specific protocols for metrics, tracing, alerting, health,
-    # logging, and dashboard operations.
-
     class Observability:
         """Observability domain-specific protocols.
 
@@ -65,21 +59,13 @@ class FlextObservabilityProtocols(FlextProtocols):
             """Protocol for metrics collection and management operations."""
 
             def create_counter(
-                self,
-                name: str,
-                description: str,
-                *,
-                unit: str = "count",
+                self, name: str, description: str, *, unit: str = "count"
             ) -> FlextProtocols.Result[t.ContainerValue]:
                 """Create a counter metric."""
                 ...
 
             def create_gauge(
-                self,
-                name: str,
-                description: str,
-                *,
-                unit: str = "value",
+                self, name: str, description: str, *, unit: str = "value"
             ) -> FlextProtocols.Result[t.ContainerValue]:
                 """Create a gauge metric."""
                 ...
@@ -140,8 +126,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 ...
 
             def get_trace(
-                self,
-                trace_id: str,
+                self, trace_id: str
             ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Get trace by ID."""
                 ...
@@ -212,8 +197,7 @@ class FlextObservabilityProtocols(FlextProtocols):
             """Protocol for health check operations."""
 
             def check_health(
-                self,
-                service_name: str,
+                self, service_name: str
             ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Perform health check for a service."""
                 ...
@@ -225,8 +209,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 ...
 
             def get_service_status(
-                self,
-                service_name: str,
+                self, service_name: str
             ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Get service health status."""
                 ...
@@ -246,8 +229,7 @@ class FlextObservabilityProtocols(FlextProtocols):
             """Protocol for logging operations."""
 
             def configure_logging(
-                self,
-                config: Mapping[str, t.ContainerValue],
+                self, config: Mapping[str, t.ContainerValue]
             ) -> FlextProtocols.Result[bool]:
                 """Configure logging system."""
                 ...
@@ -291,9 +273,7 @@ class FlextObservabilityProtocols(FlextProtocols):
             """Protocol for dashboard and visualization operations."""
 
             def add_widget(
-                self,
-                dashboard_id: str,
-                widget_config: Mapping[str, t.ContainerValue],
+                self, dashboard_id: str, widget_config: Mapping[str, t.ContainerValue]
             ) -> FlextProtocols.Result[str]:
                 """Add widget to dashboard."""
                 ...
@@ -309,8 +289,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 ...
 
             def get_dashboard(
-                self,
-                dashboard_id: str,
+                self, dashboard_id: str
             ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Get dashboard by ID."""
                 ...
@@ -326,10 +305,5 @@ class FlextObservabilityProtocols(FlextProtocols):
                 ...
 
 
-# Runtime alias for simplified usage
 p = FlextObservabilityProtocols
-
-__all__ = [
-    "FlextObservabilityProtocols",
-    "p",
-]
+__all__ = ["FlextObservabilityProtocols", "p"]

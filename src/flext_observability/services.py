@@ -53,13 +53,13 @@ class FlextObservabilityServices:
     def create_alert(self, **_kwargs: t.ContainerValue) -> FlextResult[m.Dict]:
         """Generic alert creation - not implemented in base service."""
         return FlextResult[m.Dict].fail(
-            "Alert creation not implemented in generic service",
+            "Alert creation not implemented in generic service"
         )
 
     def get_metrics_summary(self) -> FlextResult[m.Dict]:
         """Generic metrics summary - not implemented in base service."""
         return FlextResult[m.Dict].fail(
-            "Metrics summary not implemented in generic service",
+            "Metrics summary not implemented in generic service"
         )
 
     def get_status(self) -> FlextResult[m.Dict]:
@@ -77,46 +77,30 @@ class FlextObservabilityServices:
                 "timestamp": status["timestamp"],
                 "version": status["version"],
             }
-
             return FlextResult[m.Dict].ok(status_result)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[m.Dict].fail(f"Status check failed: {e}")
 
-    def process_entry(
-        self,
-        entry_data: m.Dict,
-    ) -> FlextResult[m.Dict]:
+    def process_entry(self, entry_data: m.Dict) -> FlextResult[m.Dict]:
         """Process generic observability entry through FLEXT patterns."""
         try:
-            # Delegate validation to FLEXT core
             if not entry_data:
                 return FlextResult[m.Dict].fail("Entry data required")
-
-            # Use container for any service resolution
             processed: m.Dict = dict(entry_data.items())
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
-
             return FlextResult[m.Dict].ok(processed)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[m.Dict].fail(f"Entry processing failed: {e}")
 
 
-# Global factory functions delegating to FLEXT core
 def get_global_factory() -> FlextObservabilityServices:
     """Get global factory instance."""
-    # For now, return new instance directly - container registration
-    # would require protocol implementation
     return FlextObservabilityServices()
 
 
 def reset_global_factory() -> None:
     """Reset global factory through FLEXT container."""
-    # Note: Container may not have remove method, so this is a no-op for now
 
 
-__all__ = [
-    "FlextObservabilityServices",
-    "get_global_factory",
-    "reset_global_factory",
-]
+__all__ = ["FlextObservabilityServices", "get_global_factory", "reset_global_factory"]

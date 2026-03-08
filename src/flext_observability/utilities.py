@@ -27,10 +27,7 @@ class FlextObservabilityUtilities(FlextUtilities):
 
         @staticmethod
         def create_monitor_config(
-            service_name: str,
-            interval_seconds: int = 60,
-            *,
-            enabled: bool = True,
+            service_name: str, interval_seconds: int = 60, *, enabled: bool = True
         ) -> Mapping[str, str | int | bool]:
             """Create a monitoring configuration dictionary."""
             return {
@@ -43,56 +40,39 @@ class FlextObservabilityUtilities(FlextUtilities):
         """Performance tracking helpers."""
 
         @staticmethod
-        def calculate_duration(
-            start_ns: int,
-            end_ns: int,
-        ) -> FlextResult[float]:
+        def calculate_duration(start_ns: int, end_ns: int) -> FlextResult[float]:
             """Calculate duration in seconds from nanosecond timestamps."""
             if end_ns < start_ns:
-                return FlextResult[float].fail(
-                    "end_ns must be >= start_ns",
-                )
-            return FlextResult[float].ok((end_ns - start_ns) / 1_000_000_000)
+                return FlextResult[float].fail("end_ns must be >= start_ns")
+            return FlextResult[float].ok((end_ns - start_ns) / 1000000000)
 
     class Health:
         """Health check helpers."""
 
         @staticmethod
         def create_health_status(
-            service_name: str,
-            *,
-            is_healthy: bool = True,
-            details: str = "",
+            service_name: str, *, is_healthy: bool = True, details: str = ""
         ) -> Mapping[str, str | bool]:
             """Create a health status dictionary."""
-            return {
-                "service": service_name,
-                "healthy": is_healthy,
-                "details": details,
-            }
+            return {"service": service_name, "healthy": is_healthy, "details": details}
 
     class Sampling:
         """Sampling strategy helpers."""
 
         @staticmethod
-        def should_sample(
-            rate: float,
-            request_id: int,
-        ) -> bool:
+        def should_sample(rate: float, request_id: int) -> bool:
             """Determine if a request should be sampled based on rate."""
             if rate <= 0.0:
                 return False
             if rate >= 1.0:
                 return True
-            return (request_id % 100) < int(rate * 100)
+            return request_id % 100 < int(rate * 100)
 
     class HTTP:
         """HTTP instrumentation helpers."""
 
         @staticmethod
-        def extract_route_pattern(
-            path: str,
-        ) -> str:
+        def extract_route_pattern(path: str) -> str:
             """Extract a generic route pattern from a concrete URL path."""
             parts = path.strip("/").split("/")
             normalized: list[str] = []
@@ -108,8 +88,7 @@ class FlextObservabilityUtilities(FlextUtilities):
 
         @staticmethod
         def build_log_context(
-            service_name: str,
-            correlation_id: str = "",
+            service_name: str, correlation_id: str = ""
         ) -> Mapping[str, str]:
             """Build a structured logging context dictionary."""
             ctx: dict[str, str] = {"service": service_name}
@@ -121,11 +100,7 @@ class FlextObservabilityUtilities(FlextUtilities):
         """Custom metrics helpers."""
 
         @staticmethod
-        def create_metric_key(
-            namespace: str,
-            name: str,
-            unit: str = "",
-        ) -> str:
+        def create_metric_key(namespace: str, name: str, unit: str = "") -> str:
             """Create a standardized metric key."""
             base = f"{namespace}.{name}"
             if unit:
@@ -136,9 +111,7 @@ class FlextObservabilityUtilities(FlextUtilities):
         """Error handling helpers."""
 
         @staticmethod
-        def classify_error(
-            error: Exception,
-        ) -> str:
+        def classify_error(error: Exception) -> str:
             """Classify an error into a standard category string."""
             error_type = type(error).__name__
             if "Timeout" in error_type:
@@ -154,20 +127,14 @@ class FlextObservabilityUtilities(FlextUtilities):
 
         @staticmethod
         def create_trace_context(
-            trace_id: str,
-            span_id: str,
-            parent_span_id: str = "",
+            trace_id: str, span_id: str, parent_span_id: str = ""
         ) -> Mapping[str, str]:
             """Create a trace context dictionary."""
-            ctx: dict[str, str] = {
-                "trace_id": trace_id,
-                "span_id": span_id,
-            }
+            ctx: dict[str, str] = {"trace_id": trace_id, "span_id": span_id}
             if parent_span_id:
                 ctx["parent_span_id"] = parent_span_id
             return ctx
 
 
 u = FlextObservabilityUtilities
-
 __all__ = ["FlextObservabilityUtilities", "u"]

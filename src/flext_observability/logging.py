@@ -19,10 +19,5 @@ class FlextObservabilityLogging(FlextModels):
     for structured logging, log management, and log analysis within the FLEXT ecosystem.
     """
 
-    # Log Management Models
 
-
-# Export the focused logging namespace class
-__all__ = [
-    "FlextObservabilityLogging",
-]
+__all__ = ["FlextObservabilityLogging"]

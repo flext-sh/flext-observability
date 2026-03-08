@@ -15,8 +15,7 @@ from flext_observability import FlextObservabilityProtocols
 
 
 class TestsFlextObservabilityProtocols(
-    FlextTestsProtocols,
-    FlextObservabilityProtocols,
+    FlextTestsProtocols, FlextObservabilityProtocols
 ):
     """Test protocols combining FlextTestsProtocols and FlextObservabilityProtocols.
 
@@ -36,8 +35,6 @@ class TestsFlextObservabilityProtocols(
             """Observability-specific test protocols."""
 
 
-# Runtime aliases
 p = TestsFlextObservabilityProtocols
 p = TestsFlextObservabilityProtocols
-
 __all__ = ["TestsFlextObservabilityProtocols", "p"]

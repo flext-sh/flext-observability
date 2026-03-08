@@ -26,7 +26,6 @@ from flext_core import FlextLogger, FlextResult
 
 from flext_observability import FlextObservabilityContext, c
 
-# Use SystemRandom for cryptographically stronger sampling decisions
 _secure_random = random.SystemRandom()
 
 
@@ -71,20 +70,18 @@ class FlextObservabilitySampling:
         def __init__(self) -> None:
             """Initialize sampler with default settings."""
             self._environment = "development"
-            self._default_rate = 1.0  # 100% in development
+            self._default_rate = 1.0
             self._environment_rates: MutableMapping[str, float] = {
-                "development": 1.0,  # 100% in dev
-                "staging": 0.5,  # 50% in staging
-                "production": 0.1,  # 10% in production
+                "development": 1.0,
+                "staging": 0.5,
+                "production": 0.1,
             }
             self._service_overrides: MutableMapping[str, float] = {}
             self._operation_overrides: MutableMapping[str, float] = {}
-            self._sampled_trace_ids: set[str] = set()  # For deterministic sampling
+            self._sampled_trace_ids: set[str] = set()
 
         def get_current_rate(
-            self,
-            operation: str | None = None,
-            service: str | None = None,
+            self, operation: str | None = None, service: str | None = None
         ) -> float:
             """Get effective sampling rate for given operation/service.
 
@@ -96,21 +93,15 @@ class FlextObservabilitySampling:
                 float - Effective sampling rate (0.0 to 1.0)
 
             """
-            # Determine effective rate (priority: operation > service > default)
             rate = self._default_rate
-
             if service and service in self._service_overrides:
                 rate = self._service_overrides[service]
-
             if operation and operation in self._operation_overrides:
                 rate = self._operation_overrides[operation]
-
             return rate
 
         def get_sampling_decision(
-            self,
-            operation: str | None = None,
-            service: str | None = None,
+            self, operation: str | None = None, service: str | None = None
         ) -> c.Observability.SamplingDecision:
             """Get sampling decision as enum.
 
@@ -144,12 +135,11 @@ class FlextObservabilitySampling:
             """
             if not 0.0 <= rate <= 1.0:
                 return FlextResult[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
                 )
-
             self._default_rate = rate
             FlextObservabilitySampling._logger.debug(
-                f"Default sampling rate set to {rate}",
+                f"Default sampling rate set to {rate}"
             )
             return FlextResult[bool].ok(value=True)
 
@@ -171,14 +161,12 @@ class FlextObservabilitySampling:
             valid_envs = ["development", "staging", "production"]
             if environment not in valid_envs:
                 return FlextResult[bool].fail(
-                    f"Invalid environment: {environment}. Must be one of {valid_envs}",
+                    f"Invalid environment: {environment}. Must be one of {valid_envs}"
                 )
-
             self._environment = environment
             self._default_rate = self._environment_rates.get(environment, 0.1)
-
             FlextObservabilitySampling._logger.debug(
-                f"Sampling environment set to {environment} (rate: {self._default_rate})",
+                f"Sampling environment set to {environment} (rate: {self._default_rate})"
             )
             return FlextResult[bool].ok(value=True)
 
@@ -199,12 +187,11 @@ class FlextObservabilitySampling:
             """
             if not 0.0 <= rate <= 1.0:
                 return FlextResult[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
                 )
-
             self._operation_overrides[operation] = rate
             FlextObservabilitySampling._logger.debug(
-                f"Sampling rate for operation '{operation}' set to {rate}",
+                f"Sampling rate for operation '{operation}' set to {rate}"
             )
             return FlextResult[bool].ok(value=True)
 
@@ -226,19 +213,16 @@ class FlextObservabilitySampling:
             """
             if not 0.0 <= rate <= 1.0:
                 return FlextResult[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
                 )
-
             self._service_overrides[service] = rate
             FlextObservabilitySampling._logger.debug(
-                f"Sampling rate for service '{service}' set to {rate}",
+                f"Sampling rate for service '{service}' set to {rate}"
             )
             return FlextResult[bool].ok(value=True)
 
         def should_sample(
-            self,
-            operation: str | None = None,
-            service: str | None = None,
+            self, operation: str | None = None, service: str | None = None
         ) -> bool:
             """Determine if request should be sampled (head-based decision).
 
@@ -255,32 +239,20 @@ class FlextObservabilitySampling:
                 - Uses random sampling within configured rate
 
             """
-            # Determine sampling rate (priority: operation > service > default)
             sampling_rate = self._default_rate
-
             if service and service in self._service_overrides:
                 sampling_rate = self._service_overrides[service]
-
             if operation and operation in self._operation_overrides:
                 sampling_rate = self._operation_overrides[operation]
-
-            # Always sample if rate is 1.0 (100%)
             if sampling_rate >= 1.0:
                 return True
-
-            # Never sample if rate is 0.0 (0%)
             if sampling_rate <= 0.0:
                 return False
-
-            # Deterministic sampling using correlation ID
-            # If we have a correlation ID, use it for deterministic sampling
             try:
                 correlation_id = FlextObservabilityContext.get_correlation_id()
-                # Hash correlation ID to get deterministic random value
                 hash_val = hash(correlation_id) % 100
-                return (hash_val / 100) < sampling_rate
+                return hash_val / 100 < sampling_rate
             except (ValueError, TypeError, KeyError):
-                # Fallback to secure random sampling if context not available
                 return _secure_random.random() < sampling_rate
 
     @staticmethod
@@ -300,13 +272,11 @@ class FlextObservabilitySampling:
             FlextObservabilitySampling._sampler_instance = (
                 FlextObservabilitySampling.Sampler()
             )
-
         return FlextObservabilitySampling._sampler_instance
 
     @staticmethod
     def get_sampling_decision(
-        operation: str | None = None,
-        service: str | None = None,
+        operation: str | None = None, service: str | None = None
     ) -> c.Observability.SamplingDecision:
         """Convenience function: get sampling decision as enum.
 
@@ -322,10 +292,7 @@ class FlextObservabilitySampling:
         return sampler.get_sampling_decision(operation=operation, service=service)
 
     @staticmethod
-    def should_sample(
-        operation: str | None = None,
-        service: str | None = None,
-    ) -> bool:
+    def should_sample(operation: str | None = None, service: str | None = None) -> bool:
         """Convenience function: make sampling decision.
 
         Args:
@@ -340,10 +307,4 @@ class FlextObservabilitySampling:
         return sampler.should_sample(operation=operation, service=service)
 
 
-# ============================================================================
-# MODULE EXPORTS
-# ============================================================================
-
-__all__ = [
-    "FlextObservabilitySampling",
-]
+__all__ = ["FlextObservabilitySampling"]

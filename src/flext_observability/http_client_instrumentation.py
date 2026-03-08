@@ -29,10 +29,6 @@ from pydantic import ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
 
-# ============================================================================
-# PROTOCOL DEFINITIONS FOR HTTP CLIENTS
-# ============================================================================
-
 
 class HTTPXURLProtocol(Protocol):
     """Protocol for httpx URL object."""
@@ -115,10 +111,6 @@ class FlextObservabilityHTTPClient:
 
     _logger = FlextRuntime.get_logger(__name__)
 
-    # ========================================================================
-    # HTTPX INSTRUMENTATION
-    # ========================================================================
-
     @staticmethod
     def _is_httpx_async_client(obj: object) -> TypeGuard[Any]:
         """Type guard to check if object is an async httpx client."""
@@ -189,24 +181,16 @@ class FlextObservabilityHTTPClient:
                     and hasattr(client, "_send") is False
                 ):
                     return FlextResult[bool].fail(
-                        "Invalid httpx client - missing request method",
+                        "Invalid httpx client - missing request method"
                     )
-
-                # Avoid duplicate instrumentation
                 if client in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
                     return FlextResult[bool].ok(value=True)
-
-                # Determine if this is async client
                 is_async = FlextObservabilityHTTPClient.HTTPX._is_httpx_async_client(
                     client
                 )
-
                 if is_async:
-                    # Get original send method from dynamic getattr result
-                    # to typed Callable with Awaitable return
                     original_send: Callable[
-                        [HTTPXRequestProtocol],
-                        Awaitable[HTTPXResponseProtocol],
+                        [HTTPXRequestProtocol], Awaitable[HTTPXResponseProtocol]
                     ] = getattr(client, "_send")
 
                     async def traced_send(
@@ -214,21 +198,15 @@ class FlextObservabilityHTTPClient:
                     ) -> HTTPXResponseProtocol:
                         """Traced send wrapper for async httpx."""
                         start_time = time.time()
-
-                        # Get current context
                         correlation_id = FlextObservabilityContext.get_correlation_id()
                         trace_id = FlextObservabilityContext.get_trace_id()
                         span_id = FlextObservabilityContext.get_span_id()
-
-                        # Add trace headers to request
                         if correlation_id:
                             request.headers["X-Correlation-ID"] = correlation_id
                         if trace_id:
                             request.headers["X-Trace-ID"] = trace_id
                         if span_id:
                             request.headers["X-Span-ID"] = span_id
-
-                        # Log request start
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
                             "debug",
@@ -242,15 +220,9 @@ class FlextObservabilityHTTPClient:
                                 "async": True,
                             },
                         )
-
                         try:
-                            # Send request - await the properly typed coroutine
                             response = await original_send(request)
-
-                            # Calculate duration
                             duration_ms = (time.time() - start_time) * 1000
-
-                            # Log response
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
                                 "debug",
@@ -264,11 +236,8 @@ class FlextObservabilityHTTPClient:
                                     "async": True,
                                 },
                             )
-
                             return response
-
                         except (ValueError, TypeError, KeyError) as e:
-                            # Log error
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
@@ -286,11 +255,8 @@ class FlextObservabilityHTTPClient:
                             )
                             raise
 
-                    # Replace send method using setattr
                     setattr(client, "_send", traced_send)
-
                 else:
-                    # Get original request method using getattr for dynamic access
                     original_request: Callable[..., HTTPXResponseProtocol] = getattr(
                         client, "request"
                     )
@@ -303,18 +269,13 @@ class FlextObservabilityHTTPClient:
                     ) -> HTTPXResponseProtocol:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
-
-                        # Get current context
                         correlation_id = FlextObservabilityContext.get_correlation_id()
                         trace_id = FlextObservabilityContext.get_trace_id()
                         span_id = FlextObservabilityContext.get_span_id()
-
-                        # Add trace headers to request
                         headers = FlextObservabilityHTTPClient._validated_headers(
                             (kwargs if isinstance(kwargs, dict) else {}).get(
-                                "headers",
-                                {},
-                            ),
+                                "headers", {}
+                            )
                         )
                         if correlation_id:
                             headers["X-Correlation-ID"] = correlation_id
@@ -323,8 +284,6 @@ class FlextObservabilityHTTPClient:
                         if span_id:
                             headers["X-Span-ID"] = span_id
                         kwargs["headers"] = headers
-
-                        # Log request start
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
                             "debug",
@@ -336,15 +295,9 @@ class FlextObservabilityHTTPClient:
                                 "async": False,
                             },
                         )
-
                         try:
-                            # Send request
                             response = original_request(method, url, *args, **kwargs)
-
-                            # Calculate duration
                             duration_ms = (time.time() - start_time) * 1000
-
-                            # Log response
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
                                 "debug",
@@ -358,11 +311,8 @@ class FlextObservabilityHTTPClient:
                                     "async": False,
                                 },
                             )
-
                             return response
-
                         except (ValueError, TypeError, KeyError) as e:
-                            # Log error
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
@@ -380,25 +330,16 @@ class FlextObservabilityHTTPClient:
                             )
                             raise
 
-                    # Replace request method using setattr
                     setattr(client, "request", traced_request)
-
-                # Mark as instrumented
                 FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client)
-
                 FlextObservabilityHTTPClient._logger.debug(
-                    "httpx client instrumentation setup complete",
+                    "httpx client instrumentation setup complete"
                 )
                 return FlextResult[bool].ok(value=True)
-
             except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(
-                    f"httpx instrumentation setup failed: {e}",
+                    f"httpx instrumentation setup failed: {e}"
                 )
-
-    # ========================================================================
-    # AIOHTTP INSTRUMENTATION
-    # ========================================================================
 
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
@@ -443,21 +384,16 @@ class FlextObservabilityHTTPClient:
             try:
                 if getattr(session, "_request", None) is None:
                     return FlextResult[bool].fail(
-                        "Invalid aiohttp session - missing _request method",
+                        "Invalid aiohttp session - missing _request method"
                     )
-
-                # Avoid duplicate instrumentation
                 if (
                     session
                     in FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions
                 ):
                     return FlextResult[bool].ok(value=True)
-
-                # Get original request method using getattr for dynamic access
-                original_request: Callable[
-                    ...,
-                    Awaitable[AIOHTTPResponseProtocol],
-                ] = session._request
+                original_request: Callable[..., Awaitable[AIOHTTPResponseProtocol]] = (
+                    session._request
+                )
 
                 async def traced_request(
                     method: str,
@@ -467,15 +403,11 @@ class FlextObservabilityHTTPClient:
                 ) -> AIOHTTPResponseProtocol:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()
-
-                    # Get current context
                     correlation_id = FlextObservabilityContext.get_correlation_id()
                     trace_id = FlextObservabilityContext.get_trace_id()
                     span_id = FlextObservabilityContext.get_span_id()
-
-                    # Add trace headers to request
                     headers = FlextObservabilityHTTPClient._validated_headers(
-                        (kwargs if isinstance(kwargs, dict) else {}).get("headers", {}),
+                        (kwargs if isinstance(kwargs, dict) else {}).get("headers", {})
                     )
                     if correlation_id:
                         headers["X-Correlation-ID"] = correlation_id
@@ -484,8 +416,6 @@ class FlextObservabilityHTTPClient:
                     if span_id:
                         headers["X-Span-ID"] = span_id
                     kwargs["headers"] = headers
-
-                    # Log request start
                     _ = FlextObservabilityLogging.log_with_context(
                         FlextObservabilityHTTPClient._logger,
                         "debug",
@@ -497,23 +427,10 @@ class FlextObservabilityHTTPClient:
                             "async": True,
                         },
                     )
-
                     try:
-                        # Send request - await the coroutine
-                        response = await original_request(
-                            method,
-                            url,
-                            *args,
-                            **kwargs,
-                        )
-
-                        # Calculate duration
+                        response = await original_request(method, url, *args, **kwargs)
                         duration_ms = (time.time() - start_time) * 1000
-
-                        # Get status
                         status = response.status
-
-                        # Log response
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
                             "debug",
@@ -527,11 +444,8 @@ class FlextObservabilityHTTPClient:
                                 "async": True,
                             },
                         )
-
                         return response
-
                     except (ValueError, TypeError, KeyError) as e:
-                        # Log error
                         duration_ms = (time.time() - start_time) * 1000
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
@@ -549,27 +463,16 @@ class FlextObservabilityHTTPClient:
                         )
                         raise
 
-                # Replace request method using setattr
                 session._request = traced_request
-
-                # Mark as instrumented
                 FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions.add(session)
-
                 FlextObservabilityHTTPClient._logger.debug(
-                    "aiohttp session instrumentation setup complete",
+                    "aiohttp session instrumentation setup complete"
                 )
                 return FlextResult[bool].ok(value=True)
-
             except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(
-                    f"aiohttp instrumentation setup failed: {e}",
+                    f"aiohttp instrumentation setup failed: {e}"
                 )
 
 
-# ============================================================================
-# MODULE EXPORTS
-# ============================================================================
-
-__all__ = [
-    "FlextObservabilityHTTPClient",
-]
+__all__ = ["FlextObservabilityHTTPClient"]

@@ -35,7 +35,6 @@ from flext_observability import FlextObservabilityContext, FlextObservabilityLog
 FlaskApp = flask.Flask if hasattr(flask, "Flask") else object
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None
-
 _flask_available = True
 _starlette_available = True
 
@@ -98,13 +97,7 @@ class FlextObservabilityHTTP:
     """
 
     _logger = FlextRuntime.get_logger(__name__)
-
-    # HTTP status code threshold for errors (4xx and 5xx)
     HTTP_ERROR_STATUS_THRESHOLD = 400
-
-    # ========================================================================
-    # FLASK MIDDLEWARE
-    # ========================================================================
 
     class Flask:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
@@ -148,12 +141,11 @@ class FlextObservabilityHTTP:
             try:
                 if not _is_flask_app(app):
                     return FlextResult[bool].fail(
-                        "Invalid Flask app - missing request hooks",
+                        "Invalid Flask app - missing request hooks"
                     )
                     return FlextResult[bool].fail(
-                        "Invalid Flask app - missing request hooks",
+                        "Invalid Flask app - missing request hooks"
                     )
-
                 before_request_hook = app.before_request
                 after_request_hook = app.after_request
 
@@ -161,48 +153,36 @@ class FlextObservabilityHTTP:
                 def flext_before_request() -> None:
                     """Extract context and create span before request processing."""
                     try:
-                        # Extract or create correlation ID from headers
                         headers_dict = dict(request.headers) if request else {}
                         if request:
                             FlextObservabilityContext.from_headers(headers_dict)
-
-                        # Set trace ID from context
                         correlation_id = FlextObservabilityContext.get_correlation_id()
-
-                        # Store request start time for duration calculation
                         if g:
                             g.flext_start_time = time.time()
-
-                        # Store request metadata in g for after_request access
                         if g:
                             g.flext_correlation_id = correlation_id
-
-                        # Log request start
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
                             "debug",
-                            f"HTTP {request.method if request else 'UNKNOWN'} {request.path if request else 'UNKNOWN'}",
+                            f"HTTP {(request.method if request else 'UNKNOWN')} {(request.path if request else 'UNKNOWN')}",
                             extra={
                                 "http_method": request.method,
                                 "http_path": request.path,
                                 "http_client_ip": request.remote_addr or "unknown",
-                                "http_user_agent": (
-                                    request.user_agent.string
-                                    if request.user_agent
-                                    else "unknown"
-                                ),
+                                "http_user_agent": request.user_agent.string
+                                if request.user_agent
+                                else "unknown",
                             },
                         )
                     except (ValueError, TypeError, KeyError) as e:
                         FlextObservabilityHTTP._logger.warning(
-                            f"Error in before_request hook: {e}",
+                            f"Error in before_request hook: {e}"
                         )
 
                 @after_request_hook
                 def flext_after_request(response: ResponseProtocol) -> ResponseProtocol:
                     """Record metrics and complete span after request processing."""
                     try:
-                        # Calculate request duration
                         start_time = (
                             g.flext_start_time
                             if hasattr(g, "flext_start_time")
@@ -210,29 +190,25 @@ class FlextObservabilityHTTP:
                         )
                         duration_ms = 0.0
                         try:
-                            validated_start = _StartTimePayload.model_validate(
-                                {"value": start_time},
-                            ).value
+                            validated_start = _StartTimePayload.model_validate({
+                                "value": start_time
+                            }).value
                             duration_ms = (time.time() - validated_start) * 1000
                         except ValidationError:
                             duration_ms = 0.0
-
-                        # Determine if response indicates error
                         status_code = int(
                             response.status_code
                             if hasattr(response, "status_code")
-                            else 200,
+                            else 200
                         )
                         is_error = (
                             status_code
                             >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
                         )
-
-                        # Log response
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
                             "info" if not is_error else "warning",
-                            f"HTTP {request.method if request else 'UNKNOWN'} {request.path if request else 'UNKNOWN'} -> {status_code}",
+                            f"HTTP {(request.method if request else 'UNKNOWN')} {(request.path if request else 'UNKNOWN')} -> {status_code}",
                             extra={
                                 "http_method": request.method if request else "UNKNOWN",
                                 "http_path": request.path if request else "UNKNOWN",
@@ -240,26 +216,16 @@ class FlextObservabilityHTTP:
                                 "http_duration_ms": duration_ms,
                             },
                         )
-
-                        # Record metrics (via observability services)
-                        # Will be connected in Phase 4 integration
-                        # flext_create_metric("http_requests_total", 1.0, ...)
-                        # flext_create_metric("http_request_duration_ms", duration_ms, ...)
-
                     except (ValueError, TypeError, KeyError) as e:
                         FlextObservabilityHTTP._logger.warning(
-                            f"Error in after_request hook: {e}",
+                            f"Error in after_request hook: {e}"
                         )
-
                     return response
 
-                # Get errorhandler decorator via getattr for dynamic access
                 errorhandler = app.errorhandler
 
                 @errorhandler(Exception)
-                def flext_error_handler(
-                    error: Exception,
-                ) -> tuple[m.Dict, int]:
+                def flext_error_handler(error: Exception) -> tuple[m.Dict, int]:
                     """Handle exceptions with logging and alerting."""
                     try:
                         FlextObservabilityLogging.log_with_context(
@@ -275,24 +241,18 @@ class FlextObservabilityHTTP:
                         )
                     except (ValueError, TypeError, KeyError) as log_error:
                         FlextObservabilityHTTP._logger.error(
-                            f"Error in error handler: {log_error}",
+                            f"Error in error handler: {log_error}"
                         )
-
-                    return m.Dict.model_validate({"error": str(error)}), 500
+                    return (m.Dict.model_validate({"error": str(error)}), 500)
 
                 FlextObservabilityHTTP._logger.debug(
-                    "Flask HTTP instrumentation setup complete",
+                    "Flask HTTP instrumentation setup complete"
                 )
                 return FlextResult[bool].ok(value=True)
-
             except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(
-                    f"Flask instrumentation setup failed: {e}",
+                    f"Flask instrumentation setup failed: {e}"
                 )
-
-    # ========================================================================
-    # FASTAPI MIDDLEWARE
-    # ========================================================================
 
     class FastAPI:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
@@ -338,7 +298,7 @@ class FlextObservabilityHTTP:
             try:
                 if not hasattr(app, "middleware"):
                     return FlextResult[bool].fail(
-                        "Invalid FastAPI app - missing middleware method",
+                        "Invalid FastAPI app - missing middleware method"
                     )
 
                 class FlextObservabilityMiddleware:
@@ -351,61 +311,43 @@ class FlextObservabilityHTTP:
                         self,
                         request: RequestProtocol,
                         call_next: Callable[
-                            [RequestProtocol],
-                            Awaitable[ResponseProtocol],
+                            [RequestProtocol], Awaitable[ResponseProtocol]
                         ],
                     ) -> ResponseProtocol:
                         """Process HTTP request with instrumentation."""
                         try:
-                            # Extract or create correlation ID from headers
                             headers_dict = dict(request.headers)
                             FlextObservabilityContext.from_headers(headers_dict)
-
-                            # Get correlation ID
                             correlation_id = (
                                 FlextObservabilityContext.get_correlation_id()
                             )
-
-                            # Record start time
                             start_time = time.time()
-
-                            # Log request start
                             await FlextObservabilityHTTP._async_log_with_context(
                                 f"HTTP {request.method} {request.url.path}",
                                 "debug",
                                 {
                                     "http_method": request.method,
                                     "http_path": request.url.path,
-                                    "http_client_ip": (
-                                        request.client.host
-                                        if request.client
-                                        else "unknown"
-                                    ),
-                                    "http_user_agent": (
-                                        request.headers.get("user-agent", "unknown")
+                                    "http_client_ip": request.client.host
+                                    if request.client
+                                    else "unknown",
+                                    "http_user_agent": request.headers.get(
+                                        "user-agent", "unknown"
                                     ),
                                 },
                             )
-
                             try:
-                                # Process request
                                 response = await call_next(request)
-
-                                # Calculate duration
                                 duration_ms = (time.time() - start_time) * 1000
-
-                                # Check for error
                                 status_code = int(
                                     response.status_code
                                     if hasattr(response, "status_code")
-                                    else 200,
+                                    else 200
                                 )
                                 is_error = (
                                     status_code
                                     >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
                                 )
-
-                                # Log response
                                 await FlextObservabilityHTTP._async_log_with_context(
                                     f"HTTP {request.method} {request.url.path} -> {status_code}",
                                     "info" if not is_error else "warning",
@@ -416,14 +358,9 @@ class FlextObservabilityHTTP:
                                         "http_duration_ms": duration_ms,
                                     },
                                 )
-
-                                # Add correlation ID to response headers
                                 response.headers["X-Correlation-ID"] = correlation_id
-
                                 return response
-
                             except (ValueError, TypeError, KeyError) as e:
-                                # Log error
                                 await FlextObservabilityHTTP._async_log_with_context(
                                     f"HTTP request error: {e!s}",
                                     "error",
@@ -435,36 +372,26 @@ class FlextObservabilityHTTP:
                                     },
                                 )
                                 raise
-
                         except (ValueError, TypeError, KeyError) as e:
                             FlextObservabilityHTTP._logger.warning(
-                                f"Middleware error: {e}",
+                                f"Middleware error: {e}"
                             )
                             raise
 
-                # Add middleware to app via getattr for dynamic access
                 add_middleware = app.add_middleware
                 add_middleware(FlextObservabilityMiddleware)
-
                 FlextObservabilityHTTP._logger.debug(
-                    "FastAPI HTTP instrumentation setup complete",
+                    "FastAPI HTTP instrumentation setup complete"
                 )
                 return FlextResult[bool].ok(value=True)
-
             except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(
-                    f"FastAPI instrumentation setup failed: {e}",
+                    f"FastAPI instrumentation setup failed: {e}"
                 )
-
-    # ========================================================================
-    # ASYNC HELPER METHODS
-    # ========================================================================
 
     @staticmethod
     async def _async_log_with_context(
-        message: str,
-        level: str,
-        extra: m.Dict | t.ConfigurationMapping | None = None,
+        message: str, level: str, extra: m.Dict | t.ConfigurationMapping | None = None
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 
@@ -472,21 +399,12 @@ class FlextObservabilityHTTP:
         """
         try:
             FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTP._logger,
-                level,
-                message,
-                extra=extra,
+                FlextObservabilityHTTP._logger, level, message, extra=extra
             )
         except (ValueError, TypeError, KeyError) as e:
             FlextObservabilityHTTP._logger.warning(
-                f"Error logging in async context: {e}",
+                f"Error logging in async context: {e}"
             )
 
 
-# ============================================================================
-# MODULE EXPORTS
-# ============================================================================
-
-__all__ = [
-    "FlextObservabilityHTTP",
-]
+__all__ = ["FlextObservabilityHTTP"]

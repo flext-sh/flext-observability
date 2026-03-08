@@ -31,8 +31,6 @@ class TestFlextObservabilityConstants:
         assert hasattr(FlextObservabilityConstants, "ALERT_LEVEL_WARNING")
         assert hasattr(FlextObservabilityConstants, "ALERT_LEVEL_ERROR")
         assert hasattr(FlextObservabilityConstants, "ALERT_LEVEL_CRITICAL")
-
-        # Test specific values
         assert FlextObservabilityConstants.ALERT_LEVEL_INFO == "info"
         assert FlextObservabilityConstants.ALERT_LEVEL_WARNING == "warning"
         assert FlextObservabilityConstants.ALERT_LEVEL_ERROR == "error"
@@ -44,8 +42,6 @@ class TestFlextObservabilityConstants:
         assert hasattr(FlextObservabilityConstants, "TRACE_STATUS_RUNNING")
         assert hasattr(FlextObservabilityConstants, "TRACE_STATUS_COMPLETED")
         assert hasattr(FlextObservabilityConstants, "TRACE_STATUS_FAILED")
-
-        # Test specific values
         assert FlextObservabilityConstants.TRACE_STATUS_STARTED == "started"
         assert FlextObservabilityConstants.TRACE_STATUS_RUNNING == "running"
         assert FlextObservabilityConstants.TRACE_STATUS_COMPLETED == "completed"
@@ -56,8 +52,6 @@ class TestFlextObservabilityConstants:
         assert hasattr(FlextObservabilityConstants, "HEALTH_STATUS_HEALTHY")
         assert hasattr(FlextObservabilityConstants, "HEALTH_STATUS_DEGRADED")
         assert hasattr(FlextObservabilityConstants, "HEALTH_STATUS_UNHEALTHY")
-
-        # Test specific values
         assert FlextObservabilityConstants.HEALTH_STATUS_HEALTHY == "healthy"
         assert FlextObservabilityConstants.HEALTH_STATUS_DEGRADED == "degraded"
         assert FlextObservabilityConstants.HEALTH_STATUS_UNHEALTHY == "unhealthy"
@@ -69,8 +63,6 @@ class TestFlextObservabilityConstants:
         assert hasattr(FlextObservabilityConstants, "LOG_LEVEL_WARNING")
         assert hasattr(FlextObservabilityConstants, "LOG_LEVEL_ERROR")
         assert hasattr(FlextObservabilityConstants, "LOG_LEVEL_CRITICAL")
-
-        # Test specific values
         assert FlextObservabilityConstants.LOG_LEVEL_DEBUG == "debug"
         assert FlextObservabilityConstants.LOG_LEVEL_INFO == "info"
         assert FlextObservabilityConstants.LOG_LEVEL_WARNING == "warning"
@@ -83,8 +75,6 @@ class TestFlextObservabilityConstants:
         assert hasattr(FlextObservabilityConstants, "MAX_TRACE_NAME_LENGTH")
         assert hasattr(FlextObservabilityConstants, "MAX_ALERT_MESSAGE_LENGTH")
         assert hasattr(FlextObservabilityConstants, "MAX_LOG_MESSAGE_LENGTH")
-
-        # Test reasonable limits
         assert FlextObservabilityConstants.MAX_METRIC_NAME_LENGTH > 0
         assert FlextObservabilityConstants.MAX_TRACE_NAME_LENGTH > 0
         assert FlextObservabilityConstants.MAX_ALERT_MESSAGE_LENGTH > 0
@@ -95,7 +85,6 @@ class TestFlextObservabilityConstants:
         assert hasattr(FlextObservabilityConstants, "DEFAULT_SERVICE_NAME")
         assert hasattr(FlextObservabilityConstants, "DEFAULT_ENVIRONMENT")
         assert hasattr(FlextObservabilityConstants, "DEFAULT_HEALTH_CHECK_INTERVAL")
-
         assert FlextObservabilityConstants.DEFAULT_SERVICE_NAME == "flext-observability"
         assert FlextObservabilityConstants.DEFAULT_ENVIRONMENT == "development"
         assert FlextObservabilityConstants.DEFAULT_HEALTH_CHECK_INTERVAL > 0

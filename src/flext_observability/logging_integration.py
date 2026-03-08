@@ -49,10 +49,6 @@ class FlextObservabilityLogging:
 
     _logger = FlextLogger(__name__)
 
-    # ========================================================================
-    # LOGGER CREATION WITH CONTEXT
-    # ========================================================================
-
     @staticmethod
     def create_logger(name: str) -> FlextResult[BindableLogger]:
         """Create logger with trace context enrichment.
@@ -79,28 +75,16 @@ class FlextObservabilityLogging:
         try:
             if not name:
                 return FlextResult[BindableLogger].fail(
-                    "Logger name must be non-empty string",
+                    "Logger name must be non-empty string"
                 )
-
-            # Create logger from flext-core
             logger = FlextLogger.get_logger(name)
-
-            # Logger is returned with capability to be enriched
             return FlextResult[BindableLogger].ok(logger)
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[BindableLogger].fail(
-                f"Logger creation failed: {e}",
-            )
-
-    # ========================================================================
-    # CONTEXT ENRICHMENT
-    # ========================================================================
+            return FlextResult[BindableLogger].fail(f"Logger creation failed: {e}")
 
     @staticmethod
     def enrich_log_context(
-        _logger: BindableLogger,
-        *,
-        include_baggage: bool = False,
+        _logger: BindableLogger, *, include_baggage: bool = False
     ) -> FlextResult[LogContext]:
         """Get trace context for log enrichment.
 
@@ -133,38 +117,24 @@ class FlextObservabilityLogging:
         """
         try:
             context_payload = FlextObservabilityLogging.LogContext()
-
-            # Extract correlation ID
             correlation_id = FlextObservabilityContext.get_correlation_id()
             if correlation_id:
                 context_payload.correlation_id = correlation_id
-
-            # Extract trace ID
             trace_id = FlextObservabilityContext.get_trace_id()
             if trace_id:
                 context_payload.trace_id = trace_id
-
-            # Extract span ID
             span_id = FlextObservabilityContext.get_span_id()
             if span_id:
                 context_payload.span_id = span_id
-
-            # Optionally include baggage
             if include_baggage:
                 baggage = FlextObservabilityContext.get_baggage()
                 if baggage is not None:
-                    # Store baggage as string representation for type safety
                     context_payload.baggage = str(baggage)
-
             return FlextResult[FlextObservabilityLogging.LogContext].ok(context_payload)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityLogging.LogContext].fail(
-                f"Context enrichment failed: {e}",
+                f"Context enrichment failed: {e}"
             )
-
-    # ========================================================================
-    # CONTEXT VALIDATION
-    # ========================================================================
 
     @staticmethod
     def ensure_correlation_id() -> str:
@@ -185,10 +155,8 @@ class FlextObservabilityLogging:
 
         """
         current_id = FlextObservabilityContext.get_correlation_id()
-
         if not current_id:
             return FlextObservabilityContext.set_correlation_id()
-
         return current_id
 
     @staticmethod
@@ -216,27 +184,15 @@ class FlextObservabilityLogging:
 
         """
         try:
-            # Get current trace context
             context = FlextObservabilityContext.get_context()
-
-            # Logger will automatically include this context in logs
-            # (This is handled by flext-core's structured logging)
-            # We just verify the integration works
             if not context:
                 FlextObservabilityLogging._logger.debug(
-                    "No trace context currently set",
+                    "No trace context currently set"
                 )
-
-            # Use logger parameter to avoid unused variable warning
             _ = logger
-
             return FlextResult[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Trace context injection failed: {e}")
-
-    # ========================================================================
-    # LOGGING WITH CONTEXT
-    # ========================================================================
 
     @staticmethod
     def log_with_context(
@@ -279,31 +235,21 @@ class FlextObservabilityLogging:
         try:
             if not message:
                 return FlextResult[bool].fail("Message must be non-empty string")
-
             if level not in {"debug", "info", "warning", "error", "critical"}:
                 return FlextResult[bool].fail(f"Invalid log level: {level}")
-
-            # Get trace context
             context_result = FlextObservabilityLogging.enrich_log_context(
-                logger,
-                include_baggage=include_baggage,
+                logger, include_baggage=include_baggage
             )
-
             if context_result.is_failure:
                 return FlextResult[bool].fail(
-                    f"Failed to get trace context: {context_result.error}",
+                    f"Failed to get trace context: {context_result.error}"
                 )
-
-            # Merge context with extra fields
             log_context = context_result.value.model_dump(exclude_none=True)
             extra_context = log_context.pop("extra", {})
             log_context.update(extra_context)
             if extra:
                 log_context.update(extra)
-
-            # Log with context
             getattr(logger, level)(message, extra=log_context)
-
             return FlextResult[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Logging with context failed: {e}")
@@ -330,41 +276,26 @@ class FlextObservabilityLogging:
         """
         try:
             context = FlextObservabilityContext.get_context()
-
-            # At minimum, correlation ID should be set
             if not context.get("correlation_id"):
                 _ = FlextObservabilityLogging.ensure_correlation_id()
                 context = FlextObservabilityContext.get_context()
-
             return FlextResult[FlextObservabilityLogging.LogContext].ok(
                 FlextObservabilityLogging.LogContext(
-                    correlation_id=(
-                        str(context.get("correlation_id"))
-                        if context.get("correlation_id") is not None
-                        else None
-                    ),
-                    trace_id=(
-                        str(context.get("trace_id"))
-                        if context.get("trace_id") is not None
-                        else None
-                    ),
-                    span_id=(
-                        str(context.get("span_id"))
-                        if context.get("span_id") is not None
-                        else None
-                    ),
-                ),
+                    correlation_id=str(context.get("correlation_id"))
+                    if context.get("correlation_id") is not None
+                    else None,
+                    trace_id=str(context.get("trace_id"))
+                    if context.get("trace_id") is not None
+                    else None,
+                    span_id=str(context.get("span_id"))
+                    if context.get("span_id") is not None
+                    else None,
+                )
             )
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[FlextObservabilityLogging.LogContext].fail(
-                f"Context validation failed: {e}",
+                f"Context validation failed: {e}"
             )
 
 
-# ============================================================================
-# MODULE EXPORTS
-# ============================================================================
-
-__all__ = [
-    "FlextObservabilityLogging",
-]
+__all__ = ["FlextObservabilityLogging"]

@@ -76,12 +76,9 @@ class FlextObservabilityPerformance:
             """
             self.metrics.end_time = time.time()
             self.metrics.calculate_duration()
-
-            # Calculate resource usage
             final_memory = self._get_memory_usage()
             self.metrics.memory_used_mb = max(0, final_memory - self._initial_memory)
             self.metrics.cpu_percent = self._get_cpu_percent()
-
             return self.metrics
 
         def mark_error(self, error_message: str) -> None:
@@ -102,7 +99,7 @@ class FlextObservabilityPerformance:
             """Get current CPU usage percent."""
             try:
                 cpu: float = FlextObservabilityPerformance._process.cpu_percent(
-                    interval=0.01,
+                    interval=0.01
                 )
                 return cpu
             except (ValueError, TypeError, KeyError):
@@ -132,7 +129,6 @@ class FlextObservabilityPerformance:
             memory_info = FlextObservabilityPerformance._process.memory_info()
             rss_bytes: int = memory_info.rss
             memory_mb: float = float(rss_bytes) / 1024 / 1024
-
             return {
                 "memory_mb": memory_mb,
                 "memory_percent": FlextObservabilityPerformance._process.memory_percent(),
@@ -159,23 +155,18 @@ class FlextObservabilityPerformance:
         """
         if not metrics.success:
             return False
-
-        # Define acceptable latencies per operation type
         acceptable_latencies: dict[str, float] = {
-            "http_": 50.0,  # HTTP operations: < 50ms
-            "database_": 100.0,  # Database operations: < 100ms
-            "context_": 10.0,  # Context operations: < 10ms
-            "sampling_": 5.0,  # Sampling: < 5ms
-            "default": 100.0,  # Default: < 100ms
+            "http_": 50.0,
+            "database_": 100.0,
+            "context_": 10.0,
+            "sampling_": 5.0,
+            "default": 100.0,
         }
-
-        # Find applicable latency threshold
         threshold = acceptable_latencies["default"]
         for prefix, latency in acceptable_latencies.items():
             if metrics.operation.lower().startswith(prefix):
                 threshold = latency
                 break
-
         return metrics.duration_ms < threshold
 
     @staticmethod
@@ -192,24 +183,14 @@ class FlextObservabilityPerformance:
         try:
             status = "OK" if metrics.success else "ERROR"
             level = "debug" if metrics.success else "warning"
-
-            message = (
-                f"{status} {metrics.operation}: "
-                f"duration={metrics.duration_ms:.2f}ms, "
-                f"memory={metrics.memory_used_mb:.2f}MB, "
-                f"cpu={metrics.cpu_percent:.1f}%"
-            )
-
+            message = f"{status} {metrics.operation}: duration={metrics.duration_ms:.2f}ms, memory={metrics.memory_used_mb:.2f}MB, cpu={metrics.cpu_percent:.1f}%"
             if metrics.error_message:
                 message += f", error={metrics.error_message}"
-
             if level == "debug":
                 FlextObservabilityPerformance._logger.debug(message)
             else:
                 FlextObservabilityPerformance._logger.warning(message)
-
             return FlextResult[bool].ok(value=True)
-
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Failed to log metrics: {e}")
 
@@ -227,11 +208,4 @@ class FlextObservabilityPerformance:
         return FlextObservabilityPerformance.Monitor(operation)
 
 
-# ============================================================================
-# MODULE EXPORTS
-# ============================================================================
-
-__all__ = [
-    "FlextObservabilityPerformance",
-    "PerformanceMetrics",
-]
+__all__ = ["FlextObservabilityPerformance", "PerformanceMetrics"]

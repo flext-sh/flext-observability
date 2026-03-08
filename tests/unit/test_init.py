@@ -33,7 +33,6 @@ class TestInitCoverage:
 
     def test_all_public_api_imports(self) -> None:
         """Test that all __all__ exports can be imported successfully."""
-        # Test all exports from __all__ list can be imported
         for export_name in flext_observability.__all__:
             assert hasattr(flext_observability, export_name), (
                 f"Missing export: {export_name}"
@@ -53,14 +52,10 @@ class TestInitCoverage:
     def test_core_entity_imports(self) -> None:
         """Test that core entities can be accessed via FlextObservabilityModels."""
         m = FlextObservabilityModels
-        # These are nested classes on models/facades, not top-level exports
-        assert (
-            hasattr(m, "Observability") or hasattr(m, "Health") or True
-        )  # models structure varies
+        assert hasattr(m, "Observability") or hasattr(m, "Health") or True
 
     def test_factory_functions_imports(self) -> None:
         """Test that factory functions can be imported."""
-        # Test that functions are available and callable
         assert callable(flext_alert)
         assert callable(flext_health_check)
         assert callable(flext_metric)
@@ -68,20 +63,16 @@ class TestInitCoverage:
 
     def test_api_functions_imports(self) -> None:
         """Test that API functions can be imported."""
-        # flext_create_health_check does not exist as a top-level function
-        # Health check creation is done via flext_health_check
         assert callable(flext_health_check)
 
     def test_factory_class_imports(self) -> None:
         """Test that factory classes can be imported."""
-        # Test that classes and functions are available
         assert callable(FlextObservabilityMasterFactory)
         assert callable(get_global_factory)
         assert callable(reset_global_factory)
 
     def test_flext_core_reexports(self) -> None:
         """Test that flext-core re-exports are available."""
-        # Test that re-exported classes are available
         assert callable(FlextContainer)
         assert FlextConstants is not None
         assert callable(FlextLogger)

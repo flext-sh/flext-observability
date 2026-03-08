@@ -55,15 +55,10 @@ class FlextObservabilityContext:
 
     """
 
-    # ========================================================================
-    # CONTEXT VARIABLES - Async-safe storage
-    # ========================================================================
-
     _correlation_id: ContextVar[str] = ContextVar("correlation_id", default="")
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
     _baggage: ContextVar[m.Dict | None] = ContextVar("baggage", default=None)
-
     _logger = FlextRuntime.get_logger(__name__)
 
     @staticmethod
@@ -115,9 +110,7 @@ class FlextObservabilityContext:
         FlextObservabilityContext._trace_id.set("")
 
     @staticmethod
-    def from_headers(
-        headers: m.Dict | t.ConfigurationMapping,
-    ) -> FlextResult[bool]:
+    def from_headers(headers: m.Dict | t.ConfigurationMapping) -> FlextResult[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -142,37 +135,26 @@ class FlextObservabilityContext:
 
         """
         try:
-            # Normalize header names (case-insensitive)
             normalized_headers = {
                 header_key.lower(): str(header_value)
                 for header_key, header_value in headers.items()
             }
-
-            # Extract correlation ID (generate if not found)
             correlation_id = normalized_headers.get("x-correlation-id") or str(uuid4())
             FlextObservabilityContext.set_correlation_id(correlation_id)
-
-            # Extract trace ID if present
             if trace_id := normalized_headers.get("x-trace-id"):
                 FlextObservabilityContext.set_trace_id(trace_id)
-
-            # Extract span ID if present
             if span_id := normalized_headers.get("x-span-id"):
                 FlextObservabilityContext.set_span_id(span_id)
-
             return FlextResult[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
             FlextObservabilityContext._logger.warning(
-                f"Failed to extract context from headers: {e}",
+                f"Failed to extract context from headers: {e}"
             )
-            # Still return ok - generate new IDs
             FlextObservabilityContext.set_correlation_id()
             return FlextResult[bool].ok(value=True)
 
     @staticmethod
-    def get_baggage(
-        key: str | None = None,
-    ) -> t.ContainerValue | m.Dict | None:
+    def get_baggage(key: str | None = None) -> t.ContainerValue | m.Dict | None:
         """Get baggage value.
 
         Args:
@@ -192,15 +174,9 @@ class FlextObservabilityContext:
 
         """
         baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
-
         if key is None:
             return baggage
-
         return baggage.get(key)
-
-    # ========================================================================
-    # COMPLETE CONTEXT RETRIEVAL
-    # ========================================================================
 
     @staticmethod
     def get_context() -> m.Dict:
@@ -225,14 +201,12 @@ class FlextObservabilityContext:
             ```
 
         """
-        return m.Dict.model_validate(
-            {
-                "correlation_id": FlextObservabilityContext.get_correlation_id(),
-                "trace_id": FlextObservabilityContext.get_trace_id(),
-                "span_id": FlextObservabilityContext.get_span_id(),
-                "baggage": FlextObservabilityContext.get_baggage(),
-            },
-        )
+        return m.Dict.model_validate({
+            "correlation_id": FlextObservabilityContext.get_correlation_id(),
+            "trace_id": FlextObservabilityContext.get_trace_id(),
+            "span_id": FlextObservabilityContext.get_span_id(),
+            "baggage": FlextObservabilityContext.get_baggage(),
+        })
 
     @staticmethod
     def get_correlation_id() -> str:
@@ -263,10 +237,6 @@ class FlextObservabilityContext:
         """Get current trace ID."""
         return FlextObservabilityContext._trace_id.get("")
 
-    # ========================================================================
-    # BAGGAGE MANAGEMENT - Metadata propagation
-    # ========================================================================
-
     @staticmethod
     def set_baggage(key: str, value: t.ContainerValue) -> FlextResult[bool]:
         """Set baggage value for metadata propagation.
@@ -296,32 +266,21 @@ class FlextObservabilityContext:
                 _BaggageKeyModel.model_validate({"key": key})
             except ValidationError:
                 return FlextResult[bool].fail("Baggage key must be non-empty string")
-
-            # Validate value is serializable
             try:
                 json.dumps(value)
             except (TypeError, ValueError):
                 return FlextResult[bool].fail(
-                    f"Baggage value for '{key}' must be JSON serializable",
+                    f"Baggage value for '{key}' must be JSON serializable"
                 )
-
-            # Get current baggage and update
             current_baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
-            updated_baggage = m.Dict.model_validate(
-                {
-                    **dict(current_baggage.items()),
-                    key: value,
-                },
-            )
+            updated_baggage = m.Dict.model_validate({
+                **dict(current_baggage.items()),
+                key: value,
+            })
             FlextObservabilityContext._baggage.set(updated_baggage)
-
             return FlextResult[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[bool].fail(f"Baggage set failed: {e}")
-
-    # ========================================================================
-    # CORRELATION ID MANAGEMENT
-    # ========================================================================
 
     @staticmethod
     def set_correlation_id(correlation_id: str | None = None) -> str:
@@ -348,26 +307,16 @@ class FlextObservabilityContext:
         """
         if correlation_id is None:
             correlation_id = str(uuid4())
-
         FlextObservabilityContext._correlation_id.set(correlation_id)
         return correlation_id
-
-    # ========================================================================
-    # SPAN ID MANAGEMENT
-    # ========================================================================
 
     @staticmethod
     def set_span_id(span_id: str | None = None) -> str:
         """Set current span ID."""
         if span_id is None:
             span_id = str(uuid4())
-
         FlextObservabilityContext._span_id.set(span_id)
         return span_id
-
-    # ========================================================================
-    # TRACE ID MANAGEMENT
-    # ========================================================================
 
     @staticmethod
     def set_trace_id(trace_id: str | None = None) -> str:
@@ -385,13 +334,8 @@ class FlextObservabilityContext:
         """
         if trace_id is None:
             trace_id = str(uuid4())
-
         FlextObservabilityContext._trace_id.set(trace_id)
         return trace_id
-
-    # ========================================================================
-    # HTTP HEADER MANAGEMENT - W3C Trace Context
-    # ========================================================================
 
     @staticmethod
     def to_headers() -> m.Dict:
@@ -421,26 +365,16 @@ class FlextObservabilityContext:
 
         """
         headers = m.Dict({})
-
         correlation_id = FlextObservabilityContext.get_correlation_id()
         if correlation_id:
             headers["X-Correlation-ID"] = correlation_id
-
         trace_id = FlextObservabilityContext.get_trace_id()
         if trace_id:
             headers["X-Trace-ID"] = trace_id
-
         span_id = FlextObservabilityContext.get_span_id()
         if span_id:
             headers["X-Span-ID"] = span_id
-
         return headers
 
 
-# ============================================================================
-# MODULE EXPORTS
-# ============================================================================
-
-__all__ = [
-    "FlextObservabilityContext",
-]
+__all__ = ["FlextObservabilityContext"]
