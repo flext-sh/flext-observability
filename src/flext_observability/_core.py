@@ -18,7 +18,6 @@ from flext_core import (
     m,
     p,
 )
-from pydantic import BaseModel, ConfigDict, Field
 
 from flext_observability import c
 
@@ -67,81 +66,6 @@ class FlextObservability:
     # ========================================================================
     # LAYER 1: DOMAIN ENTITIES (PYDANTIC MODELS)
     # ========================================================================
-
-    class Metric(BaseModel):
-        """Observability metric entity - immutable value object."""
-
-        model_config: ClassVar[ConfigDict] = ConfigDict(validate_assignment=True)
-
-        id: str = Field(default_factory=lambda: str(uuid4()))
-        name: str = Field(description="Metric name")
-        value: float = Field(description="Metric value")
-        unit: str = Field(default="count")
-        metric_type: c.Observability.MetricType = Field(
-            default=c.Observability.MetricType.GAUGE,
-        )
-        labels: m.Dict = Field(default_factory=dict)
-        timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-
-    class Trace(BaseModel):
-        """Distributed trace span entity."""
-
-        model_config: ClassVar[ConfigDict] = ConfigDict(validate_assignment=True)
-
-        id: str = Field(default_factory=lambda: str(uuid4()))
-        name: str = Field(description="Span name")
-        trace_id: str = Field(default_factory=lambda: str(uuid4()))
-        parent_span_id: str | None = Field(default=None)
-        status: c.Observability.TraceStatus = Field(
-            default=c.Observability.TraceStatus.UNSET,
-        )
-        attributes: m.Dict = Field(default_factory=dict)
-        start_time: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-        end_time: datetime | None = Field(default=None)
-        duration_ms: float | None = Field(default=None)
-        error_message: str | None = Field(default=None)
-
-    class Alert(BaseModel):
-        """Alert entity - immutable alert definition."""
-
-        model_config: ClassVar[ConfigDict] = ConfigDict(validate_assignment=True)
-
-        id: str = Field(default_factory=lambda: str(uuid4()))
-        title: str = Field(default="", description="Alert title")
-        message: str = Field(description="Alert message")
-        severity: c.Observability.AlertSeverity = Field(
-            default=c.Observability.AlertSeverity.WARNING,
-        )
-        source: str = Field(default="system")
-        labels: m.Dict = Field(default_factory=dict)
-        timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-
-    class HealthCheck(BaseModel):
-        """Health check status entity."""
-
-        model_config: ClassVar[ConfigDict] = ConfigDict(validate_assignment=True)
-
-        id: str = Field(default_factory=lambda: str(uuid4()))
-        component: str = Field(description="Component name")
-        status: c.Observability.HealthStatus = Field(
-            default=c.Observability.HealthStatus.HEALTHY,
-        )
-        details: m.Dict = Field(default_factory=dict)
-        timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-
-    class LogEntry(BaseModel):
-        """Log entry entity."""
-
-        model_config: ClassVar[ConfigDict] = ConfigDict(validate_assignment=True)
-
-        id: str = Field(default_factory=lambda: str(uuid4()))
-        message: str = Field(description="Log message")
-        level: c.Observability.ErrorSeverity = Field(
-            default=c.Observability.ErrorSeverity.INFO,
-        )
-        component: str = Field(default="application")
-        timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-        context: m.Dict = Field(default_factory=dict)
 
     # ========================================================================
     # LAYER 2: APPLICATION SERVICES

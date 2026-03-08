@@ -19,63 +19,12 @@ Key Features:
 from __future__ import annotations
 
 import json
-import time
 from collections.abc import Mapping
 
 from flext_core import FlextLogger, FlextResult, t
-from pydantic import BaseModel, ConfigDict, Field
 
 # Type for JSON-serializable values
 # Using PEP 695 type statement for recursive type (Python 3.12+)
-
-
-class ContextSnapshot(BaseModel):
-    """Snapshot of current observability context."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    correlation_id: str = Field(description="Correlation ID")
-    trace_id: str = Field(description="Trace ID")
-    span_id: str = Field(description="Span ID")
-    baggage: dict[str, str] = Field(default_factory=dict, description="Baggage items")
-    metadata: dict[str, t.JsonValue] = Field(
-        default_factory=dict,
-        description="Context metadata",
-    )
-    timestamp: float = Field(
-        default_factory=time.time,
-        description="Snapshot timestamp",
-    )
-
-    def to_dict(
-        self,
-    ) -> Mapping[str, str | float | Mapping[str, str] | Mapping[str, t.JsonValue]]:
-        """Convert snapshot to dictionary.
-
-        Returns:
-            dict - Snapshot as dictionary
-
-        """
-        return {
-            "correlation_id": self.correlation_id,
-            "trace_id": self.trace_id,
-            "span_id": self.span_id,
-            "baggage": self.baggage,
-            "metadata": self.metadata,
-            "timestamp": self.timestamp,
-        }
-
-    def to_json(self) -> str:
-        """Convert snapshot to JSON.
-
-        Returns:
-            str - Snapshot as JSON string
-
-        """
-        try:
-            return json.dumps(self.to_dict())
-        except (TypeError, ValueError):
-            return "{}"
 
 
 class FlextObservabilityAdvancedContext:

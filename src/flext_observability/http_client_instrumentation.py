@@ -25,7 +25,7 @@ from collections.abc import Awaitable, Callable, MutableMapping
 from typing import Any, ClassVar, Protocol, TypeGuard
 
 from flext_core import FlextResult, FlextRuntime, t
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
 
@@ -83,10 +83,6 @@ class AIOHTTPResponseProtocol(Protocol):
     def status(self) -> int:
         """HTTP status code."""
         ...
-
-
-class _HeadersPayload(BaseModel):
-    headers: MutableMapping[str, str] = Field(default_factory=dict)
 
 
 class FlextObservabilityHTTPClient:

@@ -19,10 +19,9 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping
+from collections.abc import Mapping
 
 from flext_core import FlextLogger, FlextResult, m, t
-from pydantic import BaseModel, ConfigDict, Field
 from structlog.typing import BindableLogger
 
 from flext_observability import FlextObservabilityContext
@@ -47,19 +46,6 @@ class FlextObservabilityLogging:
         # Log output includes: correlation_id=abc-123, trace_id=def-456
         ```
     """
-
-    class LogContext(BaseModel):
-        """Structured observability context for log enrichment."""
-
-        model_config = ConfigDict(frozen=False, extra="forbid")
-
-        correlation_id: str | None = None
-        trace_id: str | None = None
-        span_id: str | None = None
-        baggage: str | None = None
-        extra: MutableMapping[str, t.Scalar | None] = Field(
-            default_factory=dict,
-        )
 
     _logger = FlextLogger(__name__)
 

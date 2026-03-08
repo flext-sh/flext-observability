@@ -18,38 +18,13 @@ Key Features:
 
 from __future__ import annotations
 
-import hashlib
 import time
 from collections.abc import Callable, MutableMapping
 
-from flext_core import FlextLogger, FlextModels, FlextResult, t
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from flext_core import FlextLogger, FlextResult
+from pydantic import ValidationError
 
 from flext_observability import FlextObservabilityContext, c
-
-
-class _CooldownInput(BaseModel):
-    seconds: float
-
-    @field_validator("seconds")
-    @classmethod
-    def validate_seconds(cls, value: float) -> float:
-        if value < 0:
-            msg = "Cooldown must be >= 0"
-            raise ValueError(msg)
-        return value
-
-
-class _ThresholdInput(BaseModel):
-    threshold: int
-
-    @field_validator("threshold")
-    @classmethod
-    def validate_threshold(cls, value: int) -> int:
-        if value < 1:
-            msg = "Threshold must be >= 1"
-            raise ValueError(msg)
-        return value
 
 
 def _extract_validation_message(error: ValidationError) -> str:
@@ -61,38 +36,6 @@ def _extract_validation_message(error: ValidationError) -> str:
     if message.startswith(prefix):
         return message.removeprefix(prefix)
     return message
-
-
-class ErrorEvent(FlextModels.Event):
-    """Represents an error event."""
-
-    event_type: str = Field(
-        default="error",
-        frozen=True,
-        description="Event type identifier",
-    )
-    error_type: str = Field(description="Error type")
-    message: str = Field(description="Error message")
-    severity: c.Observability.ErrorSeverity = Field(description="Error severity")
-    timestamp: float = Field(default_factory=time.time, description="Event timestamp")
-    correlation_id: str = Field(default="", description="Correlation ID")
-    context: MutableMapping[str, t.Scalar | None] = Field(
-        default_factory=dict,
-        description="Error context",
-    )
-    fingerprint: str = Field(default="", description="Error fingerprint")
-
-    def calculate_fingerprint(self) -> str:
-        """Calculate fingerprint for error deduplication.
-
-        Returns:
-            str - Error fingerprint hash
-
-        """
-        # Create fingerprint from error type and message
-        fingerprint_data = f"{self.error_type}:{self.message}"
-        self.fingerprint = hashlib.sha256(fingerprint_data.encode()).hexdigest()
-        return self.fingerprint
 
 
 class FlextObservabilityErrorHandling:

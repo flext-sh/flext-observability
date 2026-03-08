@@ -18,13 +18,9 @@ from contextvars import ContextVar
 from uuid import uuid4
 
 from flext_core import FlextResult, FlextRuntime, m
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from flext_observability import t
-
-
-class _BaggageKeyModel(BaseModel):
-    key: str = Field(min_length=1)
 
 
 class FlextObservabilityContext:

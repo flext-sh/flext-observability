@@ -12,37 +12,11 @@ FLEXT Pattern:
 
 from __future__ import annotations
 
-import math
 import time
 from collections.abc import Mapping
 
 import psutil
 from flext_core import FlextLogger, FlextResult
-from pydantic import BaseModel, ConfigDict, Field
-
-
-class PerformanceMetrics(BaseModel):
-    """Performance metrics for observability operations."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    operation: str = Field(description="Operation name")
-    start_time: float = Field(default_factory=time.time, description="Start time")
-    end_time: float = Field(default=0.0, description="End time")
-    duration_ms: float = Field(default=0.0, description="Duration in milliseconds")
-    memory_used_mb: float = Field(default=0.0, description="Memory used in MB")
-    cpu_percent: float = Field(default=0.0, description="CPU usage percentage")
-    success: bool = Field(default=True, description="Operation success status")
-    error_message: str | None = Field(
-        default=None,
-        description="Error message if failed",
-    )
-
-    def calculate_duration(self) -> None:
-        """Calculate operation duration."""
-        if math.isclose(self.end_time, 0.0):
-            self.end_time = time.time()
-        self.duration_ms = (self.end_time - self.start_time) * 1000
 
 
 class FlextObservabilityPerformance:

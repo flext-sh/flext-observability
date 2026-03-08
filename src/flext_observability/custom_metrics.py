@@ -19,27 +19,11 @@ Key Features:
 from __future__ import annotations
 
 from flext_core import FlextResult, FlextRuntime, m
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import ValidationError
 
 from flext_observability import c
 
 MetricType = c.Observability.MetricType
-
-
-class _MetricTypeInput(BaseModel):
-    metric_type: MetricType
-
-
-class CustomMetricDefinition(BaseModel):
-    """Definition for a custom metric."""
-
-    model_config = ConfigDict(validate_assignment=True)
-
-    name: str = Field(min_length=1)
-    metric_type: MetricType
-    description: str = Field(min_length=1)
-    unit: str = Field(default="1")
-    labels: m.Dict = Field(default_factory=m.Dict)
 
 
 class FlextObservabilityCustomMetrics:

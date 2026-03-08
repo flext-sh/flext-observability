@@ -28,14 +28,9 @@ from typing import Any, Protocol, TypeGuard
 
 import flask
 from flext_core import FlextResult, FlextRuntime, m, t
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
-
-
-class _StartTimePayload(BaseModel):
-    value: float
-
 
 FlaskApp = flask.Flask if hasattr(flask, "Flask") else object
 g = flask.g if hasattr(flask, "g") else None
