@@ -24,7 +24,7 @@ from __future__ import annotations
 import time
 from collections import UserDict
 from collections.abc import Awaitable, Callable
-from typing import Any, Protocol, TypeGuard
+from typing import Protocol, TypeGuard
 
 import flask
 from flext_core import FlextResult, FlextRuntime, m, t
@@ -39,7 +39,21 @@ _flask_available = True
 _starlette_available = True
 
 
-def _is_flask_app(obj: object) -> TypeGuard[Any]:
+class FlaskHookProtocol(Protocol):
+    def __call__(self, callback: Callable[..., object]) -> Callable[..., object]: ...
+
+
+class FlaskErrorHandlerProtocol(Protocol):
+    def __call__(self, error_type: type[Exception]) -> FlaskHookProtocol: ...
+
+
+class FlaskAppProtocol(Protocol):
+    before_request: FlaskHookProtocol
+    after_request: FlaskHookProtocol
+    errorhandler: FlaskErrorHandlerProtocol
+
+
+def _is_flask_app(obj: object) -> TypeGuard[FlaskAppProtocol]:
     """Type guard to check if object is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 

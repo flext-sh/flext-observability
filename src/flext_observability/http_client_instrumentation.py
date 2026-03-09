@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Awaitable, Callable, MutableMapping
-from typing import Any, ClassVar, Protocol, TypeGuard
+from typing import ClassVar, Protocol, TypeGuard
 
 from flext_core import FlextResult, FlextRuntime, t
 from pydantic import ValidationError
@@ -81,6 +81,22 @@ class AIOHTTPResponseProtocol(Protocol):
         ...
 
 
+class HTTPXAsyncClientProtocol(Protocol):
+    def _send(
+        self, request: HTTPXRequestProtocol
+    ) -> Awaitable[HTTPXResponseProtocol]: ...
+
+
+class HTTPXClientProtocol(Protocol):
+    def request(
+        self,
+        method: str,
+        url: str,
+        *args: t.ContainerValue,
+        **kwargs: t.ContainerValue,
+    ) -> HTTPXResponseProtocol: ...
+
+
 class FlextObservabilityHTTPClient:
     """HTTP client auto-instrumentation for service-to-service communication.
 
@@ -112,12 +128,12 @@ class FlextObservabilityHTTPClient:
     _logger = FlextRuntime.get_logger(__name__)
 
     @staticmethod
-    def _is_httpx_async_client(obj: object) -> TypeGuard[Any]:
+    def _is_httpx_async_client(obj: object) -> TypeGuard[HTTPXAsyncClientProtocol]:
         """Type guard to check if object is an async httpx client."""
         return hasattr(obj, "_send")
 
     @staticmethod
-    def _is_httpx_client(obj: object) -> TypeGuard[Any]:
+    def _is_httpx_client(obj: object) -> TypeGuard[HTTPXClientProtocol]:
         """Type guard to check if object is an httpx client."""
         return hasattr(obj, "request") or hasattr(obj, "_send")
 
@@ -185,13 +201,11 @@ class FlextObservabilityHTTPClient:
                     )
                 if client in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
                     return FlextResult[bool].ok(value=True)
-                is_async = FlextObservabilityHTTPClient.HTTPX._is_httpx_async_client(
-                    client
-                )
+                is_async = FlextObservabilityHTTPClient._is_httpx_async_client(client)
                 if is_async:
                     original_send: Callable[
                         [HTTPXRequestProtocol], Awaitable[HTTPXResponseProtocol]
-                    ] = getattr(client, "_send")
+                    ] = client._send
 
                     async def traced_send(
                         request: HTTPXRequestProtocol,
