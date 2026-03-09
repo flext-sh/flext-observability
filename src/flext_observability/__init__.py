@@ -22,8 +22,6 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core.typings import FlextTypes
-
     from flext_core import (
         FlextDecorators as d,
         FlextExceptions as e,
@@ -32,6 +30,7 @@ if TYPE_CHECKING:
         FlextResult as r,
         FlextService as s,
     )
+    from flext_core.typings import FlextTypes
 
     from flext_observability.__version__ import __version__, __version_info__
     from flext_observability._core import (
