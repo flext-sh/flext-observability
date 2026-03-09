@@ -18,11 +18,11 @@ import argparse
 import json
 import re
 from collections import defaultdict
-from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
 import yaml
+from pydantic import BaseModel, Field
 from flext_core import t
 
 # Constants for magic values
@@ -38,46 +38,60 @@ MAX_LINE_LENGTH = 120
 MAX_LONG_LINES_THRESHOLD = 5
 
 
-@dataclass
-class ContentMetrics:
+class ContentMetrics(BaseModel):
     """Content quality metrics for a documentation file."""
 
-    file_path: str
-    word_count: int = 0
-    line_count: int = 0
-    heading_count: int = 0
-    link_count: int = 0
-    code_block_count: int = 0
-    list_item_count: int = 0
-    table_count: int = 0
-    todo_count: int = 0
-    fixme_count: int = 0
-    last_modified: datetime = field(default_factory=datetime.now)
-    freshness_score: float = 0.0
-    quality_score: float = 0.0
-    issues: list[str] = field(default_factory=list)
-    recommendations: list[str] = field(default_factory=list)
+    file_path: str = Field(description="Path to the documentation file")
+    word_count: int = Field(default=0, description="Number of words in file")
+    line_count: int = Field(default=0, description="Number of lines in file")
+    heading_count: int = Field(default=0, description="Number of headings")
+    link_count: int = Field(default=0, description="Number of links")
+    code_block_count: int = Field(default=0, description="Number of code blocks")
+    list_item_count: int = Field(default=0, description="Number of list items")
+    table_count: int = Field(default=0, description="Number of tables")
+    todo_count: int = Field(default=0, description="Number of TODO markers")
+    fixme_count: int = Field(default=0, description="Number of FIXME markers")
+    last_modified: datetime = Field(
+        default_factory=datetime.now, description="Last modification timestamp"
+    )
+    freshness_score: float = Field(default=0.0, description="Freshness score 0-100")
+    quality_score: float = Field(default=0.0, description="Quality score 0-100")
+    issues: list[str] = Field(default_factory=list, description="List of issues found")
+    recommendations: list[str] = Field(
+        default_factory=list, description="List of recommendations"
+    )
 
 
-@dataclass
-class AuditReport:
+class AuditReport(BaseModel):
     """Comprehensive audit report for the documentation set."""
 
-    timestamp: datetime = field(default_factory=datetime.now)
-    total_files: int = 0
-    files_audited: int = 0
-    total_word_count: int = 0
-    total_links: int = 0
-    total_issues: int = 0
-    critical_issues: int = 0
-    warning_issues: int = 0
-    info_issues: int = 0
-    freshness_threshold_days: int = 30
-    fresh_files: int = 0
-    stale_files: int = 0
-    file_metrics: dict[str, ContentMetrics] = field(default_factory=dict)
-    category_breakdown: dict[str, int] = field(default_factory=dict)
-    overall_quality_score: float = 0.0
+    timestamp: datetime = Field(
+        default_factory=datetime.now, description="Report generation timestamp"
+    )
+    total_files: int = Field(default=0, description="Total files found")
+    files_audited: int = Field(default=0, description="Number of files audited")
+    total_word_count: int = Field(
+        default=0, description="Total word count across all files"
+    )
+    total_links: int = Field(default=0, description="Total links found")
+    total_issues: int = Field(default=0, description="Total issues found")
+    critical_issues: int = Field(default=0, description="Number of critical issues")
+    warning_issues: int = Field(default=0, description="Number of warning issues")
+    info_issues: int = Field(default=0, description="Number of info items")
+    freshness_threshold_days: int = Field(
+        default=30, description="Freshness threshold in days"
+    )
+    fresh_files: int = Field(default=0, description="Number of fresh files")
+    stale_files: int = Field(default=0, description="Number of stale files")
+    file_metrics: dict[str, ContentMetrics] = Field(
+        default_factory=dict, description="Metrics per file"
+    )
+    category_breakdown: dict[str, int] = Field(
+        default_factory=dict, description="File count by category"
+    )
+    overall_quality_score: float = Field(
+        default=0.0, description="Overall quality score 0-100"
+    )
 
 
 class DocumentationAuditor:
