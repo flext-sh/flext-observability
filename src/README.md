@@ -79,12 +79,13 @@ from flext_observability import (
     flext_create_metric,
     flext_create_trace,
     flext_monitor_function,
-    FlextMetricsService
+    FlextMetricsService,
 )
 
 # Create observability data
 metric_result = flext_create_metric("api_requests", 42, "count")
 trace_result = flext_create_trace("user_login", "auth-service")
+
 
 # Use monitoring decorators
 @flext_monitor_function("business_operation")

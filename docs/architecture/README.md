@@ -280,6 +280,7 @@ else:
 # Consistent monitoring across all FLEXT projects
 from flext_observability import flext_monitor_function
 
+
 @flext_monitor_function("flext_api_endpoint")
 def process_api_request(request_data):
     """Automatic metrics, tracing, and logging."""
@@ -308,7 +309,9 @@ flext-observability
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-    def create_metric(self, name: str, value: float, unit: str = "") -> FlextResult[FlextMetric]:
+    def create_metric(
+        self, name: str, value: float, unit: str = ""
+    ) -> FlextResult[FlextMetric]:
         """Create validated metric with domain rules."""
         # Domain validation
         # Entity creation
@@ -344,7 +347,9 @@ class FlextMetricsRepository(Protocol):
         """Store metric with persistence abstraction."""
         ...
 
-    def query_metrics(self, criteria: MetricsCriteria) -> FlextResult[List[FlextMetric]]:
+    def query_metrics(
+        self, criteria: MetricsCriteria
+    ) -> FlextResult[List[FlextMetric]]:
         """Query metrics with filtering."""
         ...
 ```

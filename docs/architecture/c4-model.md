@@ -372,20 +372,25 @@ src/flext_observability/
 # Core Domain Entities
 class FlextMetric(FlextModels.Entity):
     """Immutable metric entity with domain validation."""
+
     name: str
     value: float
     unit: str
     timestamp: datetime
     tags: dict[str, str]
 
+
 class FlextTrace(FlextModels.Entity):
     """Distributed trace entity with span hierarchy."""
+
     trace_id: str
     spans: list[Span]
     context: TraceContext
 
+
 class FlextAlert(FlextModels.Entity):
     """Alert entity with severity and routing."""
+
     name: str
     severity: AlertLevel
     message: str
@@ -417,7 +422,9 @@ class FlextObservabilityServices(u):
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-    def create_metric(self, name: str, value: float, unit: str) -> FlextResult[FlextMetric]:
+    def create_metric(
+        self, name: str, value: float, unit: str
+    ) -> FlextResult[FlextMetric]:
         """Create validated metric entity."""
 
     def create_trace(self, operation: str, context: dict) -> FlextResult[FlextTrace]:

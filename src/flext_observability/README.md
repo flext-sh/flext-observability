@@ -133,7 +133,7 @@ metric = FlextMetric(
     name="api_response_time",
     value=150.5,
     unit="milliseconds",
-    tags={"service": "user-api"}
+    tags={"service": "user-api"},
 )
 
 validation = metric.validate_business_rules()
@@ -203,6 +203,7 @@ trace_result = flext_create_trace("user_login", "auth-service")
 
 ```python
 from flext_observability import flext_monitor_function
+
 
 @flext_monitor_function("order_processing")
 def process_order(order_data: dict) -> dict[str, object]:

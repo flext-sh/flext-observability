@@ -89,8 +89,9 @@ def test_production_monitoring_scenario():
     for i in range(100):
         # Create various metrics as they would appear in production
         api_metric = flext_create_metric(f"api_request_{i}", 1, "count")
-        response_time = flext_create_metric("response_time",
-                                          random.uniform(50, 500), "ms")
+        response_time = flext_create_metric(
+            "response_time", random.uniform(50, 500), "ms"
+        )
 
         # Validate each metric creation
         assert api_metric.success
@@ -149,7 +150,7 @@ def e2e_environment():
     config = {
         "metrics_retention": "24h",
         "trace_sampling": 0.1,
-        "alert_thresholds": {"cpu": 80, "memory": 85}
+        "alert_thresholds": {"cpu": 80, "memory": 85},
     }
 
     return platform, config

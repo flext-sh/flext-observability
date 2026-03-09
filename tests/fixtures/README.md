@@ -55,11 +55,9 @@ fixtures/
 def sample_metric() -> FlextMetric:
     """Provide consistent test metric."""
     return FlextMetric(
-        name="test_metric",
-        value=42.0,
-        unit="count",
-        tags={"environment": "test"}
+        name="test_metric", value=42.0, unit="count", tags={"environment": "test"}
     )
+
 
 @pytest.fixture
 def sample_trace() -> FlextTrace:
@@ -67,7 +65,7 @@ def sample_trace() -> FlextTrace:
     return FlextTrace(
         operation_name="test_operation",
         service_name="test_service",
-        context={"test": True}
+        context={"test": True},
     )
 ```
 
@@ -81,6 +79,7 @@ def mock_metrics_service() -> Mock:
     mock_service = Mock(spec=FlextMetricsService)
     mock_service.record_metric.return_value = FlextResult[bool].ok(sample_metric())
     return mock_service
+
 
 @pytest.fixture
 def mock_container() -> Mock:
@@ -100,10 +99,7 @@ class MetricsTestDataFactory:
     def create_api_metric(value: float = 1.0) -> FlextMetric:
         """Create API request metric for testing."""
         return FlextMetric(
-            name="api_requests",
-            value=value,
-            unit="count",
-            tags={"service": "test-api"}
+            name="api_requests", value=value, unit="count", tags={"service": "test-api"}
         )
 
     @staticmethod
@@ -113,7 +109,7 @@ class MetricsTestDataFactory:
             name="response_time",
             value=response_time,
             unit="milliseconds",
-            tags={"endpoint": "/test"}
+            tags={"endpoint": "/test"},
         )
 ```
 
@@ -127,6 +123,7 @@ def test_metric_processing(sample_metric, mock_metrics_service):
     result = mock_metrics_service.record_metric(sample_metric)
     assert result.success
     assert result.data.name == "test_metric"
+
 
 def test_with_factory_data():
     """Test using factory-created data."""
@@ -156,7 +153,7 @@ def test_config():
     return {
         "metrics_retention": "1h",
         "trace_sampling": 1.0,  # 100% sampling for tests
-        "log_level": "DEBUG"
+        "log_level": "DEBUG",
     }
 ```
 

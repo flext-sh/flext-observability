@@ -104,9 +104,11 @@ Provides comprehensive test fixtures and configuration:
 def clean_container() -> FlextContainer:
     """Provide clean dependency injection container."""
 
+
 @pytest.fixture
 def observability_factory() -> FlextObservabilityMasterFactory:
     """Provide fresh observability factory."""
+
 
 @pytest.fixture
 def metrics_service(clean_container) -> FlextMetricsService:
@@ -128,6 +130,7 @@ def test_metric_creation_success():
     assert result.data.name == "api_requests"
     assert result.data.value == 42.0
     assert result.error is None
+
 
 def test_metric_creation_failure():
     """Test metric creation failure with error handling."""
