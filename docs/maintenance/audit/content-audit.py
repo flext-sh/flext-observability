@@ -22,8 +22,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import yaml
-from pydantic import BaseModel, Field
 from flext_core import t
+from pydantic import BaseModel, Field
 
 # Constants for magic values
 MAX_LINK_DENSITY_PERCENT = 5
