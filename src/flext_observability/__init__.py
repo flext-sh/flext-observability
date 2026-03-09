@@ -17,7 +17,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
@@ -30,7 +30,6 @@ if TYPE_CHECKING:
         FlextResult as r,
         FlextService as s,
     )
-    from flext_core.typings import FlextTypes
 
     from flext_observability.__version__ import __version__, __version_info__
     from flext_observability._core import (
@@ -88,6 +87,8 @@ if TYPE_CHECKING:
         FlextObservabilityUtilities,
         FlextObservabilityUtilities as u,
     )
+
+# Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "CustomMetricDefinition": (
         "flext_observability.custom_metrics",
@@ -196,6 +197,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "u": ("flext_observability.utilities", "FlextObservabilityUtilities"),
     "x": ("flext_core", "FlextMixins"),
 }
+
 __all__ = [
     "CustomMetricDefinition",
     "ErrorEvent",
@@ -243,7 +245,7 @@ __all__ = [
 ]
 
 
-def __getattr__(name: str) -> FlextTypes.ModuleExport:
+def __getattr__(name: str) -> Any:  # noqa: ANN401  # JUSTIFIED: Ruff (any-type) with PEP 562 dynamic module exports — https://docs.astral.sh/ruff/rules/any-type/
     """Lazy-load module attributes on first access (PEP 562)."""
     return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
 
