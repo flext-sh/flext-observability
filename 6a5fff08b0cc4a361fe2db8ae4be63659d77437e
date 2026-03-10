@@ -1,0 +1,27 @@
+src/flext_observability/advanced_context.py
+  f91df66d8ea308cb 29-30
+src/flext_observability/custom_metrics.py
+  f91df66d8ea308cb 34-35
+src/flext_observability/error_handling.py
+  f91df66d8ea308cb 40-41,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "6a5fff08b0cc4a361fe2db8ae4be63659d77437e",
+  "prompts": {
+    "f91df66d8ea308cb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_3269919a0ffeakXKu8ivurqawO",
+        "model": "anthropic/claude-haiku-4-5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 7,
+      "total_deletions": 0,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    }
+  }
+}
