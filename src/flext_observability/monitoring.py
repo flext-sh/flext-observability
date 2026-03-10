@@ -133,7 +133,7 @@ class FlextObservabilityMonitor:
         """Initialize monitor with real service orchestration and shared configuration."""
         self._container = container or FlextContainer.get_global()
         self._logger = FlextRuntime.get_logger(self.__class__.__name__)
-        self._config = FlextObservabilitySettings.get_global_instance()
+        self._config = FlextObservabilitySettings.get_global()
         self._initialized = False
         self._running = False
         self._observability_service: FlextObservabilityServices | None = None

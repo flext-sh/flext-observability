@@ -28,7 +28,7 @@ class FlextObservabilityServices:
         super().__init__()
         self._container = FlextContainer.get_global()
         self._logger = FlextRuntime.get_logger(__name__)
-        self._config = FlextObservabilitySettings.get_global_instance()
+        self._config = FlextObservabilitySettings.get_global()
 
     @property
     def config(self) -> FlextObservabilitySettings:
