@@ -1,0 +1,27 @@
+src/flext_observability/logging_integration.py
+  f91df66d8ea308cb 52-53
+src/flext_observability/monitoring.py
+  f91df66d8ea308cb 38,40-44
+src/flext_observability/performance.py
+  f91df66d8ea308cb 24-25,36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "56d0ee13ab63965f9e2053dc64b424691156a70b",
+  "prompts": {
+    "f91df66d8ea308cb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_3269919a0ffeakXKu8ivurqawO",
+        "model": "anthropic/claude-haiku-4-5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 11,
+      "total_deletions": 2,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    }
+  }
+}
