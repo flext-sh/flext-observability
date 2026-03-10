@@ -50,11 +50,9 @@ if TYPE_CHECKING:
     )
     from flext_observability.context import FlextObservabilityContext
     from flext_observability.custom_metrics import (
-        CustomMetricDefinition,
         FlextObservabilityCustomMetrics,
     )
     from flext_observability.error_handling import (
-        ErrorEvent,
         FlextObservabilityErrorHandling,
     )
     from flext_observability.fields import FlextObservabilityFields
@@ -90,11 +88,6 @@ if TYPE_CHECKING:
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
-    "CustomMetricDefinition": (
-        "flext_observability.custom_metrics",
-        "CustomMetricDefinition",
-    ),
-    "ErrorEvent": ("flext_observability.error_handling", "ErrorEvent"),
     "FlextObservability": ("flext_observability._core", "FlextObservability"),
     "FlextObservabilityAdvancedContext": (
         "flext_observability.advanced_context",
@@ -199,8 +192,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
 }
 
 __all__ = [
-    "CustomMetricDefinition",
-    "ErrorEvent",
     "FlextObservability",
     "FlextObservabilityAdvancedContext",
     "FlextObservabilityConstants",
