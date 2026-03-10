@@ -8,18 +8,16 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import override
+from typing import Protocol, override
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextRuntime, m, r
+from flext_core import FlextContainer, FlextResult, FlextRuntime, m, r
 
-from flext_observability import (
-    FlextObservabilityModels,
-    FlextObservabilityServices,
-    FlextObservabilitySettings,
-    c as _obs_c,
-    t,
-)
+from flext_observability.constants import c as _obs_c
+from flext_observability.models import FlextObservabilityModels
+from flext_observability.services import FlextObservabilityServices
+from flext_observability.settings import FlextObservabilitySettings
+from flext_observability.typings import t
 
 
 class FlextObservabilityMonitor:
@@ -35,6 +33,11 @@ class FlextObservabilityMonitor:
 
     object_callable = Callable[..., t.ContainerValue]
     logger = FlextRuntime.get_logger(__name__)
+
+    class ObservabilityServiceProtocol(Protocol):
+        def create_alert(self, **kwargs: t.ContainerValue) -> FlextResult[m.Dict]: ...
+
+        def get_metrics_summary(self) -> FlextResult[m.Dict]: ...
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""
@@ -136,9 +139,15 @@ class FlextObservabilityMonitor:
         self._config = FlextObservabilitySettings.get_global()
         self._initialized = False
         self._running = False
-        self._observability_service: FlextObservabilityServices | None = None
-        self._health_service: FlextObservabilityServices | None = None
-        self._metrics_service: FlextObservabilityServices | None = None
+        self._observability_service: (
+            FlextObservabilityMonitor.ObservabilityServiceProtocol | None
+        ) = None
+        self._health_service: (
+            FlextObservabilityMonitor.ObservabilityServiceProtocol | None
+        ) = None
+        self._metrics_service: (
+            FlextObservabilityMonitor.ObservabilityServiceProtocol | None
+        ) = None
         self._monitor_start_time = time.time()
         self._functions_monitored = 0
 
@@ -167,12 +176,10 @@ class FlextObservabilityMonitor:
                 f"Health status check failed: {e}"
             )
 
-    def flext_get_metrics_summary(self) -> r[t.ObservabilityCore.MetricDict]:
+    def flext_get_metrics_summary(self) -> r[m.Dict]:
         """Get complete metrics summary."""
         if not self._metrics_service:
-            return r[t.ObservabilityCore.MetricDict].fail(
-                "Metrics service not available"
-            )
+            return r[m.Dict].fail("Metrics service not available")
         return self._metrics_service.get_metrics_summary()
 
     def flext_initialize_observability(self) -> r[None]:
@@ -268,7 +275,9 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return r[None].fail(f"Failed to stop monitoring: {e}")
 
-    def get_observability_service(self) -> FlextObservabilityServices | None:
+    def get_observability_service(
+        self,
+    ) -> FlextObservabilityMonitor.ObservabilityServiceProtocol | None:
         """Public method to get unified observability service."""
         return self._observability_service
 

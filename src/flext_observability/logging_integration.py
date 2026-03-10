@@ -19,9 +19,8 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-
 from flext_core import FlextLogger, FlextResult, m, t
+from pydantic import BaseModel, Field
 from structlog.typing import BindableLogger
 
 from flext_observability import FlextObservabilityContext
@@ -48,6 +47,13 @@ class FlextObservabilityLogging:
     """
 
     _logger = FlextLogger(__name__)
+
+    class LogContext(BaseModel):
+        correlation_id: str | None = None
+        trace_id: str | None = None
+        span_id: str | None = None
+        baggage: str | None = None
+        extra: m.Dict = Field(default_factory=lambda: m.Dict({}))
 
     @staticmethod
     def create_logger(name: str) -> FlextResult[BindableLogger]:
@@ -85,7 +91,7 @@ class FlextObservabilityLogging:
     @staticmethod
     def enrich_log_context(
         _logger: BindableLogger, *, include_baggage: bool = False
-    ) -> FlextResult[LogContext]:  # noqa: F821
+    ) -> FlextResult[FlextObservabilityLogging.LogContext]:
         """Get trace context for log enrichment.
 
         Retrieves current trace context (correlation ID, trace ID, span ID)
@@ -199,7 +205,7 @@ class FlextObservabilityLogging:
         logger: BindableLogger,
         level: str,
         message: str,
-        extra: Mapping[str, t.Scalar | None] | m.Dict | None = None,
+        extra: t.ConfigurationMapping | m.Dict | None = None,
         *,
         include_baggage: bool = False,
     ) -> FlextResult[bool]:
@@ -255,7 +261,7 @@ class FlextObservabilityLogging:
             return FlextResult[bool].fail(f"Logging with context failed: {e}")
 
     @staticmethod
-    def validate_context() -> FlextResult[LogContext]:  # noqa: F821
+    def validate_context() -> FlextResult[FlextObservabilityLogging.LogContext]:
         """Validate current trace context is properly configured.
 
         Checks that essential trace context (correlation ID) is set.

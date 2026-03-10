@@ -20,11 +20,33 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable, MutableMapping
+from hashlib import sha256
 
 from flext_core import FlextLogger, FlextResult
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, c
+
+
+class _CooldownInput(BaseModel):
+    seconds: float = Field(gt=0)
+
+
+class _ThresholdInput(BaseModel):
+    threshold: int = Field(ge=1)
+
+
+class ErrorEvent(BaseModel):
+    error_type: str = Field(min_length=1)
+    message: str = Field(min_length=1)
+    severity: c.Observability.ErrorSeverity = c.Observability.ErrorSeverity.ERROR
+    fingerprint: str = ""
+    correlation_id: str = ""
+
+    def calculate_fingerprint(self) -> None:
+        self.fingerprint = sha256(
+            f"{self.error_type}:{self.message}".encode()
+        ).hexdigest()
 
 
 def _extract_validation_message(error: ValidationError) -> str:
@@ -120,7 +142,7 @@ class FlextObservabilityErrorHandling:
 
         def get_escalated_severity(
             self,
-            error: ErrorEvent,  # noqa: F821
+            error: ErrorEvent,
         ) -> c.Observability.ErrorSeverity:
             """Get escalated severity based on error count.
 
@@ -142,7 +164,7 @@ class FlextObservabilityErrorHandling:
                 return c.Observability.ErrorSeverity.WARNING
             return error.severity
 
-        def record_alert_sent(self, error: ErrorEvent) -> None:  # noqa: F821
+        def record_alert_sent(self, error: ErrorEvent) -> None:
             """Record that alert was sent for error.
 
             Args:
@@ -153,7 +175,7 @@ class FlextObservabilityErrorHandling:
                 error.calculate_fingerprint()
             self._last_alert_time[error.fingerprint] = time.time()
 
-        def record_error(self, error: ErrorEvent) -> FlextResult[ErrorEvent]:  # noqa: F821
+        def record_error(self, error: ErrorEvent) -> FlextResult[ErrorEvent]:
             """Record an error event.
 
             Args:
@@ -169,7 +191,7 @@ class FlextObservabilityErrorHandling:
 
             """
 
-            def operation() -> ErrorEvent:  # noqa: F821
+            def operation() -> ErrorEvent:
                 error.calculate_fingerprint()
                 try:
                     error.correlation_id = (
@@ -203,7 +225,7 @@ class FlextObservabilityErrorHandling:
 
             """
             try:
-                validated_seconds = _CooldownInput.model_validate({  # noqa: F821
+                validated_seconds = _CooldownInput.model_validate({
                     "seconds": seconds
                 }).seconds
             except ValidationError as error:
@@ -225,7 +247,7 @@ class FlextObservabilityErrorHandling:
 
             """
             try:
-                validated_threshold = _ThresholdInput.model_validate({  # noqa: F821
+                validated_threshold = _ThresholdInput.model_validate({
                     "threshold": threshold
                 }).threshold
             except ValidationError as error:
@@ -236,7 +258,7 @@ class FlextObservabilityErrorHandling:
             )
             return FlextResult[bool].ok(value=True)
 
-        def should_alert_for_error(self, error: ErrorEvent) -> bool:  # noqa: F821
+        def should_alert_for_error(self, error: ErrorEvent) -> bool:
             """Determine if error should trigger an alert.
 
             Args:
@@ -285,7 +307,7 @@ class FlextObservabilityErrorHandling:
         return FlextObservabilityErrorHandling._handler_instance
 
     @staticmethod
-    def record_error(error: ErrorEvent) -> FlextResult[ErrorEvent]:  # noqa: F821
+    def record_error(error: ErrorEvent) -> FlextResult[ErrorEvent]:
         """Convenience function: record an error.
 
         Args:
@@ -299,7 +321,7 @@ class FlextObservabilityErrorHandling:
         return handler.record_error(error)
 
     @staticmethod
-    def should_alert(error: ErrorEvent) -> bool:  # noqa: F821
+    def should_alert(error: ErrorEvent) -> bool:
         """Convenience function: check if error should alert.
 
         Args:
@@ -313,4 +335,4 @@ class FlextObservabilityErrorHandling:
         return handler.should_alert_for_error(error)
 
 
-__all__ = ["ErrorEvent", "FlextObservabilityErrorHandling"]  # noqa: F822
+__all__ = ["ErrorEvent", "FlextObservabilityErrorHandling"]

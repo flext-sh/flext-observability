@@ -17,6 +17,23 @@ from collections.abc import Mapping
 
 import psutil
 from flext_core import FlextLogger, FlextResult
+from pydantic import BaseModel, Field
+
+
+class PerformanceMetrics(BaseModel):
+    operation: str = Field(min_length=1)
+    start_time: float = Field(default_factory=time.time)
+    end_time: float = 0.0
+    duration_ms: float = 0.0
+    memory_used_mb: float = 0.0
+    cpu_percent: float = 0.0
+    success: bool = True
+    error_message: str = ""
+
+    def calculate_duration(self) -> None:
+        if self.end_time <= 0:
+            self.end_time = time.time()
+        self.duration_ms = max(0.0, (self.end_time - self.start_time) * 1000.0)
 
 
 class FlextObservabilityPerformance:
@@ -52,7 +69,7 @@ class FlextObservabilityPerformance:
     class Monitor:
         """Individual operation performance monitor."""
 
-        metrics: PerformanceMetrics  # noqa: F821
+        metrics: PerformanceMetrics
         _initial_memory: float
         _initial_cpu: float
 
@@ -63,11 +80,11 @@ class FlextObservabilityPerformance:
                 operation: Operation name for tracking
 
             """
-            self.metrics = PerformanceMetrics(operation=operation)  # noqa: F821
+            self.metrics = PerformanceMetrics(operation=operation)
             self._initial_memory = self._get_memory_usage()
             self._initial_cpu = self._get_cpu_percent()
 
-        def finish(self) -> PerformanceMetrics:  # noqa: F821
+        def finish(self) -> PerformanceMetrics:
             """Finish monitoring and return metrics.
 
             Returns:
@@ -138,7 +155,7 @@ class FlextObservabilityPerformance:
             return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
 
     @staticmethod
-    def is_performance_acceptable(metrics: PerformanceMetrics) -> bool:  # noqa: F821
+    def is_performance_acceptable(metrics: PerformanceMetrics) -> bool:
         """Check if operation performance is acceptable.
 
         Args:
@@ -170,7 +187,7 @@ class FlextObservabilityPerformance:
         return metrics.duration_ms < threshold
 
     @staticmethod
-    def log_performance_metrics(metrics: PerformanceMetrics) -> FlextResult[bool]:  # noqa: F821
+    def log_performance_metrics(metrics: PerformanceMetrics) -> FlextResult[bool]:
         """Log performance metrics for operation.
 
         Args:
@@ -208,4 +225,4 @@ class FlextObservabilityPerformance:
         return FlextObservabilityPerformance.Monitor(operation)
 
 
-__all__ = ["FlextObservabilityPerformance", "PerformanceMetrics"]  # noqa: F822
+__all__ = ["FlextObservabilityPerformance", "PerformanceMetrics"]

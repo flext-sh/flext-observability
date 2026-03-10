@@ -25,9 +25,13 @@ from collections.abc import Awaitable, Callable, MutableMapping
 from typing import ClassVar, Protocol, TypeGuard
 
 from flext_core import FlextResult, FlextRuntime, t
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
+
+
+class _HeadersPayload(BaseModel):
+    headers: dict[str, str] = Field(default_factory=dict)
 
 
 class HTTPXURLProtocol(Protocol):
@@ -97,6 +101,10 @@ class HTTPXClientProtocol(Protocol):
     ) -> HTTPXResponseProtocol: ...
 
 
+class AIOHTTPSessionProtocol(Protocol):
+    request: Callable[..., Awaitable[AIOHTTPResponseProtocol]]
+
+
 class FlextObservabilityHTTPClient:
     """HTTP client auto-instrumentation for service-to-service communication.
 
@@ -138,9 +146,13 @@ class FlextObservabilityHTTPClient:
         return hasattr(obj, "request") or hasattr(obj, "_send")
 
     @staticmethod
+    def _is_aiohttp_session(obj: object) -> TypeGuard[AIOHTTPSessionProtocol]:
+        return hasattr(obj, "request")
+
+    @staticmethod
     def _validated_headers(payload: t.ContainerValue) -> MutableMapping[str, str]:
         try:
-            return _HeadersPayload.model_validate({"headers": payload}).headers  # noqa: F821
+            return _HeadersPayload.model_validate({"headers": payload}).headers
         except ValidationError:
             return {}
 
@@ -203,9 +215,7 @@ class FlextObservabilityHTTPClient:
                     return FlextResult[bool].ok(value=True)
                 is_async = FlextObservabilityHTTPClient._is_httpx_async_client(client)
                 if is_async:
-                    original_send: Callable[
-                        [HTTPXRequestProtocol], Awaitable[HTTPXResponseProtocol]
-                    ] = client._send
+                    original_send = getattr(client, "_send")
 
                     async def traced_send(
                         request: HTTPXRequestProtocol,
@@ -287,9 +297,7 @@ class FlextObservabilityHTTPClient:
                         trace_id = FlextObservabilityContext.get_trace_id()
                         span_id = FlextObservabilityContext.get_span_id()
                         headers = FlextObservabilityHTTPClient._validated_headers(
-                            (kwargs if isinstance(kwargs, dict) else {}).get(
-                                "headers", {}
-                            )
+                            kwargs.get("headers", {})
                         )
                         if correlation_id:
                             headers["X-Correlation-ID"] = correlation_id
@@ -358,10 +366,10 @@ class FlextObservabilityHTTPClient:
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
 
-        instrumented_sessions: ClassVar[set[t.ContainerValue]] = set()
+        instrumented_sessions: ClassVar[set[AIOHTTPSessionProtocol]] = set()
 
         @staticmethod
-        def setup_instrumentation(session: t.ContainerValue) -> FlextResult[bool]:
+        def setup_instrumentation(session: object) -> FlextResult[bool]:
             """Setup aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests
@@ -396,18 +404,17 @@ class FlextObservabilityHTTPClient:
 
             """
             try:
-                if getattr(session, "_request", None) is None:
+                if not FlextObservabilityHTTPClient._is_aiohttp_session(session):
                     return FlextResult[bool].fail(
-                        "Invalid aiohttp session - missing _request method"
+                        "Invalid aiohttp session - missing request method"
                     )
+                typed_session: AIOHTTPSessionProtocol = session
                 if (
-                    session
+                    typed_session
                     in FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions
                 ):
                     return FlextResult[bool].ok(value=True)
-                original_request: Callable[..., Awaitable[AIOHTTPResponseProtocol]] = (
-                    session._request
-                )
+                original_request = getattr(typed_session, "request")
 
                 async def traced_request(
                     method: str,
@@ -421,7 +428,7 @@ class FlextObservabilityHTTPClient:
                     trace_id = FlextObservabilityContext.get_trace_id()
                     span_id = FlextObservabilityContext.get_span_id()
                     headers = FlextObservabilityHTTPClient._validated_headers(
-                        (kwargs if isinstance(kwargs, dict) else {}).get("headers", {})
+                        kwargs.get("headers", {})
                     )
                     if correlation_id:
                         headers["X-Correlation-ID"] = correlation_id
@@ -477,8 +484,10 @@ class FlextObservabilityHTTPClient:
                         )
                         raise
 
-                session._request = traced_request
-                FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions.add(session)
+                setattr(typed_session, "request", traced_request)
+                FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions.add(
+                    typed_session
+                )
                 FlextObservabilityHTTPClient._logger.debug(
                     "aiohttp session instrumentation setup complete"
                 )

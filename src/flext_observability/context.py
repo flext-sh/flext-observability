@@ -18,9 +18,13 @@ from contextvars import ContextVar
 from uuid import uuid4
 
 from flext_core import FlextResult, FlextRuntime, m
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import t
+
+
+class _BaggageKeyModel(BaseModel):
+    key: str = Field(min_length=1)
 
 
 class FlextObservabilityContext:
@@ -263,7 +267,7 @@ class FlextObservabilityContext:
         """
         try:
             try:
-                _BaggageKeyModel.model_validate({"key": key})  # noqa: F821
+                _BaggageKeyModel.model_validate({"key": key})
             except ValidationError:
                 return FlextResult[bool].fail("Baggage key must be non-empty string")
             try:

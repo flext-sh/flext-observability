@@ -11,8 +11,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextContainer, FlextResult, FlextRuntime, m, t
+from structlog.typing import BindableLogger
 
-from flext_observability import FlextObservabilitySettings
+from flext_observability.settings import FlextObservabilitySettings
 
 
 class FlextObservabilityServices:
@@ -46,7 +47,7 @@ class FlextObservabilityServices:
         return None
 
     @property
-    def logger(self) -> t.ContainerValue:
+    def logger(self) -> BindableLogger:
         """Access FLEXT logger."""
         return self._logger
 
@@ -71,12 +72,12 @@ class FlextObservabilityServices:
                 "timestamp": "now",
                 "version": "generic",
             }
-            status_result: m.Dict = {
+            status_result = m.Dict.model_validate({
                 "service": status["service"],
                 "status": status["status"],
                 "timestamp": status["timestamp"],
                 "version": status["version"],
-            }
+            })
             return FlextResult[m.Dict].ok(status_result)
         except (ValueError, TypeError, KeyError) as e:
             return FlextResult[m.Dict].fail(f"Status check failed: {e}")
@@ -86,7 +87,7 @@ class FlextObservabilityServices:
         try:
             if not entry_data:
                 return FlextResult[m.Dict].fail("Entry data required")
-            processed: m.Dict = dict(entry_data.items())
+            processed = m.Dict.model_validate(dict(entry_data.items()))
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
             return FlextResult[m.Dict].ok(processed)

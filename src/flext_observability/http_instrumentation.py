@@ -28,7 +28,7 @@ from typing import Protocol, TypeGuard
 
 import flask
 from flext_core import FlextResult, FlextRuntime, m, t
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
 
@@ -37,6 +37,10 @@ g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None
 _flask_available = True
 _starlette_available = True
+
+
+class _StartTimePayload(BaseModel):
+    value: float = Field(ge=0)
 
 
 class FlaskHookProtocol(Protocol):
@@ -56,6 +60,14 @@ class FlaskAppProtocol(Protocol):
 def _is_flask_app(obj: object) -> TypeGuard[FlaskAppProtocol]:
     """Type guard to check if object is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
+
+
+class FastAPIAppProtocol(Protocol):
+    def add_middleware(self, middleware_class: type) -> None: ...
+
+
+def _is_fastapi_app(obj: object) -> TypeGuard[FastAPIAppProtocol]:
+    return hasattr(obj, "add_middleware")
 
 
 class RequestURLProtocol(Protocol):
@@ -117,7 +129,7 @@ class FlextObservabilityHTTP:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: t.ContainerValue) -> FlextResult[bool]:
+        def setup_instrumentation(app: object) -> FlextResult[bool]:
             """Setup Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -157,9 +169,6 @@ class FlextObservabilityHTTP:
                     return FlextResult[bool].fail(
                         "Invalid Flask app - missing request hooks"
                     )
-                    return FlextResult[bool].fail(
-                        "Invalid Flask app - missing request hooks"
-                    )
                 before_request_hook = app.before_request
                 after_request_hook = app.after_request
 
@@ -167,25 +176,35 @@ class FlextObservabilityHTTP:
                 def flext_before_request() -> None:
                     """Extract context and create span before request processing."""
                     try:
-                        headers_dict = dict(request.headers) if request else {}
+                        headers_dict: dict[str, str] = (
+                            dict(request.headers) if request else {}
+                        )
                         if request:
-                            FlextObservabilityContext.from_headers(headers_dict)
+                            FlextObservabilityContext.from_headers(
+                                m.Dict.model_validate(headers_dict)
+                            )
                         correlation_id = FlextObservabilityContext.get_correlation_id()
                         if g:
                             g.flext_start_time = time.time()
                         if g:
                             g.flext_correlation_id = correlation_id
+                        request_method = request.method if request else "UNKNOWN"
+                        request_path = request.path if request else "UNKNOWN"
+                        request_remote = request.remote_addr if request else "unknown"
+                        user_agent = (
+                            request.user_agent.string
+                            if request and request.user_agent
+                            else "unknown"
+                        )
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
                             "debug",
-                            f"HTTP {(request.method if request else 'UNKNOWN')} {(request.path if request else 'UNKNOWN')}",
+                            f"HTTP {request_method} {request_path}",
                             extra={
-                                "http_method": request.method,
-                                "http_path": request.path,
-                                "http_client_ip": request.remote_addr or "unknown",
-                                "http_user_agent": request.user_agent.string
-                                if request.user_agent
-                                else "unknown",
+                                "http_method": request_method,
+                                "http_path": request_path,
+                                "http_client_ip": request_remote,
+                                "http_user_agent": user_agent,
                             },
                         )
                     except (ValueError, TypeError, KeyError) as e:
@@ -199,12 +218,12 @@ class FlextObservabilityHTTP:
                     try:
                         start_time = (
                             g.flext_start_time
-                            if hasattr(g, "flext_start_time")
+                            if g is not None and hasattr(g, "flext_start_time")
                             else None
                         )
                         duration_ms = 0.0
                         try:
-                            validated_start = _StartTimePayload.model_validate({  # noqa: F821
+                            validated_start = _StartTimePayload.model_validate({
                                 "value": start_time
                             }).value
                             duration_ms = (time.time() - validated_start) * 1000
@@ -259,6 +278,10 @@ class FlextObservabilityHTTP:
                         )
                     return (m.Dict.model_validate({"error": str(error)}), 500)
 
+                _ = flext_before_request
+                _ = flext_after_request
+                _ = flext_error_handler
+
                 FlextObservabilityHTTP._logger.debug(
                     "Flask HTTP instrumentation setup complete"
                 )
@@ -272,7 +295,7 @@ class FlextObservabilityHTTP:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: t.ContainerValue) -> FlextResult[bool]:
+        def setup_instrumentation(app: object) -> FlextResult[bool]:
             """Setup FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,
@@ -310,10 +333,11 @@ class FlextObservabilityHTTP:
 
             """
             try:
-                if not hasattr(app, "middleware"):
+                if not _is_fastapi_app(app):
                     return FlextResult[bool].fail(
-                        "Invalid FastAPI app - missing middleware method"
+                        "Invalid FastAPI app - missing add_middleware method"
                     )
+                typed_app: FastAPIAppProtocol = app
 
                 class FlextObservabilityMiddleware:
                     """Starlette-based ASGI middleware for FastAPI."""
@@ -392,7 +416,7 @@ class FlextObservabilityHTTP:
                             )
                             raise
 
-                add_middleware = app.add_middleware
+                add_middleware = typed_app.add_middleware
                 add_middleware(FlextObservabilityMiddleware)
                 FlextObservabilityHTTP._logger.debug(
                     "FastAPI HTTP instrumentation setup complete"
@@ -405,7 +429,9 @@ class FlextObservabilityHTTP:
 
     @staticmethod
     async def _async_log_with_context(
-        message: str, level: str, extra: m.Dict | t.ConfigurationMapping | None = None
+        message: str,
+        level: str,
+        extra: t.ConfigurationMapping | m.Dict | None = None,
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 

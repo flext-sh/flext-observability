@@ -12,9 +12,22 @@ from __future__ import annotations
 from datetime import datetime
 
 from flext_core import FlextModels, FlextResult, t
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import m
+
+
+class _HealthCheckFactoryKwargs(BaseModel):
+    metrics: m.Dict | None = None
+    timestamp: datetime | None = None
+
+
+class HealthCheckModel(BaseModel):
+    component: str = Field(min_length=1)
+    status: str = Field(default="unknown", min_length=1)
+    message: str = Field(default="")
+    metrics: m.Dict = Field(default_factory=lambda: m.Dict({}))
+    timestamp: datetime = Field(default_factory=datetime.now)
 
 
 class FlextObservabilityHealth(FlextModels):
@@ -30,19 +43,19 @@ class FlextObservabilityHealth(FlextModels):
         status: str = "unknown",
         message: str = "",
         **kwargs: t.ContainerValue,
-    ) -> FlextResult[FlextObservabilityHealth.FlextHealthCheck]:
+    ) -> FlextResult[HealthCheckModel]:
         """Create a FlextHealthCheck entity directly."""
         try:
             valid_kwargs: dict[str, t.ContainerValue] = {}
             try:
-                parsed_kwargs = _HealthCheckFactoryKwargs.model_validate(kwargs)  # noqa: F821
+                parsed_kwargs = _HealthCheckFactoryKwargs.model_validate(kwargs)
                 if parsed_kwargs.metrics is not None:
                     valid_kwargs["metrics"] = parsed_kwargs.metrics
                 if parsed_kwargs.timestamp is not None:
                     valid_kwargs["timestamp"] = parsed_kwargs.timestamp
             except ValidationError:
                 valid_kwargs = {}
-            health_check = FlextObservabilityHealth.FlextHealthCheck(
+            health_check = HealthCheckModel(
                 component=component, status=status, message=message
             )
             if valid_kwargs.get("metrics") and isinstance(
@@ -53,11 +66,9 @@ class FlextObservabilityHealth(FlextModels):
                 valid_kwargs["timestamp"], datetime
             ):
                 health_check.timestamp = valid_kwargs["timestamp"]
-            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].ok(
-                health_check
-            )
+            return FlextResult[HealthCheckModel].ok(health_check)
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[FlextObservabilityHealth.FlextHealthCheck].fail(
+            return FlextResult[HealthCheckModel].fail(
                 f"Failed to create health check: {e}"
             )
 
