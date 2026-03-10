@@ -35,9 +35,13 @@ class FlextObservabilityMonitor:
     logger = FlextRuntime.get_logger(__name__)
 
     class ObservabilityServiceProtocol(Protocol):
-        def create_alert(self, **kwargs: t.ContainerValue) -> FlextResult[m.Dict]: ...
+        """Protocol for observability services providing alerts and metrics."""
 
-        def get_metrics_summary(self) -> FlextResult[m.Dict]: ...
+        def create_alert(self, **kwargs: t.ContainerValue) -> FlextResult[m.Dict]:
+            """Create an alert with given parameters."""
+
+        def get_metrics_summary(self) -> FlextResult[m.Dict]:
+            """Get summary of collected metrics."""
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""

@@ -49,6 +49,8 @@ class FlextObservabilityLogging:
     _logger = FlextLogger(__name__)
 
     class LogContext(BaseModel):
+        """Trace context for enriching log entries with correlation and span IDs."""
+
         correlation_id: str | None = None
         trace_id: str | None = None
         span_id: str | None = None

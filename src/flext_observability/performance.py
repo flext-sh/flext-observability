@@ -21,6 +21,8 @@ from pydantic import BaseModel, Field
 
 
 class PerformanceMetrics(BaseModel):
+    """Metrics for tracking performance of observability operations."""
+
     operation: str = Field(min_length=1)
     start_time: float = Field(default_factory=time.time)
     end_time: float = 0.0
@@ -31,6 +33,7 @@ class PerformanceMetrics(BaseModel):
     error_message: str = ""
 
     def calculate_duration(self) -> None:
+        """Calculate operation duration in milliseconds from start and end times."""
         if self.end_time <= 0:
             self.end_time = time.time()
         self.duration_ms = max(0.0, (self.end_time - self.start_time) * 1000.0)
