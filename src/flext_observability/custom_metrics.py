@@ -31,6 +31,8 @@ class _MetricTypeInput(BaseModel):
 
 
 class CustomMetricDefinition(BaseModel):
+    """Definition of a custom business metric with type and metadata."""
+
     name: str = Field(min_length=1)
     metric_type: MetricType
     description: str = Field(min_length=1)

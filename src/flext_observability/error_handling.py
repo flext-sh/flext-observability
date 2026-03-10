@@ -37,6 +37,8 @@ class _ThresholdInput(BaseModel):
 
 
 class ErrorEvent(BaseModel):
+    """Error event with fingerprinting for deduplication and alerting."""
+
     error_type: str = Field(min_length=1)
     message: str = Field(min_length=1)
     severity: c.Observability.ErrorSeverity = c.Observability.ErrorSeverity.ERROR
@@ -44,6 +46,7 @@ class ErrorEvent(BaseModel):
     correlation_id: str = ""
 
     def calculate_fingerprint(self) -> None:
+        """Calculate SHA256 fingerprint from error type and message."""
         self.fingerprint = sha256(
             f"{self.error_type}:{self.message}".encode()
         ).hexdigest()

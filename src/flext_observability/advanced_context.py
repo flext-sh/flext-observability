@@ -26,6 +26,8 @@ from pydantic import BaseModel, Field
 
 
 class ContextSnapshot(BaseModel):
+    """Snapshot of observability context for restoration in async operations."""
+
     correlation_id: str = Field(default="")
     trace_id: str = Field(default="")
     span_id: str = Field(default="")
