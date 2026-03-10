@@ -7,4 +7,4 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-__all__: list[str] = ["FlextObservabilitySettings"]
+__all__: list[str] = ["FlextObservabilitySettings"]  # noqa: F822

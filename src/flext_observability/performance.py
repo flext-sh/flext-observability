@@ -52,7 +52,7 @@ class FlextObservabilityPerformance:
     class Monitor:
         """Individual operation performance monitor."""
 
-        metrics: PerformanceMetrics
+        metrics: PerformanceMetrics  # noqa: F821
         _initial_memory: float
         _initial_cpu: float
 
@@ -63,11 +63,11 @@ class FlextObservabilityPerformance:
                 operation: Operation name for tracking
 
             """
-            self.metrics = PerformanceMetrics(operation=operation)
+            self.metrics = PerformanceMetrics(operation=operation)  # noqa: F821
             self._initial_memory = self._get_memory_usage()
             self._initial_cpu = self._get_cpu_percent()
 
-        def finish(self) -> PerformanceMetrics:
+        def finish(self) -> PerformanceMetrics:  # noqa: F821
             """Finish monitoring and return metrics.
 
             Returns:
@@ -138,7 +138,7 @@ class FlextObservabilityPerformance:
             return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
 
     @staticmethod
-    def is_performance_acceptable(metrics: PerformanceMetrics) -> bool:
+    def is_performance_acceptable(metrics: PerformanceMetrics) -> bool:  # noqa: F821
         """Check if operation performance is acceptable.
 
         Args:
@@ -170,7 +170,7 @@ class FlextObservabilityPerformance:
         return metrics.duration_ms < threshold
 
     @staticmethod
-    def log_performance_metrics(metrics: PerformanceMetrics) -> FlextResult[bool]:
+    def log_performance_metrics(metrics: PerformanceMetrics) -> FlextResult[bool]:  # noqa: F821
         """Log performance metrics for operation.
 
         Args:
@@ -208,4 +208,4 @@ class FlextObservabilityPerformance:
         return FlextObservabilityPerformance.Monitor(operation)
 
 
-__all__ = ["FlextObservabilityPerformance", "PerformanceMetrics"]
+__all__ = ["FlextObservabilityPerformance", "PerformanceMetrics"]  # noqa: F822

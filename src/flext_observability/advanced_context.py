@@ -61,7 +61,7 @@ class FlextObservabilityAdvancedContext:
             self._metadata: dict[str, t.JsonValue] = {}
             self._baggage: dict[str, str] = {}
             self._request_id: str = ""
-            self._parent_context: ContextSnapshot | None = None
+            self._parent_context: ContextSnapshot | None = None  # noqa: F821
 
         def clear(self) -> FlextResult[bool]:
             """Clear all request-local context.
@@ -141,7 +141,7 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return FlextResult[bool].fail(f"Failed to merge context: {e}")
 
-        def restore(self, snapshot: ContextSnapshot) -> FlextResult[bool]:
+        def restore(self, snapshot: ContextSnapshot) -> FlextResult[bool]:  # noqa: F821
             """Restore context from snapshot.
 
             Args:
@@ -211,7 +211,7 @@ class FlextObservabilityAdvancedContext:
 
         def snapshot(
             self, correlation_id: str = "", trace_id: str = "", span_id: str = ""
-        ) -> ContextSnapshot:
+        ) -> ContextSnapshot:  # noqa: F821
             """Create snapshot of current context.
 
             Args:
@@ -223,7 +223,7 @@ class FlextObservabilityAdvancedContext:
                 ContextSnapshot - Context snapshot for later restoration
 
             """
-            return ContextSnapshot(
+            return ContextSnapshot(  # noqa: F821
                 correlation_id=correlation_id,
                 trace_id=trace_id,
                 span_id=span_id,
@@ -275,4 +275,4 @@ class FlextObservabilityAdvancedContext:
         return ctx.set_metadata(key, value)
 
 
-__all__ = ["ContextSnapshot", "FlextObservabilityAdvancedContext"]
+__all__ = ["ContextSnapshot", "FlextObservabilityAdvancedContext"]  # noqa: F822

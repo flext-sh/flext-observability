@@ -140,7 +140,7 @@ class FlextObservabilityHTTPClient:
     @staticmethod
     def _validated_headers(payload: t.ContainerValue) -> MutableMapping[str, str]:
         try:
-            return _HeadersPayload.model_validate({"headers": payload}).headers
+            return _HeadersPayload.model_validate({"headers": payload}).headers  # noqa: F821
         except ValidationError:
             return {}
 

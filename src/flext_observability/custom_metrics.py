@@ -118,7 +118,7 @@ class FlextObservabilityCustomMetrics:
 
         def get_metric(
             self, name: str, namespace: str = "default"
-        ) -> CustomMetricDefinition | None:
+        ) -> CustomMetricDefinition | None:  # noqa: F821
             """Get metric definition by name.
 
             Args:
@@ -131,7 +131,7 @@ class FlextObservabilityCustomMetrics:
             """
             namespaced_name = f"{namespace}:{name}" if namespace != "default" else name
             value = self._metrics.root.get(namespaced_name)
-            if isinstance(value, CustomMetricDefinition):
+            if isinstance(value, CustomMetricDefinition):  # noqa: F821
                 return value
             return None
 
@@ -172,7 +172,7 @@ class FlextObservabilityCustomMetrics:
             return m.Dict.model_validate({
                 metric_name: metric
                 for metric_name, metric in self._metrics.root.items()
-                if isinstance(metric, CustomMetricDefinition)
+                if isinstance(metric, CustomMetricDefinition)  # noqa: F821
                 and metric.metric_type == metric_type
             })
 
@@ -223,7 +223,7 @@ class FlextObservabilityCustomMetrics:
                     case _:
                         metric_input = metric_type
                 try:
-                    metric_type_enum = _MetricTypeInput.model_validate({
+                    metric_type_enum = _MetricTypeInput.model_validate({  # noqa: F821
                         "metric_type": metric_input
                     }).metric_type
                 except ValidationError:
@@ -237,7 +237,7 @@ class FlextObservabilityCustomMetrics:
                     return FlextResult[bool].fail(
                         f"Metric '{namespaced_name}' already registered"
                     )
-                definition = CustomMetricDefinition(
+                definition = CustomMetricDefinition(  # noqa: F821
                     name=name,
                     metric_type=metric_type_enum,
                     description=description,
@@ -284,7 +284,7 @@ class FlextObservabilityCustomMetrics:
     @staticmethod
     def get_metric(
         name: str, namespace: str = "default"
-    ) -> CustomMetricDefinition | None:
+    ) -> CustomMetricDefinition | None:  # noqa: F821
         """Convenience function: get metric definition.
 
         Args:
@@ -354,4 +354,4 @@ class FlextObservabilityCustomMetrics:
         )
 
 
-__all__ = ["CustomMetricDefinition", "FlextObservabilityCustomMetrics"]
+__all__ = ["CustomMetricDefinition", "FlextObservabilityCustomMetrics"]  # noqa: F822

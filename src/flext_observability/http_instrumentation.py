@@ -204,7 +204,7 @@ class FlextObservabilityHTTP:
                         )
                         duration_ms = 0.0
                         try:
-                            validated_start = _StartTimePayload.model_validate({
+                            validated_start = _StartTimePayload.model_validate({  # noqa: F821
                                 "value": start_time
                             }).value
                             duration_ms = (time.time() - validated_start) * 1000

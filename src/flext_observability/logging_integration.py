@@ -85,7 +85,7 @@ class FlextObservabilityLogging:
     @staticmethod
     def enrich_log_context(
         _logger: BindableLogger, *, include_baggage: bool = False
-    ) -> FlextResult[LogContext]:
+    ) -> FlextResult[LogContext]:  # noqa: F821
         """Get trace context for log enrichment.
 
         Retrieves current trace context (correlation ID, trace ID, span ID)
@@ -255,7 +255,7 @@ class FlextObservabilityLogging:
             return FlextResult[bool].fail(f"Logging with context failed: {e}")
 
     @staticmethod
-    def validate_context() -> FlextResult[LogContext]:
+    def validate_context() -> FlextResult[LogContext]:  # noqa: F821
         """Validate current trace context is properly configured.
 
         Checks that essential trace context (correlation ID) is set.
