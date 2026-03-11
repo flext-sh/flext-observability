@@ -8,13 +8,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextSettings
-from pydantic import ConfigDict, Field
+from pydantic import Field
+from pydantic_settings import SettingsConfigDict
 
 
 class FlextObservabilitySettings(FlextSettings):
     """Runtime settings for observability components."""
 
-    model_config = ConfigDict(extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore")
 
     service_name: str = Field(default="flext-observability")
     environment: str = Field(default="development")

@@ -39,9 +39,11 @@ class FlextObservabilityMonitor:
 
         def create_alert(self, **kwargs: t.ContainerValue) -> FlextResult[m.Dict]:
             """Create an alert with given parameters."""
+            ...
 
         def get_metrics_summary(self) -> FlextResult[m.Dict]:
             """Get summary of collected metrics."""
+            ...
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""
@@ -68,8 +70,9 @@ class FlextObservabilityMonitor:
             actual_metric_name = metric_name or f"function_execution_{function_name}"
             start_time = time.time()
             try:
+                kwargs_dict = kwargs if isinstance(kwargs, dict) else {}
                 result = FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
-                    func, *args, **kwargs
+                    func, *args, **kwargs_dict
                 )
                 execution_time = time.time() - start_time
                 FlextObservabilityMonitor.MonitoringHelpers.record_success_metrics(

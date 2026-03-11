@@ -383,9 +383,7 @@ def flext_trace(
 def flext_alert(
     title: str = "",
     message: str = "",
-    severity: Literal[
-        "info", "warning", "error", "critical"
-    ] = c.Observability.AlertSeverity.WARNING.value,
+    severity: Literal["info", "warning", "error", "critical"] = "warning",
     status: Literal["firing", "resolved"] = "firing",
     alert_id: str | None = None,
     source: str = "system",
