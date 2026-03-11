@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from flext_core import FlextModels, FlextResult, t
+from flext_core import FlextModels, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import m
@@ -43,7 +43,7 @@ class FlextObservabilityHealth(FlextModels):
         status: str = "unknown",
         message: str = "",
         **kwargs: t.ContainerValue,
-    ) -> FlextResult[HealthCheckModel]:
+    ) -> r[HealthCheckModel]:
         """Create a FlextHealthCheck entity directly."""
         try:
             valid_kwargs: dict[str, t.ContainerValue] = {}
@@ -66,11 +66,9 @@ class FlextObservabilityHealth(FlextModels):
                 valid_kwargs["timestamp"], datetime
             ):
                 health_check.timestamp = valid_kwargs["timestamp"]
-            return FlextResult[HealthCheckModel].ok(health_check)
+            return r[HealthCheckModel].ok(health_check)
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[HealthCheckModel].fail(
-                f"Failed to create health check: {e}"
-            )
+            return r[HealthCheckModel].fail(f"Failed to create health check: {e}")
 
 
 __all__ = ["FlextObservabilityHealth"]

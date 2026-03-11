@@ -38,7 +38,7 @@ Comprehensive demonstration of core observability functionality including:
 - **Factory Usage**: FlextObservabilityMasterFactory integration
 - **Service Integration**: FlextMetricsService and other service usage
 - **Monitoring Decorators**: @flext_monitor_function practical examples
-- **Error Handling**: Railway-oriented programming with FlextResult
+- **Error Handling**: Railway-oriented programming with r
 - **Real-world Scenarios**: Business logic with observability integration
 
 ### [02_solid_observability_demo.py](02_solid_observability_demo.py) - SOLID Principles
@@ -101,7 +101,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -116,7 +116,7 @@ class UserService:
         self.metrics = FlextMetricsService(container)
         self.factory = FlextObservabilityMasterFactory()
 
-    def create_user(self, user_data: dict) -> FlextResult[t.Dict]:
+    def create_user(self, user_data: dict) -> r[t.Dict]:
         """Create user with comprehensive observability."""
         # Create business metrics
         metric_result = self.factory.create_metric(
@@ -130,7 +130,7 @@ class UserService:
             self.metrics.record_metric(metric_result.data)
 
         # Business logic here
-        return FlextResult[bool].ok({"user_id": "user123", "status": "created"})
+        return r[bool].ok({"user_id": "user123", "status": "created"})
 ```
 
 ### Monitoring Decorator Patterns
@@ -162,10 +162,10 @@ def process_order(order_data: dict) -> dict[str, object]:
 
 # Advanced monitoring with context
 @flext_monitor_function("payment_processing")
-def process_payment(amount: float, currency: str) -> FlextResult[t.Dict]:
+def process_payment(amount: float, currency: str) -> r[t.Dict]:
     """Process payment with error handling and monitoring."""
     if amount <= 0:
-        return FlextResult[bool].fail("Invalid payment amount")
+        return r[bool].fail("Invalid payment amount")
 
     # Payment processing logic
     transaction = {
@@ -175,7 +175,7 @@ def process_payment(amount: float, currency: str) -> FlextResult[t.Dict]:
         "status": "completed",
     }
 
-    return FlextResult[bool].ok(transaction)
+    return r[bool].ok(transaction)
 ```
 
 ### Health Monitoring Patterns
@@ -185,7 +185,7 @@ def process_payment(amount: float, currency: str) -> FlextResult[t.Dict]:
 from flext_observability import flext_create_health_check, FlextHealthService
 
 
-def monitor_database_health() -> FlextResult[t.Dict]:
+def monitor_database_health() -> r[t.Dict]:
     """Monitor database connectivity and performance."""
     try:
         # Test database connection
@@ -227,7 +227,7 @@ def monitor_database_health() -> FlextResult[t.Dict]:
 from flext_observability import flext_create_trace
 
 
-def process_user_workflow(user_id: str) -> FlextResult[t.Dict]:
+def process_user_workflow(user_id: str) -> r[t.Dict]:
     """Process user workflow with distributed tracing."""
 
     # Create parent trace
@@ -251,14 +251,14 @@ def process_user_workflow(user_id: str) -> FlextResult[t.Dict]:
     if processing_result.is_failure:
         return processing_result
 
-    return FlextResult[bool].ok({
+    return r[bool].ok({
         "user_id": user_id,
         "trace_id": parent_trace.id,
         "status": "completed",
     })
 
 
-def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[t.Dict]:
+def validate_user_data(user_id: str, parent_trace_id: str) -> r[t.Dict]:
     """Validate user with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="user_validation",
@@ -270,7 +270,7 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[t.Dict
         return child_trace_result
 
     # Validation logic here
-    return FlextResult[bool].ok({
+    return r[bool].ok({
         "status": "valid",
         "trace_id": child_trace_result.data.id,
     })
@@ -324,7 +324,7 @@ class FlextAPIService:
     """Example FastAPI service with observability."""
 
     @flext_monitor_function("api_endpoint")
-    def handle_user_request(self, request_data: dict) -> FlextResult[t.Dict]:
+    def handle_user_request(self, request_data: dict) -> r[t.Dict]:
         """Handle API request with comprehensive observability."""
 
         # Request metrics
@@ -392,7 +392,7 @@ make type-check examples/
 
 - **Functional Code**: All examples must execute successfully
 - **Type Safety**: Complete type annotations following project standards
-- **Error Handling**: Proper FlextResult usage and validation
+- **Error Handling**: Proper r usage and validation
 - **Documentation**: Clear explanations of observability patterns
 - **FLEXT Integration**: Demonstrate ecosystem integration patterns
 

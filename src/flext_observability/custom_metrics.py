@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_core import FlextResult, FlextRuntime, m, t
+from flext_core import FlextRuntime, m, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import c
@@ -85,14 +85,14 @@ class FlextObservabilityCustomMetrics:
             self._metric_instances: dict[str, t.ContainerValue] = {}
             self._namespaces: dict[str, str] = {}
 
-        def clear_metrics(self, namespace: str | None = None) -> FlextResult[bool]:
+        def clear_metrics(self, namespace: str | None = None) -> r[bool]:
             """Clear metrics from registry.
 
             Args:
                 namespace: Optional namespace to clear (clears all if None)
 
             Returns:
-                FlextResult[bool] - Ok if successful
+                r[bool] - Ok if successful
 
             """
             try:
@@ -107,9 +107,9 @@ class FlextObservabilityCustomMetrics:
                 FlextObservabilityCustomMetrics._logger.debug(
                     f"Metrics cleared: {namespace or 'all'}"
                 )
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(f"Failed to clear metrics: {e}")
+                return r[bool].fail(f"Failed to clear metrics: {e}")
 
         def get_all_metrics(self, namespace: str | None = None) -> m.Dict:
             """Get all registered metrics.
@@ -205,7 +205,7 @@ class FlextObservabilityCustomMetrics:
             description: str,
             unit: str = "1",
             namespace: str = "default",
-        ) -> FlextResult[bool]:
+        ) -> r[bool]:
             """Register a custom metric.
 
             Args:
@@ -216,7 +216,7 @@ class FlextObservabilityCustomMetrics:
                 namespace: Namespace for metric organization
 
             Returns:
-                FlextResult[bool] - Ok if registration successful
+                r[bool] - Ok if registration successful
 
             Behavior:
                 - Validates metric name and type
@@ -227,23 +227,23 @@ class FlextObservabilityCustomMetrics:
             """
             try:
                 if not name or not name.strip():
-                    return FlextResult[bool].fail("Metric name cannot be empty")
+                    return r[bool].fail("Metric name cannot be empty")
                 if not description or not description.strip():
-                    return FlextResult[bool].fail("Metric description cannot be empty")
+                    return r[bool].fail("Metric description cannot be empty")
                 metric_input = metric_type.lower()
                 try:
                     metric_type_enum = _MetricTypeInput.model_validate({
                         "metric_type": metric_input
                     }).metric_type
                 except ValidationError:
-                    return FlextResult[bool].fail(
+                    return r[bool].fail(
                         f"Invalid metric type: {metric_type}. Must be one of ['counter', 'gauge', 'histogram']"
                     )
                 namespaced_name = (
                     f"{namespace}:{name}" if namespace != "default" else name
                 )
                 if namespaced_name in self._metrics:
-                    return FlextResult[bool].fail(
+                    return r[bool].fail(
                         f"Metric '{namespaced_name}' already registered"
                     )
                 definition = CustomMetricDefinition(
@@ -257,13 +257,11 @@ class FlextObservabilityCustomMetrics:
                 FlextObservabilityCustomMetrics._logger.debug(
                     f"Metric registered: {namespaced_name} ({metric_type_enum.value})"
                 )
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(f"Metric registration failed: {e}")
+                return r[bool].fail(f"Metric registration failed: {e}")
 
-        def unregister_metric(
-            self, name: str, namespace: str = "default"
-        ) -> FlextResult[bool]:
+        def unregister_metric(self, name: str, namespace: str = "default") -> r[bool]:
             """Unregister a metric.
 
             Args:
@@ -271,7 +269,7 @@ class FlextObservabilityCustomMetrics:
                 namespace: Namespace (default "default")
 
             Returns:
-                FlextResult[bool] - Ok if unregistered
+                r[bool] - Ok if unregistered
 
             """
             try:
@@ -279,16 +277,14 @@ class FlextObservabilityCustomMetrics:
                     f"{namespace}:{name}" if namespace != "default" else name
                 )
                 if namespaced_name not in self._metrics:
-                    return FlextResult[bool].fail(
-                        f"Metric '{namespaced_name}' not found"
-                    )
+                    return r[bool].fail(f"Metric '{namespaced_name}' not found")
                 del self._metrics[namespaced_name]
                 FlextObservabilityCustomMetrics._logger.debug(
                     f"Metric unregistered: {namespaced_name}"
                 )
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(f"Metric unregistration failed: {e}")
+                return r[bool].fail(f"Metric unregistration failed: {e}")
 
     @staticmethod
     def get_metric(
@@ -339,7 +335,7 @@ class FlextObservabilityCustomMetrics:
         description: str,
         unit: str = "1",
         namespace: str = "default",
-    ) -> FlextResult[bool]:
+    ) -> r[bool]:
         """Convenience function: register a metric.
 
         Args:
@@ -350,7 +346,7 @@ class FlextObservabilityCustomMetrics:
             namespace: Namespace (default "default")
 
         Returns:
-            FlextResult[bool] - Ok if successful
+            r[bool] - Ok if successful
 
         """
         registry = FlextObservabilityCustomMetrics.get_registry()

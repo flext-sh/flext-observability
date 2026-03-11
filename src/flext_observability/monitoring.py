@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import Protocol, override
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextResult, FlextRuntime, m, r
+from flext_core import FlextContainer, FlextRuntime, m, r
 
 from flext_observability.constants import c as _obs_c
 from flext_observability.models import FlextObservabilityModels
@@ -37,11 +37,11 @@ class FlextObservabilityMonitor:
     class ObservabilityServiceProtocol(Protocol):
         """Protocol for observability services providing alerts and metrics."""
 
-        def create_alert(self, **kwargs: t.ContainerValue) -> FlextResult[m.Dict]:
+        def create_alert(self, **kwargs: t.ContainerValue) -> r[m.Dict]:
             """Create an alert with given parameters."""
             ...
 
-        def get_metrics_summary(self) -> FlextResult[m.Dict]:
+        def get_metrics_summary(self) -> r[m.Dict]:
             """Get summary of collected metrics."""
             ...
 

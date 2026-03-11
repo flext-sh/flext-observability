@@ -1,14 +1,14 @@
 """Enterprise observability and monitoring library for FLEXT ecosystem.
 
 FLEXT Observability provides unified observability patterns for monitoring, metrics,
-tracing, and alerting across the FLEXT ecosystem using FlextResult railway pattern.
+tracing, and alerting across the FLEXT ecosystem using r railway pattern.
 
 Architecture:
 - Single FlextObservability class (domain library pattern)
 - Nested domain entities (Metric, Trace, Alert, HealthCheck, LogEntry)
 - Nested application services (MetricsService, TracingService, etc.)
 - Clean Architecture layers with SOLID principles
-- Railway-oriented programming with FlextResult[T]
+- Railway-oriented programming with r[T]
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -27,8 +27,8 @@ if TYPE_CHECKING:
         FlextExceptions as e,
         FlextHandlers as h,
         FlextMixins as x,
-        FlextResult as r,
         FlextService as s,
+        r as r,
     )
 
     from flext_observability.__version__ import __version__, __version_info__
@@ -183,7 +183,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "h": ("flext_core", "FlextHandlers"),
     "m": ("flext_observability.models", "FlextObservabilityModels"),
     "p": ("flext_observability.protocols", "FlextObservabilityProtocols"),
-    "r": ("flext_core", "FlextResult"),
+    "r": ("flext_core", "r"),
     "reset_global_factory": ("flext_observability._core", "reset_global_factory"),
     "s": ("flext_core", "FlextService"),
     "t": ("flext_observability.typings", "FlextObservabilityTypes"),

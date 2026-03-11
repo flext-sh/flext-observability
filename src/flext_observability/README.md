@@ -160,7 +160,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -217,7 +217,7 @@ def process_order(order_data: dict) -> dict[str, object]:
 
 All modules follow FLEXT ecosystem standards:
 
-- **FlextResult[T]** for railway-oriented programming
+- **r[T]** for railway-oriented programming
 - **FlextContainer** for dependency injection
 - **FlextModels.Entity** base patterns for domain entities
 - **Type safety** with comprehensive annotations
@@ -227,9 +227,9 @@ All modules follow FLEXT ecosystem standards:
 ```python
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
-def handle_user_request(request: dict) -> FlextResult[t.Dict]:
+def handle_user_request(request: dict) -> r[t.Dict]:
     # Automatic metrics, tracing, and logging
-    return FlextResult[bool].ok({"status": "processed"})
+    return r[bool].ok({"status": "processed"})
 ```
 
 ## Quality Standards
@@ -239,13 +239,13 @@ All modules in this package maintain:
 - **100% Type Coverage**: Complete type annotations
 - **95% Test Coverage**: Comprehensive test suites
 - **Domain Validation**: Business rule enforcement
-- **Error Handling**: FlextResult patterns throughout
+- **Error Handling**: r patterns throughout
 - **Documentation**: Enterprise-grade docstrings
 
 ## Development Guidelines
 
 1. **Follow Clean Architecture**: Maintain clear layer separation
-1. **Use FlextResult**: All operations return FlextResult[T]
+1. **Use r**: All operations return r[T]
 1. **Domain Validation**: Implement validate_business_rules() for entities
 1. **Type Safety**: Complete type annotations required
 1. **Test Coverage**: 95% minimum coverage for all new code

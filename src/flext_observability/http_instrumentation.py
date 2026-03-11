@@ -27,7 +27,7 @@ from collections.abc import Awaitable, Callable
 from typing import Protocol, TypeGuard
 
 import flask
-from flext_core import FlextResult, FlextRuntime, m, t
+from flext_core import FlextRuntime, m, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
@@ -129,7 +129,7 @@ class FlextObservabilityHTTP:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: object) -> FlextResult[bool]:
+        def setup_instrumentation(app: object) -> r[bool]:
             """Setup Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -139,7 +139,7 @@ class FlextObservabilityHTTP:
                 app: Flask application instance
 
             Returns:
-                FlextResult[bool] - Ok if setup successful
+                r[bool] - Ok if setup successful
 
             Behavior:
                 - Extracts correlation ID from X-Correlation-ID header
@@ -166,9 +166,7 @@ class FlextObservabilityHTTP:
             """
             try:
                 if not _is_flask_app(app):
-                    return FlextResult[bool].fail(
-                        "Invalid Flask app - missing request hooks"
-                    )
+                    return r[bool].fail("Invalid Flask app - missing request hooks")
                 before_request_hook = app.before_request
                 after_request_hook = app.after_request
 
@@ -285,17 +283,15 @@ class FlextObservabilityHTTP:
                 FlextObservabilityHTTP._logger.debug(
                     "Flask HTTP instrumentation setup complete"
                 )
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(
-                    f"Flask instrumentation setup failed: {e}"
-                )
+                return r[bool].fail(f"Flask instrumentation setup failed: {e}")
 
     class FastAPI:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: object) -> FlextResult[bool]:
+        def setup_instrumentation(app: object) -> r[bool]:
             """Setup FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,
@@ -306,7 +302,7 @@ class FlextObservabilityHTTP:
                 app: FastAPI application instance
 
             Returns:
-                FlextResult[bool] - Ok if setup successful
+                r[bool] - Ok if setup successful
 
             Behavior:
                 - Extracts correlation ID from X-Correlation-ID header
@@ -334,7 +330,7 @@ class FlextObservabilityHTTP:
             """
             try:
                 if not _is_fastapi_app(app):
-                    return FlextResult[bool].fail(
+                    return r[bool].fail(
                         "Invalid FastAPI app - missing add_middleware method"
                     )
                 typed_app: FastAPIAppProtocol = app
@@ -421,11 +417,9 @@ class FlextObservabilityHTTP:
                 FlextObservabilityHTTP._logger.debug(
                     "FastAPI HTTP instrumentation setup complete"
                 )
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(
-                    f"FastAPI instrumentation setup failed: {e}"
-                )
+                return r[bool].fail(f"FastAPI instrumentation setup failed: {e}")
 
     @staticmethod
     async def _async_log_with_context(

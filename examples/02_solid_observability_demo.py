@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import time
 
-from flext_core import FlextContainer, FlextResult, t
+from flext_core import FlextContainer, r, t
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -142,7 +142,7 @@ def demonstrate_factory_patterns() -> None:
 
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
-    entities_to_validate: list[FlextResult[dict[str, t.ContainerValue]]] = [
+    entities_to_validate: list[r[dict[str, t.ContainerValue]]] = [
         flext_metric("valid_metric", 100.0, "count"),
         flext_trace("valid_operation"),
         flext_alert("system", "Valid alert", "info"),

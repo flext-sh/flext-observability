@@ -21,7 +21,7 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping
 
-from flext_core import FlextLogger, FlextResult, t
+from flext_core import FlextLogger, r, t
 from pydantic import BaseModel, Field
 
 
@@ -74,11 +74,11 @@ class FlextObservabilityAdvancedContext:
             self._request_id: str = ""
             self._parent_context: ContextSnapshot | None = None
 
-        def clear(self) -> FlextResult[bool]:
+        def clear(self) -> r[bool]:
             """Clear all request-local context.
 
             Returns:
-                FlextResult[bool] - Ok always
+                r[bool] - Ok always
 
             """
             try:
@@ -86,9 +86,9 @@ class FlextObservabilityAdvancedContext:
                 self._baggage.clear()
                 self._request_id = ""
                 FlextObservabilityAdvancedContext._logger.debug("Context cleared")
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(f"Failed to clear context: {e}")
+                return r[bool].fail(f"Failed to clear context: {e}")
 
         def get_all_baggage(self) -> Mapping[str, str]:
             """Get all baggage items.
@@ -132,34 +132,32 @@ class FlextObservabilityAdvancedContext:
             """
             return self._metadata.get(key)
 
-        def merge(
-            self, other: FlextObservabilityAdvancedContext.Context
-        ) -> FlextResult[bool]:
+        def merge(self, other: FlextObservabilityAdvancedContext.Context) -> r[bool]:
             """Merge another context into this one.
 
             Args:
                 other: Other context to merge
 
             Returns:
-                FlextResult[bool] - Ok if successful
+                r[bool] - Ok if successful
 
             """
             try:
                 self._metadata.update(other.get_all_metadata())
                 self._baggage.update(other.get_all_baggage())
                 FlextObservabilityAdvancedContext._logger.debug("Context merged")
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(f"Failed to merge context: {e}")
+                return r[bool].fail(f"Failed to merge context: {e}")
 
-        def restore(self, snapshot: ContextSnapshot) -> FlextResult[bool]:
+        def restore(self, snapshot: ContextSnapshot) -> r[bool]:
             """Restore context from snapshot.
 
             Args:
                 snapshot: Context snapshot to restore
 
             Returns:
-                FlextResult[bool] - Ok if successful
+                r[bool] - Ok if successful
 
             Behavior:
                 - Restores all metadata and baggage
@@ -172,11 +170,11 @@ class FlextObservabilityAdvancedContext:
                 FlextObservabilityAdvancedContext._logger.debug(
                     "Context restored from snapshot"
                 )
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(f"Failed to restore context: {e}")
+                return r[bool].fail(f"Failed to restore context: {e}")
 
-        def set_baggage(self, key: str, value: str) -> FlextResult[bool]:
+        def set_baggage(self, key: str, value: str) -> r[bool]:
             """Set baggage item (W3C Baggage API).
 
             Args:
@@ -184,17 +182,17 @@ class FlextObservabilityAdvancedContext:
                 value: Baggage value (string)
 
             Returns:
-                FlextResult[bool] - Ok if successful
+                r[bool] - Ok if successful
 
             """
             try:
                 self._baggage[key] = value
                 FlextObservabilityAdvancedContext._logger.debug(f"Baggage set: {key}")
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(f"Failed to set baggage: {e}")
+                return r[bool].fail(f"Failed to set baggage: {e}")
 
-        def set_metadata(self, key: str, value: t.JsonValue) -> FlextResult[bool]:
+        def set_metadata(self, key: str, value: t.JsonValue) -> r[bool]:
             """Set request-local metadata.
 
             Args:
@@ -202,7 +200,7 @@ class FlextObservabilityAdvancedContext:
                 value: Metadata value (must be JSON serializable)
 
             Returns:
-                FlextResult[bool] - Ok if successful
+                r[bool] - Ok if successful
 
             Behavior:
                 - Stores in request-local storage
@@ -214,11 +212,9 @@ class FlextObservabilityAdvancedContext:
                 json.dumps(value)
                 self._metadata[key] = value
                 FlextObservabilityAdvancedContext._logger.debug(f"Metadata set: {key}")
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (TypeError, ValueError) as e:
-                return FlextResult[bool].fail(
-                    f"Metadata value not JSON serializable: {e}"
-                )
+                return r[bool].fail(f"Metadata value not JSON serializable: {e}")
 
         def snapshot(
             self, correlation_id: str = "", trace_id: str = "", span_id: str = ""
@@ -271,7 +267,7 @@ class FlextObservabilityAdvancedContext:
         return ctx.get_metadata(key)
 
     @staticmethod
-    def set_metadata(key: str, value: t.JsonValue) -> FlextResult[bool]:
+    def set_metadata(key: str, value: t.JsonValue) -> r[bool]:
         """Convenience function: set metadata.
 
         Args:
@@ -279,7 +275,7 @@ class FlextObservabilityAdvancedContext:
             value: Metadata value
 
         Returns:
-            FlextResult[bool] - Ok if successful
+            r[bool] - Ok if successful
 
         """
         ctx = FlextObservabilityAdvancedContext.get_context()

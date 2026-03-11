@@ -22,7 +22,7 @@ import time
 from collections.abc import Callable, MutableMapping
 from hashlib import sha256
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, r
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, c
@@ -105,16 +105,14 @@ class FlextObservabilityErrorHandling:
             self._escalation_threshold = 5
             self._deduplication_window_sec = 300
 
-        def clear_error_counts(
-            self, older_than_sec: float | None = None
-        ) -> FlextResult[bool]:
+        def clear_error_counts(self, older_than_sec: float | None = None) -> r[bool]:
             """Clear error counts.
 
             Args:
                 older_than_sec: Clear only counts older than N seconds (None = clear all)
 
             Returns:
-                FlextResult[bool] - Ok if successful
+                r[bool] - Ok if successful
 
             """
 
@@ -178,14 +176,14 @@ class FlextObservabilityErrorHandling:
                 error.calculate_fingerprint()
             self._last_alert_time[error.fingerprint] = time.time()
 
-        def record_error(self, error: ErrorEvent) -> FlextResult[ErrorEvent]:
+        def record_error(self, error: ErrorEvent) -> r[ErrorEvent]:
             """Record an error event.
 
             Args:
                 error: Error event to record
 
             Returns:
-                FlextResult[ErrorEvent] - Updated error with fingerprint
+                r[ErrorEvent] - Updated error with fingerprint
 
             Behavior:
                 - Calculates fingerprint
@@ -217,14 +215,14 @@ class FlextObservabilityErrorHandling:
                 operation, error_prefix="Failed to record error"
             )
 
-        def set_alert_cooldown(self, seconds: float) -> FlextResult[bool]:
+        def set_alert_cooldown(self, seconds: float) -> r[bool]:
             """Set minimum seconds between alerts for same error.
 
             Args:
                 seconds: Cooldown duration in seconds
 
             Returns:
-                FlextResult[bool] - Ok if valid
+                r[bool] - Ok if valid
 
             """
             try:
@@ -232,21 +230,21 @@ class FlextObservabilityErrorHandling:
                     "seconds": seconds
                 }).seconds
             except ValidationError as error:
-                return FlextResult[bool].fail(_extract_validation_message(error))
+                return r[bool].fail(_extract_validation_message(error))
             self._alert_cooldown_sec = validated_seconds
             FlextObservabilityErrorHandling._logger.debug(
                 f"Alert cooldown set to {validated_seconds}s"
             )
-            return FlextResult[bool].ok(value=True)
+            return r[bool].ok(value=True)
 
-        def set_escalation_threshold(self, threshold: int) -> FlextResult[bool]:
+        def set_escalation_threshold(self, threshold: int) -> r[bool]:
             """Set threshold for error escalation.
 
             Args:
                 threshold: Number of errors before escalation
 
             Returns:
-                FlextResult[bool] - Ok if valid
+                r[bool] - Ok if valid
 
             """
             try:
@@ -254,12 +252,12 @@ class FlextObservabilityErrorHandling:
                     "threshold": threshold
                 }).threshold
             except ValidationError as error:
-                return FlextResult[bool].fail(_extract_validation_message(error))
+                return r[bool].fail(_extract_validation_message(error))
             self._escalation_threshold = validated_threshold
             FlextObservabilityErrorHandling._logger.debug(
                 f"Escalation threshold set to {validated_threshold}"
             )
-            return FlextResult[bool].ok(value=True)
+            return r[bool].ok(value=True)
 
         def should_alert_for_error(self, error: ErrorEvent) -> bool:
             """Determine if error should trigger an alert.
@@ -288,12 +286,12 @@ class FlextObservabilityErrorHandling:
 
         def _run_with_result[TResult](
             self, operation: Callable[[], TResult], *, error_prefix: str
-        ) -> FlextResult[TResult]:
+        ) -> r[TResult]:
             try:
-                return FlextResult[TResult].ok(operation())
+                return r[TResult].ok(operation())
             except (ValueError, TypeError, KeyError) as e:
                 FlextObservabilityErrorHandling._logger.warning(f"{error_prefix}: {e}")
-                return FlextResult[TResult].fail(f"{error_prefix}: {e}")
+                return r[TResult].fail(f"{error_prefix}: {e}")
 
     @staticmethod
     def get_handler() -> FlextObservabilityErrorHandling.Handler:
@@ -310,14 +308,14 @@ class FlextObservabilityErrorHandling:
         return FlextObservabilityErrorHandling._handler_instance
 
     @staticmethod
-    def record_error(error: ErrorEvent) -> FlextResult[ErrorEvent]:
+    def record_error(error: ErrorEvent) -> r[ErrorEvent]:
         """Convenience function: record an error.
 
         Args:
             error: Error event
 
         Returns:
-            FlextResult[ErrorEvent] - Updated error with fingerprint
+            r[ErrorEvent] - Updated error with fingerprint
 
         """
         handler = FlextObservabilityErrorHandling.get_handler()

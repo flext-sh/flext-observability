@@ -16,7 +16,7 @@ import time
 from collections.abc import Mapping
 
 import psutil
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, r
 from pydantic import BaseModel, Field
 
 
@@ -190,14 +190,14 @@ class FlextObservabilityPerformance:
         return metrics.duration_ms < threshold
 
     @staticmethod
-    def log_performance_metrics(metrics: PerformanceMetrics) -> FlextResult[bool]:
+    def log_performance_metrics(metrics: PerformanceMetrics) -> r[bool]:
         """Log performance metrics for operation.
 
         Args:
             metrics: Performance metrics to log
 
         Returns:
-            FlextResult[bool] - Ok always
+            r[bool] - Ok always
 
         """
         try:
@@ -210,9 +210,9 @@ class FlextObservabilityPerformance:
                 FlextObservabilityPerformance._logger.debug(message)
             else:
                 FlextObservabilityPerformance._logger.warning(message)
-            return FlextResult[bool].ok(value=True)
+            return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[bool].fail(f"Failed to log metrics: {e}")
+            return r[bool].fail(f"Failed to log metrics: {e}")
 
     @staticmethod
     def start_monitoring(operation: str) -> FlextObservabilityPerformance.Monitor:

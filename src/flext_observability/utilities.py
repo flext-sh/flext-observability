@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from flext_core import FlextResult, FlextUtilities
+from flext_core import FlextUtilities, r
 
 
 class FlextObservabilityUtilities(FlextUtilities):
@@ -40,11 +40,11 @@ class FlextObservabilityUtilities(FlextUtilities):
         """Performance tracking helpers."""
 
         @staticmethod
-        def calculate_duration(start_ns: int, end_ns: int) -> FlextResult[float]:
+        def calculate_duration(start_ns: int, end_ns: int) -> r[float]:
             """Calculate duration in seconds from nanosecond timestamps."""
             if end_ns < start_ns:
-                return FlextResult[float].fail("end_ns must be >= start_ns")
-            return FlextResult[float].ok((end_ns - start_ns) / 1000000000)
+                return r[float].fail("end_ns must be >= start_ns")
+            return r[float].ok((end_ns - start_ns) / 1000000000)
 
     class Health:
         """Health check helpers."""

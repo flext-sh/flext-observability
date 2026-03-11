@@ -19,7 +19,7 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_core import FlextLogger, FlextResult, m, t
+from flext_core import FlextLogger, m, r, t
 from pydantic import BaseModel, Field
 from structlog.typing import BindableLogger
 
@@ -58,7 +58,7 @@ class FlextObservabilityLogging:
         extra: m.Dict = Field(default_factory=lambda: m.Dict({}))
 
     @staticmethod
-    def create_logger(name: str) -> FlextResult[BindableLogger]:
+    def create_logger(name: str) -> r[BindableLogger]:
         """Create logger with trace context enrichment.
 
         Creates a logger that automatically includes correlation ID,
@@ -68,7 +68,7 @@ class FlextObservabilityLogging:
             name: Logger name (typically __name__)
 
         Returns:
-            FlextResult[StructlogLogger] - Logger instance with context enrichment
+            r[StructlogLogger] - Logger instance with context enrichment
 
         Example:
             ```python
@@ -82,18 +82,16 @@ class FlextObservabilityLogging:
         """
         try:
             if not name:
-                return FlextResult[BindableLogger].fail(
-                    "Logger name must be non-empty string"
-                )
+                return r[BindableLogger].fail("Logger name must be non-empty string")
             logger = FlextLogger.get_logger(name)
-            return FlextResult[BindableLogger].ok(logger)
+            return r[BindableLogger].ok(logger)
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[BindableLogger].fail(f"Logger creation failed: {e}")
+            return r[BindableLogger].fail(f"Logger creation failed: {e}")
 
     @staticmethod
     def enrich_log_context(
         _logger: BindableLogger, *, include_baggage: bool = False
-    ) -> FlextResult[FlextObservabilityLogging.LogContext]:
+    ) -> r[FlextObservabilityLogging.LogContext]:
         """Get trace context for log enrichment.
 
         Retrieves current trace context (correlation ID, trace ID, span ID)
@@ -104,7 +102,7 @@ class FlextObservabilityLogging:
             include_baggage: Whether to include baggage in context
 
         Returns:
-            FlextResult with context dict for log enrichment
+            r with context dict for log enrichment
 
         Context Dict includes:
             - correlation_id: Application-level request tracking
@@ -138,9 +136,9 @@ class FlextObservabilityLogging:
                 baggage = FlextObservabilityContext.get_baggage()
                 if baggage is not None:
                     context_payload.baggage = str(baggage)
-            return FlextResult[FlextObservabilityLogging.LogContext].ok(context_payload)
+            return r[FlextObservabilityLogging.LogContext].ok(context_payload)
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[FlextObservabilityLogging.LogContext].fail(
+            return r[FlextObservabilityLogging.LogContext].fail(
                 f"Context enrichment failed: {e}"
             )
 
@@ -168,7 +166,7 @@ class FlextObservabilityLogging:
         return current_id
 
     @staticmethod
-    def inject_trace_context(logger: BindableLogger) -> FlextResult[bool]:
+    def inject_trace_context(logger: BindableLogger) -> r[bool]:
         """Inject trace context into logger for structured logging.
 
         Configures logger to automatically include trace context in all
@@ -178,7 +176,7 @@ class FlextObservabilityLogging:
             logger: Logger instance to configure
 
         Returns:
-            FlextResult[bool] - Ok if successful
+            r[bool] - Ok if successful
 
         Example:
             ```python
@@ -198,9 +196,9 @@ class FlextObservabilityLogging:
                     "No trace context currently set"
                 )
             _ = logger
-            return FlextResult[bool].ok(value=True)
+            return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[bool].fail(f"Trace context injection failed: {e}")
+            return r[bool].fail(f"Trace context injection failed: {e}")
 
     @staticmethod
     def log_with_context(
@@ -210,7 +208,7 @@ class FlextObservabilityLogging:
         extra: t.ConfigurationMapping | m.Dict | None = None,
         *,
         include_baggage: bool = False,
-    ) -> FlextResult[bool]:
+    ) -> r[bool]:
         """Log message with automatic trace context.
 
         Logs a message while automatically enriching it with correlation ID,
@@ -224,7 +222,7 @@ class FlextObservabilityLogging:
             include_baggage: Whether to include baggage in logs
 
         Returns:
-            FlextResult[bool] - Ok if logging succeeded
+            r[bool] - Ok if logging succeeded
 
         Example:
             ```python
@@ -242,14 +240,14 @@ class FlextObservabilityLogging:
         """
         try:
             if not message:
-                return FlextResult[bool].fail("Message must be non-empty string")
+                return r[bool].fail("Message must be non-empty string")
             if level not in {"debug", "info", "warning", "error", "critical"}:
-                return FlextResult[bool].fail(f"Invalid log level: {level}")
+                return r[bool].fail(f"Invalid log level: {level}")
             context_result = FlextObservabilityLogging.enrich_log_context(
                 logger, include_baggage=include_baggage
             )
             if context_result.is_failure:
-                return FlextResult[bool].fail(
+                return r[bool].fail(
                     f"Failed to get trace context: {context_result.error}"
                 )
             log_context = context_result.value.model_dump(exclude_none=True)
@@ -258,19 +256,19 @@ class FlextObservabilityLogging:
             if extra:
                 log_context.update(extra)
             getattr(logger, level)(message, extra=log_context)
-            return FlextResult[bool].ok(value=True)
+            return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[bool].fail(f"Logging with context failed: {e}")
+            return r[bool].fail(f"Logging with context failed: {e}")
 
     @staticmethod
-    def validate_context() -> FlextResult[FlextObservabilityLogging.LogContext]:
+    def validate_context() -> r[FlextObservabilityLogging.LogContext]:
         """Validate current trace context is properly configured.
 
         Checks that essential trace context (correlation ID) is set.
         Useful for validation in middleware or handlers.
 
         Returns:
-            FlextResult with context dict if valid
+            r with context dict if valid
 
         Example:
             ```python
@@ -287,7 +285,7 @@ class FlextObservabilityLogging:
             if not context.get("correlation_id"):
                 _ = FlextObservabilityLogging.ensure_correlation_id()
                 context = FlextObservabilityContext.get_context()
-            return FlextResult[FlextObservabilityLogging.LogContext].ok(
+            return r[FlextObservabilityLogging.LogContext].ok(
                 FlextObservabilityLogging.LogContext(
                     correlation_id=str(context.get("correlation_id"))
                     if context.get("correlation_id") is not None
@@ -301,7 +299,7 @@ class FlextObservabilityLogging:
                 )
             )
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[FlextObservabilityLogging.LogContext].fail(
+            return r[FlextObservabilityLogging.LogContext].fail(
                 f"Context validation failed: {e}"
             )
 

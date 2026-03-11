@@ -24,7 +24,7 @@ import time
 from collections.abc import Awaitable, Callable, MutableMapping
 from typing import ClassVar, Protocol, TypeGuard
 
-from flext_core import FlextResult, FlextRuntime, t
+from flext_core import FlextRuntime, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
@@ -162,7 +162,7 @@ class FlextObservabilityHTTPClient:
         instrumented_clients: ClassVar[set[t.ContainerValue]] = set()
 
         @staticmethod
-        def setup_instrumentation(client: t.ContainerValue) -> FlextResult[bool]:
+        def setup_instrumentation(client: t.ContainerValue) -> r[bool]:
             """Setup httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -172,7 +172,7 @@ class FlextObservabilityHTTPClient:
                 client: httpx.Client or httpx.AsyncClient instance
 
             Returns:
-                FlextResult[bool] - Ok if setup successful
+                r[bool] - Ok if setup successful
 
             Behavior:
                 - Injects correlation ID into request headers
@@ -208,11 +208,9 @@ class FlextObservabilityHTTPClient:
                     hasattr(client, "request") is False
                     and hasattr(client, "_send") is False
                 ):
-                    return FlextResult[bool].fail(
-                        "Invalid httpx client - missing request method"
-                    )
+                    return r[bool].fail("Invalid httpx client - missing request method")
                 if client in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
-                    return FlextResult[bool].ok(value=True)
+                    return r[bool].ok(value=True)
                 is_async = FlextObservabilityHTTPClient._is_httpx_async_client(client)
                 if is_async:
                     original_send = getattr(client, "_send")
@@ -357,11 +355,9 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient._logger.debug(
                     "httpx client instrumentation setup complete"
                 )
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(
-                    f"httpx instrumentation setup failed: {e}"
-                )
+                return r[bool].fail(f"httpx instrumentation setup failed: {e}")
 
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
@@ -369,7 +365,7 @@ class FlextObservabilityHTTPClient:
         instrumented_sessions: ClassVar[set[AIOHTTPSessionProtocol]] = set()
 
         @staticmethod
-        def setup_instrumentation(session: object) -> FlextResult[bool]:
+        def setup_instrumentation(session: object) -> r[bool]:
             """Setup aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests
@@ -379,7 +375,7 @@ class FlextObservabilityHTTPClient:
                 session: aiohttp.ClientSession instance
 
             Returns:
-                FlextResult[bool] - Ok if setup successful
+                r[bool] - Ok if setup successful
 
             Behavior:
                 - Injects correlation ID into request headers
@@ -405,7 +401,7 @@ class FlextObservabilityHTTPClient:
             """
             try:
                 if not FlextObservabilityHTTPClient._is_aiohttp_session(session):
-                    return FlextResult[bool].fail(
+                    return r[bool].fail(
                         "Invalid aiohttp session - missing request method"
                     )
                 typed_session: AIOHTTPSessionProtocol = session
@@ -413,7 +409,7 @@ class FlextObservabilityHTTPClient:
                     typed_session
                     in FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions
                 ):
-                    return FlextResult[bool].ok(value=True)
+                    return r[bool].ok(value=True)
                 original_request = getattr(typed_session, "request")
 
                 async def traced_request(
@@ -491,11 +487,9 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient._logger.debug(
                     "aiohttp session instrumentation setup complete"
                 )
-                return FlextResult[bool].ok(value=True)
+                return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return FlextResult[bool].fail(
-                    f"aiohttp instrumentation setup failed: {e}"
-                )
+                return r[bool].fail(f"aiohttp instrumentation setup failed: {e}")
 
 
 __all__ = ["FlextObservabilityHTTPClient"]

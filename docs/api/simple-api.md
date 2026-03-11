@@ -76,13 +76,13 @@
 
 **Quick-Start Functions for FLEXT Observability Integration**
 
-The Simple API provides the fastest way to integrate observability into FLEXT ecosystem projects. These functions offer a streamlined interface for creating observability entities with automatic validation and FlextResult error handling.
+The Simple API provides the fastest way to integrate observability into FLEXT ecosystem projects. These functions offer a streamlined interface for creating observability entities with automatic validation and r error handling.
 
 ## 📋 API Overview
 
 All Simple API functions follow consistent patterns:
 
-- **Return Type**: `FlextResult[Entity]` for railway-oriented programming
+- **Return Type**: `r[Entity]` for railway-oriented programming
 - **Error Handling**: Domain validation with descriptive error messages
 - **Type Safety**: Full type annotations with MyPy compatibility
 - **Zero Dependencies**: No external configuration required
@@ -100,7 +100,7 @@ def flext_create_metric(
     unit: str = "",
     tags: t.StringDict | None = None,
     metric_type: str = "gauge"
-) -> FlextResult[FlextMetric]
+) -> r[FlextMetric]
 ```
 
 #### Parameters
@@ -113,7 +113,7 @@ def flext_create_metric(
 
 #### Returns
 
-`FlextResult[FlextMetric]` - Success contains FlextMetric entity, failure contains validation error.
+`r[FlextMetric]` - Success contains FlextMetric entity, failure contains validation error.
 
 #### Examples
 
@@ -171,7 +171,7 @@ def flext_create_trace(
     service_name: str,
     context: t.StringDict | None = None,
     parent_trace_id: str | None = None
-) -> FlextResult[FlextTrace]
+) -> r[FlextTrace]
 ```
 
 #### Parameters
@@ -183,7 +183,7 @@ def flext_create_trace(
 
 #### Returns
 
-`FlextResult[FlextTrace]` - Success contains FlextTrace entity, failure contains validation error.
+`r[FlextTrace]` - Success contains FlextTrace entity, failure contains validation error.
 
 #### Examples
 
@@ -229,7 +229,7 @@ def flext_create_alert(
     severity: str,
     message: str,
     details: t.StringDict | None = None
-) -> FlextResult[FlextAlert]
+) -> r[FlextAlert]
 ```
 
 #### Parameters
@@ -241,7 +241,7 @@ def flext_create_alert(
 
 #### Returns
 
-`FlextResult[FlextAlert]` - Success contains FlextAlert entity, failure contains validation error.
+`r[FlextAlert]` - Success contains FlextAlert entity, failure contains validation error.
 
 #### Examples
 
@@ -289,7 +289,7 @@ def flext_create_health_check(
     status: str,
     message: str = "",
     details: t.StringDict | None = None
-) -> FlextResult[FlextHealthCheck]
+) -> r[FlextHealthCheck]
 ```
 
 #### Parameters
@@ -301,7 +301,7 @@ def flext_create_health_check(
 
 #### Returns
 
-`FlextResult[FlextHealthCheck]` - Success contains FlextHealthCheck entity, failure contains validation error.
+`r[FlextHealthCheck]` - Success contains FlextHealthCheck entity, failure contains validation error.
 
 #### Examples
 
@@ -348,7 +348,7 @@ def flext_create_log_entry(
     message: str,
     context: t.StringDict | None = None,
     correlation_id: str | None = None
-) -> FlextResult[FlextLogEntry]
+) -> r[FlextLogEntry]
 ```
 
 #### Parameters
@@ -360,7 +360,7 @@ def flext_create_log_entry(
 
 #### Returns
 
-`FlextResult[FlextLogEntry]` - Success contains FlextLogEntry entity, failure contains validation error.
+`r[FlextLogEntry]` - Success contains FlextLogEntry entity, failure contains validation error.
 
 #### Examples
 
@@ -404,18 +404,18 @@ ______________________________________________________________________
 from flext_observability import flext_create_metric, flext_create_trace
 
 
-def process_business_operation(data: dict) -> FlextResult[t.Dict]:
+def process_business_operation(data: dict) -> r[t.Dict]:
     """Example of chaining observability operations."""
 
     # Create metric - handle potential failure
     metric_result = flext_create_metric("operations_started", 1, "count")
     if not metric_result.success:
-        return FlextResult[bool].fail(f"Failed to create metric: {metric_result.error}")
+        return r[bool].fail(f"Failed to create metric: {metric_result.error}")
 
     # Create trace - handle potential failure
     trace_result = flext_create_trace("business_operation", "main-service")
     if not trace_result.success:
-        return FlextResult[bool].fail(f"Failed to create trace: {trace_result.error}")
+        return r[bool].fail(f"Failed to create trace: {trace_result.error}")
 
     # Business logic here
     result_data = {"status": "processed", "data": data}
@@ -424,13 +424,13 @@ def process_business_operation(data: dict) -> FlextResult[t.Dict]:
     success_metric = flext_create_metric("operations_completed", 1, "count")
     # Note: In production, you might want to handle this error too
 
-    return FlextResult[bool].ok(result_data)
+    return r[bool].ok(result_data)
 ```
 
 ### Pattern 2: Batch Observability Creation
 
 ```python
-def create_system_metrics() -> list[FlextResult[FlextMetric]]:
+def create_system_metrics() -> list[r[FlextMetric]]:
     """Create multiple metrics with error handling."""
 
     metrics_to_create = [
@@ -454,7 +454,7 @@ def create_system_metrics() -> list[FlextResult[FlextMetric]]:
 ### Pattern 3: Observability Context Propagation
 
 ```python
-def handle_user_request(user_id: str, operation: str) -> FlextResult[t.Dict]:
+def handle_user_request(user_id: str, operation: str) -> r[t.Dict]:
     """Example of propagating context through observability."""
 
     # Create base context
@@ -466,7 +466,7 @@ def handle_user_request(user_id: str, operation: str) -> FlextResult[t.Dict]:
     )
 
     if not trace_result.success:
-        return FlextResult[bool].fail(f"Tracing failed: {trace_result.error}")
+        return r[bool].fail(f"Tracing failed: {trace_result.error}")
 
     trace_id = trace_result.data.id
 
@@ -486,7 +486,7 @@ def handle_user_request(user_id: str, operation: str) -> FlextResult[t.Dict]:
         correlation_id=trace_id,
     )
 
-    return FlextResult[bool].ok({
+    return r[bool].ok({
         "trace_id": trace_id,
         "status": "success",
         "context": context,

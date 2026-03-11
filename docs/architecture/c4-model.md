@@ -404,15 +404,15 @@ class FlextObservabilityServices(u):
     """Unified service class with all observability operations."""
 
     @classmethod
-    def record_counter(cls, name: str, value: float = 1.0) -> FlextResult[bool]:
+    def record_counter(cls, name: str, value: float = 1.0) -> r[bool]:
         """Record counter metric with thread safety."""
 
     @classmethod
-    def create_trace(cls, operation: str) -> FlextResult[FlextTrace]:
+    def create_trace(cls, operation: str) -> r[FlextTrace]:
         """Create new distributed trace."""
 
     @classmethod
-    def evaluate_alert(cls, alert: FlextAlert) -> FlextResult[bool]:
+    def evaluate_alert(cls, alert: FlextAlert) -> r[bool]:
         """Evaluate alert conditions."""
 ```
 
@@ -422,12 +422,10 @@ class FlextObservabilityServices(u):
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-    def create_metric(
-        self, name: str, value: float, unit: str
-    ) -> FlextResult[FlextMetric]:
+    def create_metric(self, name: str, value: float, unit: str) -> r[FlextMetric]:
         """Create validated metric entity."""
 
-    def create_trace(self, operation: str, context: dict) -> FlextResult[FlextTrace]:
+    def create_trace(self, operation: str, context: dict) -> r[FlextTrace]:
         """Create validated trace entity."""
 ```
 
@@ -456,7 +454,7 @@ External Monitoring Systems
 ```
 Domain Validation Failure
      ↓
-FlextResult[T].fail(error_message)
+r[T].fail(error_message)
      ↓
 Service Layer Error Handling
      ↓
@@ -473,7 +471,7 @@ ______________________________________________________________________
 
 ### ADRs Referenced
 
-- **ADR-001**: Railway-oriented Programming with FlextResult[T]
+- **ADR-001**: Railway-oriented Programming with r[T]
 - **ADR-002**: Clean Architecture Layer Separation
 - **ADR-003**: Domain-Driven Design with Pydantic Entities
 - **ADR-004**: Unified Service Class Pattern
@@ -481,7 +479,7 @@ ______________________________________________________________________
 
 ### Key Architectural Principles
 
-1. **Railway Pattern**: All operations return `FlextResult[T]` for composable error handling
+1. **Railway Pattern**: All operations return `r[T]` for composable error handling
 1. **Clean Architecture**: Strict layer separation (Domain → Application → Infrastructure)
 1. **Domain-Driven Design**: Rich domain entities with business logic validation
 1. **Type Safety**: Complete Python 3.13+ type annotations throughout

@@ -17,7 +17,7 @@ import json
 from contextvars import ContextVar
 from uuid import uuid4
 
-from flext_core import FlextResult, FlextRuntime, m
+from flext_core import FlextRuntime, m, r
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import t
@@ -114,7 +114,7 @@ class FlextObservabilityContext:
         FlextObservabilityContext._trace_id.set("")
 
     @staticmethod
-    def from_headers(headers: m.Dict | t.ConfigurationMapping) -> FlextResult[bool]:
+    def from_headers(headers: m.Dict | t.ConfigurationMapping) -> r[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -124,7 +124,7 @@ class FlextObservabilityContext:
             headers: HTTP request headers dict
 
         Returns:
-            FlextResult[bool] - Always Ok, generates IDs if not found
+            r[bool] - Always Ok, generates IDs if not found
 
         Example:
             ```python
@@ -149,13 +149,13 @@ class FlextObservabilityContext:
                 FlextObservabilityContext.set_trace_id(trace_id)
             if span_id := normalized_headers.get("x-span-id"):
                 FlextObservabilityContext.set_span_id(span_id)
-            return FlextResult[bool].ok(value=True)
+            return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
             FlextObservabilityContext._logger.warning(
                 f"Failed to extract context from headers: {e}"
             )
             FlextObservabilityContext.set_correlation_id()
-            return FlextResult[bool].ok(value=True)
+            return r[bool].ok(value=True)
 
     @staticmethod
     def get_baggage(key: str | None = None) -> t.ContainerValue | m.Dict | None:
@@ -242,7 +242,7 @@ class FlextObservabilityContext:
         return FlextObservabilityContext._trace_id.get("")
 
     @staticmethod
-    def set_baggage(key: str, value: t.ContainerValue) -> FlextResult[bool]:
+    def set_baggage(key: str, value: t.ContainerValue) -> r[bool]:
         """Set baggage value for metadata propagation.
 
         Baggage allows passing metadata across service boundaries
@@ -253,7 +253,7 @@ class FlextObservabilityContext:
             value: Baggage value (must be serializable)
 
         Returns:
-            FlextResult[bool] - Ok if successful, Fail if validation error
+            r[bool] - Ok if successful, Fail if validation error
 
         Example:
             ```python
@@ -269,11 +269,11 @@ class FlextObservabilityContext:
             try:
                 _BaggageKeyModel.model_validate({"key": key})
             except ValidationError:
-                return FlextResult[bool].fail("Baggage key must be non-empty string")
+                return r[bool].fail("Baggage key must be non-empty string")
             try:
                 json.dumps(value)
             except (TypeError, ValueError):
-                return FlextResult[bool].fail(
+                return r[bool].fail(
                     f"Baggage value for '{key}' must be JSON serializable"
                 )
             current_baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
@@ -282,9 +282,9 @@ class FlextObservabilityContext:
                 key: value,
             })
             FlextObservabilityContext._baggage.set(updated_baggage)
-            return FlextResult[bool].ok(value=True)
+            return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
-            return FlextResult[bool].fail(f"Baggage set failed: {e}")
+            return r[bool].fail(f"Baggage set failed: {e}")
 
     @staticmethod
     def set_correlation_id(correlation_id: str | None = None) -> str:
