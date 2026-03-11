@@ -128,7 +128,7 @@ class DocumentationAuditor:
 
     def discover_files(self) -> list[Path]:
         """Discover all markdown files in the documentation tree."""
-        files = []
+        files: list[Path] = []
         for pattern in ["*.md", "*.mdx"]:
             files.extend(self.docs_root.rglob(pattern))
 
@@ -426,7 +426,7 @@ class DocumentationAuditor:
     def _generate_json_report(self) -> str:
         """Generate JSON audit report."""
         # Convert dataclasses to dicts for JSON serialization
-        file_metrics = {}
+        file_metrics: dict[str, dict[str, float | int | list[str] | str]] = {}
         for path, metrics in self.report.file_metrics.items():
             file_metrics[path] = {
                 "file_path": metrics.file_path,
