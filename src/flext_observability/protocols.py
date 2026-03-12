@@ -125,9 +125,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 """Finish a trace span."""
                 ...
 
-            def get_trace(
-                self, trace_id: str
-            ) -> FlextProtocols.Result[object]:
+            def get_trace(self, trace_id: str) -> FlextProtocols.Result[object]:
                 """Get trace by ID."""
                 ...
 
@@ -196,9 +194,7 @@ class FlextObservabilityProtocols(FlextProtocols):
         class HealthCheckProtocol(FlextProtocols.Service[object], Protocol):
             """Protocol for health check operations."""
 
-            def check_health(
-                self, service_name: str
-            ) -> FlextProtocols.Result[object]:
+            def check_health(self, service_name: str) -> FlextProtocols.Result[object]:
                 """Perform health check for a service."""
                 ...
 
@@ -288,9 +284,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 """Create a dashboard."""
                 ...
 
-            def get_dashboard(
-                self, dashboard_id: str
-            ) -> FlextProtocols.Result[object]:
+            def get_dashboard(self, dashboard_id: str) -> FlextProtocols.Result[object]:
                 """Get dashboard by ID."""
                 ...
 

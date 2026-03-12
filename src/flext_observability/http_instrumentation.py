@@ -27,7 +27,7 @@ from collections.abc import Awaitable, Callable
 from typing import Protocol, TypeGuard
 
 import flask
-from flext_core import FlextRuntime, m, r, t
+from flext_core import FlextRuntime, m, r
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging

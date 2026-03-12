@@ -19,7 +19,7 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_core import FlextLogger, m, r, t
+from flext_core import FlextLogger, m, r
 from pydantic import BaseModel, Field
 from structlog.typing import BindableLogger
 

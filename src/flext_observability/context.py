@@ -20,8 +20,6 @@ from uuid import uuid4
 from flext_core import FlextRuntime, m, r
 from pydantic import BaseModel, Field, ValidationError
 
-from flext_observability import t
-
 
 class _BaggageKeyModel(BaseModel):
     key: str = Field(min_length=1)
