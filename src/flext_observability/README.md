@@ -39,7 +39,7 @@ Core business entities with domain validation and business logic:
 - **FlextAlert**: Alert management entity with severity handling
 - **FlextHealthCheck**: Health monitoring entity with dependency validation
 - **FlextLogEntry**: Structured logging entity with correlation ID support
-- **u.Generators**: Utility functions for ID generation and timestamps
+- **u**: Utility functions for ID generation and timestamps
 
 ### Application Layer
 
