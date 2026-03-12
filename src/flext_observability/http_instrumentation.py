@@ -425,7 +425,7 @@ class FlextObservabilityHTTP:
     async def _async_log_with_context(
         message: str,
         level: str,
-        extra: t.ConfigurationMapping | m.Dict | None = None,
+        extra: object | m.Dict | None = None,
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 

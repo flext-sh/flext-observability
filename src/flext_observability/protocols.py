@@ -87,7 +87,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[list[t.ConfigurationMapping]]:
+            ) -> FlextProtocols.Result[list[object]]:
                 """Get collected metrics."""
                 ...
 
@@ -127,7 +127,7 @@ class FlextObservabilityProtocols(FlextProtocols):
 
             def get_trace(
                 self, trace_id: str
-            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
+            ) -> FlextProtocols.Result[object]:
                 """Get trace by ID."""
                 ...
 
@@ -138,7 +138,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 operation_name: t.Scalar | None = None,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[list[t.ConfigurationMapping]]:
+            ) -> FlextProtocols.Result[list[object]]:
                 """Search traces by criteria."""
                 ...
 
@@ -184,7 +184,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 level: t.Scalar | None = None,
                 service: t.Scalar | None = None,
                 resolved: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[list[t.ConfigurationMapping]]:
+            ) -> FlextProtocols.Result[list[object]]:
                 """Get alerts by criteria."""
                 ...
 
@@ -198,19 +198,19 @@ class FlextObservabilityProtocols(FlextProtocols):
 
             def check_health(
                 self, service_name: str
-            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
+            ) -> FlextProtocols.Result[object]:
                 """Perform health check for a service."""
                 ...
 
             def get_all_services_status(
                 self,
-            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
+            ) -> FlextProtocols.Result[object]:
                 """Get health status for all services."""
                 ...
 
             def get_service_status(
                 self, service_name: str
-            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
+            ) -> FlextProtocols.Result[object]:
                 """Get service health status."""
                 ...
 
@@ -252,7 +252,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 correlation_id: t.Scalar | None = None,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[list[t.ConfigurationMapping]]:
+            ) -> FlextProtocols.Result[list[object]]:
                 """Get logs by criteria."""
                 ...
 
@@ -290,7 +290,7 @@ class FlextObservabilityProtocols(FlextProtocols):
 
             def get_dashboard(
                 self, dashboard_id: str
-            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
+            ) -> FlextProtocols.Result[object]:
                 """Get dashboard by ID."""
                 ...
 
@@ -300,7 +300,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
+            ) -> FlextProtocols.Result[object]:
                 """Get dashboard data."""
                 ...
 

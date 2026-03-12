@@ -205,7 +205,7 @@ class FlextObservabilityLogging:
         logger: BindableLogger,
         level: str,
         message: str,
-        extra: t.ConfigurationMapping | m.Dict | None = None,
+        extra: object | m.Dict | None = None,
         *,
         include_baggage: bool = False,
     ) -> r[bool]:
