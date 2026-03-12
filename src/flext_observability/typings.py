@@ -60,11 +60,11 @@ class FlextObservabilityTypes(FlextTypes):
             "telemetry-service",
         ]
         type ObservabilityProjectConfig = dict[
-            str, str | int | bool | list[str] | _object
+            str, str | int | bool | list[str] | t.Dict
         ]
         type MonitoringConfig = dict[str, str | int | bool | list[str]]
         type MetricsConfig = dict[str, bool | str | dict[str, object]]
-        type TracingConfig = dict[str, str | int | bool | list[str] | _object]
+        type TracingConfig = dict[str, str | int | bool | list[str] | t.Dict]
 
     class ObservabilityCore:
         """Core observability types extending t for complex domain operations."""
@@ -90,7 +90,7 @@ class FlextObservabilityTypes(FlextTypes):
         type ServiceDiscovery = dict[str, list[dict[str, object]]]
         type ServiceHealth = dict[str, str | dict[str, object]]
         type MetadataDict = dict[str, object]
-        type ServicesList = list[tuple[str, _object]]
+        type ServicesList = list[tuple[str, t.Dict]]
         type HealthMetricsDict = dict[str, object]
         type MetricDict = dict[str, object]
         type StringList = list[str]

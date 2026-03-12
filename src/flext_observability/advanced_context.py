@@ -32,7 +32,7 @@ class ContextSnapshot(BaseModel):
     trace_id: str = Field(default="")
     span_id: str = Field(default="")
     baggage: dict[str, str] = Field(default_factory=dict)
-    metadata: dict[str, objectield(default_factory=dict)
+    metadata: dict[str, t.Scalar] = Field(default_factory=dict)
 
 
 class FlextObservabilityAdvancedContext:
@@ -69,7 +69,7 @@ class FlextObservabilityAdvancedContext:
 
         def __init__(self) -> None:
             """Initialize advanced context."""
-            self._metadata: dict[str, object}
+            self._metadata: dict[str, t.Scalar] = {}
             self._baggage: dict[str, str] = {}
             self._request_id: str = ""
             self._parent_context: ContextSnapshot | None = None
@@ -99,7 +99,7 @@ class FlextObservabilityAdvancedContext:
             """
             return self._baggage.copy()
 
-        def get_all_metadata(self) -> Mapping[str, object
+        def get_all_metadata(self) -> Mapping[str, t.Scalar]:
             """Get all request-local metadata.
 
             Returns:
@@ -120,7 +120,7 @@ class FlextObservabilityAdvancedContext:
             """
             return self._baggage.get(key)
 
-        def get_metadata(self, key: str) -> objectne:
+        def get_metadata(self, key: str) -> t.Scalar | None:
             """Get request-local metadata.
 
             Args:
@@ -192,7 +192,7 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to set baggage: {e}")
 
-        def set_metadata(self, key: str, value: objectr[bool]:
+        def set_metadata(self, key: str, value: t.Scalar) -> r[bool]:
             """Set request-local metadata.
 
             Args:
@@ -253,7 +253,7 @@ class FlextObservabilityAdvancedContext:
         return FlextObservabilityAdvancedContext._context_instance
 
     @staticmethod
-    def get_metadata(key: str) -> objectne:
+    def get_metadata(key: str) -> t.Scalar | None:
         """Convenience function: get metadata.
 
         Args:
@@ -267,7 +267,7 @@ class FlextObservabilityAdvancedContext:
         return ctx.get_metadata(key)
 
     @staticmethod
-    def set_metadata(key: str, value: objectr[bool]:
+    def set_metadata(key: str, value: t.Scalar) -> r[bool]:
         """Convenience function: set metadata.
 
         Args:
