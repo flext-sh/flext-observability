@@ -37,7 +37,7 @@ class FlextObservabilityMonitor:
     class ObservabilityServiceProtocol(Protocol):
         """Protocol for observability services providing alerts and metrics."""
 
-        def create_alert(self, **kwargs: object) -> r[m.Dict]:
+        def create_alert(self, **kwargs: t.Scalar) -> r[m.Dict]:
             """Create an alert with given parameters."""
             ...
 
@@ -52,7 +52,7 @@ class FlextObservabilityMonitor:
         def call_any_function(
             func: FlextObservabilityMonitor.object_callable,
             *args: object,
-            **kwargs: object,
+            **kwargs: t.Scalar,
         ) -> object:
             """Helper to call function with flexible arguments."""
             return func(*args, **kwargs)
@@ -312,7 +312,7 @@ class FlextObservabilityMonitor:
                 func: FlextObservabilityMonitor.object_callable,
             ) -> FlextObservabilityMonitor.object_callable:
 
-                def wrapper(*args: object, **kwargs: object) -> object:
+                def wrapper(*args: object, **kwargs: t.Scalar) -> object:
                     active_monitor = monitor or FlextObservabilityMonitor()
                     if not active_monitor.flext_is_initialized():
                         init_result = active_monitor.flext_initialize_observability()

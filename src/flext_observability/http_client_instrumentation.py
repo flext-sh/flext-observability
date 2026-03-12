@@ -24,7 +24,7 @@ import time
 from collections.abc import Awaitable, Callable, MutableMapping
 from typing import ClassVar, Protocol, TypeGuard
 
-from flext_core import FlextRuntime, r
+from flext_core import FlextRuntime, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
@@ -97,7 +97,7 @@ class HTTPXClientProtocol(Protocol):
         method: str,
         url: str,
         *args: object,
-        **kwargs: object,
+        **kwargs: t.Scalar,
     ) -> HTTPXResponseProtocol: ...
 
 
@@ -287,7 +287,7 @@ class FlextObservabilityHTTPClient:
                         method: str,
                         url: str,
                         *args: object,
-                        **kwargs: object,
+                        **kwargs: t.Scalar,
                     ) -> HTTPXResponseProtocol:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
@@ -416,7 +416,7 @@ class FlextObservabilityHTTPClient:
                     method: str,
                     url: str,
                     *args: object,
-                    **kwargs: object,
+                    **kwargs: t.Scalar,
                 ) -> AIOHTTPResponseProtocol:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()

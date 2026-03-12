@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from flext_core import FlextModels, r
+from flext_core import FlextModels, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import m
@@ -42,7 +42,7 @@ class FlextObservabilityHealth(FlextModels):
         component: str,
         status: str = "unknown",
         message: str = "",
-        **kwargs: object,
+        **kwargs: t.Scalar,
     ) -> r[HealthCheckModel]:
         """Create a FlextHealthCheck entity directly."""
         try:

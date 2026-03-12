@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextContainer, FlextRuntime, m, r
+from flext_core import FlextContainer, FlextRuntime, m, r, t
 from structlog.typing import BindableLogger
 
 from flext_observability.settings import FlextObservabilitySettings
@@ -51,7 +51,7 @@ class FlextObservabilityServices:
         """Access FLEXT logger."""
         return self._logger
 
-    def create_alert(self, **_kwargs: object) -> r[m.Dict]:
+    def create_alert(self, **_kwargs: t.Scalar) -> r[m.Dict]:
         """Generic alert creation - not implemented in base service."""
         return r[m.Dict].fail("Alert creation not implemented in generic service")
 
