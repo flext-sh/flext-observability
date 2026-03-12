@@ -338,7 +338,7 @@ class FlextObservabilityHTTP:
                 class FlextObservabilityMiddleware:
                     """Starlette-based ASGI middleware for FastAPI."""
 
-                    def __init__(self, app: t.ContainerValue) -> None:
+                    def __init__(self, app: object) -> None:
                         _ = app
 
                     async def dispatch(

@@ -158,7 +158,7 @@ class FlextObservabilityContext:
             return r[bool].ok(value=True)
 
     @staticmethod
-    def get_baggage(key: str | None = None) -> t.ContainerValue | m.Dict | None:
+    def get_baggage(key: str | None = None) -> object | m.Dict | None:
         """Get baggage value.
 
         Args:
@@ -242,7 +242,7 @@ class FlextObservabilityContext:
         return FlextObservabilityContext._trace_id.get("")
 
     @staticmethod
-    def set_baggage(key: str, value: t.ContainerValue) -> r[bool]:
+    def set_baggage(key: str, value: object) -> r[bool]:
         """Set baggage value for metadata propagation.
 
         Baggage allows passing metadata across service boundaries

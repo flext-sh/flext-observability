@@ -22,7 +22,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import yaml
-from flext_core import t
 from pydantic import BaseModel, Field
 
 # Constants for magic values
@@ -109,7 +108,7 @@ class DocumentationAuditor:
         self.config = self._load_config(config_path)
         self.report = AuditReport()
 
-    def _load_config(self, config_path: Path | None) -> dict[str, t.ContainerValue]:
+    def _load_config(self, config_path: Path | None) -> dict[str, object]:
         """Load audit configuration."""
         default_config = {
             "freshness_threshold_days": 30,

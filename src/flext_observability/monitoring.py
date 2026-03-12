@@ -31,13 +31,13 @@ class FlextObservabilityMonitor:
     Unified class with nested helpers - no loose functions.
     """
 
-    object_callable = Callable[..., t.ContainerValue]
+    object_callable = Callable[..., object]
     logger = FlextRuntime.get_logger(__name__)
 
     class ObservabilityServiceProtocol(Protocol):
         """Protocol for observability services providing alerts and metrics."""
 
-        def create_alert(self, **kwargs: t.ContainerValue) -> r[m.Dict]:
+        def create_alert(self, **kwargs: object) -> r[m.Dict]:
             """Create an alert with given parameters."""
             ...
 
@@ -51,20 +51,20 @@ class FlextObservabilityMonitor:
         @staticmethod
         def call_any_function(
             func: FlextObservabilityMonitor.object_callable,
-            *args: t.ContainerValue,
-            **kwargs: t.ContainerValue,
-        ) -> t.ContainerValue:
+            *args: object,
+            **kwargs: object,
+        ) -> object:
             """Helper to call function with flexible arguments."""
             return func(*args, **kwargs)
 
         @staticmethod
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
-            args: tuple[t.ContainerValue, ...],
-            kwargs: dict[str, t.ContainerValue] | m.Dict,
+            args: tuple[object, ...],
+            kwargs: dict[str, object] | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
-        ) -> t.ContainerValue:
+        ) -> object:
             """Execute function with monitoring."""
             function_name = getattr(func, "__name__", "unknown_function")
             actual_metric_name = metric_name or f"function_execution_{function_name}"
@@ -312,9 +312,7 @@ class FlextObservabilityMonitor:
                 func: FlextObservabilityMonitor.object_callable,
             ) -> FlextObservabilityMonitor.object_callable:
 
-                def wrapper(
-                    *args: t.ContainerValue, **kwargs: t.ContainerValue
-                ) -> t.ContainerValue:
+                def wrapper(*args: object, **kwargs: object) -> object:
                     active_monitor = monitor or FlextObservabilityMonitor()
                     if not active_monitor.flext_is_initialized():
                         init_result = active_monitor.flext_initialize_observability()

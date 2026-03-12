@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_core import FlextRuntime, m, r, t
+from flext_core import FlextRuntime, m, r
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import c
@@ -82,7 +82,7 @@ class FlextObservabilityCustomMetrics:
         def __init__(self) -> None:
             """Initialize metric registry."""
             self._metrics: dict[str, CustomMetricDefinition] = {}
-            self._metric_instances: dict[str, t.ContainerValue] = {}
+            self._metric_instances: dict[str, object] = {}
             self._namespaces: dict[str, str] = {}
 
         def clear_metrics(self, namespace: str | None = None) -> r[bool]:

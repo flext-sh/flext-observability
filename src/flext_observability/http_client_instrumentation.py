@@ -24,7 +24,7 @@ import time
 from collections.abc import Awaitable, Callable, MutableMapping
 from typing import ClassVar, Protocol, TypeGuard
 
-from flext_core import FlextRuntime, r, t
+from flext_core import FlextRuntime, r
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
@@ -96,8 +96,8 @@ class HTTPXClientProtocol(Protocol):
         self,
         method: str,
         url: str,
-        *args: t.ContainerValue,
-        **kwargs: t.ContainerValue,
+        *args: object,
+        **kwargs: object,
     ) -> HTTPXResponseProtocol: ...
 
 
@@ -150,7 +150,7 @@ class FlextObservabilityHTTPClient:
         return hasattr(obj, "request")
 
     @staticmethod
-    def _validated_headers(payload: t.ContainerValue) -> MutableMapping[str, str]:
+    def _validated_headers(payload: object) -> MutableMapping[str, str]:
         try:
             return _HeadersPayload.model_validate({"headers": payload}).headers
         except ValidationError:
@@ -159,10 +159,10 @@ class FlextObservabilityHTTPClient:
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
 
-        instrumented_clients: ClassVar[set[t.ContainerValue]] = set()
+        instrumented_clients: ClassVar[set[object]] = set()
 
         @staticmethod
-        def setup_instrumentation(client: t.ContainerValue) -> r[bool]:
+        def setup_instrumentation(client: object) -> r[bool]:
             """Setup httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -286,8 +286,8 @@ class FlextObservabilityHTTPClient:
                     def traced_request(
                         method: str,
                         url: str,
-                        *args: t.ContainerValue,
-                        **kwargs: t.ContainerValue,
+                        *args: object,
+                        **kwargs: object,
                     ) -> HTTPXResponseProtocol:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
@@ -415,8 +415,8 @@ class FlextObservabilityHTTPClient:
                 async def traced_request(
                     method: str,
                     url: str,
-                    *args: t.ContainerValue,
-                    **kwargs: t.ContainerValue,
+                    *args: object,
+                    **kwargs: object,
                 ) -> AIOHTTPResponseProtocol:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()

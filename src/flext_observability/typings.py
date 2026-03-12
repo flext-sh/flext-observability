@@ -17,7 +17,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Literal, TypeVar
 
-from flext_core import FlextTypes, t as _t
+from flext_core import FlextTypes
 
 T = TypeVar("T")
 
@@ -60,13 +60,13 @@ class FlextObservabilityTypes(FlextTypes):
             "telemetry-service",
         ]
         type ObservabilityProjectConfig = dict[
-            str, str | int | bool | list[str] | _t.ContainerValue
+            str, str | int | bool | list[str] | _object
         ]
         type MonitoringConfig = dict[str, str | int | bool | list[str]]
         type MetricsConfig = dict[
             str, bool | str | dict[str, FlextTypes.ContainerValue]
         ]
-        type TracingConfig = dict[str, str | int | bool | list[str] | _t.ContainerValue]
+        type TracingConfig = dict[str, str | int | bool | list[str] | _object]
 
     class ObservabilityCore:
         """Core observability types extending t for complex domain operations."""
@@ -108,7 +108,7 @@ class FlextObservabilityTypes(FlextTypes):
         type ServiceDiscovery = dict[str, list[dict[str, FlextTypes.JsonValue]]]
         type ServiceHealth = dict[str, str | dict[str, FlextTypes.JsonValue]]
         type MetadataDict = dict[str, FlextTypes.ContainerValue]
-        type ServicesList = list[tuple[str, _t.ContainerValue]]
+        type ServicesList = list[tuple[str, _object]]
         type HealthMetricsDict = dict[str, FlextTypes.ContainerValue]
         type MetricDict = dict[str, FlextTypes.ContainerValue]
         type StringList = list[str]

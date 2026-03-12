@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import time
 
-from flext_core import FlextContainer, r, t
+from flext_core import FlextContainer, r
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -25,13 +25,13 @@ from flext_observability import (
 )
 
 
-def database_query(query: str) -> dict[str, t.ContainerValue]:
+def database_query(query: str) -> dict[str, object]:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> dict[str, t.ContainerValue]:
+def process_api_request(endpoint: str) -> dict[str, object]:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
@@ -47,7 +47,7 @@ def demonstrate_solid_design() -> None:
     factory = FlextObservabilityMasterFactory(container)
     factory.create_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
-    entities: list[t.ContainerValue] = [
+    entities: list[object] = [
         result.value
         for result in results
         if hasattr(result, "success")
@@ -142,7 +142,7 @@ def demonstrate_factory_patterns() -> None:
 
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
-    entities_to_validate: list[r[dict[str, t.ContainerValue]]] = [
+    entities_to_validate: list[r[dict[str, object]]] = [
         flext_metric("valid_metric", 100.0, "count"),
         flext_trace("valid_operation"),
         flext_alert("system", "Valid alert", "info"),
