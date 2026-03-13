@@ -129,8 +129,8 @@ class FlextObservabilityCustomMetrics:
                     for metric_name, metric in self._metrics.items()
                     if metric_name.startswith(f"{namespace}:")
                 }
-                return m.Dict.model_validate(filtered)
-            return m.Dict.model_validate(self._metrics)
+                return m.Dict(filtered)
+            return m.Dict(self._metrics)
 
         def get_metric(
             self, name: str, namespace: str = "default"
@@ -167,7 +167,7 @@ class FlextObservabilityCustomMetrics:
             metric = self.get_metric(name, namespace)
             if not metric:
                 return None
-            return m.Dict.model_validate({
+            return m.Dict({
                 "name": metric.name,
                 "type": metric.metric_type.value,
                 "description": metric.description,
@@ -185,7 +185,7 @@ class FlextObservabilityCustomMetrics:
                 dict - Metrics matching the type
 
             """
-            return m.Dict.model_validate({
+            return m.Dict({
                 metric_name: metric
                 for metric_name, metric in self._metrics.items()
                 if metric.metric_type == metric_type
@@ -234,7 +234,7 @@ class FlextObservabilityCustomMetrics:
                     return r[bool].fail("Metric description cannot be empty")
                 metric_input = metric_type.lower()
                 try:
-                    metric_type_enum = _MetricTypeInput.model_validate({
+                    metric_type_enum = _MetricTypeInput({
                         "metric_type": metric_input
                     }).metric_type
                 except ValidationError:

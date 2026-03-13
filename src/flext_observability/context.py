@@ -204,7 +204,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        return m.Dict.model_validate({
+        return m.Dict({
             "correlation_id": FlextObservabilityContext.get_correlation_id(),
             "trace_id": FlextObservabilityContext.get_trace_id(),
             "span_id": FlextObservabilityContext.get_span_id(),
@@ -266,7 +266,7 @@ class FlextObservabilityContext:
         """
         try:
             try:
-                _BaggageKeyModel.model_validate({"key": key})
+                _BaggageKeyModel({"key": key})
             except ValidationError:
                 return r[bool].fail("Baggage key must be non-empty string")
             try:
@@ -276,7 +276,7 @@ class FlextObservabilityContext:
                     f"Baggage value for '{key}' must be JSON serializable"
                 )
             current_baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
-            updated_baggage = m.Dict.model_validate({
+            updated_baggage = m.Dict({
                 **dict(current_baggage.items()),
                 key: value,
             })

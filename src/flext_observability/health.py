@@ -49,7 +49,7 @@ class FlextObservabilityHealth(FlextModels):
         try:
             valid_kwargs: dict[str, object] = {}
             try:
-                parsed_kwargs = _HealthCheckFactoryKwargs.model_validate(kwargs)
+                parsed_kwargs = _HealthCheckFactoryKwargs(kwargs)
                 if parsed_kwargs.metrics is not None:
                     valid_kwargs["metrics"] = parsed_kwargs.metrics
                 if parsed_kwargs.timestamp is not None:

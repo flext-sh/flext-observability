@@ -178,9 +178,7 @@ class FlextObservabilityHTTP:
                             dict(request.headers) if request else {}
                         )
                         if request:
-                            FlextObservabilityContext.from_headers(
-                                m.Dict.model_validate(headers_dict)
-                            )
+                            FlextObservabilityContext.from_headers(m.Dict(headers_dict))
                         correlation_id = FlextObservabilityContext.get_correlation_id()
                         if g:
                             g.flext_start_time = time.time()
@@ -221,7 +219,7 @@ class FlextObservabilityHTTP:
                         )
                         duration_ms = 0.0
                         try:
-                            validated_start = _StartTimePayload.model_validate({
+                            validated_start = _StartTimePayload({
                                 "value": start_time
                             }).value
                             duration_ms = (time.time() - validated_start) * 1000
@@ -274,7 +272,7 @@ class FlextObservabilityHTTP:
                         FlextObservabilityHTTP._logger.error(
                             f"Error in error handler: {log_error}"
                         )
-                    return (m.Dict.model_validate({"error": str(error)}), 500)
+                    return (m.Dict({"error": str(error)}), 500)
 
                 _ = flext_before_request
                 _ = flext_after_request

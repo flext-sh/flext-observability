@@ -68,7 +68,7 @@ class FlextObservabilityServices:
                 "timestamp": "now",
                 "version": "generic",
             }
-            status_result = m.Dict.model_validate({
+            status_result = m.Dict({
                 "service": status["service"],
                 "status": status["status"],
                 "timestamp": status["timestamp"],
@@ -83,7 +83,7 @@ class FlextObservabilityServices:
         try:
             if not entry_data:
                 return r[m.Dict].fail("Entry data required")
-            processed = m.Dict.model_validate(dict(entry_data.items()))
+            processed = m.Dict(dict(entry_data.items()))
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
             return r[m.Dict].ok(processed)
