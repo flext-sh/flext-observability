@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import ClassVar
+from typing import Annotated, ClassVar
 from uuid import uuid4
 
 from flext_core import FlextModels
@@ -35,25 +35,37 @@ class FlextObservabilityModels(FlextModels):
             str_strip_whitespace=True,
         )
 
-        id: str = Field(
-            default_factory=lambda: str(uuid4()),
-            min_length=1,
-            description="Unique entity identifier",
-        )
-        name: str = Field(min_length=1, description="Entity name")
-        type: str = Field(min_length=1, description="Entity type")
-        timestamp: datetime = Field(
-            default_factory=datetime.now,
-            description="Entry timestamp",
-        )
-        data: dict[str, object] = Field(
-            default_factory=dict,
-            description="Generic data payload",
-        )
-        metadata: dict[str, object] = Field(
-            default_factory=dict,
-            description="Generic metadata",
-        )
+        id: Annotated[
+            str,
+            Field(
+                default_factory=lambda: str(uuid4()),
+                min_length=1,
+                description="Unique entity identifier",
+            ),
+        ]
+        name: Annotated[str, Field(min_length=1, description="Entity name")]
+        type: Annotated[str, Field(min_length=1, description="Entity type")]
+        timestamp: Annotated[
+            datetime,
+            Field(
+                default_factory=datetime.now,
+                description="Entry timestamp",
+            ),
+        ]
+        data: Annotated[
+            dict[str, object],
+            Field(
+                default_factory=dict,
+                description="Generic data payload",
+            ),
+        ]
+        metadata: Annotated[
+            dict[str, object],
+            Field(
+                default_factory=dict,
+                description="Generic metadata",
+            ),
+        ]
 
         @computed_field
         def age_seconds(self) -> float:
@@ -80,22 +92,33 @@ class FlextObservabilityModels(FlextModels):
             str_strip_whitespace=True,
         )
 
-        enabled: bool = Field(default=True, description="Enable observability")
-        interval_seconds: float = Field(
-            gt=0,
-            default=60.0,
-            description="Collection interval",
-        )
-        retention_days: int = Field(
-            ge=1,
-            le=365,
-            default=30,
-            description="Retention period",
-        )
-        settings: dict[str, object] = Field(
-            default_factory=dict,
-            description="Type-specific settings",
-        )
+        enabled: Annotated[
+            bool, Field(default=True, description="Enable observability")
+        ]
+        interval_seconds: Annotated[
+            float,
+            Field(
+                gt=0,
+                default=60.0,
+                description="Collection interval",
+            ),
+        ]
+        retention_days: Annotated[
+            int,
+            Field(
+                ge=1,
+                le=365,
+                default=30,
+                description="Retention period",
+            ),
+        ]
+        settings: Annotated[
+            dict[str, object],
+            Field(
+                default_factory=dict,
+                description="Type-specific settings",
+            ),
+        ]
 
         @computed_field
         def interval_minutes(self) -> float:
@@ -113,11 +136,11 @@ class FlextObservabilityModels(FlextModels):
         class MetricEntry(FlextModels.Entity):
             """Metric entry model."""
 
-            metric_id: str = Field(default_factory=lambda: str(uuid4()))
-            name: str = Field(min_length=1)
+            metric_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            name: Annotated[str, Field(min_length=1)]
             value: float | int
             unit: str
-            source: str = Field(default="unknown")
+            source: Annotated[str, Field(default="unknown")]
 
 
 m = FlextObservabilityModels

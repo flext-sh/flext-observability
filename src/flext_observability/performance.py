@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Mapping
+from typing import Annotated
 
 import psutil
 from flext_core import FlextLogger, r
@@ -23,8 +24,8 @@ from pydantic import BaseModel, Field
 class PerformanceMetrics(BaseModel):
     """Metrics for tracking performance of observability operations."""
 
-    operation: str = Field(min_length=1)
-    start_time: float = Field(default_factory=time.time)
+    operation: Annotated[str, Field(min_length=1)]
+    start_time: Annotated[float, Field(default_factory=time.time)]
     end_time: float = 0.0
     duration_ms: float = 0.0
     memory_used_mb: float = 0.0

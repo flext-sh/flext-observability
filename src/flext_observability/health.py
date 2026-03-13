@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Annotated
 
 from flext_core import FlextModels, r, t
 from pydantic import BaseModel, Field, ValidationError
@@ -23,11 +24,11 @@ class _HealthCheckFactoryKwargs(BaseModel):
 
 
 class HealthCheckModel(BaseModel):
-    component: str = Field(min_length=1)
-    status: str = Field(default="unknown", min_length=1)
-    message: str = Field(default="")
-    metrics: m.Dict = Field(default_factory=lambda: m.Dict({}))
-    timestamp: datetime = Field(default_factory=datetime.now)
+    component: Annotated[str, Field(min_length=1)]
+    status: Annotated[str, Field(default="unknown", min_length=1)]
+    message: Annotated[str, Field(default="")]
+    metrics: Annotated[m.Dict, Field(default_factory=lambda: m.Dict({}))]
+    timestamp: Annotated[datetime, Field(default_factory=datetime.now)]
 
 
 class FlextObservabilityHealth(FlextModels):

@@ -20,6 +20,7 @@ Key Features:
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import Annotated
 
 from flext_core import FlextLogger, m, r, t
 from pydantic import BaseModel, Field
@@ -57,7 +58,7 @@ class FlextObservabilityLogging:
         trace_id: str | None = None
         span_id: str | None = None
         baggage: str | None = None
-        extra: m.Dict = Field(default_factory=lambda: m.Dict({}))
+        extra: Annotated[m.Dict, Field(default_factory=lambda: m.Dict({}))]
 
     @staticmethod
     def create_logger(name: str) -> r[BindableLogger]:

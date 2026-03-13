@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Awaitable, Callable, MutableMapping
-from typing import ClassVar, Protocol, TypeGuard
+from typing import Annotated, ClassVar, Protocol, TypeGuard
 
 from flext_core import FlextRuntime, r, t
 from pydantic import BaseModel, Field, ValidationError
@@ -31,7 +31,7 @@ from flext_observability import FlextObservabilityContext, FlextObservabilityLog
 
 
 class _HeadersPayload(BaseModel):
-    headers: dict[str, str] = Field(default_factory=dict)
+    headers: Annotated[dict[str, str], Field(default_factory=dict)]
 
 
 class HTTPXURLProtocol(Protocol):

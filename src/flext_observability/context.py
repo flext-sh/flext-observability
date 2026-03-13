@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from contextvars import ContextVar
+from typing import Annotated
 from uuid import uuid4
 
 from flext_core import FlextRuntime, m, r, t
@@ -22,7 +23,7 @@ from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 
 
 class _BaggageKeyModel(BaseModel):
-    key: str = Field(min_length=1)
+    key: Annotated[str, Field(min_length=1)]
 
 
 class FlextObservabilityContext:

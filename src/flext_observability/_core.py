@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import math
 from datetime import UTC, datetime
-from typing import ClassVar, Literal
+from typing import Annotated, ClassVar, Literal
 from uuid import uuid4
 
 from flext_core import (
@@ -61,39 +61,41 @@ class FlextObservability:
         }
 
     class Metric(FlextModels.Entity):
-        id: str = Field(default_factory=lambda: str(uuid4()))
+        id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
         name: str
         value: float
         unit: str
         metric_type: str
-        labels: dict[str, object] = Field(default_factory=dict)
+        labels: Annotated[dict[str, object], Field(default_factory=dict)]
 
     class Trace(FlextModels.Entity):
-        trace_id: str = Field(default_factory=lambda: str(uuid4()))
+        trace_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
         name: str
-        attributes: dict[str, object] = Field(default_factory=dict)
+        attributes: Annotated[dict[str, object], Field(default_factory=dict)]
 
     class Alert(FlextModels.Entity):
-        id: str = Field(default_factory=lambda: str(uuid4()))
+        id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
         title: str
         message: str
         severity: str
         source: str
-        labels: dict[str, object] = Field(default_factory=dict)
+        labels: Annotated[dict[str, object], Field(default_factory=dict)]
 
     class HealthCheck(FlextModels.Entity):
-        id: str = Field(default_factory=lambda: str(uuid4()))
+        id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
         component: str
         status: str
-        details: dict[str, object] = Field(default_factory=dict)
+        details: Annotated[dict[str, object], Field(default_factory=dict)]
 
     class LogEntry(FlextModels.Entity):
-        id: str = Field(default_factory=lambda: str(uuid4()))
+        id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
         message: str
         level: str
         component: str
-        timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-        context: dict[str, object] = Field(default_factory=dict)
+        timestamp: Annotated[
+            datetime, Field(default_factory=lambda: datetime.now(tz=UTC))
+        ]
+        context: Annotated[dict[str, object], Field(default_factory=dict)]
 
     class MetricsService:
         """Service for metrics collection and recording.

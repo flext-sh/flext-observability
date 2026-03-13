@@ -24,7 +24,7 @@ from __future__ import annotations
 import time
 from collections import UserDict
 from collections.abc import Awaitable, Callable, Mapping
-from typing import Protocol, TypeGuard
+from typing import Annotated, Protocol, TypeGuard
 
 import flask
 from flext_core import FlextRuntime, m, r, t
@@ -40,7 +40,7 @@ _starlette_available = True
 
 
 class _StartTimePayload(BaseModel):
-    value: float = Field(ge=0)
+    value: Annotated[float, Field(ge=0)]
 
 
 class FlaskHookProtocol(Protocol):

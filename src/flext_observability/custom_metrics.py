@@ -18,6 +18,8 @@ Key Features:
 
 from __future__ import annotations
 
+from typing import Annotated
+
 from flext_core import FlextRuntime, m, r
 from pydantic import BaseModel, Field, ValidationError
 
@@ -33,11 +35,11 @@ class _MetricTypeInput(BaseModel):
 class CustomMetricDefinition(BaseModel):
     """Definition of a custom business metric with type and metadata."""
 
-    name: str = Field(min_length=1)
+    name: Annotated[str, Field(min_length=1)]
     metric_type: MetricType
-    description: str = Field(min_length=1)
-    unit: str = Field(default="1", min_length=1)
-    labels: dict[str, str] = Field(default_factory=dict)
+    description: Annotated[str, Field(min_length=1)]
+    unit: Annotated[str, Field(default="1", min_length=1)]
+    labels: Annotated[dict[str, str], Field(default_factory=dict)]
 
 
 class FlextObservabilityCustomMetrics:
