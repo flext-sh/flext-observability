@@ -150,9 +150,9 @@ class FlextObservabilityHTTPClient:
     @staticmethod
     def _validated_headers(payload: object) -> MutableMapping[str, str]:
         try:
-            return _HeadersPayload({"headers": payload}).headers
+            return _HeadersPayload.model_validate(obj={"headers": payload}).headers
         except ValidationError:
-            return {}(
+            return {}
 
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""

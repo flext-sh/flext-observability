@@ -32,7 +32,7 @@ from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
 
-FlaskApp = flask.Flask if hasattr(flask, "Flask") else object
+_FlaskAppType = flask.Flask if hasattr(flask, "Flask") else object
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None
 _flask_available = True
@@ -178,7 +178,10 @@ class FlextObservabilityHTTP:
                             dict(request.headers) if request else {}
                         )
                         if request:
-                            FlextObservabilityContext.from_headers(m.Dict(headers_dict))
+                            headers_payload: dict[str, object] = dict(headers_dict)
+                            FlextObservabilityContext.from_headers(
+                                m.Dict(headers_payload)
+                            )
                         correlation_id = FlextObservabilityContext.get_correlation_id()
                         if g:
                             g.flext_start_time = time.time()
@@ -219,9 +222,9 @@ class FlextObservabilityHTTP:
                         )
                         duration_ms = 0.0
                         try:
-                            validated_start = _StartTimePayload({
-                                "value": start_time
-                            }).value
+                            validated_start = _StartTimePayload.model_validate(
+                                obj={"value": start_time}
+                            ).value
                             duration_ms = (time.time() - validated_start) * 1000
                         except ValidationError:
                             duration_ms = 0.0

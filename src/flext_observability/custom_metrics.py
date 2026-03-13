@@ -129,8 +129,10 @@ class FlextObservabilityCustomMetrics:
                     for metric_name, metric in self._metrics.items()
                     if metric_name.startswith(f"{namespace}:")
                 }
-                return m.Dict(filtered)
-            return m.Dict(self._metrics)
+                filtered_payload: dict[str, object] = dict(filtered.items())
+                return m.Dict(filtered_payload)
+            all_metrics_payload: dict[str, object] = dict(self._metrics.items())
+            return m.Dict(all_metrics_payload)
 
         def get_metric(
             self, name: str, namespace: str = "default"
@@ -234,9 +236,9 @@ class FlextObservabilityCustomMetrics:
                     return r[bool].fail("Metric description cannot be empty")
                 metric_input = metric_type.lower()
                 try:
-                    metric_type_enum = _MetricTypeInput({
-                        "metric_type": metric_input
-                    }).metric_type
+                    metric_type_enum = _MetricTypeInput.model_validate(
+                        obj={"metric_type": metric_input}
+                    ).metric_type
                 except ValidationError:
                     return r[bool].fail(
                         f"Invalid metric type: {metric_type}. Must be one of ['counter', 'gauge', 'histogram']"
@@ -253,6 +255,7 @@ class FlextObservabilityCustomMetrics:
                     metric_type=metric_type_enum,
                     description=description,
                     unit=unit,
+                    labels={},
                 )
                 self._metrics[namespaced_name] = definition
                 self._namespaces[namespace] = namespace

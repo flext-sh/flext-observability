@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Annotated
 
 from flext_core import FlextModels, r, t
@@ -49,7 +49,7 @@ class FlextObservabilityHealth(FlextModels):
         try:
             valid_kwargs: dict[str, object] = {}
             try:
-                parsed_kwargs = _HealthCheckFactoryKwargs(kwargs)
+                parsed_kwargs = _HealthCheckFactoryKwargs.model_validate(obj=kwargs)
                 if parsed_kwargs.metrics is not None:
                     valid_kwargs["metrics"] = parsed_kwargs.metrics
                 if parsed_kwargs.timestamp is not None:
@@ -57,7 +57,11 @@ class FlextObservabilityHealth(FlextModels):
             except ValidationError:
                 valid_kwargs = {}
             health_check = HealthCheckModel(
-                component=component, status=status, message=message
+                component=component,
+                status=status,
+                message=message,
+                metrics=m.Dict({}),
+                timestamp=datetime.now(UTC),
             )
             if valid_kwargs.get("metrics") and isinstance(
                 valid_kwargs["metrics"], m.Dict

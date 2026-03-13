@@ -266,7 +266,7 @@ class FlextObservabilityContext:
         """
         try:
             try:
-                _BaggageKeyModel({"key": key})
+                _BaggageKeyModel.model_validate(obj={"key": key})
             except ValidationError:
                 return r[bool].fail("Baggage key must be non-empty string")
             try:
