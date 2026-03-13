@@ -18,11 +18,10 @@ Key Features:
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping
 
 from flext_core import FlextLogger, r, t
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, TypeAdapter
 
 
 class ContextSnapshot(BaseModel):
@@ -209,7 +208,7 @@ class FlextObservabilityAdvancedContext:
 
             """
             try:
-                json.dumps(value)
+                TypeAdapter(t.Scalar).validate_python(value)
                 self._metadata[key] = value
                 FlextObservabilityAdvancedContext._logger.debug(f"Metadata set: {key}")
                 return r[bool].ok(value=True)

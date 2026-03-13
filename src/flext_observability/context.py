@@ -13,12 +13,11 @@ FLEXT Pattern:
 
 from __future__ import annotations
 
-import json
 from contextvars import ContextVar
 from uuid import uuid4
 
 from flext_core import FlextRuntime, m, r
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 
 
 class _BaggageKeyModel(BaseModel):
@@ -269,7 +268,7 @@ class FlextObservabilityContext:
             except ValidationError:
                 return r[bool].fail("Baggage key must be non-empty string")
             try:
-                json.dumps(value)
+                TypeAdapter(object).dump_json(value)
             except (TypeError, ValueError):
                 return r[bool].fail(
                     f"Baggage value for '{key}' must be JSON serializable"
