@@ -33,7 +33,6 @@ class FlextObservabilityModels(FlextModels):
             extra="allow",
             frozen=False,
             str_strip_whitespace=True,
-            json_encoders={datetime: lambda v: v.isoformat()},
         )
 
         id: str = Field(
