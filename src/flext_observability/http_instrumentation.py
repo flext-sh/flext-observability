@@ -43,55 +43,55 @@ class _StartTimePayload(BaseModel):
     value: Annotated[float, Field(ge=0)]
 
 
-class FlaskHookProtocol(Protocol):
+class FlaskHook(Protocol):
     def __call__(self, callback: Callable[..., object]) -> Callable[..., object]: ...
 
 
-class FlaskErrorHandlerProtocol(Protocol):
-    def __call__(self, error_type: type[Exception]) -> FlaskHookProtocol: ...
+class FlaskErrorHandler(Protocol):
+    def __call__(self, error_type: type[Exception]) -> FlaskHook: ...
 
 
-class FlaskAppProtocol(Protocol):
-    before_request: FlaskHookProtocol
-    after_request: FlaskHookProtocol
-    errorhandler: FlaskErrorHandlerProtocol
+class FlaskApp(Protocol):
+    before_request: FlaskHook
+    after_request: FlaskHook
+    errorhandler: FlaskErrorHandler
 
 
-def _is_flask_app(obj: object) -> TypeGuard[FlaskAppProtocol]:
+def _is_flask_app(obj: object) -> TypeGuard[FlaskApp]:
     """Type guard to check if object is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
 
-class FastAPIAppProtocol(Protocol):
+class FastAPIApp(Protocol):
     def add_middleware(self, middleware_class: type) -> None: ...
 
 
-def _is_fastapi_app(obj: object) -> TypeGuard[FastAPIAppProtocol]:
+def _is_fastapi_app(obj: object) -> TypeGuard[FastAPIApp]:
     return hasattr(obj, "add_middleware")
 
 
-class RequestURLProtocol(Protocol):
+class RequestURL(Protocol):
     """Protocol for request URL objects."""
 
     path: str
 
 
-class RequestClientProtocol(Protocol):
+class RequestClient(Protocol):
     """Protocol for request client objects."""
 
     host: str
 
 
-class RequestProtocol(Protocol):
+class Request(Protocol):
     """Protocol for HTTP request objects used by middleware."""
 
     headers: m.Dict | UserDict[str, str]
     method: str
-    url: RequestURLProtocol
-    client: RequestClientProtocol | None
+    url: RequestURL
+    client: RequestClient | None
 
 
-class ResponseProtocol(Protocol):
+class Response(Protocol):
     """Protocol for HTTP response objects used by middleware."""
 
     status_code: int
@@ -211,7 +211,7 @@ class FlextObservabilityHTTP:
                         )
 
                 @after_request_hook
-                def flext_after_request(response: ResponseProtocol) -> ResponseProtocol:
+                def flext_after_request(response: Response) -> Response:
                     """Record metrics and complete span after request processing."""
                     try:
                         start_time = (
@@ -333,7 +333,7 @@ class FlextObservabilityHTTP:
                     return r[bool].fail(
                         "Invalid FastAPI app - missing add_middleware method"
                     )
-                typed_app: FastAPIAppProtocol = app
+                typed_app: FastAPIApp = app
 
                 class FlextObservabilityMiddleware:
                     """Starlette-based ASGI middleware for FastAPI."""
@@ -343,11 +343,9 @@ class FlextObservabilityHTTP:
 
                     async def dispatch(
                         self,
-                        request: RequestProtocol,
-                        call_next: Callable[
-                            [RequestProtocol], Awaitable[ResponseProtocol]
-                        ],
-                    ) -> ResponseProtocol:
+                        request: Request,
+                        call_next: Callable[[Request], Awaitable[Response]],
+                    ) -> Response:
                         """Process HTTP request with instrumentation."""
                         try:
                             headers_dict = {

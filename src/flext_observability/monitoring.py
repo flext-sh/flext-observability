@@ -34,7 +34,7 @@ class FlextObservabilityMonitor:
     object_callable = Callable[..., object]
     logger = FlextRuntime.get_logger(__name__)
 
-    class ObservabilityServiceProtocol(Protocol):
+    class ObservabilityService(Protocol):
         """Protocol for observability services providing alerts and metrics."""
 
         def create_alert(self, **kwargs: t.Scalar) -> r[m.Dict]:
@@ -147,14 +147,14 @@ class FlextObservabilityMonitor:
         self._initialized = False
         self._running = False
         self._observability_service: (
-            FlextObservabilityMonitor.ObservabilityServiceProtocol | None
+            FlextObservabilityMonitor.ObservabilityService | None
         ) = None
-        self._health_service: (
-            FlextObservabilityMonitor.ObservabilityServiceProtocol | None
-        ) = None
-        self._metrics_service: (
-            FlextObservabilityMonitor.ObservabilityServiceProtocol | None
-        ) = None
+        self._health_service: FlextObservabilityMonitor.ObservabilityService | None = (
+            None
+        )
+        self._metrics_service: FlextObservabilityMonitor.ObservabilityService | None = (
+            None
+        )
         self._monitor_start_time = time.time()
         self._functions_monitored = 0
 
@@ -284,7 +284,7 @@ class FlextObservabilityMonitor:
 
     def get_observability_service(
         self,
-    ) -> FlextObservabilityMonitor.ObservabilityServiceProtocol | None:
+    ) -> FlextObservabilityMonitor.ObservabilityService | None:
         """Public method to get unified observability service."""
         return self._observability_service
 

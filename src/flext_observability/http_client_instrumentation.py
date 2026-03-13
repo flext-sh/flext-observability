@@ -34,7 +34,7 @@ class _HeadersPayload(BaseModel):
     headers: Annotated[dict[str, str], Field(default_factory=dict)]
 
 
-class HTTPXURLProtocol(Protocol):
+class HTTPXURL(Protocol):
     """Protocol for httpx URL object."""
 
     @property
@@ -48,7 +48,7 @@ class HTTPXURLProtocol(Protocol):
         ...
 
 
-class HTTPXRequestProtocol(Protocol):
+class HTTPXRequest(Protocol):
     """Protocol for httpx Request object."""
 
     @property
@@ -62,12 +62,12 @@ class HTTPXRequestProtocol(Protocol):
         ...
 
     @property
-    def url(self) -> HTTPXURLProtocol:
+    def url(self) -> HTTPXURL:
         """Request URL."""
         ...
 
 
-class HTTPXResponseProtocol(Protocol):
+class HTTPXResponse(Protocol):
     """Protocol for httpx Response object."""
 
     @property
@@ -76,7 +76,7 @@ class HTTPXResponseProtocol(Protocol):
         ...
 
 
-class AIOHTTPResponseProtocol(Protocol):
+class AIOHTTPResponse(Protocol):
     """Protocol for aiohttp ClientResponse."""
 
     @property
@@ -85,24 +85,22 @@ class AIOHTTPResponseProtocol(Protocol):
         ...
 
 
-class HTTPXAsyncClientProtocol(Protocol):
-    def _send(
-        self, request: HTTPXRequestProtocol
-    ) -> Awaitable[HTTPXResponseProtocol]: ...
+class HTTPXAsyncClient(Protocol):
+    def _send(self, request: HTTPXRequest) -> Awaitable[HTTPXResponse]: ...
 
 
-class HTTPXClientProtocol(Protocol):
+class HTTPXClient(Protocol):
     def request(
         self,
         method: str,
         url: str,
         *args: object,
         **kwargs: t.Scalar,
-    ) -> HTTPXResponseProtocol: ...
+    ) -> HTTPXResponse: ...
 
 
-class AIOHTTPSessionProtocol(Protocol):
-    request: Callable[..., Awaitable[AIOHTTPResponseProtocol]]
+class AIOHTTPSession(Protocol):
+    request: Callable[..., Awaitable[AIOHTTPResponse]]
 
 
 class FlextObservabilityHTTPClient:
@@ -136,17 +134,17 @@ class FlextObservabilityHTTPClient:
     _logger = FlextRuntime.get_logger(__name__)
 
     @staticmethod
-    def _is_httpx_async_client(obj: object) -> TypeGuard[HTTPXAsyncClientProtocol]:
+    def _is_httpx_async_client(obj: object) -> TypeGuard[HTTPXAsyncClient]:
         """Type guard to check if object is an async httpx client."""
         return hasattr(obj, "_send")
 
     @staticmethod
-    def _is_httpx_client(obj: object) -> TypeGuard[HTTPXClientProtocol]:
+    def _is_httpx_client(obj: object) -> TypeGuard[HTTPXClient]:
         """Type guard to check if object is an httpx client."""
         return hasattr(obj, "request") or hasattr(obj, "_send")
 
     @staticmethod
-    def _is_aiohttp_session(obj: object) -> TypeGuard[AIOHTTPSessionProtocol]:
+    def _is_aiohttp_session(obj: object) -> TypeGuard[AIOHTTPSession]:
         return hasattr(obj, "request")
 
     @staticmethod
@@ -216,8 +214,8 @@ class FlextObservabilityHTTPClient:
                     original_send = getattr(client, "_send")
 
                     async def traced_send(
-                        request: HTTPXRequestProtocol,
-                    ) -> HTTPXResponseProtocol:
+                        request: HTTPXRequest,
+                    ) -> HTTPXResponse:
                         """Traced send wrapper for async httpx."""
                         start_time = time.time()
                         correlation_id = FlextObservabilityContext.get_correlation_id()
@@ -279,7 +277,7 @@ class FlextObservabilityHTTPClient:
 
                     setattr(client, "_send", traced_send)
                 else:
-                    original_request: Callable[..., HTTPXResponseProtocol] = getattr(
+                    original_request: Callable[..., HTTPXResponse] = getattr(
                         client, "request"
                     )
 
@@ -288,7 +286,7 @@ class FlextObservabilityHTTPClient:
                         url: str,
                         *args: object,
                         **kwargs: t.Scalar,
-                    ) -> HTTPXResponseProtocol:
+                    ) -> HTTPXResponse:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
                         correlation_id = FlextObservabilityContext.get_correlation_id()
@@ -366,7 +364,7 @@ class FlextObservabilityHTTPClient:
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
 
-        instrumented_sessions: ClassVar[set[AIOHTTPSessionProtocol]] = set()
+        instrumented_sessions: ClassVar[set[AIOHTTPSession]] = set()
 
         @staticmethod
         def setup_instrumentation(session: object) -> r[bool]:
@@ -408,7 +406,7 @@ class FlextObservabilityHTTPClient:
                     return r[bool].fail(
                         "Invalid aiohttp session - missing request method"
                     )
-                typed_session: AIOHTTPSessionProtocol = session
+                typed_session: AIOHTTPSession = session
                 if (
                     typed_session
                     in FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions
@@ -421,7 +419,7 @@ class FlextObservabilityHTTPClient:
                     url: str,
                     *args: object,
                     **kwargs: t.Scalar,
-                ) -> AIOHTTPResponseProtocol:
+                ) -> AIOHTTPResponse:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()
                     correlation_id = FlextObservabilityContext.get_correlation_id()
