@@ -61,7 +61,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[object, ...],
-            kwargs: dict[str, object] | m.Dict,
+            kwargs: dict[str, t.Scalar] | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> object:

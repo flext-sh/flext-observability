@@ -23,11 +23,11 @@ from __future__ import annotations
 
 import time
 from collections import UserDict
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from typing import Protocol, TypeGuard
 
 import flask
-from flext_core import FlextRuntime, m, r
+from flext_core import FlextRuntime, m, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
@@ -350,7 +350,9 @@ class FlextObservabilityHTTP:
                     ) -> ResponseProtocol:
                         """Process HTTP request with instrumentation."""
                         try:
-                            headers_dict = dict(request.headers)
+                            headers_dict = {
+                                str(k): str(v) for k, v in request.headers.items()
+                            }
                             FlextObservabilityContext.from_headers(headers_dict)
                             correlation_id = (
                                 FlextObservabilityContext.get_correlation_id()
@@ -360,13 +362,13 @@ class FlextObservabilityHTTP:
                                 f"HTTP {request.method} {request.url.path}",
                                 "debug",
                                 {
-                                    "http_method": request.method,
-                                    "http_path": request.url.path,
-                                    "http_client_ip": request.client.host
+                                    "http_method": str(request.method),
+                                    "http_path": str(request.url.path),
+                                    "http_client_ip": str(request.client.host)
                                     if request.client
                                     else "unknown",
-                                    "http_user_agent": request.headers.get(
-                                        "user-agent", "unknown"
+                                    "http_user_agent": str(
+                                        request.headers.get("user-agent", "unknown")
                                     ),
                                 },
                             )
@@ -425,7 +427,7 @@ class FlextObservabilityHTTP:
     async def _async_log_with_context(
         message: str,
         level: str,
-        extra: object | m.Dict | None = None,
+        extra: Mapping[str, t.Scalar] | None = None,
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 

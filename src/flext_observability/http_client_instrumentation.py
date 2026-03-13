@@ -314,12 +314,12 @@ class FlextObservabilityHTTPClient:
                                 "async": False,
                             },
                         )
-                        _call_kwargs: dict[str, t.Scalar] = {
+                        call_kwargs: dict[str, t.Scalar] = {
                             k: v for k, v in kwargs.items() if k != "headers"
                         }
                         try:
                             response = original_request(
-                                method, url, *args, headers=headers, **_call_kwargs
+                                method, url, *args, headers=headers, **call_kwargs
                             )
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
@@ -447,12 +447,12 @@ class FlextObservabilityHTTPClient:
                             "async": True,
                         },
                     )
-                    _async_call_kwargs: dict[str, t.Scalar] = {
+                    async_call_kwargs: dict[str, t.Scalar] = {
                         k: v for k, v in kwargs.items() if k != "headers"
                     }
                     try:
                         response = await original_request(
-                            method, url, *args, headers=headers, **_async_call_kwargs
+                            method, url, *args, headers=headers, **async_call_kwargs
                         )
                         duration_ms = (time.time() - start_time) * 1000
                         status = response.status
