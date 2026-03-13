@@ -303,7 +303,6 @@ class FlextObservabilityHTTPClient:
                             headers["X-Trace-ID"] = trace_id
                         if span_id:
                             headers["X-Span-ID"] = span_id
-                        kwargs["headers"] = headers
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
                             "debug",
@@ -315,8 +314,13 @@ class FlextObservabilityHTTPClient:
                                 "async": False,
                             },
                         )
+                        _call_kwargs: dict[str, t.Scalar] = {
+                            k: v for k, v in kwargs.items() if k != "headers"
+                        }
                         try:
-                            response = original_request(method, url, *args, **kwargs)
+                            response = original_request(
+                                method, url, *args, headers=headers, **_call_kwargs
+                            )
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
@@ -432,7 +436,6 @@ class FlextObservabilityHTTPClient:
                         headers["X-Trace-ID"] = trace_id
                     if span_id:
                         headers["X-Span-ID"] = span_id
-                    kwargs["headers"] = headers
                     _ = FlextObservabilityLogging.log_with_context(
                         FlextObservabilityHTTPClient._logger,
                         "debug",
@@ -444,8 +447,13 @@ class FlextObservabilityHTTPClient:
                             "async": True,
                         },
                     )
+                    _async_call_kwargs: dict[str, t.Scalar] = {
+                        k: v for k, v in kwargs.items() if k != "headers"
+                    }
                     try:
-                        response = await original_request(method, url, *args, **kwargs)
+                        response = await original_request(
+                            method, url, *args, headers=headers, **_async_call_kwargs
+                        )
                         duration_ms = (time.time() - start_time) * 1000
                         status = response.status
                         _ = FlextObservabilityLogging.log_with_context(

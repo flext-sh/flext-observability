@@ -13,10 +13,11 @@ FLEXT Pattern:
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from contextvars import ContextVar
 from uuid import uuid4
 
-from flext_core import FlextRuntime, m, r
+from flext_core import FlextRuntime, m, r, t
 from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 
 
@@ -111,7 +112,7 @@ class FlextObservabilityContext:
         FlextObservabilityContext._trace_id.set("")
 
     @staticmethod
-    def from_headers(headers: m.Dict | object) -> r[bool]:
+    def from_headers(headers: m.Dict | Mapping[str, t.Scalar]) -> r[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming

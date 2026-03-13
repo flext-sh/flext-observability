@@ -205,7 +205,7 @@ class FlextObservabilityLogging:
         logger: BindableLogger,
         level: str,
         message: str,
-        extra: object | m.Dict | None = None,
+        extra: m.Dict | None = None,
         *,
         include_baggage: bool = False,
     ) -> r[bool]:
@@ -252,7 +252,8 @@ class FlextObservabilityLogging:
                 )
             log_context = context_result.value.model_dump(exclude_none=True)
             extra_context = log_context.pop("extra", {})
-            log_context.update(extra_context)
+            if isinstance(extra_context, dict):
+                log_context.update(extra_context)
             if extra:
                 log_context.update(extra)
             getattr(logger, level)(message, extra=log_context)
