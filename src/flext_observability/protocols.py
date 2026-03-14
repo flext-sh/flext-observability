@@ -204,9 +204,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 """Get health status for all services."""
                 ...
 
-            def get_service_status(
-                self, service_name: str
-            ) -> FlextProtocols.Result:
+            def get_service_status(self, service_name: str) -> FlextProtocols.Result:
                 """Get service health status."""
                 ...
 
