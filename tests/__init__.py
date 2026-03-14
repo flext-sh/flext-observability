@@ -39,29 +39,14 @@ if TYPE_CHECKING:
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
-    "TestFlextObservabilityConstants": (
-        "tests.unit.test_constants",
-        "TestFlextObservabilityConstants",
-    ),
-    "TestFlextObservabilityMasterFactoryReal": (
-        "tests.unit.test_factory",
-        "TestFlextObservabilityMasterFactoryReal",
-    ),
+    "TestFlextObservabilityConstants": ("tests.unit.test_constants", "TestFlextObservabilityConstants"),
+    "TestFlextObservabilityMasterFactoryReal": ("tests.unit.test_factory", "TestFlextObservabilityMasterFactoryReal"),
     "TestInitCoverage": ("tests.unit.test_init", "TestInitCoverage"),
-    "TestsFlextObservabilityConstants": (
-        "tests.constants",
-        "TestsFlextObservabilityConstants",
-    ),
+    "TestsFlextObservabilityConstants": ("tests.constants", "TestsFlextObservabilityConstants"),
     "TestsFlextObservabilityModels": ("tests.models", "TestsFlextObservabilityModels"),
-    "TestsFlextObservabilityProtocols": (
-        "tests.protocols",
-        "TestsFlextObservabilityProtocols",
-    ),
+    "TestsFlextObservabilityProtocols": ("tests.protocols", "TestsFlextObservabilityProtocols"),
     "TestsFlextObservabilityTypes": ("tests.typings", "TestsFlextObservabilityTypes"),
-    "TestsFlextObservabilityUtilities": (
-        "tests.utilities",
-        "TestsFlextObservabilityUtilities",
-    ),
+    "TestsFlextObservabilityUtilities": ("tests.utilities", "TestsFlextObservabilityUtilities"),
     "c": ("tests.unit.test_constants", "TestFlextObservabilityConstants"),
     "m": ("tests.models", "m"),
     "p": ("tests.protocols", "p"),
