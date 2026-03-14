@@ -17,6 +17,7 @@ from flext_core import (
     FlextRuntime,
     p,
     r,
+    t,
 )
 from pydantic import Field
 
@@ -66,12 +67,12 @@ class FlextObservability:
         value: float
         unit: str
         metric_type: str
-        labels: Annotated[dict[str, object], Field(default_factory=dict)]
+        labels: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
 
     class Trace(FlextModels.Entity):
         trace_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
         name: str
-        attributes: Annotated[dict[str, object], Field(default_factory=dict)]
+        attributes: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
 
     class Alert(FlextModels.Entity):
         id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
@@ -79,13 +80,13 @@ class FlextObservability:
         message: str
         severity: str
         source: str
-        labels: Annotated[dict[str, object], Field(default_factory=dict)]
+        labels: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
 
     class HealthCheck(FlextModels.Entity):
         id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
         component: str
         status: str
-        details: Annotated[dict[str, object], Field(default_factory=dict)]
+        details: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
 
     class LogEntry(FlextModels.Entity):
         id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
@@ -95,7 +96,7 @@ class FlextObservability:
         timestamp: Annotated[
             datetime, Field(default_factory=lambda: datetime.now(tz=UTC))
         ]
-        context: Annotated[dict[str, object], Field(default_factory=dict)]
+        context: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
 
     class MetricsService:
         """Service for metrics collection and recording.
@@ -119,7 +120,7 @@ class FlextObservability:
             name: str,
             value: float,
             unit: str = "count",
-            labels: dict[str, object] | None = None,
+            labels: dict[str, t.Scalar] | None = None,
         ) -> r[FlextObservability.Metric]:
             """Record a metric with validation."""
             try:
@@ -139,11 +140,13 @@ class FlextObservability:
                 elif name.endswith(("_duration", "_seconds")):
                     metric_type = c.Observability.MetricType.HISTOGRAM
                 metric = FlextObservability.Metric(
+                    id=str(uuid4()),
                     name=name,
                     value=float(value),
                     unit=unit,
                     metric_type=metric_type,
                     labels=labels or {},
+                    domain_events=[],
                 )
                 self._metrics.append(metric)
                 return r[FlextObservability.Metric].ok(metric)
@@ -167,7 +170,7 @@ class FlextObservability:
             self._traces = []
 
         def start_trace(
-            self, name: str, attributes: dict[str, object] | None = None
+            self, name: str, attributes: dict[str, t.Scalar] | None = None
         ) -> r[FlextObservability.Trace]:
             """Start a distributed trace."""
             try:
@@ -175,7 +178,12 @@ class FlextObservability:
                     return r[FlextObservability.Trace].fail(
                         "Trace name must be non-empty string"
                     )
-                trace = FlextObservability.Trace(name=name, attributes=attributes or {})
+                trace = FlextObservability.Trace(
+                    trace_id=str(uuid4()),
+                    name=name,
+                    attributes=attributes or {},
+                    domain_events=[],
+                )
                 self._traces.append(trace)
                 return r[FlextObservability.Trace].ok(trace)
             except (ValueError, TypeError, AttributeError) as e:
@@ -201,7 +209,7 @@ class FlextObservability:
             message: str,
             severity: Literal["info", "warning", "error", "critical"] = "warning",
             source: str = "system",
-            labels: dict[str, object] | None = None,
+            labels: dict[str, t.Scalar] | None = None,
         ) -> r[FlextObservability.Alert]:
             """Create an alert with validation."""
             try:
@@ -214,11 +222,13 @@ class FlextObservability:
                         "Alert message cannot be empty"
                     )
                 alert = FlextObservability.Alert(
+                    id=str(uuid4()),
                     title=title,
                     message=message,
                     severity=severity,
                     source=source,
                     labels=labels or {},
+                    domain_events=[],
                 )
                 self._alerts.append(alert)
                 return r[FlextObservability.Alert].ok(alert)
@@ -243,7 +253,7 @@ class FlextObservability:
             self,
             component: str,
             status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
-            details: dict[str, object] | None = None,
+            details: dict[str, t.Scalar] | None = None,
         ) -> r[FlextObservability.HealthCheck]:
             """Create a health check."""
             try:
@@ -256,7 +266,11 @@ class FlextObservability:
                         f"Invalid health status: {status}"
                     )
                 health = FlextObservability.HealthCheck(
-                    component=component, status=status, details=details or {}
+                    id=str(uuid4()),
+                    component=component,
+                    status=status,
+                    details=details or {},
+                    domain_events=[],
                 )
                 self._checks.append(health)
                 return r[FlextObservability.HealthCheck].ok(health)
@@ -284,7 +298,7 @@ class FlextObservability:
             message: str,
             level: Literal["debug", "info", "warning", "error", "critical"] = "info",
             component: str = "application",
-            context: dict[str, object] | None = None,
+            context: dict[str, t.Scalar] | None = None,
         ) -> r[FlextObservability.LogEntry]:
             """Create a log entry."""
             try:
@@ -293,10 +307,13 @@ class FlextObservability:
                         "Log message cannot be empty"
                     )
                 entry = FlextObservability.LogEntry(
+                    id=str(uuid4()),
                     message=message,
                     level=level,
                     component=component,
+                    timestamp=datetime.now(tz=UTC),
                     context=context or {},
+                    domain_events=[],
                 )
                 self._entries.append(entry)
                 return r[FlextObservability.LogEntry].ok(entry)
@@ -315,8 +332,8 @@ def flext_metric(
     unit: str = "count",
     metric_type: c.Observability.MetricType | None = None,
     metric_id: str | None = None,
-    tags: dict[str, object] | None = None,
-    labels: dict[str, object] | None = None,
+    tags: dict[str, t.Scalar] | None = None,
+    labels: dict[str, t.Scalar] | None = None,
 ) -> r[FlextObservability.Metric]:
     """Create a metric entity directly."""
     _ = metric_id
@@ -329,12 +346,12 @@ def flext_metric(
             return r[FlextObservability.Metric].fail(
                 "Metric value must be a valid number"
             )
-        all_labels_data: dict[str, object] = {}
+        all_labels_data: dict[str, t.Scalar] = {}
         if tags:
             all_labels_data.update(tags)
         if labels:
             all_labels_data.update(labels)
-        all_labels: dict[str, object] = all_labels_data
+        all_labels: dict[str, t.Scalar] = all_labels_data
         detected_type: c.Observability.MetricType = (
             metric_type or c.Observability.MetricType.GAUGE
         )
@@ -350,6 +367,7 @@ def flext_metric(
             unit=unit,
             metric_type=detected_type,
             labels=all_labels,
+            domain_events=[],
         )
         return r[FlextObservability.Metric].ok(metric)
     except (ValueError, TypeError, AttributeError) as e:
@@ -358,7 +376,7 @@ def flext_metric(
 
 def flext_trace(
     name: str,
-    attributes: dict[str, object] | None = None,
+    attributes: dict[str, t.Scalar] | None = None,
     trace_id: str | None = None,
 ) -> r[FlextObservability.Trace]:
     """Create a trace entity directly."""
@@ -368,7 +386,10 @@ def flext_trace(
                 "Trace name must be non-empty string"
             )
         trace = FlextObservability.Trace(
-            name=name, trace_id=trace_id or str(uuid4()), attributes=attributes or {}
+            name=name,
+            trace_id=trace_id or str(uuid4()),
+            attributes=attributes or {},
+            domain_events=[],
         )
         return r[FlextObservability.Trace].ok(trace)
     except (ValueError, TypeError, AttributeError) as e:
@@ -382,7 +403,7 @@ def flext_alert(
     status: Literal["firing", "resolved"] = "firing",
     alert_id: str | None = None,
     source: str = "system",
-    labels: dict[str, object] | None = None,
+    labels: dict[str, t.Scalar] | None = None,
 ) -> r[FlextObservability.Alert]:
     """Create an alert entity directly."""
     _ = status
@@ -398,6 +419,7 @@ def flext_alert(
             severity=severity,
             source=source,
             labels=labels or {},
+            domain_events=[],
         )
         return r[FlextObservability.Alert].ok(alert)
     except (ValueError, TypeError, AttributeError) as e:
@@ -408,7 +430,7 @@ def flext_health_check(
     component: str,
     status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
     health_check_id: str | None = None,
-    details: dict[str, object] | None = None,
+    details: dict[str, t.Scalar] | None = None,
 ) -> r[FlextObservability.HealthCheck]:
     """Create a health check entity directly."""
     _ = health_check_id
@@ -426,6 +448,7 @@ def flext_health_check(
             component=component,
             status=status,
             details=details or {},
+            domain_events=[],
         )
         return r[FlextObservability.HealthCheck].ok(health)
     except (ValueError, TypeError, AttributeError) as e:
@@ -439,7 +462,7 @@ def flext_log_entry(
     level: Literal["debug", "info", "warning", "error", "critical"] = "info",
     component: str = "application",
     timestamp: datetime | None = None,
-    context: dict[str, object] | None = None,
+    context: dict[str, t.Scalar] | None = None,
 ) -> r[FlextObservability.LogEntry]:
     """Create a log entry entity directly."""
     try:
@@ -452,6 +475,7 @@ def flext_log_entry(
             component=component,
             timestamp=timestamp or datetime.now(tz=UTC),
             context=context or {},
+            domain_events=[],
         )
         return r[FlextObservability.LogEntry].ok(entry)
     except (ValueError, TypeError, AttributeError) as e:
@@ -527,7 +551,7 @@ class FlextObservabilityMasterFactory:
         title: str,
         message: str,
         severity: str = "warning",
-        tags: dict[str, object] | None = None,
+        tags: dict[str, t.Scalar] | None = None,
         status: str = c.Observability.AlertStatus.FIRING,
         timestamp: datetime | None = None,
     ) -> r[FlextObservability.Alert]:
@@ -566,7 +590,7 @@ class FlextObservabilityMasterFactory:
         message: str,
         service: str = "default",
         severity: str = "warning",
-        tags: dict[str, object] | None = None,
+        tags: dict[str, t.Scalar] | None = None,
     ) -> r[FlextObservability.Alert]:
         """Create an alert (alias)."""
         return self.alert(f"Alert: {service}", message, severity=severity, tags=tags)
@@ -575,7 +599,7 @@ class FlextObservabilityMasterFactory:
         self,
         component: str,
         status: str = c.Observability.HealthStatus.HEALTHY,
-        details: dict[str, object] | None = None,
+        details: dict[str, t.Scalar] | None = None,
     ) -> r[FlextObservability.HealthCheck]:
         """Create a health check (alias)."""
         return self.health_check(component, status=status, metrics=details)
@@ -584,7 +608,7 @@ class FlextObservabilityMasterFactory:
         self,
         message: str,
         level: str = "info",
-        context: dict[str, object] | None = None,
+        context: dict[str, t.Scalar] | None = None,
     ) -> r[FlextObservability.LogEntry]:
         """Create a log entry (alias)."""
         return self.log(message, level=level, context=context)
@@ -594,7 +618,7 @@ class FlextObservabilityMasterFactory:
         name: str,
         value: float,
         unit: str = "count",
-        tags: dict[str, object] | None = None,
+        tags: dict[str, t.Scalar] | None = None,
     ) -> r[FlextObservability.Metric]:
         """Create a metric (alias)."""
         return self.metric(name, value, unit=unit, tags=tags)
@@ -603,10 +627,10 @@ class FlextObservabilityMasterFactory:
         self,
         operation: str,
         service: str = "default",
-        tags: dict[str, object] | None = None,
+        tags: dict[str, t.Scalar] | None = None,
     ) -> r[FlextObservability.Trace]:
         """Create a trace (alias)."""
-        attrs: dict[str, object] | None = None
+        attrs: dict[str, t.Scalar] | None = None
         if tags is not None:
             attrs = dict(tags.items())
         return self.trace(f"trace-{service}", operation, span_attributes=attrs)
@@ -616,7 +640,7 @@ class FlextObservabilityMasterFactory:
         component: str,
         status: str = c.Observability.HealthStatus.HEALTHY,
         message: str | None = None,
-        metrics: dict[str, object] | None = None,
+        metrics: dict[str, t.Scalar] | None = None,
         timestamp: datetime | None = None,
     ) -> r[FlextObservability.HealthCheck]:
         """Create a health check."""
@@ -642,7 +666,7 @@ class FlextObservabilityMasterFactory:
         self,
         message: str,
         level: str = c.Observability.ErrorSeverity.INFO,
-        context: dict[str, object] | None = None,
+        context: dict[str, t.Scalar] | None = None,
         timestamp: datetime | None = None,
     ) -> r[FlextObservability.LogEntry]:
         """Create a log entry."""
@@ -669,7 +693,7 @@ class FlextObservabilityMasterFactory:
         name: str,
         value: float,
         unit: str = "count",
-        tags: dict[str, object] | None = None,
+        tags: dict[str, t.Scalar] | None = None,
         timestamp: datetime | None = None,
     ) -> r[FlextObservability.Metric]:
         """Create a metric."""
@@ -681,7 +705,7 @@ class FlextObservabilityMasterFactory:
         trace_id: str,
         operation: str,
         span_id: str | None = None,
-        span_attributes: dict[str, object] | None = None,
+        span_attributes: dict[str, t.Scalar] | None = None,
         duration_ms: float | None = None,
         status: str = "unset",
     ) -> r[FlextObservability.Trace]:
@@ -689,7 +713,7 @@ class FlextObservabilityMasterFactory:
         _ = span_id
         _ = duration_ms
         _ = status
-        str_attributes: dict[str, object] = {}
+        str_attributes: dict[str, t.Scalar] = {}
         if span_attributes:
             str_attributes = {k: str(v) for k, v in span_attributes.items()}
         return flext_trace(operation, attributes=str_attributes, trace_id=trace_id)

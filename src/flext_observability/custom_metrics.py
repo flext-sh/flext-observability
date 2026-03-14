@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_core import FlextRuntime, m, r
+from flext_core import FlextRuntime, m, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import c
@@ -84,7 +84,7 @@ class FlextObservabilityCustomMetrics:
         def __init__(self) -> None:
             """Initialize metric registry."""
             self._metrics: dict[str, CustomMetricDefinition] = {}
-            self._metric_instances: dict[str, object] = {}
+            self._metric_instances: dict[str, t.Scalar] = {}
             self._namespaces: dict[str, str] = {}
 
         def clear_metrics(self, namespace: str | None = None) -> r[bool]:
@@ -129,10 +129,8 @@ class FlextObservabilityCustomMetrics:
                     for metric_name, metric in self._metrics.items()
                     if metric_name.startswith(f"{namespace}:")
                 }
-                filtered_payload: dict[str, object] = dict(filtered.items())
-                return m.Dict(filtered_payload)
-            all_metrics_payload: dict[str, object] = dict(self._metrics.items())
-            return m.Dict(all_metrics_payload)
+                return m.Dict.model_validate(filtered)
+            return m.Dict.model_validate(self._metrics)
 
         def get_metric(
             self, name: str, namespace: str = "default"

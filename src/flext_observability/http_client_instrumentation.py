@@ -94,7 +94,7 @@ class HTTPXClient(Protocol):
         self,
         method: str,
         url: str,
-        *args: object,
+        *args: t.Scalar,
         **kwargs: t.Scalar,
     ) -> HTTPXResponse: ...
 
@@ -134,21 +134,21 @@ class FlextObservabilityHTTPClient:
     _logger = FlextRuntime.get_logger(__name__)
 
     @staticmethod
-    def _is_httpx_async_client(obj: object) -> TypeGuard[HTTPXAsyncClient]:
+    def _is_httpx_async_client(obj: t.Scalar) -> TypeGuard[HTTPXAsyncClient]:
         """Type guard to check if object is an async httpx client."""
         return hasattr(obj, "_send")
 
     @staticmethod
-    def _is_httpx_client(obj: object) -> TypeGuard[HTTPXClient]:
+    def _is_httpx_client(obj: t.Scalar) -> TypeGuard[HTTPXClient]:
         """Type guard to check if object is an httpx client."""
         return hasattr(obj, "request") or hasattr(obj, "_send")
 
     @staticmethod
-    def _is_aiohttp_session(obj: object) -> TypeGuard[AIOHTTPSession]:
+    def _is_aiohttp_session(obj: t.Scalar) -> TypeGuard[AIOHTTPSession]:
         return hasattr(obj, "request")
 
     @staticmethod
-    def _validated_headers(payload: object) -> MutableMapping[str, str]:
+    def _validated_headers(payload: t.NormalizedValue) -> MutableMapping[str, str]:
         try:
             return _HeadersPayload.model_validate(obj={"headers": payload}).headers
         except ValidationError:
@@ -157,10 +157,10 @@ class FlextObservabilityHTTPClient:
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
 
-        instrumented_clients: ClassVar[set[object]] = set()
+        instrumented_clients: ClassVar[set[t.Scalar]] = set()
 
         @staticmethod
-        def setup_instrumentation(client: object) -> r[bool]:
+        def setup_instrumentation(client: t.Scalar) -> r[bool]:
             """Setup httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -284,7 +284,7 @@ class FlextObservabilityHTTPClient:
                     def traced_request(
                         method: str,
                         url: str,
-                        *args: object,
+                        *args: t.Scalar,
                         **kwargs: t.Scalar,
                     ) -> HTTPXResponse:
                         """Traced request wrapper for sync httpx."""
@@ -367,7 +367,7 @@ class FlextObservabilityHTTPClient:
         instrumented_sessions: ClassVar[set[AIOHTTPSession]] = set()
 
         @staticmethod
-        def setup_instrumentation(session: object) -> r[bool]:
+        def setup_instrumentation(session: t.Scalar) -> r[bool]:
             """Setup aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests
@@ -417,7 +417,7 @@ class FlextObservabilityHTTPClient:
                 async def traced_request(
                     method: str,
                     url: str,
-                    *args: object,
+                    *args: t.Scalar,
                     **kwargs: t.Scalar,
                 ) -> AIOHTTPResponse:
                     """Traced request wrapper for aiohttp."""

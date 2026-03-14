@@ -19,7 +19,7 @@ from typing import Annotated
 from uuid import uuid4
 
 from flext_core import FlextRuntime, m, r, t
-from pydantic import BaseModel, Field, TypeAdapter, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 
 class _BaggageKeyModel(BaseModel):
@@ -157,7 +157,9 @@ class FlextObservabilityContext:
             return r[bool].ok(value=True)
 
     @staticmethod
-    def get_baggage(key: str | None = None) -> object | m.Dict | None:
+    def get_baggage(
+        key: str | None = None,
+    ) -> BaseModel | t.NormalizedValue | m.Dict | None:
         """Get baggage value.
 
         Args:
@@ -241,7 +243,7 @@ class FlextObservabilityContext:
         return FlextObservabilityContext._trace_id.get("")
 
     @staticmethod
-    def set_baggage(key: str, value: object) -> r[bool]:
+    def set_baggage(key: str, value: t.NormalizedValue) -> r[bool]:
         """Set baggage value for metadata propagation.
 
         Baggage allows passing metadata across service boundaries
@@ -269,12 +271,6 @@ class FlextObservabilityContext:
                 _BaggageKeyModel.model_validate(obj={"key": key})
             except ValidationError:
                 return r[bool].fail("Baggage key must be non-empty string")
-            try:
-                TypeAdapter(object).dump_json(value)
-            except (TypeError, ValueError):
-                return r[bool].fail(
-                    f"Baggage value for '{key}' must be JSON serializable"
-                )
             current_baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
             updated_baggage = m.Dict({
                 **dict(current_baggage.items()),

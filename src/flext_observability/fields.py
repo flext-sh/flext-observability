@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import ClassVar
 
+from flext_core import t
 from pydantic import Field, field_validator
 
 from flext_observability import FlextObservabilityConstants
@@ -73,17 +74,17 @@ class FlextObservabilityFields:
             return numeric_value
 
     @classmethod
-    def create_alert_message_field(cls) -> object:
+    def create_alert_message_field(cls) -> t.Scalar:
         """Create alert message field."""
         return Field(min_length=1, max_length=1000, description="Alert message")
 
     @classmethod
-    def create_metric_name_field(cls) -> object:
+    def create_metric_name_field(cls) -> t.Scalar:
         """Create metric name field."""
         return Field(min_length=1, max_length=255, description="Metric name")
 
     @classmethod
-    def create_metric_unit_field(cls) -> object:
+    def create_metric_unit_field(cls) -> t.Scalar:
         """Create metric unit field."""
         return Field(
             default=FlextObservabilityConstants.Observability.Defaults.DEFAULT_METRIC_UNIT,
@@ -91,17 +92,17 @@ class FlextObservabilityFields:
         )
 
     @classmethod
-    def create_metric_value_field(cls) -> object:
+    def create_metric_value_field(cls) -> t.Scalar:
         """Create metric value field."""
         return Field(ge=0.0, description="Metric value (non-negative)")
 
     @classmethod
-    def create_timestamp_field(cls) -> object:
+    def create_timestamp_field(cls) -> t.Scalar:
         """Create timestamp field."""
         return Field(default_factory=lambda: datetime.now(UTC), description="Timestamp")
 
     @classmethod
-    def create_trace_name_field(cls) -> object:
+    def create_trace_name_field(cls) -> t.Scalar:
         """Create trace name field."""
         return Field(min_length=1, max_length=255, description="Trace operation name")
 

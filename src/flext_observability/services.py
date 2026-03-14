@@ -42,7 +42,7 @@ class FlextObservabilityServices:
         return self._container
 
     @property
-    def health_service(self) -> object | None:
+    def health_service(self) -> m.Dict | None:
         """Generic health service - not implemented in base service."""
         return None
 

@@ -31,7 +31,7 @@ class FlextObservabilityMonitor:
     Unified class with nested helpers - no loose functions.
     """
 
-    object_callable = Callable[..., object]
+    object_callable = Callable[..., t.Scalar]
     logger = FlextRuntime.get_logger(__name__)
 
     class ObservabilityService(Protocol):
@@ -51,20 +51,20 @@ class FlextObservabilityMonitor:
         @staticmethod
         def call_any_function(
             func: FlextObservabilityMonitor.object_callable,
-            *args: object,
+            *args: t.Scalar,
             **kwargs: t.Scalar,
-        ) -> object:
+        ) -> t.Scalar:
             """Helper to call function with flexible arguments."""
             return func(*args, **kwargs)
 
         @staticmethod
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
-            args: tuple[object, ...],
+            args: tuple[t.Scalar, ...],
             kwargs: dict[str, t.Scalar] | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
-        ) -> object:
+        ) -> t.Scalar:
             """Execute function with monitoring."""
             function_name = getattr(func, "__name__", "unknown_function")
             actual_metric_name = metric_name or f"function_execution_{function_name}"
@@ -312,7 +312,7 @@ class FlextObservabilityMonitor:
                 func: FlextObservabilityMonitor.object_callable,
             ) -> FlextObservabilityMonitor.object_callable:
 
-                def wrapper(*args: object, **kwargs: t.Scalar) -> object:
+                def wrapper(*args: t.Scalar, **kwargs: t.Scalar) -> t.Scalar:
                     active_monitor = monitor or FlextObservabilityMonitor()
                     if not active_monitor.flext_is_initialized():
                         init_result = active_monitor.flext_initialize_observability()

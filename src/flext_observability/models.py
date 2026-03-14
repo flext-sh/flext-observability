@@ -14,7 +14,7 @@ from datetime import UTC, datetime
 from typing import Annotated, ClassVar
 from uuid import uuid4
 
-from flext_core import FlextModels
+from flext_core import FlextModels, t
 from pydantic import ConfigDict, Field, computed_field
 
 
@@ -53,14 +53,14 @@ class FlextObservabilityModels(FlextModels):
             ),
         ]
         data: Annotated[
-            dict[str, object],
+            dict[str, t.Scalar],
             Field(
                 default_factory=dict,
                 description="Generic data payload",
             ),
         ]
         metadata: Annotated[
-            dict[str, object],
+            dict[str, t.Scalar],
             Field(
                 default_factory=dict,
                 description="Generic metadata",
@@ -113,7 +113,7 @@ class FlextObservabilityModels(FlextModels):
             ),
         ]
         settings: Annotated[
-            dict[str, object],
+            dict[str, t.Scalar],
             Field(
                 default_factory=dict,
                 description="Type-specific settings",

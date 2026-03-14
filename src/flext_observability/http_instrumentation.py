@@ -44,7 +44,10 @@ class _StartTimePayload(BaseModel):
 
 
 class FlaskHook(Protocol):
-    def __call__(self, callback: Callable[..., object]) -> Callable[..., object]: ...
+    def __call__(
+        self,
+        callback: Callable[..., t.Scalar | Response | tuple[m.Dict, int] | None],
+    ) -> Callable[..., t.Scalar | Response | tuple[m.Dict, int] | None]: ...
 
 
 class FlaskErrorHandler(Protocol):
@@ -57,7 +60,7 @@ class FlaskApp(Protocol):
     errorhandler: FlaskErrorHandler
 
 
-def _is_flask_app(obj: object) -> TypeGuard[FlaskApp]:
+def _is_flask_app(obj: t.Scalar) -> TypeGuard[FlaskApp]:
     """Type guard to check if object is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
@@ -66,7 +69,7 @@ class FastAPIApp(Protocol):
     def add_middleware(self, middleware_class: type) -> None: ...
 
 
-def _is_fastapi_app(obj: object) -> TypeGuard[FastAPIApp]:
+def _is_fastapi_app(obj: t.Scalar) -> TypeGuard[FastAPIApp]:
     return hasattr(obj, "add_middleware")
 
 
@@ -129,7 +132,7 @@ class FlextObservabilityHTTP:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: object) -> r[bool]:
+        def setup_instrumentation(app: t.Scalar) -> r[bool]:
             """Setup Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -178,10 +181,7 @@ class FlextObservabilityHTTP:
                             dict(request.headers) if request else {}
                         )
                         if request:
-                            headers_payload: dict[str, object] = dict(headers_dict)
-                            FlextObservabilityContext.from_headers(
-                                m.Dict(headers_payload)
-                            )
+                            FlextObservabilityContext.from_headers(headers_dict)
                         correlation_id = FlextObservabilityContext.get_correlation_id()
                         if g:
                             g.flext_start_time = time.time()
@@ -292,7 +292,7 @@ class FlextObservabilityHTTP:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: object) -> r[bool]:
+        def setup_instrumentation(app: t.Scalar) -> r[bool]:
             """Setup FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,
@@ -339,7 +339,7 @@ class FlextObservabilityHTTP:
                 class FlextObservabilityMiddleware:
                     """Starlette-based ASGI middleware for FastAPI."""
 
-                    def __init__(self, app: object) -> None:
+                    def __init__(self, app: t.Scalar) -> None:
                         _ = app
 
                     async def dispatch(
