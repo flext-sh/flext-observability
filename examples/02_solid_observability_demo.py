@@ -47,7 +47,7 @@ def demonstrate_solid_design() -> None:
     factory = FlextObservabilityMasterFactory(container)
     factory.create_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
-    entities: list[object] = [
+    entities: list = [
         result.value
         for result in results
         if hasattr(result, "success")
