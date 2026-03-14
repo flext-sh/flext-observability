@@ -10,20 +10,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import cast
-
-from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes as t
-from flext_core.protocols import p
-from flext_core.utilities import u_core
+from flext_core import FlextContainer, FlextRuntime, m, r, t
+from structlog.typing import BindableLogger
 
 from flext_observability.settings import FlextObservabilitySettings
 
 
-class FlextObservabilityServices(u_core):
+class FlextObservabilityServices:
     """Generic observability services delegating to FLEXT core patterns.
 
     Single unified class providing generic observability operations through
-    complete delegation to FlextContainer, FlextLogger, and FlextResult patterns.
+    complete delegation to FlextContainer, FlextLogger, and r patterns.
     No domain-specific logic - pure generic foundation.
     """
 
@@ -31,8 +28,13 @@ class FlextObservabilityServices(u_core):
         """Initialize with FLEXT core components."""
         super().__init__()
         self._container = FlextContainer.get_global()
-        self._logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
-        self._config = FlextObservabilitySettings.get_global_instance()
+        self._logger = FlextRuntime.get_logger(__name__)
+        self._config = FlextObservabilitySettings.get_global()
+
+    @property
+    def config(self) -> FlextObservabilitySettings:
+        """Access observability config."""
+        return self._config
 
     @property
     def container(self) -> FlextContainer:
@@ -40,39 +42,24 @@ class FlextObservabilityServices(u_core):
         return self._container
 
     @property
-    def logger(self) -> p.Log.StructlogLogger:
+    def health_service(self) -> object | None:
+        """Generic health service - not implemented in base service."""
+        return None
+
+    @property
+    def logger(self) -> BindableLogger:
         """Access FLEXT logger."""
         return self._logger
 
-    @property
-    def config(self) -> FlextObservabilitySettings:
-        """Access observability config."""
-        return self._config
+    def create_alert(self, **_kwargs: t.Scalar) -> r[m.Dict]:
+        """Generic alert creation - not implemented in base service."""
+        return r[m.Dict].fail("Alert creation not implemented in generic service")
 
-    def process_entry(
-        self,
-        entry_data: dict[str, t.GeneralValueType],
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Process generic observability entry through FLEXT patterns."""
-        try:
-            # Delegate validation to FLEXT core
-            if not entry_data:
-                return FlextResult[dict[str, t.GeneralValueType]].fail(
-                    "Entry data required"
-                )
+    def get_metrics_summary(self) -> r[m.Dict]:
+        """Generic metrics summary - not implemented in base service."""
+        return r[m.Dict].fail("Metrics summary not implemented in generic service")
 
-            # Use container for any service resolution
-            processed = entry_data.copy()
-            processed["processed_at"] = "now"
-            processed["processor"] = "flext_observability"
-
-            return FlextResult[dict[str, t.GeneralValueType]].ok(processed)
-        except Exception as e:
-            return FlextResult[dict[str, t.GeneralValueType]].fail(
-                f"Entry processing failed: {e}"
-            )
-
-    def get_status(self) -> FlextResult[dict[str, t.GeneralValueType]]:
+    def get_status(self) -> r[m.Dict]:
         """Get generic service status through FLEXT patterns."""
         try:
             status = {
@@ -81,57 +68,36 @@ class FlextObservabilityServices(u_core):
                 "timestamp": "now",
                 "version": "generic",
             }
-            status_result: dict[str, t.GeneralValueType] = {
+            status_result = m.Dict({
                 "service": status["service"],
                 "status": status["status"],
                 "timestamp": status["timestamp"],
                 "version": status["version"],
-            }
-            return FlextResult[dict[str, t.GeneralValueType]].ok(status_result)
-        except Exception as e:
-            return FlextResult[dict[str, t.GeneralValueType]].fail(
-                f"Status check failed: {e}"
-            )
+            })
+            return r[m.Dict].ok(status_result)
+        except (ValueError, TypeError, KeyError) as e:
+            return r[m.Dict].fail(f"Status check failed: {e}")
 
-    def create_alert(
-        self, **_kwargs: object
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Generic alert creation - not implemented in base service."""
-        return FlextResult[dict[str, t.GeneralValueType]].fail(
-            "Alert creation not implemented in generic service",
-        )
-
-    def get_metrics_summary(self) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Generic metrics summary - not implemented in base service."""
-        return FlextResult[dict[str, t.GeneralValueType]].fail(
-            "Metrics summary not implemented in generic service",
-        )
-
-    @property
-    def health_service(self) -> object | None:
-        """Generic health service - not implemented in base service."""
-        return None
+    def process_entry(self, entry_data: m.Dict) -> r[m.Dict]:
+        """Process generic observability entry through FLEXT patterns."""
+        try:
+            if not entry_data:
+                return r[m.Dict].fail("Entry data required")
+            processed = m.Dict(dict(entry_data.items()))
+            processed["processed_at"] = "now"
+            processed["processor"] = "flext_observability"
+            return r[m.Dict].ok(processed)
+        except (ValueError, TypeError, KeyError) as e:
+            return r[m.Dict].fail(f"Entry processing failed: {e}")
 
 
-# Global factory functions delegating to FLEXT core
 def get_global_factory() -> FlextObservabilityServices:
     """Get global factory instance."""
-    # For now, return new instance directly - container registration
-    # would require protocol implementation
     return FlextObservabilityServices()
 
 
 def reset_global_factory() -> None:
     """Reset global factory through FLEXT container."""
-    # Note: Container may not have remove method, so this is a no-op for now
 
 
-# Alias for backward compatibility
-FlextObservabilityUtilities = FlextObservabilityServices
-
-__all__ = [
-    "FlextObservabilityServices",
-    "FlextObservabilityUtilities",
-    "get_global_factory",
-    "reset_global_factory",
-]
+__all__ = ["FlextObservabilityServices", "get_global_factory", "reset_global_factory"]

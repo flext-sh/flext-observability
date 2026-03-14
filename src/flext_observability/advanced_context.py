@@ -18,60 +18,21 @@ Key Features:
 
 from __future__ import annotations
 
-import json
-from dataclasses import dataclass, field
-from typing import cast
+from collections.abc import Mapping
+from typing import Annotated
 
-from flext_core import FlextLogger, FlextResult
-from flext_core.protocols import p
-
-# Type for JSON-serializable values (no Any allowed)
-# Using PEP 695 type statement for recursive type (Python 3.12+)
-type JSONValue = (
-    str | int | float | bool | list[JSONValue] | dict[str, JSONValue] | None
-)
+from flext_core import FlextLogger, r, t
+from pydantic import BaseModel, Field, TypeAdapter
 
 
-@dataclass
-class ContextSnapshot:
-    """Snapshot of current observability context."""
+class ContextSnapshot(BaseModel):
+    """Snapshot of observability context for restoration in async operations."""
 
-    correlation_id: str
-    trace_id: str
-    span_id: str
-    baggage: dict[str, str] = field(default_factory=dict)
-    metadata: dict[str, JSONValue] = field(default_factory=dict)
-    timestamp: float = field(default_factory=lambda: __import__("time").time())
-
-    def to_dict(
-        self,
-    ) -> dict[str, str | float | dict[str, str] | dict[str, JSONValue]]:
-        """Convert snapshot to dictionary.
-
-        Returns:
-            dict - Snapshot as dictionary
-
-        """
-        return {
-            "correlation_id": self.correlation_id,
-            "trace_id": self.trace_id,
-            "span_id": self.span_id,
-            "baggage": self.baggage,
-            "metadata": self.metadata,
-            "timestamp": self.timestamp,
-        }
-
-    def to_json(self) -> str:
-        """Convert snapshot to JSON.
-
-        Returns:
-            str - Snapshot as JSON string
-
-        """
-        try:
-            return json.dumps(self.to_dict())
-        except (TypeError, ValueError):
-            return "{}"
+    correlation_id: Annotated[str, Field(default="")]
+    trace_id: Annotated[str, Field(default="")]
+    span_id: Annotated[str, Field(default="")]
+    baggage: Annotated[dict[str, str], Field(default_factory=dict)]
+    metadata: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
 
 
 class FlextObservabilityAdvancedContext:
@@ -100,7 +61,7 @@ class FlextObservabilityAdvancedContext:
         Context: Request-local context management
     """
 
-    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
+    _logger = FlextLogger.get_logger(__name__)
     _context_instance: FlextObservabilityAdvancedContext.Context | None = None
 
     class Context:
@@ -108,70 +69,44 @@ class FlextObservabilityAdvancedContext:
 
         def __init__(self) -> None:
             """Initialize advanced context."""
-            self._metadata: dict[str, JSONValue] = {}
+            self._metadata: dict[str, t.Scalar] = {}
             self._baggage: dict[str, str] = {}
             self._request_id: str = ""
             self._parent_context: ContextSnapshot | None = None
 
-        def set_metadata(self, key: str, value: JSONValue) -> FlextResult[bool]:
-            """Set request-local metadata.
-
-            Args:
-                key: Metadata key
-                value: Metadata value (must be JSON serializable)
+        def clear(self) -> r[bool]:
+            """Clear all request-local context.
 
             Returns:
-                FlextResult[bool] - Ok if successful
-
-            Behavior:
-                - Stores in request-local storage
-                - Value must be JSON serializable
-                - Useful for user IDs, request IDs, etc.
+                r[bool] - Ok always
 
             """
             try:
-                # Validate JSON serializability
-                json.dumps(value)
-                self._metadata[key] = value
+                self._metadata.clear()
+                self._baggage.clear()
+                self._request_id = ""
+                FlextObservabilityAdvancedContext._logger.debug("Context cleared")
+                return r[bool].ok(value=True)
+            except (ValueError, TypeError, KeyError) as e:
+                return r[bool].fail(f"Failed to clear context: {e}")
 
-                FlextObservabilityAdvancedContext._logger.debug(f"Metadata set: {key}")
-                return FlextResult[bool].ok(value=True)
-
-            except (TypeError, ValueError) as e:
-                return FlextResult[bool].fail(
-                    f"Metadata value not JSON serializable: {e}",
-                )
-
-        def get_metadata(self, key: str) -> JSONValue | None:
-            """Get request-local metadata.
-
-            Args:
-                key: Metadata key
+        def get_all_baggage(self) -> Mapping[str, str]:
+            """Get all baggage items.
 
             Returns:
-                JSONValue - Metadata value or None
+                dict - All baggage
 
             """
-            return self._metadata.get(key)
+            return self._baggage.copy()
 
-        def set_baggage(self, key: str, value: str) -> FlextResult[bool]:
-            """Set baggage item (W3C Baggage API).
-
-            Args:
-                key: Baggage key
-                value: Baggage value (string)
+        def get_all_metadata(self) -> Mapping[str, t.Scalar]:
+            """Get all request-local metadata.
 
             Returns:
-                FlextResult[bool] - Ok if successful
+                dict - All metadata
 
             """
-            try:
-                self._baggage[key] = value
-                FlextObservabilityAdvancedContext._logger.debug(f"Baggage set: {key}")
-                return FlextResult[bool].ok(value=True)
-
-            except Exception as e:
-                return FlextResult[bool].fail(f"Failed to set baggage: {e}")
+            return self._metadata.copy()
 
         def get_baggage(self, key: str) -> str | None:
             """Get baggage item.
@@ -185,29 +120,104 @@ class FlextObservabilityAdvancedContext:
             """
             return self._baggage.get(key)
 
-        def get_all_metadata(self) -> dict[str, JSONValue]:
-            """Get all request-local metadata.
+        def get_metadata(self, key: str) -> t.Scalar | None:
+            """Get request-local metadata.
+
+            Args:
+                key: Metadata key
 
             Returns:
-                dict - All metadata
+                JSONValue - Metadata value or None
 
             """
-            return self._metadata.copy()
+            return self._metadata.get(key)
 
-        def get_all_baggage(self) -> dict[str, str]:
-            """Get all baggage items.
+        def merge(self, other: FlextObservabilityAdvancedContext.Context) -> r[bool]:
+            """Merge another context into this one.
+
+            Args:
+                other: Other context to merge
 
             Returns:
-                dict - All baggage
+                r[bool] - Ok if successful
 
             """
-            return self._baggage.copy()
+            try:
+                self._metadata.update(other.get_all_metadata())
+                self._baggage.update(other.get_all_baggage())
+                FlextObservabilityAdvancedContext._logger.debug("Context merged")
+                return r[bool].ok(value=True)
+            except (ValueError, TypeError, KeyError) as e:
+                return r[bool].fail(f"Failed to merge context: {e}")
+
+        def restore(self, snapshot: ContextSnapshot) -> r[bool]:
+            """Restore context from snapshot.
+
+            Args:
+                snapshot: Context snapshot to restore
+
+            Returns:
+                r[bool] - Ok if successful
+
+            Behavior:
+                - Restores all metadata and baggage
+                - Useful for async callbacks, background tasks
+
+            """
+            try:
+                self._metadata = snapshot.metadata.copy()
+                self._baggage = snapshot.baggage.copy()
+                FlextObservabilityAdvancedContext._logger.debug(
+                    "Context restored from snapshot"
+                )
+                return r[bool].ok(value=True)
+            except (ValueError, TypeError, KeyError) as e:
+                return r[bool].fail(f"Failed to restore context: {e}")
+
+        def set_baggage(self, key: str, value: str) -> r[bool]:
+            """Set baggage item (W3C Baggage API).
+
+            Args:
+                key: Baggage key
+                value: Baggage value (string)
+
+            Returns:
+                r[bool] - Ok if successful
+
+            """
+            try:
+                self._baggage[key] = value
+                FlextObservabilityAdvancedContext._logger.debug(f"Baggage set: {key}")
+                return r[bool].ok(value=True)
+            except (ValueError, TypeError, KeyError) as e:
+                return r[bool].fail(f"Failed to set baggage: {e}")
+
+        def set_metadata(self, key: str, value: t.Scalar) -> r[bool]:
+            """Set request-local metadata.
+
+            Args:
+                key: Metadata key
+                value: Metadata value (must be JSON serializable)
+
+            Returns:
+                r[bool] - Ok if successful
+
+            Behavior:
+                - Stores in request-local storage
+                - Value must be JSON serializable
+                - Useful for user IDs, request IDs, etc.
+
+            """
+            try:
+                TypeAdapter(t.Scalar).validate_python(value)
+                self._metadata[key] = value
+                FlextObservabilityAdvancedContext._logger.debug(f"Metadata set: {key}")
+                return r[bool].ok(value=True)
+            except (TypeError, ValueError) as e:
+                return r[bool].fail(f"Metadata value not JSON serializable: {e}")
 
         def snapshot(
-            self,
-            correlation_id: str = "",
-            trace_id: str = "",
-            span_id: str = "",
+            self, correlation_id: str = "", trace_id: str = "", span_id: str = ""
         ) -> ContextSnapshot:
             """Create snapshot of current context.
 
@@ -224,76 +234,9 @@ class FlextObservabilityAdvancedContext:
                 correlation_id=correlation_id,
                 trace_id=trace_id,
                 span_id=span_id,
-                baggage=self.get_all_baggage(),
-                metadata=self.get_all_metadata(),
+                baggage=dict(self.get_all_baggage()),
+                metadata=dict(self.get_all_metadata()),
             )
-
-        def restore(self, snapshot: ContextSnapshot) -> FlextResult[bool]:
-            """Restore context from snapshot.
-
-            Args:
-                snapshot: Context snapshot to restore
-
-            Returns:
-                FlextResult[bool] - Ok if successful
-
-            Behavior:
-                - Restores all metadata and baggage
-                - Useful for async callbacks, background tasks
-
-            """
-            try:
-                self._metadata = snapshot.metadata.copy()
-                self._baggage = snapshot.baggage.copy()
-
-                FlextObservabilityAdvancedContext._logger.debug(
-                    "Context restored from snapshot",
-                )
-                return FlextResult[bool].ok(value=True)
-
-            except Exception as e:
-                return FlextResult[bool].fail(f"Failed to restore context: {e}")
-
-        def clear(self) -> FlextResult[bool]:
-            """Clear all request-local context.
-
-            Returns:
-                FlextResult[bool] - Ok always
-
-            """
-            try:
-                self._metadata.clear()
-                self._baggage.clear()
-                self._request_id = ""
-
-                FlextObservabilityAdvancedContext._logger.debug("Context cleared")
-                return FlextResult[bool].ok(value=True)
-
-            except Exception as e:
-                return FlextResult[bool].fail(f"Failed to clear context: {e}")
-
-        def merge(
-            self,
-            other: FlextObservabilityAdvancedContext.Context,
-        ) -> FlextResult[bool]:
-            """Merge another context into this one.
-
-            Args:
-                other: Other context to merge
-
-            Returns:
-                FlextResult[bool] - Ok if successful
-
-            """
-            try:
-                self._metadata.update(other.get_all_metadata())
-                self._baggage.update(other.get_all_baggage())
-
-                FlextObservabilityAdvancedContext._logger.debug("Context merged")
-                return FlextResult[bool].ok(value=True)
-
-            except Exception as e:
-                return FlextResult[bool].fail(f"Failed to merge context: {e}")
 
     @staticmethod
     def get_context() -> FlextObservabilityAdvancedContext.Context:
@@ -307,11 +250,24 @@ class FlextObservabilityAdvancedContext:
             FlextObservabilityAdvancedContext._context_instance = (
                 FlextObservabilityAdvancedContext.Context()
             )
-
         return FlextObservabilityAdvancedContext._context_instance
 
     @staticmethod
-    def set_metadata(key: str, value: JSONValue) -> FlextResult[bool]:
+    def get_metadata(key: str) -> t.Scalar | None:
+        """Convenience function: get metadata.
+
+        Args:
+            key: Metadata key
+
+        Returns:
+            JSONValue - Metadata value or None
+
+        """
+        ctx = FlextObservabilityAdvancedContext.get_context()
+        return ctx.get_metadata(key)
+
+    @staticmethod
+    def set_metadata(key: str, value: t.Scalar) -> r[bool]:
         """Convenience function: set metadata.
 
         Args:
@@ -319,32 +275,11 @@ class FlextObservabilityAdvancedContext:
             value: Metadata value
 
         Returns:
-            FlextResult[bool] - Ok if successful
+            r[bool] - Ok if successful
 
         """
         ctx = FlextObservabilityAdvancedContext.get_context()
         return ctx.set_metadata(key, value)
 
-    @staticmethod
-    def get_metadata(key: str) -> JSONValue | None:
-        """Convenience function: get metadata.
 
-        Args:
-            key: Metadata key
-
-        Returns:
-            Any - Metadata value or None
-
-        """
-        ctx = FlextObservabilityAdvancedContext.get_context()
-        return ctx.get_metadata(key)
-
-
-# ============================================================================
-# MODULE EXPORTS
-# ============================================================================
-
-__all__ = [
-    "ContextSnapshot",
-    "FlextObservabilityAdvancedContext",
-]
+__all__ = ["ContextSnapshot", "FlextObservabilityAdvancedContext"]

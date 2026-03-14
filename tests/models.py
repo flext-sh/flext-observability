@@ -13,9 +13,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests.models import FlextTestsModels
+from flext_tests import FlextTestsModels
 
-from flext_observability.models import FlextObservabilityModels
+from flext_observability import FlextObservabilityModels
 
 
 class TestsFlextObservabilityModels(FlextTestsModels, FlextObservabilityModels):
@@ -53,7 +53,14 @@ class TestsFlextObservabilityModels(FlextTestsModels, FlextObservabilityModels):
 
 # Short aliases per FLEXT convention
 tm = TestsFlextObservabilityModels  # Primary test models alias
-m = TestsFlextObservabilityModels  # Alternative alias for production model access
+m = FlextObservabilityModels  # Production models alias
+
+__all__ = [
+    "TestsFlextObservabilityModels",
+    "m",
+    "tm",
+]
+tm = TestsFlextObservabilityModels  # Primary test models alias
 
 __all__ = [
     "TestsFlextObservabilityModels",

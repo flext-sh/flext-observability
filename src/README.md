@@ -52,13 +52,13 @@ src/flext_observability/
 
 1. **Clean Architecture**: Clear separation between domain, application, and infrastructure layers
 1. **Domain-Driven Design**: Rich domain models with business logic encapsulation
-1. **Railway-Oriented Programming**: FlextResult[T] patterns throughout
+1. **Railway-Oriented Programming**: r[T] patterns throughout
 1. **Type Safety**: MyPy strict mode adoption; aiming for complete annotations
 1. **Enterprise Standards**: Professional code quality and documentation
 
 ## Integration Points
 
-- **flext-core**: Foundation patterns (FlextModels.Entity, FlextResult, FlextContainer)
+- **flext-core**: Foundation patterns (FlextModels.Entity, r, FlextContainer)
 - **OpenTelemetry**: Industry-standard telemetry (future integration)
 - **Prometheus**: Metrics export and collection compatibility
 - **Structured Logging**: JSON logging with correlation ID support
@@ -69,7 +69,7 @@ src/flext_observability/
 - **95% Test Coverage**: Comprehensive test suites
 - **Zero Tolerance Quality**: All quality gates must pass
 - **Documentation Standards**: Enterprise-grade docstrings
-- **Railway-Oriented**: All operations return FlextResult[T]
+- **Railway-Oriented**: All operations return r[T]
 
 ## Usage Patterns
 
@@ -79,12 +79,13 @@ from flext_observability import (
     flext_create_metric,
     flext_create_trace,
     flext_monitor_function,
-    FlextMetricsService
+    FlextMetricsService,
 )
 
 # Create observability data
 metric_result = flext_create_metric("api_requests", 42, "count")
 trace_result = flext_create_trace("user_login", "auth-service")
+
 
 # Use monitoring decorators
 @flext_monitor_function("business_operation")

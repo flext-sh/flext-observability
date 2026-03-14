@@ -60,6 +60,7 @@ def mock_container():
     """Mock container for service testing."""
     return Mock(spec=FlextContainer)
 
+
 def test_metrics_service_record_metric(mock_container):
     """Test service logic without external dependencies."""
     service = FlextMetricsService(mock_container)

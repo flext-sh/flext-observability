@@ -39,7 +39,7 @@ Core business entities with domain validation and business logic:
 - **FlextAlert**: Alert management entity with severity handling
 - **FlextHealthCheck**: Health monitoring entity with dependency validation
 - **FlextLogEntry**: Structured logging entity with correlation ID support
-- **u.Generators**: Utility functions for ID generation and timestamps
+- **u**: Utility functions for ID generation and timestamps
 
 ### Application Layer
 
@@ -133,7 +133,7 @@ metric = FlextMetric(
     name="api_response_time",
     value=150.5,
     unit="milliseconds",
-    tags={"service": "user-api"}
+    tags={"service": "user-api"},
 )
 
 validation = metric.validate_business_rules()
@@ -144,7 +144,7 @@ if validation.success:
 ### Service Layer Usage
 
 ```python
-from flext_observability.services import FlextMetricsService
+from flext_observability import FlextMetricsService
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
@@ -160,7 +160,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -177,7 +177,7 @@ if result.success:
 ### Factory Pattern Usage
 
 ```python
-from flext_observability.factory import FlextObservabilityMasterFactory
+from flext_observability import FlextObservabilityMasterFactory
 
 factory = FlextObservabilityMasterFactory()
 metric_result = factory.create_metric("cpu_usage", 75.2, "percent")
@@ -190,7 +190,7 @@ if metric_result.success:
 ### Simple API Usage
 
 ```python
-from flext_observability.flext_simple import flext_create_metric, flext_create_trace
+from flext_observability import flext_create_metric, flext_create_trace
 
 # Quick metric creation
 metric_result = flext_create_metric("requests_total", 1, "count")
@@ -202,7 +202,8 @@ trace_result = flext_create_trace("user_login", "auth-service")
 ### Monitoring Decorator Usage
 
 ```python
-from flext_observability.flext_monitor import flext_monitor_function
+from flext_observability import flext_monitor_function
+
 
 @flext_monitor_function("order_processing")
 def process_order(order_data: dict) -> dict[str, object]:
@@ -216,7 +217,7 @@ def process_order(order_data: dict) -> dict[str, object]:
 
 All modules follow FLEXT ecosystem standards:
 
-- **FlextResult[T]** for railway-oriented programming
+- **r[T]** for railway-oriented programming
 - **FlextContainer** for dependency injection
 - **FlextModels.Entity** base patterns for domain entities
 - **Type safety** with comprehensive annotations
@@ -226,9 +227,9 @@ All modules follow FLEXT ecosystem standards:
 ```python
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
-def handle_user_request(request: dict) -> FlextResult[t.Dict]:
+def handle_user_request(request: dict) -> r[t.Dict]:
     # Automatic metrics, tracing, and logging
-    return FlextResult[bool].ok({"status": "processed"})
+    return r[bool].ok({"status": "processed"})
 ```
 
 ## Quality Standards
@@ -238,13 +239,13 @@ All modules in this package maintain:
 - **100% Type Coverage**: Complete type annotations
 - **95% Test Coverage**: Comprehensive test suites
 - **Domain Validation**: Business rule enforcement
-- **Error Handling**: FlextResult patterns throughout
+- **Error Handling**: r patterns throughout
 - **Documentation**: Enterprise-grade docstrings
 
 ## Development Guidelines
 
 1. **Follow Clean Architecture**: Maintain clear layer separation
-1. **Use FlextResult**: All operations return FlextResult[T]
+1. **Use r**: All operations return r[T]
 1. **Domain Validation**: Implement validate_business_rules() for entities
 1. **Type Safety**: Complete type annotations required
 1. **Test Coverage**: 95% minimum coverage for all new code

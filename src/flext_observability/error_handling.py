@@ -18,44 +18,50 @@ Key Features:
 
 from __future__ import annotations
 
-import hashlib
 import time
-from dataclasses import dataclass, field
-from typing import cast
+from collections.abc import Callable, MutableMapping
+from hashlib import sha256
+from typing import Annotated
 
-from flext_core import FlextLogger, FlextResult, FlextTypes as t
-from flext_core.protocols import p
+from flext_core import FlextLogger, r
+from pydantic import BaseModel, Field, ValidationError
 
-from flext_observability.constants import c
-from flext_observability.context import FlextObservabilityContext
-
-# Alias for backward compatibility - ErrorSeverity is now centralized in constants.py
-ErrorSeverity = c.Observability.ErrorSeverity
+from flext_observability import FlextObservabilityContext, c
 
 
-@dataclass
-class ErrorEvent:
-    """Represents an error event."""
+class _CooldownInput(BaseModel):
+    seconds: Annotated[float, Field(gt=0)]
 
-    error_type: str
-    message: str
-    severity: ErrorSeverity
-    timestamp: float = field(default_factory=time.time)
-    correlation_id: str = ""
-    context: dict[str, t.GeneralValueType] = field(default_factory=dict)
+
+class _ThresholdInput(BaseModel):
+    threshold: Annotated[int, Field(ge=1)]
+
+
+class ErrorEvent(BaseModel):
+    """Error event with fingerprinting for deduplication and alerting."""
+
+    error_type: Annotated[str, Field(min_length=1)]
+    message: Annotated[str, Field(min_length=1)]
+    severity: c.Observability.ErrorSeverity = c.Observability.ErrorSeverity.ERROR
     fingerprint: str = ""
+    correlation_id: str = ""
 
-    def calculate_fingerprint(self) -> str:
-        """Calculate fingerprint for error deduplication.
+    def calculate_fingerprint(self) -> None:
+        """Calculate SHA256 fingerprint from error type and message."""
+        self.fingerprint = sha256(
+            f"{self.error_type}:{self.message}".encode()
+        ).hexdigest()
 
-        Returns:
-            str - Error fingerprint hash
 
-        """
-        # Create fingerprint from error type and message
-        fingerprint_data = f"{self.error_type}:{self.message}"
-        self.fingerprint = hashlib.sha256(fingerprint_data.encode()).hexdigest()
-        return self.fingerprint
+def _extract_validation_message(error: ValidationError) -> str:
+    errors = error.errors()
+    if not errors:
+        return str(error)
+    message = str(errors[0].get("msg", "Validation failed"))
+    prefix = "Value error, "
+    if message.startswith(prefix):
+        return message.removeprefix(prefix)
+    return message
 
 
 class FlextObservabilityErrorHandling:
@@ -73,7 +79,7 @@ class FlextObservabilityErrorHandling:
         error = ErrorEvent(
             error_type="DatabaseError",
             message="Connection timeout",
-            severity=ErrorSeverity.ERROR,
+            severity=c.Observability.ErrorSeverity.ERROR,
         )
 
         # Check if error should be alerted
@@ -86,7 +92,7 @@ class FlextObservabilityErrorHandling:
         Handler: Error handling and deduplication logic
     """
 
-    _logger = cast("p.Log.StructlogLogger", FlextLogger.get_logger(__name__))
+    _logger = FlextLogger(__name__)
     _handler_instance: FlextObservabilityErrorHandling.Handler | None = None
 
     class Handler:
@@ -94,58 +100,91 @@ class FlextObservabilityErrorHandling:
 
         def __init__(self) -> None:
             """Initialize error handler."""
-            self._error_counts: dict[str, int] = {}  # fingerprint -> count
-            self._last_alert_time: dict[str, float] = {}  # fingerprint -> timestamp
-            self._alert_cooldown_sec = 60.0  # Min seconds between alerts
-            self._escalation_threshold = 5  # Escalate after N errors
-            self._deduplication_window_sec = 300  # 5 minutes
+            self._error_counts: MutableMapping[str, int] = {}
+            self._last_alert_time: MutableMapping[str, float] = {}
+            self._alert_cooldown_sec = 60.0
+            self._escalation_threshold = 5
+            self._deduplication_window_sec = 300
 
-        def set_alert_cooldown(self, seconds: float) -> FlextResult[bool]:
-            """Set minimum seconds between alerts for same error.
-
-            Args:
-                seconds: Cooldown duration in seconds
-
-            Returns:
-                FlextResult[bool] - Ok if valid
-
-            """
-            if seconds < 0:
-                return FlextResult[bool].fail("Cooldown must be >= 0")
-
-            self._alert_cooldown_sec = seconds
-            FlextObservabilityErrorHandling._logger.debug(
-                f"Alert cooldown set to {seconds}s",
-            )
-            return FlextResult[bool].ok(value=True)
-
-        def set_escalation_threshold(self, threshold: int) -> FlextResult[bool]:
-            """Set threshold for error escalation.
+        def clear_error_counts(self, older_than_sec: float | None = None) -> r[bool]:
+            """Clear error counts.
 
             Args:
-                threshold: Number of errors before escalation
+                older_than_sec: Clear only counts older than N seconds (None = clear all)
 
             Returns:
-                FlextResult[bool] - Ok if valid
+                r[bool] - Ok if successful
 
             """
-            if threshold < 1:
-                return FlextResult[bool].fail("Threshold must be >= 1")
 
-            self._escalation_threshold = threshold
-            FlextObservabilityErrorHandling._logger.debug(
-                f"Escalation threshold set to {threshold}",
+            def operation() -> bool:
+                if older_than_sec is None:
+                    self._error_counts.clear()
+                    self._last_alert_time.clear()
+                else:
+                    self._error_counts.clear()
+                FlextObservabilityErrorHandling._logger.debug("Error counts cleared")
+                return True
+
+            return self._run_with_result(
+                operation, error_prefix="Failed to clear error counts"
             )
-            return FlextResult[bool].ok(value=True)
 
-        def record_error(self, error: ErrorEvent) -> FlextResult[ErrorEvent]:
+        def get_error_count(self, fingerprint: str) -> int:
+            """Get count of errors with given fingerprint.
+
+            Args:
+                fingerprint: Error fingerprint
+
+            Returns:
+                int - Error count
+
+            """
+            return self._error_counts.get(fingerprint, 0)
+
+        def get_escalated_severity(
+            self,
+            error: ErrorEvent,
+        ) -> c.Observability.ErrorSeverity:
+            """Get escalated severity based on error count.
+
+            Args:
+                error: Error event
+
+            Returns:
+                c.Observability.ErrorSeverity - Escalated severity
+
+            """
+            if not error.fingerprint:
+                error.calculate_fingerprint()
+            count = self._error_counts.get(error.fingerprint, 0)
+            if count >= self._escalation_threshold * 3:
+                return c.Observability.ErrorSeverity.CRITICAL
+            if count >= self._escalation_threshold * 2:
+                return c.Observability.ErrorSeverity.ERROR
+            if count >= self._escalation_threshold:
+                return c.Observability.ErrorSeverity.WARNING
+            return error.severity
+
+        def record_alert_sent(self, error: ErrorEvent) -> None:
+            """Record that alert was sent for error.
+
+            Args:
+                error: Error that was alerted
+
+            """
+            if not error.fingerprint:
+                error.calculate_fingerprint()
+            self._last_alert_time[error.fingerprint] = time.time()
+
+        def record_error(self, error: ErrorEvent) -> r[ErrorEvent]:
             """Record an error event.
 
             Args:
                 error: Error event to record
 
             Returns:
-                FlextResult[ErrorEvent] - Updated error with fingerprint
+                r[ErrorEvent] - Updated error with fingerprint
 
             Behavior:
                 - Calculates fingerprint
@@ -153,34 +192,73 @@ class FlextObservabilityErrorHandling:
                 - Sets correlation ID if available
 
             """
-            try:
-                # Calculate fingerprint
-                error.calculate_fingerprint()
 
-                # Get correlation ID - optional enrichment
+            def operation() -> ErrorEvent:
+                error.calculate_fingerprint()
                 try:
                     error.correlation_id = (
                         FlextObservabilityContext.get_correlation_id()
                     )
-                except Exception as e:
-                    FlextObservabilityErrorHandling._logger.debug(
-                        f"Could not set correlation_id: {e}",
+                except (ValueError, TypeError, KeyError) as e:
+                    FlextObservabilityErrorHandling._logger.warning(
+                        f"Could not set correlation_id, falling back to empty: {e}"
                     )
                     error.correlation_id = ""
-
-                # Increment error count
                 self._error_counts[error.fingerprint] = (
                     self._error_counts.get(error.fingerprint, 0) + 1
                 )
-
                 FlextObservabilityErrorHandling._logger.debug(
-                    f"Error recorded: {error.error_type} (fingerprint: {error.fingerprint[:8]})",
+                    f"Error recorded: {error.error_type} (fingerprint: {error.fingerprint[:8]})"
                 )
+                return error
 
-                return FlextResult[ErrorEvent].ok(error)
+            return self._run_with_result(
+                operation, error_prefix="Failed to record error"
+            )
 
-            except Exception as e:
-                return FlextResult[ErrorEvent].fail(f"Failed to record error: {e}")
+        def set_alert_cooldown(self, seconds: float) -> r[bool]:
+            """Set minimum seconds between alerts for same error.
+
+            Args:
+                seconds: Cooldown duration in seconds
+
+            Returns:
+                r[bool] - Ok if valid
+
+            """
+            try:
+                validated_seconds = _CooldownInput.model_validate(
+                    obj={"seconds": seconds}
+                ).seconds
+            except ValidationError as error:
+                return r[bool].fail(_extract_validation_message(error))
+            self._alert_cooldown_sec = validated_seconds
+            FlextObservabilityErrorHandling._logger.debug(
+                f"Alert cooldown set to {validated_seconds}s"
+            )
+            return r[bool].ok(value=True)
+
+        def set_escalation_threshold(self, threshold: int) -> r[bool]:
+            """Set threshold for error escalation.
+
+            Args:
+                threshold: Number of errors before escalation
+
+            Returns:
+                r[bool] - Ok if valid
+
+            """
+            try:
+                validated_threshold = _ThresholdInput.model_validate(
+                    obj={"threshold": threshold}
+                ).threshold
+            except ValidationError as error:
+                return r[bool].fail(_extract_validation_message(error))
+            self._escalation_threshold = validated_threshold
+            FlextObservabilityErrorHandling._logger.debug(
+                f"Escalation threshold set to {validated_threshold}"
+            )
+            return r[bool].ok(value=True)
 
         def should_alert_for_error(self, error: ErrorEvent) -> bool:
             """Determine if error should trigger an alert.
@@ -197,98 +275,24 @@ class FlextObservabilityErrorHandling:
                 - Respects severity level
 
             """
-            # Calculate fingerprint if not already done
             if not error.fingerprint:
                 error.calculate_fingerprint()
-
-            # Critical errors always alert
-            if error.severity == ErrorSeverity.CRITICAL:
+            if error.severity == c.Observability.ErrorSeverity.CRITICAL:
                 return True
-
-            # Check cooldown period
             last_alert = self._last_alert_time.get(error.fingerprint, 0)
             if time.time() - last_alert < self._alert_cooldown_sec:
                 return False
-
-            # Check escalation threshold
             count = self._error_counts.get(error.fingerprint, 0)
             return not count < self._escalation_threshold
 
-        def get_escalated_severity(self, error: ErrorEvent) -> ErrorSeverity:
-            """Get escalated severity based on error count.
-
-            Args:
-                error: Error event
-
-            Returns:
-                ErrorSeverity - Escalated severity
-
-            """
-            if not error.fingerprint:
-                error.calculate_fingerprint()
-
-            count = self._error_counts.get(error.fingerprint, 0)
-
-            # Escalate based on count
-            if count >= self._escalation_threshold * 3:
-                return ErrorSeverity.CRITICAL
-            if count >= self._escalation_threshold * 2:
-                return ErrorSeverity.ERROR
-            if count >= self._escalation_threshold:
-                return ErrorSeverity.WARNING
-
-            return error.severity
-
-        def record_alert_sent(self, error: ErrorEvent) -> None:
-            """Record that alert was sent for error.
-
-            Args:
-                error: Error that was alerted
-
-            """
-            if not error.fingerprint:
-                error.calculate_fingerprint()
-
-            self._last_alert_time[error.fingerprint] = time.time()
-
-        def get_error_count(self, fingerprint: str) -> int:
-            """Get count of errors with given fingerprint.
-
-            Args:
-                fingerprint: Error fingerprint
-
-            Returns:
-                int - Error count
-
-            """
-            return self._error_counts.get(fingerprint, 0)
-
-        def clear_error_counts(
-            self,
-            older_than_sec: float | None = None,
-        ) -> FlextResult[bool]:
-            """Clear error counts.
-
-            Args:
-                older_than_sec: Clear only counts older than N seconds (None = clear all)
-
-            Returns:
-                FlextResult[bool] - Ok if successful
-
-            """
+        def _run_with_result[TResult](
+            self, operation: Callable[[], TResult], *, error_prefix: str
+        ) -> r[TResult]:
             try:
-                if older_than_sec is None:
-                    self._error_counts.clear()
-                    self._last_alert_time.clear()
-                else:
-                    # Clear old entries (would need timestamp tracking)
-                    self._error_counts.clear()
-
-                FlextObservabilityErrorHandling._logger.debug("Error counts cleared")
-                return FlextResult[bool].ok(value=True)
-
-            except Exception as e:
-                return FlextResult[bool].fail(f"Failed to clear error counts: {e}")
+                return r[TResult].ok(operation())
+            except (ValueError, TypeError, KeyError) as e:
+                FlextObservabilityErrorHandling._logger.warning(f"{error_prefix}: {e}")
+                return r[TResult].fail(f"{error_prefix}: {e}")
 
     @staticmethod
     def get_handler() -> FlextObservabilityErrorHandling.Handler:
@@ -302,18 +306,17 @@ class FlextObservabilityErrorHandling:
             FlextObservabilityErrorHandling._handler_instance = (
                 FlextObservabilityErrorHandling.Handler()
             )
-
         return FlextObservabilityErrorHandling._handler_instance
 
     @staticmethod
-    def record_error(error: ErrorEvent) -> FlextResult[ErrorEvent]:
+    def record_error(error: ErrorEvent) -> r[ErrorEvent]:
         """Convenience function: record an error.
 
         Args:
             error: Error event
 
         Returns:
-            FlextResult[ErrorEvent] - Updated error with fingerprint
+            r[ErrorEvent] - Updated error with fingerprint
 
         """
         handler = FlextObservabilityErrorHandling.get_handler()
@@ -334,12 +337,4 @@ class FlextObservabilityErrorHandling:
         return handler.should_alert_for_error(error)
 
 
-# ============================================================================
-# MODULE EXPORTS
-# ============================================================================
-
-__all__ = [
-    "ErrorEvent",
-    "ErrorSeverity",
-    "FlextObservabilityErrorHandling",
-]
+__all__ = ["ErrorEvent", "FlextObservabilityErrorHandling"]

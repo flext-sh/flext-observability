@@ -82,7 +82,7 @@ Start with [Getting Started](guides/getting-started.md) → [Simple API](api/sim
 
 ### **For FLEXT Ecosystem Integration**
 
-Start with [Architecture Overview](architecture/README.md) → [CLAUDE.md](../CLAUDE.md)
+Start with [Architecture Overview](architecture/README.md) → [AGENTS.md](../AGENTS.md)
 
 ### **For API Reference**
 
@@ -95,7 +95,7 @@ Quick functions: [Simple API](api/simple-api.md)
 ### ✅ **Implemented & Working**
 
 - **Domain Entities**: FlextMetric, FlextTrace, FlextAlert, FlextHealthCheck with Pydantic v2 validation
-- **Service Layer**: Complete services with FlextResult[T] railway pattern and dependency injection
+- **Service Layer**: Complete services with r[T] railway pattern and dependency injection
 - **Factory Functions**: Simple API (flext_create_metric, flext_create_trace, flext_create_alert, etc.)
 - **Monitoring Decorators**: @flext_monitor_function for automatic instrumentation
 - **Type Safety**: Complete Python 3.13+ type annotations throughout
@@ -147,7 +147,7 @@ All documentation in this project follows FLEXT ecosystem standards:
 
 - **[FLEXT Ecosystem Documentation](../../docs/)** - Overall ecosystem architecture and patterns
 - **[flext-core Documentation](https://github.com/organization/flext/tree/main/flext-core/docs/)** - Foundation library patterns and utilities
-- **[CLAUDE.md](../CLAUDE.md)** - Development guidance for Claude Code AI assistance
+- **[AGENTS.md](../AGENTS.md)** - Development guidance for Claude Code AI assistance
 
 ______________________________________________________________________
 

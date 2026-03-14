@@ -9,9 +9,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests.protocols import FlextTestsProtocols
+from flext_tests import FlextTestsProtocols
 
-from flext_observability.protocols import FlextObservabilityProtocols
+from flext_observability import FlextObservabilityProtocols
 
 
 class TestsFlextObservabilityProtocols(
@@ -20,9 +20,9 @@ class TestsFlextObservabilityProtocols(
     """Test protocols combining FlextTestsProtocols and FlextObservabilityProtocols.
 
     Provides access to:
-    - tp.Tests.Docker.* (from FlextTestsProtocols)
-    - tp.Tests.Factory.* (from FlextTestsProtocols)
-    - tp.Observability.* (from FlextObservabilityProtocols)
+    - p.Tests.Docker.* (from FlextTestsProtocols)
+    - p.Tests.Factory.* (from FlextTestsProtocols)
+    - p.Observability.* (from FlextObservabilityProtocols)
     """
 
     class Tests:
@@ -35,8 +35,6 @@ class TestsFlextObservabilityProtocols(
             """Observability-specific test protocols."""
 
 
-# Runtime aliases
 p = TestsFlextObservabilityProtocols
-tp = TestsFlextObservabilityProtocols
-
-__all__ = ["TestsFlextObservabilityProtocols", "p", "tp"]
+p = TestsFlextObservabilityProtocols
+__all__ = ["TestsFlextObservabilityProtocols", "p"]

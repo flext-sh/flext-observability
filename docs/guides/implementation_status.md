@@ -80,7 +80,7 @@ ______________________________________________________________________
 - Complete Clean Architecture implementation (Domain → Application → Infrastructure)
 - 21 Python modules with proper separation of concerns
 - Domain-Driven Design with rich domain entities
-- Railway-oriented programming with FlextResult[T] throughout
+- Railway-oriented programming with r[T] throughout
 
 ### **Implementation Completion**: 100% ✅
 
@@ -166,7 +166,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -188,7 +188,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -213,7 +213,7 @@ but `T` is not exported in flext-core's `__init__.py`.
 **Solution Required**:
 
 1. **flext-core fix**: Export `T` in flext-core `__init__.py` OR
-1. **flext-observability fix**: Change import to `from flext_core import FlextBus from flext_core import FlextSettings from flext_core import FlextConstants from flext_core import FlextContainer from flext_core import FlextContext from flext_core import FlextDecorators from flext_core import FlextDispatcher from flext_core import FlextExceptions from flext_core import h from flext_core import FlextLogger from flext_core import x from flext_core import FlextModels from flext_core import FlextProcessors from flext_core import p from flext_core import FlextRegistry from flext_core import FlextResult from flext_core import FlextRuntime from flext_core import FlextService from flext_core import t from flext_core import u`
+1. **flext-observability fix**: Change import to `from flext_core import FlextBus from flext_core import FlextSettings from flext_core import FlextConstants from flext_core import FlextContainer from flext_core import FlextContext from flext_core import FlextDecorators from flext_core import FlextDispatcher from flext_core import FlextExceptions from flext_core import h from flext_core import FlextLogger from flext_core import x from flext_core import FlextModels from flext_core import FlextProcessors from flext_core import p from flext_core import FlextRegistry from flext_core import r from flext_core import FlextRuntime from flext_core import FlextService from flext_core import t from flext_core import u`
 
 **Impact**: Unblocks all testing, type checking, and quality validation.
 
@@ -297,7 +297,7 @@ ______________________________________________________________________
 - **Clean Architecture**: Proper layer separation maintained throughout
 - **Domain-Driven Design**: Rich domain entities with business logic
 - **Type Safety**: Complete Python 3.13+ annotations
-- **Railway Pattern**: FlextResult[T] used consistently for error handling
+- **Railway Pattern**: r[T] used consistently for error handling
 - **Dependency Injection**: Proper service registration and resolution
 
 ### **Implementation Decisions**
