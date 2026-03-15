@@ -1,14 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make codegen
 #
-"""FLEXT Observability Tests - Test infrastructure and utilities.
-
-Provides TestsFlextObservability classes extending FlextTests and FlextObservability
-for comprehensive testing.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+"""Tests package."""
 
 from __future__ import annotations
 
@@ -19,6 +12,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
+    from tests import unit
     from tests.constants import TestsFlextObservabilityConstants
     from tests.models import TestsFlextObservabilityModels, m, tm
     from tests.protocols import TestsFlextObservabilityProtocols, p
@@ -67,6 +61,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "t": ("tests.typings", "TestsFlextObservabilityTypes"),
     "tm": ("tests.models", "tm"),
     "u": ("tests.utilities", "TestsFlextObservabilityUtilities"),
+    "unit": ("tests.unit", ""),
 }
 
 __all__ = [
@@ -84,6 +79,7 @@ __all__ = [
     "t",
     "tm",
     "u",
+    "unit",
 ]
 
 
