@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from datetime import datetime
 
 import pytest
-from flext_core import FlextContainer
+from flext_core import FlextContainer, p
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
@@ -27,7 +27,7 @@ class TestFlextObservabilityMasterFactoryReal:
         assert factory.container is container
         factory_default = FlextObservabilityMasterFactory()
         assert factory_default.container is not None
-        assert isinstance(factory_default.container, FlextContainer)
+        assert isinstance(factory_default.container, p.Container)
 
     def test_metric_creation_real_functionality(self) -> None:
         """Test metric creation with actual factory functionality."""

@@ -105,7 +105,7 @@ class FlextObservability:
         Dependency Inversion: Uses r pattern for error handling
         """
 
-        _container: FlextContainer
+        _container: p.Container
         _logger: p.Log.StructlogLogger
         _metrics: list[FlextObservability.Metric]
 
@@ -159,7 +159,7 @@ class FlextObservability:
     class TracingService:
         """Service for distributed tracing."""
 
-        _container: FlextContainer
+        _container: p.Container
         _logger: p.Log.StructlogLogger
         _traces: list[FlextObservability.Trace]
 
@@ -193,7 +193,7 @@ class FlextObservability:
     class AlertingService:
         """Service for alert management."""
 
-        _container: FlextContainer
+        _container: p.Container
         _logger: p.Log.StructlogLogger
         _alerts: list[FlextObservability.Alert]
 
@@ -239,7 +239,7 @@ class FlextObservability:
     class HealthService:
         """Service for health check management."""
 
-        _container: FlextContainer
+        _container: p.Container
         _logger: p.Log.StructlogLogger
         _checks: list[FlextObservability.HealthCheck]
 
@@ -283,7 +283,7 @@ class FlextObservability:
     class LoggingService:
         """Service for structured logging."""
 
-        _container: FlextContainer
+        _container: p.Container
         _logger: p.Log.StructlogLogger
         _entries: list[FlextObservability.LogEntry]
 
@@ -525,7 +525,7 @@ _global_factory_state = _GlobalFactoryState()
 class FlextObservabilityMasterFactory:
     """Master factory for creating observability entities."""
 
-    _container: FlextContainer
+    _container: p.Container
     _metrics_service: FlextObservability.MetricsService
     _tracing_service: FlextObservability.TracingService
     _alerting_service: FlextObservability.AlertingService
@@ -542,7 +542,7 @@ class FlextObservabilityMasterFactory:
         self._logging_service = FlextObservability.LoggingService(self._container)
 
     @property
-    def container(self) -> FlextContainer:
+    def container(self) -> p.Container:
         """Return the container."""
         return self._container
 

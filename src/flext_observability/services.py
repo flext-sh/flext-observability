@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextContainer, FlextRuntime, r, t
+from flext_core import FlextContainer, FlextRuntime, p, r, t
 from structlog.typing import BindableLogger
 
 from flext_observability.settings import FlextObservabilitySettings
@@ -37,7 +37,7 @@ class FlextObservabilityServices:
         return self._config
 
     @property
-    def container(self) -> FlextContainer:
+    def container(self) -> p.Container:
         """Access FLEXT container."""
         return self._container
 
