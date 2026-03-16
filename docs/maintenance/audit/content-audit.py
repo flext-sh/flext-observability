@@ -14,6 +14,8 @@ Usage:
     python docs/maintenance/audit/content-audit.py [--comprehensive] [--output-format json|markdown]
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import re

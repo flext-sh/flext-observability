@@ -8,6 +8,8 @@ Tests realistic scenarios combining:
 - Performance monitoring and sampling
 """
 
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 
