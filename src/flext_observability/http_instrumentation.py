@@ -27,7 +27,7 @@ from collections.abc import Awaitable, Callable, Mapping
 from typing import Annotated, Protocol, TypeGuard
 
 import flask
-from flext_core import FlextRuntime, m, r, t
+from flext_core import FlextRuntime, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
@@ -46,8 +46,8 @@ class _StartTimePayload(BaseModel):
 class FlaskHook(Protocol):
     def __call__(
         self,
-        callback: Callable[..., t.Scalar | Response | tuple[m.Dict, int] | None],
-    ) -> Callable[..., t.Scalar | Response | tuple[m.Dict, int] | None]: ...
+        callback: Callable[..., t.Scalar | Response | tuple[t.Dict, int] | None],
+    ) -> Callable[..., t.Scalar | Response | tuple[t.Dict, int] | None]: ...
 
 
 class FlaskErrorHandler(Protocol):
@@ -88,7 +88,7 @@ class RequestClient(Protocol):
 class Request(Protocol):
     """Protocol for HTTP request objects used by middleware."""
 
-    headers: m.Dict | UserDict[str, str]
+    headers: t.Dict | UserDict[str, str]
     method: str
     url: RequestURL
     client: RequestClient | None
@@ -98,7 +98,7 @@ class Response(Protocol):
     """Protocol for HTTP response objects used by middleware."""
 
     status_code: int
-    headers: m.Dict | UserDict[str, str]
+    headers: t.Dict | UserDict[str, str]
 
 
 class FlextObservabilityHTTP:
@@ -257,7 +257,7 @@ class FlextObservabilityHTTP:
                 errorhandler = app.errorhandler
 
                 @errorhandler(Exception)
-                def flext_error_handler(error: Exception) -> tuple[m.Dict, int]:
+                def flext_error_handler(error: Exception) -> tuple[t.Dict, int]:
                     """Handle exceptions with logging and alerting."""
                     try:
                         FlextObservabilityLogging.log_with_context(
@@ -275,7 +275,7 @@ class FlextObservabilityHTTP:
                         FlextObservabilityHTTP._logger.error(
                             f"Error in error handler: {log_error}"
                         )
-                    return (m.Dict({"error": str(error)}), 500)
+                    return (t.Dict({"error": str(error)}), 500)
 
                 _ = flext_before_request
                 _ = flext_after_request

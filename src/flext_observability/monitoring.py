@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import Protocol, override
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextRuntime, m, r
+from flext_core import FlextContainer, FlextRuntime, r
 
 from flext_observability.constants import c as _obs_c
 from flext_observability.models import FlextObservabilityModels
@@ -37,11 +37,11 @@ class FlextObservabilityMonitor:
     class ObservabilityService(Protocol):
         """Protocol for observability services providing alerts and metrics."""
 
-        def create_alert(self, **kwargs: t.Scalar) -> r[m.Dict]:
+        def create_alert(self, **kwargs: t.Scalar) -> r[t.Dict]:
             """Create an alert with given parameters."""
             ...
 
-        def get_metrics_summary(self) -> r[m.Dict]:
+        def get_metrics_summary(self) -> r[t.Dict]:
             """Get summary of collected metrics."""
             ...
 
@@ -61,7 +61,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[t.Scalar, ...],
-            kwargs: dict[str, t.Scalar] | m.Dict,
+            kwargs: dict[str, t.Scalar] | t.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> t.Scalar:
@@ -183,10 +183,10 @@ class FlextObservabilityMonitor:
                 f"Health status check failed: {e}"
             )
 
-    def flext_get_metrics_summary(self) -> r[m.Dict]:
+    def flext_get_metrics_summary(self) -> r[t.Dict]:
         """Get complete metrics summary."""
         if not self._metrics_service:
-            return r[m.Dict].fail("Metrics service not available")
+            return r[t.Dict].fail("Metrics service not available")
         return self._metrics_service.get_metrics_summary()
 
     def flext_initialize_observability(self) -> r[None]:

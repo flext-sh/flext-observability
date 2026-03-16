@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextContainer, FlextRuntime, m, r, t
+from flext_core import FlextContainer, FlextRuntime, r, t
 from structlog.typing import BindableLogger
 
 from flext_observability.settings import FlextObservabilitySettings
@@ -42,7 +42,7 @@ class FlextObservabilityServices:
         return self._container
 
     @property
-    def health_service(self) -> m.Dict | None:
+    def health_service(self) -> t.Dict | None:
         """Generic health service - not implemented in base service."""
         return None
 
@@ -51,15 +51,15 @@ class FlextObservabilityServices:
         """Access FLEXT logger."""
         return self._logger
 
-    def create_alert(self, **_kwargs: t.Scalar) -> r[m.Dict]:
+    def create_alert(self, **_kwargs: t.Scalar) -> r[t.Dict]:
         """Generic alert creation - not implemented in base service."""
-        return r[m.Dict].fail("Alert creation not implemented in generic service")
+        return r[t.Dict].fail("Alert creation not implemented in generic service")
 
-    def get_metrics_summary(self) -> r[m.Dict]:
+    def get_metrics_summary(self) -> r[t.Dict]:
         """Generic metrics summary - not implemented in base service."""
-        return r[m.Dict].fail("Metrics summary not implemented in generic service")
+        return r[t.Dict].fail("Metrics summary not implemented in generic service")
 
-    def get_status(self) -> r[m.Dict]:
+    def get_status(self) -> r[t.Dict]:
         """Get generic service status through FLEXT patterns."""
         try:
             status = {
@@ -68,27 +68,27 @@ class FlextObservabilityServices:
                 "timestamp": "now",
                 "version": "generic",
             }
-            status_result = m.Dict({
+            status_result = t.Dict({
                 "service": status["service"],
                 "status": status["status"],
                 "timestamp": status["timestamp"],
                 "version": status["version"],
             })
-            return r[m.Dict].ok(status_result)
+            return r[t.Dict].ok(status_result)
         except (ValueError, TypeError, KeyError) as e:
-            return r[m.Dict].fail(f"Status check failed: {e}")
+            return r[t.Dict].fail(f"Status check failed: {e}")
 
-    def process_entry(self, entry_data: m.Dict) -> r[m.Dict]:
+    def process_entry(self, entry_data: t.Dict) -> r[t.Dict]:
         """Process generic observability entry through FLEXT patterns."""
         try:
             if not entry_data:
-                return r[m.Dict].fail("Entry data required")
-            processed = m.Dict(dict(entry_data.items()))
+                return r[t.Dict].fail("Entry data required")
+            processed = t.Dict(dict(entry_data.items()))
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
-            return r[m.Dict].ok(processed)
+            return r[t.Dict].ok(processed)
         except (ValueError, TypeError, KeyError) as e:
-            return r[m.Dict].fail(f"Entry processing failed: {e}")
+            return r[t.Dict].fail(f"Entry processing failed: {e}")
 
 
 def get_global_factory() -> FlextObservabilityServices:

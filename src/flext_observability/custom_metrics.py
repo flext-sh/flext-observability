@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_core import FlextRuntime, m, r, t
+from flext_core import FlextRuntime, r, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import c
@@ -113,7 +113,7 @@ class FlextObservabilityCustomMetrics:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to clear metrics: {e}")
 
-        def get_all_metrics(self, namespace: str | None = None) -> m.Dict:
+        def get_all_metrics(self, namespace: str | None = None) -> t.Dict:
             """Get all registered metrics.
 
             Args:
@@ -129,8 +129,8 @@ class FlextObservabilityCustomMetrics:
                     for metric_name, metric in self._metrics.items()
                     if metric_name.startswith(f"{namespace}:")
                 }
-                return m.Dict.model_validate(filtered)
-            return m.Dict.model_validate(self._metrics)
+                return t.Dict.model_validate(filtered)
+            return t.Dict.model_validate(self._metrics)
 
         def get_metric(
             self, name: str, namespace: str = "default"
@@ -153,7 +153,7 @@ class FlextObservabilityCustomMetrics:
 
         def get_metric_info(
             self, name: str, namespace: str = "default"
-        ) -> m.Dict | None:
+        ) -> t.Dict | None:
             """Get detailed metric information.
 
             Args:
@@ -167,7 +167,7 @@ class FlextObservabilityCustomMetrics:
             metric = self.get_metric(name, namespace)
             if not metric:
                 return None
-            return m.Dict({
+            return t.Dict({
                 "name": metric.name,
                 "type": metric.metric_type.value,
                 "description": metric.description,
@@ -175,7 +175,7 @@ class FlextObservabilityCustomMetrics:
                 "labels": metric.labels,
             })
 
-        def get_metrics_by_type(self, metric_type: MetricType) -> m.Dict:
+        def get_metrics_by_type(self, metric_type: MetricType) -> t.Dict:
             """Get all metrics of a specific type.
 
             Args:
@@ -185,7 +185,7 @@ class FlextObservabilityCustomMetrics:
                 dict - Metrics matching the type
 
             """
-            return m.Dict({
+            return t.Dict({
                 metric_name: metric
                 for metric_name, metric in self._metrics.items()
                 if metric.metric_type == metric_type
