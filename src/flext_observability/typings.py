@@ -15,11 +15,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Literal, TypeVar
+from typing import TypeVar
 
 from flext_core import FlextTypes
 
 T = TypeVar("T")
+
+
+from flext_observability import c
 
 
 class FlextObservabilityTypes(FlextTypes):
@@ -38,27 +41,7 @@ class FlextObservabilityTypes(FlextTypes):
         Observability domain owns monitoring-specific types.
         """
 
-        type ObservabilityProjectType = Literal[
-            "library",
-            "application",
-            "service",
-            "monitoring-service",
-            "metrics-collector",
-            "tracing-service",
-            "alerting-system",
-            "observability-platform",
-            "monitoring-dashboard",
-            "metrics-aggregator",
-            "trace-collector",
-            "health-monitor",
-            "log-aggregator",
-            "apm-service",
-            "monitoring-api",
-            "metrics-exporter",
-            "alertmanager",
-            "observability-gateway",
-            "telemetry-service",
-        ]
+        type ObservabilityProjectType = c.ObservabilityProjectType
         type ObservabilityProjectConfig = dict[
             str, str | int | bool | list[str] | t.Dict
         ]

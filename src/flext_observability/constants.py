@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from enum import StrEnum
+from enum import StrEnum, unique
 from typing import ClassVar, Final, Literal
 
 from flext_core import FlextConstants
@@ -50,6 +50,7 @@ class FlextObservabilityConstants(FlextConstants):
             DEFAULT_MAX_SPAN_ATTRIBUTES: Final[int] = 128
             DEFAULT_MONITORING_ENDPOINT: Final[str] = "http://localhost:9090"
 
+        @unique
         class MetricType(StrEnum):
             """Metric type enumeration.
 
@@ -63,6 +64,7 @@ class FlextObservabilityConstants(FlextConstants):
             HISTOGRAM = "histogram"
             SUMMARY = "summary"
 
+        @unique
         class AlertLevel(StrEnum):
             """Alert level enumeration.
 
@@ -76,6 +78,7 @@ class FlextObservabilityConstants(FlextConstants):
             ERROR = "error"
             CRITICAL = "critical"
 
+        @unique
         class TraceStatus(StrEnum):
             """Trace status enumeration.
 
@@ -92,6 +95,7 @@ class FlextObservabilityConstants(FlextConstants):
             OK = "ok"
             ERROR = "error"
 
+        @unique
         class HealthStatus(StrEnum):
             """Health check status enumeration.
 
@@ -104,6 +108,7 @@ class FlextObservabilityConstants(FlextConstants):
             DEGRADED = "degraded"
             UNHEALTHY = "unhealthy"
 
+        @unique
         class AlertSeverity(StrEnum):
             """Alert severity enumeration.
 
@@ -117,6 +122,7 @@ class FlextObservabilityConstants(FlextConstants):
             ERROR = "error"
             CRITICAL = "critical"
 
+        @unique
         class AlertStatus(StrEnum):
             """Alert status enumeration.
 
@@ -134,6 +140,7 @@ class FlextObservabilityConstants(FlextConstants):
             MAX_METRICS_STORE_SIZE: Final[int] = 1000
             METRICS_STORE_CLEANUP_SIZE: Final[int] = 500
 
+        @unique
         class Service(StrEnum):
             """Service name enumeration.
 
@@ -148,6 +155,7 @@ class FlextObservabilityConstants(FlextConstants):
             HEALTH = "health"
             LOGGING = "logging"
 
+        @unique
         class SamplingDecision(StrEnum):
             """Sampling decision enumeration.
 
@@ -159,6 +167,7 @@ class FlextObservabilityConstants(FlextConstants):
             SAMPLED = "sampled"
             NOT_SAMPLED = "not_sampled"
 
+        @unique
         class ErrorSeverity(StrEnum):
             """Error severity enumeration.
 
@@ -249,6 +258,28 @@ class FlextObservabilityConstants(FlextConstants):
     DEFAULT_SERVICE_NAME: ClassVar[str] = "flext-observability"
     DEFAULT_ENVIRONMENT: ClassVar[str] = "development"
     DEFAULT_HEALTH_CHECK_INTERVAL: ClassVar[int] = 30
+
+    @unique
+    class ObservabilityProjectType(StrEnum):
+        LIBRARY = "library"
+        APPLICATION = "application"
+        SERVICE = "service"
+        MONITORING_SERVICE = "monitoring-service"
+        METRICS_COLLECTOR = "metrics-collector"
+        TRACING_SERVICE = "tracing-service"
+        ALERTING_SYSTEM = "alerting-system"
+        OBSERVABILITY_PLATFORM = "observability-platform"
+        MONITORING_DASHBOARD = "monitoring-dashboard"
+        METRICS_AGGREGATOR = "metrics-aggregator"
+        TRACE_COLLECTOR = "trace-collector"
+        HEALTH_MONITOR = "health-monitor"
+        LOG_AGGREGATOR = "log-aggregator"
+        APM_SERVICE = "apm-service"
+        MONITORING_API = "monitoring-api"
+        METRICS_EXPORTER = "metrics-exporter"
+        ALERTMANAGER = "alertmanager"
+        OBSERVABILITY_GATEWAY = "observability-gateway"
+        TELEMETRY_SERVICE = "telemetry-service"
 
 
 c = FlextObservabilityConstants

@@ -24,7 +24,7 @@ from __future__ import annotations
 import time
 from collections import UserDict
 from collections.abc import Awaitable, Callable, Mapping
-from typing import Annotated, Protocol, TypeGuard
+from typing import Annotated, Protocol, TypeIs
 
 import flask
 from flext_core import FlextRuntime, r, t
@@ -60,7 +60,7 @@ class FlaskApp(Protocol):
     errorhandler: FlaskErrorHandler
 
 
-def _is_flask_app(obj: t.Scalar) -> TypeGuard[FlaskApp]:
+def _is_flask_app(obj: t.Scalar) -> TypeIs[FlaskApp]:
     """Type guard to check if object is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
@@ -69,7 +69,7 @@ class FastAPIApp(Protocol):
     def add_middleware(self, middleware_class: type) -> None: ...
 
 
-def _is_fastapi_app(obj: t.Scalar) -> TypeGuard[FastAPIApp]:
+def _is_fastapi_app(obj: t.Scalar) -> TypeIs[FastAPIApp]:
     return hasattr(obj, "add_middleware")
 
 
