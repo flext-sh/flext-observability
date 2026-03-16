@@ -106,7 +106,7 @@ class FlextObservability:
         """
 
         _container: p.Container
-        _logger: p.Log.StructlogLogger
+        _logger: p.Logger
         _metrics: list[FlextObservability.Metric]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
@@ -160,7 +160,7 @@ class FlextObservability:
         """Service for distributed tracing."""
 
         _container: p.Container
-        _logger: p.Log.StructlogLogger
+        _logger: p.Logger
         _traces: list[FlextObservability.Trace]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
@@ -194,7 +194,7 @@ class FlextObservability:
         """Service for alert management."""
 
         _container: p.Container
-        _logger: p.Log.StructlogLogger
+        _logger: p.Logger
         _alerts: list[FlextObservability.Alert]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
@@ -240,7 +240,7 @@ class FlextObservability:
         """Service for health check management."""
 
         _container: p.Container
-        _logger: p.Log.StructlogLogger
+        _logger: p.Logger
         _checks: list[FlextObservability.HealthCheck]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
@@ -284,7 +284,7 @@ class FlextObservability:
         """Service for structured logging."""
 
         _container: p.Container
-        _logger: p.Log.StructlogLogger
+        _logger: p.Logger
         _entries: list[FlextObservability.LogEntry]
 
         def __init__(self, container: FlextContainer | None = None) -> None:

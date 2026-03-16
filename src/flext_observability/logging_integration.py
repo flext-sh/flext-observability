@@ -71,7 +71,7 @@ class FlextObservabilityLogging:
             name: Logger name (typically __name__)
 
         Returns:
-            r[StructlogLogger] - Logger instance with context enrichment
+            r[Logger] - Logger instance with context enrichment
 
         Example:
             ```python
