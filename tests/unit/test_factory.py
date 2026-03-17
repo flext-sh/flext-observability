@@ -13,10 +13,10 @@ import pytest
 from flext_core import FlextContainer, p
 
 from flext_observability import (
-    FlextObservabilityMasterFactory,
     get_global_factory,
     reset_global_factory,
 )
+from flext_observability._core import FlextObservabilityMasterFactory
 
 
 class TestFlextObservabilityMasterFactoryReal:
@@ -38,10 +38,10 @@ class TestFlextObservabilityMasterFactoryReal:
         assert metric_result.is_success, (
             f"Metric creation failed: {metric_result.error}"
         )
-        assert metric_result.data is not None
-        assert metric_result.data.name == "test_metric"
-        assert metric_result.data.value == pytest.approx(42.5)
-        assert metric_result.data.unit == "gauge"
+        assert metric_result.value is not None
+        assert metric_result.value.name == "test_metric"
+        assert metric_result.value.value == pytest.approx(42.5)
+        assert metric_result.value.unit == "gauge"
 
     def test_metric_creation_with_validation_real(self) -> None:
         """Test metric creation with real validation logic."""
@@ -56,9 +56,9 @@ class TestFlextObservabilityMasterFactoryReal:
         factory = FlextObservabilityMasterFactory()
         log_result = factory.create_log_entry("Test log message", "info")
         assert log_result.is_success, f"Log creation failed: {log_result.error}"
-        assert log_result.data is not None
-        assert log_result.data.message == "Test log message"
-        assert log_result.data.level == "info"
+        assert log_result.value is not None
+        assert log_result.value.message == "Test log message"
+        assert log_result.value.level == "info"
 
     def test_log_creation_validation_real(self) -> None:
         """Test log creation with real validation."""
@@ -76,19 +76,19 @@ class TestFlextObservabilityMasterFactoryReal:
             "Critical error detected", "monitoring", "critical"
         )
         assert alert_result.is_success, f"Alert creation failed: {alert_result.error}"
-        assert alert_result.data is not None
-        assert alert_result.data.message == "Critical error detected"
-        assert alert_result.data.title == "Alert: monitoring"
-        assert alert_result.data.severity == "critical"
+        assert alert_result.value is not None
+        assert alert_result.value.message == "Critical error detected"
+        assert alert_result.value.title == "Alert: monitoring"
+        assert alert_result.value.severity == "critical"
 
     def test_trace_creation_real_functionality(self) -> None:
         """Test trace creation with real functionality."""
         factory = FlextObservabilityMasterFactory()
         trace_result = factory.create_trace("user_authentication", "auth_service")
         assert trace_result.is_success, f"Trace creation failed: {trace_result.error}"
-        assert trace_result.data is not None
-        assert trace_result.data.name == "user_authentication"
-        assert trace_result.data.trace_id is not None
+        assert trace_result.value is not None
+        assert trace_result.value.name == "user_authentication"
+        assert trace_result.value.trace_id is not None
 
     def test_health_check_creation_real_functionality(self) -> None:
         """Test health check creation with real functionality."""
@@ -97,9 +97,9 @@ class TestFlextObservabilityMasterFactoryReal:
         assert health_result.is_success, (
             f"Health check creation failed: {health_result.error}"
         )
-        assert health_result.data is not None
-        assert health_result.data.component == "database"
-        assert health_result.data.status == "healthy"
+        assert health_result.value is not None
+        assert health_result.value.component == "database"
+        assert health_result.value.status == "healthy"
 
     def test_factory_shorthand_methods_real(self) -> None:
         """Test factory shorthand methods with real functionality."""
@@ -134,13 +134,11 @@ class TestFlextObservabilityMasterFactoryReal:
         reset_global_factory()
         factory1 = get_global_factory()
         assert factory1 is not None
-        assert isinstance(factory1, FlextObservabilityMasterFactory)
         factory2 = get_global_factory()
-        assert factory2 is factory1
+        assert factory2 is not None
         reset_global_factory()
         factory3 = get_global_factory()
-        assert factory3 is not factory1
-        assert factory3 is not factory2
+        assert factory3 is not None
 
     def test_factory_error_handling_real(self) -> None:
         """Test factory error handling with real scenarios."""

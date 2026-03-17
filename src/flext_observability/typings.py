@@ -22,7 +22,7 @@ from flext_core import FlextTypes
 T = TypeVar("T")
 
 
-from flext_observability import c
+from flext_observability.constants import c
 
 
 class FlextObservabilityTypes(FlextTypes):

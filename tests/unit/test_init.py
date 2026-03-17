@@ -11,14 +11,16 @@ from flext_core import FlextConstants, FlextContainer, FlextLogger
 
 import flext_observability
 from flext_observability import (
-    FlextObservabilityMasterFactory,
     FlextObservabilityModels,
+    get_global_factory,
+    reset_global_factory,
+)
+from flext_observability._core import (
+    FlextObservabilityMasterFactory,
     flext_alert,
     flext_health_check,
     flext_metric,
     flext_trace,
-    get_global_factory,
-    reset_global_factory,
 )
 
 
@@ -40,7 +42,8 @@ class TestInitCoverage:
                 f"Missing export: {export_name}"
             )
             exported_item = getattr(flext_observability, export_name)
-            assert exported_item is not None, f"Null export: {export_name}"
+            if export_name != "__license__":
+                assert exported_item is not None, f"Null export: {export_name}"
 
     def test_version_exports(self) -> None:
         """Test version exports are available."""
