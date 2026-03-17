@@ -261,6 +261,8 @@ class FlextObservabilityConstants(FlextConstants):
 
     @unique
     class ObservabilityProjectType(StrEnum):
+        """Project-type identifiers for observability packages."""
+
         LIBRARY = "library"
         APPLICATION = "application"
         SERVICE = "service"
