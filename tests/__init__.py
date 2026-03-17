@@ -12,21 +12,18 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
-    from tests import unit
-    from tests.constants import TestsFlextObservabilityConstants
-    from tests.models import TestsFlextObservabilityModels, m, tm
-    from tests.protocols import TestsFlextObservabilityProtocols, p
-    from tests.typings import (
-        TestsFlextObservabilityTypes,
-        TestsFlextObservabilityTypes as t,
-    )
-    from tests.unit.test_constants import (
+    from . import unit as unit
+    from .constants import TestsFlextObservabilityConstants
+    from .models import TestsFlextObservabilityModels, m, tm
+    from .protocols import TestsFlextObservabilityProtocols, p
+    from .typings import TestsFlextObservabilityTypes, TestsFlextObservabilityTypes as t
+    from .unit.test_constants import (
         TestFlextObservabilityConstants,
         TestFlextObservabilityConstants as c,
     )
-    from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
-    from tests.unit.test_init import TestInitCoverage
-    from tests.utilities import (
+    from .unit.test_factory import TestFlextObservabilityMasterFactoryReal
+    from .unit.test_init import TestInitCoverage
+    from .utilities import (
         TestsFlextObservabilityUtilities,
         TestsFlextObservabilityUtilities as u,
     )
