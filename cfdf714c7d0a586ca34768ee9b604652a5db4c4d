@@ -1,0 +1,25 @@
+examples/01_functional.py
+  6ca903efb38333a8 17
+examples/02_solid_observability_demo.py
+  6ca903efb38333a8 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.15",
+  "base_commit_sha": "cfdf714c7d0a586ca34768ee9b604652a5db4c4d",
+  "prompts": {
+    "6ca903efb38333a8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_2fe480932ffeGusQmSqUet1elh",
+        "model": "anthropic/claude-opus-4-6"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 4,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  }
+}
