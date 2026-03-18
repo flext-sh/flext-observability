@@ -40,6 +40,14 @@ if TYPE_CHECKING:
         __version__,
         __version_info__,
     )
+    from flext_observability._core import (
+        FlextObservabilityMasterFactory,
+        flext_alert,
+        flext_health_check,
+        flext_log_entry,
+        flext_metric,
+        flext_trace,
+    )
     from flext_observability.advanced_context import (
         ContextSnapshot,
         FlextObservabilityAdvancedContext,
@@ -128,6 +136,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "flext_observability.logging_integration",
         "FlextObservabilityLogging",
     ),
+    "FlextObservabilityMasterFactory": (
+        "flext_observability._core",
+        "FlextObservabilityMasterFactory",
+    ),
     "FlextObservabilityModels": (
         "flext_observability.models",
         "FlextObservabilityModels",
@@ -175,10 +187,15 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "__version__": ("flext_observability.__version__", "__version__"),
     "__version_info__": ("flext_observability.__version__", "__version_info__"),
     "c": ("flext_observability.constants", "c"),
+    "flext_alert": ("flext_observability._core", "flext_alert"),
+    "flext_health_check": ("flext_observability._core", "flext_health_check"),
+    "flext_log_entry": ("flext_observability._core", "flext_log_entry"),
+    "flext_metric": ("flext_observability._core", "flext_metric"),
     "flext_monitor_function": (
         "flext_observability.monitoring",
         "flext_monitor_function",
     ),
+    "flext_trace": ("flext_observability._core", "flext_trace"),
     "get_global_factory": ("flext_observability.services", "get_global_factory"),
     "m": ("flext_observability.models", "m"),
     "p": ("flext_observability.protocols", "p"),
@@ -201,6 +218,7 @@ __all__ = [
     "FlextObservabilityHTTPClient",
     "FlextObservabilityHealth",
     "FlextObservabilityLogging",
+    "FlextObservabilityMasterFactory",
     "FlextObservabilityModels",
     "FlextObservabilityMonitor",
     "FlextObservabilityPerformance",
@@ -222,7 +240,12 @@ __all__ = [
     "__version__",
     "__version_info__",
     "c",
+    "flext_alert",
+    "flext_health_check",
+    "flext_log_entry",
+    "flext_metric",
     "flext_monitor_function",
+    "flext_trace",
     "get_global_factory",
     "m",
     "p",

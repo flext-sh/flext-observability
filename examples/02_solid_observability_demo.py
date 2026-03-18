@@ -12,16 +12,16 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
+from typing import Literal
 
-from flext_core import FlextContainer, r
+from flext_core import FlextContainer
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
     flext_alert,
-    flext_create_health_check,
+    flext_health_check,
     flext_metric,
     flext_trace,
-    get_global_factory,
 )
 
 
@@ -42,21 +42,14 @@ def demonstrate_solid_design() -> None:
     metric_result = flext_metric("cpu_usage", 75.5, "percent")
     trace_result = flext_trace("user_login")
     alert_result = flext_alert("monitoring", "High CPU usage", "warning")
-    health_result = flext_create_health_check("database", "healthy")
+    health_result = flext_health_check("database", "healthy")
     container = FlextContainer()
     factory = FlextObservabilityMasterFactory(container)
     factory.create_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
-    entities: list = [
-        result.value
-        for result in results
-        if hasattr(result, "success")
-        and result.is_success
-        and hasattr(result, "unwrap")
-    ]
-    for entity in entities:
-        if hasattr(entity, "validate_business_rules"):
-            entity.validate_business_rules()
+    for result in results:
+        if hasattr(result, "is_success") and result.is_success:  # type: ignore[attr-defined]
+            pass
 
 
 def demonstrate_metrics_collection() -> None:
@@ -91,23 +84,21 @@ def demonstrate_distributed_tracing() -> None:
 
 def demonstrate_health_monitoring() -> None:
     """Demonstrate comprehensive health monitoring."""
-    services_health = [
-        ("api_gateway", "healthy"),
-        ("auth_service", "healthy"),
-        ("user_service", "healthy"),
-        ("database", "degraded"),
+    services_health: list[tuple[str, Literal["healthy", "degraded", "unhealthy"]]] = [
+        ("database", "healthy"),
         ("cache", "healthy"),
-        ("message_queue", "healthy"),
+        ("message_queue", "degraded"),
+        ("auth_service", "healthy"),
     ]
     for service, status in services_health:
-        result = flext_create_health_check(service, status)
+        result = flext_health_check(service, status)
         if result.is_success:
             pass
 
 
 def demonstrate_alerting_system() -> None:
     """Demonstrate comprehensive alerting."""
-    alerts = [
+    alerts: list[tuple[Literal["info", "warning", "error", "critical"], str, str]] = [
         ("info", "System maintenance scheduled", "system"),
         ("warning", "Database response time increased", "database"),
         ("error", "Failed to connect to cache", "cache"),
@@ -133,24 +124,28 @@ def demonstrate_function_monitoring() -> None:
 
 def demonstrate_factory_patterns() -> None:
     """Demonstrate factory pattern usage."""
-    global_factory = get_global_factory()
-    global_factory.create_metric("global_metric", 42.0, "count")
     container = FlextContainer()
+    factory = FlextObservabilityMasterFactory(container)
+    factory.create_metric("global_metric", 42.0, "count")
     custom_factory = FlextObservabilityMasterFactory(container)
     custom_factory.create_metric("custom_metric", 24.0, "count")
 
 
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
-    entities_to_validate: list[r[dict[str, object]]] = [
+    entities_to_validate: list[object] = [
         flext_metric("valid_metric", 100.0, "count"),
         flext_trace("valid_operation"),
         flext_alert("system", "Valid alert", "info"),
-        flext_create_health_check("service", "healthy"),
+        flext_health_check("service", "healthy"),
     ]
     for result in entities_to_validate:
-        if result.is_success and result.data:
-            result_type = type(result.data).__name__
+        if (
+            hasattr(result, "is_success")
+            and result.is_success
+            and hasattr(result, "data")
+        ):  # type: ignore[attr-defined]
+            result_type = type(result.data).__name__  # type: ignore[attr-defined]
             print(f"Validation successful for {result_type}")
 
 

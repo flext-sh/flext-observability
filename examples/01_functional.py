@@ -10,18 +10,17 @@ for the flext-observability module, showcasing 100% functional integration.
 from __future__ import annotations
 
 import time
+from typing import Literal
 
 from flext_core import FlextContainer
 
 from flext_observability import (
     FlextObservabilityMasterFactory,
     flext_alert,
-    flext_create_health_check,
+    flext_health_check,
     flext_log_entry,
     flext_metric,
     flext_trace,
-    get_global_factory,
-    reset_global_factory,
 )
 
 
@@ -36,11 +35,11 @@ def demonstrate_simple_api() -> None:
     alert_result = flext_alert("monitoring", "High CPU usage detected", "warning")
     if alert_result.is_success:
         pass
-    health_result = flext_create_health_check("database", "healthy")
+    health_result = flext_health_check("database", "healthy")
     if health_result.is_success:
         pass
     log_result = flext_log_entry(
-        "User authentication successful", "INFO", "auth-service"
+        "User authentication successful", "info", "auth-service"
     )
     if log_result.is_success:
         pass
@@ -85,16 +84,23 @@ def demonstrate_validation() -> None:
 def demonstrate_health_monitoring() -> None:
     """Demonstrate health monitoring scenario."""
     services = ["database", "cache", "message-queue", "auth-service"]
-    statuses = ["healthy", "healthy", "degraded", "healthy"]
+    statuses: list[Literal["healthy", "degraded", "unhealthy"]] = [
+        "healthy",
+        "healthy",
+        "degraded",
+        "healthy",
+    ]
     for service, status in zip(services, statuses, strict=False):
-        health_result = flext_create_health_check(service, status)
+        health_result = flext_health_check(service, status)
         if health_result.is_success:
             pass
 
 
 def demonstrate_alerting_scenario() -> None:
     """Demonstrate alerting in different scenarios."""
-    alert_scenarios = [
+    alert_scenarios: list[
+        tuple[Literal["info", "warning", "error", "critical"], str, str]
+    ] = [
         ("info", "System started successfully", "system"),
         ("warning", "High memory usage: 85%", "monitoring"),
         ("error", "Database connection failed", "database"),
@@ -114,8 +120,8 @@ def demonstrate_alerting_scenario() -> None:
 
 def demonstrate_global_factory() -> None:
     """Demonstrate global factory usage."""
-    reset_global_factory()
-    factory = get_global_factory()
+    container = FlextContainer()
+    factory = FlextObservabilityMasterFactory(container)
     metric_result = factory.create_metric("global_metric", 42.0, "count")
     if metric_result.is_success:
         pass
