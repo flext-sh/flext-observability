@@ -211,7 +211,7 @@ class FlextObservabilityHTTPClient:
                     return r[bool].ok(value=True)
                 is_async = FlextObservabilityHTTPClient._is_httpx_async_client(client)
                 if is_async:
-                    original_send = getattr(client, "_send")
+                    original_send = client._send
 
                     async def traced_send(
                         request: HTTPXRequest,
@@ -275,11 +275,9 @@ class FlextObservabilityHTTPClient:
                             )
                             raise
 
-                    setattr(client, "_send", traced_send)
+                    client._send = traced_send
                 else:
-                    original_request: Callable[..., HTTPXResponse] = getattr(
-                        client, "request"
-                    )
+                    original_request: Callable[..., HTTPXResponse] = client.request
 
                     def traced_request(
                         method: str,
@@ -293,7 +291,7 @@ class FlextObservabilityHTTPClient:
                         trace_id = FlextObservabilityContext.get_trace_id()
                         span_id = FlextObservabilityContext.get_span_id()
                         headers = FlextObservabilityHTTPClient._validated_headers(
-                            kwargs.get("headers", {})
+                            kwargs.get("headers", {}),
                         )
                         if correlation_id:
                             headers["X-Correlation-ID"] = correlation_id
@@ -317,7 +315,11 @@ class FlextObservabilityHTTPClient:
                         }
                         try:
                             response = original_request(
-                                method, url, *args, headers=headers, **call_kwargs
+                                method,
+                                url,
+                                *args,
+                                headers=headers,
+                                **call_kwargs,
                             )
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
@@ -352,10 +354,10 @@ class FlextObservabilityHTTPClient:
                             )
                             raise
 
-                    setattr(client, "request", traced_request)
+                    client.request = traced_request
                 FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client)
                 FlextObservabilityHTTPClient._logger.debug(
-                    "httpx client instrumentation setup complete"
+                    "httpx client instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
@@ -404,7 +406,7 @@ class FlextObservabilityHTTPClient:
             try:
                 if not FlextObservabilityHTTPClient._is_aiohttp_session(session):
                     return r[bool].fail(
-                        "Invalid aiohttp session - missing request method"
+                        "Invalid aiohttp session - missing request method",
                     )
                 typed_session: AIOHTTPSession = session
                 if (
@@ -412,7 +414,7 @@ class FlextObservabilityHTTPClient:
                     in FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions
                 ):
                     return r[bool].ok(value=True)
-                original_request = getattr(typed_session, "request")
+                original_request = typed_session.request
 
                 async def traced_request(
                     method: str,
@@ -426,7 +428,7 @@ class FlextObservabilityHTTPClient:
                     trace_id = FlextObservabilityContext.get_trace_id()
                     span_id = FlextObservabilityContext.get_span_id()
                     headers = FlextObservabilityHTTPClient._validated_headers(
-                        kwargs.get("headers", {})
+                        kwargs.get("headers", {}),
                     )
                     if correlation_id:
                         headers["X-Correlation-ID"] = correlation_id
@@ -450,7 +452,11 @@ class FlextObservabilityHTTPClient:
                     }
                     try:
                         response = await original_request(
-                            method, url, *args, headers=headers, **async_call_kwargs
+                            method,
+                            url,
+                            *args,
+                            headers=headers,
+                            **async_call_kwargs,
                         )
                         duration_ms = (time.time() - start_time) * 1000
                         status = response.status
@@ -486,12 +492,12 @@ class FlextObservabilityHTTPClient:
                         )
                         raise
 
-                setattr(typed_session, "request", traced_request)
+                typed_session.request = traced_request
                 FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions.add(
-                    typed_session
+                    typed_session,
                 )
                 FlextObservabilityHTTPClient._logger.debug(
-                    "aiohttp session instrumentation setup complete"
+                    "aiohttp session instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:

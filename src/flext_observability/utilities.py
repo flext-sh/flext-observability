@@ -27,7 +27,10 @@ class FlextObservabilityUtilities(FlextUtilities):
 
         @staticmethod
         def create_monitor_config(
-            service_name: str, interval_seconds: int = 60, *, enabled: bool = True
+            service_name: str,
+            interval_seconds: int = 60,
+            *,
+            enabled: bool = True,
         ) -> Mapping[str, str | int | bool]:
             """Create a monitoring configuration dictionary."""
             return {
@@ -51,7 +54,10 @@ class FlextObservabilityUtilities(FlextUtilities):
 
         @staticmethod
         def create_health_status(
-            service_name: str, *, is_healthy: bool = True, details: str = ""
+            service_name: str,
+            *,
+            is_healthy: bool = True,
+            details: str = "",
         ) -> Mapping[str, str | bool]:
             """Create a health status dictionary."""
             return {"service": service_name, "healthy": is_healthy, "details": details}
@@ -88,7 +94,8 @@ class FlextObservabilityUtilities(FlextUtilities):
 
         @staticmethod
         def build_log_context(
-            service_name: str, correlation_id: str = ""
+            service_name: str,
+            correlation_id: str = "",
         ) -> Mapping[str, str]:
             """Build a structured logging context dictionary."""
             ctx: dict[str, str] = {"service": service_name}
@@ -127,7 +134,9 @@ class FlextObservabilityUtilities(FlextUtilities):
 
         @staticmethod
         def create_trace_context(
-            trace_id: str, span_id: str, parent_span_id: str = ""
+            trace_id: str,
+            span_id: str,
+            parent_span_id: str = "",
         ) -> Mapping[str, str]:
             """Create a trace context dictionary."""
             ctx: dict[str, str] = {"trace_id": trace_id, "span_id": span_id}

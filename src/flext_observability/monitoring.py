@@ -72,17 +72,25 @@ class FlextObservabilityMonitor:
             try:
                 kwargs_dict = kwargs if isinstance(kwargs, dict) else {}
                 result = FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
-                    func, *args, **kwargs_dict
+                    func,
+                    *args,
+                    **kwargs_dict,
                 )
                 execution_time = time.time() - start_time
                 FlextObservabilityMonitor.MonitoringHelpers.record_success_metrics(
-                    monitor, actual_metric_name, execution_time
+                    monitor,
+                    actual_metric_name,
+                    execution_time,
                 )
                 return result
             except (ValueError, TypeError, KeyError) as e:
                 execution_time = time.time() - start_time
                 FlextObservabilityMonitor.MonitoringHelpers.record_error_metrics(
-                    monitor, actual_metric_name, execution_time, function_name, e
+                    monitor,
+                    actual_metric_name,
+                    execution_time,
+                    function_name,
+                    e,
                 )
                 raise
 
@@ -96,7 +104,9 @@ class FlextObservabilityMonitor:
         ) -> None:
             """Record metrics and alerts for function execution errors."""
             monitor.flext_record_metric(
-                f"{metric_name}_error_total", 1, _obs_c.Observability.MetricType.COUNTER
+                f"{metric_name}_error_total",
+                1,
+                _obs_c.Observability.MetricType.COUNTER,
             )
             monitor.flext_record_metric(
                 f"{metric_name}_error_duration_seconds",
@@ -114,16 +124,18 @@ class FlextObservabilityMonitor:
                     )
                     if alert_result.is_failure:
                         FlextObservabilityMonitor.logger.warning(
-                            f"Alert creation failed: {alert_result.error}"
+                            f"Alert creation failed: {alert_result.error}",
                         )
                 except (ValueError, TypeError, AttributeError) as e:
                     FlextObservabilityMonitor.logger.warning(
-                        f"Alert creation failed: {e}"
+                        f"Alert creation failed: {e}",
                     )
 
         @staticmethod
         def record_success_metrics(
-            monitor: FlextObservabilityMonitor, metric_name: str, execution_time: float
+            monitor: FlextObservabilityMonitor,
+            metric_name: str,
+            execution_time: float,
         ) -> None:
             """Record metrics for successful function execution."""
             monitor.flext_record_metric(
@@ -163,7 +175,7 @@ class FlextObservabilityMonitor:
         try:
             if not self._observability_service:
                 return r[t.ObservabilityCore.HealthMetricsDict].fail(
-                    "Observability service not available"
+                    "Observability service not available",
                 )
             health_data: t.ObservabilityCore.HealthMetricsDict = {
                 "status": _obs_c.Observability.HealthStatus.HEALTHY
@@ -180,7 +192,7 @@ class FlextObservabilityMonitor:
             return r[t.ObservabilityCore.HealthMetricsDict].ok(health_data)
         except (ValueError, TypeError, AttributeError) as e:
             return r[t.ObservabilityCore.HealthMetricsDict].fail(
-                f"Health status check failed: {e}"
+                f"Health status check failed: {e}",
             )
 
     def flext_get_metrics_summary(self) -> r[t.Dict]:
@@ -202,7 +214,7 @@ class FlextObservabilityMonitor:
                 and (not self._config.monitoring_enabled)
             ):
                 self._logger.warning(
-                    "All observability features are disabled in configuration"
+                    "All observability features are disabled in configuration",
                 )
             try:
                 self._observability_service = FlextObservabilityServices()
@@ -318,15 +330,23 @@ class FlextObservabilityMonitor:
                         init_result = active_monitor.flext_initialize_observability()
                         if init_result.is_failure:
                             return FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
-                                func, *args, **kwargs
+                                func,
+                                *args,
+                                **kwargs,
                             )
                     if active_monitor.flext_is_monitoring_active():
                         return FlextObservabilityMonitor.MonitoringHelpers.execute_monitored_function(
-                            func, args, kwargs, active_monitor, metric_name
+                            func,
+                            args,
+                            kwargs,
+                            active_monitor,
+                            metric_name,
                         )
                     return (
                         FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
-                            func, *args, **kwargs
+                            func,
+                            *args,
+                            **kwargs,
                         )
                     )
 
@@ -339,7 +359,8 @@ class FlextObservabilityMonitor:
 
 
 def flext_monitor_function(
-    monitor: FlextObservabilityMonitor | None = None, metric_name: str | None = None
+    monitor: FlextObservabilityMonitor | None = None,
+    metric_name: str | None = None,
 ) -> Callable[
     [FlextObservabilityMonitor.object_callable],
     FlextObservabilityMonitor.object_callable,
@@ -362,7 +383,8 @@ def flext_monitor_function(
 
     """
     return FlextObservabilityMonitor.MonitoringDecorators.flext_monitor_function(
-        monitor=monitor, metric_name=metric_name
+        monitor=monitor,
+        metric_name=metric_name,
     )
 
 

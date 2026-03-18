@@ -93,7 +93,8 @@ class FlextObservabilityModels(FlextModels):
         )
 
         enabled: Annotated[
-            bool, Field(default=True, description="Enable observability")
+            bool,
+            Field(default=True, description="Enable observability"),
         ]
         interval_seconds: Annotated[
             float,

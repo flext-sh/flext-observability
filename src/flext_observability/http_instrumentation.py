@@ -208,7 +208,7 @@ class FlextObservabilityHTTP:
                         )
                     except (ValueError, TypeError, KeyError) as e:
                         FlextObservabilityHTTP._logger.warning(
-                            f"Error in before_request hook: {e}"
+                            f"Error in before_request hook: {e}",
                         )
 
                 @after_request_hook
@@ -223,7 +223,7 @@ class FlextObservabilityHTTP:
                         duration_ms = 0.0
                         try:
                             validated_start = _StartTimePayload.model_validate(
-                                obj={"value": start_time}
+                                obj={"value": start_time},
                             ).value
                             duration_ms = (time.time() - validated_start) * 1000
                         except ValidationError:
@@ -231,7 +231,7 @@ class FlextObservabilityHTTP:
                         status_code = int(
                             response.status_code
                             if hasattr(response, "status_code")
-                            else 200
+                            else 200,
                         )
                         is_error = (
                             status_code
@@ -250,7 +250,7 @@ class FlextObservabilityHTTP:
                         )
                     except (ValueError, TypeError, KeyError) as e:
                         FlextObservabilityHTTP._logger.warning(
-                            f"Error in after_request hook: {e}"
+                            f"Error in after_request hook: {e}",
                         )
                     return response
 
@@ -273,7 +273,7 @@ class FlextObservabilityHTTP:
                         )
                     except (ValueError, TypeError, KeyError) as log_error:
                         FlextObservabilityHTTP._logger.error(
-                            f"Error in error handler: {log_error}"
+                            f"Error in error handler: {log_error}",
                         )
                     return (t.Dict({"error": str(error)}), 500)
 
@@ -282,7 +282,7 @@ class FlextObservabilityHTTP:
                 _ = flext_error_handler
 
                 FlextObservabilityHTTP._logger.debug(
-                    "Flask HTTP instrumentation setup complete"
+                    "Flask HTTP instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
@@ -332,7 +332,7 @@ class FlextObservabilityHTTP:
             try:
                 if not _is_fastapi_app(app):
                     return r[bool].fail(
-                        "Invalid FastAPI app - missing add_middleware method"
+                        "Invalid FastAPI app - missing add_middleware method",
                     )
                 typed_app: FastAPIApp = app
 
@@ -367,7 +367,7 @@ class FlextObservabilityHTTP:
                                     if request.client
                                     else "unknown",
                                     "http_user_agent": str(
-                                        request.headers.get("user-agent", "unknown")
+                                        request.headers.get("user-agent", "unknown"),
                                     ),
                                 },
                             )
@@ -377,7 +377,7 @@ class FlextObservabilityHTTP:
                                 status_code = int(
                                     response.status_code
                                     if hasattr(response, "status_code")
-                                    else 200
+                                    else 200,
                                 )
                                 is_error = (
                                     status_code
@@ -409,14 +409,14 @@ class FlextObservabilityHTTP:
                                 raise
                         except (ValueError, TypeError, KeyError) as e:
                             FlextObservabilityHTTP._logger.warning(
-                                f"Middleware error: {e}"
+                                f"Middleware error: {e}",
                             )
                             raise
 
                 add_middleware = typed_app.add_middleware
                 add_middleware(FlextObservabilityMiddleware)
                 FlextObservabilityHTTP._logger.debug(
-                    "FastAPI HTTP instrumentation setup complete"
+                    "FastAPI HTTP instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
@@ -434,11 +434,14 @@ class FlextObservabilityHTTP:
         """
         try:
             FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTP._logger, level, message, extra=extra
+                FlextObservabilityHTTP._logger,
+                level,
+                message,
+                extra=extra,
             )
         except (ValueError, TypeError, KeyError) as e:
             FlextObservabilityHTTP._logger.warning(
-                f"Error logging in async context: {e}"
+                f"Error logging in async context: {e}",
             )
 
 

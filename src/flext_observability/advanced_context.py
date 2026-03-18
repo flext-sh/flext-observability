@@ -168,7 +168,7 @@ class FlextObservabilityAdvancedContext:
                 self._metadata = snapshot.metadata.copy()
                 self._baggage = snapshot.baggage.copy()
                 FlextObservabilityAdvancedContext._logger.debug(
-                    "Context restored from snapshot"
+                    "Context restored from snapshot",
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
@@ -217,7 +217,10 @@ class FlextObservabilityAdvancedContext:
                 return r[bool].fail(f"Metadata value not JSON serializable: {e}")
 
         def snapshot(
-            self, correlation_id: str = "", trace_id: str = "", span_id: str = ""
+            self,
+            correlation_id: str = "",
+            trace_id: str = "",
+            span_id: str = "",
         ) -> ContextSnapshot:
             """Create snapshot of current context.
 

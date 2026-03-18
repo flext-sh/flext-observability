@@ -49,7 +49,7 @@ class ErrorEvent(BaseModel):
     def calculate_fingerprint(self) -> None:
         """Calculate SHA256 fingerprint from error type and message."""
         self.fingerprint = sha256(
-            f"{self.error_type}:{self.message}".encode()
+            f"{self.error_type}:{self.message}".encode(),
         ).hexdigest()
 
 
@@ -127,7 +127,8 @@ class FlextObservabilityErrorHandling:
                 return True
 
             return self._run_with_result(
-                operation, error_prefix="Failed to clear error counts"
+                operation,
+                error_prefix="Failed to clear error counts",
             )
 
         def get_error_count(self, fingerprint: str) -> int:
@@ -201,19 +202,20 @@ class FlextObservabilityErrorHandling:
                     )
                 except (ValueError, TypeError, KeyError) as e:
                     FlextObservabilityErrorHandling._logger.warning(
-                        f"Could not set correlation_id, falling back to empty: {e}"
+                        f"Could not set correlation_id, falling back to empty: {e}",
                     )
                     error.correlation_id = ""
                 self._error_counts[error.fingerprint] = (
                     self._error_counts.get(error.fingerprint, 0) + 1
                 )
                 FlextObservabilityErrorHandling._logger.debug(
-                    f"Error recorded: {error.error_type} (fingerprint: {error.fingerprint[:8]})"
+                    f"Error recorded: {error.error_type} (fingerprint: {error.fingerprint[:8]})",
                 )
                 return error
 
             return self._run_with_result(
-                operation, error_prefix="Failed to record error"
+                operation,
+                error_prefix="Failed to record error",
             )
 
         def set_alert_cooldown(self, seconds: float) -> r[bool]:
@@ -228,13 +230,13 @@ class FlextObservabilityErrorHandling:
             """
             try:
                 validated_seconds = _CooldownInput.model_validate(
-                    obj={"seconds": seconds}
+                    obj={"seconds": seconds},
                 ).seconds
             except ValidationError as error:
                 return r[bool].fail(_extract_validation_message(error))
             self._alert_cooldown_sec = validated_seconds
             FlextObservabilityErrorHandling._logger.debug(
-                f"Alert cooldown set to {validated_seconds}s"
+                f"Alert cooldown set to {validated_seconds}s",
             )
             return r[bool].ok(value=True)
 
@@ -250,13 +252,13 @@ class FlextObservabilityErrorHandling:
             """
             try:
                 validated_threshold = _ThresholdInput.model_validate(
-                    obj={"threshold": threshold}
+                    obj={"threshold": threshold},
                 ).threshold
             except ValidationError as error:
                 return r[bool].fail(_extract_validation_message(error))
             self._escalation_threshold = validated_threshold
             FlextObservabilityErrorHandling._logger.debug(
-                f"Escalation threshold set to {validated_threshold}"
+                f"Escalation threshold set to {validated_threshold}",
             )
             return r[bool].ok(value=True)
 
@@ -286,7 +288,10 @@ class FlextObservabilityErrorHandling:
             return not count < self._escalation_threshold
 
         def _run_with_result[TResult](
-            self, operation: Callable[[], TResult], *, error_prefix: str
+            self,
+            operation: Callable[[], TResult],
+            *,
+            error_prefix: str,
         ) -> r[TResult]:
             try:
                 return r[TResult].ok(operation())

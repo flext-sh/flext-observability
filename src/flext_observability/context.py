@@ -151,7 +151,7 @@ class FlextObservabilityContext:
             return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
             FlextObservabilityContext._logger.warning(
-                f"Failed to extract context from headers: {e}"
+                f"Failed to extract context from headers: {e}",
             )
             FlextObservabilityContext.set_correlation_id()
             return r[bool].ok(value=True)

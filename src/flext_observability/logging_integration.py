@@ -93,7 +93,9 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def enrich_log_context(
-        _logger: BindableLogger, *, include_baggage: bool = False
+        _logger: BindableLogger,
+        *,
+        include_baggage: bool = False,
     ) -> r[FlextObservabilityLogging.LogContext]:
         """Get trace context for log enrichment.
 
@@ -142,7 +144,7 @@ class FlextObservabilityLogging:
             return r[FlextObservabilityLogging.LogContext].ok(context_payload)
         except (ValueError, TypeError, KeyError) as e:
             return r[FlextObservabilityLogging.LogContext].fail(
-                f"Context enrichment failed: {e}"
+                f"Context enrichment failed: {e}",
             )
 
     @staticmethod
@@ -196,7 +198,7 @@ class FlextObservabilityLogging:
             context = FlextObservabilityContext.get_context()
             if not context:
                 FlextObservabilityLogging._logger.debug(
-                    "No trace context currently set"
+                    "No trace context currently set",
                 )
             _ = logger
             return r[bool].ok(value=True)
@@ -247,11 +249,12 @@ class FlextObservabilityLogging:
             if level not in {"debug", "info", "warning", "error", "critical"}:
                 return r[bool].fail(f"Invalid log level: {level}")
             context_result = FlextObservabilityLogging.enrich_log_context(
-                logger, include_baggage=include_baggage
+                logger,
+                include_baggage=include_baggage,
             )
             if context_result.is_failure:
                 return r[bool].fail(
-                    f"Failed to get trace context: {context_result.error}"
+                    f"Failed to get trace context: {context_result.error}",
                 )
             log_context = context_result.value.model_dump(exclude_none=True)
             extra_context = log_context.pop("extra", {})
@@ -300,11 +303,11 @@ class FlextObservabilityLogging:
                     span_id=str(context.get("span_id"))
                     if context.get("span_id") is not None
                     else None,
-                )
+                ),
             )
         except (ValueError, TypeError, KeyError) as e:
             return r[FlextObservabilityLogging.LogContext].fail(
-                f"Context validation failed: {e}"
+                f"Context validation failed: {e}",
             )
 
 

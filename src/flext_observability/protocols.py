@@ -59,13 +59,21 @@ class FlextObservabilityProtocols(FlextProtocols):
             """Protocol for metrics collection and management operations."""
 
             def create_counter(
-                self, name: str, description: str, *, unit: str = "count"
+                self,
+                name: str,
+                description: str,
+                *,
+                unit: str = "count",
             ) -> FlextProtocols.Result:
                 """Create a counter metric."""
                 ...
 
             def create_gauge(
-                self, name: str, description: str, *, unit: str = "value"
+                self,
+                name: str,
+                description: str,
+                *,
+                unit: str = "value",
             ) -> FlextProtocols.Result:
                 """Create a gauge metric."""
                 ...
@@ -223,7 +231,8 @@ class FlextObservabilityProtocols(FlextProtocols):
             """Protocol for logging operations."""
 
             def configure_logging(
-                self, config: Mapping[str, t.Scalar]
+                self,
+                config: Mapping[str, t.Scalar],
             ) -> FlextProtocols.Result[bool]:
                 """Configure logging system."""
                 ...
@@ -267,7 +276,9 @@ class FlextObservabilityProtocols(FlextProtocols):
             """Protocol for dashboard and visualization operations."""
 
             def add_widget(
-                self, dashboard_id: str, widget_config: Mapping[str, t.Scalar]
+                self,
+                dashboard_id: str,
+                widget_config: Mapping[str, t.Scalar],
             ) -> FlextProtocols.Result[str]:
                 """Add widget to dashboard."""
                 ...

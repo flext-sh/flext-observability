@@ -42,7 +42,8 @@ class FlextObservabilityTypes(FlextTypes):
 
         type ObservabilityProjectType = c.ObservabilityProjectType
         type ObservabilityProjectConfig = dict[
-            str, str | int | bool | list[str] | t.Dict
+            str,
+            str | int | bool | list[str] | t.Dict,
         ]
         type MonitoringConfig = dict[str, str | int | bool | list[str]]
         type MetricsConfig = dict[str, bool | str | dict[str, t.Scalar]]

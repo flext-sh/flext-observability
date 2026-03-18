@@ -107,7 +107,7 @@ class FlextObservabilityCustomMetrics:
                 else:
                     self._metrics.clear()
                 FlextObservabilityCustomMetrics._logger.debug(
-                    f"Metrics cleared: {namespace or 'all'}"
+                    f"Metrics cleared: {namespace or 'all'}",
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
@@ -133,7 +133,9 @@ class FlextObservabilityCustomMetrics:
             return t.Dict.model_validate(self._metrics)
 
         def get_metric(
-            self, name: str, namespace: str = "default"
+            self,
+            name: str,
+            namespace: str = "default",
         ) -> CustomMetricDefinition | None:
             """Get metric definition by name.
 
@@ -152,7 +154,9 @@ class FlextObservabilityCustomMetrics:
             return None
 
         def get_metric_info(
-            self, name: str, namespace: str = "default"
+            self,
+            name: str,
+            namespace: str = "default",
         ) -> t.Dict | None:
             """Get detailed metric information.
 
@@ -235,18 +239,18 @@ class FlextObservabilityCustomMetrics:
                 metric_input = metric_type.lower()
                 try:
                     metric_type_enum = _MetricTypeInput.model_validate(
-                        obj={"metric_type": metric_input}
+                        obj={"metric_type": metric_input},
                     ).metric_type
                 except ValidationError:
                     return r[bool].fail(
-                        f"Invalid metric type: {metric_type}. Must be one of ['counter', 'gauge', 'histogram']"
+                        f"Invalid metric type: {metric_type}. Must be one of ['counter', 'gauge', 'histogram']",
                     )
                 namespaced_name = (
                     f"{namespace}:{name}" if namespace != "default" else name
                 )
                 if namespaced_name in self._metrics:
                     return r[bool].fail(
-                        f"Metric '{namespaced_name}' already registered"
+                        f"Metric '{namespaced_name}' already registered",
                     )
                 definition = CustomMetricDefinition(
                     name=name,
@@ -258,7 +262,7 @@ class FlextObservabilityCustomMetrics:
                 self._metrics[namespaced_name] = definition
                 self._namespaces[namespace] = namespace
                 FlextObservabilityCustomMetrics._logger.debug(
-                    f"Metric registered: {namespaced_name} ({metric_type_enum.value})"
+                    f"Metric registered: {namespaced_name} ({metric_type_enum.value})",
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
@@ -283,7 +287,7 @@ class FlextObservabilityCustomMetrics:
                     return r[bool].fail(f"Metric '{namespaced_name}' not found")
                 del self._metrics[namespaced_name]
                 FlextObservabilityCustomMetrics._logger.debug(
-                    f"Metric unregistered: {namespaced_name}"
+                    f"Metric unregistered: {namespaced_name}",
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
@@ -291,7 +295,8 @@ class FlextObservabilityCustomMetrics:
 
     @staticmethod
     def get_metric(
-        name: str, namespace: str = "default"
+        name: str,
+        namespace: str = "default",
     ) -> CustomMetricDefinition | None:
         """Convenience function: get metric definition.
 

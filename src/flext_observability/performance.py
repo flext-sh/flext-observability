@@ -120,7 +120,7 @@ class FlextObservabilityPerformance:
             """Get current CPU usage percent."""
             try:
                 cpu: float = FlextObservabilityPerformance._process.cpu_percent(
-                    interval=0.01
+                    interval=0.01,
                 )
                 return cpu
             except (ValueError, TypeError, KeyError):

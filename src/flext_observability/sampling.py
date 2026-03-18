@@ -81,7 +81,9 @@ class FlextObservabilitySampling:
             self._sampled_trace_ids: set[str] = set()
 
         def get_current_rate(
-            self, operation: str | None = None, service: str | None = None
+            self,
+            operation: str | None = None,
+            service: str | None = None,
         ) -> float:
             """Get effective sampling rate for given operation/service.
 
@@ -101,7 +103,9 @@ class FlextObservabilitySampling:
             return rate
 
         def get_sampling_decision(
-            self, operation: str | None = None, service: str | None = None
+            self,
+            operation: str | None = None,
+            service: str | None = None,
         ) -> c.Observability.SamplingDecision:
             """Get sampling decision as enum.
 
@@ -135,11 +139,11 @@ class FlextObservabilitySampling:
             """
             if not 0.0 <= rate <= 1.0:
                 return r[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
             self._default_rate = rate
             FlextObservabilitySampling._logger.debug(
-                f"Default sampling rate set to {rate}"
+                f"Default sampling rate set to {rate}",
             )
             return r[bool].ok(value=True)
 
@@ -161,12 +165,12 @@ class FlextObservabilitySampling:
             valid_envs = ["development", "staging", "production"]
             if environment not in valid_envs:
                 return r[bool].fail(
-                    f"Invalid environment: {environment}. Must be one of {valid_envs}"
+                    f"Invalid environment: {environment}. Must be one of {valid_envs}",
                 )
             self._environment = environment
             self._default_rate = self._environment_rates.get(environment, 0.1)
             FlextObservabilitySampling._logger.debug(
-                f"Sampling environment set to {environment} (rate: {self._default_rate})"
+                f"Sampling environment set to {environment} (rate: {self._default_rate})",
             )
             return r[bool].ok(value=True)
 
@@ -187,11 +191,11 @@ class FlextObservabilitySampling:
             """
             if not 0.0 <= rate <= 1.0:
                 return r[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
             self._operation_overrides[operation] = rate
             FlextObservabilitySampling._logger.debug(
-                f"Sampling rate for operation '{operation}' set to {rate}"
+                f"Sampling rate for operation '{operation}' set to {rate}",
             )
             return r[bool].ok(value=True)
 
@@ -213,16 +217,18 @@ class FlextObservabilitySampling:
             """
             if not 0.0 <= rate <= 1.0:
                 return r[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
             self._service_overrides[service] = rate
             FlextObservabilitySampling._logger.debug(
-                f"Sampling rate for service '{service}' set to {rate}"
+                f"Sampling rate for service '{service}' set to {rate}",
             )
             return r[bool].ok(value=True)
 
         def should_sample(
-            self, operation: str | None = None, service: str | None = None
+            self,
+            operation: str | None = None,
+            service: str | None = None,
         ) -> bool:
             """Determine if request should be sampled (head-based decision).
 
@@ -276,7 +282,8 @@ class FlextObservabilitySampling:
 
     @staticmethod
     def get_sampling_decision(
-        operation: str | None = None, service: str | None = None
+        operation: str | None = None,
+        service: str | None = None,
     ) -> c.Observability.SamplingDecision:
         """Convenience function: get sampling decision as enum.
 
