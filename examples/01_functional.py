@@ -14,7 +14,7 @@ from typing import Literal
 
 from flext_core import FlextContainer
 
-from flext_observability import (
+from flext_observability._core import (
     FlextObservabilityMasterFactory,
     flext_alert,
     flext_health_check,
