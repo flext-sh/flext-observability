@@ -8,10 +8,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests.constants import FlextTestsConstants
+from flext_tests.constants import c
 
 
-class TestsFlextObservabilityConstants(FlextTestsConstants):
+class TestsFlextObservabilityConstants(c):
     """Test constants for flextobservability."""
 
 

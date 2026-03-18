@@ -1,6 +1,6 @@
 """Test protocol definitions for flext-observability.
 
-Provides TestsFlextObservabilityProtocols, combining FlextTestsProtocols with
+Provides TestsFlextObservabilityProtocols, combining p with
 FlextObservabilityProtocols for test-specific protocol definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,21 +14,19 @@ from flext_tests import p
 from flext_observability import FlextObservabilityProtocols
 
 
-class TestsFlextObservabilityProtocols(
-    FlextTestsProtocols, FlextObservabilityProtocols
-):
-    """Test protocols combining FlextTestsProtocols and FlextObservabilityProtocols.
+class TestsFlextObservabilityProtocols(p, FlextObservabilityProtocols):
+    """Test protocols combining p and FlextObservabilityProtocols.
 
     Provides access to:
-    - p.Tests.Docker.* (from FlextTestsProtocols)
-    - p.Tests.Factory.* (from FlextTestsProtocols)
+    - p.Tests.Docker.* (from p)
+    - p.Tests.Factory.* (from p)
     - p.Observability.* (from FlextObservabilityProtocols)
     """
 
     class Tests:
         """Project-specific test protocols.
 
-        Extends FlextTestsProtocols.Tests with Observability-specific protocols.
+        Extends p.Tests with Observability-specific protocols.
         """
 
         class Observability:

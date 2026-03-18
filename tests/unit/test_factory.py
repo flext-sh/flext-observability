@@ -11,6 +11,7 @@ from datetime import datetime
 
 import pytest
 from flext_core import FlextContainer
+from flext_tests import tm
 
 from flext_observability import (
     get_global_factory,
@@ -27,48 +28,54 @@ class TestFlextObservabilityMasterFactoryReal:
         """Test factory initialization with real container integration."""
         container = FlextContainer()
         factory = FlextObservabilityMasterFactory(container)
-        assert factory.container is container
+        tm.that(factory.container is container, eq=True)
         factory_default = FlextObservabilityMasterFactory()
-        assert factory_default.container is not None
-        assert isinstance(factory_default.container, p.Container)
+        tm.that(factory_default.container is not None, eq=True)
+        tm.that(isinstance(factory_default.container, p.Container), eq=True)
 
     def test_metric_creation_real_functionality(self) -> None:
         """Test metric creation with actual factory functionality."""
         factory = FlextObservabilityMasterFactory()
         metric_result = factory.create_metric("test_metric", 42.5, "gauge")
-        assert metric_result.is_success, (
-            f"Metric creation failed: {metric_result.error}"
+        (
+            tm.that(metric_result.is_success, eq=True),
+            (f"Metric creation failed: {metric_result.error}"),
         )
-        assert metric_result.value is not None
-        assert metric_result.value.name == "test_metric"
-        assert metric_result.value.value == pytest.approx(42.5)
-        assert metric_result.value.unit == "gauge"
+        tm.that(metric_result.value is not None, eq=True)
+        tm.that(metric_result.value.name == "test_metric", eq=True)
+        tm.that(metric_result.value.value == pytest.approx(42.5), eq=True)
+        tm.that(metric_result.value.unit == "gauge", eq=True)
 
     def test_metric_creation_with_validation_real(self) -> None:
         """Test metric creation with real validation logic."""
         factory = FlextObservabilityMasterFactory()
         invalid_result = factory.create_metric("", 10.0)
-        assert invalid_result.is_failure
-        assert invalid_result.error is not None
-        assert "must be non-empty string" in invalid_result.error
+        tm.that(invalid_result.is_failure, eq=True)
+        tm.that(invalid_result.error is not None, eq=True)
+        tm.that("must be non-empty string" in invalid_result.error, eq=True)
 
     def test_log_creation_real_functionality(self) -> None:
         """Test log entry creation with real functionality."""
         factory = FlextObservabilityMasterFactory()
         log_result = factory.create_log_entry("Test log message", "info")
-        assert log_result.is_success, f"Log creation failed: {log_result.error}"
-        assert log_result.value is not None
-        assert log_result.value.message == "Test log message"
-        assert log_result.value.level == "info"
+        (
+            tm.that(log_result.is_success, eq=True),
+            f"Log creation failed: {log_result.error}",
+        )
+        tm.that(log_result.value is not None, eq=True)
+        tm.that(log_result.value.message == "Test log message", eq=True)
+        tm.that(log_result.value.level == "info", eq=True)
 
     def test_log_creation_validation_real(self) -> None:
         """Test log creation with real validation."""
         factory = FlextObservabilityMasterFactory()
         custom_level_result = factory.create_log_entry("Test", "INVALID_LEVEL")
         if custom_level_result.is_failure:
-            assert custom_level_result.error is not None
+            tm.that(custom_level_result.error is not None, eq=True)
         else:
-            assert custom_level_result.value.level in {"INVALID_LEVEL", "info"}
+            tm.that(
+                custom_level_result.value.level in {"INVALID_LEVEL", "info"}, eq=True
+            )
 
     def test_alert_creation_real_functionality(self) -> None:
         """Test alert creation with real functionality."""
@@ -76,70 +83,77 @@ class TestFlextObservabilityMasterFactoryReal:
         alert_result = factory.create_alert(
             "Critical error detected", "monitoring", "critical"
         )
-        assert alert_result.is_success, f"Alert creation failed: {alert_result.error}"
-        assert alert_result.value is not None
-        assert alert_result.value.message == "Critical error detected"
-        assert alert_result.value.title == "Alert: monitoring"
-        assert alert_result.value.severity == "critical"
+        (
+            tm.that(alert_result.is_success, eq=True),
+            f"Alert creation failed: {alert_result.error}",
+        )
+        tm.that(alert_result.value is not None, eq=True)
+        tm.that(alert_result.value.message == "Critical error detected", eq=True)
+        tm.that(alert_result.value.title == "Alert: monitoring", eq=True)
+        tm.that(alert_result.value.severity == "critical", eq=True)
 
     def test_trace_creation_real_functionality(self) -> None:
         """Test trace creation with real functionality."""
         factory = FlextObservabilityMasterFactory()
         trace_result = factory.create_trace("user_authentication", "auth_service")
-        assert trace_result.is_success, f"Trace creation failed: {trace_result.error}"
-        assert trace_result.value is not None
-        assert trace_result.value.name == "user_authentication"
-        assert trace_result.value.trace_id is not None
+        (
+            tm.that(trace_result.is_success, eq=True),
+            f"Trace creation failed: {trace_result.error}",
+        )
+        tm.that(trace_result.value is not None, eq=True)
+        tm.that(trace_result.value.name == "user_authentication", eq=True)
+        tm.that(trace_result.value.trace_id is not None, eq=True)
 
     def test_health_check_creation_real_functionality(self) -> None:
         """Test health check creation with real functionality."""
         factory = FlextObservabilityMasterFactory()
         health_result = factory.create_health_check("database", "healthy")
-        assert health_result.is_success, (
-            f"Health check creation failed: {health_result.error}"
+        (
+            tm.that(health_result.is_success, eq=True),
+            (f"Health check creation failed: {health_result.error}"),
         )
-        assert health_result.value is not None
-        assert health_result.value.component == "database"
-        assert health_result.value.status == "healthy"
+        tm.that(health_result.value is not None, eq=True)
+        tm.that(health_result.value.component == "database", eq=True)
+        tm.that(health_result.value.status == "healthy", eq=True)
 
     def test_factory_shorthand_methods_real(self) -> None:
         """Test factory shorthand methods with real functionality."""
         factory = FlextObservabilityMasterFactory()
         metric_result = factory.metric("cpu_usage", 85.2)
-        assert metric_result.is_success
+        tm.that(metric_result.is_success, eq=True)
         metric = metric_result.value
-        assert hasattr(metric, "name")
-        assert metric.name == "cpu_usage"
-        assert hasattr(metric, "value")
-        assert metric.value == pytest.approx(85.2)
+        tm.that(hasattr(metric, "name"), eq=True)
+        tm.that(metric.name == "cpu_usage", eq=True)
+        tm.that(hasattr(metric, "value"), eq=True)
+        tm.that(metric.value == pytest.approx(85.2), eq=True)
         log_result = factory.log("System started")
-        assert log_result.is_success
+        tm.that(log_result.is_success, eq=True)
         log_entry = log_result.value
-        assert hasattr(log_entry, "message")
-        assert log_entry.message == "System started"
+        tm.that(hasattr(log_entry, "message"), eq=True)
+        tm.that(log_entry.message == "System started", eq=True)
         alert_result = factory.alert("High memory usage", "monitoring")
-        assert alert_result.is_success
+        tm.that(alert_result.is_success, eq=True)
         alert = alert_result.value
-        assert hasattr(alert, "title")
-        assert alert.title == "High memory usage"
-        assert alert.message == "monitoring"
+        tm.that(hasattr(alert, "title"), eq=True)
+        tm.that(alert.title == "High memory usage", eq=True)
+        tm.that(alert.message == "monitoring", eq=True)
         trace_result = factory.trace("trace-123", "api_request")
-        assert trace_result.is_success
+        tm.that(trace_result.is_success, eq=True)
         trace = trace_result.value
-        assert hasattr(trace, "name")
-        assert trace.name == "api_request"
-        assert trace.trace_id == "trace-123"
+        tm.that(hasattr(trace, "name"), eq=True)
+        tm.that(trace.name == "api_request", eq=True)
+        tm.that(trace.trace_id == "trace-123", eq=True)
 
     def test_global_factory_real_functionality(self) -> None:
         """Test global factory with real functionality."""
         reset_global_factory()
         factory1 = get_global_factory()
-        assert factory1 is not None
+        tm.that(factory1 is not None, eq=True)
         factory2 = get_global_factory()
-        assert factory2 is not None
+        tm.that(factory2 is not None, eq=True)
         reset_global_factory()
         factory3 = get_global_factory()
-        assert factory3 is not None
+        tm.that(factory3 is not None, eq=True)
 
     def test_factory_error_handling_real(self) -> None:
         """Test factory error handling with real scenarios."""
@@ -153,11 +167,12 @@ class TestFlextObservabilityMasterFactoryReal:
         for method_name, args, expected_error in test_cases:
             method = getattr(factory, method_name)
             result = method(*args)
-            assert result.is_failure, (
-                f"Method {method_name} should have failed with args {args}"
+            (
+                tm.that(result.is_failure, eq=True),
+                (f"Method {method_name} should have failed with args {args}"),
             )
-            assert result.error is not None
-            assert expected_error in result.error
+            tm.that(result.error is not None, eq=True)
+            tm.that(expected_error in result.error, eq=True)
 
     def test_factory_integration_with_services_real(self) -> None:
         """Test factory integration with real service workflows."""
@@ -169,18 +184,23 @@ class TestFlextObservabilityMasterFactoryReal:
         health = factory.create_health_check("api_service", "healthy")
         results = [metric, log, alert, trace, health]
         for i, result in enumerate(results):
-            assert hasattr(result, "is_success"), (
-                f"Entity {i} missing is_success property"
+            (
+                tm.that(hasattr(result, "is_success"), eq=True),
+                (f"Entity {i} missing is_success property"),
             )
-            assert result.is_success, (
-                f"Entity {i} creation failed: {getattr(result, 'error', 'Unknown error')}"
+            (
+                tm.that(result.is_success, eq=True),
+                (
+                    f"Entity {i} creation failed: {getattr(result, 'error', 'Unknown error')}"
+                ),
             )
         timestamp_fields = ("timestamp", "created_at", "start_time")
         for result in results:
             entity = result.value if hasattr(result, "unwrap") else result
             has_timestamp = any(hasattr(entity, f) for f in timestamp_fields)
-            assert has_timestamp, (
-                f"Entity {type(entity).__name__} has no timestamp field"
+            (
+                tm.that(has_timestamp, eq=True),
+                (f"Entity {type(entity).__name__} has no timestamp field"),
             )
             timestamp_attr = None
             for field in timestamp_fields:
@@ -189,6 +209,6 @@ class TestFlextObservabilityMasterFactoryReal:
                     break
             if timestamp_attr:
                 if hasattr(timestamp_attr, "root"):
-                    assert isinstance(timestamp_attr.root, datetime)
+                    tm.that(isinstance(timestamp_attr.root, datetime), eq=True)
                 else:
-                    assert isinstance(timestamp_attr, datetime)
+                    tm.that(isinstance(timestamp_attr, datetime), eq=True)

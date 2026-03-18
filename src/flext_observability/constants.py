@@ -13,6 +13,11 @@ from enum import StrEnum, unique
 from typing import ClassVar, Final, Literal
 
 from flext_core import FlextConstants
+from flext_core.constants import (
+    PROJECT_KIND_APPLICATION,
+    PROJECT_KIND_LIBRARY,
+    PROJECT_KIND_SERVICE,
+)
 
 
 class FlextObservabilityConstants(FlextConstants):
@@ -263,9 +268,9 @@ class FlextObservabilityConstants(FlextConstants):
     class ObservabilityProjectType(StrEnum):
         """Project-type identifiers for observability packages."""
 
-        LIBRARY = "library"
-        APPLICATION = "application"
-        SERVICE = "service"
+        LIBRARY = PROJECT_KIND_LIBRARY
+        APPLICATION = PROJECT_KIND_APPLICATION
+        SERVICE = PROJECT_KIND_SERVICE
         MONITORING_SERVICE = "monitoring-service"
         METRICS_COLLECTOR = "metrics-collector"
         TRACING_SERVICE = "tracing-service"
