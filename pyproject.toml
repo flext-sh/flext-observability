@@ -346,6 +346,7 @@ split-on-trailing-comma = true
   "FIX002",
   "INP001",
   "N999",
+  "PLC2701",
   "PLR2004",
   "S105",
   "S106",
