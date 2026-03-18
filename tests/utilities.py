@@ -11,3 +11,7 @@ from __future__ import annotations
 
 class TestsFlextObservabilityUtilities:
     """Test utilities for flextobservability."""
+
+
+u = TestsFlextObservabilityUtilities
+__all__ = ["TestsFlextObservabilityUtilities", "u"]

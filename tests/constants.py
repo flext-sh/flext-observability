@@ -13,3 +13,7 @@ from flext_tests.constants import FlextTestsConstants
 
 class TestsFlextObservabilityConstants(FlextTestsConstants):
     """Test constants for flextobservability."""
+
+
+c = TestsFlextObservabilityConstants
+__all__ = ["TestsFlextObservabilityConstants", "c"]

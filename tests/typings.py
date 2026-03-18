@@ -11,3 +11,7 @@ from __future__ import annotations
 
 class TestsFlextObservabilityTypes:
     """Test type aliases for flextobservability."""
+
+
+t = TestsFlextObservabilityTypes
+__all__ = ["TestsFlextObservabilityTypes", "t"]

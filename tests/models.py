@@ -67,3 +67,5 @@ __all__ = [
     "m",
     "tm",
 ]
+
+m = TestsFlextObservabilityModels

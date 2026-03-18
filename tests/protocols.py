@@ -35,6 +35,6 @@ class TestsFlextObservabilityProtocols(
             """Observability-specific test protocols."""
 
 
-p = TestsFlextObservabilityProtocols
-p = TestsFlextObservabilityProtocols
 __all__ = ["TestsFlextObservabilityProtocols", "p"]
+
+p = TestsFlextObservabilityProtocols
