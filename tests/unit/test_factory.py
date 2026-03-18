@@ -10,13 +10,14 @@ from __future__ import annotations
 from datetime import datetime
 
 import pytest
-from flext_core import FlextContainer, p
+from flext_core import FlextContainer
 
 from flext_observability import (
     get_global_factory,
     reset_global_factory,
 )
 from flext_observability._core import FlextObservabilityMasterFactory
+from tests import p
 
 
 class TestFlextObservabilityMasterFactoryReal:
