@@ -18,10 +18,10 @@ import time
 
 try:
     from flext_observability import (
-        FlextObservability,
         FlextObservabilityContext,
         FlextObservabilitySampling,
     )
+    from flext_observability._core import FlextObservabilityMasterFactory
 
     FlextObservabilityContext.set_correlation_id("http-req-001")
     FlextObservabilityContext.set_trace_id("trace-http-001")
@@ -30,51 +30,59 @@ try:
     sampler.set_operation_rate("http_request", 1.0)
     should_sample = sampler.should_sample("http_request", "api")
     assert should_sample is not None, "Sampling decision should be made"
-    obs = FlextObservability()
-    metrics_service = obs.Metrics()
-    metric_result = metrics_service.record_counter(
-        "http.requests.total", 1.0, labels={"method": "POST", "endpoint": "/api/users"}
+    factory = FlextObservabilityMasterFactory()
+    metric_result = factory.create_metric(
+        "http.requests.total",
+        1.0,
+        "counter",
+        tags={"method": "POST", "endpoint": "/api/users"},
     )
     assert metric_result.is_success
     start_time = time.time()
     time.sleep(0.01)
     duration = time.time() - start_time
-    metric_result = metrics_service.record_histogram(
+    metric_result = factory.create_metric(
         "http.request.duration_ms",
         duration * 1000,
-        labels={"method": "POST", "endpoint": "/api/users"},
+        "histogram",
+        tags={"method": "POST", "endpoint": "/api/users"},
     )
     assert metric_result.is_success
-    metric_result = metrics_service.record_counter(
+    metric_result = factory.create_metric(
         "http.requests.success",
         1.0,
-        labels={"method": "POST", "endpoint": "/api/users"},
+        "counter",
+        tags={"method": "POST", "endpoint": "/api/users"},
     )
     assert metric_result.is_success
 except Exception:
     pass
 try:
-    from flext_observability import FlextObservability
+    from flext_observability._core import FlextObservabilityMasterFactory
 
-    obs = FlextObservability()
-    metrics_service = obs.Metrics()
+    factory = FlextObservabilityMasterFactory()
     start_time = time.time()
     time.sleep(0.02)
     duration = time.time() - start_time
-    result = metrics_service.record_counter(
-        "db.queries.total", 1.0, labels={"system": "postgresql", "operation": "SELECT"}
+    result = factory.create_metric(
+        "db.queries.total",
+        1.0,
+        "counter",
+        tags={"system": "postgresql", "operation": "SELECT"},
     )
     assert result.is_success
-    result = metrics_service.record_histogram(
+    result = factory.create_metric(
         "db.query.duration_ms",
         duration * 1000,
-        labels={"system": "postgresql", "operation": "SELECT"},
+        "histogram",
+        tags={"system": "postgresql", "operation": "SELECT"},
     )
     assert result.is_success
-    result = metrics_service.record_gauge(
+    result = factory.create_metric(
         "db.query.rows_returned",
         1.0,
-        labels={"system": "postgresql", "operation": "SELECT"},
+        "gauge",
+        tags={"system": "postgresql", "operation": "SELECT"},
     )
     assert result.is_success
 except Exception:
@@ -96,7 +104,6 @@ try:
             error_type="DatabaseConnectionError",
             message="Failed to connect to database",
             severity=c.Observability.ErrorSeverity.ERROR,
-            context={"attempt": i + 1},
         )
         result = handler.record_error(error)
         assert result.is_success, "Error should be recorded"
@@ -107,29 +114,41 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import FlextObservability, FlextObservabilityContext
+    from flext_observability import FlextObservabilityContext
+    from flext_observability._core import FlextObservabilityMasterFactory
 
     correlation_id = "dist-trace-001"
     FlextObservabilityContext.set_correlation_id(correlation_id)
-    obs = FlextObservability()
-    metrics_service = obs.Metrics()
-    api_result = metrics_service.record_counter(
-        "api.requests", 1.0, labels={"component": "api"}
+    factory = FlextObservabilityMasterFactory()
+    api_result = factory.create_metric(
+        "api.requests",
+        1.0,
+        "counter",
+        tags={"component": "api"},
     )
     assert api_result.is_success
     time.sleep(0.005)
-    business_result = metrics_service.record_counter(
-        "business.operations", 1.0, labels={"component": "business"}
+    business_result = factory.create_metric(
+        "business.operations",
+        1.0,
+        "counter",
+        tags={"component": "business"},
     )
     assert business_result.is_success
     time.sleep(0.005)
-    db_result = metrics_service.record_counter(
-        "database.queries", 1.0, labels={"component": "database"}
+    db_result = factory.create_metric(
+        "database.queries",
+        1.0,
+        "counter",
+        tags={"component": "database"},
     )
     assert db_result.is_success
     time.sleep(0.01)
-    api_success = metrics_service.record_counter(
-        "api.success", 1.0, labels={"component": "api"}
+    api_success = factory.create_metric(
+        "api.success",
+        1.0,
+        "counter",
+        tags={"component": "api"},
     )
     assert api_success.is_success
 except Exception:
@@ -149,7 +168,7 @@ try:
     assert snapshot.correlation_id == "async-001"
     assert len(snapshot.metadata) >= 3
     assert len(snapshot.baggage) >= 2
-    json_data = snapshot.to_json()
+    json_data = snapshot.model_dump_json()
     assert json_data is not None
     assert "correlation_id" in json_data
     ctx.clear()
@@ -162,28 +181,28 @@ try:
     from flext_observability import (
         FlextObservabilityCustomMetrics,
         FlextObservabilitySampling,
-        MetricType,
+        c,
     )
 
     registry = FlextObservabilityCustomMetrics.get_registry()
     sampler = FlextObservabilitySampling.get_sampler()
     result = registry.register_metric(
         name="user_signup",
-        metric_type=MetricType.COUNTER,
+        metric_type=c.Observability.MetricType.COUNTER,
         description="User signup events",
         namespace="auth",
     )
     assert result.is_success
     result = registry.register_metric(
         name="active_sessions",
-        metric_type=MetricType.GAUGE,
+        metric_type=c.Observability.MetricType.GAUGE,
         description="Currently active sessions",
         namespace="auth",
     )
     assert result.is_success
     sampler.set_service_rate("auth_service", 0.5)
     sampler.set_operation_rate("user_signup", 1.0)
-    metrics = registry.get_metrics_by_type(MetricType.COUNTER)
+    metrics = registry.get_metrics_by_type(c.Observability.MetricType.COUNTER)
     assert any("user_signup" in m for m in metrics)
 except Exception:
     pass
@@ -211,7 +230,6 @@ except Exception:
 try:
     from flext_observability import (
         ErrorEvent,
-        FlextObservability,
         FlextObservabilityAdvancedContext,
         FlextObservabilityContext,
         FlextObservabilityCustomMetrics,
@@ -220,15 +238,15 @@ try:
         FlextObservabilitySampling,
         c,
     )
+    from flext_observability._core import FlextObservabilityMasterFactory
 
     FlextObservabilityContext.set_correlation_id("e2e-test-001")
     FlextObservabilityContext.set_trace_id("trace-e2e-001")
     sampler = FlextObservabilitySampling.get_sampler()
     sampler.set_environment("staging")
     sampler.set_operation_rate("e2e_workflow", 1.0)
-    obs = FlextObservability()
-    metrics_service = obs.Metrics()
-    result = metrics_service.record_counter("workflow.started", 1.0)
+    factory = FlextObservabilityMasterFactory()
+    result = factory.create_metric("workflow.started", 1.0, "counter")
     assert result.is_success
     perf_monitor = FlextObservabilityPerformance()
     monitor = perf_monitor.start_monitoring("e2e_operation")
@@ -246,11 +264,9 @@ try:
     monitor.mark_success()
     perf_metrics = monitor.metrics
     assert perf_monitor.is_performance_acceptable(perf_metrics)
-    result = metrics_service.record_counter("workflow.completed", 1.0)
+    result = factory.create_metric("workflow.completed", 1.0, "counter")
     assert result.is_success
-    result = metrics_service.record_histogram(
-        "workflow.duration_ms", perf_metrics.duration_ms
-    )
+    result = factory.create_metric("workflow.duration_ms", perf_metrics.duration_ms)
     assert result.is_success
     snapshot = adv_ctx.snapshot(
         correlation_id=FlextObservabilityContext.get_correlation_id(),
@@ -267,7 +283,7 @@ try:
     )
     error_result = error_handler.record_error(test_error)
     assert error_result.is_success
-    result = metrics_service.record_counter("workflow.errors", 1.0)
+    result = factory.create_metric("workflow.errors", 1.0, "counter")
     assert result.is_success
 except Exception:
     pass
@@ -293,14 +309,13 @@ try:
         trace_id="trace-multi-001",
         span_id="span-api-001",
     )
-    json_snapshot = snapshot.to_json()
+    json_snapshot = snapshot.model_dump_json()
     assert json_snapshot is not None
     assert "correlation_id" in json_snapshot
 except Exception:
     pass
 try:
     from flext_observability import (
-        FlextObservability,
         FlextObservabilityAdvancedContext,
         FlextObservabilityContext,
         FlextObservabilityCustomMetrics,
@@ -308,11 +323,12 @@ try:
         FlextObservabilityPerformance,
         FlextObservabilitySampling,
     )
+    from flext_observability._core import FlextObservabilityMasterFactory
 
     FlextObservabilityContext.set_correlation_id("setup-001")
     assert FlextObservabilityContext.get_correlation_id() == "setup-001"
-    obs = FlextObservability()
-    assert obs is not None
+    factory = FlextObservabilityMasterFactory()
+    assert factory is not None
     sampler = FlextObservabilitySampling.get_sampler()
     perf = FlextObservabilityPerformance()
     assert sampler is not None and perf is not None
@@ -322,7 +338,7 @@ try:
     assert errors is not None
     assert custom_metrics is not None
     assert advanced_ctx is not None
-    metrics_service = obs.Metrics()
+    metrics_service = factory
     assert metrics_service is not None
     FlextObservabilityContext.set_correlation_id("example-001")
     assert FlextObservabilityContext.get_correlation_id() == "example-001"

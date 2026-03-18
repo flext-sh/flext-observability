@@ -24,7 +24,7 @@ from __future__ import annotations
 import time
 from collections import UserDict
 from collections.abc import Awaitable, Callable, Mapping
-from typing import Annotated, Protocol, TypeIs
+from typing import Annotated, Protocol, TypeGuard
 
 import flask
 from flext_core import FlextRuntime, r, t
@@ -32,7 +32,6 @@ from pydantic import BaseModel, Field, ValidationError
 
 from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
 
-_FlaskAppType = flask.Flask if hasattr(flask, "Flask") else object
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None
 _flask_available = True
@@ -60,7 +59,7 @@ class FlaskApp(Protocol):
     errorhandler: FlaskErrorHandler
 
 
-def _is_flask_app(obj: t.Scalar) -> TypeIs[FlaskApp]:
+def _is_flask_app(obj: t.RegisterableService) -> TypeGuard[FlaskApp]:
     """Type guard to check if object is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
@@ -69,7 +68,7 @@ class FastAPIApp(Protocol):
     def add_middleware(self, middleware_class: type) -> None: ...
 
 
-def _is_fastapi_app(obj: t.Scalar) -> TypeIs[FastAPIApp]:
+def _is_fastapi_app(obj: t.RegisterableService) -> TypeGuard[FastAPIApp]:
     return hasattr(obj, "add_middleware")
 
 
@@ -132,7 +131,7 @@ class FlextObservabilityHTTP:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: t.Scalar) -> r[bool]:
+        def setup_instrumentation(app: t.RegisterableService) -> r[bool]:
             """Setup Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -292,7 +291,7 @@ class FlextObservabilityHTTP:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: t.Scalar) -> r[bool]:
+        def setup_instrumentation(app: t.RegisterableService) -> r[bool]:
             """Setup FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,

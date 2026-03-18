@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Awaitable, Callable, MutableMapping
-from typing import Annotated, ClassVar, Protocol, TypeIs
+from typing import Annotated, ClassVar, Protocol, TypeGuard
 
 from flext_core import FlextRuntime, r, t
 from pydantic import BaseModel, Field, ValidationError
@@ -86,17 +86,12 @@ class AIOHTTPResponse(Protocol):
 
 
 class HTTPXAsyncClient(Protocol):
-    def _send(self, request: HTTPXRequest) -> Awaitable[HTTPXResponse]: ...
+    _send: Callable[..., Awaitable[HTTPXResponse]]
+    request: Callable[..., HTTPXResponse | Awaitable[HTTPXResponse]]
 
 
 class HTTPXClient(Protocol):
-    def request(
-        self,
-        method: str,
-        url: str,
-        *args: t.Scalar,
-        **kwargs: t.Scalar,
-    ) -> HTTPXResponse: ...
+    request: Callable[..., HTTPXResponse | Awaitable[HTTPXResponse]]
 
 
 class AIOHTTPSession(Protocol):
@@ -134,17 +129,19 @@ class FlextObservabilityHTTPClient:
     _logger = FlextRuntime.get_logger(__name__)
 
     @staticmethod
-    def _is_httpx_async_client(obj: t.Scalar) -> TypeIs[HTTPXAsyncClient]:
+    def _is_httpx_async_client(
+        obj: t.RegisterableService,
+    ) -> TypeGuard[HTTPXAsyncClient]:
         """Type guard to check if object is an async httpx client."""
-        return hasattr(obj, "_send")
+        return hasattr(obj, "request") and hasattr(obj, "_send")
 
     @staticmethod
-    def _is_httpx_client(obj: t.Scalar) -> TypeIs[HTTPXClient]:
+    def _is_httpx_client(obj: t.RegisterableService) -> TypeGuard[HTTPXClient]:
         """Type guard to check if object is an httpx client."""
-        return hasattr(obj, "request") or hasattr(obj, "_send")
+        return hasattr(obj, "request") and hasattr(obj, "_send") is False
 
     @staticmethod
-    def _is_aiohttp_session(obj: t.Scalar) -> TypeIs[AIOHTTPSession]:
+    def _is_aiohttp_session(obj: t.RegisterableService) -> TypeGuard[AIOHTTPSession]:
         return hasattr(obj, "request")
 
     @staticmethod
@@ -157,10 +154,10 @@ class FlextObservabilityHTTPClient:
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
 
-        instrumented_clients: ClassVar[set[t.Scalar]] = set()
+        instrumented_clients: ClassVar[set[int]] = set()
 
         @staticmethod
-        def setup_instrumentation(client: t.Scalar) -> r[bool]:
+        def setup_instrumentation(client: t.RegisterableService) -> r[bool]:
             """Setup httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -207,49 +204,68 @@ class FlextObservabilityHTTPClient:
                     and hasattr(client, "_send") is False
                 ):
                     return r[bool].fail("Invalid httpx client - missing request method")
-                if client in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
+                client_id = id(client)
+                if client_id in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
                     return r[bool].ok(value=True)
-                is_async = FlextObservabilityHTTPClient._is_httpx_async_client(client)
-                if is_async:
-                    original_send = client._send
+                if FlextObservabilityHTTPClient._is_httpx_async_client(client):
+                    typed_async_client: HTTPXAsyncClient = client
+                    original_request = typed_async_client.request
 
-                    async def traced_send(
-                        request: HTTPXRequest,
+                    async def traced_async_request(
+                        method: str,
+                        url: str,
+                        *args: t.Scalar,
+                        **kwargs: t.Scalar,
                     ) -> HTTPXResponse:
-                        """Traced send wrapper for async httpx."""
                         start_time = time.time()
                         correlation_id = FlextObservabilityContext.get_correlation_id()
                         trace_id = FlextObservabilityContext.get_trace_id()
                         span_id = FlextObservabilityContext.get_span_id()
+                        headers = FlextObservabilityHTTPClient._validated_headers(
+                            kwargs.get("headers", {}),
+                        )
                         if correlation_id:
-                            request.headers["X-Correlation-ID"] = correlation_id
+                            headers["X-Correlation-ID"] = correlation_id
                         if trace_id:
-                            request.headers["X-Trace-ID"] = trace_id
+                            headers["X-Trace-ID"] = trace_id
                         if span_id:
-                            request.headers["X-Span-ID"] = span_id
+                            headers["X-Span-ID"] = span_id
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
                             "debug",
-                            f"HTTP client request: {request.method} {request.url}",
+                            f"HTTP client request: {method} {url}",
                             extra={
-                                "http_method": request.method,
-                                "http_url": str(request.url),
-                                "http_scheme": request.url.scheme,
-                                "http_host": str(request.url.host),
+                                "http_method": method,
+                                "http_url": str(url),
                                 "client": "httpx",
                                 "async": True,
                             },
                         )
+                        call_kwargs: dict[str, t.Scalar] = {
+                            k: v for k, v in kwargs.items() if k != "headers"
+                        }
                         try:
-                            response = await original_send(request)
+                            response_candidate = original_request(
+                                method,
+                                url,
+                                *args,
+                                headers=headers,
+                                **call_kwargs,
+                            )
+                            if not isinstance(response_candidate, Awaitable):
+                                error_message = "Async httpx request returned a non-awaitable response"
+                                raise TypeError(
+                                    error_message,
+                                )
+                            response = await response_candidate
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
                                 "debug",
-                                f"HTTP client response: {request.method} {request.url} -> {response.status_code}",
+                                f"HTTP client response: {method} {url} -> {response.status_code}",
                                 extra={
-                                    "http_method": request.method,
-                                    "http_url": str(request.url),
+                                    "http_method": method,
+                                    "http_url": str(url),
                                     "http_status": response.status_code,
                                     "http_duration_ms": duration_ms,
                                     "client": "httpx",
@@ -262,10 +278,10 @@ class FlextObservabilityHTTPClient:
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
                                 "error",
-                                f"HTTP client error: {request.method} {request.url}",
+                                f"HTTP client error: {method} {url}",
                                 extra={
-                                    "http_method": request.method,
-                                    "http_url": str(request.url),
+                                    "http_method": method,
+                                    "http_url": str(url),
                                     "http_duration_ms": duration_ms,
                                     "error_type": type(e).__name__,
                                     "error_message": str(e),
@@ -275,9 +291,13 @@ class FlextObservabilityHTTPClient:
                             )
                             raise
 
-                    client._send = traced_send
-                else:
-                    original_request: Callable[..., HTTPXResponse] = client.request
+                    typed_async_client.request = traced_async_request
+                elif FlextObservabilityHTTPClient._is_httpx_client(client):
+                    typed_sync_client: HTTPXClient = client
+                    original_request: Callable[
+                        ...,
+                        HTTPXResponse | Awaitable[HTTPXResponse],
+                    ] = typed_sync_client.request
 
                     def traced_request(
                         method: str,
@@ -314,13 +334,21 @@ class FlextObservabilityHTTPClient:
                             k: v for k, v in kwargs.items() if k != "headers"
                         }
                         try:
-                            response = original_request(
+                            response_candidate = original_request(
                                 method,
                                 url,
                                 *args,
                                 headers=headers,
                                 **call_kwargs,
                             )
+                            if isinstance(response_candidate, Awaitable):
+                                error_message = (
+                                    "Sync httpx request returned an awaitable response"
+                                )
+                                raise TypeError(
+                                    error_message,
+                                )
+                            response = response_candidate
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
@@ -354,8 +382,12 @@ class FlextObservabilityHTTPClient:
                             )
                             raise
 
-                    client.request = traced_request
-                FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client)
+                    typed_sync_client.request = traced_request
+                else:
+                    return r[bool].fail(
+                        "Invalid httpx client - unsupported client type",
+                    )
+                FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client_id)
                 FlextObservabilityHTTPClient._logger.debug(
                     "httpx client instrumentation setup complete",
                 )
@@ -369,7 +401,7 @@ class FlextObservabilityHTTPClient:
         instrumented_sessions: ClassVar[set[AIOHTTPSession]] = set()
 
         @staticmethod
-        def setup_instrumentation(session: t.Scalar) -> r[bool]:
+        def setup_instrumentation(session: t.RegisterableService) -> r[bool]:
             """Setup aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests
