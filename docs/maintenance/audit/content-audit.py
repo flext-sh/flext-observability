@@ -20,6 +20,7 @@ import argparse
 import json
 import re
 from collections import defaultdict
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -95,6 +96,25 @@ class AuditReport(BaseModel):
     )
 
 
+class AuditorConfig(BaseModel):
+    """Configuration for documentation auditor behavior."""
+
+    freshness_threshold_days: int = Field(default=30, ge=1)
+    min_words_per_file: int = Field(default=50, ge=1)
+    max_external_links: int = Field(default=10, ge=0)
+    quality_thresholds: dict[str, int] = Field(
+        default_factory=lambda: {
+            "excellent": EXCELLENT_QUALITY_THRESHOLD,
+            "good": GOOD_QUALITY_THRESHOLD,
+            "fair": FAIR_QUALITY_THRESHOLD,
+            "poor": 45,
+        },
+    )
+    required_sections: list[str] = Field(
+        default_factory=lambda: ["description", "usage", "examples", "api"],
+    )
+
+
 class DocumentationAuditor:
     """Main documentation audit system."""
 
@@ -110,20 +130,17 @@ class DocumentationAuditor:
         self.config = self._load_config(config_path)
         self.report = AuditReport()
 
-    def _load_config(self, config_path: Path | None) -> dict[str, object]:
+    def _load_config(self, config_path: Path | None) -> AuditorConfig:
         """Load audit configuration."""
-        default_config = {
-            "freshness_threshold_days": 30,
-            "min_words_per_file": 50,
-            "max_external_links": 10,
-            "quality_thresholds": {"excellent": 90, "good": 75, "fair": 60, "poor": 45},
-            "required_sections": ["description", "usage", "examples", "api"],
-        }
+        default_config = AuditorConfig()
 
         if config_path and config_path.exists():
             with Path(config_path).open("r", encoding="utf-8") as f:
                 user_config = yaml.safe_load(f)
-                default_config.update(user_config)
+                if isinstance(user_config, Mapping):
+                    merged = default_config.model_dump()
+                    merged.update(user_config)
+                    return AuditorConfig.model_validate(merged)
 
         return default_config
 
@@ -194,7 +211,7 @@ class DocumentationAuditor:
         score = 100.0
 
         # Word count penalty
-        if metrics.word_count < self.config["min_words_per_file"]:
+        if metrics.word_count < self.config.min_words_per_file:
             score -= 20
             metrics.recommendations.append(
                 "Consider expanding content (minimum 50 words)",
@@ -227,7 +244,7 @@ class DocumentationAuditor:
     def _check_freshness(self, metrics: ContentMetrics) -> None:
         """Check content freshness against thresholds."""
         days_since_update = (datetime.now(UTC) - metrics.last_modified).days
-        threshold = self.config["freshness_threshold_days"]
+        threshold = self.config.freshness_threshold_days
 
         if days_since_update <= threshold:
             metrics.freshness_score = 100.0
@@ -279,7 +296,7 @@ class DocumentationAuditor:
 
         files = self.discover_files()
         self.report.total_files = len(files)
-        self.report.freshness_threshold_days = self.config["freshness_threshold_days"]
+        self.report.freshness_threshold_days = self.config.freshness_threshold_days
 
         for file_path in files:
             metrics = self.analyze_file(file_path)
