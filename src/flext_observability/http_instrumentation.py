@@ -27,10 +27,10 @@ from collections.abc import Awaitable, Callable, Mapping
 from typing import Annotated, Protocol, TypeGuard
 
 import flask
-from flext_core import FlextRuntime, r, t
+from flext_core import FlextRuntime, r
 from pydantic import BaseModel, Field, ValidationError
 
-from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
+from flext_observability import FlextObservabilityContext, FlextObservabilityLogging, t
 
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None

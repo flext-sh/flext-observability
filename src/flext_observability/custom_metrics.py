@@ -20,10 +20,10 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_core import FlextRuntime, r, t
+from flext_core import FlextRuntime, r
 from pydantic import BaseModel, Field, ValidationError
 
-from flext_observability import c
+from flext_observability import c, t
 
 MetricType = c.Observability.MetricType
 

@@ -24,10 +24,10 @@ import time
 from collections.abc import Awaitable, Callable, MutableMapping
 from typing import Annotated, ClassVar, Protocol, TypeGuard
 
-from flext_core import FlextRuntime, r, t
+from flext_core import FlextRuntime, r
 from pydantic import BaseModel, Field, ValidationError
 
-from flext_observability import FlextObservabilityContext, FlextObservabilityLogging
+from flext_observability import FlextObservabilityContext, FlextObservabilityLogging, t
 
 
 class _HeadersPayload(BaseModel):

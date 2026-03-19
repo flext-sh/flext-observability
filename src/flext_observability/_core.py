@@ -10,18 +10,10 @@ from datetime import UTC, datetime
 from typing import Annotated, ClassVar, Literal
 from uuid import uuid4
 
-from flext_core import (
-    FlextConstants,
-    FlextContainer,
-    FlextModels,
-    FlextRuntime,
-    p,
-    r,
-    t,
-)
+from flext_core import FlextConstants, FlextContainer, FlextModels, FlextRuntime, r
 from pydantic import Field
 
-from flext_observability import c
+from flext_observability import c, p, t
 
 
 class FlextObservability:

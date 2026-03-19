@@ -10,9 +10,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextContainer, FlextRuntime, p, r, t
+from flext_core import FlextContainer, FlextRuntime, r
 from structlog.typing import BindableLogger
 
+from flext_observability import p, t
 from flext_observability.settings import FlextObservabilitySettings
 
 

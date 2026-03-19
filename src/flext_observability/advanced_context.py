@@ -21,8 +21,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Annotated
 
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 from pydantic import BaseModel, Field, TypeAdapter
+
+from flext_observability import t
 
 
 class ContextSnapshot(BaseModel):

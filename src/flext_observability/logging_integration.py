@@ -22,11 +22,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Annotated
 
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 from pydantic import BaseModel, Field
 from structlog.typing import BindableLogger
 
-from flext_observability import FlextObservabilityContext
+from flext_observability import FlextObservabilityContext, t
 
 
 class FlextObservabilityLogging:

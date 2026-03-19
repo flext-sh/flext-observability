@@ -18,8 +18,10 @@ from contextvars import ContextVar
 from typing import Annotated
 from uuid import uuid4
 
-from flext_core import FlextRuntime, r, t
+from flext_core import FlextRuntime, r
 from pydantic import BaseModel, Field, ValidationError
+
+from flext_observability import t
 
 
 class _BaggageKeyModel(BaseModel):

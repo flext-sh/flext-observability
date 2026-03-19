@@ -14,8 +14,10 @@ from datetime import UTC, datetime
 from typing import Annotated, ClassVar
 from uuid import uuid4
 
-from flext_core import FlextModels, t
+from flext_core import FlextModels
 from pydantic import ConfigDict, Field, computed_field
+
+from flext_observability import t
 
 
 class FlextObservabilityModels(FlextModels):

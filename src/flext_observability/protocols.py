@@ -9,7 +9,9 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, t
+from flext_core import FlextProtocols
+
+from flext_observability import t
 
 
 class FlextObservabilityProtocols(FlextProtocols):
