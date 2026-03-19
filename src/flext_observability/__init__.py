@@ -61,7 +61,7 @@ if TYPE_CHECKING:
         FlextObservabilityHTTPClient,
     )
     from flext_observability.http_instrumentation import FlextObservabilityHTTP
-    from flext_observability.logging_integration import FlextObservabilityLogging
+    from flext_observability.logging import FlextObservabilityLogging
     from flext_observability.models import FlextObservabilityModels, m
     from flext_observability.monitoring import (
         FlextObservabilityMonitor,
@@ -126,7 +126,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "FlextObservabilityHealth",
     ),
     "FlextObservabilityLogging": (
-        "flext_observability.logging_integration",
+        "flext_observability.logging",
         "FlextObservabilityLogging",
     ),
     "FlextObservabilityModels": (
