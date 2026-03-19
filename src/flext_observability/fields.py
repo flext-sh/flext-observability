@@ -4,14 +4,13 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_observability import c
 
 from datetime import UTC, datetime
 from typing import ClassVar
 
 from pydantic import Field, field_validator
 
-from flext_observability import t
+from flext_observability import c, t
 
 
 class FlextObservabilityFields:

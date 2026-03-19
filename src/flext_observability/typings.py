@@ -19,9 +19,7 @@ from typing import TypeVar
 
 from flext_core import FlextTypes
 
-from flext_observability import c
-
-T = TypeVar("T")
+from flext_observability.constants import c
 
 
 class FlextObservabilityTypes(FlextTypes):
@@ -82,4 +80,6 @@ class FlextObservabilityTypes(FlextTypes):
 
 
 t = FlextObservabilityTypes
+T = TypeVar("T")
+
 __all__ = ["FlextObservabilityTypes", "T", "t"]
