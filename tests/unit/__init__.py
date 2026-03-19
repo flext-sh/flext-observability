@@ -12,10 +12,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
-    from .test_constants import (
-        TestFlextObservabilityConstants,
-        TestFlextObservabilityConstants as c,
-    )
+    from .test_constants import TestFlextObservabilityConstants
     from .test_factory import TestFlextObservabilityMasterFactoryReal
     from .test_init import TestInitCoverage
 
@@ -29,14 +26,12 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "TestFlextObservabilityMasterFactoryReal",
     ),
     "TestInitCoverage": ("tests.unit.test_init", "TestInitCoverage"),
-    "c": ("tests.unit.test_constants", "TestFlextObservabilityConstants"),
 }
 
 __all__ = [
     "TestFlextObservabilityConstants",
     "TestFlextObservabilityMasterFactoryReal",
     "TestInitCoverage",
-    "c",
 ]
 
 
