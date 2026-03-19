@@ -4,13 +4,14 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+from flext_observability import c
 
 from datetime import UTC, datetime
 from typing import ClassVar
 
 from pydantic import Field, field_validator
 
-from flext_observability import FlextObservabilityConstants, t
+from flext_observability import t
 
 
 class FlextObservabilityFields:
@@ -33,21 +34,21 @@ class FlextObservabilityFields:
         "cpu",
     }
     ALERT_VALID_LEVELS: ClassVar[set[str]] = {
-        FlextObservabilityConstants.Observability.AlertLevel.INFO,
-        FlextObservabilityConstants.Observability.AlertLevel.WARNING,
-        FlextObservabilityConstants.Observability.AlertLevel.ERROR,
-        FlextObservabilityConstants.Observability.AlertLevel.CRITICAL,
+        c.Observability.AlertLevel.INFO,
+        c.Observability.AlertLevel.WARNING,
+        c.Observability.AlertLevel.ERROR,
+        c.Observability.AlertLevel.CRITICAL,
     }
     TRACE_VALID_STATUSES: ClassVar[set[str]] = {
-        FlextObservabilityConstants.Observability.TraceStatus.STARTED,
-        FlextObservabilityConstants.Observability.TraceStatus.RUNNING,
-        FlextObservabilityConstants.Observability.TraceStatus.COMPLETED,
-        FlextObservabilityConstants.Observability.TraceStatus.FAILED,
+        c.Observability.TraceStatus.STARTED,
+        c.Observability.TraceStatus.RUNNING,
+        c.Observability.TraceStatus.COMPLETED,
+        c.Observability.TraceStatus.FAILED,
     }
     HEALTH_VALID_STATUSES: ClassVar[set[str]] = {
-        FlextObservabilityConstants.Observability.HealthStatus.HEALTHY,
-        FlextObservabilityConstants.Observability.HealthStatus.DEGRADED,
-        FlextObservabilityConstants.Observability.HealthStatus.UNHEALTHY,
+        c.Observability.HealthStatus.HEALTHY,
+        c.Observability.HealthStatus.DEGRADED,
+        c.Observability.HealthStatus.UNHEALTHY,
     }
 
     class MetricFields:
@@ -86,7 +87,7 @@ class FlextObservabilityFields:
     def create_metric_unit_field(cls) -> t.Scalar:
         """Create metric unit field."""
         return Field(
-            default=FlextObservabilityConstants.Observability.Defaults.DEFAULT_METRIC_UNIT,
+            default=c.Observability.Defaults.DEFAULT_METRIC_UNIT,
             description="Metric unit",
         )
 

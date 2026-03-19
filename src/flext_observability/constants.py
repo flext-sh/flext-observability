@@ -39,16 +39,8 @@ class FlextObservabilityConstants(FlextConstants):
         class Defaults:
             """Configuration defaults."""
 
-            DEFAULT_METRICS_NAMESPACE: Final[str] = "flext"
             DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
             DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-            DEFAULT_METRIC_UNIT: Final[str] = "count"
-            DEFAULT_TRACE_TIMEOUT: Final[float] = 30.0
-            DEFAULT_HEALTH_CHECK_INTERVAL: Final[float] = 60.0
-            DEFAULT_METRICS_EXPORT_INTERVAL_SECONDS: Final[int] = 60
-            DEFAULT_TRACING_SAMPLING_RATE: Final[float] = 1.0
-            DEFAULT_MAX_SPAN_ATTRIBUTES: Final[int] = 128
-            DEFAULT_MONITORING_ENDPOINT: Final[str] = "http://localhost:9090"
 
         @unique
         class MetricType(StrEnum):
@@ -137,9 +129,6 @@ class FlextObservabilityConstants(FlextConstants):
         class Storage:
             """Storage limits for metrics service."""
 
-            MAX_METRICS_STORE_SIZE: Final[int] = 1000
-            METRICS_STORE_CLEANUP_SIZE: Final[int] = 500
-
         @unique
         class Service(StrEnum):
             """Service name enumeration.
@@ -225,12 +214,6 @@ class FlextObservabilityConstants(FlextConstants):
         class FunctionArgs:
             """Function argument length constants."""
 
-            NO_ARGS: Final[int] = 0
-            ONE_ARG: Final[int] = 1
-            TWO_ARGS: Final[int] = 2
-
-    # Flat ClassVar constants for direct access
-    DEFAULT_METRIC_UNIT: ClassVar[str] = "count"
     METRIC_UNIT_COUNT: ClassVar[str] = "count"
     METRIC_UNIT_PERCENT: ClassVar[str] = "percent"
     METRIC_UNIT_BYTES: ClassVar[str] = "bytes"
@@ -257,7 +240,6 @@ class FlextObservabilityConstants(FlextConstants):
     MAX_LOG_MESSAGE_LENGTH: ClassVar[int] = 4096
     DEFAULT_SERVICE_NAME: ClassVar[str] = "flext-observability"
     DEFAULT_ENVIRONMENT: ClassVar[str] = "development"
-    DEFAULT_HEALTH_CHECK_INTERVAL: ClassVar[int] = 30
 
     @unique
     class ObservabilityProjectType(StrEnum):

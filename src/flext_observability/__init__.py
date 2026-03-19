@@ -27,12 +27,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 from flext_observability.typings import T
 
 if TYPE_CHECKING:
-    from flext_core.decorators import d
-    from flext_core.exceptions import e
-    from flext_core.handlers import h
-    from flext_core.mixins import x
-    from flext_core.result import r
-    from flext_core.service import s
+    from flext_core import d, e, h, r, s, x
     from flext_core.typings import FlextTypes
 
     from flext_observability.__version__ import (
@@ -181,22 +176,22 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "__version__": ("flext_observability.__version__", "__version__"),
     "__version_info__": ("flext_observability.__version__", "__version_info__"),
     "c": ("flext_observability.constants", "c"),
-    "d": ("flext_core.decorators", "d"),
-    "e": ("flext_core.exceptions", "e"),
+    "d": ("flext_core", "d"),
+    "e": ("flext_core", "e"),
     "flext_monitor_function": (
         "flext_observability.monitoring",
         "flext_monitor_function",
     ),
     "get_global_factory": ("flext_observability.services", "get_global_factory"),
-    "h": ("flext_core.handlers", "h"),
+    "h": ("flext_core", "h"),
     "m": ("flext_observability.models", "m"),
     "p": ("flext_observability.protocols", "p"),
-    "r": ("flext_core.result", "r"),
+    "r": ("flext_core", "r"),
     "reset_global_factory": ("flext_observability.services", "reset_global_factory"),
-    "s": ("flext_core.service", "s"),
+    "s": ("flext_core", "s"),
     "t": ("flext_observability.typings", "t"),
     "u": ("flext_observability.utilities", "u"),
-    "x": ("flext_core.mixins", "x"),
+    "x": ("flext_core", "x"),
 }
 
 __all__ = [
