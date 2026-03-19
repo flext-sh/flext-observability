@@ -19,7 +19,7 @@ from typing import TypeVar
 
 from flext_core import FlextTypes
 
-from flext_observability.constants import c
+from flext_observability import c
 
 T = TypeVar("T")
 

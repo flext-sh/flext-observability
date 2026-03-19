@@ -13,11 +13,11 @@ from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
 
+from flext_observability import t
 from flext_observability.constants import c as _obs_c
 from flext_observability.models import FlextObservabilityModels
 from flext_observability.services import FlextObservabilityServices
 from flext_observability.settings import FlextObservabilitySettings
-from flext_observability.typings import t
 
 
 class FlextObservabilityMonitor:

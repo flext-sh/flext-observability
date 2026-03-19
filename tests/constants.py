@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests.constants import c
+from flext_tests import c
 
 
 class TestsFlextObservabilityConstants(c):
