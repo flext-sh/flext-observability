@@ -141,7 +141,7 @@ class FlextObservabilityModels(FlextModels):
 
             metric_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
             name: Annotated[str, Field(min_length=1)]
-            value: float | int
+            value: t.Numeric
             unit: str
             source: Annotated[str, Field(default="unknown")]
 
