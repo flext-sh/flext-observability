@@ -45,7 +45,10 @@ if TYPE_CHECKING:
         ContextSnapshot,
         FlextObservabilityAdvancedContext,
     )
-    from flext_observability.constants import FlextObservabilityConstants, c
+    from flext_observability.constants import (
+        FlextObservabilityConstants,
+        FlextObservabilityConstants as c,
+    )
     from flext_observability.context import FlextObservabilityContext
     from flext_observability.custom_metrics import (
         CustomMetricDefinition,
@@ -62,7 +65,10 @@ if TYPE_CHECKING:
     )
     from flext_observability.http_instrumentation import FlextObservabilityHTTP
     from flext_observability.logging import FlextObservabilityLogging
-    from flext_observability.models import FlextObservabilityModels, m
+    from flext_observability.models import (
+        FlextObservabilityModels,
+        FlextObservabilityModels as m,
+    )
     from flext_observability.monitoring import (
         FlextObservabilityMonitor,
         flext_monitor_function,
@@ -71,7 +77,10 @@ if TYPE_CHECKING:
         FlextObservabilityPerformance,
         PerformanceMetrics,
     )
-    from flext_observability.protocols import FlextObservabilityProtocols, p
+    from flext_observability.protocols import (
+        FlextObservabilityProtocols,
+        FlextObservabilityProtocols as p,
+    )
     from flext_observability.sampling import FlextObservabilitySampling
     from flext_observability.services import (
         FlextObservabilityServices,
@@ -79,8 +88,14 @@ if TYPE_CHECKING:
         reset_global_factory,
     )
     from flext_observability.settings import FlextObservabilitySettings
-    from flext_observability.typings import FlextObservabilityTypes, t
-    from flext_observability.utilities import FlextObservabilityUtilities, u
+    from flext_observability.typings import (
+        FlextObservabilityTypes,
+        FlextObservabilityTypes as t,
+    )
+    from flext_observability.utilities import (
+        FlextObservabilityUtilities,
+        FlextObservabilityUtilities as u,
+    )
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "ContextSnapshot": ("flext_observability.advanced_context", "ContextSnapshot"),
@@ -175,7 +190,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "__url__": ("flext_observability.__version__", "__url__"),
     "__version__": ("flext_observability.__version__", "__version__"),
     "__version_info__": ("flext_observability.__version__", "__version_info__"),
-    "c": ("flext_observability.constants", "c"),
+    "c": ("flext_observability.constants", "FlextObservabilityConstants"),
     "d": ("flext_core", "d"),
     "e": ("flext_core", "e"),
     "flext_monitor_function": (
@@ -184,13 +199,13 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "get_global_factory": ("flext_observability.services", "get_global_factory"),
     "h": ("flext_core", "h"),
-    "m": ("flext_observability.models", "m"),
-    "p": ("flext_observability.protocols", "p"),
+    "m": ("flext_observability.models", "FlextObservabilityModels"),
+    "p": ("flext_observability.protocols", "FlextObservabilityProtocols"),
     "r": ("flext_core", "r"),
     "reset_global_factory": ("flext_observability.services", "reset_global_factory"),
     "s": ("flext_core", "s"),
-    "t": ("flext_observability.typings", "t"),
-    "u": ("flext_observability.utilities", "u"),
+    "t": ("flext_observability.typings", "FlextObservabilityTypes"),
+    "u": ("flext_observability.utilities", "FlextObservabilityUtilities"),
     "x": ("flext_core", "x"),
 }
 
