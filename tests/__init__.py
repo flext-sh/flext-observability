@@ -13,14 +13,27 @@ if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
     from . import unit as unit
-    from .constants import TestsFlextObservabilityConstants, c
-    from .models import TestsFlextObservabilityModels, m, tm
-    from .protocols import TestsFlextObservabilityProtocols, p
-    from .typings import TestsFlextObservabilityTypes, t
+    from .constants import (
+        TestsFlextObservabilityConstants,
+        TestsFlextObservabilityConstants as c,
+    )
+    from .models import (
+        TestsFlextObservabilityModels,
+        TestsFlextObservabilityModels as m,
+        tm,
+    )
+    from .protocols import (
+        TestsFlextObservabilityProtocols,
+        TestsFlextObservabilityProtocols as p,
+    )
+    from .typings import TestsFlextObservabilityTypes, TestsFlextObservabilityTypes as t
     from .unit.test_constants import TestFlextObservabilityConstants
     from .unit.test_factory import TestFlextObservabilityMasterFactoryReal
     from .unit.test_init import TestInitCoverage
-    from .utilities import TestsFlextObservabilityUtilities, u
+    from .utilities import (
+        TestsFlextObservabilityUtilities,
+        TestsFlextObservabilityUtilities as u,
+    )
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextObservabilityConstants": (
@@ -46,12 +59,12 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "tests.utilities",
         "TestsFlextObservabilityUtilities",
     ),
-    "c": ("tests.constants", "c"),
-    "m": ("tests.models", "m"),
-    "p": ("tests.protocols", "p"),
-    "t": ("tests.typings", "t"),
+    "c": ("tests.constants", "TestsFlextObservabilityConstants"),
+    "m": ("tests.models", "TestsFlextObservabilityModels"),
+    "p": ("tests.protocols", "TestsFlextObservabilityProtocols"),
+    "t": ("tests.typings", "TestsFlextObservabilityTypes"),
     "tm": ("tests.models", "tm"),
-    "u": ("tests.utilities", "u"),
+    "u": ("tests.utilities", "TestsFlextObservabilityUtilities"),
     "unit": ("tests.unit", ""),
 }
 
