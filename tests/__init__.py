@@ -27,9 +27,11 @@ if TYPE_CHECKING:
         TestsFlextObservabilityProtocols as p,
     )
     from .typings import TestsFlextObservabilityTypes, TestsFlextObservabilityTypes as t
-    from .unit.test_constants import TestFlextObservabilityConstants
-    from .unit.test_factory import TestFlextObservabilityMasterFactoryReal
-    from .unit.test_init import TestInitCoverage
+    from .unit import (
+        TestFlextObservabilityConstants,
+        TestFlextObservabilityMasterFactoryReal,
+        TestInitCoverage,
+    )
     from .utilities import (
         TestsFlextObservabilityUtilities,
         TestsFlextObservabilityUtilities as u,
@@ -37,14 +39,14 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextObservabilityConstants": (
-        "tests.unit.test_constants",
+        "tests.unit",
         "TestFlextObservabilityConstants",
     ),
     "TestFlextObservabilityMasterFactoryReal": (
-        "tests.unit.test_factory",
+        "tests.unit",
         "TestFlextObservabilityMasterFactoryReal",
     ),
-    "TestInitCoverage": ("tests.unit.test_init", "TestInitCoverage"),
+    "TestInitCoverage": ("tests.unit", "TestInitCoverage"),
     "TestsFlextObservabilityConstants": (
         "tests.constants",
         "TestsFlextObservabilityConstants",
