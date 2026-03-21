@@ -37,15 +37,14 @@ class FlextObservabilityModels(FlextModels):
         )
 
         id: Annotated[
-            str,
+            t.NonEmptyStr,
             Field(
                 default_factory=lambda: str(uuid4()),
-                min_length=1,
                 description="Unique entity identifier",
             ),
         ]
-        name: Annotated[str, Field(min_length=1, description="Entity name")]
-        type: Annotated[str, Field(min_length=1, description="Entity type")]
+        name: Annotated[t.NonEmptyStr, Field(description="Entity name")]
+        type: Annotated[t.NonEmptyStr, Field(description="Entity type")]
         timestamp: Annotated[
             datetime,
             Field(
@@ -98,9 +97,8 @@ class FlextObservabilityModels(FlextModels):
             Field(default=True, description="Enable observability"),
         ]
         interval_seconds: Annotated[
-            float,
+            t.PositiveFloat,
             Field(
-                gt=0,
                 default=60.0,
                 description="Collection interval",
             ),
