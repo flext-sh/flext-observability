@@ -146,4 +146,5 @@ class FlextObservabilityUtilities(FlextUtilities):
 
 
 u = FlextObservabilityUtilities
+
 __all__ = ["FlextObservabilityUtilities", "u"]

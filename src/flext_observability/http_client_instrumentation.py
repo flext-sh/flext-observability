@@ -25,9 +25,11 @@ from collections.abc import Awaitable, Callable, MutableMapping
 from typing import Annotated, ClassVar, Protocol, TypeGuard
 
 from flext_core import FlextRuntime, r
+from flext_core.typings import t
 from pydantic import BaseModel, Field, ValidationError
 
-from flext_observability import FlextObservabilityContext, FlextObservabilityLogging, t
+from flext_observability.context import FlextObservabilityContext
+from flext_observability.logging_integration import FlextObservabilityLogging
 
 
 class _HeadersPayload(BaseModel):
@@ -107,7 +109,9 @@ class FlextObservabilityHTTPClient:
     Usage:
         ```python
         import httpx
-        from flext_observability import FlextObservabilityHTTPClient
+        from flext_observability.http_client_instrumentation import (
+            FlextObservabilityHTTPClient,
+        )
 
         # Setup httpx client instrumentation
         client = httpx.Client()
@@ -180,7 +184,9 @@ class FlextObservabilityHTTPClient:
             Example:
                 ```python
                 import httpx
-                from flext_observability import FlextObservabilityHTTPClient
+                from flext_observability.http_client_instrumentation import (
+                    FlextObservabilityHTTPClient,
+                )
 
                 # Sync client
                 client = httpx.Client()
@@ -424,7 +430,9 @@ class FlextObservabilityHTTPClient:
             Example:
                 ```python
                 import aiohttp
-                from flext_observability import FlextObservabilityHTTPClient
+                from flext_observability.http_client_instrumentation import (
+                    FlextObservabilityHTTPClient,
+                )
 
                 async with aiohttp.ClientSession() as session:
                     FlextObservabilityHTTPClient.AIOHTTP.setup_instrumentation(session)

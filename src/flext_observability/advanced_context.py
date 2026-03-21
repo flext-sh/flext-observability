@@ -22,9 +22,8 @@ from collections.abc import Mapping
 from typing import Annotated
 
 from flext_core import FlextLogger, r
+from flext_core.typings import t
 from pydantic import BaseModel, Field, TypeAdapter
-
-from flext_observability import t
 
 
 class ContextSnapshot(BaseModel):
@@ -44,7 +43,9 @@ class FlextObservabilityAdvancedContext:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityAdvancedContext
+        from flext_observability.advanced_context import (
+            FlextObservabilityAdvancedContext,
+        )
 
         ctx = FlextObservabilityAdvancedContext.get_context()
 

@@ -24,9 +24,10 @@ from hashlib import sha256
 from typing import Annotated
 
 from flext_core import FlextLogger, r
+from flext_core.constants import c
 from pydantic import BaseModel, Field, ValidationError
 
-from flext_observability import FlextObservabilityContext, c
+from flext_observability.context import FlextObservabilityContext
 
 
 class _CooldownInput(BaseModel):
@@ -71,7 +72,7 @@ class FlextObservabilityErrorHandling:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityErrorHandling
+        from flext_observability.error_handling import FlextObservabilityErrorHandling
 
         handler = FlextObservabilityErrorHandling.get_handler()
 

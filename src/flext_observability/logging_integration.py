@@ -23,10 +23,11 @@ from collections.abc import Mapping
 from typing import Annotated
 
 from flext_core import FlextLogger, r
+from flext_core.typings import t
 from pydantic import BaseModel, Field
 from structlog.typing import BindableLogger
 
-from flext_observability import FlextObservabilityContext, t
+from flext_observability.context import FlextObservabilityContext
 
 
 class FlextObservabilityLogging:
@@ -38,7 +39,7 @@ class FlextObservabilityLogging:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityLogging
+        from flext_observability.logging_integration import FlextObservabilityLogging
 
         # Create logger with automatic trace context
         logger = FlextObservabilityLogging.create_logger(__name__)

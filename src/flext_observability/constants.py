@@ -20,7 +20,7 @@ class FlextObservabilityConstants(FlextConstants):
 
     Usage:
     ```python
-    from flext_observability import FlextObservabilityConstants
+    from flext_observability.constants import FlextObservabilityConstants
 
     namespace = (
         FlextObservabilityConstants.Observability.Defaults.DEFAULT_METRICS_NAMESPACE

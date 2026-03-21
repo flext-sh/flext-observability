@@ -13,9 +13,8 @@ from datetime import UTC, datetime
 from typing import Annotated
 
 from flext_core import FlextModels, r
+from flext_core.typings import t
 from pydantic import BaseModel, Field, ValidationError
-
-from flext_observability import t
 
 
 class _HealthCheckFactoryKwargs(BaseModel):

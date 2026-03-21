@@ -21,9 +21,9 @@ from __future__ import annotations
 from typing import Annotated
 
 from flext_core import FlextRuntime, r
+from flext_core.constants import c
+from flext_core.typings import t
 from pydantic import BaseModel, Field, ValidationError
-
-from flext_observability import c, t
 
 MetricType = c.Observability.MetricType
 
@@ -50,7 +50,7 @@ class FlextObservabilityCustomMetrics:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityCustomMetrics
+        from flext_observability.custom_metrics import FlextObservabilityCustomMetrics
 
         # Define custom metrics
         metrics = FlextObservabilityCustomMetrics.get_registry()

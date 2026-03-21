@@ -15,11 +15,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import TypeVar
 
 from flext_core import FlextTypes
 
-from flext_observability.constants import c
+from flext_observability import c
 
 
 class FlextObservabilityTypes(FlextTypes):
@@ -46,9 +45,6 @@ class FlextObservabilityTypes(FlextTypes):
         type MonitoringConfig = dict[str, str | int | bool | list[str]]
         type MetricsConfig = dict[str, bool | str | dict[str, t.Scalar]]
         type TracingConfig = dict[str, str | int | bool | list[str] | t.Dict]
-
-    class ObservabilityCore:
-        """Core observability types extending t for complex domain operations."""
 
         type MetricCollection = dict[str, float | int | Decimal | dict[str, t.Scalar]]
         type MetricAggregation = dict[str, float | dict[str, float | int | Decimal]]
@@ -80,6 +76,5 @@ class FlextObservabilityTypes(FlextTypes):
 
 
 t = FlextObservabilityTypes
-T = TypeVar("T")
 
-__all__ = ["FlextObservabilityTypes", "T", "t"]
+__all__ = ["FlextObservabilityTypes", "t"]

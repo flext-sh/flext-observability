@@ -8,9 +8,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import ClassVar
 
+from flext_core.constants import c
+from flext_core.typings import t
 from pydantic import Field, field_validator
-
-from flext_observability import c, t
 
 
 class FlextObservabilityFields:

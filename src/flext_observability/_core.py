@@ -11,9 +11,10 @@ from typing import Annotated, ClassVar, Literal
 from uuid import uuid4
 
 from flext_core import FlextConstants, FlextContainer, FlextModels, FlextRuntime, r
+from flext_core.constants import c
+from flext_core.protocols import FlextProtocols as p
+from flext_core.typings import t
 from pydantic import Field
-
-from flext_observability import c, p, t
 
 
 class FlextObservability:

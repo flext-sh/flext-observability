@@ -12,8 +12,8 @@ from typing import Protocol, override
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
+from flext_core.typings import t
 
-from flext_observability import t
 from flext_observability.constants import c as _obs_c
 from flext_observability.models import FlextObservabilityModels
 from flext_observability.services import FlextObservabilityServices

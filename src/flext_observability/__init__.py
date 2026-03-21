@@ -24,8 +24,6 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
-from flext_observability.typings import T
-
 if TYPE_CHECKING:
     from flext_core import d, e, h, r, s, x
     from flext_core.typings import FlextTypes
@@ -233,7 +231,6 @@ __all__ = [
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
     "PerformanceMetrics",
-    "T",
     "__all__",
     "__author__",
     "__author_email__",

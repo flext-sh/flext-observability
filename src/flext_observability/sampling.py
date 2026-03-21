@@ -26,8 +26,6 @@ from flext_core import FlextLogger, r
 
 from flext_observability import FlextObservabilityContext, c
 
-_secure_random = random.SystemRandom()
-
 
 class FlextObservabilitySampling:
     """Sampling strategy for production performance optimization.
@@ -37,7 +35,7 @@ class FlextObservabilitySampling:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilitySampling
+        from flext_observability.sampling import FlextObservabilitySampling
 
         # Configure sampling
         sampler = FlextObservabilitySampling.get_sampler()
@@ -259,7 +257,7 @@ class FlextObservabilitySampling:
                 hash_val = hash(correlation_id) % 100
                 return hash_val / 100 < sampling_rate
             except (ValueError, TypeError, KeyError):
-                return _secure_random.random() < sampling_rate
+                return random.SystemRandom().random() < sampling_rate
 
     @staticmethod
     def get_sampler() -> FlextObservabilitySampling.Sampler:
