@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import Protocol, override
+from typing import override
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
@@ -16,6 +16,7 @@ from flext_core.typings import t
 
 from flext_observability.constants import c as _obs_c
 from flext_observability.models import FlextObservabilityModels
+from flext_observability.protocols import FlextObservabilityProtocols as p
 from flext_observability.services import FlextObservabilityServices
 from flext_observability.settings import FlextObservabilitySettings
 
@@ -33,17 +34,7 @@ class FlextObservabilityMonitor:
 
     object_callable = Callable[..., t.Scalar]
     logger = FlextRuntime.get_logger(__name__)
-
-    class ObservabilityService(Protocol):
-        """Protocol for observability services providing alerts and metrics."""
-
-        def create_alert(self, **kwargs: t.Scalar) -> r[t.Dict]:
-            """Create an alert with given parameters."""
-            ...
-
-        def get_metrics_summary(self) -> r[t.Dict]:
-            """Get summary of collected metrics."""
-            ...
+    ObservabilityService = p.Observability.ObservabilityService
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""

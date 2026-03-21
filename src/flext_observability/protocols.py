@@ -279,6 +279,18 @@ class FlextObservabilityProtocols(FlextProtocols):
                 ...
 
         @runtime_checkable
+        class ObservabilityService(Protocol):
+            """Protocol for observability services providing alerts and metrics."""
+
+            def create_alert(self, **kwargs: t.Scalar) -> FlextProtocols.Result[t.Dict]:
+                """Create an alert with given parameters."""
+                ...
+
+            def get_metrics_summary(self) -> FlextProtocols.Result[t.Dict]:
+                """Get summary of collected metrics."""
+                ...
+
+        @runtime_checkable
         class Dashboard(FlextProtocols.Service[bool], Protocol):
             """Protocol for dashboard and visualization operations."""
 
