@@ -48,7 +48,7 @@ def demonstrate_solid_design() -> None:
     factory.create_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
     for result in results:
-        if hasattr(result, "is_success") and result.is_success:  # type: ignore[attr-defined]
+        if hasattr(result, "is_success") and result.is_success:
             pass
 
 
@@ -144,8 +144,8 @@ def demonstrate_validation() -> None:
             hasattr(result, "is_success")
             and result.is_success
             and hasattr(result, "data")
-        ):  # type: ignore[attr-defined]
-            result_type = type(result.data).__name__  # type: ignore[attr-defined]
+        ):
+            result_type = type(result.data).__name__
             print(f"Validation successful for {result_type}")
 
 
