@@ -80,12 +80,12 @@ class FlextObservabilityHTTPClient:
     def _is_httpx_async_client(
         obj: t.RegisterableService,
     ) -> TypeGuard[HTTPXAsyncClient]:
-        """Type guard to check if object is an async httpx client."""
+        """Type guard to check if t.NormalizedValue is an async httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send")
 
     @staticmethod
     def _is_httpx_client(obj: t.RegisterableService) -> TypeGuard[HTTPXClient]:
-        """Type guard to check if object is an httpx client."""
+        """Type guard to check if t.NormalizedValue is an httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send") is False
 
     @staticmethod

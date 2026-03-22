@@ -16,22 +16,23 @@ from typing import Literal
 
 from flext_core import FlextContainer
 
-from flext_observability._core import (
+from flext_observability import (
     FlextObservabilityMasterFactory,
     flext_alert,
     flext_health_check,
     flext_metric,
     flext_trace,
+    t,
 )
 
 
-def database_query(query: str) -> dict[str, object]:
+def database_query(query: str) -> dict[str, t.NormalizedValue]:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> dict[str, object]:
+def process_api_request(endpoint: str) -> dict[str, t.NormalizedValue]:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
@@ -133,7 +134,7 @@ def demonstrate_factory_patterns() -> None:
 
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
-    entities_to_validate: list[object] = [
+    entities_to_validate: list[t.NormalizedValue] = [
         flext_metric("valid_metric", 100.0, "count"),
         flext_trace("valid_operation"),
         flext_alert("system", "Valid alert", "info"),

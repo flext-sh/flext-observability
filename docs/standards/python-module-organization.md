@@ -386,7 +386,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("user_processing")
-def process_user_data(user_data: dict) -> dict[str, object]:
+def process_user_data(user_data: dict) -> dict[str, t.NormalizedValue]:
     """Function automatically monitored for execution time and errors."""
     # Business logic here
     return {"status": "processed", "user": user_data}

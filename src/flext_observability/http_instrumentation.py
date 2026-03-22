@@ -55,7 +55,7 @@ Response = p.Observability.Http.Response
 def _is_flask_app(
     obj: t.RegisterableService,
 ) -> TypeGuard[p.Observability.Http.FlaskApp]:
-    """Type guard to check if object is a Flask app."""
+    """Type guard to check if t.NormalizedValue is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
 

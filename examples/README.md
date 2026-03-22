@@ -141,7 +141,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> dict[str, object]:
+def process_order(order_data: dict) -> dict[str, t.NormalizedValue]:
     """Process order with automatic monitoring.
 
     This function automatically gets:

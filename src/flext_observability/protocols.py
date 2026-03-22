@@ -398,7 +398,7 @@ class FlextObservabilityProtocols(FlextProtocols):
             """Protocols for httpx and aiohttp HTTP client instrumentation."""
 
             class HTTPXURL(Protocol):
-                """Protocol for httpx URL object."""
+                """Protocol for httpx URL t.NormalizedValue."""
 
                 @property
                 def host(self) -> str | None:
@@ -411,7 +411,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     ...
 
             class HTTPXRequest(Protocol):
-                """Protocol for httpx Request object."""
+                """Protocol for httpx Request t.NormalizedValue."""
 
                 @property
                 def headers(self) -> MutableMapping[str, str]:
@@ -431,7 +431,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     ...
 
             class HTTPXResponse(Protocol):
-                """Protocol for httpx Response object."""
+                """Protocol for httpx Response t.NormalizedValue."""
 
                 @property
                 def status_code(self) -> int:
