@@ -21,9 +21,7 @@ from flext_core import FlextRuntime, r
 from flext_core.typings import t
 from pydantic import BaseModel, ValidationError
 
-from flext_observability.models import m
-
-_BaggageKeyModel = m.Observability._BaggageKeyModel  # noqa: SLF001
+from flext_observability import m
 
 
 class FlextObservabilityContext:
@@ -268,7 +266,7 @@ class FlextObservabilityContext:
         """
         try:
             try:
-                _BaggageKeyModel.model_validate(obj={"key": key})
+                m.Observability.BaggageKeyModel.model_validate(obj={"key": key})
             except ValidationError:
                 return r[bool].fail("Baggage key must be non-empty string")
             current_baggage = FlextObservabilityContext._baggage.get() or t.Dict({})

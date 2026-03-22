@@ -28,8 +28,8 @@ from flext_observability.constants import FlextObservabilityConstants as c
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.models import m
 
-_CooldownInput = m.Observability._CooldownInput  # noqa: SLF001
-_ThresholdInput = m.Observability._ThresholdInput  # noqa: SLF001
+_CooldownInput = m.Observability.CooldownInput
+_ThresholdInput = m.Observability.ThresholdInput
 ErrorEvent = m.Observability.ErrorEvent
 
 

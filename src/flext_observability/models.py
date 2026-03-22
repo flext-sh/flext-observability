@@ -221,13 +221,13 @@ class FlextObservabilityModels(FlextModels):
             metadata: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
 
         # --- Moved from context.py ---
-        class _BaggageKeyModel(FlextModels.Value):
+        class BaggageKeyModel(FlextModels.Value):
             """Validation model for baggage keys."""
 
             key: Annotated[str, Field(min_length=1)]
 
         # --- Moved from custom_metrics.py ---
-        class _MetricTypeInput(FlextModels.Value):
+        class MetricTypeInput(FlextModels.Value):
             """Validation model for metric type input."""
 
             metric_type: _c.Observability.MetricType
@@ -242,12 +242,12 @@ class FlextObservabilityModels(FlextModels):
             labels: Annotated[dict[str, str], Field(default_factory=dict)]
 
         # --- Moved from error_handling.py ---
-        class _CooldownInput(FlextModels.Value):
+        class CooldownInput(FlextModels.Value):
             """Validation model for cooldown seconds input."""
 
             seconds: Annotated[float, Field(gt=0)]
 
-        class _ThresholdInput(FlextModels.Value):
+        class ThresholdInput(FlextModels.Value):
             """Validation model for threshold input."""
 
             threshold: Annotated[int, Field(ge=1)]
@@ -272,7 +272,7 @@ class FlextObservabilityModels(FlextModels):
                 ).hexdigest()
 
         # --- Moved from health.py ---
-        class _HealthCheckFactoryKwargs(FlextModels.Value):
+        class HealthCheckFactoryKwargs(FlextModels.Value):
             """Validation model for health check factory kwargs."""
 
             metrics: t.Dict | None = None

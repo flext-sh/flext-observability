@@ -27,7 +27,7 @@ from flext_observability.models import m
 
 MetricType = c.Observability.MetricType
 
-_MetricTypeInput = m.Observability._MetricTypeInput  # noqa: SLF001
+_MetricTypeInput = m.Observability.MetricTypeInput
 CustomMetricDefinition = m.Observability.CustomMetricDefinition
 
 

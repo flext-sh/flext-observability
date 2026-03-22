@@ -17,7 +17,7 @@ from pydantic import ValidationError
 
 from flext_observability.models import m
 
-_HealthCheckFactoryKwargs = m.Observability._HealthCheckFactoryKwargs  # noqa: SLF001
+_HealthCheckFactoryKwargs = m.Observability.HealthCheckFactoryKwargs
 HealthCheckModel = m.Observability.HealthCheckModel
 
 

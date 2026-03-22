@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import cast, override
+from typing import override
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
@@ -215,10 +215,9 @@ class FlextObservabilityMonitor:
                 )
             try:
                 service = FlextObservabilityServices()
-                self._observability_service = cast(
-                    "p.Observability.ObservabilityService | None",
-                    service,
-                )
+                self._observability_service: (
+                    p.Observability.ObservabilityService | None
+                ) = service
                 self._metrics_service = self._observability_service
                 self._health_service = self._observability_service
             except (ValueError, TypeError, KeyError) as e:
