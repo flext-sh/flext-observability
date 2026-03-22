@@ -20,14 +20,13 @@ Key Features:
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Annotated
 
 from flext_core import FlextLogger, r
 from flext_core.typings import t
-from pydantic import BaseModel, Field
 from structlog.typing import BindableLogger
 
 from flext_observability.context import FlextObservabilityContext
+from flext_observability.models import m
 
 
 class FlextObservabilityLogging:
@@ -52,14 +51,7 @@ class FlextObservabilityLogging:
 
     _logger = FlextLogger(__name__)
 
-    class LogContext(BaseModel):
-        """Trace context for enriching log entries with correlation and span IDs."""
-
-        correlation_id: str | None = None
-        trace_id: str | None = None
-        span_id: str | None = None
-        baggage: str | None = None
-        extra: Annotated[t.Dict, Field(default_factory=lambda: t.Dict({}))]
+    LogContext = m.Observability.LogContext
 
     @staticmethod
     def create_logger(name: str) -> r[BindableLogger]:

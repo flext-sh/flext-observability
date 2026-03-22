@@ -14,30 +14,13 @@ from __future__ import annotations
 
 import time
 from collections.abc import Mapping
-from typing import Annotated
 
 import psutil
 from flext_core import FlextLogger, r
-from pydantic import BaseModel, Field
 
+from flext_observability.models import m
 
-class PerformanceMetrics(BaseModel):
-    """Metrics for tracking performance of observability operations."""
-
-    operation: Annotated[str, Field(min_length=1)]
-    start_time: Annotated[float, Field(default_factory=time.time)]
-    end_time: float = 0.0
-    duration_ms: float = 0.0
-    memory_used_mb: float = 0.0
-    cpu_percent: float = 0.0
-    success: bool = True
-    error_message: str = ""
-
-    def calculate_duration(self) -> None:
-        """Calculate operation duration in milliseconds from start and end times."""
-        if self.end_time <= 0:
-            self.end_time = time.time()
-        self.duration_ms = max(0.0, (self.end_time - self.start_time) * 1000.0)
+PerformanceMetrics = m.Observability.PerformanceMetrics
 
 
 class FlextObservabilityPerformance:

@@ -20,38 +20,17 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable, MutableMapping
-from hashlib import sha256
-from typing import Annotated
 
 from flext_core import FlextLogger, r
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from flext_observability.constants import FlextObservabilityConstants as c
 from flext_observability.context import FlextObservabilityContext
+from flext_observability.models import m
 
-
-class _CooldownInput(BaseModel):
-    seconds: Annotated[float, Field(gt=0)]
-
-
-class _ThresholdInput(BaseModel):
-    threshold: Annotated[int, Field(ge=1)]
-
-
-class ErrorEvent(BaseModel):
-    """Error event with fingerprinting for deduplication and alerting."""
-
-    error_type: Annotated[str, Field(min_length=1)]
-    message: Annotated[str, Field(min_length=1)]
-    severity: c.Observability.ErrorSeverity = c.Observability.ErrorSeverity.ERROR
-    fingerprint: str = ""
-    correlation_id: str = ""
-
-    def calculate_fingerprint(self) -> None:
-        """Calculate SHA256 fingerprint from error type and message."""
-        self.fingerprint = sha256(
-            f"{self.error_type}:{self.message}".encode(),
-        ).hexdigest()
+_CooldownInput = m.Observability._CooldownInput  # noqa: SLF001
+_ThresholdInput = m.Observability._ThresholdInput  # noqa: SLF001
+ErrorEvent = m.Observability.ErrorEvent
 
 
 def _extract_validation_message(error: ValidationError) -> str:

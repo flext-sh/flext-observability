@@ -18,29 +18,17 @@ Key Features:
 
 from __future__ import annotations
 
-from typing import Annotated
-
 from flext_core import FlextRuntime, r
 from flext_core.typings import t
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from flext_observability.constants import FlextObservabilityConstants as c
+from flext_observability.models import m
 
 MetricType = c.Observability.MetricType
 
-
-class _MetricTypeInput(BaseModel):
-    metric_type: MetricType
-
-
-class CustomMetricDefinition(BaseModel):
-    """Definition of a custom business metric with type and metadata."""
-
-    name: Annotated[str, Field(min_length=1)]
-    metric_type: MetricType
-    description: Annotated[str, Field(min_length=1)]
-    unit: Annotated[str, Field(default="1", min_length=1)]
-    labels: Annotated[dict[str, str], Field(default_factory=dict)]
+_MetricTypeInput = m.Observability._MetricTypeInput  # noqa: SLF001
+CustomMetricDefinition = m.Observability.CustomMetricDefinition
 
 
 class FlextObservabilityCustomMetrics:

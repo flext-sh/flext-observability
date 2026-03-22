@@ -19,21 +19,14 @@ Key Features:
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Annotated
 
 from flext_core import FlextLogger, r
 from flext_core.typings import t
-from pydantic import BaseModel, Field, TypeAdapter
+from pydantic import TypeAdapter
 
+from flext_observability.models import m
 
-class ContextSnapshot(BaseModel):
-    """Snapshot of observability context for restoration in async operations."""
-
-    correlation_id: Annotated[str, Field(default="")]
-    trace_id: Annotated[str, Field(default="")]
-    span_id: Annotated[str, Field(default="")]
-    baggage: Annotated[dict[str, str], Field(default_factory=dict)]
-    metadata: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
+ContextSnapshot = m.Observability.ContextSnapshot
 
 
 class FlextObservabilityAdvancedContext:

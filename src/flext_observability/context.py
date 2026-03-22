@@ -15,16 +15,15 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from contextvars import ContextVar
-from typing import Annotated
 from uuid import uuid4
 
 from flext_core import FlextRuntime, r
 from flext_core.typings import t
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ValidationError
 
+from flext_observability.models import m
 
-class _BaggageKeyModel(BaseModel):
-    key: Annotated[str, Field(min_length=1)]
+_BaggageKeyModel = m.Observability._BaggageKeyModel  # noqa: SLF001
 
 
 class FlextObservabilityContext:
