@@ -24,9 +24,9 @@ from hashlib import sha256
 from typing import Annotated
 
 from flext_core import FlextLogger, r
-from flext_core.constants import c
 from pydantic import BaseModel, Field, ValidationError
 
+from flext_observability.constants import FlextObservabilityConstants as c
 from flext_observability.context import FlextObservabilityContext
 
 

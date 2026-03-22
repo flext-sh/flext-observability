@@ -12,13 +12,14 @@ from typing import override
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
-from flext_core.typings import t
+from flext_core.typings import t as t_core
 
 from flext_observability.constants import c as _obs_c
 from flext_observability.models import FlextObservabilityModels
 from flext_observability.protocols import FlextObservabilityProtocols as p
 from flext_observability.services import FlextObservabilityServices
 from flext_observability.settings import FlextObservabilitySettings
+from flext_observability.typings import FlextObservabilityTypes as t
 
 
 class FlextObservabilityMonitor:
@@ -32,7 +33,7 @@ class FlextObservabilityMonitor:
     Unified class with nested helpers - no loose functions.
     """
 
-    object_callable = Callable[..., t.Scalar]
+    object_callable = Callable[..., t_core.Scalar]
     logger = FlextRuntime.get_logger(__name__)
     ObservabilityService = p.Observability.ObservabilityService
 
@@ -42,20 +43,20 @@ class FlextObservabilityMonitor:
         @staticmethod
         def call_any_function(
             func: FlextObservabilityMonitor.object_callable,
-            *args: t.Scalar,
-            **kwargs: t.Scalar,
-        ) -> t.Scalar:
+            *args: t_core.Scalar,
+            **kwargs: t_core.Scalar,
+        ) -> t_core.Scalar:
             """Helper to call function with flexible arguments."""
             return func(*args, **kwargs)
 
         @staticmethod
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
-            args: tuple[t.Scalar, ...],
-            kwargs: dict[str, t.Scalar] | t.Dict,
+            args: tuple[t_core.Scalar, ...],
+            kwargs: dict[str, t_core.Scalar] | t_core.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
-        ) -> t.Scalar:
+        ) -> t_core.Scalar:
             """Execute function with monitoring."""
             function_name = getattr(func, "__name__", "unknown_function")
             actual_metric_name = metric_name or f"function_execution_{function_name}"
@@ -161,14 +162,14 @@ class FlextObservabilityMonitor:
         self._monitor_start_time = time.time()
         self._functions_monitored = 0
 
-    def flext_get_health_status(self) -> r[t.ObservabilityCore.HealthMetricsDict]:
+    def flext_get_health_status(self) -> r[t.Observability.HealthMetricsDict]:
         """Get complete health status with real metrics."""
         try:
             if not self._observability_service:
-                return r[t.ObservabilityCore.HealthMetricsDict].fail(
+                return r[t.Observability.HealthMetricsDict].fail(
                     "Observability service not available",
                 )
-            health_data: t.ObservabilityCore.HealthMetricsDict = {
+            health_data: t.Observability.HealthMetricsDict = {
                 "status": _obs_c.Observability.HealthStatus.HEALTHY
                 if self._initialized
                 else "initializing",
@@ -180,17 +181,22 @@ class FlextObservabilityMonitor:
                 "services_initialized": self._initialized,
                 "monitoring_active": self._running,
             }
-            return r[t.ObservabilityCore.HealthMetricsDict].ok(health_data)
+            return r[t.Observability.HealthMetricsDict].ok(health_data)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[t.ObservabilityCore.HealthMetricsDict].fail(
+            return r[t.Observability.HealthMetricsDict].fail(
                 f"Health status check failed: {e}",
             )
 
-    def flext_get_metrics_summary(self) -> r[t.Dict]:
+    def flext_get_metrics_summary(self) -> r[t_core.Dict]:
         """Get complete metrics summary."""
         if not self._metrics_service:
-            return r[t.Dict].fail("Metrics service not available")
-        return self._metrics_service.get_metrics_summary()
+            return r[t_core.Dict].fail("Metrics service not available")
+        result = self._metrics_service.get_metrics_summary()
+        return (
+            r[t_core.Dict].ok(result.value)
+            if result.is_success
+            else r[t_core.Dict].fail(result.error)
+        )
 
     def flext_initialize_observability(self) -> r[None]:
         """Initialize all observability services with real functionality and config integration."""
@@ -208,7 +214,7 @@ class FlextObservabilityMonitor:
                     "All observability features are disabled in configuration",
                 )
             try:
-                self._observability_service = FlextObservabilityServices()
+                self._observability_service = FlextObservabilityServices()  # type: ignore[assignment]
                 self._metrics_service = self._observability_service
                 self._health_service = self._observability_service
             except (ValueError, TypeError, KeyError) as e:
@@ -315,7 +321,9 @@ class FlextObservabilityMonitor:
                 func: FlextObservabilityMonitor.object_callable,
             ) -> FlextObservabilityMonitor.object_callable:
 
-                def wrapper(*args: t.Scalar, **kwargs: t.Scalar) -> t.Scalar:
+                def wrapper(
+                    *args: t_core.Scalar, **kwargs: t_core.Scalar
+                ) -> t_core.Scalar:
                     active_monitor = monitor or FlextObservabilityMonitor()
                     if not active_monitor.flext_is_initialized():
                         init_result = active_monitor.flext_initialize_observability()

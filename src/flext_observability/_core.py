@@ -10,11 +10,12 @@ from datetime import UTC, datetime
 from typing import Annotated, ClassVar, Literal
 from uuid import uuid4
 
-from flext_core import FlextConstants, FlextContainer, FlextModels, FlextRuntime, r
-from flext_core.constants import c
+from flext_core import FlextContainer, FlextModels, FlextRuntime, r
 from flext_core.protocols import FlextProtocols as p
 from flext_core.typings import t
 from pydantic import Field
+
+from flext_observability.constants import FlextObservabilityConstants as c
 
 
 class FlextObservability:
@@ -477,39 +478,6 @@ def flext_log_entry(
         return r[FlextObservability.LogEntry].ok(entry)
     except (ValueError, TypeError, AttributeError) as e:
         return r[FlextObservability.LogEntry].fail(f"Log entry creation failed: {e}")
-
-
-class FlextObservabilityConstants(FlextConstants):
-    """Constants for FLEXT Observability module."""
-
-    DEFAULT_METRIC_UNIT: ClassVar[str] = "count"
-    METRIC_UNIT_COUNT: ClassVar[str] = "count"
-    METRIC_UNIT_PERCENT: ClassVar[str] = "percent"
-    METRIC_UNIT_BYTES: ClassVar[str] = "bytes"
-    METRIC_UNIT_SECONDS: ClassVar[str] = "seconds"
-    ALERT_LEVEL_INFO: ClassVar[str] = "info"
-    ALERT_LEVEL_WARNING: ClassVar[str] = "warning"
-    ALERT_LEVEL_ERROR: ClassVar[str] = "error"
-    ALERT_LEVEL_CRITICAL: ClassVar[str] = "critical"
-    TRACE_STATUS_STARTED: ClassVar[str] = c.Observability.TraceStatus.STARTED
-    TRACE_STATUS_RUNNING: ClassVar[str] = c.Observability.TraceStatus.RUNNING
-    TRACE_STATUS_COMPLETED: ClassVar[str] = c.Observability.TraceStatus.COMPLETED
-    TRACE_STATUS_FAILED: ClassVar[str] = c.Observability.TraceStatus.FAILED
-    HEALTH_STATUS_HEALTHY: ClassVar[str] = c.Observability.HealthStatus.HEALTHY
-    HEALTH_STATUS_DEGRADED: ClassVar[str] = c.Observability.HealthStatus.DEGRADED
-    HEALTH_STATUS_UNHEALTHY: ClassVar[str] = c.Observability.HealthStatus.UNHEALTHY
-    LOG_LEVEL_DEBUG: ClassVar[str] = "debug"
-    LOG_LEVEL_INFO: ClassVar[str] = "info"
-    LOG_LEVEL_WARNING: ClassVar[str] = "warning"
-    LOG_LEVEL_ERROR: ClassVar[str] = "error"
-    LOG_LEVEL_CRITICAL: ClassVar[str] = "critical"
-    MAX_METRIC_NAME_LENGTH: ClassVar[int] = 256
-    MAX_TRACE_NAME_LENGTH: ClassVar[int] = 256
-    MAX_ALERT_MESSAGE_LENGTH: ClassVar[int] = 4096
-    MAX_LOG_MESSAGE_LENGTH: ClassVar[int] = 8192
-    DEFAULT_SERVICE_NAME: ClassVar[str] = "flext-observability"
-    DEFAULT_ENVIRONMENT: ClassVar[str] = "development"
-    DEFAULT_HEALTH_CHECK_INTERVAL: ClassVar[int] = 30
 
 
 class _GlobalFactoryState:
