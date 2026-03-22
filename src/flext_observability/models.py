@@ -23,6 +23,9 @@ from pydantic import ConfigDict, Field, computed_field
 # Deferred import to avoid circular dependency - used inside Observability nested classes
 from flext_observability.constants import FlextObservabilityConstants as _c
 
+# Domain scalar type alias used in model fields
+_DomainLabels = dict[str, t.Scalar]
+
 
 class FlextObservabilityModels(FlextModels):
     """Generic observability models with Pydantic patterns.
@@ -147,6 +150,56 @@ class FlextObservabilityModels(FlextModels):
             unit: str
             source: Annotated[str, Field(default="unknown")]
 
+        # --- Domain entity models (moved from _core.py FlextObservability) ---
+
+        class Metric(FlextModels.Entity):
+            """Observability metric entity."""
+
+            id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            name: str
+            value: float
+            unit: str
+            metric_type: str
+            labels: Annotated[_DomainLabels, Field(default_factory=dict)]
+
+        class Trace(FlextModels.Entity):
+            """Distributed trace entity."""
+
+            trace_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            name: str
+            attributes: Annotated[_DomainLabels, Field(default_factory=dict)]
+
+        class Alert(FlextModels.Entity):
+            """Observability alert entity."""
+
+            id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            title: str
+            message: str
+            severity: str
+            source: str
+            labels: Annotated[_DomainLabels, Field(default_factory=dict)]
+
+        class HealthCheck(FlextModels.Entity):
+            """Health check entity."""
+
+            id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            component: str
+            status: str
+            details: Annotated[_DomainLabels, Field(default_factory=dict)]
+
+        class LogEntry(FlextModels.Entity):
+            """Structured log entry entity."""
+
+            id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            message: str
+            level: str
+            component: str
+            timestamp: Annotated[
+                datetime,
+                Field(default_factory=lambda: datetime.now(tz=UTC)),
+            ]
+            context: Annotated[_DomainLabels, Field(default_factory=dict)]
+
         class _StartTimePayload(FlextModels.Value):
             """Payload for validating HTTP request start time."""
 
@@ -202,6 +255,8 @@ class FlextObservabilityModels(FlextModels):
         class ErrorEvent(FlextModels.Value):
             """Error event with fingerprinting for deduplication and alerting."""
 
+            model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
+
             error_type: Annotated[str, Field(min_length=1)]
             message: Annotated[str, Field(min_length=1)]
             severity: _c.Observability.ErrorSeverity = (
@@ -226,6 +281,8 @@ class FlextObservabilityModels(FlextModels):
         class HealthCheckModel(FlextModels.Value):
             """Health check result model."""
 
+            model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
+
             component: Annotated[str, Field(min_length=1)]
             status: Annotated[str, Field(default="unknown", min_length=1)]
             message: Annotated[str, Field(default="")]
@@ -236,6 +293,8 @@ class FlextObservabilityModels(FlextModels):
         class LogContext(FlextModels.Value):
             """Trace context for enriching log entries with correlation and span IDs."""
 
+            model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
+
             correlation_id: str | None = None
             trace_id: str | None = None
             span_id: str | None = None
@@ -245,6 +304,8 @@ class FlextObservabilityModels(FlextModels):
         # --- Moved from performance.py ---
         class PerformanceMetrics(FlextModels.Value):
             """Metrics for tracking performance of observability operations."""
+
+            model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
 
             operation: Annotated[str, Field(min_length=1)]
             start_time: Annotated[float, Field(default_factory=time.time)]

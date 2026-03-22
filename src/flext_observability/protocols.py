@@ -335,10 +335,10 @@ class FlextObservabilityProtocols(FlextProtocols):
             class FlaskHook(Protocol):
                 """Protocol for Flask request hooks."""
 
-                def __call__(
+                def __call__[T](
                     self,
-                    callback: Callable[..., t.Scalar | None],
-                ) -> Callable[..., t.Scalar | None]:
+                    callback: Callable[..., T],
+                ) -> Callable[..., T]:
                     """Call the hook with a callback."""
                     ...
 

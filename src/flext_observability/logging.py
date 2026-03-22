@@ -7,13 +7,9 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
-from __future__ import annotations
 
-from flext_core import FlextModels
-
-
-class FlextObservabilityLogging(FlextModels):
-    """Focused logging models for observability operations extending FlextModels.
+class FlextObservabilityLogging:
+    """Focused logging for observability operations.
 
     Provides complete logging entities, configurations, and operations
     for structured logging, log management, and log analysis within the FLEXT ecosystem.

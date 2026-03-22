@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from flext_core import FlextModels, r
+from flext_core import r
 from flext_core.typings import t
 from pydantic import ValidationError
 
@@ -21,8 +21,8 @@ _HealthCheckFactoryKwargs = m.Observability._HealthCheckFactoryKwargs  # noqa: S
 HealthCheckModel = m.Observability.HealthCheckModel
 
 
-class FlextObservabilityHealth(FlextModels):
-    """Focused health monitoring models for observability operations extending FlextModels.
+class FlextObservabilityHealth:
+    """Focused health monitoring for observability operations.
 
     Provides complete health check entities, configurations, and operations
     for service health monitoring, status tracking, and health validation within the FLEXT ecosystem.

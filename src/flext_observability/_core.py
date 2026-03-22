@@ -7,15 +7,15 @@ from __future__ import annotations
 
 import math
 from datetime import UTC, datetime
-from typing import Annotated, ClassVar, Literal
+from typing import ClassVar, Literal
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextModels, FlextRuntime, r
+from flext_core import FlextContainer, FlextRuntime, r
 from flext_core.protocols import FlextProtocols as p
 from flext_core.typings import t
-from pydantic import Field
 
 from flext_observability.constants import FlextObservabilityConstants as c
+from flext_observability.models import FlextObservabilityModels as _m
 
 
 class FlextObservability:
@@ -55,43 +55,12 @@ class FlextObservability:
             "critical",
         }
 
-    class Metric(FlextModels.Entity):
-        id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-        name: str
-        value: float
-        unit: str
-        metric_type: str
-        labels: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
-
-    class Trace(FlextModels.Entity):
-        trace_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-        name: str
-        attributes: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
-
-    class Alert(FlextModels.Entity):
-        id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-        title: str
-        message: str
-        severity: str
-        source: str
-        labels: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
-
-    class HealthCheck(FlextModels.Entity):
-        id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-        component: str
-        status: str
-        details: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
-
-    class LogEntry(FlextModels.Entity):
-        id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-        message: str
-        level: str
-        component: str
-        timestamp: Annotated[
-            datetime,
-            Field(default_factory=lambda: datetime.now(tz=UTC)),
-        ]
-        context: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
+    # Model classes live in models.py — aliases kept here for backward compatibility
+    Metric = _m.Observability.Metric
+    Trace = _m.Observability.Trace
+    Alert = _m.Observability.Alert
+    HealthCheck = _m.Observability.HealthCheck
+    LogEntry = _m.Observability.LogEntry
 
     class MetricsService:
         """Service for metrics collection and recording.
