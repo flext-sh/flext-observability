@@ -22,84 +22,47 @@ Key Features:
 from __future__ import annotations
 
 import time
-from collections import UserDict
 from collections.abc import Awaitable, Callable, Mapping
-from typing import Annotated, Protocol, TypeGuard
+from typing import TypeGuard
 
 import flask
 from flext_core import FlextRuntime, r
 from flext_core.typings import t
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.logging_integration import FlextObservabilityLogging
+from flext_observability.models import FlextObservabilityModels as m
+from flext_observability.protocols import FlextObservabilityProtocols as p
 
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None
 _flask_available = True
 _starlette_available = True
 
-
-class _StartTimePayload(BaseModel):
-    value: Annotated[float, Field(ge=0)]
-
-
-class FlaskHook(Protocol):
-    def __call__(
-        self,
-        callback: Callable[..., t.Scalar | Response | tuple[t.Dict, int] | None],
-    ) -> Callable[..., t.Scalar | Response | tuple[t.Dict, int] | None]: ...
-
-
-class FlaskErrorHandler(Protocol):
-    def __call__(self, error_type: type[Exception]) -> FlaskHook: ...
+# Local aliases for convenience
+_StartTimePayload = m.Observability._StartTimePayload
+FlaskHook = p.Observability.Http.FlaskHook
+FlaskErrorHandler = p.Observability.Http.FlaskErrorHandler
+FlaskApp = p.Observability.Http.FlaskApp
+FastAPIApp = p.Observability.Http.FastAPIApp
+RequestURL = p.Observability.Http.RequestURL
+RequestClient = p.Observability.Http.RequestClient
+Request = p.Observability.Http.Request
+Response = p.Observability.Http.Response
 
 
-class FlaskApp(Protocol):
-    before_request: FlaskHook
-    after_request: FlaskHook
-    errorhandler: FlaskErrorHandler
-
-
-def _is_flask_app(obj: t.RegisterableService) -> TypeGuard[FlaskApp]:
+def _is_flask_app(
+    obj: t.RegisterableService,
+) -> TypeGuard[p.Observability.Http.FlaskApp]:
     """Type guard to check if object is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
 
-class FastAPIApp(Protocol):
-    def add_middleware(self, middleware_class: type) -> None: ...
-
-
-def _is_fastapi_app(obj: t.RegisterableService) -> TypeGuard[FastAPIApp]:
+def _is_fastapi_app(
+    obj: t.RegisterableService,
+) -> TypeGuard[p.Observability.Http.FastAPIApp]:
     return hasattr(obj, "add_middleware")
-
-
-class RequestURL(Protocol):
-    """Protocol for request URL objects."""
-
-    path: str
-
-
-class RequestClient(Protocol):
-    """Protocol for request client objects."""
-
-    host: str
-
-
-class Request(Protocol):
-    """Protocol for HTTP request objects used by middleware."""
-
-    headers: t.Dict | UserDict[str, str]
-    method: str
-    url: RequestURL
-    client: RequestClient | None
-
-
-class Response(Protocol):
-    """Protocol for HTTP response objects used by middleware."""
-
-    status_code: int
-    headers: t.Dict | UserDict[str, str]
 
 
 class FlextObservabilityHTTP:

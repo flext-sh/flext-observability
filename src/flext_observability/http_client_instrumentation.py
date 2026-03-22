@@ -22,82 +22,26 @@ from __future__ import annotations
 
 import time
 from collections.abc import Awaitable, Callable, MutableMapping
-from typing import Annotated, ClassVar, Protocol, TypeGuard
+from typing import ClassVar, TypeGuard
 
 from flext_core import FlextRuntime, r
 from flext_core.typings import t
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from flext_observability.context import FlextObservabilityContext
 from flext_observability.logging_integration import FlextObservabilityLogging
+from flext_observability.models import FlextObservabilityModels as m
+from flext_observability.protocols import FlextObservabilityProtocols as p
 
-
-class _HeadersPayload(BaseModel):
-    headers: Annotated[dict[str, str], Field(default_factory=dict)]
-
-
-class HTTPXURL(Protocol):
-    """Protocol for httpx URL object."""
-
-    @property
-    def host(self) -> str | None:
-        """URL host."""
-        ...
-
-    @property
-    def scheme(self) -> str:
-        """URL scheme (http/https)."""
-        ...
-
-
-class HTTPXRequest(Protocol):
-    """Protocol for httpx Request object."""
-
-    @property
-    def headers(self) -> MutableMapping[str, str]:
-        """Request headers."""
-        ...
-
-    @property
-    def method(self) -> str:
-        """HTTP method."""
-        ...
-
-    @property
-    def url(self) -> HTTPXURL:
-        """Request URL."""
-        ...
-
-
-class HTTPXResponse(Protocol):
-    """Protocol for httpx Response object."""
-
-    @property
-    def status_code(self) -> int:
-        """HTTP status code."""
-        ...
-
-
-class AIOHTTPResponse(Protocol):
-    """Protocol for aiohttp ClientResponse."""
-
-    @property
-    def status(self) -> int:
-        """HTTP status code."""
-        ...
-
-
-class HTTPXAsyncClient(Protocol):
-    _send: Callable[..., Awaitable[HTTPXResponse]]
-    request: Callable[..., HTTPXResponse | Awaitable[HTTPXResponse]]
-
-
-class HTTPXClient(Protocol):
-    request: Callable[..., HTTPXResponse | Awaitable[HTTPXResponse]]
-
-
-class AIOHTTPSession(Protocol):
-    request: Callable[..., Awaitable[AIOHTTPResponse]]
+# Local aliases for convenience
+_HeadersPayload = m.Observability._HeadersPayload
+HTTPXURL = p.Observability.HttpClient.HTTPXURL
+HTTPXRequest = p.Observability.HttpClient.HTTPXRequest
+HTTPXResponse = p.Observability.HttpClient.HTTPXResponse
+AIOHTTPResponse = p.Observability.HttpClient.AIOHTTPResponse
+HTTPXAsyncClient = p.Observability.HttpClient.HTTPXAsyncClient
+HTTPXClient = p.Observability.HttpClient.HTTPXClient
+AIOHTTPSession = p.Observability.HttpClient.AIOHTTPSession
 
 
 class FlextObservabilityHTTPClient:

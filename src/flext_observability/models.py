@@ -142,6 +142,16 @@ class FlextObservabilityModels(FlextModels):
             unit: str
             source: Annotated[str, Field(default="unknown")]
 
+        class _StartTimePayload(FlextModels.Value):
+            """Payload for validating HTTP request start time."""
+
+            value: Annotated[float, Field(ge=0)]
+
+        class _HeadersPayload(FlextModels.Value):
+            """Payload for validating HTTP client headers."""
+
+            headers: Annotated[dict[str, str], Field(default_factory=dict)]
+
 
 m = FlextObservabilityModels
 

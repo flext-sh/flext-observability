@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping, MutableMapping
 from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols
@@ -328,6 +328,161 @@ class FlextObservabilityProtocols(FlextProtocols):
             ) -> FlextProtocols.Result[t.RuntimeData]:
                 """Get dashboard data."""
                 ...
+
+        class Http:
+            """Protocols for Flask and FastAPI HTTP instrumentation."""
+
+            class FlaskHook(Protocol):
+                """Protocol for Flask request hooks."""
+
+                def __call__(
+                    self,
+                    callback: Callable[..., t.Scalar | None],
+                ) -> Callable[..., t.Scalar | None]:
+                    """Call the hook with a callback."""
+                    ...
+
+            class FlaskErrorHandler(Protocol):
+                """Protocol for Flask error handler decorator."""
+
+                def __call__(
+                    self,
+                    error_type: type[Exception],
+                ) -> FlextObservabilityProtocols.Observability.Http.FlaskHook:
+                    """Return a hook for the given error type."""
+                    ...
+
+            class FlaskApp(Protocol):
+                """Protocol for Flask application."""
+
+                before_request: FlextObservabilityProtocols.Observability.Http.FlaskHook
+                after_request: FlextObservabilityProtocols.Observability.Http.FlaskHook
+                errorhandler: (
+                    FlextObservabilityProtocols.Observability.Http.FlaskErrorHandler
+                )
+
+            class FastAPIApp(Protocol):
+                """Protocol for FastAPI application."""
+
+                def add_middleware(self, middleware_class: type) -> None:
+                    """Add middleware to the FastAPI app."""
+                    ...
+
+            class RequestURL(Protocol):
+                """Protocol for request URL objects."""
+
+                path: str
+
+            class RequestClient(Protocol):
+                """Protocol for request client objects."""
+
+                host: str
+
+            class Request(Protocol):
+                """Protocol for HTTP request objects used by middleware."""
+
+                headers: t.Dict
+                method: str
+                url: FlextObservabilityProtocols.Observability.Http.RequestURL
+                client: (
+                    FlextObservabilityProtocols.Observability.Http.RequestClient | None
+                )
+
+            class Response(Protocol):
+                """Protocol for HTTP response objects used by middleware."""
+
+                status_code: int
+                headers: t.Dict
+
+        class HttpClient:
+            """Protocols for httpx and aiohttp HTTP client instrumentation."""
+
+            class HTTPXURL(Protocol):
+                """Protocol for httpx URL object."""
+
+                @property
+                def host(self) -> str | None:
+                    """URL host."""
+                    ...
+
+                @property
+                def scheme(self) -> str:
+                    """URL scheme (http/https)."""
+                    ...
+
+            class HTTPXRequest(Protocol):
+                """Protocol for httpx Request object."""
+
+                @property
+                def headers(self) -> MutableMapping[str, str]:
+                    """Request headers."""
+                    ...
+
+                @property
+                def method(self) -> str:
+                    """HTTP method."""
+                    ...
+
+                @property
+                def url(
+                    self,
+                ) -> FlextObservabilityProtocols.Observability.HttpClient.HTTPXURL:
+                    """Request URL."""
+                    ...
+
+            class HTTPXResponse(Protocol):
+                """Protocol for httpx Response object."""
+
+                @property
+                def status_code(self) -> int:
+                    """HTTP status code."""
+                    ...
+
+            class AIOHTTPResponse(Protocol):
+                """Protocol for aiohttp ClientResponse."""
+
+                @property
+                def status(self) -> int:
+                    """HTTP status code."""
+                    ...
+
+            class HTTPXAsyncClient(Protocol):
+                """Protocol for async httpx client."""
+
+                _send: Callable[
+                    ...,
+                    Awaitable[
+                        FlextObservabilityProtocols.Observability.HttpClient.HTTPXResponse
+                    ],
+                ]
+                request: Callable[
+                    ...,
+                    FlextObservabilityProtocols.Observability.HttpClient.HTTPXResponse
+                    | Awaitable[
+                        FlextObservabilityProtocols.Observability.HttpClient.HTTPXResponse
+                    ],
+                ]
+
+            class HTTPXClient(Protocol):
+                """Protocol for sync httpx client."""
+
+                request: Callable[
+                    ...,
+                    FlextObservabilityProtocols.Observability.HttpClient.HTTPXResponse
+                    | Awaitable[
+                        FlextObservabilityProtocols.Observability.HttpClient.HTTPXResponse
+                    ],
+                ]
+
+            class AIOHTTPSession(Protocol):
+                """Protocol for aiohttp ClientSession."""
+
+                request: Callable[
+                    ...,
+                    Awaitable[
+                        FlextObservabilityProtocols.Observability.HttpClient.AIOHTTPResponse
+                    ],
+                ]
 
 
 p = FlextObservabilityProtocols
