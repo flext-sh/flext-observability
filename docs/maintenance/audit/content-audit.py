@@ -20,7 +20,6 @@ import argparse
 import json
 import re
 from collections import defaultdict
-from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -136,11 +135,12 @@ class DocumentationAuditor:
 
         if config_path and config_path.exists():
             with Path(config_path).open("r", encoding="utf-8") as f:
-                user_config = yaml.safe_load(f)
-                if isinstance(user_config, Mapping):
-                    merged = default_config.model_dump()
-                    merged.update(user_config)
-                    return AuditorConfig.model_validate(merged)
+                raw: dict[
+                    str, str | int | float | bool | list[str] | dict[str, int]
+                ] = yaml.safe_load(f)
+                merged = default_config.model_dump()
+                merged.update(raw)
+                return AuditorConfig.model_validate(merged)
 
         return default_config
 
@@ -420,7 +420,7 @@ class DocumentationAuditor:
         ])
 
         # Group recommendations by priority
-        priority_recs = defaultdict(list)
+        priority_recs: defaultdict[str, list[str]] = defaultdict(list)
 
         for file_path, metrics in self.report.file_metrics.items():
             relative_path = Path(file_path).relative_to(self.docs_root)

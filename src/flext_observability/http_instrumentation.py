@@ -161,16 +161,17 @@ class FlextObservabilityHTTP:
                             if request and request.user_agent
                             else "unknown"
                         )
+                        extra_before: dict[str, str] = {
+                            "http_method": str(request_method),
+                            "http_path": str(request_path),
+                            "http_client_ip": str(request_remote),
+                            "http_user_agent": str(user_agent),
+                        }
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
                             "debug",
                             f"HTTP {request_method} {request_path}",
-                            extra={
-                                "http_method": request_method,
-                                "http_path": request_path,
-                                "http_client_ip": request_remote,
-                                "http_user_agent": user_agent,
-                            },
+                            extra=extra_before,
                         )
                     except (ValueError, TypeError, KeyError) as e:
                         FlextObservabilityHTTP._logger.warning(

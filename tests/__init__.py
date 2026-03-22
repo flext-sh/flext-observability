@@ -11,31 +11,42 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
+    from flext_tests import d, e, h, r, s, x
 
     from . import unit as unit
     from .constants import (
-        TestsFlextObservabilityConstants,
-        TestsFlextObservabilityConstants as c,
+        FlextObservabilityTestConstants,
+        FlextObservabilityTestConstants as c,
     )
-    from .models import (
-        TestsFlextObservabilityModels,
-        TestsFlextObservabilityModels as m,
-        tm,
-    )
+    from .models import FlextObservabilityTestModels, FlextObservabilityTestModels as m
     from .protocols import (
-        TestsFlextObservabilityProtocols,
-        TestsFlextObservabilityProtocols as p,
+        FlextObservabilityTestProtocols,
+        FlextObservabilityTestProtocols as p,
     )
-    from .typings import TestsFlextObservabilityTypes, TestsFlextObservabilityTypes as t
+    from .typings import FlextObservabilityTestTypes, FlextObservabilityTestTypes as t
     from .unit.test_constants import TestFlextObservabilityConstants
     from .unit.test_factory import TestFlextObservabilityMasterFactoryReal
     from .unit.test_init import TestInitCoverage
     from .utilities import (
-        TestsFlextObservabilityUtilities,
-        TestsFlextObservabilityUtilities as u,
+        FlextObservabilityTestUtilities,
+        FlextObservabilityTestUtilities as u,
     )
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
+    "FlextObservabilityTestConstants": (
+        "tests.constants",
+        "FlextObservabilityTestConstants",
+    ),
+    "FlextObservabilityTestModels": ("tests.models", "FlextObservabilityTestModels"),
+    "FlextObservabilityTestProtocols": (
+        "tests.protocols",
+        "FlextObservabilityTestProtocols",
+    ),
+    "FlextObservabilityTestTypes": ("tests.typings", "FlextObservabilityTestTypes"),
+    "FlextObservabilityTestUtilities": (
+        "tests.utilities",
+        "FlextObservabilityTestUtilities",
+    ),
     "TestFlextObservabilityConstants": (
         "tests.unit.test_constants",
         "TestFlextObservabilityConstants",
@@ -45,45 +56,41 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "TestFlextObservabilityMasterFactoryReal",
     ),
     "TestInitCoverage": ("tests.unit.test_init", "TestInitCoverage"),
-    "TestsFlextObservabilityConstants": (
-        "tests.constants",
-        "TestsFlextObservabilityConstants",
-    ),
-    "TestsFlextObservabilityModels": ("tests.models", "TestsFlextObservabilityModels"),
-    "TestsFlextObservabilityProtocols": (
-        "tests.protocols",
-        "TestsFlextObservabilityProtocols",
-    ),
-    "TestsFlextObservabilityTypes": ("tests.typings", "TestsFlextObservabilityTypes"),
-    "TestsFlextObservabilityUtilities": (
-        "tests.utilities",
-        "TestsFlextObservabilityUtilities",
-    ),
-    "c": ("tests.constants", "TestsFlextObservabilityConstants"),
-    "m": ("tests.models", "TestsFlextObservabilityModels"),
-    "p": ("tests.protocols", "TestsFlextObservabilityProtocols"),
-    "t": ("tests.typings", "TestsFlextObservabilityTypes"),
-    "tm": ("tests.models", "tm"),
-    "u": ("tests.utilities", "TestsFlextObservabilityUtilities"),
+    "c": ("tests.constants", "FlextObservabilityTestConstants"),
+    "d": ("flext_tests", "d"),
+    "e": ("flext_tests", "e"),
+    "h": ("flext_tests", "h"),
+    "m": ("tests.models", "FlextObservabilityTestModels"),
+    "p": ("tests.protocols", "FlextObservabilityTestProtocols"),
+    "r": ("flext_tests", "r"),
+    "s": ("flext_tests", "s"),
+    "t": ("tests.typings", "FlextObservabilityTestTypes"),
+    "u": ("tests.utilities", "FlextObservabilityTestUtilities"),
     "unit": ("tests.unit", ""),
+    "x": ("flext_tests", "x"),
 }
 
 __all__ = [
+    "FlextObservabilityTestConstants",
+    "FlextObservabilityTestModels",
+    "FlextObservabilityTestProtocols",
+    "FlextObservabilityTestTypes",
+    "FlextObservabilityTestUtilities",
     "TestFlextObservabilityConstants",
     "TestFlextObservabilityMasterFactoryReal",
     "TestInitCoverage",
-    "TestsFlextObservabilityConstants",
-    "TestsFlextObservabilityModels",
-    "TestsFlextObservabilityProtocols",
-    "TestsFlextObservabilityTypes",
-    "TestsFlextObservabilityUtilities",
     "c",
+    "d",
+    "e",
+    "h",
     "m",
     "p",
+    "r",
+    "s",
     "t",
-    "tm",
     "u",
     "unit",
+    "x",
 ]
 
 
