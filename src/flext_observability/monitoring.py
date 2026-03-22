@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import override
+from typing import cast, override
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
@@ -214,7 +214,11 @@ class FlextObservabilityMonitor:
                     "All observability features are disabled in configuration",
                 )
             try:
-                self._observability_service = FlextObservabilityServices()  # type: ignore[assignment]
+                service = FlextObservabilityServices()
+                self._observability_service = cast(
+                    "p.Observability.ObservabilityService | None",
+                    service,
+                )
                 self._metrics_service = self._observability_service
                 self._health_service = self._observability_service
             except (ValueError, TypeError, KeyError) as e:
