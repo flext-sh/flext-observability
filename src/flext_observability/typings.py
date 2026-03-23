@@ -14,6 +14,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from decimal import Decimal
 
 from flext_core import FlextTypes
@@ -38,41 +39,55 @@ class FlextObservabilityTypes(FlextTypes):
         """
 
         type ObservabilityProjectType = c.ObservabilityProjectType
-        type ObservabilityProjectConfig = dict[
+        type ObservabilityProjectConfig = Mapping[
             str,
-            str | int | bool | list[str] | t.Dict,
+            str | int | bool | Sequence[str] | t.Dict,
         ]
-        type MonitoringConfig = dict[str, str | int | bool | list[str]]
-        type MetricsConfig = dict[str, bool | str | dict[str, t.Scalar]]
-        type TracingConfig = dict[str, str | int | bool | list[str] | t.Dict]
+        type MonitoringConfig = Mapping[str, str | int | bool | Sequence[str]]
+        type MetricsConfig = Mapping[str, bool | str | Mapping[str, t.Scalar]]
+        type TracingConfig = Mapping[str, str | int | bool | Sequence[str] | t.Dict]
 
-        type MetricCollection = dict[str, float | int | Decimal | dict[str, t.Scalar]]
-        type MetricAggregation = dict[str, float | dict[str, float | int | Decimal]]
-        type MetricThresholds = dict[str, float | int | bool | dict[str, t.Scalar]]
-        type MetricConfiguration = dict[str, bool | str | int | dict[str, t.Scalar]]
-        type TraceConfiguration = dict[str, str | int | bool | dict[str, t.Scalar]]
-        type SpanAttributes = dict[str, t.Scalar | dict[str, t.Scalar]]
-        type TraceContext = dict[str, str | int | dict[str, t.Scalar]]
-        type SpanHierarchy = dict[str, list[t.Dict]]
-        type AlertConfiguration = dict[str, str | int | bool | dict[str, t.Scalar]]
-        type AlertRules = list[
-            dict[str, str | bool | int | float | dict[str, t.Scalar]]
+        type MetricCollection = Mapping[
+            str, float | int | Decimal | Mapping[str, t.Scalar]
         ]
-        type AlertChannels = dict[str, str | dict[str, t.Scalar]]
-        type HealthChecks = dict[str, dict[str, float | str | bool]]
-        type ComponentStatus = dict[str, str | int | dict[str, t.Scalar]]
-        type SystemMetrics = dict[str, float | int | dict[str, t.Scalar]]
-        type LogConfiguration = dict[str, str | int | bool | dict[str, t.Scalar]]
-        type LogFilters = dict[str, str | list[str] | dict[str, t.Scalar]]
-        type LogProcessing = dict[str, str | dict[str, t.Scalar] | bool]
-        type ServiceRegistry = dict[str, dict[str, str | int | dict[str, t.Scalar]]]
-        type ServiceDiscovery = dict[str, list[t.Dict]]
-        type ServiceHealth = dict[str, str | dict[str, t.Scalar]]
-        type MetadataDict = dict[str, t.Scalar]
-        type ServicesList = list[tuple[str, t.Dict]]
-        type HealthMetricsDict = dict[str, t.NormalizedValue]
-        type MetricDict = dict[str, t.NormalizedValue]
-        type StringList = list[str]
+        type MetricAggregation = Mapping[
+            str, float | Mapping[str, float | int | Decimal]
+        ]
+        type MetricThresholds = Mapping[
+            str, float | int | bool | Mapping[str, t.Scalar]
+        ]
+        type MetricConfiguration = Mapping[
+            str, bool | str | int | Mapping[str, t.Scalar]
+        ]
+        type TraceConfiguration = Mapping[
+            str, str | int | bool | Mapping[str, t.Scalar]
+        ]
+        type SpanAttributes = Mapping[str, t.Scalar | Mapping[str, t.Scalar]]
+        type TraceContext = Mapping[str, str | int | Mapping[str, t.Scalar]]
+        type SpanHierarchy = Mapping[str, Sequence[t.Dict]]
+        type AlertConfiguration = Mapping[
+            str, str | int | bool | Mapping[str, t.Scalar]
+        ]
+        type AlertRules = Sequence[
+            Mapping[str, str | bool | int | float | Mapping[str, t.Scalar]]
+        ]
+        type AlertChannels = Mapping[str, str | Mapping[str, t.Scalar]]
+        type HealthChecks = Mapping[str, Mapping[str, float | str | bool]]
+        type ComponentStatus = Mapping[str, str | int | Mapping[str, t.Scalar]]
+        type SystemMetrics = Mapping[str, float | int | Mapping[str, t.Scalar]]
+        type LogConfiguration = Mapping[str, str | int | bool | Mapping[str, t.Scalar]]
+        type LogFilters = Mapping[str, str | Sequence[str] | Mapping[str, t.Scalar]]
+        type LogProcessing = Mapping[str, str | Mapping[str, t.Scalar] | bool]
+        type ServiceRegistry = Mapping[
+            str, Mapping[str, str | int | Mapping[str, t.Scalar]]
+        ]
+        type ServiceDiscovery = Mapping[str, Sequence[t.Dict]]
+        type ServiceHealth = Mapping[str, str | Mapping[str, t.Scalar]]
+        type MetadataDict = Mapping[str, t.Scalar]
+        type ServicesList = Sequence[tuple[str, t.Dict]]
+        type HealthMetricsDict = Mapping[str, t.NormalizedValue]
+        type MetricDict = Mapping[str, t.NormalizedValue]
+        type StringList = Sequence[str]
 
 
 t = FlextObservabilityTypes

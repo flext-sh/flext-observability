@@ -11,6 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from hashlib import sha256
 from typing import Annotated, ClassVar
@@ -23,7 +24,7 @@ from pydantic import ConfigDict, Field, computed_field
 from flext_observability import FlextObservabilityConstants as _c
 
 # Domain scalar type alias used in model fields
-_DomainLabels = dict[str, t.Scalar]
+_DomainLabels = Mapping[str, t.Scalar]
 
 
 class FlextObservabilityModels(FlextModels):
@@ -60,14 +61,14 @@ class FlextObservabilityModels(FlextModels):
             ),
         ]
         data: Annotated[
-            dict[str, t.Scalar],
+            Mapping[str, t.Scalar],
             Field(
                 default_factory=dict,
                 description="Generic data payload",
             ),
         ]
         metadata: Annotated[
-            dict[str, t.Scalar],
+            Mapping[str, t.Scalar],
             Field(
                 default_factory=dict,
                 description="Generic metadata",
@@ -80,7 +81,7 @@ class FlextObservabilityModels(FlextModels):
             return (datetime.now(tz=UTC) - self.timestamp).total_seconds()
 
         @computed_field
-        def data_keys(self) -> list[str]:
+        def data_keys(self) -> Sequence[str]:
             """List of data keys for introspection."""
             return list(self.data.keys()) if self.data else []
 
@@ -120,7 +121,7 @@ class FlextObservabilityModels(FlextModels):
             ),
         ]
         settings: Annotated[
-            dict[str, t.Scalar],
+            Mapping[str, t.Scalar],
             Field(
                 default_factory=dict,
                 description="Type-specific settings",
@@ -207,7 +208,7 @@ class FlextObservabilityModels(FlextModels):
         class _HeadersPayload(FlextModels.Value):
             """Payload for validating HTTP client headers."""
 
-            headers: Annotated[dict[str, str], Field(default_factory=dict)]
+            headers: Annotated[Mapping[str, str], Field(default_factory=dict)]
 
         # --- Moved from advanced_context.py ---
         class ContextSnapshot(FlextModels.Value):
@@ -216,8 +217,8 @@ class FlextObservabilityModels(FlextModels):
             correlation_id: Annotated[str, Field(default="")]
             trace_id: Annotated[str, Field(default="")]
             span_id: Annotated[str, Field(default="")]
-            baggage: Annotated[dict[str, str], Field(default_factory=dict)]
-            metadata: Annotated[dict[str, t.Scalar], Field(default_factory=dict)]
+            baggage: Annotated[Mapping[str, str], Field(default_factory=dict)]
+            metadata: Annotated[Mapping[str, t.Scalar], Field(default_factory=dict)]
 
         # --- Moved from context.py ---
         class BaggageKeyModel(FlextModels.Value):
@@ -238,7 +239,7 @@ class FlextObservabilityModels(FlextModels):
             metric_type: _c.Observability.MetricType
             description: Annotated[str, Field(min_length=1)]
             unit: Annotated[str, Field(default="1", min_length=1)]
-            labels: Annotated[dict[str, str], Field(default_factory=dict)]
+            labels: Annotated[Mapping[str, str], Field(default_factory=dict)]
 
         # --- Moved from error_handling.py ---
         class CooldownInput(FlextModels.Value):

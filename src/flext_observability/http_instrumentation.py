@@ -144,7 +144,7 @@ class FlextObservabilityHTTP:
                 def flext_before_request() -> None:
                     """Extract context and create span before request processing."""
                     try:
-                        headers_dict: dict[str, str] = (
+                        headers_dict: Mapping[str, str] = (
                             dict(request.headers) if request else {}
                         )
                         if request:
@@ -162,7 +162,7 @@ class FlextObservabilityHTTP:
                             if request and request.user_agent
                             else "unknown"
                         )
-                        extra_before: dict[str, str] = {
+                        extra_before: Mapping[str, str] = {
                             "http_method": str(request_method),
                             "http_path": str(request_path),
                             "http_client_ip": str(request_remote),

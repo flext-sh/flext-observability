@@ -206,7 +206,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> dict[str, t.NormalizedValue]:
+def process_order(order_data: dict) -> Mapping[str, t.NormalizedValue]:
     # Automatically monitored for execution time, success/failure
     return {"status": "processed", "order_id": order_data["id"]}
 ```

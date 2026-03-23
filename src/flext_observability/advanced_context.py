@@ -64,8 +64,8 @@ class FlextObservabilityAdvancedContext:
 
         def __init__(self) -> None:
             """Initialize advanced context."""
-            self._metadata: dict[str, t.Scalar] = {}
-            self._baggage: dict[str, str] = {}
+            self._metadata: Mapping[str, t.Scalar] = {}
+            self._baggage: Mapping[str, str] = {}
             self._request_id: str = ""
             self._parent_context: ContextSnapshot | None = None
 

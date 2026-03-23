@@ -159,7 +159,7 @@ class FlextObservabilityPerformance:
         """
         if not metrics.success:
             return False
-        acceptable_latencies: dict[str, float] = {
+        acceptable_latencies: Mapping[str, float] = {
             "http_": 50.0,
             "database_": 100.0,
             "context_": 10.0,

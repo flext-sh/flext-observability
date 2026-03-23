@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Annotated, ClassVar
 
 from flext_core import FlextSettings
@@ -27,4 +28,4 @@ class FlextObservabilitySettings(FlextSettings):
     flush_interval_seconds: Annotated[int, Field(default=30, ge=1, le=300)]
 
 
-__all__: list[str] = ["FlextObservabilitySettings"]
+__all__: Sequence[str] = ["FlextObservabilitySettings"]

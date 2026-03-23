@@ -10,6 +10,7 @@ for the flext-observability module, showcasing 100% functional integration.
 from __future__ import annotations
 
 import time
+from collections.abc import Sequence
 from typing import Literal
 
 from flext_core import FlextContainer
@@ -84,7 +85,7 @@ def demonstrate_validation() -> None:
 def demonstrate_health_monitoring() -> None:
     """Demonstrate health monitoring scenario."""
     services = ["database", "cache", "message-queue", "auth-service"]
-    statuses: list[Literal["healthy", "degraded", "unhealthy"]] = [
+    statuses: Sequence[Literal["healthy", "degraded", "unhealthy"]] = [
         "healthy",
         "healthy",
         "degraded",
@@ -98,7 +99,7 @@ def demonstrate_health_monitoring() -> None:
 
 def demonstrate_alerting_scenario() -> None:
     """Demonstrate alerting in different scenarios."""
-    alert_scenarios: list[
+    alert_scenarios: Sequence[
         tuple[Literal["info", "warning", "error", "critical"], str, str]
     ] = [
         ("info", "System started successfully", "system"),

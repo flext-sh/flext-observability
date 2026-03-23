@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 from flext_core import FlextUtilities, r
 
@@ -81,7 +81,7 @@ class FlextObservabilityUtilities(FlextUtilities):
         def extract_route_pattern(path: str) -> str:
             """Extract a generic route pattern from a concrete URL path."""
             parts = path.strip("/").split("/")
-            normalized: list[str] = []
+            normalized: Sequence[str] = []
             for part in parts:
                 if part.isdigit():
                     normalized.append("{id}")
@@ -98,7 +98,7 @@ class FlextObservabilityUtilities(FlextUtilities):
             correlation_id: str = "",
         ) -> Mapping[str, str]:
             """Build a structured logging context dictionary."""
-            ctx: dict[str, str] = {"service": service_name}
+            ctx: Mapping[str, str] = {"service": service_name}
             if correlation_id:
                 ctx["correlation_id"] = correlation_id
             return ctx
@@ -139,7 +139,7 @@ class FlextObservabilityUtilities(FlextUtilities):
             parent_span_id: str = "",
         ) -> Mapping[str, str]:
             """Create a trace context dictionary."""
-            ctx: dict[str, str] = {"trace_id": trace_id, "span_id": span_id}
+            ctx: Mapping[str, str] = {"trace_id": trace_id, "span_id": span_id}
             if parent_span_id:
                 ctx["parent_span_id"] = parent_span_id
             return ctx

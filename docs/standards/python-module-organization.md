@@ -287,7 +287,7 @@ class FlextMetricsService:
 
     def __init__(self, container: FlextContainer) -> None:
         self._container = container
-        self._metrics_store: dict[str, FlextMetric] = {}
+        self._metrics_store: Mapping[str, FlextMetric] = {}
 
     def record_metric(self, metric: FlextMetric) -> r[FlextMetric]:
         """Record metric with business validation."""
@@ -386,7 +386,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("user_processing")
-def process_user_data(user_data: dict) -> dict[str, t.NormalizedValue]:
+def process_user_data(user_data: dict) -> Mapping[str, t.NormalizedValue]:
     """Function automatically monitored for execution time and errors."""
     # Business logic here
     return {"status": "processed", "user": user_data}
@@ -419,9 +419,9 @@ class FlextObservabilityRepository:
     """Repository for observability data access."""
 
     def __init__(self) -> None:
-        self._metrics: dict[str, FlextMetric] = {}
-        self._traces: dict[str, FlextTrace] = {}
-        self._alerts: dict[str, FlextAlert] = {}
+        self._metrics: Mapping[str, FlextMetric] = {}
+        self._traces: Mapping[str, FlextTrace] = {}
+        self._alerts: Mapping[str, FlextAlert] = {}
 
     def store_metric(self, metric: FlextMetric) -> r[bool]:
         """Store metric with validation."""
@@ -431,7 +431,7 @@ class FlextObservabilityRepository:
         self._metrics[metric.id] = metric
         return r[bool].| ok(value=True)
 
-    def find_metrics_by_name(self, name: str) -> r[list[FlextMetric]]:
+    def find_metrics_by_name(self, name: str) -> r[Sequence[FlextMetric]]:
         """Find metrics by name pattern."""
         matching_metrics = [
             metric for metric in self._metrics.values()
@@ -1704,7 +1704,7 @@ class FlextOracleService:
     """Oracle service with ecosystem-standard monitoring."""
 
     @flext_monitor_function("oracle_query")
-    def execute_wms_query(self, query: str) -> r[list[t.Dict]]:
+    def execute_wms_query(self, query: str) -> r[Sequence[t.Dict]]:
         """Execute Oracle WMS query with monitoring."""
         # Oracle-specific observability patterns
         return self._execute_oracle_query(query)
@@ -1714,7 +1714,7 @@ class FlextLdapService:
     """LDAP service with ecosystem-standard monitoring."""
 
     @flext_monitor_function("ldap_operation")
-    def search_users(self, search_filter: str) -> r[list[t.Dict]]:
+    def search_users(self, search_filter: str) -> r[Sequence[t.Dict]]:
         """LDAP search with monitoring."""
         # LDAP-specific observability patterns
         return self._execute_ldap_search(search_filter)

@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
+from collections.abc import Mapping, Sequence
 from typing import Literal
 
 from flext_core import FlextContainer
@@ -26,13 +27,13 @@ from flext_observability import (
 )
 
 
-def database_query(query: str) -> dict[str, t.NormalizedValue]:
+def database_query(query: str) -> Mapping[str, t.NormalizedValue]:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> dict[str, t.NormalizedValue]:
+def process_api_request(endpoint: str) -> Mapping[str, t.NormalizedValue]:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
@@ -85,7 +86,9 @@ def demonstrate_distributed_tracing() -> None:
 
 def demonstrate_health_monitoring() -> None:
     """Demonstrate comprehensive health monitoring."""
-    services_health: list[tuple[str, Literal["healthy", "degraded", "unhealthy"]]] = [
+    services_health: Sequence[
+        tuple[str, Literal["healthy", "degraded", "unhealthy"]]
+    ] = [
         ("database", "healthy"),
         ("cache", "healthy"),
         ("message_queue", "degraded"),
@@ -99,7 +102,9 @@ def demonstrate_health_monitoring() -> None:
 
 def demonstrate_alerting_system() -> None:
     """Demonstrate comprehensive alerting."""
-    alerts: list[tuple[Literal["info", "warning", "error", "critical"], str, str]] = [
+    alerts: Sequence[
+        tuple[Literal["info", "warning", "error", "critical"], str, str]
+    ] = [
         ("info", "System maintenance scheduled", "system"),
         ("warning", "Database response time increased", "database"),
         ("error", "Failed to connect to cache", "cache"),
@@ -134,7 +139,7 @@ def demonstrate_factory_patterns() -> None:
 
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
-    entities_to_validate: list[t.NormalizedValue] = [
+    entities_to_validate: Sequence[t.NormalizedValue] = [
         flext_metric("valid_metric", 100.0, "count"),
         flext_trace("valid_operation"),
         flext_alert("system", "Valid alert", "info"),

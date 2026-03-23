@@ -18,6 +18,8 @@ Key Features:
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
+
 from flext_core import FlextRuntime, r, t
 from pydantic import ValidationError
 
@@ -70,9 +72,9 @@ class FlextObservabilityCustomMetrics:
 
         def __init__(self) -> None:
             """Initialize metric registry."""
-            self._metrics: dict[str, CustomMetricDefinition] = {}
-            self._metric_instances: dict[str, t.Scalar] = {}
-            self._namespaces: dict[str, str] = {}
+            self._metrics: Mapping[str, CustomMetricDefinition] = {}
+            self._metric_instances: Mapping[str, t.Scalar] = {}
+            self._namespaces: Mapping[str, str] = {}
 
         def clear_metrics(self, namespace: str | None = None) -> r[bool]:
             """Clear metrics from registry.
@@ -182,7 +184,7 @@ class FlextObservabilityCustomMetrics:
                 if metric.metric_type == metric_type
             })
 
-        def list_metrics(self) -> list[str]:
+        def list_metrics(self) -> Sequence[str]:
             """List all registered metric names.
 
             Returns:
@@ -313,7 +315,7 @@ class FlextObservabilityCustomMetrics:
         return FlextObservabilityCustomMetrics._registry_instance
 
     @staticmethod
-    def list_all_metrics() -> list[str]:
+    def list_all_metrics() -> Sequence[str]:
         """Convenience function: list all metrics.
 
         Returns:

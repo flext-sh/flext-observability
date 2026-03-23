@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Mapping, MutableMapping
+from collections.abc import Awaitable, Callable, Mapping, MutableMapping, Sequence
 from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, r, t
@@ -84,7 +84,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 description: str,
                 *,
                 unit: str = "seconds",
-                buckets: list[t.Scalar] | None = None,
+                buckets: Sequence[t.Scalar] | None = None,
             ) -> FlextProtocols.Result[bool]:
                 """Create a histogram metric."""
                 ...
@@ -95,7 +95,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[list[t.Scalar]]:
+            ) -> FlextProtocols.Result[Sequence[t.Scalar]]:
                 """Get collected metrics."""
                 ...
 
@@ -144,7 +144,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 operation_name: t.Scalar | None = None,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[list[t.Scalar]]:
+            ) -> FlextProtocols.Result[Sequence[t.Scalar]]:
                 """Search traces by criteria."""
                 ...
 
@@ -190,7 +190,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 level: t.Scalar | None = None,
                 service: t.Scalar | None = None,
                 resolved: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[list[t.Scalar]]:
+            ) -> FlextProtocols.Result[Sequence[t.Scalar]]:
                 """Get alerts by criteria."""
                 ...
 
@@ -261,7 +261,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 correlation_id: t.Scalar | None = None,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[list[t.Scalar]]:
+            ) -> FlextProtocols.Result[Sequence[t.Scalar]]:
                 """Get logs by criteria."""
                 ...
 
@@ -306,7 +306,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 name: str,
                 description: str,
                 *,
-                widgets: list[Mapping[str, t.Scalar]] | None = None,
+                widgets: Sequence[Mapping[str, t.Scalar]] | None = None,
             ) -> FlextProtocols.Result[str]:
                 """Create a dashboard."""
                 ...

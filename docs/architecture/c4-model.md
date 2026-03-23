@@ -377,14 +377,14 @@ class FlextMetric(FlextModels.Entity):
     value: float
     unit: str
     timestamp: datetime
-    tags: dict[str, str]
+    tags: Mapping[str, str]
 
 
 class FlextTrace(FlextModels.Entity):
     """Distributed trace entity with span hierarchy."""
 
     trace_id: str
-    spans: list[Span]
+    spans: Sequence[Span]
     context: TraceContext
 
 

@@ -430,7 +430,7 @@ def process_business_operation(data: dict) -> r[t.Dict]:
 ### Pattern 2: Batch Observability Creation
 
 ```python
-def create_system_metrics() -> list[r[FlextMetric]]:
+def create_system_metrics() -> Sequence[r[FlextMetric]]:
     """Create multiple metrics with error handling."""
 
     metrics_to_create = [

@@ -20,6 +20,7 @@ import argparse
 import json
 import re
 from collections import defaultdict
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -57,8 +58,10 @@ class ContentMetrics(BaseModel):
     )
     freshness_score: float = Field(default=0.0, description="Freshness score 0-100")
     quality_score: float = Field(default=0.0, description="Quality score 0-100")
-    issues: list[str] = Field(default_factory=list, description="List of issues found")
-    recommendations: list[str] = Field(
+    issues: Sequence[str] = Field(
+        default_factory=list, description="List of issues found"
+    )
+    recommendations: Sequence[str] = Field(
         default_factory=list, description="List of recommendations"
     )
 
@@ -84,10 +87,10 @@ class AuditReport(BaseModel):
     )
     fresh_files: int = Field(default=0, description="Number of fresh files")
     stale_files: int = Field(default=0, description="Number of stale files")
-    file_metrics: dict[str, ContentMetrics] = Field(
+    file_metrics: Mapping[str, ContentMetrics] = Field(
         default_factory=dict, description="Metrics per file"
     )
-    category_breakdown: dict[str, int] = Field(
+    category_breakdown: Mapping[str, int] = Field(
         default_factory=dict, description="File count by category"
     )
     overall_quality_score: float = Field(
@@ -101,7 +104,7 @@ class AuditorConfig(BaseModel):
     freshness_threshold_days: int = Field(default=30, ge=1)
     min_words_per_file: int = Field(default=50, ge=1)
     max_external_links: int = Field(default=10, ge=0)
-    quality_thresholds: dict[str, int] = Field(
+    quality_thresholds: Mapping[str, int] = Field(
         default_factory=lambda: {
             "excellent": EXCELLENT_QUALITY_THRESHOLD,
             "good": GOOD_QUALITY_THRESHOLD,
@@ -109,7 +112,7 @@ class AuditorConfig(BaseModel):
             "poor": 45,
         },
     )
-    required_sections: list[str] = Field(
+    required_sections: Sequence[str] = Field(
         default_factory=lambda: ["description", "usage", "examples", "api"],
     )
 
@@ -135,8 +138,8 @@ class DocumentationAuditor:
 
         if config_path and config_path.exists():
             with Path(config_path).open("r", encoding="utf-8") as f:
-                raw: dict[
-                    str, str | int | float | bool | list[str] | dict[str, int]
+                raw: Mapping[
+                    str, str | int | float | bool | Sequence[str] | Mapping[str, int]
                 ] = yaml.safe_load(f)
                 merged = default_config.model_dump()
                 merged.update(raw)
@@ -144,9 +147,9 @@ class DocumentationAuditor:
 
         return default_config
 
-    def discover_files(self) -> list[Path]:
+    def discover_files(self) -> Sequence[Path]:
         """Discover all markdown files in the documentation tree."""
-        files: list[Path] = []
+        files: Sequence[Path] = []
         for pattern in ["*.md", "*.mdx"]:
             files.extend(self.docs_root.rglob(pattern))
 
@@ -420,7 +423,7 @@ class DocumentationAuditor:
         ])
 
         # Group recommendations by priority
-        priority_recs: defaultdict[str, list[str]] = defaultdict(list)
+        priority_recs: defaultdict[str, Sequence[str]] = defaultdict(list)
 
         for file_path, metrics in self.report.file_metrics.items():
             relative_path = Path(file_path).relative_to(self.docs_root)
@@ -444,7 +447,7 @@ class DocumentationAuditor:
     def _generate_json_report(self) -> str:
         """Generate JSON audit report."""
         # Convert dataclasses to dicts for JSON serialization
-        file_metrics: dict[str, dict[str, float | int | list[str] | str]] = {}
+        file_metrics: Mapping[str, Mapping[str, float | int | Sequence[str] | str]] = {}
         for path, metrics in self.report.file_metrics.items():
             file_metrics[path] = {
                 "file_path": metrics.file_path,

@@ -141,7 +141,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> dict[str, t.NormalizedValue]:
+def process_order(order_data: dict) -> Mapping[str, t.NormalizedValue]:
     """Process order with automatic monitoring.
 
     This function automatically gets:
@@ -289,7 +289,7 @@ class FlextTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> list[t.Dict]:
+    def extract_records(self, table_name: str) -> Sequence[t.Dict]:
         """Extract records with automatic monitoring."""
 
         # Extract data (business logic)
