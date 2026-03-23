@@ -10,12 +10,9 @@ from datetime import UTC, datetime
 from typing import ClassVar, Literal
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextRuntime, r
-from flext_core.protocols import FlextProtocols as p
-from flext_core.typings import t
+from flext_core import FlextContainer, FlextRuntime, p, r, t
 
-from flext_observability.constants import FlextObservabilityConstants as c
-from flext_observability.models import FlextObservabilityModels as _m
+from flext_observability import FlextObservabilityModels as _m, c
 
 
 class FlextObservability:

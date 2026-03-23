@@ -20,11 +20,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from flext_core import FlextLogger, r
-from flext_core.typings import t
+from flext_core import FlextLogger, r, t
 from pydantic import TypeAdapter
 
-from flext_observability.models import m
+from flext_observability import m
 
 ContextSnapshot = m.Observability.ContextSnapshot
 
@@ -36,7 +35,7 @@ class FlextObservabilityAdvancedContext:
 
     Usage:
         ```python
-        from flext_observability.advanced_context import (
+        from flext_observability import (
             FlextObservabilityAdvancedContext,
         )
 

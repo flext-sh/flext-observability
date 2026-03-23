@@ -24,9 +24,7 @@ from collections.abc import Callable, MutableMapping
 from flext_core import FlextLogger, r
 from pydantic import ValidationError
 
-from flext_observability.constants import FlextObservabilityConstants as c
-from flext_observability.context import FlextObservabilityContext
-from flext_observability.models import m
+from flext_observability import FlextObservabilityContext, c, m
 
 _CooldownInput = m.Observability.CooldownInput
 _ThresholdInput = m.Observability.ThresholdInput
@@ -51,7 +49,7 @@ class FlextObservabilityErrorHandling:
 
     Usage:
         ```python
-        from flext_observability.error_handling import FlextObservabilityErrorHandling
+        from flext_observability import FlextObservabilityErrorHandling
 
         handler = FlextObservabilityErrorHandling.get_handler()
 

@@ -16,12 +16,11 @@ from hashlib import sha256
 from typing import Annotated, ClassVar
 from uuid import uuid4
 
-from flext_core import FlextModels
-from flext_core.typings import t
+from flext_core import FlextModels, t
 from pydantic import ConfigDict, Field, computed_field
 
 # Deferred import to avoid circular dependency - used inside Observability nested classes
-from flext_observability.constants import FlextObservabilityConstants as _c
+from flext_observability import FlextObservabilityConstants as _c
 
 # Domain scalar type alias used in model fields
 _DomainLabels = dict[str, t.Scalar]

@@ -17,8 +17,7 @@ from collections.abc import Mapping
 from contextvars import ContextVar
 from uuid import uuid4
 
-from flext_core import FlextRuntime, r
-from flext_core.typings import t
+from flext_core import FlextRuntime, r, t
 from pydantic import BaseModel, ValidationError
 
 from flext_observability import m
@@ -39,7 +38,7 @@ class FlextObservabilityContext:
 
     Example:
         ```python
-        from flext_observability.context import FlextObservabilityContext
+        from flext_observability import FlextObservabilityContext
 
         # Set correlation ID for request
         correlation_id = FlextObservabilityContext.set_correlation_id()
@@ -126,7 +125,7 @@ class FlextObservabilityContext:
         Example:
             ```python
             # Extract context from incoming request
-            from flext_observability.context import FlextObservabilityContext
+            from flext_observability import FlextObservabilityContext
 
             FlextObservabilityContext.from_headers(dict(request.headers))
 

@@ -21,12 +21,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from flext_core import FlextLogger, r
-from flext_core.typings import t
+from flext_core import FlextLogger, r, t
 from structlog.typing import BindableLogger
 
-from flext_observability.context import FlextObservabilityContext
-from flext_observability.models import m
+from flext_observability import FlextObservabilityContext, m
 
 
 class FlextObservabilityLogging:
@@ -38,7 +36,7 @@ class FlextObservabilityLogging:
 
     Usage:
         ```python
-        from flext_observability.logging_integration import FlextObservabilityLogging
+        from flext_observability import FlextObservabilityLogging
 
         # Create logger with automatic trace context
         logger = FlextObservabilityLogging.create_logger(__name__)

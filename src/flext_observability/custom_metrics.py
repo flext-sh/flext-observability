@@ -18,12 +18,10 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_core import FlextRuntime, r
-from flext_core.typings import t
+from flext_core import FlextRuntime, r, t
 from pydantic import ValidationError
 
-from flext_observability.constants import FlextObservabilityConstants as c
-from flext_observability.models import m
+from flext_observability import c, m
 
 MetricType = c.Observability.MetricType
 
@@ -39,7 +37,7 @@ class FlextObservabilityCustomMetrics:
 
     Usage:
         ```python
-        from flext_observability.custom_metrics import FlextObservabilityCustomMetrics
+        from flext_observability import FlextObservabilityCustomMetrics
 
         # Define custom metrics
         metrics = FlextObservabilityCustomMetrics.get_registry()

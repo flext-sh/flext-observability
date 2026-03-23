@@ -19,9 +19,9 @@ import time
 try:
     from flext_observability import (
         FlextObservabilityContext,
+        FlextObservabilityMasterFactory,
         FlextObservabilitySampling,
     )
-    from flext_observability._core import FlextObservabilityMasterFactory
 
     FlextObservabilityContext.set_correlation_id("http-req-001")
     FlextObservabilityContext.set_trace_id("trace-http-001")
@@ -58,7 +58,7 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability._core import FlextObservabilityMasterFactory
+    from flext_observability import FlextObservabilityMasterFactory
 
     factory = FlextObservabilityMasterFactory()
     start_time = time.time()
@@ -114,8 +114,10 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import FlextObservabilityContext
-    from flext_observability._core import FlextObservabilityMasterFactory
+    from flext_observability import (
+        FlextObservabilityContext,
+        FlextObservabilityMasterFactory,
+    )
 
     correlation_id = "dist-trace-001"
     FlextObservabilityContext.set_correlation_id(correlation_id)
@@ -234,11 +236,11 @@ try:
         FlextObservabilityContext,
         FlextObservabilityCustomMetrics,
         FlextObservabilityErrorHandling,
+        FlextObservabilityMasterFactory,
         FlextObservabilityPerformance,
         FlextObservabilitySampling,
         c,
     )
-    from flext_observability._core import FlextObservabilityMasterFactory
 
     FlextObservabilityContext.set_correlation_id("e2e-test-001")
     FlextObservabilityContext.set_trace_id("trace-e2e-001")
@@ -320,10 +322,10 @@ try:
         FlextObservabilityContext,
         FlextObservabilityCustomMetrics,
         FlextObservabilityErrorHandling,
+        FlextObservabilityMasterFactory,
         FlextObservabilityPerformance,
         FlextObservabilitySampling,
     )
-    from flext_observability._core import FlextObservabilityMasterFactory
 
     FlextObservabilityContext.set_correlation_id("setup-001")
     assert FlextObservabilityContext.get_correlation_id() == "setup-001"

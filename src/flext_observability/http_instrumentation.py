@@ -26,14 +26,15 @@ from collections.abc import Awaitable, Callable, Mapping
 from typing import TypeGuard
 
 import flask
-from flext_core import FlextRuntime, r
-from flext_core.typings import t
+from flext_core import FlextRuntime, r, t
 from pydantic import ValidationError
 
-from flext_observability.context import FlextObservabilityContext
-from flext_observability.logging_integration import FlextObservabilityLogging
-from flext_observability.models import FlextObservabilityModels as m
-from flext_observability.protocols import FlextObservabilityProtocols as p
+from flext_observability import (
+    FlextObservabilityContext,
+    FlextObservabilityLogging,
+    m,
+    p,
+)
 
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None
@@ -74,7 +75,7 @@ class FlextObservabilityHTTP:
     Usage:
         ```python
         from fastapi import FastAPI
-        from flext_observability.http_instrumentation import FlextObservabilityHTTP
+        from flext_observability import FlextObservabilityHTTP
 
         app = FastAPI()
         FlextObservabilityHTTP.FastAPI.setup_instrumentation(app)
@@ -118,7 +119,7 @@ class FlextObservabilityHTTP:
             Example:
                 ```python
                 from flask import Flask
-                from flext_observability.http_instrumentation import (
+                from flext_observability import (
                     FlextObservabilityHTTP,
                 )
 
@@ -283,7 +284,7 @@ class FlextObservabilityHTTP:
             Example:
                 ```python
                 from fastapi import FastAPI
-                from flext_observability.http_instrumentation import (
+                from flext_observability import (
                     FlextObservabilityHTTP,
                 )
 

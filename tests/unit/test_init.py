@@ -12,16 +12,14 @@ from flext_tests import tm
 
 import flext_observability
 from flext_observability import (
-    FlextObservabilityModels,
-    get_global_factory,
-    reset_global_factory,
-)
-from flext_observability._core import (
     FlextObservabilityMasterFactory,
+    FlextObservabilityModels,
     flext_alert,
     flext_health_check,
     flext_metric,
     flext_trace,
+    get_global_factory,
+    reset_global_factory,
 )
 
 

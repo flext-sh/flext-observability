@@ -18,7 +18,7 @@ from collections.abc import Mapping
 import psutil
 from flext_core import FlextLogger, r
 
-from flext_observability.models import m
+from flext_observability import m
 
 PerformanceMetrics = m.Observability.PerformanceMetrics
 
@@ -30,7 +30,7 @@ class FlextObservabilityPerformance:
 
     Usage:
         ```python
-        from flext_observability.performance import FlextObservabilityPerformance
+        from flext_observability import FlextObservabilityPerformance
 
         # Start monitoring operation
         monitor = FlextObservabilityPerformance.start_monitoring("http_request_tracing")

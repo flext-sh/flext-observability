@@ -11,11 +11,10 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from flext_core import r
-from flext_core.typings import t
+from flext_core import r, t
 from pydantic import ValidationError
 
-from flext_observability.models import m
+from flext_observability import m
 
 _HealthCheckFactoryKwargs = m.Observability.HealthCheckFactoryKwargs
 HealthCheckModel = m.Observability.HealthCheckModel

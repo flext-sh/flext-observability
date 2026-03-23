@@ -24,14 +24,15 @@ import time
 from collections.abc import Awaitable, Callable, MutableMapping
 from typing import ClassVar, TypeGuard
 
-from flext_core import FlextRuntime, r
-from flext_core.typings import t
+from flext_core import FlextRuntime, r, t
 from pydantic import ValidationError
 
-from flext_observability.context import FlextObservabilityContext
-from flext_observability.logging_integration import FlextObservabilityLogging
-from flext_observability.models import FlextObservabilityModels as m
-from flext_observability.protocols import FlextObservabilityProtocols as p
+from flext_observability import (
+    FlextObservabilityContext,
+    FlextObservabilityLogging,
+    m,
+    p,
+)
 
 # Local aliases for convenience
 _HeadersPayload = m.Observability._HeadersPayload
@@ -53,7 +54,7 @@ class FlextObservabilityHTTPClient:
     Usage:
         ```python
         import httpx
-        from flext_observability.http_client_instrumentation import (
+        from flext_observability import (
             FlextObservabilityHTTPClient,
         )
 
@@ -128,7 +129,7 @@ class FlextObservabilityHTTPClient:
             Example:
                 ```python
                 import httpx
-                from flext_observability.http_client_instrumentation import (
+                from flext_observability import (
                     FlextObservabilityHTTPClient,
                 )
 
@@ -374,7 +375,7 @@ class FlextObservabilityHTTPClient:
             Example:
                 ```python
                 import aiohttp
-                from flext_observability.http_client_instrumentation import (
+                from flext_observability import (
                     FlextObservabilityHTTPClient,
                 )
 
