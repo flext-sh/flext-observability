@@ -38,14 +38,6 @@ if TYPE_CHECKING:
         __version__,
         __version_info__,
     )
-    from flext_observability._core import (
-        FlextObservabilityMasterFactory,
-        flext_alert,
-        flext_health_check,
-        flext_log_entry,
-        flext_metric,
-        flext_trace,
-    )
     from flext_observability.advanced_context import (
         ContextSnapshot,
         FlextObservabilityAdvancedContext,
@@ -69,7 +61,7 @@ if TYPE_CHECKING:
         FlextObservabilityHTTPClient,
     )
     from flext_observability.http_instrumentation import FlextObservabilityHTTP
-    from flext_observability.logging_integration import FlextObservabilityLogging
+    from flext_observability.logging import FlextObservabilityLogging
     from flext_observability.models import (
         FlextObservabilityModels,
         FlextObservabilityModels as m,
@@ -104,15 +96,6 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "ContextSnapshot": ("flext_observability.advanced_context", "ContextSnapshot"),
-    "FlextObservabilityMasterFactory": (
-        "flext_observability._core",
-        "FlextObservabilityMasterFactory",
-    ),
-    "flext_alert": ("flext_observability._core", "flext_alert"),
-    "flext_health_check": ("flext_observability._core", "flext_health_check"),
-    "flext_log_entry": ("flext_observability._core", "flext_log_entry"),
-    "flext_metric": ("flext_observability._core", "flext_metric"),
-    "flext_trace": ("flext_observability._core", "flext_trace"),
     "CustomMetricDefinition": (
         "flext_observability.custom_metrics",
         "CustomMetricDefinition",
@@ -155,7 +138,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "FlextObservabilityHealth",
     ),
     "FlextObservabilityLogging": (
-        "flext_observability.logging_integration",
+        "flext_observability.logging",
         "FlextObservabilityLogging",
     ),
     "FlextObservabilityModels": (
@@ -237,7 +220,6 @@ __all__ = [
     "FlextObservabilityHTTPClient",
     "FlextObservabilityHealth",
     "FlextObservabilityLogging",
-    "FlextObservabilityMasterFactory",
     "FlextObservabilityModels",
     "FlextObservabilityMonitor",
     "FlextObservabilityPerformance",
@@ -260,12 +242,7 @@ __all__ = [
     "c",
     "d",
     "e",
-    "flext_alert",
-    "flext_health_check",
-    "flext_log_entry",
-    "flext_metric",
     "flext_monitor_function",
-    "flext_trace",
     "get_global_factory",
     "h",
     "m",
