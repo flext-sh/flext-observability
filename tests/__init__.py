@@ -13,21 +13,27 @@ if TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
-    from . import unit as unit
-    from .constants import (
+    from tests import unit
+    from tests.constants import (
         FlextObservabilityTestConstants,
         FlextObservabilityTestConstants as c,
     )
-    from .models import FlextObservabilityTestModels, FlextObservabilityTestModels as m
-    from .protocols import (
+    from tests.models import (
+        FlextObservabilityTestModels,
+        FlextObservabilityTestModels as m,
+    )
+    from tests.protocols import (
         FlextObservabilityTestProtocols,
         FlextObservabilityTestProtocols as p,
     )
-    from .typings import FlextObservabilityTestTypes, FlextObservabilityTestTypes as t
-    from .unit.test_constants import TestFlextObservabilityConstants
-    from .unit.test_factory import TestFlextObservabilityMasterFactoryReal
-    from .unit.test_init import TestInitCoverage
-    from .utilities import (
+    from tests.typings import (
+        FlextObservabilityTestTypes,
+        FlextObservabilityTestTypes as t,
+    )
+    from tests.unit.test_constants import TestFlextObservabilityConstants
+    from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
+    from tests.unit.test_init import TestInitCoverage
+    from tests.utilities import (
         FlextObservabilityTestUtilities,
         FlextObservabilityTestUtilities as u,
     )
