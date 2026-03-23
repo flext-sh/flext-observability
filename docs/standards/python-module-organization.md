@@ -1,7 +1,6 @@
 # Python Module Organization & Semantic Patterns
 
 <!-- TOC START -->
-
 - [Table of Contents](#table-of-contents)
 - [🏗️ **Module Architecture Overview**](#module-architecture-overview)
   - [**Core Design Principles**](#core-design-principles)
@@ -30,7 +29,7 @@
   - [**Alert Management Patterns**](#alert-management-patterns)
 - [🧪 **Testing Patterns**](#testing-patterns)
   - [**Test Organization**](#test-organization)
-  - [**r Testing Patterns for Observability**](#flextresult-testing-patterns-for-observability)
+  - [**r Testing Patterns for Observability**](#r-testing-patterns-for-observability)
   - [**Observability Entity Testing Patterns**](#observability-entity-testing-patterns)
   - [**Service Testing Patterns**](#service-testing-patterns)
   - [**Monitoring Decorator Testing Patterns**](#monitoring-decorator-testing-patterns)
@@ -46,7 +45,6 @@
   - [**Module Creation Checklist**](#module-creation-checklist)
   - [**Observability Quality Gate Checklist**](#observability-quality-gate-checklist)
   - [**Observability-Specific Standards**](#observability-specific-standards)
-
 <!-- TOC END -->
 
 ## Table of Contents

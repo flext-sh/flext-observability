@@ -1,7 +1,6 @@
 # Documentation Maintenance Framework
 
 <!-- TOC START -->
-
 - [Table of Contents](#table-of-contents)
 - [🏗️ Framework Architecture](#framework-architecture)
   - [Core Components](#core-components)
@@ -43,7 +42,6 @@
   - [Quality Metrics (Real-time)](#quality-metrics-real-time)
   - [Recent Activity](#recent-activity)
   - [Next Steps](#next-steps)
-
 <!-- TOC END -->
 
 ## Table of Contents

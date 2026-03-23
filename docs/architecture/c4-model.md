@@ -1,7 +1,6 @@
 # FLEXT Observability - C4 Model Architecture
 
 <!-- TOC START -->
-
 - [Table of Contents](#table-of-contents)
 - [📋 C4 Model Overview](#c4-model-overview)
 - [🌍 Level 1: System Context](#level-1-system-context)
@@ -23,7 +22,6 @@
 - [🏛️ Architectural Decisions](#architectural-decisions)
   - [ADRs Referenced](#adrs-referenced)
   - [Key Architectural Principles](#key-architectural-principles)
-
 <!-- TOC END -->
 
 ## Table of Contents

@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Awaitable, Callable, Mapping
-from typing import TypeGuard
+from typing import TypeIs
 
 import flask
 from flext_core import FlextRuntime, r, t
@@ -55,14 +55,14 @@ Response = p.Observability.Http.Response
 
 def _is_flask_app(
     obj: t.RegisterableService,
-) -> TypeGuard[p.Observability.Http.FlaskApp]:
+) -> TypeIs[p.Observability.Http.FlaskApp]:
     """Type guard to check if t.NormalizedValue is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
 
 def _is_fastapi_app(
     obj: t.RegisterableService,
-) -> TypeGuard[p.Observability.Http.FastAPIApp]:
+) -> TypeIs[p.Observability.Http.FastAPIApp]:
     return hasattr(obj, "add_middleware")
 
 

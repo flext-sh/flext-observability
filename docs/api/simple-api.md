@@ -1,7 +1,6 @@
 # Simple API Reference
 
 <!-- TOC START -->
-
 - [Table of Contents](#table-of-contents)
 - [📋 API Overview](#api-overview)
 - [🔍 Core Functions](#core-functions)
@@ -18,7 +17,6 @@
   - [Common Validation Errors](#common-validation-errors)
   - [Type Safety Errors](#type-safety-errors)
 - [🔗 Related APIs](#related-apis)
-
 <!-- TOC END -->
 
 ## Table of Contents

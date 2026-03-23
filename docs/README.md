@@ -1,7 +1,6 @@
 # FLEXT Observability - Documentation Hub
 
 <!-- TOC START -->
-
 - [Table of Contents](#table-of-contents)
 - [📚 Documentation Index](#documentation-index)
   - [🏗️ **Architecture & Design**](#architecture-design)
@@ -22,7 +21,6 @@
   - [Documentation Structure](#documentation-structure)
   - [Standards for New Documentation](#standards-for-new-documentation)
 - [🔗 Related Documentation](#related-documentation)
-
 <!-- TOC END -->
 
 ## Table of Contents

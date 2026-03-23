@@ -1,7 +1,6 @@
 # Implementation Status - FLEXT Observability v0.9.0
 
 <!-- TOC START -->
-
 - [Table of Contents](#table-of-contents)
 - [📊 Overall Project Status](#overall-project-status)
   - [**Architecture Completion**: 100% ✅](#architecture-completion-100)
@@ -27,7 +26,6 @@
   - [**Implementation Decisions**](#implementation-decisions)
   - [**Current Blockers**](#current-blockers)
 - [📋 Status Summary](#status-summary)
-
 <!-- TOC END -->
 
 ## Table of Contents

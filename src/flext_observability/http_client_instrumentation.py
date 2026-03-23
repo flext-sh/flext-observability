@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Awaitable, Callable, Mapping, MutableMapping
-from typing import ClassVar, TypeGuard
+from typing import ClassVar, TypeIs
 
 from flext_core import FlextRuntime, r, t
 from pydantic import ValidationError
@@ -80,17 +80,17 @@ class FlextObservabilityHTTPClient:
     @staticmethod
     def _is_httpx_async_client(
         obj: t.RegisterableService,
-    ) -> TypeGuard[HTTPXAsyncClient]:
+    ) -> TypeIs[HTTPXAsyncClient]:
         """Type guard to check if t.NormalizedValue is an async httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send")
 
     @staticmethod
-    def _is_httpx_client(obj: t.RegisterableService) -> TypeGuard[HTTPXClient]:
+    def _is_httpx_client(obj: t.RegisterableService) -> TypeIs[HTTPXClient]:
         """Type guard to check if t.NormalizedValue is an httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send") is False
 
     @staticmethod
-    def _is_aiohttp_session(obj: t.RegisterableService) -> TypeGuard[AIOHTTPSession]:
+    def _is_aiohttp_session(obj: t.RegisterableService) -> TypeIs[AIOHTTPSession]:
         return hasattr(obj, "request")
 
     @staticmethod
