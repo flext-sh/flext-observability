@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import MutableMapping, Sequence
 
 from flext_core import FlextRuntime, r, t
 from pydantic import ValidationError
@@ -72,9 +72,9 @@ class FlextObservabilityCustomMetrics:
 
         def __init__(self) -> None:
             """Initialize metric registry."""
-            self._metrics: Mapping[str, CustomMetricDefinition] = {}
-            self._metric_instances: Mapping[str, t.Scalar] = {}
-            self._namespaces: Mapping[str, str] = {}
+            self._metrics: MutableMapping[str, CustomMetricDefinition] = {}
+            self._metric_instances: MutableMapping[str, t.Scalar] = {}
+            self._namespaces: MutableMapping[str, str] = {}
 
         def clear_metrics(self, namespace: str | None = None) -> r[bool]:
             """Clear metrics from registry.

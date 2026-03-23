@@ -24,7 +24,7 @@ from pydantic import ConfigDict, Field, computed_field
 from flext_observability import FlextObservabilityConstants as _c
 
 # Domain scalar type alias used in model fields
-_DomainLabels = Mapping[str, t.Scalar]
+_DomainLabels = dict[str, t.Scalar]
 
 
 class FlextObservabilityModels(FlextModels):

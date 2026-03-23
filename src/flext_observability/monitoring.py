@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Mapping, MutableMapping, Sequence
 from typing import override
 from uuid import uuid4
 
@@ -170,7 +170,7 @@ class FlextObservabilityMonitor:
                 return r[t.Observability.HealthMetricsDict].fail(
                     "Observability service not available",
                 )
-            health_data: t.Observability.HealthMetricsDict = {
+            health_data: MutableMapping[str, t.NormalizedValue] = {
                 "status": _obs_c.Observability.HealthStatus.HEALTHY
                 if self._initialized
                 else "initializing",

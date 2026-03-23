@@ -29,9 +29,11 @@ from pydantic import ValidationError
 
 from flext_observability import (
     FlextObservabilityContext,
-    FlextObservabilityLogging,
     m,
     p,
+)
+from flext_observability.logging_integration import (
+    FlextObservabilityLogging,
 )
 
 # Local aliases for convenience
@@ -96,7 +98,7 @@ class FlextObservabilityHTTPClient:
     @staticmethod
     def _validated_headers(payload: t.NormalizedValue) -> MutableMapping[str, str]:
         try:
-            return _HeadersPayload.model_validate(obj={"headers": payload}).headers
+            return dict(_HeadersPayload.model_validate(obj={"headers": payload}).headers)
         except ValidationError:
             return {}
 

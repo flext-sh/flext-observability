@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping
 
 from flext_core import FlextLogger, r, t
 from pydantic import TypeAdapter
@@ -64,8 +64,8 @@ class FlextObservabilityAdvancedContext:
 
         def __init__(self) -> None:
             """Initialize advanced context."""
-            self._metadata: Mapping[str, t.Scalar] = {}
-            self._baggage: Mapping[str, str] = {}
+            self._metadata: MutableMapping[str, t.Scalar] = {}
+            self._baggage: MutableMapping[str, str] = {}
             self._request_id: str = ""
             self._parent_context: ContextSnapshot | None = None
 
@@ -92,7 +92,7 @@ class FlextObservabilityAdvancedContext:
                 dict - All baggage
 
             """
-            return self._baggage.copy()
+            return dict(self._baggage)
 
         def get_all_metadata(self) -> Mapping[str, t.Scalar]:
             """Get all request-local metadata.
@@ -101,7 +101,7 @@ class FlextObservabilityAdvancedContext:
                 dict - All metadata
 
             """
-            return self._metadata.copy()
+            return dict(self._metadata)
 
         def get_baggage(self, key: str) -> str | None:
             """Get baggage item.
@@ -160,8 +160,8 @@ class FlextObservabilityAdvancedContext:
 
             """
             try:
-                self._metadata = snapshot.metadata.copy()
-                self._baggage = snapshot.baggage.copy()
+                self._metadata = dict(snapshot.metadata)
+                self._baggage = dict(snapshot.baggage)
                 FlextObservabilityAdvancedContext._logger.debug(
                     "Context restored from snapshot",
                 )

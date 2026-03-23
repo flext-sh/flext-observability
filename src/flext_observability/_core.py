@@ -6,7 +6,7 @@ Internal module; use flext_observability package API.
 from __future__ import annotations
 
 import math
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, MutableMapping, MutableSequence
 from datetime import UTC, datetime
 from typing import ClassVar, Literal
 from uuid import uuid4
@@ -69,7 +69,7 @@ class FlextObservability:
 
         _container: p.Container
         _logger: p.Logger
-        _metrics: Sequence[FlextObservability.Metric]
+        _metrics: MutableSequence[FlextObservability.Metric]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize metrics service."""
@@ -101,13 +101,14 @@ class FlextObservability:
                     metric_type = c.Observability.MetricType.COUNTER
                 elif name.endswith(("_duration", "_seconds")):
                     metric_type = c.Observability.MetricType.HISTOGRAM
+                resolved_labels: dict[str, t.Scalar] = dict(labels) if labels is not None else {}
                 metric = FlextObservability.Metric(
                     id=str(uuid4()),
                     name=name,
                     value=float(value),
                     unit=unit,
                     metric_type=metric_type,
-                    labels=labels or {},
+                    labels=resolved_labels,
                     domain_events=[],
                 )
                 self._metrics.append(metric)
@@ -123,7 +124,7 @@ class FlextObservability:
 
         _container: p.Container
         _logger: p.Logger
-        _traces: Sequence[FlextObservability.Trace]
+        _traces: MutableSequence[FlextObservability.Trace]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize tracing service."""
@@ -142,10 +143,11 @@ class FlextObservability:
                     return r[FlextObservability.Trace].fail(
                         "Trace name must be non-empty string",
                     )
+                resolved_attrs: dict[str, t.Scalar] = dict(attributes) if attributes is not None else {}
                 trace = FlextObservability.Trace(
                     trace_id=str(uuid4()),
                     name=name,
-                    attributes=attributes or {},
+                    attributes=resolved_attrs,
                     domain_events=[],
                 )
                 self._traces.append(trace)
@@ -159,7 +161,7 @@ class FlextObservability:
 
         _container: p.Container
         _logger: p.Logger
-        _alerts: Sequence[FlextObservability.Alert]
+        _alerts: MutableSequence[FlextObservability.Alert]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize alerting service."""
@@ -185,13 +187,14 @@ class FlextObservability:
                     return r[FlextObservability.Alert].fail(
                         "Alert message cannot be empty",
                     )
+                resolved_labels: dict[str, t.Scalar] = dict(labels) if labels is not None else {}
                 alert = FlextObservability.Alert(
                     id=str(uuid4()),
                     title=title,
                     message=message,
                     severity=severity,
                     source=source,
-                    labels=labels or {},
+                    labels=resolved_labels,
                     domain_events=[],
                 )
                 self._alerts.append(alert)
@@ -205,7 +208,7 @@ class FlextObservability:
 
         _container: p.Container
         _logger: p.Logger
-        _checks: Sequence[FlextObservability.HealthCheck]
+        _checks: MutableSequence[FlextObservability.HealthCheck]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize health service."""
@@ -229,11 +232,12 @@ class FlextObservability:
                     return r[FlextObservability.HealthCheck].fail(
                         f"Invalid health status: {status}",
                     )
+                resolved_details: dict[str, t.Scalar] = dict(details) if details is not None else {}
                 health = FlextObservability.HealthCheck(
                     id=str(uuid4()),
                     component=component,
                     status=status,
-                    details=details or {},
+                    details=resolved_details,
                     domain_events=[],
                 )
                 self._checks.append(health)
@@ -249,7 +253,7 @@ class FlextObservability:
 
         _container: p.Container
         _logger: p.Logger
-        _entries: Sequence[FlextObservability.LogEntry]
+        _entries: MutableSequence[FlextObservability.LogEntry]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize logging service."""
@@ -270,13 +274,14 @@ class FlextObservability:
                     return r[FlextObservability.LogEntry].fail(
                         "Log message cannot be empty",
                     )
+                resolved_context: dict[str, t.Scalar] = dict(context) if context is not None else {}
                 entry = FlextObservability.LogEntry(
                     id=str(uuid4()),
                     message=message,
                     level=level,
                     component=component,
                     timestamp=datetime.now(tz=UTC),
-                    context=context or {},
+                    context=resolved_context,
                     domain_events=[],
                 )
                 self._entries.append(entry)
@@ -311,12 +316,11 @@ def flext_metric(
             return r[FlextObservability.Metric].fail(
                 "Metric value must be a valid number",
             )
-        all_labels_data: Mapping[str, t.Scalar] = {}
+        all_labels_data: MutableMapping[str, t.Scalar] = {}
         if tags:
             all_labels_data.update(tags)
         if labels:
             all_labels_data.update(labels)
-        all_labels: Mapping[str, t.Scalar] = all_labels_data
         detected_type: c.Observability.MetricType = (
             metric_type or c.Observability.MetricType.GAUGE
         )
@@ -331,7 +335,7 @@ def flext_metric(
             value=float(value),
             unit=unit,
             metric_type=detected_type,
-            labels=all_labels,
+            labels=dict(all_labels_data),
             domain_events=[],
         )
         return r[FlextObservability.Metric].ok(metric)
@@ -350,10 +354,11 @@ def flext_trace(
             return r[FlextObservability.Trace].fail(
                 "Trace name must be non-empty string",
             )
+        resolved_attrs: dict[str, t.Scalar] = dict(attributes) if attributes is not None else {}
         trace = FlextObservability.Trace(
             name=name,
             trace_id=trace_id or str(uuid4()),
-            attributes=attributes or {},
+            attributes=resolved_attrs,
             domain_events=[],
         )
         return r[FlextObservability.Trace].ok(trace)
@@ -377,13 +382,14 @@ def flext_alert(
             return r[FlextObservability.Alert].fail("Alert message cannot be empty")
         if not title and message:
             return r[FlextObservability.Alert].fail("Alert title cannot be empty")
+        resolved_labels: dict[str, t.Scalar] = dict(labels) if labels is not None else {}
         alert = FlextObservability.Alert(
             id=alert_id or str(uuid4()),
             title=title,
             message=message,
             severity=severity,
             source=source,
-            labels=labels or {},
+            labels=resolved_labels,
             domain_events=[],
         )
         return r[FlextObservability.Alert].ok(alert)
@@ -408,11 +414,12 @@ def flext_health_check(
             return r[FlextObservability.HealthCheck].fail(
                 f"Invalid health status: {status}",
             )
+        resolved_details: dict[str, t.Scalar] = dict(details) if details is not None else {}
         health = FlextObservability.HealthCheck(
             id=health_check_id or str(uuid4()),
             component=component,
             status=status,
-            details=details or {},
+            details=resolved_details,
             domain_events=[],
         )
         return r[FlextObservability.HealthCheck].ok(health)
@@ -433,13 +440,14 @@ def flext_log_entry(
     try:
         if not message:
             return r[FlextObservability.LogEntry].fail("Log message cannot be empty")
+        resolved_context: dict[str, t.Scalar] = dict(context) if context is not None else {}
         entry = FlextObservability.LogEntry(
             id=str(uuid4()),
             message=message,
             level=level,
             component=component,
             timestamp=timestamp or datetime.now(tz=UTC),
-            context=context or {},
+            context=resolved_context,
             domain_events=[],
         )
         return r[FlextObservability.LogEntry].ok(entry)
