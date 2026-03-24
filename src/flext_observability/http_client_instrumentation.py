@@ -92,7 +92,7 @@ class FlextObservabilityHTTPClient:
         try:
             return dict(
                 m.Observability.HeadersPayload.model_validate(
-                    obj={"headers": payload}
+                    obj={"headers": payload},
                 ).headers,
             )
         except ValidationError:

@@ -37,7 +37,7 @@ class FlextObservabilityHealth:
             valid_timestamp: datetime | None = None
             try:
                 parsed_kwargs = m.Observability.HealthCheckFactoryKwargs.model_validate(
-                    obj=kwargs
+                    obj=kwargs,
                 )
                 if parsed_kwargs.metrics is not None:
                     valid_metrics = parsed_kwargs.metrics
@@ -60,7 +60,7 @@ class FlextObservabilityHealth:
             return r[m.Observability.HealthCheckModel].ok(health_check)
         except (ValueError, TypeError, KeyError) as e:
             return r[m.Observability.HealthCheckModel].fail(
-                f"Failed to create health check: {e}"
+                f"Failed to create health check: {e}",
             )
 
 

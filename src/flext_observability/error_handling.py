@@ -153,7 +153,7 @@ class FlextObservabilityErrorHandling:
             self._last_alert_time[error.fingerprint] = time.time()
 
         def record_error(
-            self, error: m.Observability.ErrorEvent
+            self, error: m.Observability.ErrorEvent,
         ) -> r[m.Observability.ErrorEvent]:
             """Record an error event.
 
@@ -210,7 +210,7 @@ class FlextObservabilityErrorHandling:
                 ).seconds
             except ValidationError as error:
                 return r[bool].fail(
-                    FlextObservabilityErrorHandling._extract_validation_message(error)
+                    FlextObservabilityErrorHandling._extract_validation_message(error),
                 )
             self._alert_cooldown_sec = validated_seconds
             FlextObservabilityErrorHandling._logger.debug(
@@ -234,7 +234,7 @@ class FlextObservabilityErrorHandling:
                 ).threshold
             except ValidationError as error:
                 return r[bool].fail(
-                    FlextObservabilityErrorHandling._extract_validation_message(error)
+                    FlextObservabilityErrorHandling._extract_validation_message(error),
                 )
             self._escalation_threshold = validated_threshold
             FlextObservabilityErrorHandling._logger.debug(
