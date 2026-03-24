@@ -305,6 +305,20 @@ class FlextObservabilityMonitor:
         """Public method to increment functions monitored counter."""
         self._functions_monitored += 1
 
+    @staticmethod
+    def flext_monitor_function(
+        monitor: FlextObservabilityMonitor | None = None,
+        metric_name: str | None = None,
+    ) -> Callable[
+        [FlextObservabilityMonitor.object_callable],
+        FlextObservabilityMonitor.object_callable,
+    ]:
+        """Create function monitoring decorator with metrics collection."""
+        return FlextObservabilityMonitor.MonitoringDecorators.flext_monitor_function(
+            monitor=monitor,
+            metric_name=metric_name,
+        )
+
     class MonitoringDecorators:
         """Nested class for monitoring decorators and function wrappers."""
 
@@ -383,7 +397,7 @@ def flext_monitor_function(
         version with automatic monitoring capabilities.
 
     """
-    return FlextObservabilityMonitor.MonitoringDecorators.flext_monitor_function(
+    return FlextObservabilityMonitor.flext_monitor_function(
         monitor=monitor,
         metric_name=metric_name,
     )
