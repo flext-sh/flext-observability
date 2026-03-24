@@ -53,7 +53,7 @@ class TestInitCoverage:
         tm.that(hasattr(flext_observability, "__version__"), eq=True)
         tm.that(hasattr(flext_observability, "__version_info__"), eq=True)
         tm.that(isinstance(flext_observability.__version__, str), eq=True)
-        tm.that(len(flext_observability.__version__) > 0, eq=True)
+        tm.that(flext_observability.__version__, eq=True)
         tm.that(isinstance(flext_observability.__version_info__, tuple), eq=True)
         tm.that(len(flext_observability.__version_info__) >= 3, eq=True)
 

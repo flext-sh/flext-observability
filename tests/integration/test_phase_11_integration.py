@@ -174,7 +174,7 @@ try:
     assert json_data is not None
     assert "correlation_id" in json_data
     ctx.clear()
-    assert len(ctx.get_all_metadata()) == 0
+    assert not ctx.get_all_metadata()
     ctx.restore(snapshot)
     assert ctx.get_metadata("user_id") == "user-123"
 except Exception:
