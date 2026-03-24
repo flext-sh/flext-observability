@@ -90,5 +90,7 @@ class TestFlextObservabilityConstants:
         """Test service-related constants."""
         tm.that(hasattr(FlextObservabilityConstants, "DEFAULT_SERVICE_NAME"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "DEFAULT_ENVIRONMENT"), eq=True)
-        tm.that(FlextObservabilityConstants.DEFAULT_SERVICE_NAME, eq="flext-observability")
+        tm.that(
+            FlextObservabilityConstants.DEFAULT_SERVICE_NAME, eq="flext-observability"
+        )
         tm.that(FlextObservabilityConstants.DEFAULT_ENVIRONMENT, eq="development")

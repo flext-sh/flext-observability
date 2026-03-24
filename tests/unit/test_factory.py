@@ -171,6 +171,6 @@ class TestFlextObservabilityMasterFactoryReal:
                     break
             if timestamp_attr:
                 if hasattr(timestamp_attr, "root"):
-                    tm.that(isinstance(timestamp_attr.root, datetime), eq=True)
+                    tm.that(timestamp_attr.root, is_=datetime)
                 else:
-                    tm.that(isinstance(timestamp_attr, datetime), eq=True)
+                    tm.that(timestamp_attr, is_=datetime)

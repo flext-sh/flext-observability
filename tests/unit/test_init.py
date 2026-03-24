@@ -52,9 +52,9 @@ class TestInitCoverage:
         """Test version exports are available."""
         tm.that(hasattr(flext_observability, "__version__"), eq=True)
         tm.that(hasattr(flext_observability, "__version_info__"), eq=True)
-        tm.that(isinstance(flext_observability.__version__, str), eq=True)
+        tm.that(flext_observability.__version__, is_=str)
         tm.that(flext_observability.__version__, eq=True)
-        tm.that(isinstance(flext_observability.__version_info__, tuple), eq=True)
+        tm.that(flext_observability.__version_info__, is_=tuple)
         tm.that(len(flext_observability.__version_info__), gte=3)
 
     def test_core_entity_imports(self) -> None:
