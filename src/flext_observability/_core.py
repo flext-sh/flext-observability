@@ -101,7 +101,9 @@ class FlextObservability:
                     metric_type = c.Observability.MetricType.COUNTER
                 elif name.endswith(("_duration", "_seconds")):
                     metric_type = c.Observability.MetricType.HISTOGRAM
-                resolved_labels: dict[str, t.Scalar] = dict(labels) if labels is not None else {}
+                resolved_labels: dict[str, t.Scalar] = (
+                    dict(labels) if labels is not None else {}
+                )
                 metric = FlextObservability.Metric(
                     id=str(uuid4()),
                     name=name,
@@ -143,7 +145,9 @@ class FlextObservability:
                     return r[FlextObservability.Trace].fail(
                         "Trace name must be non-empty string",
                     )
-                resolved_attrs: dict[str, t.Scalar] = dict(attributes) if attributes is not None else {}
+                resolved_attrs: dict[str, t.Scalar] = (
+                    dict(attributes) if attributes is not None else {}
+                )
                 trace = FlextObservability.Trace(
                     trace_id=str(uuid4()),
                     name=name,
@@ -187,7 +191,9 @@ class FlextObservability:
                     return r[FlextObservability.Alert].fail(
                         "Alert message cannot be empty",
                     )
-                resolved_labels: dict[str, t.Scalar] = dict(labels) if labels is not None else {}
+                resolved_labels: dict[str, t.Scalar] = (
+                    dict(labels) if labels is not None else {}
+                )
                 alert = FlextObservability.Alert(
                     id=str(uuid4()),
                     title=title,
@@ -232,7 +238,9 @@ class FlextObservability:
                     return r[FlextObservability.HealthCheck].fail(
                         f"Invalid health status: {status}",
                     )
-                resolved_details: dict[str, t.Scalar] = dict(details) if details is not None else {}
+                resolved_details: dict[str, t.Scalar] = (
+                    dict(details) if details is not None else {}
+                )
                 health = FlextObservability.HealthCheck(
                     id=str(uuid4()),
                     component=component,
@@ -274,7 +282,9 @@ class FlextObservability:
                     return r[FlextObservability.LogEntry].fail(
                         "Log message cannot be empty",
                     )
-                resolved_context: dict[str, t.Scalar] = dict(context) if context is not None else {}
+                resolved_context: dict[str, t.Scalar] = (
+                    dict(context) if context is not None else {}
+                )
                 entry = FlextObservability.LogEntry(
                     id=str(uuid4()),
                     message=message,
@@ -354,7 +364,9 @@ def flext_trace(
             return r[FlextObservability.Trace].fail(
                 "Trace name must be non-empty string",
             )
-        resolved_attrs: dict[str, t.Scalar] = dict(attributes) if attributes is not None else {}
+        resolved_attrs: dict[str, t.Scalar] = (
+            dict(attributes) if attributes is not None else {}
+        )
         trace = FlextObservability.Trace(
             name=name,
             trace_id=trace_id or str(uuid4()),
@@ -382,7 +394,9 @@ def flext_alert(
             return r[FlextObservability.Alert].fail("Alert message cannot be empty")
         if not title and message:
             return r[FlextObservability.Alert].fail("Alert title cannot be empty")
-        resolved_labels: dict[str, t.Scalar] = dict(labels) if labels is not None else {}
+        resolved_labels: dict[str, t.Scalar] = (
+            dict(labels) if labels is not None else {}
+        )
         alert = FlextObservability.Alert(
             id=alert_id or str(uuid4()),
             title=title,
@@ -414,7 +428,9 @@ def flext_health_check(
             return r[FlextObservability.HealthCheck].fail(
                 f"Invalid health status: {status}",
             )
-        resolved_details: dict[str, t.Scalar] = dict(details) if details is not None else {}
+        resolved_details: dict[str, t.Scalar] = (
+            dict(details) if details is not None else {}
+        )
         health = FlextObservability.HealthCheck(
             id=health_check_id or str(uuid4()),
             component=component,
@@ -440,7 +456,9 @@ def flext_log_entry(
     try:
         if not message:
             return r[FlextObservability.LogEntry].fail("Log message cannot be empty")
-        resolved_context: dict[str, t.Scalar] = dict(context) if context is not None else {}
+        resolved_context: dict[str, t.Scalar] = (
+            dict(context) if context is not None else {}
+        )
         entry = FlextObservability.LogEntry(
             id=str(uuid4()),
             message=message,
