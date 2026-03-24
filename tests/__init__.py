@@ -40,28 +40,13 @@ if TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "FlextObservabilityTestConstants": (
-        "tests.constants",
-        "FlextObservabilityTestConstants",
-    ),
+    "FlextObservabilityTestConstants": ("tests.constants", "FlextObservabilityTestConstants"),
     "FlextObservabilityTestModels": ("tests.models", "FlextObservabilityTestModels"),
-    "FlextObservabilityTestProtocols": (
-        "tests.protocols",
-        "FlextObservabilityTestProtocols",
-    ),
+    "FlextObservabilityTestProtocols": ("tests.protocols", "FlextObservabilityTestProtocols"),
     "FlextObservabilityTestTypes": ("tests.typings", "FlextObservabilityTestTypes"),
-    "FlextObservabilityTestUtilities": (
-        "tests.utilities",
-        "FlextObservabilityTestUtilities",
-    ),
-    "TestFlextObservabilityConstants": (
-        "tests.unit.test_constants",
-        "TestFlextObservabilityConstants",
-    ),
-    "TestFlextObservabilityMasterFactoryReal": (
-        "tests.unit.test_factory",
-        "TestFlextObservabilityMasterFactoryReal",
-    ),
+    "FlextObservabilityTestUtilities": ("tests.utilities", "FlextObservabilityTestUtilities"),
+    "TestFlextObservabilityConstants": ("tests.unit.test_constants", "TestFlextObservabilityConstants"),
+    "TestFlextObservabilityMasterFactoryReal": ("tests.unit.test_factory", "TestFlextObservabilityMasterFactoryReal"),
     "TestInitCoverage": ("tests.unit.test_init", "TestInitCoverage"),
     "c": ("tests.constants", "FlextObservabilityTestConstants"),
     "d": ("flext_tests", "d"),
