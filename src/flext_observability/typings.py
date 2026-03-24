@@ -59,15 +59,11 @@ class FlextObservabilityTypes(FlextTypes):
         type MetricConfiguration = Mapping[
             str, bool | str | int | Mapping[str, t.Scalar]
         ]
-        type TraceConfiguration = Mapping[
-            str, t.Scalar | Mapping[str, t.Scalar]
-        ]
+        type TraceConfiguration = Mapping[str, t.Scalar | Mapping[str, t.Scalar]]
         type SpanAttributes = Mapping[str, t.Scalar | Mapping[str, t.Scalar]]
         type TraceContext = Mapping[str, str | int | Mapping[str, t.Scalar]]
         type SpanHierarchy = Mapping[str, Sequence[t.Dict]]
-        type AlertConfiguration = Mapping[
-            str, t.Scalar | Mapping[str, t.Scalar]
-        ]
+        type AlertConfiguration = Mapping[str, t.Scalar | Mapping[str, t.Scalar]]
         type AlertRules = Sequence[
             Mapping[str, str | bool | int | float | Mapping[str, t.Scalar]]
         ]
