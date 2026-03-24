@@ -48,50 +48,50 @@ if TYPE_CHECKING:
         FlextObservabilityTestUtilities as u,
     )
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "ErrorEvent": ("tests.integration.test_phase_11_integration", "ErrorEvent"),
-    "FlextObservabilityTestConstants": (
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "ErrorEvent": ["tests.integration.test_phase_11_integration", "ErrorEvent"],
+    "FlextObservabilityTestConstants": [
         "tests.constants",
         "FlextObservabilityTestConstants",
-    ),
-    "FlextObservabilityTestModels": ("tests.models", "FlextObservabilityTestModels"),
-    "FlextObservabilityTestProtocols": (
+    ],
+    "FlextObservabilityTestModels": ["tests.models", "FlextObservabilityTestModels"],
+    "FlextObservabilityTestProtocols": [
         "tests.protocols",
         "FlextObservabilityTestProtocols",
-    ),
-    "FlextObservabilityTestTypes": ("tests.typings", "FlextObservabilityTestTypes"),
-    "FlextObservabilityTestUtilities": (
+    ],
+    "FlextObservabilityTestTypes": ["tests.typings", "FlextObservabilityTestTypes"],
+    "FlextObservabilityTestUtilities": [
         "tests.utilities",
         "FlextObservabilityTestUtilities",
-    ),
-    "TestFlextObservabilityConstants": (
+    ],
+    "TestFlextObservabilityConstants": [
         "tests.unit.test_constants",
         "TestFlextObservabilityConstants",
-    ),
-    "TestFlextObservabilityMasterFactoryReal": (
+    ],
+    "TestFlextObservabilityMasterFactoryReal": [
         "tests.unit.test_factory",
         "TestFlextObservabilityMasterFactoryReal",
-    ),
-    "TestInitCoverage": ("tests.unit.test_init", "TestInitCoverage"),
-    "c": ("tests.constants", "FlextObservabilityTestConstants"),
-    "d": ("flext_tests", "d"),
-    "e": ("flext_tests", "e"),
-    "flext_alert": ("tests.unit.test_init", "flext_alert"),
-    "flext_health_check": ("tests.unit.test_init", "flext_health_check"),
-    "flext_metric": ("tests.unit.test_init", "flext_metric"),
-    "flext_trace": ("tests.unit.test_init", "flext_trace"),
-    "get_global_factory": ("tests.unit.test_init", "get_global_factory"),
-    "h": ("flext_tests", "h"),
-    "integration": ("tests.integration", ""),
-    "m": ("tests.models", "FlextObservabilityTestModels"),
-    "p": ("tests.protocols", "FlextObservabilityTestProtocols"),
-    "r": ("flext_tests", "r"),
-    "reset_global_factory": ("tests.unit.test_init", "reset_global_factory"),
-    "s": ("flext_tests", "s"),
-    "t": ("tests.typings", "FlextObservabilityTestTypes"),
-    "u": ("tests.utilities", "FlextObservabilityTestUtilities"),
-    "unit": ("tests.unit", ""),
-    "x": ("flext_tests", "x"),
+    ],
+    "TestInitCoverage": ["tests.unit.test_init", "TestInitCoverage"],
+    "c": ["tests.constants", "FlextObservabilityTestConstants"],
+    "d": ["flext_tests", "d"],
+    "e": ["flext_tests", "e"],
+    "flext_alert": ["tests.unit.test_init", "flext_alert"],
+    "flext_health_check": ["tests.unit.test_init", "flext_health_check"],
+    "flext_metric": ["tests.unit.test_init", "flext_metric"],
+    "flext_trace": ["tests.unit.test_init", "flext_trace"],
+    "get_global_factory": ["tests.unit.test_init", "get_global_factory"],
+    "h": ["flext_tests", "h"],
+    "integration": ["tests.integration", ""],
+    "m": ["tests.models", "FlextObservabilityTestModels"],
+    "p": ["tests.protocols", "FlextObservabilityTestProtocols"],
+    "r": ["flext_tests", "r"],
+    "reset_global_factory": ["tests.unit.test_init", "reset_global_factory"],
+    "s": ["flext_tests", "s"],
+    "t": ["tests.typings", "FlextObservabilityTestTypes"],
+    "u": ["tests.utilities", "FlextObservabilityTestUtilities"],
+    "unit": ["tests.unit", ""],
+    "x": ["flext_tests", "x"],
 }
 
 __all__ = [

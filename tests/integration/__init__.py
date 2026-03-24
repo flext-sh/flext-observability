@@ -20,8 +20,8 @@ if TYPE_CHECKING:
 
     from tests.integration.test_phase_11_integration import ErrorEvent
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "ErrorEvent": ("tests.integration.test_phase_11_integration", "ErrorEvent"),
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "ErrorEvent": ["tests.integration.test_phase_11_integration", "ErrorEvent"],
 }
 
 __all__ = [

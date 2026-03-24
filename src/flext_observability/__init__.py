@@ -79,107 +79,107 @@ if TYPE_CHECKING:
         FlextObservabilityUtilities as u,
     )
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "FlextObservabilityAdvancedContext": (
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "FlextObservabilityAdvancedContext": [
         "flext_observability.advanced_context",
         "FlextObservabilityAdvancedContext",
-    ),
-    "FlextObservabilityConstants": (
+    ],
+    "FlextObservabilityConstants": [
         "flext_observability.constants",
         "FlextObservabilityConstants",
-    ),
-    "FlextObservabilityContext": (
+    ],
+    "FlextObservabilityContext": [
         "flext_observability.context",
         "FlextObservabilityContext",
-    ),
-    "FlextObservabilityCustomMetrics": (
+    ],
+    "FlextObservabilityCustomMetrics": [
         "flext_observability.custom_metrics",
         "FlextObservabilityCustomMetrics",
-    ),
-    "FlextObservabilityErrorHandling": (
+    ],
+    "FlextObservabilityErrorHandling": [
         "flext_observability.error_handling",
         "FlextObservabilityErrorHandling",
-    ),
-    "FlextObservabilityFields": (
+    ],
+    "FlextObservabilityFields": [
         "flext_observability.fields",
         "FlextObservabilityFields",
-    ),
-    "FlextObservabilityHTTP": (
+    ],
+    "FlextObservabilityHTTP": [
         "flext_observability.http_instrumentation",
         "FlextObservabilityHTTP",
-    ),
-    "FlextObservabilityHTTPClient": (
+    ],
+    "FlextObservabilityHTTPClient": [
         "flext_observability.http_client_instrumentation",
         "FlextObservabilityHTTPClient",
-    ),
-    "FlextObservabilityHealth": (
+    ],
+    "FlextObservabilityHealth": [
         "flext_observability.health",
         "FlextObservabilityHealth",
-    ),
-    "FlextObservabilityLogging": (
+    ],
+    "FlextObservabilityLogging": [
         "flext_observability.logging",
         "FlextObservabilityLogging",
-    ),
-    "FlextObservabilityModels": (
+    ],
+    "FlextObservabilityModels": [
         "flext_observability.models",
         "FlextObservabilityModels",
-    ),
-    "FlextObservabilityMonitor": (
+    ],
+    "FlextObservabilityMonitor": [
         "flext_observability.monitoring",
         "FlextObservabilityMonitor",
-    ),
-    "FlextObservabilityPerformance": (
+    ],
+    "FlextObservabilityPerformance": [
         "flext_observability.performance",
         "FlextObservabilityPerformance",
-    ),
-    "FlextObservabilityProtocols": (
+    ],
+    "FlextObservabilityProtocols": [
         "flext_observability.protocols",
         "FlextObservabilityProtocols",
-    ),
-    "FlextObservabilitySampling": (
+    ],
+    "FlextObservabilitySampling": [
         "flext_observability.sampling",
         "FlextObservabilitySampling",
-    ),
-    "FlextObservabilityServices": (
+    ],
+    "FlextObservabilityServices": [
         "flext_observability.services",
         "FlextObservabilityServices",
-    ),
-    "FlextObservabilitySettings": (
+    ],
+    "FlextObservabilitySettings": [
         "flext_observability.settings",
         "FlextObservabilitySettings",
-    ),
-    "FlextObservabilityTypes": (
+    ],
+    "FlextObservabilityTypes": [
         "flext_observability.typings",
         "FlextObservabilityTypes",
-    ),
-    "FlextObservabilityUtilities": (
+    ],
+    "FlextObservabilityUtilities": [
         "flext_observability.utilities",
         "FlextObservabilityUtilities",
-    ),
-    "__all__": ("flext_observability.__version__", "__all__"),
-    "__author__": ("flext_observability.__version__", "__author__"),
-    "__author_email__": ("flext_observability.__version__", "__author_email__"),
-    "__description__": ("flext_observability.__version__", "__description__"),
-    "__license__": ("flext_observability.__version__", "__license__"),
-    "__title__": ("flext_observability.__version__", "__title__"),
-    "__url__": ("flext_observability.__version__", "__url__"),
-    "__version__": ("flext_observability.__version__", "__version__"),
-    "__version_info__": ("flext_observability.__version__", "__version_info__"),
-    "c": ("flext_observability.constants", "FlextObservabilityConstants"),
-    "d": ("flext_core", "d"),
-    "e": ("flext_core", "e"),
-    "flext_monitor_function": (
+    ],
+    "__all__": ["flext_observability.__version__", "__all__"],
+    "__author__": ["flext_observability.__version__", "__author__"],
+    "__author_email__": ["flext_observability.__version__", "__author_email__"],
+    "__description__": ["flext_observability.__version__", "__description__"],
+    "__license__": ["flext_observability.__version__", "__license__"],
+    "__title__": ["flext_observability.__version__", "__title__"],
+    "__url__": ["flext_observability.__version__", "__url__"],
+    "__version__": ["flext_observability.__version__", "__version__"],
+    "__version_info__": ["flext_observability.__version__", "__version_info__"],
+    "c": ["flext_observability.constants", "FlextObservabilityConstants"],
+    "d": ["flext_core", "d"],
+    "e": ["flext_core", "e"],
+    "flext_monitor_function": [
         "flext_observability.monitoring",
         "flext_monitor_function",
-    ),
-    "h": ("flext_core", "h"),
-    "m": ("flext_observability.models", "FlextObservabilityModels"),
-    "p": ("flext_observability.protocols", "FlextObservabilityProtocols"),
-    "r": ("flext_core", "r"),
-    "s": ("flext_core", "s"),
-    "t": ("flext_observability.typings", "FlextObservabilityTypes"),
-    "u": ("flext_observability.utilities", "FlextObservabilityUtilities"),
-    "x": ("flext_core", "x"),
+    ],
+    "h": ["flext_core", "h"],
+    "m": ["flext_observability.models", "FlextObservabilityModels"],
+    "p": ["flext_observability.protocols", "FlextObservabilityProtocols"],
+    "r": ["flext_core", "r"],
+    "s": ["flext_core", "s"],
+    "t": ["flext_observability.typings", "FlextObservabilityTypes"],
+    "u": ["flext_observability.utilities", "FlextObservabilityUtilities"],
+    "x": ["flext_core", "x"],
 }
 
 __all__ = [
