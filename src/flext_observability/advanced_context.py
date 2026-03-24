@@ -26,6 +26,7 @@ from pydantic import TypeAdapter
 from flext_observability import FlextObservabilityTypes as t, m
 
 ContextSnapshot = m.Observability.ContextSnapshot
+_SCALAR_ADAPTER: TypeAdapter[t.Scalar] = TypeAdapter(t.Scalar)
 
 
 class FlextObservabilityAdvancedContext:
@@ -204,7 +205,7 @@ class FlextObservabilityAdvancedContext:
 
             """
             try:
-                TypeAdapter(t.Scalar).validate_python(value)
+                _SCALAR_ADAPTER.validate_python(value)
                 self._metadata[key] = value
                 FlextObservabilityAdvancedContext._logger.debug(f"Metadata set: {key}")
                 return r[bool].ok(value=True)
