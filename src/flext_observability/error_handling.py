@@ -31,17 +31,6 @@ _ThresholdInput = m.Observability.ThresholdInput
 ErrorEvent = m.Observability.ErrorEvent
 
 
-def _extract_validation_message(error: ValidationError) -> str:
-    errors = error.errors()
-    if not errors:
-        return str(error)
-    message = str(errors[0].get("msg", "Validation failed"))
-    prefix = "Value error, "
-    if message.startswith(prefix):
-        return message.removeprefix(prefix)
-    return message
-
-
 class FlextObservabilityErrorHandling:
     """Error handling and deduplication system.
 
@@ -72,6 +61,17 @@ class FlextObservabilityErrorHandling:
 
     _logger = FlextLogger(__name__)
     _handler_instance: FlextObservabilityErrorHandling.Handler | None = None
+
+    @staticmethod
+    def _extract_validation_message(error: ValidationError) -> str:
+        errors = error.errors()
+        if not errors:
+            return str(error)
+        message = str(errors[0].get("msg", "Validation failed"))
+        prefix = "Value error, "
+        if message.startswith(prefix):
+            return message.removeprefix(prefix)
+        return message
 
     class Handler:
         """Error handling and deduplication handler."""
@@ -211,7 +211,9 @@ class FlextObservabilityErrorHandling:
                     obj={"seconds": seconds},
                 ).seconds
             except ValidationError as error:
-                return r[bool].fail(_extract_validation_message(error))
+                return r[bool].fail(
+                    FlextObservabilityErrorHandling._extract_validation_message(error)
+                )
             self._alert_cooldown_sec = validated_seconds
             FlextObservabilityErrorHandling._logger.debug(
                 f"Alert cooldown set to {validated_seconds}s",
@@ -233,7 +235,9 @@ class FlextObservabilityErrorHandling:
                     obj={"threshold": threshold},
                 ).threshold
             except ValidationError as error:
-                return r[bool].fail(_extract_validation_message(error))
+                return r[bool].fail(
+                    FlextObservabilityErrorHandling._extract_validation_message(error)
+                )
             self._escalation_threshold = validated_threshold
             FlextObservabilityErrorHandling._logger.debug(
                 f"Escalation threshold set to {validated_threshold}",

@@ -55,19 +55,6 @@ Request = p.Observability.Http.Request
 Response = p.Observability.Http.Response
 
 
-def _is_flask_app(
-    obj: object,
-) -> TypeIs[p.Observability.Http.FlaskApp]:
-    """Type guard to check if t.NormalizedValue is a Flask app."""
-    return hasattr(obj, "before_request") and hasattr(obj, "after_request")
-
-
-def _is_fastapi_app(
-    obj: object,
-) -> TypeIs[p.Observability.Http.FastAPIApp]:
-    return hasattr(obj, "add_middleware")
-
-
 class FlextObservabilityHTTP:
     """HTTP framework auto-instrumentation.
 
@@ -94,6 +81,20 @@ class FlextObservabilityHTTP:
 
     _logger = FlextRuntime.get_logger(__name__)
     HTTP_ERROR_STATUS_THRESHOLD = 400
+
+    @staticmethod
+    def _is_flask_app(
+        obj: object,
+    ) -> TypeIs[p.Observability.Http.FlaskApp]:
+        """Type guard to check if object is a Flask app."""
+        return hasattr(obj, "before_request") and hasattr(obj, "after_request")
+
+    @staticmethod
+    def _is_fastapi_app(
+        obj: object,
+    ) -> TypeIs[p.Observability.Http.FastAPIApp]:
+        """Type guard to check if object is a FastAPI app."""
+        return hasattr(obj, "add_middleware")
 
     class Flask:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
@@ -137,7 +138,7 @@ class FlextObservabilityHTTP:
 
             """
             try:
-                if not _is_flask_app(app):
+                if not FlextObservabilityHTTP._is_flask_app(app):
                     return r[bool].fail("Invalid Flask app - missing request hooks")
                 before_request_hook = app.before_request
                 after_request_hook = app.after_request
@@ -302,7 +303,7 @@ class FlextObservabilityHTTP:
 
             """
             try:
-                if not _is_fastapi_app(app):
+                if not FlextObservabilityHTTP._is_fastapi_app(app):
                     return r[bool].fail(
                         "Invalid FastAPI app - missing add_middleware method",
                     )

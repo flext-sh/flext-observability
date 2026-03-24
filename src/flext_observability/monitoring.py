@@ -382,20 +382,7 @@ def flext_monitor_function(
 ]:
     """Create a monitoring decorator for automatic function instrumentation.
 
-    Wraps a function to automatically collect metrics, traces, and logs for
-    execution monitoring and observability. Delegates to the FlextObservabilityMonitor
-    decorator factory for consistent monitoring behavior across the ecosystem.
-
-    Args:
-        monitor: Optional FlextObservabilityMonitor instance for custom monitoring.
-                 If None, uses default monitoring configuration.
-        metric_name: Optional custom metric name for the monitored function.
-                     If None, derives from function name.
-
-    Returns:
-        A decorator function that accepts a callable and returns an instrumented
-        version with automatic monitoring capabilities.
-
+    Delegates to FlextObservabilityMonitor.flext_monitor_function.
     """
     return FlextObservabilityMonitor.flext_monitor_function(
         monitor=monitor,
