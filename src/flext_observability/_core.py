@@ -698,14 +698,3 @@ class FlextObservabilityMasterFactory:
         return FlextObservability.flext_trace(
             operation, attributes=str_attributes, trace_id=trace_id
         )
-
-
-# Module-level aliases — delegate to FlextObservability staticmethods for
-# backward compatibility with existing call sites.
-flext_metric = FlextObservability.flext_metric
-flext_trace = FlextObservability.flext_trace
-flext_alert = FlextObservability.flext_alert
-flext_health_check = FlextObservability.flext_health_check
-flext_log_entry = FlextObservability.flext_log_entry
-get_global_factory = FlextObservability.get_global_factory
-reset_global_factory = FlextObservability.reset_global_factory
