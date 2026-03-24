@@ -41,11 +41,11 @@ class FlextObservabilityTypes(FlextTypes):
         type ObservabilityProjectType = c.ObservabilityProjectType
         type ObservabilityProjectConfig = Mapping[
             str,
-            t.Scalar | t.StrSequence | t.Dict,
+            t.Scalar | Sequence[str] | t.Dict,
         ]
-        type MonitoringConfig = Mapping[str, t.Scalar | t.StrSequence]
+        type MonitoringConfig = Mapping[str, t.Scalar | Sequence[str]]
         type MetricsConfig = Mapping[str, bool | str | t.ScalarMapping]
-        type TracingConfig = Mapping[str, t.Scalar | t.StrSequence | t.Dict]
+        type TracingConfig = Mapping[str, t.Scalar | Sequence[str] | t.Dict]
 
         type MetricCollection = Mapping[str, float | int | Decimal | t.ScalarMapping]
         type MetricAggregation = Mapping[
@@ -66,7 +66,7 @@ class FlextObservabilityTypes(FlextTypes):
         type ComponentStatus = Mapping[str, str | int | t.ScalarMapping]
         type SystemMetrics = Mapping[str, float | int | t.ScalarMapping]
         type LogConfiguration = Mapping[str, t.Scalar | t.ScalarMapping]
-        type LogFilters = Mapping[str, str | t.StrSequence | t.ScalarMapping]
+        type LogFilters = Mapping[str, str | Sequence[str] | t.ScalarMapping]
         type LogProcessing = Mapping[str, str | t.ScalarMapping | bool]
         type ServiceRegistry = Mapping[str, Mapping[str, str | int | t.ScalarMapping]]
         type ServiceDiscovery = Mapping[str, Sequence[t.Dict]]
@@ -75,7 +75,7 @@ class FlextObservabilityTypes(FlextTypes):
         type ServicesList = Sequence[tuple[str, t.Dict]]
         type HealthMetricsDict = t.ContainerMapping
         type MetricDict = t.ContainerMapping
-        type StringList = t.StrSequence
+        type StringList = Sequence[str]
 
 
 t = FlextObservabilityTypes

@@ -18,14 +18,8 @@ if TYPE_CHECKING:
     from tests.unit.test_init import TestInitCoverage
 
 _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "TestFlextObservabilityConstants": (
-        "tests.unit.test_constants",
-        "TestFlextObservabilityConstants",
-    ),
-    "TestFlextObservabilityMasterFactoryReal": (
-        "tests.unit.test_factory",
-        "TestFlextObservabilityMasterFactoryReal",
-    ),
+    "TestFlextObservabilityConstants": ("tests.unit.test_constants", "TestFlextObservabilityConstants"),
+    "TestFlextObservabilityMasterFactoryReal": ("tests.unit.test_factory", "TestFlextObservabilityMasterFactoryReal"),
     "TestInitCoverage": ("tests.unit.test_init", "TestInitCoverage"),
 }
 

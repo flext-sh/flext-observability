@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Sequence
 
 from flext_core import FlextRuntime, r, t
 from pydantic import ValidationError
@@ -184,7 +184,7 @@ class FlextObservabilityCustomMetrics:
                 if metric.metric_type == metric_type
             })
 
-        def list_metrics(self) -> t.StrSequence:
+        def list_metrics(self) -> Sequence[str]:
             """List all registered metric names.
 
             Returns:
@@ -315,7 +315,7 @@ class FlextObservabilityCustomMetrics:
         return FlextObservabilityCustomMetrics._registry_instance
 
     @staticmethod
-    def list_all_metrics() -> t.StrSequence:
+    def list_all_metrics() -> Sequence[str]:
         """Convenience function: list all metrics.
 
         Returns:
