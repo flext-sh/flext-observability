@@ -6,7 +6,7 @@ Internal module; use flext_observability package API.
 from __future__ import annotations
 
 import math
-from collections.abc import Mapping, MutableMapping, MutableSequence
+from collections.abc import MutableMapping, MutableSequence
 from datetime import UTC, datetime
 from typing import ClassVar, Literal
 from uuid import uuid4
@@ -82,7 +82,7 @@ class FlextObservability:
             name: str,
             value: float,
             unit: str = "count",
-            labels: Mapping[str, t.Scalar] | None = None,
+            labels: t.ScalarMapping | None = None,
         ) -> r[FlextObservability.Metric]:
             """Record a metric with validation."""
             try:
@@ -137,7 +137,7 @@ class FlextObservability:
         def start_trace(
             self,
             name: str,
-            attributes: Mapping[str, t.Scalar] | None = None,
+            attributes: t.ScalarMapping | None = None,
         ) -> r[FlextObservability.Trace]:
             """Start a distributed trace."""
             try:
@@ -179,7 +179,7 @@ class FlextObservability:
             message: str,
             severity: Literal["info", "warning", "error", "critical"] = "warning",
             source: str = "system",
-            labels: Mapping[str, t.Scalar] | None = None,
+            labels: t.ScalarMapping | None = None,
         ) -> r[FlextObservability.Alert]:
             """Create an alert with validation."""
             try:
@@ -226,7 +226,7 @@ class FlextObservability:
             self,
             component: str,
             status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
-            details: Mapping[str, t.Scalar] | None = None,
+            details: t.ScalarMapping | None = None,
         ) -> r[FlextObservability.HealthCheck]:
             """Create a health check."""
             try:
@@ -274,7 +274,7 @@ class FlextObservability:
             message: str,
             level: Literal["debug", "info", "warning", "error", "critical"] = "info",
             component: str = "application",
-            context: Mapping[str, t.Scalar] | None = None,
+            context: t.ScalarMapping | None = None,
         ) -> r[FlextObservability.LogEntry]:
             """Create a log entry."""
             try:
@@ -312,8 +312,8 @@ def flext_metric(
     unit: str = "count",
     metric_type: c.Observability.MetricType | None = None,
     metric_id: str | None = None,
-    tags: Mapping[str, t.Scalar] | None = None,
-    labels: Mapping[str, t.Scalar] | None = None,
+    tags: t.ScalarMapping | None = None,
+    labels: t.ScalarMapping | None = None,
 ) -> r[FlextObservability.Metric]:
     """Create a metric entity directly."""
     _ = metric_id
@@ -355,7 +355,7 @@ def flext_metric(
 
 def flext_trace(
     name: str,
-    attributes: Mapping[str, t.Scalar] | None = None,
+    attributes: t.ScalarMapping | None = None,
     trace_id: str | None = None,
 ) -> r[FlextObservability.Trace]:
     """Create a trace entity directly."""
@@ -385,7 +385,7 @@ def flext_alert(
     status: Literal["firing", "resolved"] = "firing",
     alert_id: str | None = None,
     source: str = "system",
-    labels: Mapping[str, t.Scalar] | None = None,
+    labels: t.ScalarMapping | None = None,
 ) -> r[FlextObservability.Alert]:
     """Create an alert entity directly."""
     _ = status
@@ -415,7 +415,7 @@ def flext_health_check(
     component: str,
     status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
     health_check_id: str | None = None,
-    details: Mapping[str, t.Scalar] | None = None,
+    details: t.ScalarMapping | None = None,
 ) -> r[FlextObservability.HealthCheck]:
     """Create a health check entity directly."""
     _ = health_check_id
@@ -450,7 +450,7 @@ def flext_log_entry(
     level: Literal["debug", "info", "warning", "error", "critical"] = "info",
     component: str = "application",
     timestamp: datetime | None = None,
-    context: Mapping[str, t.Scalar] | None = None,
+    context: t.ScalarMapping | None = None,
 ) -> r[FlextObservability.LogEntry]:
     """Create a log entry entity directly."""
     try:
@@ -509,7 +509,7 @@ class FlextObservabilityMasterFactory:
         title: str,
         message: str,
         severity: str = "warning",
-        tags: Mapping[str, t.Scalar] | None = None,
+        tags: t.ScalarMapping | None = None,
         status: str = c.Observability.AlertStatus.FIRING,
         timestamp: datetime | None = None,
     ) -> r[FlextObservability.Alert]:
@@ -548,7 +548,7 @@ class FlextObservabilityMasterFactory:
         message: str,
         service: str = "default",
         severity: str = "warning",
-        tags: Mapping[str, t.Scalar] | None = None,
+        tags: t.ScalarMapping | None = None,
     ) -> r[FlextObservability.Alert]:
         """Create an alert (alias)."""
         return self.alert(f"Alert: {service}", message, severity=severity, tags=tags)
@@ -557,7 +557,7 @@ class FlextObservabilityMasterFactory:
         self,
         component: str,
         status: str = c.Observability.HealthStatus.HEALTHY,
-        details: Mapping[str, t.Scalar] | None = None,
+        details: t.ScalarMapping | None = None,
     ) -> r[FlextObservability.HealthCheck]:
         """Create a health check (alias)."""
         return self.health_check(component, status=status, metrics=details)
@@ -566,7 +566,7 @@ class FlextObservabilityMasterFactory:
         self,
         message: str,
         level: str = "info",
-        context: Mapping[str, t.Scalar] | None = None,
+        context: t.ScalarMapping | None = None,
     ) -> r[FlextObservability.LogEntry]:
         """Create a log entry (alias)."""
         return self.log(message, level=level, context=context)
@@ -576,7 +576,7 @@ class FlextObservabilityMasterFactory:
         name: str,
         value: float,
         unit: str = "count",
-        tags: Mapping[str, t.Scalar] | None = None,
+        tags: t.ScalarMapping | None = None,
     ) -> r[FlextObservability.Metric]:
         """Create a metric (alias)."""
         return self.metric(name, value, unit=unit, tags=tags)
@@ -585,10 +585,10 @@ class FlextObservabilityMasterFactory:
         self,
         operation: str,
         service: str = "default",
-        tags: Mapping[str, t.Scalar] | None = None,
+        tags: t.ScalarMapping | None = None,
     ) -> r[FlextObservability.Trace]:
         """Create a trace (alias)."""
-        attrs: Mapping[str, t.Scalar] | None = None
+        attrs: t.ScalarMapping | None = None
         if tags is not None:
             attrs = dict(tags.items())
         return self.trace(f"trace-{service}", operation, span_attributes=attrs)
@@ -598,7 +598,7 @@ class FlextObservabilityMasterFactory:
         component: str,
         status: str = c.Observability.HealthStatus.HEALTHY,
         message: str | None = None,
-        metrics: Mapping[str, t.Scalar] | None = None,
+        metrics: t.ScalarMapping | None = None,
         timestamp: datetime | None = None,
     ) -> r[FlextObservability.HealthCheck]:
         """Create a health check."""
@@ -624,7 +624,7 @@ class FlextObservabilityMasterFactory:
         self,
         message: str,
         level: str = c.Observability.ErrorSeverity.INFO,
-        context: Mapping[str, t.Scalar] | None = None,
+        context: t.ScalarMapping | None = None,
         timestamp: datetime | None = None,
     ) -> r[FlextObservability.LogEntry]:
         """Create a log entry."""
@@ -654,7 +654,7 @@ class FlextObservabilityMasterFactory:
         name: str,
         value: float,
         unit: str = "count",
-        tags: Mapping[str, t.Scalar] | None = None,
+        tags: t.ScalarMapping | None = None,
         timestamp: datetime | None = None,
     ) -> r[FlextObservability.Metric]:
         """Create a metric."""
@@ -666,7 +666,7 @@ class FlextObservabilityMasterFactory:
         trace_id: str,
         operation: str,
         span_id: str | None = None,
-        span_attributes: Mapping[str, t.Scalar] | None = None,
+        span_attributes: t.ScalarMapping | None = None,
         duration_ms: float | None = None,
         status: str = "unset",
     ) -> r[FlextObservability.Trace]:
@@ -674,7 +674,7 @@ class FlextObservabilityMasterFactory:
         _ = span_id
         _ = duration_ms
         _ = status
-        str_attributes: Mapping[str, t.Scalar] = {}
+        str_attributes: t.ScalarMapping = {}
         if span_attributes:
             str_attributes = {k: str(v) for k, v in span_attributes.items()}
         return flext_trace(operation, attributes=str_attributes, trace_id=trace_id)

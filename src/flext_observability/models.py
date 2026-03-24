@@ -11,7 +11,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from collections.abc import Sequence, Mapping
 from datetime import UTC, datetime
 from hashlib import sha256
 from typing import Annotated, ClassVar
@@ -81,7 +80,7 @@ class FlextObservabilityModels(FlextModels):
             return (datetime.now(tz=UTC) - self.timestamp).total_seconds()
 
         @computed_field
-        def data_keys(self) -> Sequence[str]:
+        def data_keys(self) -> t.StrSequence:
             """List of data keys for introspection."""
             return list(self.data.keys()) if self.data else []
 
@@ -207,7 +206,7 @@ class FlextObservabilityModels(FlextModels):
         class HeadersPayload(FlextModels.Value):
             """Payload for validating HTTP client headers."""
 
-            headers: Annotated[Mapping[str, str], Field(default_factory=dict)]
+            headers: Annotated[t.StrMapping, Field(default_factory=dict)]
 
         # --- Moved from advanced_context.py ---
         class ContextSnapshot(FlextModels.Value):
@@ -216,7 +215,7 @@ class FlextObservabilityModels(FlextModels):
             correlation_id: Annotated[str, Field(default="")]
             trace_id: Annotated[str, Field(default="")]
             span_id: Annotated[str, Field(default="")]
-            baggage: Annotated[Mapping[str, str], Field(default_factory=dict)]
+            baggage: Annotated[t.StrMapping, Field(default_factory=dict)]
             metadata: Annotated[t.ConfigurationMapping, Field(default_factory=dict)]
 
         # --- Moved from context.py ---
@@ -238,7 +237,7 @@ class FlextObservabilityModels(FlextModels):
             metric_type: _c.Observability.MetricType
             description: t.NonEmptyStr
             unit: Annotated[str, Field(default="1", min_length=1)]
-            labels: Annotated[Mapping[str, str], Field(default_factory=dict)]
+            labels: Annotated[t.StrMapping, Field(default_factory=dict)]
 
         # --- Moved from error_handling.py ---
         class CooldownInput(FlextModels.Value):

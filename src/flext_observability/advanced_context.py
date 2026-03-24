@@ -18,14 +18,12 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_observability import FlextObservabilityTypes as t
-
 from collections.abc import MutableMapping
 
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 from pydantic import TypeAdapter
 
-from flext_observability import m
+from flext_observability import FlextObservabilityTypes as t, m
 
 ContextSnapshot = m.Observability.ContextSnapshot
 
