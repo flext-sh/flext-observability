@@ -26,8 +26,14 @@ if TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "TestFlextObservabilityConstants": ["tests.unit.test_constants", "TestFlextObservabilityConstants"],
-    "TestFlextObservabilityMasterFactoryReal": ["tests.unit.test_factory", "TestFlextObservabilityMasterFactoryReal"],
+    "TestFlextObservabilityConstants": [
+        "tests.unit.test_constants",
+        "TestFlextObservabilityConstants",
+    ],
+    "TestFlextObservabilityMasterFactoryReal": [
+        "tests.unit.test_factory",
+        "TestFlextObservabilityMasterFactoryReal",
+    ],
     "TestInitCoverage": ["tests.unit.test_init", "TestInitCoverage"],
     "flext_alert": ["tests.unit.test_init", "flext_alert"],
     "flext_health_check": ["tests.unit.test_init", "flext_health_check"],
