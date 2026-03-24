@@ -37,7 +37,7 @@ from flext_observability.logging_integration import (
 )
 
 # Local aliases for convenience
-_HeadersPayload = m.Observability._HeadersPayload
+_HeadersPayload = m.Observability.HeadersPayload
 HTTPXURL = p.Observability.HttpClient.HTTPXURL
 HTTPXRequest = p.Observability.HttpClient.HTTPXRequest
 HTTPXResponse = p.Observability.HttpClient.HTTPXResponse
@@ -81,18 +81,18 @@ class FlextObservabilityHTTPClient:
 
     @staticmethod
     def _is_httpx_async_client(
-        obj: t.RegisterableService,
+        obj: object,
     ) -> TypeIs[HTTPXAsyncClient]:
         """Type guard to check if t.NormalizedValue is an async httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send")
 
     @staticmethod
-    def _is_httpx_client(obj: t.RegisterableService) -> TypeIs[HTTPXClient]:
+    def _is_httpx_client(obj: object) -> TypeIs[HTTPXClient]:
         """Type guard to check if t.NormalizedValue is an httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send") is False
 
     @staticmethod
-    def _is_aiohttp_session(obj: t.RegisterableService) -> TypeIs[AIOHTTPSession]:
+    def _is_aiohttp_session(obj: object) -> TypeIs[AIOHTTPSession]:
         return hasattr(obj, "request")
 
     @staticmethod

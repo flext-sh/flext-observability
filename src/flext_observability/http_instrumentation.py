@@ -44,7 +44,7 @@ _flask_available = True
 _starlette_available = True
 
 # Local aliases for convenience
-_StartTimePayload = m.Observability._StartTimePayload
+_StartTimePayload = m.Observability.StartTimePayload
 FlaskHook = p.Observability.Http.FlaskHook
 FlaskErrorHandler = p.Observability.Http.FlaskErrorHandler
 FlaskApp = p.Observability.Http.FlaskApp
@@ -56,14 +56,14 @@ Response = p.Observability.Http.Response
 
 
 def _is_flask_app(
-    obj: t.RegisterableService,
+    obj: object,
 ) -> TypeIs[p.Observability.Http.FlaskApp]:
     """Type guard to check if t.NormalizedValue is a Flask app."""
     return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
 
 def _is_fastapi_app(
-    obj: t.RegisterableService,
+    obj: object,
 ) -> TypeIs[p.Observability.Http.FastAPIApp]:
     return hasattr(obj, "add_middleware")
 

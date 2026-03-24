@@ -200,12 +200,12 @@ class FlextObservabilityModels(FlextModels):
             ]
             context: Annotated[_DomainLabels, Field(default_factory=dict)]
 
-        class _StartTimePayload(FlextModels.Value):
+        class StartTimePayload(FlextModels.Value):
             """Payload for validating HTTP request start time."""
 
             value: Annotated[float, Field(ge=0)]
 
-        class _HeadersPayload(FlextModels.Value):
+        class HeadersPayload(FlextModels.Value):
             """Payload for validating HTTP client headers."""
 
             headers: Annotated[Mapping[str, str], Field(default_factory=dict)]

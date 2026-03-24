@@ -239,7 +239,6 @@ class FlextObservabilityConstants(FlextConstants):
     MAX_TRACE_NAME_LENGTH: ClassVar[int] = 256
     MAX_ALERT_MESSAGE_LENGTH: ClassVar[int] = 1024
     MAX_LOG_MESSAGE_LENGTH: ClassVar[int] = 4096
-    DEFAULT_SERVICE_NAME: ClassVar[str] = "flext-observability"
     DEFAULT_ENVIRONMENT: ClassVar[str] = "development"
 
     @unique
