@@ -41,11 +41,11 @@ class FlextObservabilityTypes(FlextTypes):
         type ObservabilityProjectType = c.ObservabilityProjectType
         type ObservabilityProjectConfig = Mapping[
             str,
-            str | int | bool | Sequence[str] | t.Dict,
+            t.Scalar | Sequence[str] | t.Dict,
         ]
-        type MonitoringConfig = Mapping[str, str | int | bool | Sequence[str]]
+        type MonitoringConfig = Mapping[str, t.Scalar | Sequence[str]]
         type MetricsConfig = Mapping[str, bool | str | Mapping[str, t.Scalar]]
-        type TracingConfig = Mapping[str, str | int | bool | Sequence[str] | t.Dict]
+        type TracingConfig = Mapping[str, t.Scalar | Sequence[str] | t.Dict]
 
         type MetricCollection = Mapping[
             str, float | int | Decimal | Mapping[str, t.Scalar]
@@ -60,13 +60,13 @@ class FlextObservabilityTypes(FlextTypes):
             str, bool | str | int | Mapping[str, t.Scalar]
         ]
         type TraceConfiguration = Mapping[
-            str, str | int | bool | Mapping[str, t.Scalar]
+            str, t.Scalar | Mapping[str, t.Scalar]
         ]
         type SpanAttributes = Mapping[str, t.Scalar | Mapping[str, t.Scalar]]
         type TraceContext = Mapping[str, str | int | Mapping[str, t.Scalar]]
         type SpanHierarchy = Mapping[str, Sequence[t.Dict]]
         type AlertConfiguration = Mapping[
-            str, str | int | bool | Mapping[str, t.Scalar]
+            str, t.Scalar | Mapping[str, t.Scalar]
         ]
         type AlertRules = Sequence[
             Mapping[str, str | bool | int | float | Mapping[str, t.Scalar]]
@@ -75,7 +75,7 @@ class FlextObservabilityTypes(FlextTypes):
         type HealthChecks = Mapping[str, Mapping[str, float | str | bool]]
         type ComponentStatus = Mapping[str, str | int | Mapping[str, t.Scalar]]
         type SystemMetrics = Mapping[str, float | int | Mapping[str, t.Scalar]]
-        type LogConfiguration = Mapping[str, str | int | bool | Mapping[str, t.Scalar]]
+        type LogConfiguration = Mapping[str, t.Scalar | Mapping[str, t.Scalar]]
         type LogFilters = Mapping[str, str | Sequence[str] | Mapping[str, t.Scalar]]
         type LogProcessing = Mapping[str, str | Mapping[str, t.Scalar] | bool]
         type ServiceRegistry = Mapping[

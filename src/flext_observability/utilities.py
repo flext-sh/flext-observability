@@ -14,6 +14,8 @@ from collections.abc import Mapping, MutableMapping, MutableSequence
 
 from flext_core import FlextUtilities, r
 
+from flext_observability import t
+
 
 class FlextObservabilityUtilities(FlextUtilities):
     """Centralized utilities for FLEXT Observability.
@@ -31,7 +33,7 @@ class FlextObservabilityUtilities(FlextUtilities):
             interval_seconds: int = 60,
             *,
             enabled: bool = True,
-        ) -> Mapping[str, str | int | bool]:
+        ) -> Mapping[str, t.Scalar]:
             """Create a monitoring configuration dictionary."""
             return {
                 "service_name": service_name,
