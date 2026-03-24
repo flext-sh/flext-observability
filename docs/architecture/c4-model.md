@@ -375,7 +375,7 @@ class FlextMetric(FlextModels.Entity):
     value: float
     unit: str
     timestamp: datetime
-    tags: Mapping[str, str]
+    tags: t.StrMapping
 
 
 class FlextTrace(FlextModels.Entity):

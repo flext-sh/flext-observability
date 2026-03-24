@@ -22,7 +22,7 @@ Key Features:
 from __future__ import annotations
 
 import time
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Callable
 from typing import TypeIs
 
 import flask
@@ -146,7 +146,7 @@ class FlextObservabilityHTTP:
                 def flext_before_request() -> None:
                     """Extract context and create span before request processing."""
                     try:
-                        headers_dict: Mapping[str, str] = (
+                        headers_dict: t.StrMapping = (
                             dict(request.headers) if request else {}
                         )
                         if request:
@@ -164,7 +164,7 @@ class FlextObservabilityHTTP:
                             if request and request.user_agent
                             else "unknown"
                         )
-                        extra_before: Mapping[str, str] = {
+                        extra_before: t.StrMapping = {
                             "http_method": str(request_method),
                             "http_path": str(request_path),
                             "http_client_ip": str(request_remote),
@@ -398,7 +398,7 @@ class FlextObservabilityHTTP:
     async def _async_log_with_context(
         message: str,
         level: str,
-        extra: Mapping[str, t.Scalar] | None = None,
+        extra: t.ConfigurationMapping | None = None,
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 

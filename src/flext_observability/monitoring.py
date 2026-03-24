@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Sequence
 from typing import override
 from uuid import uuid4
 
@@ -54,7 +54,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[t.Scalar, ...],
-            kwargs: Mapping[str, t.Scalar] | t.Dict,
+            kwargs: t.ConfigurationMapping | t.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> t.Scalar:

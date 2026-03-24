@@ -58,10 +58,10 @@ class ContentMetrics(BaseModel):
     )
     freshness_score: float = Field(default=0.0, description="Freshness score 0-100")
     quality_score: float = Field(default=0.0, description="Quality score 0-100")
-    issues: Sequence[str] = Field(
+    issues: t.StrSequence = Field(
         default_factory=list, description="List of issues found"
     )
-    recommendations: Sequence[str] = Field(
+    recommendations: t.StrSequence = Field(
         default_factory=list, description="List of recommendations"
     )
 
@@ -112,7 +112,7 @@ class AuditorConfig(BaseModel):
             "poor": 45,
         },
     )
-    required_sections: Sequence[str] = Field(
+    required_sections: t.StrSequence = Field(
         default_factory=lambda: ["description", "usage", "examples", "api"],
     )
 
@@ -139,7 +139,7 @@ class DocumentationAuditor:
         if config_path and config_path.exists():
             with Path(config_path).open("r", encoding="utf-8") as f:
                 raw: Mapping[
-                    str, str | int | float | bool | Sequence[str] | Mapping[str, int]
+                    str, str | int | float | bool | t.StrSequence | Mapping[str, int]
                 ] = yaml.safe_load(f)
                 merged = default_config.model_dump()
                 merged.update(raw)
@@ -423,7 +423,7 @@ class DocumentationAuditor:
         ])
 
         # Group recommendations by priority
-        priority_recs: defaultdict[str, Sequence[str]] = defaultdict(list)
+        priority_recs: defaultdict[str, t.StrSequence] = defaultdict(list)
 
         for file_path, metrics in self.report.file_metrics.items():
             relative_path = Path(file_path).relative_to(self.docs_root)
@@ -447,7 +447,7 @@ class DocumentationAuditor:
     def _generate_json_report(self) -> str:
         """Generate JSON audit report."""
         # Convert dataclasses to dicts for JSON serialization
-        file_metrics: Mapping[str, Mapping[str, float | int | Sequence[str] | str]] = {}
+        file_metrics: Mapping[str, Mapping[str, float | int | t.StrSequence | str]] = {}
         for path, metrics in self.report.file_metrics.items():
             file_metrics[path] = {
                 "file_path": metrics.file_path,

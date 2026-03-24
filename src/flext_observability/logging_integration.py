@@ -19,8 +19,6 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-
 from flext_core import FlextLogger, r, t
 from structlog.typing import BindableLogger
 
@@ -201,7 +199,7 @@ class FlextObservabilityLogging:
         logger: BindableLogger,
         level: str,
         message: str,
-        extra: Mapping[str, t.Scalar] | None = None,
+        extra: t.ConfigurationMapping | None = None,
         *,
         include_baggage: bool = False,
     ) -> r[bool]:

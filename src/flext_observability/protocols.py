@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Mapping, MutableMapping, Sequence
+from collections.abc import Awaitable, Callable, MutableMapping, Sequence
 from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, r, t
@@ -84,7 +84,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 description: str,
                 *,
                 unit: str = "seconds",
-                buckets: Sequence[t.Scalar] | None = None,
+                buckets: t.ScalarList | None = None,
             ) -> FlextProtocols.Result[bool]:
                 """Create a histogram metric."""
                 ...
@@ -95,7 +95,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[Sequence[t.Scalar]]:
+            ) -> FlextProtocols.Result[t.ScalarList]:
                 """Get collected metrics."""
                 ...
 
@@ -105,7 +105,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 value: float,
                 *,
                 unit: str = "count",
-                tags: Mapping[str, t.Scalar] | None = None,
+                tags: t.ConfigurationMapping | None = None,
             ) -> FlextProtocols.Result[bool]:
                 """Record a metric value."""
                 ...
@@ -144,7 +144,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 operation_name: t.Scalar | None = None,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[Sequence[t.Scalar]]:
+            ) -> FlextProtocols.Result[t.ScalarList]:
                 """Search traces by criteria."""
                 ...
 
@@ -168,7 +168,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 level: str,
                 *,
                 service: t.Scalar | None = None,
-                tags: Mapping[str, t.Scalar] | None = None,
+                tags: t.ConfigurationMapping | None = None,
             ) -> FlextProtocols.Result[str]:
                 """Create an alert."""
                 ...
@@ -190,7 +190,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 level: t.Scalar | None = None,
                 service: t.Scalar | None = None,
                 resolved: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[Sequence[t.Scalar]]:
+            ) -> FlextProtocols.Result[t.ScalarList]:
                 """Get alerts by criteria."""
                 ...
 
@@ -238,7 +238,7 @@ class FlextObservabilityProtocols(FlextProtocols):
 
             def configure_logging(
                 self,
-                config: Mapping[str, t.Scalar],
+                config: t.ConfigurationMapping,
             ) -> FlextProtocols.Result[bool]:
                 """Configure logging system."""
                 ...
@@ -261,7 +261,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 correlation_id: t.Scalar | None = None,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> FlextProtocols.Result[Sequence[t.Scalar]]:
+            ) -> FlextProtocols.Result[t.ScalarList]:
                 """Get logs by criteria."""
                 ...
 
@@ -272,7 +272,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 *,
                 service: t.Scalar | None = None,
                 correlation_id: t.Scalar | None = None,
-                extra: Mapping[str, t.Scalar] | None = None,
+                extra: t.ConfigurationMapping | None = None,
             ) -> FlextProtocols.Result[bool]:
                 """Log a message."""
                 ...
@@ -296,7 +296,7 @@ class FlextObservabilityProtocols(FlextProtocols):
             def add_widget(
                 self,
                 dashboard_id: str,
-                widget_config: Mapping[str, t.Scalar],
+                widget_config: t.ConfigurationMapping,
             ) -> FlextProtocols.Result[str]:
                 """Add widget to dashboard."""
                 ...
@@ -306,7 +306,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 name: str,
                 description: str,
                 *,
-                widgets: Sequence[Mapping[str, t.Scalar]] | None = None,
+                widgets: Sequence[t.ConfigurationMapping] | None = None,
             ) -> FlextProtocols.Result[str]:
                 """Create a dashboard."""
                 ...

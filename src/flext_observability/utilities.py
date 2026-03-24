@@ -33,7 +33,7 @@ class FlextObservabilityUtilities(FlextUtilities):
             interval_seconds: int = 60,
             *,
             enabled: bool = True,
-        ) -> Mapping[str, t.Scalar]:
+        ) -> t.ConfigurationMapping:
             """Create a monitoring configuration dictionary."""
             return {
                 "service_name": service_name,
@@ -98,7 +98,7 @@ class FlextObservabilityUtilities(FlextUtilities):
         def build_log_context(
             service_name: str,
             correlation_id: str = "",
-        ) -> Mapping[str, str]:
+        ) -> t.StrMapping:
             """Build a structured logging context dictionary."""
             ctx: MutableMapping[str, str] = {"service": service_name}
             if correlation_id:
@@ -139,7 +139,7 @@ class FlextObservabilityUtilities(FlextUtilities):
             trace_id: str,
             span_id: str,
             parent_span_id: str = "",
-        ) -> Mapping[str, str]:
+        ) -> t.StrMapping:
             """Create a trace context dictionary."""
             ctx: MutableMapping[str, str] = {"trace_id": trace_id, "span_id": span_id}
             if parent_span_id:

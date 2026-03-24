@@ -21,7 +21,7 @@ Key Features:
 from __future__ import annotations
 
 import time
-from collections.abc import Awaitable, Callable, Mapping, MutableMapping
+from collections.abc import Awaitable, Callable, MutableMapping
 from typing import ClassVar, TypeIs
 
 from flext_core import FlextRuntime, r, t
@@ -196,7 +196,7 @@ class FlextObservabilityHTTPClient:
                                 "async": True,
                             },
                         )
-                        call_kwargs: Mapping[str, t.Scalar] = {
+                        call_kwargs: t.ConfigurationMapping = {
                             k: v for k, v in kwargs.items() if k != "headers"
                         }
                         try:
@@ -285,7 +285,7 @@ class FlextObservabilityHTTPClient:
                                 "async": False,
                             },
                         )
-                        call_kwargs: Mapping[str, t.Scalar] = {
+                        call_kwargs: t.ConfigurationMapping = {
                             k: v for k, v in kwargs.items() if k != "headers"
                         }
                         try:
@@ -436,7 +436,7 @@ class FlextObservabilityHTTPClient:
                             "async": True,
                         },
                     )
-                    async_call_kwargs: Mapping[str, t.Scalar] = {
+                    async_call_kwargs: t.ConfigurationMapping = {
                         k: v for k, v in kwargs.items() if k != "headers"
                     }
                     try:

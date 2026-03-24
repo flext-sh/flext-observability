@@ -11,7 +11,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from hashlib import sha256
 from typing import Annotated, ClassVar
@@ -61,14 +60,14 @@ class FlextObservabilityModels(FlextModels):
             ),
         ]
         data: Annotated[
-            Mapping[str, t.Scalar],
+            t.ConfigurationMapping,
             Field(
                 default_factory=dict,
                 description="Generic data payload",
             ),
         ]
         metadata: Annotated[
-            Mapping[str, t.Scalar],
+            t.ConfigurationMapping,
             Field(
                 default_factory=dict,
                 description="Generic metadata",
@@ -81,7 +80,7 @@ class FlextObservabilityModels(FlextModels):
             return (datetime.now(tz=UTC) - self.timestamp).total_seconds()
 
         @computed_field
-        def data_keys(self) -> Sequence[str]:
+        def data_keys(self) -> t.StrSequence:
             """List of data keys for introspection."""
             return list(self.data.keys()) if self.data else []
 
@@ -112,16 +111,15 @@ class FlextObservabilityModels(FlextModels):
             ),
         ]
         retention_days: Annotated[
-            int,
+            t.PositiveInt,
             Field(
-                ge=1,
                 le=365,
                 default=30,
                 description="Retention period",
             ),
         ]
         settings: Annotated[
-            Mapping[str, t.Scalar],
+            t.ConfigurationMapping,
             Field(
                 default_factory=dict,
                 description="Type-specific settings",
@@ -145,9 +143,9 @@ class FlextObservabilityModels(FlextModels):
             """Metric entry model."""
 
             metric_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-            name: Annotated[str, Field(min_length=1)]
+            name: t.NonEmptyStr
             value: t.Numeric
-            unit: str
+            unit: t.NonEmptyStr
             source: Annotated[str, Field(default="unknown")]
 
         # --- Domain entity models (moved from _core.py FlextObservability) ---
@@ -156,44 +154,44 @@ class FlextObservabilityModels(FlextModels):
             """Observability metric entity."""
 
             id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-            name: str
-            value: float
-            unit: str
-            metric_type: str
+            name: t.NonEmptyStr
+            value: t.PositiveFloat
+            unit: t.NonEmptyStr
+            metric_type: t.NonEmptyStr
             labels: Annotated[_DomainLabels, Field(default_factory=dict)]
 
         class Trace(FlextModels.Entity):
             """Distributed trace entity."""
 
             trace_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-            name: str
+            name: t.NonEmptyStr
             attributes: Annotated[_DomainLabels, Field(default_factory=dict)]
 
         class Alert(FlextModels.Entity):
             """Observability alert entity."""
 
             id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-            title: str
-            message: str
-            severity: str
-            source: str
+            title: t.NonEmptyStr
+            message: t.NonEmptyStr
+            severity: t.NonEmptyStr
+            source: t.NonEmptyStr
             labels: Annotated[_DomainLabels, Field(default_factory=dict)]
 
         class HealthCheck(FlextModels.Entity):
             """Health check entity."""
 
             id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-            component: str
-            status: str
+            component: t.NonEmptyStr
+            status: t.NonEmptyStr
             details: Annotated[_DomainLabels, Field(default_factory=dict)]
 
         class LogEntry(FlextModels.Entity):
             """Structured log entry entity."""
 
             id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
-            message: str
-            level: str
-            component: str
+            message: t.NonEmptyStr
+            level: t.NonEmptyStr
+            component: t.NonEmptyStr
             timestamp: Annotated[
                 datetime,
                 Field(default_factory=lambda: datetime.now(tz=UTC)),
@@ -208,7 +206,7 @@ class FlextObservabilityModels(FlextModels):
         class HeadersPayload(FlextModels.Value):
             """Payload for validating HTTP client headers."""
 
-            headers: Annotated[Mapping[str, str], Field(default_factory=dict)]
+            headers: Annotated[t.StrMapping, Field(default_factory=dict)]
 
         # --- Moved from advanced_context.py ---
         class ContextSnapshot(FlextModels.Value):
@@ -217,14 +215,14 @@ class FlextObservabilityModels(FlextModels):
             correlation_id: Annotated[str, Field(default="")]
             trace_id: Annotated[str, Field(default="")]
             span_id: Annotated[str, Field(default="")]
-            baggage: Annotated[Mapping[str, str], Field(default_factory=dict)]
-            metadata: Annotated[Mapping[str, t.Scalar], Field(default_factory=dict)]
+            baggage: Annotated[t.StrMapping, Field(default_factory=dict)]
+            metadata: Annotated[t.ConfigurationMapping, Field(default_factory=dict)]
 
         # --- Moved from context.py ---
         class BaggageKeyModel(FlextModels.Value):
             """Validation model for baggage keys."""
 
-            key: Annotated[str, Field(min_length=1)]
+            key: t.NonEmptyStr
 
         # --- Moved from custom_metrics.py ---
         class MetricTypeInput(FlextModels.Value):
@@ -235,30 +233,30 @@ class FlextObservabilityModels(FlextModels):
         class CustomMetricDefinition(FlextModels.Value):
             """Definition of a custom business metric with type and metadata."""
 
-            name: Annotated[str, Field(min_length=1)]
+            name: t.NonEmptyStr
             metric_type: _c.Observability.MetricType
-            description: Annotated[str, Field(min_length=1)]
+            description: t.NonEmptyStr
             unit: Annotated[str, Field(default="1", min_length=1)]
-            labels: Annotated[Mapping[str, str], Field(default_factory=dict)]
+            labels: Annotated[t.StrMapping, Field(default_factory=dict)]
 
         # --- Moved from error_handling.py ---
         class CooldownInput(FlextModels.Value):
             """Validation model for cooldown seconds input."""
 
-            seconds: Annotated[float, Field(gt=0)]
+            seconds: t.PositiveFloat
 
         class ThresholdInput(FlextModels.Value):
             """Validation model for threshold input."""
 
-            threshold: Annotated[int, Field(ge=1)]
+            threshold: t.PositiveInt
 
         class ErrorEvent(FlextModels.Value):
             """Error event with fingerprinting for deduplication and alerting."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
 
-            error_type: Annotated[str, Field(min_length=1)]
-            message: Annotated[str, Field(min_length=1)]
+            error_type: t.NonEmptyStr
+            message: t.NonEmptyStr
             severity: _c.Observability.ErrorSeverity = (
                 _c.Observability.ErrorSeverity.ERROR
             )
@@ -283,7 +281,7 @@ class FlextObservabilityModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
 
-            component: Annotated[str, Field(min_length=1)]
+            component: t.NonEmptyStr
             status: Annotated[str, Field(default="unknown", min_length=1)]
             message: Annotated[str, Field(default="")]
             metrics: Annotated[t.Dict, Field(default_factory=lambda: t.Dict({}))]
@@ -307,7 +305,7 @@ class FlextObservabilityModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
 
-            operation: Annotated[str, Field(min_length=1)]
+            operation: t.NonEmptyStr
             start_time: Annotated[float, Field(default_factory=time.time)]
             end_time: float = 0.0
             duration_ms: float = 0.0
