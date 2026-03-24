@@ -18,7 +18,9 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping
+from flext_observability import FlextObservabilityTypes as t
+
+from collections.abc import MutableMapping
 
 from flext_core import FlextLogger, r, t
 from pydantic import TypeAdapter
@@ -85,7 +87,7 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to clear context: {e}")
 
-        def get_all_baggage(self) -> Mapping[str, str]:
+        def get_all_baggage(self) -> t.StrMapping:
             """Get all baggage items.
 
             Returns:

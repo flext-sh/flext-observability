@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Sequence
+
 from typing import Annotated, ClassVar
 
 from flext_core import FlextSettings

@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping, Sequence
+from collections.abc import Sequence, MutableMapping
 
 from flext_core import FlextRuntime, r, t
 from pydantic import ValidationError
