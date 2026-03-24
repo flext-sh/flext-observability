@@ -8,7 +8,7 @@ from __future__ import annotations
 import math
 from collections.abc import MutableMapping, MutableSequence
 from datetime import UTC, datetime
-from typing import ClassVar, Literal
+from typing import ClassVar
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, p, r, t
@@ -177,7 +177,7 @@ class FlextObservability:
             self,
             title: str,
             message: str,
-            severity: Literal["info", "warning", "error", "critical"] = "warning",
+            severity: c.Observability.AlertLevel = c.Observability.AlertLevel.WARNING,
             source: str = "system",
             labels: t.ScalarMapping | None = None,
         ) -> r[FlextObservability.Alert]:
@@ -225,7 +225,7 @@ class FlextObservability:
         def check_component(
             self,
             component: str,
-            status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
+            status: c.Observability.HealthStatus = c.Observability.HealthStatus.HEALTHY,
             details: t.ScalarMapping | None = None,
         ) -> r[FlextObservability.HealthCheck]:
             """Create a health check."""
@@ -272,7 +272,7 @@ class FlextObservability:
         def log_entry(
             self,
             message: str,
-            level: Literal["debug", "info", "warning", "error", "critical"] = "info",
+            level: c.Observability.ErrorSeverity = c.Observability.ErrorSeverity.INFO,
             component: str = "application",
             context: t.ScalarMapping | None = None,
         ) -> r[FlextObservability.LogEntry]:
@@ -381,8 +381,8 @@ class FlextObservability:
     def flext_alert(
         title: str = "",
         message: str = "",
-        severity: Literal["info", "warning", "error", "critical"] = "warning",
-        status: Literal["firing", "resolved"] = "firing",
+        severity: c.Observability.AlertLevel = c.Observability.AlertLevel.WARNING,
+        status: c.Observability.AlertStatus = c.Observability.AlertStatus.FIRING,
         alert_id: str | None = None,
         source: str = "system",
         labels: t.ScalarMapping | None = None,
@@ -413,7 +413,7 @@ class FlextObservability:
     @staticmethod
     def flext_health_check(
         component: str,
-        status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
+        status: c.Observability.HealthStatus = c.Observability.HealthStatus.HEALTHY,
         health_check_id: str | None = None,
         details: t.ScalarMapping | None = None,
     ) -> r[FlextObservability.HealthCheck]:
@@ -447,7 +447,7 @@ class FlextObservability:
     @staticmethod
     def flext_log_entry(
         message: str,
-        level: Literal["debug", "info", "warning", "error", "critical"] = "info",
+        level: c.Observability.ErrorSeverity = c.Observability.ErrorSeverity.INFO,
         component: str = "application",
         timestamp: datetime | None = None,
         context: t.ScalarMapping | None = None,
@@ -531,7 +531,7 @@ class FlextObservabilityMasterFactory:
     ) -> r[FlextObservability.Alert]:
         """Create an alert."""
         _ = timestamp
-        valid_severity: Literal["info", "warning", "error", "critical"]
+        valid_severity: c.Observability.AlertLevel
         match severity:
             case "info" | "low":
                 valid_severity = "info"
@@ -543,7 +543,7 @@ class FlextObservabilityMasterFactory:
                 valid_severity = "critical"
             case _:
                 valid_severity = "warning"
-        valid_status: Literal["firing", "resolved"]
+        valid_status: c.Observability.AlertStatus
         match status:
             case "firing" | "active":
                 valid_status = "firing"
@@ -620,7 +620,7 @@ class FlextObservabilityMasterFactory:
         """Create a health check."""
         _ = timestamp
         _ = message
-        valid_status: Literal["healthy", "degraded", "unhealthy"]
+        valid_status: c.Observability.HealthStatus
         match status:
             case "healthy":
                 valid_status = "healthy"
@@ -648,7 +648,7 @@ class FlextObservabilityMasterFactory:
         timestamp: datetime | None = None,
     ) -> r[FlextObservability.LogEntry]:
         """Create a log entry."""
-        valid_level: Literal["debug", "info", "warning", "error", "critical"]
+        valid_level: c.Observability.ErrorSeverity
         match level:
             case "debug":
                 valid_level = "debug"

@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import StrEnum, unique
-from typing import ClassVar, Final, Literal
+from typing import ClassVar, Final
 
 from flext_core import FlextConstants
 
@@ -171,46 +171,6 @@ class FlextObservabilityConstants(FlextConstants):
             WARNING = "warning"
             ERROR = "error"
             CRITICAL = "critical"
-
-        class Literals:
-            """Type-safe string literals for observability (Python 3.13+ best practices).
-
-            These type aliases provide strict type checking for common string values
-            used throughout the flext-observability codebase.
-            All Literal types reference StrEnum members to avoid string duplication (DRY principle).
-            Using PEP 695 type statement for better type checking and IDE support.
-            """
-
-            type MetricTypeLiteral = Literal[
-                FlextObservabilityConstants.Observability.MetricType.COUNTER,
-                FlextObservabilityConstants.Observability.MetricType.GAUGE,
-                FlextObservabilityConstants.Observability.MetricType.HISTOGRAM,
-                FlextObservabilityConstants.Observability.MetricType.SUMMARY,
-            ]
-            type AlertLevelLiteral = Literal[
-                FlextObservabilityConstants.Observability.AlertLevel.INFO,
-                FlextObservabilityConstants.Observability.AlertLevel.WARNING,
-                FlextObservabilityConstants.Observability.AlertLevel.ERROR,
-                FlextObservabilityConstants.Observability.AlertLevel.CRITICAL,
-            ]
-            type TraceStatusLiteral = Literal[
-                FlextObservabilityConstants.Observability.TraceStatus.STARTED,
-                FlextObservabilityConstants.Observability.TraceStatus.RUNNING,
-                FlextObservabilityConstants.Observability.TraceStatus.COMPLETED,
-                FlextObservabilityConstants.Observability.TraceStatus.FAILED,
-            ]
-            type HealthStatusLiteral = Literal[
-                FlextObservabilityConstants.Observability.HealthStatus.HEALTHY,
-                FlextObservabilityConstants.Observability.HealthStatus.DEGRADED,
-                FlextObservabilityConstants.Observability.HealthStatus.UNHEALTHY,
-            ]
-            type ServiceLiteral = Literal[
-                FlextObservabilityConstants.Observability.Service.METRICS,
-                FlextObservabilityConstants.Observability.Service.TRACING,
-                FlextObservabilityConstants.Observability.Service.ALERTS,
-                FlextObservabilityConstants.Observability.Service.HEALTH,
-                FlextObservabilityConstants.Observability.Service.LOGGING,
-            ]
 
         class FunctionArgs:
             """Function argument length constants."""
