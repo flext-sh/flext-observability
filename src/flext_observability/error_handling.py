@@ -153,7 +153,8 @@ class FlextObservabilityErrorHandling:
             self._last_alert_time[error.fingerprint] = time.time()
 
         def record_error(
-            self, error: m.Observability.ErrorEvent,
+            self,
+            error: m.Observability.ErrorEvent,
         ) -> r[m.Observability.ErrorEvent]:
             """Record an error event.
 

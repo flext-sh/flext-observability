@@ -68,7 +68,8 @@ class FlextObservabilityCustomMetrics:
         def __init__(self) -> None:
             """Initialize metric registry."""
             self._metrics: MutableMapping[
-                str, m.Observability.CustomMetricDefinition,
+                str,
+                m.Observability.CustomMetricDefinition,
             ] = {}
             self._metric_instances: MutableMapping[str, t.Scalar] = {}
             self._namespaces: MutableMapping[str, str] = {}
@@ -166,7 +167,8 @@ class FlextObservabilityCustomMetrics:
             })
 
         def get_metrics_by_type(
-            self, metric_type: c.Observability.MetricType,
+            self,
+            metric_type: c.Observability.MetricType,
         ) -> t.Dict:
             """Get all metrics of a specific type.
 
