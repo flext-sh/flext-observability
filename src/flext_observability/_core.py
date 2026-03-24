@@ -305,172 +305,188 @@ class FlextObservability:
                     f"Log entry creation failed: {e}",
                 )
 
-
-def flext_metric(
-    name: str,
-    value: float,
-    unit: str = "count",
-    metric_type: c.Observability.MetricType | None = None,
-    metric_id: str | None = None,
-    tags: t.ScalarMapping | None = None,
-    labels: t.ScalarMapping | None = None,
-) -> r[FlextObservability.Metric]:
-    """Create a metric entity directly."""
-    _ = metric_id
-    try:
-        if not name:
-            return r[FlextObservability.Metric].fail(
-                "Metric name must be non-empty string",
+    @staticmethod
+    def flext_metric(
+        name: str,
+        value: float,
+        unit: str = "count",
+        metric_type: c.Observability.MetricType | None = None,
+        metric_id: str | None = None,
+        tags: t.ScalarMapping | None = None,
+        labels: t.ScalarMapping | None = None,
+    ) -> r[FlextObservability.Metric]:
+        """Create a metric entity directly."""
+        _ = metric_id
+        try:
+            if not name:
+                return r[FlextObservability.Metric].fail(
+                    "Metric name must be non-empty string",
+                )
+            if math.isnan(float(value)):
+                return r[FlextObservability.Metric].fail(
+                    "Metric value must be a valid number",
+                )
+            all_labels_data: MutableMapping[str, t.Scalar] = {}
+            if tags:
+                all_labels_data.update(tags)
+            if labels:
+                all_labels_data.update(labels)
+            detected_type: c.Observability.MetricType = (
+                metric_type or c.Observability.MetricType.GAUGE
             )
-        if math.isnan(float(value)):
-            return r[FlextObservability.Metric].fail(
-                "Metric value must be a valid number",
+            if not metric_type:
+                if name.endswith(("_total", "_count")):
+                    detected_type = c.Observability.MetricType.COUNTER
+                elif name.endswith(("_duration", "_seconds")):
+                    detected_type = c.Observability.MetricType.HISTOGRAM
+            metric = FlextObservability.Metric(
+                id=metric_id or str(uuid4()),
+                name=name,
+                value=float(value),
+                unit=unit,
+                metric_type=detected_type,
+                labels=dict(all_labels_data),
+                domain_events=[],
             )
-        all_labels_data: MutableMapping[str, t.Scalar] = {}
-        if tags:
-            all_labels_data.update(tags)
-        if labels:
-            all_labels_data.update(labels)
-        detected_type: c.Observability.MetricType = (
-            metric_type or c.Observability.MetricType.GAUGE
-        )
-        if not metric_type:
-            if name.endswith(("_total", "_count")):
-                detected_type = c.Observability.MetricType.COUNTER
-            elif name.endswith(("_duration", "_seconds")):
-                detected_type = c.Observability.MetricType.HISTOGRAM
-        metric = FlextObservability.Metric(
-            id=metric_id or str(uuid4()),
-            name=name,
-            value=float(value),
-            unit=unit,
-            metric_type=detected_type,
-            labels=dict(all_labels_data),
-            domain_events=[],
-        )
-        return r[FlextObservability.Metric].ok(metric)
-    except (ValueError, TypeError, AttributeError) as e:
-        return r[FlextObservability.Metric].fail(f"Metric creation failed: {e}")
+            return r[FlextObservability.Metric].ok(metric)
+        except (ValueError, TypeError, AttributeError) as e:
+            return r[FlextObservability.Metric].fail(f"Metric creation failed: {e}")
 
-
-def flext_trace(
-    name: str,
-    attributes: t.ScalarMapping | None = None,
-    trace_id: str | None = None,
-) -> r[FlextObservability.Trace]:
-    """Create a trace entity directly."""
-    try:
-        if not name:
-            return r[FlextObservability.Trace].fail(
-                "Trace name must be non-empty string",
+    @staticmethod
+    def flext_trace(
+        name: str,
+        attributes: t.ScalarMapping | None = None,
+        trace_id: str | None = None,
+    ) -> r[FlextObservability.Trace]:
+        """Create a trace entity directly."""
+        try:
+            if not name:
+                return r[FlextObservability.Trace].fail(
+                    "Trace name must be non-empty string",
+                )
+            resolved_attrs: dict[str, t.Scalar] = (
+                dict(attributes) if attributes is not None else {}
             )
-        resolved_attrs: dict[str, t.Scalar] = (
-            dict(attributes) if attributes is not None else {}
-        )
-        trace = FlextObservability.Trace(
-            name=name,
-            trace_id=trace_id or str(uuid4()),
-            attributes=resolved_attrs,
-            domain_events=[],
-        )
-        return r[FlextObservability.Trace].ok(trace)
-    except (ValueError, TypeError, AttributeError) as e:
-        return r[FlextObservability.Trace].fail(f"Trace creation failed: {e}")
+            trace = FlextObservability.Trace(
+                name=name,
+                trace_id=trace_id or str(uuid4()),
+                attributes=resolved_attrs,
+                domain_events=[],
+            )
+            return r[FlextObservability.Trace].ok(trace)
+        except (ValueError, TypeError, AttributeError) as e:
+            return r[FlextObservability.Trace].fail(f"Trace creation failed: {e}")
 
+    @staticmethod
+    def flext_alert(
+        title: str = "",
+        message: str = "",
+        severity: Literal["info", "warning", "error", "critical"] = "warning",
+        status: Literal["firing", "resolved"] = "firing",
+        alert_id: str | None = None,
+        source: str = "system",
+        labels: t.ScalarMapping | None = None,
+    ) -> r[FlextObservability.Alert]:
+        """Create an alert entity directly."""
+        _ = status
+        try:
+            if not message and (not title):
+                return r[FlextObservability.Alert].fail("Alert message cannot be empty")
+            if not title and message:
+                return r[FlextObservability.Alert].fail("Alert title cannot be empty")
+            resolved_labels: dict[str, t.Scalar] = (
+                dict(labels) if labels is not None else {}
+            )
+            alert = FlextObservability.Alert(
+                id=alert_id or str(uuid4()),
+                title=title,
+                message=message,
+                severity=severity,
+                source=source,
+                labels=resolved_labels,
+                domain_events=[],
+            )
+            return r[FlextObservability.Alert].ok(alert)
+        except (ValueError, TypeError, AttributeError) as e:
+            return r[FlextObservability.Alert].fail(f"Alert creation failed: {e}")
 
-def flext_alert(
-    title: str = "",
-    message: str = "",
-    severity: Literal["info", "warning", "error", "critical"] = "warning",
-    status: Literal["firing", "resolved"] = "firing",
-    alert_id: str | None = None,
-    source: str = "system",
-    labels: t.ScalarMapping | None = None,
-) -> r[FlextObservability.Alert]:
-    """Create an alert entity directly."""
-    _ = status
-    try:
-        if not message and (not title):
-            return r[FlextObservability.Alert].fail("Alert message cannot be empty")
-        if not title and message:
-            return r[FlextObservability.Alert].fail("Alert title cannot be empty")
-        resolved_labels: dict[str, t.Scalar] = (
-            dict(labels) if labels is not None else {}
-        )
-        alert = FlextObservability.Alert(
-            id=alert_id or str(uuid4()),
-            title=title,
-            message=message,
-            severity=severity,
-            source=source,
-            labels=resolved_labels,
-            domain_events=[],
-        )
-        return r[FlextObservability.Alert].ok(alert)
-    except (ValueError, TypeError, AttributeError) as e:
-        return r[FlextObservability.Alert].fail(f"Alert creation failed: {e}")
-
-
-def flext_health_check(
-    component: str,
-    status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
-    health_check_id: str | None = None,
-    details: t.ScalarMapping | None = None,
-) -> r[FlextObservability.HealthCheck]:
-    """Create a health check entity directly."""
-    _ = health_check_id
-    try:
-        if not component:
+    @staticmethod
+    def flext_health_check(
+        component: str,
+        status: Literal["healthy", "degraded", "unhealthy"] = "healthy",
+        health_check_id: str | None = None,
+        details: t.ScalarMapping | None = None,
+    ) -> r[FlextObservability.HealthCheck]:
+        """Create a health check entity directly."""
+        _ = health_check_id
+        try:
+            if not component:
+                return r[FlextObservability.HealthCheck].fail(
+                    "Component name cannot be empty",
+                )
+            if status not in FlextObservability.Constants.HEALTH_STATUSES:
+                return r[FlextObservability.HealthCheck].fail(
+                    f"Invalid health status: {status}",
+                )
+            resolved_details: dict[str, t.Scalar] = (
+                dict(details) if details is not None else {}
+            )
+            health = FlextObservability.HealthCheck(
+                id=health_check_id or str(uuid4()),
+                component=component,
+                status=status,
+                details=resolved_details,
+                domain_events=[],
+            )
+            return r[FlextObservability.HealthCheck].ok(health)
+        except (ValueError, TypeError, AttributeError) as e:
             return r[FlextObservability.HealthCheck].fail(
-                "Component name cannot be empty",
+                f"Health check creation failed: {e}",
             )
-        if status not in FlextObservability.Constants.HEALTH_STATUSES:
-            return r[FlextObservability.HealthCheck].fail(
-                f"Invalid health status: {status}",
+
+    @staticmethod
+    def flext_log_entry(
+        message: str,
+        level: Literal["debug", "info", "warning", "error", "critical"] = "info",
+        component: str = "application",
+        timestamp: datetime | None = None,
+        context: t.ScalarMapping | None = None,
+    ) -> r[FlextObservability.LogEntry]:
+        """Create a log entry entity directly."""
+        try:
+            if not message:
+                return r[FlextObservability.LogEntry].fail(
+                    "Log message cannot be empty",
+                )
+            resolved_context: dict[str, t.Scalar] = (
+                dict(context) if context is not None else {}
             )
-        resolved_details: dict[str, t.Scalar] = (
-            dict(details) if details is not None else {}
-        )
-        health = FlextObservability.HealthCheck(
-            id=health_check_id or str(uuid4()),
-            component=component,
-            status=status,
-            details=resolved_details,
-            domain_events=[],
-        )
-        return r[FlextObservability.HealthCheck].ok(health)
-    except (ValueError, TypeError, AttributeError) as e:
-        return r[FlextObservability.HealthCheck].fail(
-            f"Health check creation failed: {e}",
-        )
+            entry = FlextObservability.LogEntry(
+                id=str(uuid4()),
+                message=message,
+                level=level,
+                component=component,
+                timestamp=timestamp or datetime.now(tz=UTC),
+                context=resolved_context,
+                domain_events=[],
+            )
+            return r[FlextObservability.LogEntry].ok(entry)
+        except (ValueError, TypeError, AttributeError) as e:
+            return r[FlextObservability.LogEntry].fail(
+                f"Log entry creation failed: {e}",
+            )
 
+    @staticmethod
+    def get_global_factory() -> FlextObservabilityMasterFactory:
+        """Get or create the global factory instance."""
+        if _global_factory_state.factory is None:
+            _global_factory_state.factory = FlextObservabilityMasterFactory()
+        return _global_factory_state.factory
 
-def flext_log_entry(
-    message: str,
-    level: Literal["debug", "info", "warning", "error", "critical"] = "info",
-    component: str = "application",
-    timestamp: datetime | None = None,
-    context: t.ScalarMapping | None = None,
-) -> r[FlextObservability.LogEntry]:
-    """Create a log entry entity directly."""
-    try:
-        if not message:
-            return r[FlextObservability.LogEntry].fail("Log message cannot be empty")
-        resolved_context: dict[str, t.Scalar] = (
-            dict(context) if context is not None else {}
-        )
-        entry = FlextObservability.LogEntry(
-            id=str(uuid4()),
-            message=message,
-            level=level,
-            component=component,
-            timestamp=timestamp or datetime.now(tz=UTC),
-            context=resolved_context,
-            domain_events=[],
-        )
-        return r[FlextObservability.LogEntry].ok(entry)
-    except (ValueError, TypeError, AttributeError) as e:
-        return r[FlextObservability.LogEntry].fail(f"Log entry creation failed: {e}")
+    @staticmethod
+    def reset_global_factory() -> None:
+        """Reset the global factory instance."""
+        _global_factory_state.factory = None
 
 
 class _GlobalFactoryState:
@@ -535,7 +551,7 @@ class FlextObservabilityMasterFactory:
                 valid_status = "resolved"
             case _:
                 valid_status = "firing"
-        return flext_alert(
+        return FlextObservability.flext_alert(
             title=title,
             message=message,
             severity=valid_severity,
@@ -614,11 +630,13 @@ class FlextObservabilityMasterFactory:
                 valid_status = "unhealthy"
             case _:
                 valid_status = "healthy"
-        return flext_health_check(component, status=valid_status, details=metrics)
+        return FlextObservability.flext_health_check(
+            component, status=valid_status, details=metrics
+        )
 
     def health_status(self) -> r[FlextObservability.HealthCheck]:
         """Get overall health status."""
-        return flext_health_check("system", status="healthy")
+        return FlextObservability.flext_health_check("system", status="healthy")
 
     def log(
         self,
@@ -642,7 +660,7 @@ class FlextObservabilityMasterFactory:
                 valid_level = "critical"
             case _:
                 valid_level = "info"
-        return flext_log_entry(
+        return FlextObservability.flext_log_entry(
             message,
             level=valid_level,
             context=context,
@@ -659,7 +677,7 @@ class FlextObservabilityMasterFactory:
     ) -> r[FlextObservability.Metric]:
         """Create a metric."""
         _ = timestamp
-        return flext_metric(name, value, unit=unit, tags=tags)
+        return FlextObservability.flext_metric(name, value, unit=unit, tags=tags)
 
     def trace(
         self,
@@ -677,16 +695,17 @@ class FlextObservabilityMasterFactory:
         str_attributes: t.ScalarMapping = {}
         if span_attributes:
             str_attributes = {k: str(v) for k, v in span_attributes.items()}
-        return flext_trace(operation, attributes=str_attributes, trace_id=trace_id)
+        return FlextObservability.flext_trace(
+            operation, attributes=str_attributes, trace_id=trace_id
+        )
 
 
-def get_global_factory() -> FlextObservabilityMasterFactory:
-    """Get or create the global factory instance."""
-    if _global_factory_state.factory is None:
-        _global_factory_state.factory = FlextObservabilityMasterFactory()
-    return _global_factory_state.factory
-
-
-def reset_global_factory() -> None:
-    """Reset the global factory instance."""
-    _global_factory_state.factory = None
+# Module-level aliases — delegate to FlextObservability staticmethods for
+# backward compatibility with existing call sites.
+flext_metric = FlextObservability.flext_metric
+flext_trace = FlextObservability.flext_trace
+flext_alert = FlextObservability.flext_alert
+flext_health_check = FlextObservability.flext_health_check
+flext_log_entry = FlextObservability.flext_log_entry
+get_global_factory = FlextObservability.get_global_factory
+reset_global_factory = FlextObservability.reset_global_factory
