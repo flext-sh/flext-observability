@@ -40,7 +40,9 @@ def demonstrate_simple_api() -> None:
     if health_result.is_success:
         pass
     log_result = flext_log_entry(
-        "User authentication successful", "info", "auth-service"
+        "User authentication successful",
+        "info",
+        "auth-service",
     )
     if log_result.is_success:
         pass

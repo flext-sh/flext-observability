@@ -99,7 +99,7 @@ class FlextObservabilityHTTPClient:
     def _validated_headers(payload: t.NormalizedValue) -> MutableMapping[str, str]:
         try:
             return dict(
-                _HeadersPayload.model_validate(obj={"headers": payload}).headers
+                _HeadersPayload.model_validate(obj={"headers": payload}).headers,
             )
         except ValidationError:
             return {}

@@ -165,7 +165,9 @@ try:
     ctx.set_baggage("user_name", "alice")
     ctx.set_baggage("org_id", "org-456")
     snapshot = ctx.snapshot(
-        correlation_id="async-001", trace_id="trace-async-001", span_id="span-async-001"
+        correlation_id="async-001",
+        trace_id="trace-async-001",
+        span_id="span-async-001",
     )
     assert snapshot.correlation_id == "async-001"
     assert len(snapshot.metadata) >= 3

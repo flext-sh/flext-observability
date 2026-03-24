@@ -56,15 +56,18 @@ class ContentMetrics(BaseModel):
     todo_count: int = Field(default=0, description="Number of TODO markers")
     fixme_count: int = Field(default=0, description="Number of FIXME markers")
     last_modified: datetime = Field(
-        default_factory=datetime.now, description="Last modification timestamp"
+        default_factory=datetime.now,
+        description="Last modification timestamp",
     )
     freshness_score: float = Field(default=0.0, description="Freshness score 0-100")
     quality_score: float = Field(default=0.0, description="Quality score 0-100")
     issues: t.StrSequence = Field(
-        default_factory=list, description="List of issues found"
+        default_factory=list,
+        description="List of issues found",
     )
     recommendations: t.StrSequence = Field(
-        default_factory=list, description="List of recommendations"
+        default_factory=list,
+        description="List of recommendations",
     )
 
 
@@ -72,12 +75,14 @@ class AuditReport(BaseModel):
     """Comprehensive audit report for the documentation set."""
 
     timestamp: datetime = Field(
-        default_factory=datetime.now, description="Report generation timestamp"
+        default_factory=datetime.now,
+        description="Report generation timestamp",
     )
     total_files: int = Field(default=0, description="Total files found")
     files_audited: int = Field(default=0, description="Number of files audited")
     total_word_count: int = Field(
-        default=0, description="Total word count across all files"
+        default=0,
+        description="Total word count across all files",
     )
     total_links: int = Field(default=0, description="Total links found")
     total_issues: int = Field(default=0, description="Total issues found")
@@ -85,18 +90,22 @@ class AuditReport(BaseModel):
     warning_issues: int = Field(default=0, description="Number of warning issues")
     info_issues: int = Field(default=0, description="Number of info items")
     freshness_threshold_days: int = Field(
-        default=30, description="Freshness threshold in days"
+        default=30,
+        description="Freshness threshold in days",
     )
     fresh_files: int = Field(default=0, description="Number of fresh files")
     stale_files: int = Field(default=0, description="Number of stale files")
     file_metrics: Mapping[str, ContentMetrics] = Field(
-        default_factory=dict, description="Metrics per file"
+        default_factory=dict,
+        description="Metrics per file",
     )
     category_breakdown: Mapping[str, int] = Field(
-        default_factory=dict, description="File count by category"
+        default_factory=dict,
+        description="File count by category",
     )
     overall_quality_score: float = Field(
-        default=0.0, description="Overall quality score 0-100"
+        default=0.0,
+        description="Overall quality score 0-100",
     )
 
 
@@ -141,7 +150,8 @@ class DocumentationAuditor:
         if config_path and config_path.exists():
             with Path(config_path).open("r", encoding="utf-8") as f:
                 raw: Mapping[
-                    str, str | int | float | bool | t.StrSequence | Mapping[str, int]
+                    str,
+                    str | int | float | bool | t.StrSequence | Mapping[str, int],
                 ] = yaml.safe_load(f)
                 merged = default_config.model_dump()
                 merged.update(raw)

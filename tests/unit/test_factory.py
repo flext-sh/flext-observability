@@ -69,7 +69,9 @@ class TestFlextObservabilityMasterFactoryReal:
         """Test alert creation with real functionality."""
         factory = FlextObservabilityMasterFactory()
         alert_result = factory.create_alert(
-            "Critical error detected", "monitoring", "critical"
+            "Critical error detected",
+            "monitoring",
+            "critical",
         )
         tm.that(alert_result.is_success, eq=True)
         tm.that(alert_result.value.message, eq="Critical error detected")

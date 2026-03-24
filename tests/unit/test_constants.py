@@ -54,7 +54,8 @@ class TestFlextObservabilityConstants:
         tm.that(hasattr(FlextObservabilityConstants, "HEALTH_STATUS_HEALTHY"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "HEALTH_STATUS_DEGRADED"), eq=True)
         tm.that(
-            hasattr(FlextObservabilityConstants, "HEALTH_STATUS_UNHEALTHY"), eq=True
+            hasattr(FlextObservabilityConstants, "HEALTH_STATUS_UNHEALTHY"),
+            eq=True,
         )
         tm.that(FlextObservabilityConstants.HEALTH_STATUS_HEALTHY, eq="healthy")
         tm.that(FlextObservabilityConstants.HEALTH_STATUS_DEGRADED, eq="degraded")
@@ -78,7 +79,8 @@ class TestFlextObservabilityConstants:
         tm.that(hasattr(FlextObservabilityConstants, "MAX_METRIC_NAME_LENGTH"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "MAX_TRACE_NAME_LENGTH"), eq=True)
         tm.that(
-            hasattr(FlextObservabilityConstants, "MAX_ALERT_MESSAGE_LENGTH"), eq=True
+            hasattr(FlextObservabilityConstants, "MAX_ALERT_MESSAGE_LENGTH"),
+            eq=True,
         )
         tm.that(hasattr(FlextObservabilityConstants, "MAX_LOG_MESSAGE_LENGTH"), eq=True)
         tm.that(FlextObservabilityConstants.MAX_METRIC_NAME_LENGTH, gt=0)
@@ -91,6 +93,7 @@ class TestFlextObservabilityConstants:
         tm.that(hasattr(FlextObservabilityConstants, "DEFAULT_SERVICE_NAME"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "DEFAULT_ENVIRONMENT"), eq=True)
         tm.that(
-            FlextObservabilityConstants.DEFAULT_SERVICE_NAME, eq="flext-observability"
+            FlextObservabilityConstants.DEFAULT_SERVICE_NAME,
+            eq="flext-observability",
         )
         tm.that(FlextObservabilityConstants.DEFAULT_ENVIRONMENT, eq="development")

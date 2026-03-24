@@ -158,7 +158,8 @@ class FlextObservabilityModels(FlextModels):
             unit: t.NonEmptyStr
             metric_type: t.NonEmptyStr
             labels: Annotated[
-                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+                FlextObservabilityModels._DomainLabels,
+                Field(default_factory=dict),
             ]
 
         class Trace(FlextModels.Entity):
@@ -167,7 +168,8 @@ class FlextObservabilityModels(FlextModels):
             trace_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
             name: t.NonEmptyStr
             attributes: Annotated[
-                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+                FlextObservabilityModels._DomainLabels,
+                Field(default_factory=dict),
             ]
 
         class Alert(FlextModels.Entity):
@@ -179,7 +181,8 @@ class FlextObservabilityModels(FlextModels):
             severity: t.NonEmptyStr
             source: t.NonEmptyStr
             labels: Annotated[
-                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+                FlextObservabilityModels._DomainLabels,
+                Field(default_factory=dict),
             ]
 
         class HealthCheck(FlextModels.Entity):
@@ -189,7 +192,8 @@ class FlextObservabilityModels(FlextModels):
             component: t.NonEmptyStr
             status: t.NonEmptyStr
             details: Annotated[
-                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+                FlextObservabilityModels._DomainLabels,
+                Field(default_factory=dict),
             ]
 
         class LogEntry(FlextModels.Entity):
@@ -204,7 +208,8 @@ class FlextObservabilityModels(FlextModels):
                 Field(default_factory=lambda: datetime.now(tz=UTC)),
             ]
             context: Annotated[
-                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+                FlextObservabilityModels._DomainLabels,
+                Field(default_factory=dict),
             ]
 
         class StartTimePayload(FlextModels.Value):

@@ -631,7 +631,9 @@ class FlextObservabilityMasterFactory:
             case _:
                 valid_status = "healthy"
         return FlextObservability.flext_health_check(
-            component, status=valid_status, details=metrics
+            component,
+            status=valid_status,
+            details=metrics,
         )
 
     def health_status(self) -> r[FlextObservability.HealthCheck]:
@@ -696,5 +698,7 @@ class FlextObservabilityMasterFactory:
         if span_attributes:
             str_attributes = {k: str(v) for k, v in span_attributes.items()}
         return FlextObservability.flext_trace(
-            operation, attributes=str_attributes, trace_id=trace_id
+            operation,
+            attributes=str_attributes,
+            trace_id=trace_id,
         )

@@ -246,7 +246,7 @@ class FlextObservabilityLogging:
                     f"Failed to get trace context: {context_result.error}",
                 )
             log_context: dict[str, t.NormalizedValue] = context_result.value.model_dump(
-                exclude_none=True
+                exclude_none=True,
             )
             extra_context: t.NormalizedValue = log_context.pop("extra", {})
             if isinstance(extra_context, dict):
