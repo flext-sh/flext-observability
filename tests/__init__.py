@@ -14,11 +14,12 @@ if TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
-    from tests import unit
+    from tests import integration, unit
     from tests.constants import (
         FlextObservabilityTestConstants,
         FlextObservabilityTestConstants as c,
     )
+    from tests.integration.test_phase_11_integration import ErrorEvent
     from tests.models import (
         FlextObservabilityTestModels,
         FlextObservabilityTestModels as m,
@@ -33,13 +34,22 @@ if TYPE_CHECKING:
     )
     from tests.unit.test_constants import TestFlextObservabilityConstants
     from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
-    from tests.unit.test_init import TestInitCoverage
+    from tests.unit.test_init import (
+        TestInitCoverage,
+        flext_alert,
+        flext_health_check,
+        flext_metric,
+        flext_trace,
+        get_global_factory,
+        reset_global_factory,
+    )
     from tests.utilities import (
         FlextObservabilityTestUtilities,
         FlextObservabilityTestUtilities as u,
     )
 
 _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
+    "ErrorEvent": ("tests.integration.test_phase_11_integration", "ErrorEvent"),
     "FlextObservabilityTestConstants": (
         "tests.constants",
         "FlextObservabilityTestConstants",
@@ -66,10 +76,17 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
     "c": ("tests.constants", "FlextObservabilityTestConstants"),
     "d": ("flext_tests", "d"),
     "e": ("flext_tests", "e"),
+    "flext_alert": ("tests.unit.test_init", "flext_alert"),
+    "flext_health_check": ("tests.unit.test_init", "flext_health_check"),
+    "flext_metric": ("tests.unit.test_init", "flext_metric"),
+    "flext_trace": ("tests.unit.test_init", "flext_trace"),
+    "get_global_factory": ("tests.unit.test_init", "get_global_factory"),
     "h": ("flext_tests", "h"),
+    "integration": ("tests.integration", ""),
     "m": ("tests.models", "FlextObservabilityTestModels"),
     "p": ("tests.protocols", "FlextObservabilityTestProtocols"),
     "r": ("flext_tests", "r"),
+    "reset_global_factory": ("tests.unit.test_init", "reset_global_factory"),
     "s": ("flext_tests", "s"),
     "t": ("tests.typings", "FlextObservabilityTestTypes"),
     "u": ("tests.utilities", "FlextObservabilityTestUtilities"),
@@ -78,6 +95,7 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
 }
 
 __all__ = [
+    "ErrorEvent",
     "FlextObservabilityTestConstants",
     "FlextObservabilityTestModels",
     "FlextObservabilityTestProtocols",
@@ -89,10 +107,17 @@ __all__ = [
     "c",
     "d",
     "e",
+    "flext_alert",
+    "flext_health_check",
+    "flext_metric",
+    "flext_trace",
+    "get_global_factory",
     "h",
+    "integration",
     "m",
     "p",
     "r",
+    "reset_global_factory",
     "s",
     "t",
     "u",

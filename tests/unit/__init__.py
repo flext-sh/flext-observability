@@ -15,7 +15,15 @@ if TYPE_CHECKING:
 
     from tests.unit.test_constants import TestFlextObservabilityConstants
     from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
-    from tests.unit.test_init import TestInitCoverage
+    from tests.unit.test_init import (
+        TestInitCoverage,
+        flext_alert,
+        flext_health_check,
+        flext_metric,
+        flext_trace,
+        get_global_factory,
+        reset_global_factory,
+    )
 
 _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
     "TestFlextObservabilityConstants": (
@@ -27,12 +35,24 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
         "TestFlextObservabilityMasterFactoryReal",
     ),
     "TestInitCoverage": ("tests.unit.test_init", "TestInitCoverage"),
+    "flext_alert": ("tests.unit.test_init", "flext_alert"),
+    "flext_health_check": ("tests.unit.test_init", "flext_health_check"),
+    "flext_metric": ("tests.unit.test_init", "flext_metric"),
+    "flext_trace": ("tests.unit.test_init", "flext_trace"),
+    "get_global_factory": ("tests.unit.test_init", "get_global_factory"),
+    "reset_global_factory": ("tests.unit.test_init", "reset_global_factory"),
 }
 
 __all__ = [
     "TestFlextObservabilityConstants",
     "TestFlextObservabilityMasterFactoryReal",
     "TestInitCoverage",
+    "flext_alert",
+    "flext_health_check",
+    "flext_metric",
+    "flext_trace",
+    "get_global_factory",
+    "reset_global_factory",
 ]
 
 
