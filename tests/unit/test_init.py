@@ -31,8 +31,8 @@ class TestInitCoverage:
         result = flext_health_check("flext-observability", "healthy")
         tm.that(result.is_success, eq=True)
         health_check = result.value
-        tm.that(health_check.status == "healthy", eq=True)
-        tm.that(health_check.component == "flext-observability", eq=True)
+        tm.that(health_check.status, eq="healthy")
+        tm.that(health_check.component, eq="flext-observability")
 
     def test_all_public_api_imports(self) -> None:
         """Test that all __all__ exports can be imported successfully."""
@@ -44,7 +44,7 @@ class TestInitCoverage:
             exported_item = getattr(flext_observability, export_name)
             if export_name != "__license__":
                 (
-                    tm.that(exported_item is not None, eq=True),
+                    tm.that(exported_item, none=False),
                     f"Null export: {export_name}",
                 )
 
@@ -55,7 +55,7 @@ class TestInitCoverage:
         tm.that(isinstance(flext_observability.__version__, str), eq=True)
         tm.that(flext_observability.__version__, eq=True)
         tm.that(isinstance(flext_observability.__version_info__, tuple), eq=True)
-        tm.that(len(flext_observability.__version_info__) >= 3, eq=True)
+        tm.that(len(flext_observability.__version_info__), gte=3)
 
     def test_core_entity_imports(self) -> None:
         """Test that core entities can be accessed via FlextObservabilityModels."""
@@ -82,5 +82,5 @@ class TestInitCoverage:
     def test_flext_core_reexports(self) -> None:
         """Test that flext-core re-exports are available."""
         tm.that(callable(FlextContainer), eq=True)
-        tm.that(FlextConstants is not None, eq=True)
+        tm.that(FlextConstants, none=False)
         tm.that(callable(FlextLogger), eq=True)

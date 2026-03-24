@@ -35,37 +35,35 @@ class TestFlextObservabilityMasterFactoryReal:
         factory = FlextObservabilityMasterFactory()
         metric_result = factory.create_metric("test_metric", 42.5, "gauge")
         tm.that(metric_result.is_success, eq=True)
-        tm.that(metric_result.value.name == "test_metric", eq=True)
-        tm.that(abs(metric_result.value.value - 42.5) < 1e-9, eq=True)
-        tm.that(metric_result.value.unit == "gauge", eq=True)
+        tm.that(metric_result.value.name, eq="test_metric")
+        tm.that(abs(metric_result.value.value - 42.5), lt=1e-9)
+        tm.that(metric_result.value.unit, eq="gauge")
 
     def test_metric_creation_with_validation_real(self) -> None:
         """Test metric creation with real validation logic."""
         factory = FlextObservabilityMasterFactory()
         invalid_result = factory.create_metric("", 10.0)
         tm.that(invalid_result.is_failure, eq=True)
-        tm.that(invalid_result.error is not None, eq=True)
+        tm.that(invalid_result.error, none=False)
         assert invalid_result.error is not None
-        tm.that("must be non-empty string" in invalid_result.error, eq=True)
+        tm.that(invalid_result.error, has="must be non-empty string")
 
     def test_log_creation_real_functionality(self) -> None:
         """Test log entry creation with real functionality."""
         factory = FlextObservabilityMasterFactory()
         log_result = factory.create_log_entry("Test log message", "info")
         tm.that(log_result.is_success, eq=True)
-        tm.that(log_result.value.message == "Test log message", eq=True)
-        tm.that(log_result.value.level == "info", eq=True)
+        tm.that(log_result.value.message, eq="Test log message")
+        tm.that(log_result.value.level, eq="info")
 
     def test_log_creation_validation_real(self) -> None:
         """Test log creation with real validation."""
         factory = FlextObservabilityMasterFactory()
         custom_level_result = factory.create_log_entry("Test", "INVALID_LEVEL")
         if custom_level_result.is_failure:
-            tm.that(custom_level_result.error is not None, eq=True)
+            tm.that(custom_level_result.error, none=False)
         else:
-            tm.that(
-                custom_level_result.value.level in {"INVALID_LEVEL", "info"}, eq=True
-            )
+            tm.that({"INVALID_LEVEL", "info"}, has=custom_level_result.value.level)
 
     def test_alert_creation_real_functionality(self) -> None:
         """Test alert creation with real functionality."""
@@ -74,25 +72,25 @@ class TestFlextObservabilityMasterFactoryReal:
             "Critical error detected", "monitoring", "critical"
         )
         tm.that(alert_result.is_success, eq=True)
-        tm.that(alert_result.value.message == "Critical error detected", eq=True)
-        tm.that(alert_result.value.title == "Alert: monitoring", eq=True)
-        tm.that(alert_result.value.severity == "critical", eq=True)
+        tm.that(alert_result.value.message, eq="Critical error detected")
+        tm.that(alert_result.value.title, eq="Alert: monitoring")
+        tm.that(alert_result.value.severity, eq="critical")
 
     def test_trace_creation_real_functionality(self) -> None:
         """Test trace creation with real functionality."""
         factory = FlextObservabilityMasterFactory()
         trace_result = factory.create_trace("user_authentication", "auth_service")
         tm.that(trace_result.is_success, eq=True)
-        tm.that(trace_result.value.name == "user_authentication", eq=True)
-        tm.that(trace_result.value.trace_id != "", eq=True)
+        tm.that(trace_result.value.name, eq="user_authentication")
+        tm.that(trace_result.value.trace_id, ne="")
 
     def test_health_check_creation_real_functionality(self) -> None:
         """Test health check creation with real functionality."""
         factory = FlextObservabilityMasterFactory()
         health_result = factory.create_health_check("database", "healthy")
         tm.that(health_result.is_success, eq=True)
-        tm.that(health_result.value.component == "database", eq=True)
-        tm.that(health_result.value.status == "healthy", eq=True)
+        tm.that(health_result.value.component, eq="database")
+        tm.that(health_result.value.status, eq="healthy")
 
     def test_factory_shorthand_methods_real(self) -> None:
         """Test factory shorthand methods with real functionality."""
@@ -101,26 +99,26 @@ class TestFlextObservabilityMasterFactoryReal:
         tm.that(metric_result.is_success, eq=True)
         metric = metric_result.value
         tm.that(hasattr(metric, "name"), eq=True)
-        tm.that(metric.name == "cpu_usage", eq=True)
+        tm.that(metric.name, eq="cpu_usage")
         tm.that(hasattr(metric, "value"), eq=True)
-        tm.that(abs(metric.value - 85.2) < 1e-9, eq=True)
+        tm.that(abs(metric.value - 85.2), lt=1e-9)
         log_result = factory.log("System started")
         tm.that(log_result.is_success, eq=True)
         log_entry = log_result.value
         tm.that(hasattr(log_entry, "message"), eq=True)
-        tm.that(log_entry.message == "System started", eq=True)
+        tm.that(log_entry.message, eq="System started")
         alert_result = factory.alert("High memory usage", "monitoring")
         tm.that(alert_result.is_success, eq=True)
         alert = alert_result.value
         tm.that(hasattr(alert, "title"), eq=True)
-        tm.that(alert.title == "High memory usage", eq=True)
-        tm.that(alert.message == "monitoring", eq=True)
+        tm.that(alert.title, eq="High memory usage")
+        tm.that(alert.message, eq="monitoring")
         trace_result = factory.trace("trace-123", "api_request")
         tm.that(trace_result.is_success, eq=True)
         trace = trace_result.value
         tm.that(hasattr(trace, "name"), eq=True)
-        tm.that(trace.name == "api_request", eq=True)
-        tm.that(trace.trace_id == "trace-123", eq=True)
+        tm.that(trace.name, eq="api_request")
+        tm.that(trace.trace_id, eq="trace-123")
 
     def test_global_factory_real_functionality(self) -> None:
         """Test global factory with real functionality."""
@@ -146,8 +144,8 @@ class TestFlextObservabilityMasterFactoryReal:
             method = getattr(factory, method_name)
             result = method(*args)
             tm.that(result.is_failure, eq=True)
-            tm.that(result.error is not None, eq=True)
-            tm.that(expected_error in result.error, eq=True)
+            tm.that(result.error, none=False)
+            tm.that(result.error, has=expected_error)
 
     def test_factory_integration_with_services_real(self) -> None:
         """Test factory integration with real service workflows."""

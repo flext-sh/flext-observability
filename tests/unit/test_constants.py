@@ -33,10 +33,10 @@ class TestFlextObservabilityConstants:
         tm.that(hasattr(FlextObservabilityConstants, "ALERT_LEVEL_WARNING"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "ALERT_LEVEL_ERROR"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "ALERT_LEVEL_CRITICAL"), eq=True)
-        tm.that(FlextObservabilityConstants.ALERT_LEVEL_INFO == "info", eq=True)
-        tm.that(FlextObservabilityConstants.ALERT_LEVEL_WARNING == "warning", eq=True)
-        tm.that(FlextObservabilityConstants.ALERT_LEVEL_ERROR == "error", eq=True)
-        tm.that(FlextObservabilityConstants.ALERT_LEVEL_CRITICAL == "critical", eq=True)
+        tm.that(FlextObservabilityConstants.ALERT_LEVEL_INFO, eq="info")
+        tm.that(FlextObservabilityConstants.ALERT_LEVEL_WARNING, eq="warning")
+        tm.that(FlextObservabilityConstants.ALERT_LEVEL_ERROR, eq="error")
+        tm.that(FlextObservabilityConstants.ALERT_LEVEL_CRITICAL, eq="critical")
 
     def test_trace_constants(self) -> None:
         """Test trace-related constants."""
@@ -44,12 +44,10 @@ class TestFlextObservabilityConstants:
         tm.that(hasattr(FlextObservabilityConstants, "TRACE_STATUS_RUNNING"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "TRACE_STATUS_COMPLETED"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "TRACE_STATUS_FAILED"), eq=True)
-        tm.that(FlextObservabilityConstants.TRACE_STATUS_STARTED == "started", eq=True)
-        tm.that(FlextObservabilityConstants.TRACE_STATUS_RUNNING == "running", eq=True)
-        tm.that(
-            FlextObservabilityConstants.TRACE_STATUS_COMPLETED == "completed", eq=True
-        )
-        tm.that(FlextObservabilityConstants.TRACE_STATUS_FAILED == "failed", eq=True)
+        tm.that(FlextObservabilityConstants.TRACE_STATUS_STARTED, eq="started")
+        tm.that(FlextObservabilityConstants.TRACE_STATUS_RUNNING, eq="running")
+        tm.that(FlextObservabilityConstants.TRACE_STATUS_COMPLETED, eq="completed")
+        tm.that(FlextObservabilityConstants.TRACE_STATUS_FAILED, eq="failed")
 
     def test_health_constants(self) -> None:
         """Test health-related constants."""
@@ -58,13 +56,9 @@ class TestFlextObservabilityConstants:
         tm.that(
             hasattr(FlextObservabilityConstants, "HEALTH_STATUS_UNHEALTHY"), eq=True
         )
-        tm.that(FlextObservabilityConstants.HEALTH_STATUS_HEALTHY == "healthy", eq=True)
-        tm.that(
-            FlextObservabilityConstants.HEALTH_STATUS_DEGRADED == "degraded", eq=True
-        )
-        tm.that(
-            FlextObservabilityConstants.HEALTH_STATUS_UNHEALTHY == "unhealthy", eq=True
-        )
+        tm.that(FlextObservabilityConstants.HEALTH_STATUS_HEALTHY, eq="healthy")
+        tm.that(FlextObservabilityConstants.HEALTH_STATUS_DEGRADED, eq="degraded")
+        tm.that(FlextObservabilityConstants.HEALTH_STATUS_UNHEALTHY, eq="unhealthy")
 
     def test_log_constants(self) -> None:
         """Test logging-related constants."""
@@ -73,11 +67,11 @@ class TestFlextObservabilityConstants:
         tm.that(hasattr(FlextObservabilityConstants, "LOG_LEVEL_WARNING"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "LOG_LEVEL_ERROR"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "LOG_LEVEL_CRITICAL"), eq=True)
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_DEBUG == "debug", eq=True)
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_INFO == "info", eq=True)
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_WARNING == "warning", eq=True)
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_ERROR == "error", eq=True)
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_CRITICAL == "critical", eq=True)
+        tm.that(FlextObservabilityConstants.LOG_LEVEL_DEBUG, eq="debug")
+        tm.that(FlextObservabilityConstants.LOG_LEVEL_INFO, eq="info")
+        tm.that(FlextObservabilityConstants.LOG_LEVEL_WARNING, eq="warning")
+        tm.that(FlextObservabilityConstants.LOG_LEVEL_ERROR, eq="error")
+        tm.that(FlextObservabilityConstants.LOG_LEVEL_CRITICAL, eq="critical")
 
     def test_validation_constants(self) -> None:
         """Test validation-related constants."""
@@ -87,19 +81,14 @@ class TestFlextObservabilityConstants:
             hasattr(FlextObservabilityConstants, "MAX_ALERT_MESSAGE_LENGTH"), eq=True
         )
         tm.that(hasattr(FlextObservabilityConstants, "MAX_LOG_MESSAGE_LENGTH"), eq=True)
-        tm.that(FlextObservabilityConstants.MAX_METRIC_NAME_LENGTH > 0, eq=True)
-        tm.that(FlextObservabilityConstants.MAX_TRACE_NAME_LENGTH > 0, eq=True)
-        tm.that(FlextObservabilityConstants.MAX_ALERT_MESSAGE_LENGTH > 0, eq=True)
-        tm.that(FlextObservabilityConstants.MAX_LOG_MESSAGE_LENGTH > 0, eq=True)
+        tm.that(FlextObservabilityConstants.MAX_METRIC_NAME_LENGTH, gt=0)
+        tm.that(FlextObservabilityConstants.MAX_TRACE_NAME_LENGTH, gt=0)
+        tm.that(FlextObservabilityConstants.MAX_ALERT_MESSAGE_LENGTH, gt=0)
+        tm.that(FlextObservabilityConstants.MAX_LOG_MESSAGE_LENGTH, gt=0)
 
     def test_service_constants(self) -> None:
         """Test service-related constants."""
         tm.that(hasattr(FlextObservabilityConstants, "DEFAULT_SERVICE_NAME"), eq=True)
         tm.that(hasattr(FlextObservabilityConstants, "DEFAULT_ENVIRONMENT"), eq=True)
-        tm.that(
-            FlextObservabilityConstants.DEFAULT_SERVICE_NAME == "flext-observability",
-            eq=True,
-        )
-        tm.that(
-            FlextObservabilityConstants.DEFAULT_ENVIRONMENT == "development", eq=True
-        )
+        tm.that(FlextObservabilityConstants.DEFAULT_SERVICE_NAME, eq="flext-observability")
+        tm.that(FlextObservabilityConstants.DEFAULT_ENVIRONMENT, eq="development")
