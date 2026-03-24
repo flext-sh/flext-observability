@@ -73,14 +73,14 @@ class FlextObservabilityHTTP:
 
     @staticmethod
     def _is_flask_app(
-        obj: object,
+        obj: t.RegisterableService,
     ) -> TypeIs[p.Observability.Http.FlaskApp]:
         """Type guard to check if object is a Flask app."""
         return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
     @staticmethod
     def _is_fastapi_app(
-        obj: object,
+        obj: t.RegisterableService,
     ) -> TypeIs[p.Observability.Http.FastAPIApp]:
         """Type guard to check if object is a FastAPI app."""
         return hasattr(obj, "add_middleware")
