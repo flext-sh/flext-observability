@@ -77,7 +77,9 @@ class FlextObservabilityHTTPClient:
         return hasattr(obj, "request") and hasattr(obj, "_send")
 
     @staticmethod
-    def _is_httpx_client(obj: t.RegisterableService) -> TypeIs[p.Observability.HttpClient.HTTPXClient]:
+    def _is_httpx_client(
+        obj: t.RegisterableService,
+    ) -> TypeIs[p.Observability.HttpClient.HTTPXClient]:
         """Type guard to check if t.NormalizedValue is an httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send") is False
 

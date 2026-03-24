@@ -6,7 +6,7 @@ Internal module; use flext_observability package API.
 from __future__ import annotations
 
 import math
-from collections.abc import MutableMapping, MutableSequence
+from collections.abc import Mapping, MutableMapping, MutableSequence
 from datetime import UTC, datetime
 from typing import ClassVar
 from uuid import uuid4
@@ -75,7 +75,7 @@ class FlextObservability:
             """Initialize metrics service."""
             self._container = container or FlextContainer.get_global()
             self._logger = FlextRuntime.get_logger(__name__)
-            self._metrics = []
+            self._metrics = list[FlextObservability.Metric]()
 
         def record_metric(
             self,
@@ -101,7 +101,7 @@ class FlextObservability:
                     metric_type = c.Observability.MetricType.COUNTER
                 elif name.endswith(("_duration", "_seconds")):
                     metric_type = c.Observability.MetricType.HISTOGRAM
-                resolved_labels: dict[str, t.Scalar] = (
+                resolved_labels: Mapping[str, t.Scalar] = (
                     dict(labels) if labels is not None else {}
                 )
                 metric = FlextObservability.Metric(
@@ -132,7 +132,7 @@ class FlextObservability:
             """Initialize tracing service."""
             self._container = container or FlextContainer.get_global()
             self._logger = FlextRuntime.get_logger(__name__)
-            self._traces = []
+            self._traces = list[FlextObservability.Trace]()
 
         def start_trace(
             self,
@@ -145,7 +145,7 @@ class FlextObservability:
                     return r[FlextObservability.Trace].fail(
                         "Trace name must be non-empty string",
                     )
-                resolved_attrs: dict[str, t.Scalar] = (
+                resolved_attrs: Mapping[str, t.Scalar] = (
                     dict(attributes) if attributes is not None else {}
                 )
                 trace = FlextObservability.Trace(
@@ -171,7 +171,7 @@ class FlextObservability:
             """Initialize alerting service."""
             self._container = container or FlextContainer.get_global()
             self._logger = FlextRuntime.get_logger(__name__)
-            self._alerts = []
+            self._alerts = list[FlextObservability.Alert]()
 
         def create_alert(
             self,
@@ -191,7 +191,7 @@ class FlextObservability:
                     return r[FlextObservability.Alert].fail(
                         "Alert message cannot be empty",
                     )
-                resolved_labels: dict[str, t.Scalar] = (
+                resolved_labels: Mapping[str, t.Scalar] = (
                     dict(labels) if labels is not None else {}
                 )
                 alert = FlextObservability.Alert(
@@ -220,7 +220,7 @@ class FlextObservability:
             """Initialize health service."""
             self._container = container or FlextContainer.get_global()
             self._logger = FlextRuntime.get_logger(__name__)
-            self._checks = []
+            self._checks = list[FlextObservability.HealthCheck]()
 
         def check_component(
             self,
@@ -238,7 +238,7 @@ class FlextObservability:
                     return r[FlextObservability.HealthCheck].fail(
                         f"Invalid health status: {status}",
                     )
-                resolved_details: dict[str, t.Scalar] = (
+                resolved_details: Mapping[str, t.Scalar] = (
                     dict(details) if details is not None else {}
                 )
                 health = FlextObservability.HealthCheck(
@@ -267,7 +267,7 @@ class FlextObservability:
             """Initialize logging service."""
             self._container = container or FlextContainer.get_global()
             self._logger = FlextRuntime.get_logger(__name__)
-            self._entries = []
+            self._entries = list[FlextObservability.LogEntry]()
 
         def log_entry(
             self,
@@ -282,7 +282,7 @@ class FlextObservability:
                     return r[FlextObservability.LogEntry].fail(
                         "Log message cannot be empty",
                     )
-                resolved_context: dict[str, t.Scalar] = (
+                resolved_context: Mapping[str, t.Scalar] = (
                     dict(context) if context is not None else {}
                 )
                 entry = FlextObservability.LogEntry(
@@ -364,7 +364,7 @@ class FlextObservability:
                 return r[FlextObservability.Trace].fail(
                     "Trace name must be non-empty string",
                 )
-            resolved_attrs: dict[str, t.Scalar] = (
+            resolved_attrs: Mapping[str, t.Scalar] = (
                 dict(attributes) if attributes is not None else {}
             )
             trace = FlextObservability.Trace(
@@ -394,7 +394,7 @@ class FlextObservability:
                 return r[FlextObservability.Alert].fail("Alert message cannot be empty")
             if not title and message:
                 return r[FlextObservability.Alert].fail("Alert title cannot be empty")
-            resolved_labels: dict[str, t.Scalar] = (
+            resolved_labels: Mapping[str, t.Scalar] = (
                 dict(labels) if labels is not None else {}
             )
             alert = FlextObservability.Alert(
@@ -428,7 +428,7 @@ class FlextObservability:
                 return r[FlextObservability.HealthCheck].fail(
                     f"Invalid health status: {status}",
                 )
-            resolved_details: dict[str, t.Scalar] = (
+            resolved_details: Mapping[str, t.Scalar] = (
                 dict(details) if details is not None else {}
             )
             health = FlextObservability.HealthCheck(
@@ -458,7 +458,7 @@ class FlextObservability:
                 return r[FlextObservability.LogEntry].fail(
                     "Log message cannot be empty",
                 )
-            resolved_context: dict[str, t.Scalar] = (
+            resolved_context: Mapping[str, t.Scalar] = (
                 dict(context) if context is not None else {}
             )
             entry = FlextObservability.LogEntry(

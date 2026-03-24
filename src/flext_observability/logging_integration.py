@@ -19,6 +19,8 @@ Key Features:
 
 from __future__ import annotations
 
+from collections.abc import Mapping, MutableMapping
+
 from flext_core import FlextLogger, r, t
 from structlog.typing import BindableLogger
 
@@ -245,12 +247,14 @@ class FlextObservabilityLogging:
                 return r[bool].fail(
                     f"Failed to get trace context: {context_result.error}",
                 )
-            log_context: dict[str, t.NormalizedValue] = context_result.value.model_dump(
-                exclude_none=True,
+            log_context: MutableMapping[str, t.NormalizedValue] = (
+                context_result.value.model_dump(
+                    exclude_none=True,
+                )
             )
             extra_context: t.NormalizedValue = log_context.pop("extra", {})
             if isinstance(extra_context, dict):
-                typed_extra: dict[str, t.NormalizedValue] = extra_context
+                typed_extra: Mapping[str, t.NormalizedValue] = extra_context
                 log_context.update(typed_extra)
             if extra:
                 log_context.update(extra)
