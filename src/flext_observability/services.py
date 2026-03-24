@@ -90,14 +90,14 @@ class FlextObservabilityServices:
         except (ValueError, TypeError, KeyError) as e:
             return r[t.Dict].fail(f"Entry processing failed: {e}")
 
+    @staticmethod
+    def get_global_factory() -> FlextObservabilityServices:
+        """Get global factory instance."""
+        return FlextObservabilityServices()
 
-def get_global_factory() -> FlextObservabilityServices:
-    """Get global factory instance."""
-    return FlextObservabilityServices()
+    @staticmethod
+    def reset_global_factory() -> None:
+        """Reset global factory through FLEXT container."""
 
 
-def reset_global_factory() -> None:
-    """Reset global factory through FLEXT container."""
-
-
-__all__ = ["FlextObservabilityServices", "get_global_factory", "reset_global_factory"]
+__all__ = ["FlextObservabilityServices"]

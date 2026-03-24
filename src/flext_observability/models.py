@@ -19,11 +19,7 @@ from uuid import uuid4
 from flext_core import FlextModels, t
 from pydantic import ConfigDict, Field, computed_field
 
-# Deferred import to avoid circular dependency - used inside Observability nested classes
-from flext_observability import FlextObservabilityConstants as _c
-
-# Domain scalar type alias used in model fields
-_DomainLabels = dict[str, t.Scalar]
+from flext_observability import c
 
 
 class FlextObservabilityModels(FlextModels):
@@ -136,6 +132,9 @@ class FlextObservabilityModels(FlextModels):
             """Computed retention in hours."""
             return self.retention_days * 24.0
 
+    # Domain scalar type alias used in model fields
+    _DomainLabels = dict[str, t.Scalar]
+
     class Observability:
         """Metrics domain models."""
 
@@ -158,14 +157,18 @@ class FlextObservabilityModels(FlextModels):
             value: t.PositiveFloat
             unit: t.NonEmptyStr
             metric_type: t.NonEmptyStr
-            labels: Annotated[_DomainLabels, Field(default_factory=dict)]
+            labels: Annotated[
+                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+            ]
 
         class Trace(FlextModels.Entity):
             """Distributed trace entity."""
 
             trace_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
             name: t.NonEmptyStr
-            attributes: Annotated[_DomainLabels, Field(default_factory=dict)]
+            attributes: Annotated[
+                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+            ]
 
         class Alert(FlextModels.Entity):
             """Observability alert entity."""
@@ -175,7 +178,9 @@ class FlextObservabilityModels(FlextModels):
             message: t.NonEmptyStr
             severity: t.NonEmptyStr
             source: t.NonEmptyStr
-            labels: Annotated[_DomainLabels, Field(default_factory=dict)]
+            labels: Annotated[
+                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+            ]
 
         class HealthCheck(FlextModels.Entity):
             """Health check entity."""
@@ -183,7 +188,9 @@ class FlextObservabilityModels(FlextModels):
             id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
             component: t.NonEmptyStr
             status: t.NonEmptyStr
-            details: Annotated[_DomainLabels, Field(default_factory=dict)]
+            details: Annotated[
+                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+            ]
 
         class LogEntry(FlextModels.Entity):
             """Structured log entry entity."""
@@ -196,7 +203,9 @@ class FlextObservabilityModels(FlextModels):
                 datetime,
                 Field(default_factory=lambda: datetime.now(tz=UTC)),
             ]
-            context: Annotated[_DomainLabels, Field(default_factory=dict)]
+            context: Annotated[
+                FlextObservabilityModels._DomainLabels, Field(default_factory=dict)
+            ]
 
         class StartTimePayload(FlextModels.Value):
             """Payload for validating HTTP request start time."""
@@ -228,13 +237,13 @@ class FlextObservabilityModels(FlextModels):
         class MetricTypeInput(FlextModels.Value):
             """Validation model for metric type input."""
 
-            metric_type: _c.Observability.MetricType
+            metric_type: c.Observability.MetricType
 
         class CustomMetricDefinition(FlextModels.Value):
             """Definition of a custom business metric with type and metadata."""
 
             name: t.NonEmptyStr
-            metric_type: _c.Observability.MetricType
+            metric_type: c.Observability.MetricType
             description: t.NonEmptyStr
             unit: Annotated[str, Field(default="1", min_length=1)]
             labels: Annotated[t.StrMapping, Field(default_factory=dict)]
@@ -257,8 +266,8 @@ class FlextObservabilityModels(FlextModels):
 
             error_type: t.NonEmptyStr
             message: t.NonEmptyStr
-            severity: _c.Observability.ErrorSeverity = (
-                _c.Observability.ErrorSeverity.ERROR
+            severity: c.Observability.ErrorSeverity = (
+                c.Observability.ErrorSeverity.ERROR
             )
             fingerprint: str = ""
             correlation_id: str = ""

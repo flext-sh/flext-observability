@@ -80,11 +80,7 @@ if TYPE_CHECKING:
         FlextObservabilityProtocols as p,
     )
     from flext_observability.sampling import FlextObservabilitySampling
-    from flext_observability.services import (
-        FlextObservabilityServices,
-        get_global_factory,
-        reset_global_factory,
-    )
+    from flext_observability.services import FlextObservabilityServices
     from flext_observability.settings import FlextObservabilitySettings
     from flext_observability.typings import (
         FlextObservabilityTypes,
@@ -195,12 +191,10 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
         "flext_observability.monitoring",
         "flext_monitor_function",
     ),
-    "get_global_factory": ("flext_observability.services", "get_global_factory"),
     "h": ("flext_core", "h"),
     "m": ("flext_observability.models", "FlextObservabilityModels"),
     "p": ("flext_observability.protocols", "FlextObservabilityProtocols"),
     "r": ("flext_core", "r"),
-    "reset_global_factory": ("flext_observability.services", "reset_global_factory"),
     "s": ("flext_core", "s"),
     "t": ("flext_observability.typings", "FlextObservabilityTypes"),
     "u": ("flext_observability.utilities", "FlextObservabilityUtilities"),
@@ -244,12 +238,10 @@ __all__ = [
     "d",
     "e",
     "flext_monitor_function",
-    "get_global_factory",
     "h",
     "m",
     "p",
     "r",
-    "reset_global_factory",
     "s",
     "t",
     "u",
