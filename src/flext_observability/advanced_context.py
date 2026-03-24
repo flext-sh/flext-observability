@@ -25,7 +25,6 @@ from pydantic import TypeAdapter
 
 from flext_observability import FlextObservabilityTypes as t, m
 
-ContextSnapshot = m.Observability.ContextSnapshot
 _SCALAR_ADAPTER: TypeAdapter[t.Scalar] = TypeAdapter(t.Scalar)
 
 
@@ -68,7 +67,7 @@ class FlextObservabilityAdvancedContext:
             self._metadata: MutableMapping[str, t.Scalar] = {}
             self._baggage: MutableMapping[str, str] = {}
             self._request_id: str = ""
-            self._parent_context: ContextSnapshot | None = None
+            self._parent_context: m.Observability.ContextSnapshot | None = None
 
         def clear(self) -> r[bool]:
             """Clear all request-local context.
@@ -146,7 +145,7 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to merge context: {e}")
 
-        def restore(self, snapshot: ContextSnapshot) -> r[bool]:
+        def restore(self, snapshot: m.Observability.ContextSnapshot) -> r[bool]:
             """Restore context from snapshot.
 
             Args:
@@ -217,7 +216,7 @@ class FlextObservabilityAdvancedContext:
             correlation_id: str = "",
             trace_id: str = "",
             span_id: str = "",
-        ) -> ContextSnapshot:
+        ) -> m.Observability.ContextSnapshot:
             """Create snapshot of current context.
 
             Args:
@@ -229,7 +228,7 @@ class FlextObservabilityAdvancedContext:
                 ContextSnapshot - Context snapshot for later restoration
 
             """
-            return ContextSnapshot(
+            return m.Observability.ContextSnapshot(
                 correlation_id=correlation_id,
                 trace_id=trace_id,
                 span_id=span_id,
@@ -281,4 +280,4 @@ class FlextObservabilityAdvancedContext:
         return ctx.set_metadata(key, value)
 
 
-__all__ = ["ContextSnapshot", "FlextObservabilityAdvancedContext"]
+__all__ = ["FlextObservabilityAdvancedContext"]

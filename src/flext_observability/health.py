@@ -16,9 +16,6 @@ from pydantic import ValidationError
 
 from flext_observability import m
 
-_HealthCheckFactoryKwargs = m.Observability.HealthCheckFactoryKwargs
-HealthCheckModel = m.Observability.HealthCheckModel
-
 
 class FlextObservabilityHealth:
     """Focused health monitoring for observability operations.
@@ -33,13 +30,15 @@ class FlextObservabilityHealth:
         status: str = "unknown",
         message: str = "",
         **kwargs: t.Scalar,
-    ) -> r[HealthCheckModel]:
+    ) -> r[m.Observability.HealthCheckModel]:
         """Create a FlextHealthCheck entity directly."""
         try:
             valid_metrics: t.Dict | None = None
             valid_timestamp: datetime | None = None
             try:
-                parsed_kwargs = _HealthCheckFactoryKwargs.model_validate(obj=kwargs)
+                parsed_kwargs = m.Observability.HealthCheckFactoryKwargs.model_validate(
+                    obj=kwargs
+                )
                 if parsed_kwargs.metrics is not None:
                     valid_metrics = parsed_kwargs.metrics
                 if parsed_kwargs.timestamp is not None:
@@ -47,7 +46,7 @@ class FlextObservabilityHealth:
             except ValidationError:
                 valid_metrics = None
                 valid_timestamp = None
-            health_check = HealthCheckModel(
+            health_check = m.Observability.HealthCheckModel(
                 component=component,
                 status=status,
                 message=message,
@@ -58,9 +57,11 @@ class FlextObservabilityHealth:
                 health_check.metrics = valid_metrics
             if valid_timestamp is not None:
                 health_check.timestamp = valid_timestamp
-            return r[HealthCheckModel].ok(health_check)
+            return r[m.Observability.HealthCheckModel].ok(health_check)
         except (ValueError, TypeError, KeyError) as e:
-            return r[HealthCheckModel].fail(f"Failed to create health check: {e}")
+            return r[m.Observability.HealthCheckModel].fail(
+                f"Failed to create health check: {e}"
+            )
 
 
 __all__ = ["FlextObservabilityHealth"]

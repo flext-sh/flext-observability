@@ -43,17 +43,6 @@ request = flask.request if hasattr(flask, "request") else None
 _flask_available = True
 _starlette_available = True
 
-# Local aliases for convenience
-_StartTimePayload = m.Observability.StartTimePayload
-FlaskHook = p.Observability.Http.FlaskHook
-FlaskErrorHandler = p.Observability.Http.FlaskErrorHandler
-FlaskApp = p.Observability.Http.FlaskApp
-FastAPIApp = p.Observability.Http.FastAPIApp
-RequestURL = p.Observability.Http.RequestURL
-RequestClient = p.Observability.Http.RequestClient
-Request = p.Observability.Http.Request
-Response = p.Observability.Http.Response
-
 
 class FlextObservabilityHTTP:
     """HTTP framework auto-instrumentation.
@@ -183,7 +172,9 @@ class FlextObservabilityHTTP:
                         )
 
                 @after_request_hook
-                def flext_after_request(response: Response) -> Response:
+                def flext_after_request(
+                    response: p.Observability.Http.Response,
+                ) -> p.Observability.Http.Response:
                     """Record metrics and complete span after request processing."""
                     try:
                         start_time = (
@@ -193,9 +184,11 @@ class FlextObservabilityHTTP:
                         )
                         duration_ms = 0.0
                         try:
-                            validated_start = _StartTimePayload.model_validate(
-                                obj={"value": start_time},
-                            ).value
+                            validated_start = (
+                                m.Observability.StartTimePayload.model_validate(
+                                    obj={"value": start_time},
+                                ).value
+                            )
                             duration_ms = (time.time() - validated_start) * 1000
                         except ValidationError:
                             duration_ms = 0.0
@@ -307,7 +300,7 @@ class FlextObservabilityHTTP:
                     return r[bool].fail(
                         "Invalid FastAPI app - missing add_middleware method",
                     )
-                typed_app: FastAPIApp = app
+                typed_app: p.Observability.Http.FastAPIApp = app
 
                 class FlextObservabilityMiddleware:
                     """Starlette-based ASGI middleware for FastAPI."""
@@ -317,9 +310,12 @@ class FlextObservabilityHTTP:
 
                     async def dispatch(
                         self,
-                        request: Request,
-                        call_next: Callable[[Request], Awaitable[Response]],
-                    ) -> Response:
+                        request: p.Observability.Http.Request,
+                        call_next: Callable[
+                            [p.Observability.Http.Request],
+                            Awaitable[p.Observability.Http.Response],
+                        ],
+                    ) -> p.Observability.Http.Response:
                         """Process HTTP request with instrumentation."""
                         try:
                             headers_dict = {

@@ -39,23 +39,14 @@ if TYPE_CHECKING:
         __version__,
         __version_info__,
     )
-    from flext_observability.advanced_context import (
-        ContextSnapshot,
-        FlextObservabilityAdvancedContext,
-    )
+    from flext_observability.advanced_context import FlextObservabilityAdvancedContext
     from flext_observability.constants import (
         FlextObservabilityConstants,
         FlextObservabilityConstants as c,
     )
     from flext_observability.context import FlextObservabilityContext
-    from flext_observability.custom_metrics import (
-        CustomMetricDefinition,
-        FlextObservabilityCustomMetrics,
-    )
-    from flext_observability.error_handling import (
-        ErrorEvent,
-        FlextObservabilityErrorHandling,
-    )
+    from flext_observability.custom_metrics import FlextObservabilityCustomMetrics
+    from flext_observability.error_handling import FlextObservabilityErrorHandling
     from flext_observability.fields import FlextObservabilityFields
     from flext_observability.health import FlextObservabilityHealth
     from flext_observability.http_client_instrumentation import (
@@ -71,10 +62,7 @@ if TYPE_CHECKING:
         FlextObservabilityMonitor,
         flext_monitor_function,
     )
-    from flext_observability.performance import (
-        FlextObservabilityPerformance,
-        PerformanceMetrics,
-    )
+    from flext_observability.performance import FlextObservabilityPerformance
     from flext_observability.protocols import (
         FlextObservabilityProtocols,
         FlextObservabilityProtocols as p,
@@ -92,12 +80,6 @@ if TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "ContextSnapshot": ("flext_observability.advanced_context", "ContextSnapshot"),
-    "CustomMetricDefinition": (
-        "flext_observability.custom_metrics",
-        "CustomMetricDefinition",
-    ),
-    "ErrorEvent": ("flext_observability.error_handling", "ErrorEvent"),
     "FlextObservabilityAdvancedContext": (
         "flext_observability.advanced_context",
         "FlextObservabilityAdvancedContext",
@@ -174,7 +156,6 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
         "flext_observability.utilities",
         "FlextObservabilityUtilities",
     ),
-    "PerformanceMetrics": ("flext_observability.performance", "PerformanceMetrics"),
     "__all__": ("flext_observability.__version__", "__all__"),
     "__author__": ("flext_observability.__version__", "__author__"),
     "__author_email__": ("flext_observability.__version__", "__author_email__"),
@@ -202,9 +183,6 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
 }
 
 __all__ = [
-    "ContextSnapshot",
-    "CustomMetricDefinition",
-    "ErrorEvent",
     "FlextObservabilityAdvancedContext",
     "FlextObservabilityConstants",
     "FlextObservabilityContext",
@@ -224,7 +202,6 @@ __all__ = [
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
-    "PerformanceMetrics",
     "__all__",
     "__author__",
     "__author_email__",

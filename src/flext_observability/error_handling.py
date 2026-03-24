@@ -26,10 +26,6 @@ from pydantic import ValidationError
 
 from flext_observability import FlextObservabilityContext, c, m
 
-_CooldownInput = m.Observability.CooldownInput
-_ThresholdInput = m.Observability.ThresholdInput
-ErrorEvent = m.Observability.ErrorEvent
-
 
 class FlextObservabilityErrorHandling:
     """Error handling and deduplication system.
@@ -123,7 +119,7 @@ class FlextObservabilityErrorHandling:
 
         def get_escalated_severity(
             self,
-            error: ErrorEvent,
+            error: m.Observability.ErrorEvent,
         ) -> c.Observability.ErrorSeverity:
             """Get escalated severity based on error count.
 
@@ -145,7 +141,7 @@ class FlextObservabilityErrorHandling:
                 return c.Observability.ErrorSeverity.WARNING
             return error.severity
 
-        def record_alert_sent(self, error: ErrorEvent) -> None:
+        def record_alert_sent(self, error: m.Observability.ErrorEvent) -> None:
             """Record that alert was sent for error.
 
             Args:
@@ -156,7 +152,9 @@ class FlextObservabilityErrorHandling:
                 error.calculate_fingerprint()
             self._last_alert_time[error.fingerprint] = time.time()
 
-        def record_error(self, error: ErrorEvent) -> r[ErrorEvent]:
+        def record_error(
+            self, error: m.Observability.ErrorEvent
+        ) -> r[m.Observability.ErrorEvent]:
             """Record an error event.
 
             Args:
@@ -172,7 +170,7 @@ class FlextObservabilityErrorHandling:
 
             """
 
-            def operation() -> ErrorEvent:
+            def operation() -> m.Observability.ErrorEvent:
                 error.calculate_fingerprint()
                 try:
                     error.correlation_id = (
@@ -207,7 +205,7 @@ class FlextObservabilityErrorHandling:
 
             """
             try:
-                validated_seconds = _CooldownInput.model_validate(
+                validated_seconds = m.Observability.CooldownInput.model_validate(
                     obj={"seconds": seconds},
                 ).seconds
             except ValidationError as error:
@@ -231,7 +229,7 @@ class FlextObservabilityErrorHandling:
 
             """
             try:
-                validated_threshold = _ThresholdInput.model_validate(
+                validated_threshold = m.Observability.ThresholdInput.model_validate(
                     obj={"threshold": threshold},
                 ).threshold
             except ValidationError as error:
@@ -244,7 +242,7 @@ class FlextObservabilityErrorHandling:
             )
             return r[bool].ok(value=True)
 
-        def should_alert_for_error(self, error: ErrorEvent) -> bool:
+        def should_alert_for_error(self, error: m.Observability.ErrorEvent) -> bool:
             """Determine if error should trigger an alert.
 
             Args:
@@ -296,7 +294,9 @@ class FlextObservabilityErrorHandling:
         return FlextObservabilityErrorHandling._handler_instance
 
     @staticmethod
-    def record_error(error: ErrorEvent) -> r[ErrorEvent]:
+    def record_error(
+        error: m.Observability.ErrorEvent,
+    ) -> r[m.Observability.ErrorEvent]:
         """Convenience function: record an error.
 
         Args:
@@ -310,7 +310,7 @@ class FlextObservabilityErrorHandling:
         return handler.record_error(error)
 
     @staticmethod
-    def should_alert(error: ErrorEvent) -> bool:
+    def should_alert(error: m.Observability.ErrorEvent) -> bool:
         """Convenience function: check if error should alert.
 
         Args:
@@ -324,4 +324,4 @@ class FlextObservabilityErrorHandling:
         return handler.should_alert_for_error(error)
 
 
-__all__ = ["ErrorEvent", "FlextObservabilityErrorHandling"]
+__all__ = ["FlextObservabilityErrorHandling"]

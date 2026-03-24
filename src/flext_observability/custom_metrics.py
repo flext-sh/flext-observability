@@ -20,15 +20,10 @@ from __future__ import annotations
 
 from collections.abc import MutableMapping
 
-from flext_core import FlextRuntime, r, t
+from flext_core import FlextRuntime, r
 from pydantic import ValidationError
 
-from flext_observability import c, m
-
-MetricType = c.Observability.MetricType
-
-_MetricTypeInput = m.Observability.MetricTypeInput
-CustomMetricDefinition = m.Observability.CustomMetricDefinition
+from flext_observability import c, m, t
 
 
 class FlextObservabilityCustomMetrics:
@@ -72,7 +67,9 @@ class FlextObservabilityCustomMetrics:
 
         def __init__(self) -> None:
             """Initialize metric registry."""
-            self._metrics: MutableMapping[str, CustomMetricDefinition] = {}
+            self._metrics: MutableMapping[
+                str, m.Observability.CustomMetricDefinition
+            ] = {}
             self._metric_instances: MutableMapping[str, t.Scalar] = {}
             self._namespaces: MutableMapping[str, str] = {}
 
@@ -125,7 +122,7 @@ class FlextObservabilityCustomMetrics:
             self,
             name: str,
             namespace: str = "default",
-        ) -> CustomMetricDefinition | None:
+        ) -> m.Observability.CustomMetricDefinition | None:
             """Get metric definition by name.
 
             Args:
@@ -138,7 +135,7 @@ class FlextObservabilityCustomMetrics:
             """
             namespaced_name = f"{namespace}:{name}" if namespace != "default" else name
             value = self._metrics.get(namespaced_name)
-            if isinstance(value, CustomMetricDefinition):
+            if isinstance(value, m.Observability.CustomMetricDefinition):
                 return value
             return None
 
@@ -168,7 +165,9 @@ class FlextObservabilityCustomMetrics:
                 "labels": metric.labels,
             })
 
-        def get_metrics_by_type(self, metric_type: MetricType) -> t.Dict:
+        def get_metrics_by_type(
+            self, metric_type: c.Observability.MetricType
+        ) -> t.Dict:
             """Get all metrics of a specific type.
 
             Args:
@@ -196,7 +195,7 @@ class FlextObservabilityCustomMetrics:
         def register_metric(
             self,
             name: str,
-            metric_type: str | MetricType,
+            metric_type: str | c.Observability.MetricType,
             description: str,
             unit: str = "1",
             namespace: str = "default",
@@ -227,7 +226,7 @@ class FlextObservabilityCustomMetrics:
                     return r[bool].fail("Metric description cannot be empty")
                 metric_input = metric_type.lower()
                 try:
-                    metric_type_enum = _MetricTypeInput.model_validate(
+                    metric_type_enum = m.Observability.MetricTypeInput.model_validate(
                         obj={"metric_type": metric_input},
                     ).metric_type
                 except ValidationError:
@@ -241,7 +240,7 @@ class FlextObservabilityCustomMetrics:
                     return r[bool].fail(
                         f"Metric '{namespaced_name}' already registered",
                     )
-                definition = CustomMetricDefinition(
+                definition = m.Observability.CustomMetricDefinition(
                     name=name,
                     metric_type=metric_type_enum,
                     description=description,
@@ -286,7 +285,7 @@ class FlextObservabilityCustomMetrics:
     def get_metric(
         name: str,
         namespace: str = "default",
-    ) -> CustomMetricDefinition | None:
+    ) -> m.Observability.CustomMetricDefinition | None:
         """Convenience function: get metric definition.
 
         Args:
@@ -328,7 +327,7 @@ class FlextObservabilityCustomMetrics:
     @staticmethod
     def register_metric(
         name: str,
-        metric_type: str | MetricType,
+        metric_type: str | c.Observability.MetricType,
         description: str,
         unit: str = "1",
         namespace: str = "default",
@@ -356,4 +355,4 @@ class FlextObservabilityCustomMetrics:
         )
 
 
-__all__ = ["CustomMetricDefinition", "FlextObservabilityCustomMetrics"]
+__all__ = ["FlextObservabilityCustomMetrics"]

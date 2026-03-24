@@ -36,16 +36,6 @@ from flext_observability.logging_integration import (
     FlextObservabilityLogging,
 )
 
-# Local aliases for convenience
-_HeadersPayload = m.Observability.HeadersPayload
-HTTPXURL = p.Observability.HttpClient.HTTPXURL
-HTTPXRequest = p.Observability.HttpClient.HTTPXRequest
-HTTPXResponse = p.Observability.HttpClient.HTTPXResponse
-AIOHTTPResponse = p.Observability.HttpClient.AIOHTTPResponse
-HTTPXAsyncClient = p.Observability.HttpClient.HTTPXAsyncClient
-HTTPXClient = p.Observability.HttpClient.HTTPXClient
-AIOHTTPSession = p.Observability.HttpClient.AIOHTTPSession
-
 
 class FlextObservabilityHTTPClient:
     """HTTP client auto-instrumentation for service-to-service communication.
@@ -82,24 +72,28 @@ class FlextObservabilityHTTPClient:
     @staticmethod
     def _is_httpx_async_client(
         obj: object,
-    ) -> TypeIs[HTTPXAsyncClient]:
+    ) -> TypeIs[p.Observability.HttpClient.HTTPXAsyncClient]:
         """Type guard to check if t.NormalizedValue is an async httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send")
 
     @staticmethod
-    def _is_httpx_client(obj: object) -> TypeIs[HTTPXClient]:
+    def _is_httpx_client(obj: object) -> TypeIs[p.Observability.HttpClient.HTTPXClient]:
         """Type guard to check if t.NormalizedValue is an httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send") is False
 
     @staticmethod
-    def _is_aiohttp_session(obj: object) -> TypeIs[AIOHTTPSession]:
+    def _is_aiohttp_session(
+        obj: object,
+    ) -> TypeIs[p.Observability.HttpClient.AIOHTTPSession]:
         return hasattr(obj, "request")
 
     @staticmethod
     def _validated_headers(payload: t.NormalizedValue) -> MutableMapping[str, str]:
         try:
             return dict(
-                _HeadersPayload.model_validate(obj={"headers": payload}).headers,
+                m.Observability.HeadersPayload.model_validate(
+                    obj={"headers": payload}
+                ).headers,
             )
         except ValidationError:
             return {}
@@ -163,7 +157,9 @@ class FlextObservabilityHTTPClient:
                 if client_id in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
                     return r[bool].ok(value=True)
                 if FlextObservabilityHTTPClient._is_httpx_async_client(client):
-                    typed_async_client: HTTPXAsyncClient = client
+                    typed_async_client: p.Observability.HttpClient.HTTPXAsyncClient = (
+                        client
+                    )
                     original_request = typed_async_client.request
 
                     async def traced_async_request(
@@ -171,7 +167,7 @@ class FlextObservabilityHTTPClient:
                         url: str,
                         *args: t.Scalar,
                         **kwargs: t.Scalar,
-                    ) -> HTTPXResponse:
+                    ) -> p.Observability.HttpClient.HTTPXResponse:
                         start_time = time.time()
                         correlation_id = FlextObservabilityContext.get_correlation_id()
                         trace_id = FlextObservabilityContext.get_trace_id()
@@ -248,10 +244,11 @@ class FlextObservabilityHTTPClient:
 
                     typed_async_client.request = traced_async_request
                 elif FlextObservabilityHTTPClient._is_httpx_client(client):
-                    typed_sync_client: HTTPXClient = client
+                    typed_sync_client: p.Observability.HttpClient.HTTPXClient = client
                     original_request: Callable[
                         ...,
-                        HTTPXResponse | Awaitable[HTTPXResponse],
+                        p.Observability.HttpClient.HTTPXResponse
+                        | Awaitable[p.Observability.HttpClient.HTTPXResponse],
                     ] = typed_sync_client.request
 
                     def traced_request(
@@ -259,7 +256,7 @@ class FlextObservabilityHTTPClient:
                         url: str,
                         *args: t.Scalar,
                         **kwargs: t.Scalar,
-                    ) -> HTTPXResponse:
+                    ) -> p.Observability.HttpClient.HTTPXResponse:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
                         correlation_id = FlextObservabilityContext.get_correlation_id()
@@ -353,7 +350,9 @@ class FlextObservabilityHTTPClient:
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
 
-        instrumented_sessions: ClassVar[set[AIOHTTPSession]] = set()
+        instrumented_sessions: ClassVar[
+            set[p.Observability.HttpClient.AIOHTTPSession]
+        ] = set()
 
         @staticmethod
         def setup_instrumentation(session: t.RegisterableService) -> r[bool]:
@@ -397,7 +396,7 @@ class FlextObservabilityHTTPClient:
                     return r[bool].fail(
                         "Invalid aiohttp session - missing request method",
                     )
-                typed_session: AIOHTTPSession = session
+                typed_session: p.Observability.HttpClient.AIOHTTPSession = session
                 if (
                     typed_session
                     in FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions
@@ -410,7 +409,7 @@ class FlextObservabilityHTTPClient:
                     url: str,
                     *args: t.Scalar,
                     **kwargs: t.Scalar,
-                ) -> AIOHTTPResponse:
+                ) -> p.Observability.HttpClient.AIOHTTPResponse:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()
                     correlation_id = FlextObservabilityContext.get_correlation_id()

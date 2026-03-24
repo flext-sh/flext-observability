@@ -20,8 +20,6 @@ from flext_core import FlextLogger, r
 
 from flext_observability import m
 
-PerformanceMetrics = m.Observability.PerformanceMetrics
-
 
 class FlextObservabilityPerformance:
     """Performance monitoring for observability operations.
@@ -56,7 +54,7 @@ class FlextObservabilityPerformance:
     class Monitor:
         """Individual operation performance monitor."""
 
-        metrics: PerformanceMetrics
+        metrics: m.Observability.PerformanceMetrics
         _initial_memory: float
         _initial_cpu: float
 
@@ -67,11 +65,11 @@ class FlextObservabilityPerformance:
                 operation: Operation name for tracking
 
             """
-            self.metrics = PerformanceMetrics(operation=operation)
+            self.metrics = m.Observability.PerformanceMetrics(operation=operation)
             self._initial_memory = self._get_memory_usage()
             self._initial_cpu = self._get_cpu_percent()
 
-        def finish(self) -> PerformanceMetrics:
+        def finish(self) -> m.Observability.PerformanceMetrics:
             """Finish monitoring and return metrics.
 
             Returns:
@@ -142,7 +140,7 @@ class FlextObservabilityPerformance:
             return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
 
     @staticmethod
-    def is_performance_acceptable(metrics: PerformanceMetrics) -> bool:
+    def is_performance_acceptable(metrics: m.Observability.PerformanceMetrics) -> bool:
         """Check if operation performance is acceptable.
 
         Args:
@@ -174,7 +172,7 @@ class FlextObservabilityPerformance:
         return metrics.duration_ms < threshold
 
     @staticmethod
-    def log_performance_metrics(metrics: PerformanceMetrics) -> r[bool]:
+    def log_performance_metrics(metrics: m.Observability.PerformanceMetrics) -> r[bool]:
         """Log performance metrics for operation.
 
         Args:
@@ -212,4 +210,4 @@ class FlextObservabilityPerformance:
         return FlextObservabilityPerformance.Monitor(operation)
 
 
-__all__ = ["FlextObservabilityPerformance", "PerformanceMetrics"]
+__all__ = ["FlextObservabilityPerformance"]
