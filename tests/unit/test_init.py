@@ -11,16 +11,18 @@ from flext_core import FlextConstants, FlextContainer, FlextLogger
 from flext_tests import tm
 
 import flext_observability
-from flext_observability import (
+from flext_observability._core import (
+    FlextObservability,
     FlextObservabilityMasterFactory,
-    FlextObservabilityModels,
-    flext_alert,
-    flext_health_check,
-    flext_metric,
-    flext_trace,
-    get_global_factory,
-    reset_global_factory,
 )
+from flext_observability.models import FlextObservabilityModels
+
+flext_alert = FlextObservability.flext_alert
+flext_health_check = FlextObservability.flext_health_check
+flext_metric = FlextObservability.flext_metric
+flext_trace = FlextObservability.flext_trace
+get_global_factory = FlextObservability.get_global_factory
+reset_global_factory = FlextObservability.reset_global_factory
 
 
 class TestInitCoverage:
@@ -37,16 +39,10 @@ class TestInitCoverage:
     def test_all_public_api_imports(self) -> None:
         """Test that all __all__ exports can be imported successfully."""
         for export_name in flext_observability.__all__:
-            (
-                tm.that(hasattr(flext_observability, export_name), eq=True),
-                (f"Missing export: {export_name}"),
-            )
+            tm.that(hasattr(flext_observability, export_name), eq=True)
             exported_item = getattr(flext_observability, export_name)
             if export_name != "__license__":
-                (
-                    tm.that(exported_item, none=False),
-                    f"Null export: {export_name}",
-                )
+                tm.that(exported_item, none=False)
 
     def test_version_exports(self) -> None:
         """Test version exports are available."""

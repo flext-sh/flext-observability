@@ -14,9 +14,6 @@ from flext_observability import FlextObservabilityModels
 class FlextObservabilityTestModels(FlextTestsModels, FlextObservabilityModels):
     """Test models for flext-observability."""
 
-    class Tests:
-        """Test-specific models."""
-
 
 m = FlextObservabilityTestModels
 __all__ = ["FlextObservabilityTestModels", "m"]

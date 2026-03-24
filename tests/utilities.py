@@ -14,9 +14,6 @@ from flext_observability import FlextObservabilityUtilities
 class FlextObservabilityTestUtilities(FlextTestsUtilities, FlextObservabilityUtilities):
     """Test utilities for flext-observability."""
 
-    class Tests:
-        """Test-specific utilities."""
-
 
 u = FlextObservabilityTestUtilities
 __all__ = ["FlextObservabilityTestUtilities", "u"]

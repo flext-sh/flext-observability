@@ -11,18 +11,24 @@ Tests realistic scenarios combining:
 from __future__ import annotations
 
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent / "../../src"))
-import time
+
+from flext_observability._core import FlextObservabilityMasterFactory
+from flext_observability.advanced_context import FlextObservabilityAdvancedContext
+from flext_observability.constants import FlextObservabilityConstants as c
+from flext_observability.context import FlextObservabilityContext
+from flext_observability.custom_metrics import FlextObservabilityCustomMetrics
+from flext_observability.error_handling import FlextObservabilityErrorHandling
+from flext_observability.models import FlextObservabilityModels as _obs_m
+from flext_observability.performance import FlextObservabilityPerformance
+from flext_observability.sampling import FlextObservabilitySampling
+
+ErrorEvent = _obs_m.Observability.ErrorEvent
 
 try:
-    from flext_observability import (
-        FlextObservabilityContext,
-        FlextObservabilityMasterFactory,
-        FlextObservabilitySampling,
-    )
-
     FlextObservabilityContext.set_correlation_id("http-req-001")
     FlextObservabilityContext.set_trace_id("trace-http-001")
     sampler = FlextObservabilitySampling.get_sampler()
@@ -58,8 +64,6 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import FlextObservabilityMasterFactory
-
     factory = FlextObservabilityMasterFactory()
     start_time = time.time()
     time.sleep(0.02)
@@ -88,13 +92,6 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import (
-        ErrorEvent,
-        FlextObservabilityContext,
-        FlextObservabilityErrorHandling,
-        c,
-    )
-
     FlextObservabilityContext.set_correlation_id("error-test-001")
     handler = FlextObservabilityErrorHandling.get_handler()
     handler.set_escalation_threshold(3)
@@ -114,11 +111,6 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import (
-        FlextObservabilityContext,
-        FlextObservabilityMasterFactory,
-    )
-
     correlation_id = "dist-trace-001"
     FlextObservabilityContext.set_correlation_id(correlation_id)
     factory = FlextObservabilityMasterFactory()
@@ -156,8 +148,6 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import FlextObservabilityAdvancedContext
-
     ctx = FlextObservabilityAdvancedContext.get_context()
     ctx.set_metadata("user_id", "user-123")
     ctx.set_metadata("request_id", "req-456")
@@ -182,12 +172,6 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import (
-        FlextObservabilityCustomMetrics,
-        FlextObservabilitySampling,
-        c,
-    )
-
     registry = FlextObservabilityCustomMetrics.get_registry()
     sampler = FlextObservabilitySampling.get_sampler()
     result = registry.register_metric(
@@ -211,11 +195,6 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import (
-        FlextObservabilityPerformance,
-        FlextObservabilitySampling,
-    )
-
     sampler = FlextObservabilitySampling.get_sampler()
     performance = FlextObservabilityPerformance()
     sampler.set_environment("production")
@@ -232,18 +211,6 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import (
-        ErrorEvent,
-        FlextObservabilityAdvancedContext,
-        FlextObservabilityContext,
-        FlextObservabilityCustomMetrics,
-        FlextObservabilityErrorHandling,
-        FlextObservabilityMasterFactory,
-        FlextObservabilityPerformance,
-        FlextObservabilitySampling,
-        c,
-    )
-
     FlextObservabilityContext.set_correlation_id("e2e-test-001")
     FlextObservabilityContext.set_trace_id("trace-e2e-001")
     sampler = FlextObservabilitySampling.get_sampler()
@@ -292,11 +259,6 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import (
-        FlextObservabilityAdvancedContext,
-        FlextObservabilityContext,
-    )
-
     correlation_id = "multi-service-001"
     FlextObservabilityContext.set_correlation_id(correlation_id)
     FlextObservabilityContext.set_trace_id("trace-multi-001")
@@ -319,16 +281,6 @@ try:
 except Exception:
     pass
 try:
-    from flext_observability import (
-        FlextObservabilityAdvancedContext,
-        FlextObservabilityContext,
-        FlextObservabilityCustomMetrics,
-        FlextObservabilityErrorHandling,
-        FlextObservabilityMasterFactory,
-        FlextObservabilityPerformance,
-        FlextObservabilitySampling,
-    )
-
     FlextObservabilityContext.set_correlation_id("setup-001")
     assert FlextObservabilityContext.get_correlation_id() == "setup-001"
     factory = FlextObservabilityMasterFactory()
