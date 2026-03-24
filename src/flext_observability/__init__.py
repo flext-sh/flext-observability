@@ -93,87 +93,27 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
     "ContextSnapshot": ("flext_observability.advanced_context", "ContextSnapshot"),
-    "CustomMetricDefinition": (
-        "flext_observability.custom_metrics",
-        "CustomMetricDefinition",
-    ),
+    "CustomMetricDefinition": ("flext_observability.custom_metrics", "CustomMetricDefinition"),
     "ErrorEvent": ("flext_observability.error_handling", "ErrorEvent"),
-    "FlextObservabilityAdvancedContext": (
-        "flext_observability.advanced_context",
-        "FlextObservabilityAdvancedContext",
-    ),
-    "FlextObservabilityConstants": (
-        "flext_observability.constants",
-        "FlextObservabilityConstants",
-    ),
-    "FlextObservabilityContext": (
-        "flext_observability.context",
-        "FlextObservabilityContext",
-    ),
-    "FlextObservabilityCustomMetrics": (
-        "flext_observability.custom_metrics",
-        "FlextObservabilityCustomMetrics",
-    ),
-    "FlextObservabilityErrorHandling": (
-        "flext_observability.error_handling",
-        "FlextObservabilityErrorHandling",
-    ),
-    "FlextObservabilityFields": (
-        "flext_observability.fields",
-        "FlextObservabilityFields",
-    ),
-    "FlextObservabilityHTTP": (
-        "flext_observability.http_instrumentation",
-        "FlextObservabilityHTTP",
-    ),
-    "FlextObservabilityHTTPClient": (
-        "flext_observability.http_client_instrumentation",
-        "FlextObservabilityHTTPClient",
-    ),
-    "FlextObservabilityHealth": (
-        "flext_observability.health",
-        "FlextObservabilityHealth",
-    ),
-    "FlextObservabilityLogging": (
-        "flext_observability.logging",
-        "FlextObservabilityLogging",
-    ),
-    "FlextObservabilityModels": (
-        "flext_observability.models",
-        "FlextObservabilityModels",
-    ),
-    "FlextObservabilityMonitor": (
-        "flext_observability.monitoring",
-        "FlextObservabilityMonitor",
-    ),
-    "FlextObservabilityPerformance": (
-        "flext_observability.performance",
-        "FlextObservabilityPerformance",
-    ),
-    "FlextObservabilityProtocols": (
-        "flext_observability.protocols",
-        "FlextObservabilityProtocols",
-    ),
-    "FlextObservabilitySampling": (
-        "flext_observability.sampling",
-        "FlextObservabilitySampling",
-    ),
-    "FlextObservabilityServices": (
-        "flext_observability.services",
-        "FlextObservabilityServices",
-    ),
-    "FlextObservabilitySettings": (
-        "flext_observability.settings",
-        "FlextObservabilitySettings",
-    ),
-    "FlextObservabilityTypes": (
-        "flext_observability.typings",
-        "FlextObservabilityTypes",
-    ),
-    "FlextObservabilityUtilities": (
-        "flext_observability.utilities",
-        "FlextObservabilityUtilities",
-    ),
+    "FlextObservabilityAdvancedContext": ("flext_observability.advanced_context", "FlextObservabilityAdvancedContext"),
+    "FlextObservabilityConstants": ("flext_observability.constants", "FlextObservabilityConstants"),
+    "FlextObservabilityContext": ("flext_observability.context", "FlextObservabilityContext"),
+    "FlextObservabilityCustomMetrics": ("flext_observability.custom_metrics", "FlextObservabilityCustomMetrics"),
+    "FlextObservabilityErrorHandling": ("flext_observability.error_handling", "FlextObservabilityErrorHandling"),
+    "FlextObservabilityFields": ("flext_observability.fields", "FlextObservabilityFields"),
+    "FlextObservabilityHTTP": ("flext_observability.http_instrumentation", "FlextObservabilityHTTP"),
+    "FlextObservabilityHTTPClient": ("flext_observability.http_client_instrumentation", "FlextObservabilityHTTPClient"),
+    "FlextObservabilityHealth": ("flext_observability.health", "FlextObservabilityHealth"),
+    "FlextObservabilityLogging": ("flext_observability.logging", "FlextObservabilityLogging"),
+    "FlextObservabilityModels": ("flext_observability.models", "FlextObservabilityModels"),
+    "FlextObservabilityMonitor": ("flext_observability.monitoring", "FlextObservabilityMonitor"),
+    "FlextObservabilityPerformance": ("flext_observability.performance", "FlextObservabilityPerformance"),
+    "FlextObservabilityProtocols": ("flext_observability.protocols", "FlextObservabilityProtocols"),
+    "FlextObservabilitySampling": ("flext_observability.sampling", "FlextObservabilitySampling"),
+    "FlextObservabilityServices": ("flext_observability.services", "FlextObservabilityServices"),
+    "FlextObservabilitySettings": ("flext_observability.settings", "FlextObservabilitySettings"),
+    "FlextObservabilityTypes": ("flext_observability.typings", "FlextObservabilityTypes"),
+    "FlextObservabilityUtilities": ("flext_observability.utilities", "FlextObservabilityUtilities"),
     "PerformanceMetrics": ("flext_observability.performance", "PerformanceMetrics"),
     "__all__": ("flext_observability.__version__", "__all__"),
     "__author__": ("flext_observability.__version__", "__author__"),
@@ -187,10 +127,7 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
     "c": ("flext_observability.constants", "FlextObservabilityConstants"),
     "d": ("flext_core", "d"),
     "e": ("flext_core", "e"),
-    "flext_monitor_function": (
-        "flext_observability.monitoring",
-        "flext_monitor_function",
-    ),
+    "flext_monitor_function": ("flext_observability.monitoring", "flext_monitor_function"),
     "h": ("flext_core", "h"),
     "m": ("flext_observability.models", "FlextObservabilityModels"),
     "p": ("flext_observability.protocols", "FlextObservabilityProtocols"),
