@@ -13,7 +13,6 @@ FLEXT Pattern:
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from contextvars import ContextVar
 from uuid import uuid4
 
@@ -110,7 +109,7 @@ class FlextObservabilityContext:
         FlextObservabilityContext._trace_id.set("")
 
     @staticmethod
-    def from_headers(headers: t.Dict | Mapping[str, t.Scalar]) -> r[bool]:
+    def from_headers(headers: t.Dict | t.ScalarMapping) -> r[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
