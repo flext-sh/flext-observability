@@ -30,6 +30,8 @@ class FlextObservabilityModels(FlextModels):
     """
 
     class Observability:
+        """Observability domain models namespace."""
+
         class GenericObservabilityEntry(FlextModels.Value):
             """Generic base model for any observability entry using Pydantic."""
 

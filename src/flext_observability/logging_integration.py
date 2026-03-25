@@ -49,8 +49,6 @@ class FlextObservabilityLogging:
 
     _logger = FlextLogger(__name__)
 
-    LogContext = m.Observability.LogContext
-
     @staticmethod
     def create_logger(name: str) -> r[BindableLogger]:
         """Create logger with trace context enrichment.
@@ -87,7 +85,7 @@ class FlextObservabilityLogging:
         _logger: BindableLogger,
         *,
         include_baggage: bool = False,
-    ) -> r[FlextObservabilityLogging.LogContext]:
+    ) -> r[m.Observability.LogContext]:
         """Get trace context for log enrichment.
 
         Retrieves current trace context (correlation ID, trace ID, span ID)
@@ -118,7 +116,7 @@ class FlextObservabilityLogging:
 
         """
         try:
-            context_payload = FlextObservabilityLogging.LogContext()
+            context_payload = m.Observability.LogContext()
             correlation_id = FlextObservabilityContext.get_correlation_id()
             if correlation_id:
                 context_payload.correlation_id = correlation_id
@@ -132,9 +130,9 @@ class FlextObservabilityLogging:
                 baggage = FlextObservabilityContext.get_baggage()
                 if baggage is not None:
                     context_payload.baggage = str(baggage)
-            return r[FlextObservabilityLogging.LogContext].ok(context_payload)
+            return r[m.Observability.LogContext].ok(context_payload)
         except (ValueError, TypeError, KeyError) as e:
-            return r[FlextObservabilityLogging.LogContext].fail(
+            return r[m.Observability.LogContext].fail(
                 f"Context enrichment failed: {e}",
             )
 
@@ -264,7 +262,7 @@ class FlextObservabilityLogging:
             return r[bool].fail(f"Logging with context failed: {e}")
 
     @staticmethod
-    def validate_context() -> r[FlextObservabilityLogging.LogContext]:
+    def validate_context() -> r[m.Observability.LogContext]:
         """Validate current trace context is properly configured.
 
         Checks that essential trace context (correlation ID) is set.
@@ -288,8 +286,8 @@ class FlextObservabilityLogging:
             if not context.get("correlation_id"):
                 _ = FlextObservabilityLogging.ensure_correlation_id()
                 context = FlextObservabilityContext.get_context()
-            return r[FlextObservabilityLogging.LogContext].ok(
-                FlextObservabilityLogging.LogContext(
+            return r[m.Observability.LogContext].ok(
+                m.Observability.LogContext(
                     correlation_id=str(context.get("correlation_id"))
                     if context.get("correlation_id") is not None
                     else None,
@@ -302,7 +300,7 @@ class FlextObservabilityLogging:
                 ),
             )
         except (ValueError, TypeError, KeyError) as e:
-            return r[FlextObservabilityLogging.LogContext].fail(
+            return r[m.Observability.LogContext].fail(
                 f"Context validation failed: {e}",
             )
 
