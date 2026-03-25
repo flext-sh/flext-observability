@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping, MutableSequence
+from collections.abc import Mapping, MutableMapping, Sequence
 
 from flext_core import FlextUtilities, r
 
@@ -83,12 +83,9 @@ class FlextObservabilityUtilities(FlextUtilities):
         def extract_route_pattern(path: str) -> str:
             """Extract a generic route pattern from a concrete URL path."""
             parts = path.strip("/").split("/")
-            normalized: MutableSequence[str] = []
-            for part in parts:
-                if part.isdigit():
-                    normalized.append("{id}")
-                else:
-                    normalized.append(part)
+            normalized: Sequence[str] = [
+                "{id}" if part.isdigit() else part for part in parts
+            ]
             return "/" + "/".join(normalized) if normalized else "/"
 
     class Logging:

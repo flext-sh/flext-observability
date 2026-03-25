@@ -42,33 +42,29 @@ class FlextObservabilityModels(FlextModels):
         id: Annotated[
             t.NonEmptyStr,
             Field(
-                default_factory=lambda: str(uuid4()),
                 description="Unique entity identifier",
             ),
-        ]
+        ] = Field(default_factory=lambda: str(uuid4()))
         name: Annotated[t.NonEmptyStr, Field(description="Entity name")]
         type: Annotated[t.NonEmptyStr, Field(description="Entity type")]
         timestamp: Annotated[
             datetime,
             Field(
-                default_factory=datetime.now,
                 description="Entry timestamp",
             ),
-        ]
+        ] = Field(default_factory=datetime.now)
         data: Annotated[
             t.ConfigurationMapping,
             Field(
-                default_factory=dict,
                 description="Generic data payload",
             ),
-        ]
+        ] = Field(default_factory=dict)
         metadata: Annotated[
             t.ConfigurationMapping,
             Field(
-                default_factory=dict,
                 description="Generic metadata",
             ),
-        ]
+        ] = Field(default_factory=dict)
 
         @computed_field
         def age_seconds(self) -> float:
@@ -117,10 +113,9 @@ class FlextObservabilityModels(FlextModels):
         settings: Annotated[
             t.ConfigurationMapping,
             Field(
-                default_factory=dict,
                 description="Type-specific settings",
             ),
-        ]
+        ] = Field(default_factory=dict)
 
         @computed_field
         def interval_minutes(self) -> float:
@@ -141,7 +136,7 @@ class FlextObservabilityModels(FlextModels):
         class MetricEntry(FlextModels.Entity):
             """Metric entry model."""
 
-            metric_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            metric_id: str = Field(default_factory=lambda: str(uuid4()))
             name: t.NonEmptyStr
             value: t.Numeric
             unit: t.NonEmptyStr
@@ -152,65 +147,53 @@ class FlextObservabilityModels(FlextModels):
         class Metric(FlextModels.Entity):
             """Observability metric entity."""
 
-            id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            id: str = Field(default_factory=lambda: str(uuid4()))
             name: t.NonEmptyStr
             value: t.PositiveFloat
             unit: t.NonEmptyStr
             metric_type: t.NonEmptyStr
-            labels: Annotated[
-                FlextObservabilityModels._DomainLabels,
-                Field(default_factory=dict),
-            ]
+            labels: FlextObservabilityModels._DomainLabels = Field(default_factory=dict)
 
         class Trace(FlextModels.Entity):
             """Distributed trace entity."""
 
-            trace_id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            trace_id: str = Field(default_factory=lambda: str(uuid4()))
             name: t.NonEmptyStr
-            attributes: Annotated[
-                FlextObservabilityModels._DomainLabels,
-                Field(default_factory=dict),
-            ]
+            attributes: FlextObservabilityModels._DomainLabels = Field(
+                default_factory=dict
+            )
 
         class Alert(FlextModels.Entity):
             """Observability alert entity."""
 
-            id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            id: str = Field(default_factory=lambda: str(uuid4()))
             title: t.NonEmptyStr
             message: t.NonEmptyStr
             severity: t.NonEmptyStr
             source: t.NonEmptyStr
-            labels: Annotated[
-                FlextObservabilityModels._DomainLabels,
-                Field(default_factory=dict),
-            ]
+            labels: FlextObservabilityModels._DomainLabels = Field(default_factory=dict)
 
         class HealthCheck(FlextModels.Entity):
             """Health check entity."""
 
-            id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            id: str = Field(default_factory=lambda: str(uuid4()))
             component: t.NonEmptyStr
             status: t.NonEmptyStr
-            details: Annotated[
-                FlextObservabilityModels._DomainLabels,
-                Field(default_factory=dict),
-            ]
+            details: FlextObservabilityModels._DomainLabels = Field(
+                default_factory=dict
+            )
 
         class LogEntry(FlextModels.Entity):
             """Structured log entry entity."""
 
-            id: Annotated[str, Field(default_factory=lambda: str(uuid4()))]
+            id: str = Field(default_factory=lambda: str(uuid4()))
             message: t.NonEmptyStr
             level: t.NonEmptyStr
             component: t.NonEmptyStr
-            timestamp: Annotated[
-                datetime,
-                Field(default_factory=lambda: datetime.now(tz=UTC)),
-            ]
-            context: Annotated[
-                FlextObservabilityModels._DomainLabels,
-                Field(default_factory=dict),
-            ]
+            timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
+            context: FlextObservabilityModels._DomainLabels = Field(
+                default_factory=dict
+            )
 
         class StartTimePayload(FlextModels.Value):
             """Payload for validating HTTP request start time."""
@@ -220,7 +203,7 @@ class FlextObservabilityModels(FlextModels):
         class HeadersPayload(FlextModels.Value):
             """Payload for validating HTTP client headers."""
 
-            headers: Annotated[t.StrMapping, Field(default_factory=dict)]
+            headers: t.StrMapping = Field(default_factory=dict)
 
         # --- Moved from advanced_context.py ---
         class ContextSnapshot(FlextModels.Value):
@@ -229,8 +212,8 @@ class FlextObservabilityModels(FlextModels):
             correlation_id: Annotated[str, Field(default="")]
             trace_id: Annotated[str, Field(default="")]
             span_id: Annotated[str, Field(default="")]
-            baggage: Annotated[t.StrMapping, Field(default_factory=dict)]
-            metadata: Annotated[t.ConfigurationMapping, Field(default_factory=dict)]
+            baggage: t.StrMapping = Field(default_factory=dict)
+            metadata: t.ConfigurationMapping = Field(default_factory=dict)
 
         # --- Moved from context.py ---
         class BaggageKeyModel(FlextModels.Value):
@@ -251,7 +234,7 @@ class FlextObservabilityModels(FlextModels):
             metric_type: c.Observability.MetricType
             description: t.NonEmptyStr
             unit: Annotated[str, Field(default="1", min_length=1)]
-            labels: Annotated[t.StrMapping, Field(default_factory=dict)]
+            labels: t.StrMapping = Field(default_factory=dict)
 
         # --- Moved from error_handling.py ---
         class CooldownInput(FlextModels.Value):
@@ -298,8 +281,8 @@ class FlextObservabilityModels(FlextModels):
             component: t.NonEmptyStr
             status: Annotated[str, Field(default="unknown", min_length=1)]
             message: Annotated[str, Field(default="")]
-            metrics: Annotated[t.Dict, Field(default_factory=lambda: t.Dict({}))]
-            timestamp: Annotated[datetime, Field(default_factory=datetime.now)]
+            metrics: t.Dict = Field(default_factory=lambda: t.Dict({}))
+            timestamp: datetime = Field(default_factory=datetime.now)
 
         # --- Moved from logging_integration.py ---
         class LogContext(FlextModels.Value):
@@ -311,7 +294,7 @@ class FlextObservabilityModels(FlextModels):
             trace_id: str | None = None
             span_id: str | None = None
             baggage: str | None = None
-            extra: Annotated[t.Dict, Field(default_factory=lambda: t.Dict({}))]
+            extra: t.Dict = Field(default_factory=lambda: t.Dict({}))
 
         # --- Moved from performance.py ---
         class PerformanceMetrics(FlextModels.Value):
@@ -320,7 +303,7 @@ class FlextObservabilityModels(FlextModels):
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
 
             operation: t.NonEmptyStr
-            start_time: Annotated[float, Field(default_factory=time.time)]
+            start_time: float = Field(default_factory=time.time)
             end_time: float = 0.0
             duration_ms: float = 0.0
             memory_used_mb: float = 0.0
