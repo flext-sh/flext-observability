@@ -152,15 +152,9 @@ class FlextObservabilityMonitor:
         self._config = FlextObservabilitySettings.get_global()
         self._initialized = False
         self._running = False
-        self._observability_service: (
-            _ObservabilityService | None
-        ) = None
-        self._health_service: _ObservabilityService | None = (
-            None
-        )
-        self._metrics_service: _ObservabilityService | None = (
-            None
-        )
+        self._observability_service: _ObservabilityService | None = None
+        self._health_service: _ObservabilityService | None = None
+        self._metrics_service: _ObservabilityService | None = None
         self._monitor_start_time = time.time()
         self._functions_monitored = 0
 

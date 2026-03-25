@@ -161,9 +161,7 @@ class FlextObservabilityModels(FlextModels):
 
             trace_id: str = Field(default_factory=lambda: str(uuid4()))
             name: t.NonEmptyStr
-            attributes: _DomainLabels = Field(
-                default_factory=dict
-            )
+            attributes: _DomainLabels = Field(default_factory=dict)
 
         class Alert(FlextModels.Entity):
             """Observability alert entity."""
@@ -181,9 +179,7 @@ class FlextObservabilityModels(FlextModels):
             id: str = Field(default_factory=lambda: str(uuid4()))
             component: t.NonEmptyStr
             status: t.NonEmptyStr
-            details: _DomainLabels = Field(
-                default_factory=dict
-            )
+            details: _DomainLabels = Field(default_factory=dict)
 
         class LogEntry(FlextModels.Entity):
             """Structured log entry entity."""
@@ -193,9 +189,7 @@ class FlextObservabilityModels(FlextModels):
             level: t.NonEmptyStr
             component: t.NonEmptyStr
             timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-            context: _DomainLabels = Field(
-                default_factory=dict
-            )
+            context: _DomainLabels = Field(default_factory=dict)
 
         class StartTimePayload(FlextModels.Value):
             """Payload for validating HTTP request start time."""

@@ -639,7 +639,8 @@ class FlextObservabilityMasterFactory:
     def health_status(self) -> r[FlextObservability.HealthCheck]:
         """Get overall health status."""
         return FlextObservability.flext_health_check(
-            "system", status=c.Observability.HealthStatus.HEALTHY,
+            "system",
+            status=c.Observability.HealthStatus.HEALTHY,
         )
 
     def log(
