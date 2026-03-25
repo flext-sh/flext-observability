@@ -12,7 +12,7 @@ from datetime import datetime
 from flext_core import FlextContainer
 from flext_tests import tm
 
-from flext_observability._core import (
+from flext_observability import (
     FlextObservability,
     FlextObservabilityMasterFactory,
 )

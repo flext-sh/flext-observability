@@ -14,10 +14,10 @@ from collections.abc import Sequence
 
 from flext_core import FlextContainer
 
-from flext_observability.constants import FlextObservabilityConstants as c
-from flext_observability.core import (
+from flext_observability import (
     FlextObservability,
     FlextObservabilityMasterFactory,
+    c,
 )
 
 AlertLevel = c.Observability.AlertLevel

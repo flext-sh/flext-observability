@@ -11,7 +11,7 @@ from flext_core import FlextConstants, FlextContainer, FlextLogger
 from flext_tests import tm
 
 import flext_observability
-from flext_observability._core import (
+from flext_observability import (
     FlextObservability,
     FlextObservabilityMasterFactory,
 )

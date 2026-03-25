@@ -16,7 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent / "../../src"))
 
-from flext_observability._core import FlextObservabilityMasterFactory
+from flext_observability import FlextObservabilityMasterFactory
 from flext_observability.advanced_context import FlextObservabilityAdvancedContext
 from flext_observability.constants import FlextObservabilityConstants as c
 from flext_observability.context import FlextObservabilityContext
