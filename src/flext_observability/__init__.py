@@ -1,5 +1,5 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
-# Regenerate with: make codegen
+# Regenerate with: make gen
 #
 """Flext observability package."""
 
@@ -30,6 +30,10 @@ if TYPE_CHECKING:
         FlextObservabilityConstants as c,
     )
     from flext_observability.context import FlextObservabilityContext
+    from flext_observability.core import (
+        FlextObservability,
+        FlextObservabilityMasterFactory,
+    )
     from flext_observability.custom_metrics import FlextObservabilityCustomMetrics
     from flext_observability.error_handling import FlextObservabilityErrorHandling
     from flext_observability.fields import FlextObservabilityFields
@@ -65,6 +69,7 @@ if TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "FlextObservability": ["flext_observability.core", "FlextObservability"],
     "FlextObservabilityAdvancedContext": [
         "flext_observability.advanced_context",
         "FlextObservabilityAdvancedContext",
@@ -104,6 +109,10 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextObservabilityLogging": [
         "flext_observability.logging",
         "FlextObservabilityLogging",
+    ],
+    "FlextObservabilityMasterFactory": [
+        "flext_observability.core",
+        "FlextObservabilityMasterFactory",
     ],
     "FlextObservabilityModels": [
         "flext_observability.models",
@@ -168,6 +177,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
 }
 
 __all__ = [
+    "FlextObservability",
     "FlextObservabilityAdvancedContext",
     "FlextObservabilityConstants",
     "FlextObservabilityContext",
@@ -178,6 +188,7 @@ __all__ = [
     "FlextObservabilityHTTPClient",
     "FlextObservabilityHealth",
     "FlextObservabilityLogging",
+    "FlextObservabilityMasterFactory",
     "FlextObservabilityModels",
     "FlextObservabilityMonitor",
     "FlextObservabilityPerformance",

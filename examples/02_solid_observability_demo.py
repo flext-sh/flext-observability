@@ -17,11 +17,11 @@ from collections.abc import Sequence
 from flext_core import FlextContainer
 
 from flext_observability import t
-from flext_observability._core import (
+from flext_observability.constants import FlextObservabilityConstants as c
+from flext_observability.core import (
     FlextObservability,
     FlextObservabilityMasterFactory,
 )
-from flext_observability.constants import FlextObservabilityConstants as c
 
 AlertLevel = c.Observability.AlertLevel
 HealthStatus = c.Observability.HealthStatus
