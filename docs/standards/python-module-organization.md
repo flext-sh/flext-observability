@@ -280,7 +280,6 @@ from flext_core import u
 from flext_observability import FlextMetricsService
 
 
-
 class FlextMetricsService:
     """Application service for metrics operations."""
 
@@ -292,13 +291,7 @@ class FlextMetricsService:
         """Record metric with business validation."""
         validation_result = metric.validate_business_rules()
         if validation_result.is_failure:
-<<<<<<< Updated upstream
             return r[bool].fail(f"Metric validation failed: {validation_result.error}")
-=======
-            return FlextResult[bool].fail(
-                f"Metric validation failed: {validation_result.error}"
-            )
->>>>>>> Stashed changes
 
         self._metrics_store[metric.id] = metric
         return r[bool].ok(metric)
@@ -324,17 +317,10 @@ class FlextMetricsService:
 from flext_observability import FlextObservabilityMasterFactory
 
 
-
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-<<<<<<< Updated upstream
     def create_metric(self, name: str, value: float, unit: str = "") -> r[FlextMetric]:
-=======
-    def create_metric(
-        self, name: str, value: float, unit: str = ""
-    ) -> FlextResult[FlextMetric]:
->>>>>>> Stashed changes
         """Create validated metric with domain rules."""
         try:
             metric = FlextMetric(
@@ -349,13 +335,7 @@ class FlextObservabilityMasterFactory:
         except Exception as e:
             return r[bool].fail(f"Metric creation failed: {str(e)}")
 
-<<<<<<< Updated upstream
     def create_trace(self, operation_name: str, service_name: str) -> r[FlextTrace]:
-=======
-    def create_trace(
-        self, operation_name: str, service_name: str
-    ) -> FlextResult[FlextTrace]:
->>>>>>> Stashed changes
         """Create validated trace span."""
         try:
             trace = FlextTrace(
@@ -385,25 +365,13 @@ class FlextObservabilityMasterFactory:
 from flext_observability import flext_create_metric, flext_create_trace
 
 
-<<<<<<< Updated upstream
 def flext_create_metric(name: str, value: float, unit: str = "") -> r[FlextMetric]:
-=======
-def flext_create_metric(
-    name: str, value: float, unit: str = ""
-) -> FlextResult[FlextMetric]:
->>>>>>> Stashed changes
     """Simple API for metric creation."""
     factory = get_global_factory()
     return factory.create_metric(name, value, unit)
 
 
-<<<<<<< Updated upstream
 def flext_create_trace(operation_name: str, service_name: str) -> r[FlextTrace]:
-=======
-def flext_create_trace(
-    operation_name: str, service_name: str
-) -> FlextResult[FlextTrace]:
->>>>>>> Stashed changes
     """Simple API for trace creation."""
     factory = get_global_factory()
     return factory.create_trace(operation_name, service_name)
@@ -413,7 +381,6 @@ def flext_create_trace(
 
 ```python
 from flext_observability import flext_monitor_function
-
 
 
 @flext_monitor_function("user_processing")
@@ -659,11 +626,7 @@ class DatabaseConnectionService:
                 tags={"database": "postgresql", "host": self.host},
             )
 
-<<<<<<< Updated upstream
             return r[bool].ok({
-=======
-            return FlextResult[bool].ok({
->>>>>>> Stashed changes
                 "status": "healthy",
                 "metrics": [metric_result.data],
             })
@@ -688,11 +651,7 @@ from flext_observability import *
 from flext_observability import _internal_validation_function
 
 # ❌ Don't bypass simple API without reason
-<<<<<<< Updated upstream
 from flext_observability import FlextObservabilityMasterFactory
-=======
-from flext_observability.factory import FlextObservabilityMasterFactory
->>>>>>> Stashed changes
 
 factory = FlextObservabilityMasterFactory()
 metric = factory.create_metric("test", 1.0)  # Use flext_create_metric instead
@@ -703,11 +662,7 @@ class MyCustomMetric:  # Use FlextMetric instead
     pass
 
 
-<<<<<<< Updated upstream
 # ❌ Don't ignore r error handling
-=======
-# ❌ Don't ignore FlextResult error handling
->>>>>>> Stashed changes
 result = flext_create_metric("test", 1.0)
 metric = result.data  # Should check result.success first
 ```
@@ -767,11 +722,7 @@ def process_payment(payment_data: dict) -> r[t.Dict]:
     # - Structured logging with correlation ID
     # - Error capture and categorization
 
-<<<<<<< Updated upstream
     return r[bool].ok({
-=======
-    return FlextResult[bool].ok({
->>>>>>> Stashed changes
         "status": "processed",
         "correlation_id": correlation_id,
     })
@@ -857,13 +808,7 @@ def process_order_with_tracing(order_data: dict) -> r[t.Dict]:
     return r[bool].ok({"order_id": "order123", "trace_id": parent_trace.id})
 
 
-<<<<<<< Updated upstream
 def validate_order_with_trace(order_data: dict, parent_trace_id: str) -> r[t.Dict]:
-=======
-def validate_order_with_trace(
-    order_data: dict, parent_trace_id: str
-) -> FlextResult[t.Dict]:
->>>>>>> Stashed changes
     """Validate order with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="validate_order",
@@ -878,11 +823,7 @@ def validate_order_with_trace(
         return child_trace_result
 
     # Validation logic with trace context
-<<<<<<< Updated upstream
     return r[bool].ok({
-=======
-    return FlextResult[bool].ok({
->>>>>>> Stashed changes
         "status": "valid",
         "trace_id": child_trace_result.data.id,
     })
@@ -935,11 +876,7 @@ def monitor_service_health() -> r[t.Dict]:
     })
 
 
-<<<<<<< Updated upstream
 def check_database_health() -> r[FlextHealthCheck]:
-=======
-def check_database_health() -> FlextResult[FlextHealthCheck]:
->>>>>>> Stashed changes
     """Check database connectivity and performance."""
     try:
         start_time = time.time()
@@ -1098,11 +1035,7 @@ def test_metric_creation_failure():
 def test_observability_chaining():
     """Test railway-oriented chaining of observability operations."""
 
-<<<<<<< Updated upstream
     def create_observability_data(operation: str) -> r[t.Dict]:
-=======
-    def create_observability_data(operation: str) -> FlextResult[t.Dict]:
->>>>>>> Stashed changes
         return flext_create_metric(f"{operation}_requests", 1, "count").flat_map(
             lambda metric: flext_create_trace(operation, "test-service").map(
                 lambda trace: {"metric": metric, "trace": trace}
@@ -1121,11 +1054,7 @@ def test_observability_chaining():
 def test_observability_failure_propagation():
     """Test failure propagation in observability chains."""
 
-<<<<<<< Updated upstream
     def create_invalid_observability() -> r[t.Dict]:
-=======
-    def create_invalid_observability() -> FlextResult[t.Dict]:
->>>>>>> Stashed changes
         return flext_create_metric("", 1, "count").flat_map(  # Invalid metric name
             lambda metric: flext_create_trace(
                 "operation", "service"
@@ -1379,11 +1308,7 @@ ______________________________________________________________________
 # ✅ Complete type annotations for observability functions
 def create_business_metric(
     operation: str, value: float | Decimal, tags: t.StringDict | None = None
-<<<<<<< Updated upstream
 ) -> r[FlextMetric]:
-=======
-) -> FlextResult[FlextMetric]:
->>>>>>> Stashed changes
     """Create business metric with complete type safety."""
     return flext_create_metric(
         name=f"business_{operation}", value=value, unit="count", tags=tags or {}
@@ -1395,22 +1320,13 @@ from typing import TypeVar, Generic, Callable
 
 T = TypeVar("T")
 U = TypeVar("U")
-<<<<<<< Updated upstream
 
 
 def map_observability_result(result: r[T], func: Callable[[T], U]) -> r[U]:
-=======
-
-
-def map_observability_result(
-    result: FlextResult[T], func: Callable[[T], U]
-) -> FlextResult[U]:
->>>>>>> Stashed changes
     """Generic result mapping for observability operations."""
     if result.success:
         return r[bool].ok(func(result.data))
     return r[bool].fail(result.error)
-
 
 
 # ✅ Protocol definitions for observability interfaces
@@ -1488,11 +1404,7 @@ def create_metric_bad(name: str, value: float) -> FlextMetric:
 ```python
 def create_business_observability_dashboard(
     service_name: str, metrics_config: t.Dict, trace_config: t.Dict
-<<<<<<< Updated upstream
 ) -> r[t.Dict]:
-=======
-) -> FlextResult[t.Dict]:
->>>>>>> Stashed changes
     """
     Create comprehensive business observability dashboard.
 
@@ -1559,11 +1471,7 @@ def create_business_observability_dashboard(
             )
 
             if metric_result.is_failure:
-<<<<<<< Updated upstream
                 return r[bool].fail(
-=======
-                return FlextResult[bool].fail(
->>>>>>> Stashed changes
                     f"Failed to create metric {metric_name}: {metric_result.error}"
                 )
 
@@ -1577,24 +1485,14 @@ def create_business_observability_dashboard(
         )
 
         if trace_result.is_failure:
-<<<<<<< Updated upstream
             return r[bool].fail(f"Failed to create trace setup: {trace_result.error}")
-=======
-            return FlextResult[bool].fail(
-                f"Failed to create trace setup: {trace_result.error}"
-            )
->>>>>>> Stashed changes
 
         dashboard_config["traces"].append(trace_result.data)
 
         return r[bool].ok(dashboard_config)
 
     except Exception as e:
-<<<<<<< Updated upstream
         return r[bool].fail(
-=======
-        return FlextResult[bool].fail(
->>>>>>> Stashed changes
             f"Unexpected error creating observability dashboard: {str(e)}"
         )
 ```

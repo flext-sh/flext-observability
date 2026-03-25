@@ -10,9 +10,9 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
-
 if TYPE_CHECKING:
     from flext_core import FlextTypes
+
     from tests.unit.test_constants import TestFlextObservabilityConstants
     from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
     from tests.unit.test_init import (
@@ -26,8 +26,14 @@ if TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "TestFlextObservabilityConstants": ["tests.unit.test_constants", "TestFlextObservabilityConstants"],
-    "TestFlextObservabilityMasterFactoryReal": ["tests.unit.test_factory", "TestFlextObservabilityMasterFactoryReal"],
+    "TestFlextObservabilityConstants": [
+        "tests.unit.test_constants",
+        "TestFlextObservabilityConstants",
+    ],
+    "TestFlextObservabilityMasterFactoryReal": [
+        "tests.unit.test_factory",
+        "TestFlextObservabilityMasterFactoryReal",
+    ],
     "TestInitCoverage": ["tests.unit.test_init", "TestInitCoverage"],
     "flext_alert": ["tests.unit.test_init", "flext_alert"],
     "flext_health_check": ["tests.unit.test_init", "flext_health_check"],
@@ -67,6 +73,7 @@ def __getattr__(name: str) -> FlextTypes.ModuleExport:
 
     Raises:
         AttributeError: If attribute not registered.
+
     """
     if name in _LAZY_CACHE:
         return _LAZY_CACHE[name]
@@ -81,6 +88,7 @@ def __dir__() -> Sequence[str]:
 
     Returns:
         List of public names from module exports.
+
     """
     return sorted(__all__)
 

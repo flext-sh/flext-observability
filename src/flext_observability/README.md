@@ -205,7 +205,6 @@ trace_result = flext_create_trace("user_login", "auth-service")
 from flext_observability import flext_monitor_function
 
 
-
 @flext_monitor_function("order_processing")
 def process_order(order_data: dict) -> t.ContainerMapping:
     # Automatically monitored for execution time, success/failure

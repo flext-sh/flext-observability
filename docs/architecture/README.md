@@ -307,13 +307,7 @@ flext-observability
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-<<<<<<< Updated upstream
     def create_metric(self, name: str, value: float, unit: str = "") -> r[FlextMetric]:
-=======
-    def create_metric(
-        self, name: str, value: float, unit: str = ""
-    ) -> FlextResult[FlextMetric]:
->>>>>>> Stashed changes
         """Create validated metric with domain rules."""
         # Domain validation
         # Entity creation
@@ -349,13 +343,7 @@ class FlextMetricsRepository(Protocol):
         """Store metric with persistence abstraction."""
         ...
 
-<<<<<<< Updated upstream
     def query_metrics(self, criteria: MetricsCriteria) -> r[List[FlextMetric]]:
-=======
-    def query_metrics(
-        self, criteria: MetricsCriteria
-    ) -> FlextResult[List[FlextMetric]]:
->>>>>>> Stashed changes
         """Query metrics with filtering."""
         ...
 ```

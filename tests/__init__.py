@@ -10,16 +10,15 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
-
 if TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
+    from tests import integration, unit
     from tests.constants import (
         FlextObservabilityTestConstants,
         FlextObservabilityTestConstants as c,
     )
-    import tests.integration as integration
     from tests.integration.test_phase_11_integration import ErrorEvent
     from tests.models import (
         FlextObservabilityTestModels,
@@ -33,7 +32,6 @@ if TYPE_CHECKING:
         FlextObservabilityTestTypes,
         FlextObservabilityTestTypes as t,
     )
-    import tests.unit as unit
     from tests.unit.test_constants import TestFlextObservabilityConstants
     from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
     from tests.unit.test_init import (
@@ -52,13 +50,28 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "ErrorEvent": ["tests.integration.test_phase_11_integration", "ErrorEvent"],
-    "FlextObservabilityTestConstants": ["tests.constants", "FlextObservabilityTestConstants"],
+    "FlextObservabilityTestConstants": [
+        "tests.constants",
+        "FlextObservabilityTestConstants",
+    ],
     "FlextObservabilityTestModels": ["tests.models", "FlextObservabilityTestModels"],
-    "FlextObservabilityTestProtocols": ["tests.protocols", "FlextObservabilityTestProtocols"],
+    "FlextObservabilityTestProtocols": [
+        "tests.protocols",
+        "FlextObservabilityTestProtocols",
+    ],
     "FlextObservabilityTestTypes": ["tests.typings", "FlextObservabilityTestTypes"],
-    "FlextObservabilityTestUtilities": ["tests.utilities", "FlextObservabilityTestUtilities"],
-    "TestFlextObservabilityConstants": ["tests.unit.test_constants", "TestFlextObservabilityConstants"],
-    "TestFlextObservabilityMasterFactoryReal": ["tests.unit.test_factory", "TestFlextObservabilityMasterFactoryReal"],
+    "FlextObservabilityTestUtilities": [
+        "tests.utilities",
+        "FlextObservabilityTestUtilities",
+    ],
+    "TestFlextObservabilityConstants": [
+        "tests.unit.test_constants",
+        "TestFlextObservabilityConstants",
+    ],
+    "TestFlextObservabilityMasterFactoryReal": [
+        "tests.unit.test_factory",
+        "TestFlextObservabilityMasterFactoryReal",
+    ],
     "TestInitCoverage": ["tests.unit.test_init", "TestInitCoverage"],
     "c": ["tests.constants", "FlextObservabilityTestConstants"],
     "d": ["flext_tests", "d"],
@@ -130,6 +143,7 @@ def __getattr__(name: str) -> FlextTypes.ModuleExport:
 
     Raises:
         AttributeError: If attribute not registered.
+
     """
     if name in _LAZY_CACHE:
         return _LAZY_CACHE[name]
@@ -144,6 +158,7 @@ def __dir__() -> Sequence[str]:
 
     Returns:
         List of public names from module exports.
+
     """
     return sorted(__all__)
 

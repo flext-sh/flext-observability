@@ -185,11 +185,7 @@ def process_payment(amount: float, currency: str) -> r[t.Dict]:
 from flext_observability import flext_create_health_check, FlextHealthService
 
 
-<<<<<<< Updated upstream
 def monitor_database_health() -> r[t.Dict]:
-=======
-def monitor_database_health() -> FlextResult[t.Dict]:
->>>>>>> Stashed changes
     """Monitor database connectivity and performance."""
     try:
         # Test database connection
@@ -231,11 +227,7 @@ def monitor_database_health() -> FlextResult[t.Dict]:
 from flext_observability import flext_create_trace
 
 
-<<<<<<< Updated upstream
 def process_user_workflow(user_id: str) -> r[t.Dict]:
-=======
-def process_user_workflow(user_id: str) -> FlextResult[t.Dict]:
->>>>>>> Stashed changes
     """Process user workflow with distributed tracing."""
 
     # Create parent trace
@@ -266,11 +258,7 @@ def process_user_workflow(user_id: str) -> FlextResult[t.Dict]:
     })
 
 
-<<<<<<< Updated upstream
 def validate_user_data(user_id: str, parent_trace_id: str) -> r[t.Dict]:
-=======
-def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[t.Dict]:
->>>>>>> Stashed changes
     """Validate user with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="user_validation",
@@ -297,11 +285,7 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> FlextResult[t.Dict
 from flext_observability import flext_monitor_function, flext_create_metric
 
 
-<<<<<<< Updated upstream
 class FlextTapOracle:
-=======
-class FlextMeltanoTapOracle:
->>>>>>> Stashed changes
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
