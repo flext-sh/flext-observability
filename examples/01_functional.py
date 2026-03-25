@@ -11,18 +11,24 @@ from __future__ import annotations
 
 import time
 from collections.abc import Sequence
-from typing import Literal
 
 from flext_core import FlextContainer
 
-from flext_observability import (
+from flext_observability._core import (
+    FlextObservability,
     FlextObservabilityMasterFactory,
-    flext_alert,
-    flext_health_check,
-    flext_log_entry,
-    flext_metric,
-    flext_trace,
 )
+from flext_observability.constants import FlextObservabilityConstants as c
+
+AlertLevel = c.Observability.AlertLevel
+ErrorSeverity = c.Observability.ErrorSeverity
+HealthStatus = c.Observability.HealthStatus
+
+flext_alert = FlextObservability.flext_alert
+flext_health_check = FlextObservability.flext_health_check
+flext_log_entry = FlextObservability.flext_log_entry
+flext_metric = FlextObservability.flext_metric
+flext_trace = FlextObservability.flext_trace
 
 
 def demonstrate_simple_api() -> None:
@@ -33,15 +39,15 @@ def demonstrate_simple_api() -> None:
     trace_result = flext_trace("user_registration")
     if trace_result.is_success:
         pass
-    alert_result = flext_alert("monitoring", "High CPU usage detected", "warning")
+    alert_result = flext_alert("monitoring", "High CPU usage detected", AlertLevel.WARNING)
     if alert_result.is_success:
         pass
-    health_result = flext_health_check("database", "healthy")
+    health_result = flext_health_check("database", HealthStatus.HEALTHY)
     if health_result.is_success:
         pass
     log_result = flext_log_entry(
         "User authentication successful",
-        "info",
+        ErrorSeverity.INFO,
         "auth-service",
     )
     if log_result.is_success:
@@ -87,11 +93,11 @@ def demonstrate_validation() -> None:
 def demonstrate_health_monitoring() -> None:
     """Demonstrate health monitoring scenario."""
     services = ["database", "cache", "message-queue", "auth-service"]
-    statuses: Sequence[Literal["healthy", "degraded", "unhealthy"]] = [
-        "healthy",
-        "healthy",
-        "degraded",
-        "healthy",
+    statuses: Sequence[HealthStatus] = [
+        HealthStatus.HEALTHY,
+        HealthStatus.HEALTHY,
+        HealthStatus.DEGRADED,
+        HealthStatus.HEALTHY,
     ]
     for service, status in zip(services, statuses, strict=False):
         health_result = flext_health_check(service, status)
@@ -101,13 +107,11 @@ def demonstrate_health_monitoring() -> None:
 
 def demonstrate_alerting_scenario() -> None:
     """Demonstrate alerting in different scenarios."""
-    alert_scenarios: Sequence[
-        tuple[Literal["info", "warning", "error", "critical"], str, str]
-    ] = [
-        ("info", "System started successfully", "system"),
-        ("warning", "High memory usage: 85%", "monitoring"),
-        ("error", "Database connection failed", "database"),
-        ("critical", "Payment service unavailable", "payment"),
+    alert_scenarios: Sequence[tuple[AlertLevel, str, str]] = [
+        (AlertLevel.INFO, "System started successfully", "system"),
+        (AlertLevel.WARNING, "High memory usage: 85%", "monitoring"),
+        (AlertLevel.ERROR, "Database connection failed", "database"),
+        (AlertLevel.CRITICAL, "Payment service unavailable", "payment"),
     ]
     for level, message, service in alert_scenarios:
         alert_result = flext_alert(service, message, level)

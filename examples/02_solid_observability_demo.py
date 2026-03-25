@@ -13,18 +13,23 @@ from __future__ import annotations
 
 import time
 from collections.abc import Sequence
-from typing import Literal
 
 from flext_core import FlextContainer
 
-from flext_observability import (
+from flext_observability import t
+from flext_observability._core import (
+    FlextObservability,
     FlextObservabilityMasterFactory,
-    flext_alert,
-    flext_health_check,
-    flext_metric,
-    flext_trace,
-    t,
 )
+from flext_observability.constants import FlextObservabilityConstants as c
+
+AlertLevel = c.Observability.AlertLevel
+HealthStatus = c.Observability.HealthStatus
+
+flext_alert = FlextObservability.flext_alert
+flext_health_check = FlextObservability.flext_health_check
+flext_metric = FlextObservability.flext_metric
+flext_trace = FlextObservability.flext_trace
 
 
 def database_query(query: str) -> t.ContainerMapping:
@@ -43,8 +48,8 @@ def demonstrate_solid_design() -> None:
     """Demonstrate SOLID design principles in action."""
     metric_result = flext_metric("cpu_usage", 75.5, "percent")
     trace_result = flext_trace("user_login")
-    alert_result = flext_alert("monitoring", "High CPU usage", "warning")
-    health_result = flext_health_check("database", "healthy")
+    alert_result = flext_alert("monitoring", "High CPU usage", AlertLevel.WARNING)
+    health_result = flext_health_check("database", HealthStatus.HEALTHY)
     container = FlextContainer()
     factory = FlextObservabilityMasterFactory(container)
     factory.create_metric("custom_metric", 100.0, "units")
@@ -86,13 +91,11 @@ def demonstrate_distributed_tracing() -> None:
 
 def demonstrate_health_monitoring() -> None:
     """Demonstrate comprehensive health monitoring."""
-    services_health: Sequence[
-        tuple[str, Literal["healthy", "degraded", "unhealthy"]]
-    ] = [
-        ("database", "healthy"),
-        ("cache", "healthy"),
-        ("message_queue", "degraded"),
-        ("auth_service", "healthy"),
+    services_health: Sequence[tuple[str, HealthStatus]] = [
+        ("database", HealthStatus.HEALTHY),
+        ("cache", HealthStatus.HEALTHY),
+        ("message_queue", HealthStatus.DEGRADED),
+        ("auth_service", HealthStatus.HEALTHY),
     ]
     for service, status in services_health:
         result = flext_health_check(service, status)
@@ -102,13 +105,11 @@ def demonstrate_health_monitoring() -> None:
 
 def demonstrate_alerting_system() -> None:
     """Demonstrate comprehensive alerting."""
-    alerts: Sequence[
-        tuple[Literal["info", "warning", "error", "critical"], str, str]
-    ] = [
-        ("info", "System maintenance scheduled", "system"),
-        ("warning", "Database response time increased", "database"),
-        ("error", "Failed to connect to cache", "cache"),
-        ("critical", "API gateway not responding", "api_gateway"),
+    alerts: Sequence[tuple[AlertLevel, str, str]] = [
+        (AlertLevel.INFO, "System maintenance scheduled", "system"),
+        (AlertLevel.WARNING, "Database response time increased", "database"),
+        (AlertLevel.ERROR, "Failed to connect to cache", "cache"),
+        (AlertLevel.CRITICAL, "API gateway not responding", "api_gateway"),
     ]
     for level, message, service in alerts:
         result = flext_alert(service, message, level)
@@ -139,20 +140,18 @@ def demonstrate_factory_patterns() -> None:
 
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
-    entities_to_validate: t.ContainerList = [
-        flext_metric("valid_metric", 100.0, "count"),
-        flext_trace("valid_operation"),
-        flext_alert("system", "Valid alert", "info"),
-        flext_health_check("service", "healthy"),
-    ]
-    for result in entities_to_validate:
-        if (
-            hasattr(result, "is_success")
-            and result.is_success
-            and hasattr(result, "data")
-        ):
-            result_type = type(result.data).__name__
-            print(f"Validation successful for {result_type}")
+    metric_res = flext_metric("valid_metric", 100.0, "count")
+    if metric_res.is_success:
+        print(f"Validation successful for {type(metric_res.value).__name__}")
+    trace_res = flext_trace("valid_operation")
+    if trace_res.is_success:
+        print(f"Validation successful for {type(trace_res.value).__name__}")
+    alert_res = flext_alert("system", "Valid alert", AlertLevel.INFO)
+    if alert_res.is_success:
+        print(f"Validation successful for {type(alert_res.value).__name__}")
+    health_res = flext_health_check("service", HealthStatus.HEALTHY)
+    if health_res.is_success:
+        print(f"Validation successful for {type(health_res.value).__name__}")
 
 
 def main() -> None:

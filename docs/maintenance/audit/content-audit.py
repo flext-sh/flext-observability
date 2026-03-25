@@ -61,11 +61,11 @@ class ContentMetrics(BaseModel):
     )
     freshness_score: float = Field(default=0.0, description="Freshness score 0-100")
     quality_score: float = Field(default=0.0, description="Quality score 0-100")
-    issues: t.StrSequence = Field(
+    issues: list[str] = Field(
         default_factory=list,
         description="List of issues found",
     )
-    recommendations: t.StrSequence = Field(
+    recommendations: list[str] = Field(
         default_factory=list,
         description="List of recommendations",
     )
@@ -95,11 +95,11 @@ class AuditReport(BaseModel):
     )
     fresh_files: int = Field(default=0, description="Number of fresh files")
     stale_files: int = Field(default=0, description="Number of stale files")
-    file_metrics: Mapping[str, ContentMetrics] = Field(
+    file_metrics: dict[str, ContentMetrics] = Field(
         default_factory=dict,
         description="Metrics per file",
     )
-    category_breakdown: Mapping[str, int] = Field(
+    category_breakdown: dict[str, int] = Field(
         default_factory=dict,
         description="File count by category",
     )
@@ -123,7 +123,7 @@ class AuditorConfig(BaseModel):
             "poor": 45,
         },
     )
-    required_sections: t.StrSequence = Field(
+    required_sections: list[str] = Field(
         default_factory=lambda: ["description", "usage", "examples", "api"],
     )
 
@@ -159,9 +159,9 @@ class DocumentationAuditor:
 
         return default_config
 
-    def discover_files(self) -> Sequence[Path]:
+    def discover_files(self) -> list[Path]:
         """Discover all markdown files in the documentation tree."""
-        files: Sequence[Path] = []
+        files: list[Path] = []
         for pattern in ["*.md", "*.mdx"]:
             files.extend(self.docs_root.rglob(pattern))
 
@@ -341,7 +341,8 @@ class DocumentationAuditor:
 
             # Category breakdown
             category = self._categorize_file(file_path)
-            self.report.category_breakdown[category] += 1
+            current = self.report.category_breakdown.get(category, 0)
+            self.report.category_breakdown[category] = current + 1
 
         # Calculate overall quality score
         total_score = sum(m.quality_score for m in self.report.file_metrics.values())
@@ -435,7 +436,7 @@ class DocumentationAuditor:
         ])
 
         # Group recommendations by priority
-        priority_recs: defaultdict[str, t.StrSequence] = defaultdict(list)
+        priority_recs: defaultdict[str, list[str]] = defaultdict(list)
 
         for file_path, metrics in self.report.file_metrics.items():
             relative_path = Path(file_path).relative_to(self.docs_root)
@@ -459,7 +460,7 @@ class DocumentationAuditor:
     def _generate_json_report(self) -> str:
         """Generate JSON audit report."""
         # Convert dataclasses to dicts for JSON serialization
-        file_metrics: Mapping[str, Mapping[str, float | int | t.StrSequence | str]] = {}
+        file_metrics: dict[str, dict[str, float | int | list[str] | str]] = {}
         for path, metrics in self.report.file_metrics.items():
             file_metrics[path] = {
                 "file_path": metrics.file_path,

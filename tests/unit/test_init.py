@@ -11,6 +11,7 @@ from flext_core import FlextConstants, FlextContainer, FlextLogger
 from flext_tests import tm
 
 import flext_observability
+from flext_observability.constants import FlextObservabilityConstants as c
 from flext_observability._core import (
     FlextObservability,
     FlextObservabilityMasterFactory,
@@ -30,7 +31,10 @@ class TestInitCoverage:
 
     def test_flext_health_status_function(self) -> None:
         """Test health check function coverage."""
-        result = flext_health_check("flext-observability", "healthy")
+        result = flext_health_check(
+            "flext-observability",
+            c.Observability.HealthStatus.HEALTHY,
+        )
         tm.that(result.is_success, eq=True)
         health_check = result.value
         tm.that(health_check.status, eq="healthy")

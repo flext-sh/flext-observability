@@ -29,71 +29,71 @@ class TestFlextObservabilityConstants:
 
     def test_alert_constants(self) -> None:
         """Test alert-related constants."""
-        tm.that(hasattr(FlextObservabilityConstants, "ALERT_LEVEL_INFO"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "ALERT_LEVEL_WARNING"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "ALERT_LEVEL_ERROR"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "ALERT_LEVEL_CRITICAL"), eq=True)
-        tm.that(FlextObservabilityConstants.ALERT_LEVEL_INFO, eq="info")
-        tm.that(FlextObservabilityConstants.ALERT_LEVEL_WARNING, eq="warning")
-        tm.that(FlextObservabilityConstants.ALERT_LEVEL_ERROR, eq="error")
-        tm.that(FlextObservabilityConstants.ALERT_LEVEL_CRITICAL, eq="critical")
+        obs = FlextObservabilityConstants.Observability
+        tm.that(hasattr(obs, "ALERT_LEVEL_INFO"), eq=True)
+        tm.that(hasattr(obs, "ALERT_LEVEL_WARNING"), eq=True)
+        tm.that(hasattr(obs, "ALERT_LEVEL_ERROR"), eq=True)
+        tm.that(hasattr(obs, "ALERT_LEVEL_CRITICAL"), eq=True)
+        tm.that(FlextObservabilityConstants.Observability.ALERT_LEVEL_INFO, eq="info")
+        tm.that(FlextObservabilityConstants.Observability.ALERT_LEVEL_WARNING, eq="warning")
+        tm.that(FlextObservabilityConstants.Observability.ALERT_LEVEL_ERROR, eq="error")
+        tm.that(FlextObservabilityConstants.Observability.ALERT_LEVEL_CRITICAL, eq="critical")
 
     def test_trace_constants(self) -> None:
         """Test trace-related constants."""
-        tm.that(hasattr(FlextObservabilityConstants, "TRACE_STATUS_STARTED"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "TRACE_STATUS_RUNNING"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "TRACE_STATUS_COMPLETED"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "TRACE_STATUS_FAILED"), eq=True)
-        tm.that(FlextObservabilityConstants.TRACE_STATUS_STARTED, eq="started")
-        tm.that(FlextObservabilityConstants.TRACE_STATUS_RUNNING, eq="running")
-        tm.that(FlextObservabilityConstants.TRACE_STATUS_COMPLETED, eq="completed")
-        tm.that(FlextObservabilityConstants.TRACE_STATUS_FAILED, eq="failed")
+        obs = FlextObservabilityConstants.Observability
+        tm.that(hasattr(obs, "TRACE_STATUS_STARTED"), eq=True)
+        tm.that(hasattr(obs, "TRACE_STATUS_RUNNING"), eq=True)
+        tm.that(hasattr(obs, "TRACE_STATUS_COMPLETED"), eq=True)
+        tm.that(hasattr(obs, "TRACE_STATUS_FAILED"), eq=True)
+        tm.that(FlextObservabilityConstants.Observability.TRACE_STATUS_STARTED, eq="started")
+        tm.that(FlextObservabilityConstants.Observability.TRACE_STATUS_RUNNING, eq="running")
+        tm.that(FlextObservabilityConstants.Observability.TRACE_STATUS_COMPLETED, eq="completed")
+        tm.that(FlextObservabilityConstants.Observability.TRACE_STATUS_FAILED, eq="failed")
 
     def test_health_constants(self) -> None:
         """Test health-related constants."""
-        tm.that(hasattr(FlextObservabilityConstants, "HEALTH_STATUS_HEALTHY"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "HEALTH_STATUS_DEGRADED"), eq=True)
-        tm.that(
-            hasattr(FlextObservabilityConstants, "HEALTH_STATUS_UNHEALTHY"),
-            eq=True,
-        )
-        tm.that(FlextObservabilityConstants.HEALTH_STATUS_HEALTHY, eq="healthy")
-        tm.that(FlextObservabilityConstants.HEALTH_STATUS_DEGRADED, eq="degraded")
-        tm.that(FlextObservabilityConstants.HEALTH_STATUS_UNHEALTHY, eq="unhealthy")
+        obs = FlextObservabilityConstants.Observability
+        tm.that(hasattr(obs, "HEALTH_STATUS_HEALTHY"), eq=True)
+        tm.that(hasattr(obs, "HEALTH_STATUS_DEGRADED"), eq=True)
+        tm.that(hasattr(obs, "HEALTH_STATUS_UNHEALTHY"), eq=True)
+        tm.that(FlextObservabilityConstants.Observability.HEALTH_STATUS_HEALTHY, eq="healthy")
+        tm.that(FlextObservabilityConstants.Observability.HEALTH_STATUS_DEGRADED, eq="degraded")
+        tm.that(FlextObservabilityConstants.Observability.HEALTH_STATUS_UNHEALTHY, eq="unhealthy")
 
     def test_log_constants(self) -> None:
         """Test logging-related constants."""
-        tm.that(hasattr(FlextObservabilityConstants, "LOG_LEVEL_DEBUG"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "LOG_LEVEL_INFO"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "LOG_LEVEL_WARNING"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "LOG_LEVEL_ERROR"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "LOG_LEVEL_CRITICAL"), eq=True)
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_DEBUG, eq="debug")
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_INFO, eq="info")
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_WARNING, eq="warning")
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_ERROR, eq="error")
-        tm.that(FlextObservabilityConstants.LOG_LEVEL_CRITICAL, eq="critical")
+        obs = FlextObservabilityConstants.Observability
+        tm.that(hasattr(obs, "LOG_LEVEL_DEBUG"), eq=True)
+        tm.that(hasattr(obs, "LOG_LEVEL_INFO"), eq=True)
+        tm.that(hasattr(obs, "LOG_LEVEL_WARNING"), eq=True)
+        tm.that(hasattr(obs, "LOG_LEVEL_ERROR"), eq=True)
+        tm.that(hasattr(obs, "LOG_LEVEL_CRITICAL"), eq=True)
+        tm.that(FlextObservabilityConstants.Observability.LOG_LEVEL_DEBUG, eq="debug")
+        tm.that(FlextObservabilityConstants.Observability.LOG_LEVEL_INFO, eq="info")
+        tm.that(FlextObservabilityConstants.Observability.LOG_LEVEL_WARNING, eq="warning")
+        tm.that(FlextObservabilityConstants.Observability.LOG_LEVEL_ERROR, eq="error")
+        tm.that(FlextObservabilityConstants.Observability.LOG_LEVEL_CRITICAL, eq="critical")
 
     def test_validation_constants(self) -> None:
         """Test validation-related constants."""
-        tm.that(hasattr(FlextObservabilityConstants, "MAX_METRIC_NAME_LENGTH"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "MAX_TRACE_NAME_LENGTH"), eq=True)
-        tm.that(
-            hasattr(FlextObservabilityConstants, "MAX_ALERT_MESSAGE_LENGTH"),
-            eq=True,
-        )
-        tm.that(hasattr(FlextObservabilityConstants, "MAX_LOG_MESSAGE_LENGTH"), eq=True)
-        tm.that(FlextObservabilityConstants.MAX_METRIC_NAME_LENGTH, gt=0)
-        tm.that(FlextObservabilityConstants.MAX_TRACE_NAME_LENGTH, gt=0)
-        tm.that(FlextObservabilityConstants.MAX_ALERT_MESSAGE_LENGTH, gt=0)
-        tm.that(FlextObservabilityConstants.MAX_LOG_MESSAGE_LENGTH, gt=0)
+        obs = FlextObservabilityConstants.Observability
+        tm.that(hasattr(obs, "MAX_METRIC_NAME_LENGTH"), eq=True)
+        tm.that(hasattr(obs, "MAX_TRACE_NAME_LENGTH"), eq=True)
+        tm.that(hasattr(obs, "MAX_ALERT_MESSAGE_LENGTH"), eq=True)
+        tm.that(hasattr(obs, "MAX_LOG_MESSAGE_LENGTH"), eq=True)
+        tm.that(FlextObservabilityConstants.Observability.MAX_METRIC_NAME_LENGTH, gt=0)
+        tm.that(FlextObservabilityConstants.Observability.MAX_TRACE_NAME_LENGTH, gt=0)
+        tm.that(FlextObservabilityConstants.Observability.MAX_ALERT_MESSAGE_LENGTH, gt=0)
+        tm.that(FlextObservabilityConstants.Observability.MAX_LOG_MESSAGE_LENGTH, gt=0)
 
     def test_service_constants(self) -> None:
         """Test service-related constants."""
-        tm.that(hasattr(FlextObservabilityConstants, "DEFAULT_SERVICE_NAME"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "DEFAULT_ENVIRONMENT"), eq=True)
+        obs = FlextObservabilityConstants.Observability
+        tm.that(hasattr(obs.Defaults, "DEFAULT_SERVICE_NAME"), eq=True)
+        tm.that(hasattr(obs, "DEFAULT_ENVIRONMENT"), eq=True)
         tm.that(
-            FlextObservabilityConstants.DEFAULT_SERVICE_NAME,
-            eq="flext-observability",
+            FlextObservabilityConstants.Observability.Defaults.DEFAULT_SERVICE_NAME,
+            eq="flext-service",
         )
-        tm.that(FlextObservabilityConstants.DEFAULT_ENVIRONMENT, eq="development")
+        tm.that(FlextObservabilityConstants.Observability.DEFAULT_ENVIRONMENT, eq="development")
