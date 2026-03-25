@@ -29,108 +29,107 @@ class FlextObservabilityModels(FlextModels):
     Zero domain-specific logic - pure generic foundation with minimal code.
     """
 
-    class GenericObservabilityEntry(FlextModels.Value):
-        """Generic base model for any observability entry using Pydantic."""
-
-        model_config: ClassVar[ConfigDict] = ConfigDict(
-            validate_assignment=True,
-            extra="allow",
-            frozen=False,
-            str_strip_whitespace=True,
-        )
-
-        id: Annotated[
-            t.NonEmptyStr,
-            Field(
-                description="Unique entity identifier",
-            ),
-        ] = Field(default_factory=lambda: str(uuid4()))
-        name: Annotated[t.NonEmptyStr, Field(description="Entity name")]
-        type: Annotated[t.NonEmptyStr, Field(description="Entity type")]
-        timestamp: Annotated[
-            datetime,
-            Field(
-                description="Entry timestamp",
-            ),
-        ] = Field(default_factory=datetime.now)
-        data: Annotated[
-            t.ConfigurationMapping,
-            Field(
-                description="Generic data payload",
-            ),
-        ] = Field(default_factory=dict)
-        metadata: Annotated[
-            t.ConfigurationMapping,
-            Field(
-                description="Generic metadata",
-            ),
-        ] = Field(default_factory=dict)
-
-        @computed_field
-        def age_seconds(self) -> float:
-            """Computed age in seconds since creation."""
-            return (datetime.now(tz=UTC) - self.timestamp).total_seconds()
-
-        @computed_field
-        def data_keys(self) -> t.StrSequence:
-            """List of data keys for introspection."""
-            return list(self.data.keys()) if self.data else []
-
-        @computed_field
-        def has_data(self) -> bool:
-            """Check if entry has any data."""
-            return bool(self.data)
-
-    class GenericObservabilityConfig(FlextModels.Value):
-        """Generic configuration using Pydantic patterns."""
-
-        model_config: ClassVar[ConfigDict] = ConfigDict(
-            validate_assignment=True,
-            extra="allow",
-            frozen=False,
-            str_strip_whitespace=True,
-        )
-
-        enabled: Annotated[
-            bool,
-            Field(default=True, description="Enable observability"),
-        ]
-        interval_seconds: Annotated[
-            t.PositiveFloat,
-            Field(
-                default=60.0,
-                description="Collection interval",
-            ),
-        ]
-        retention_days: Annotated[
-            t.PositiveInt,
-            Field(
-                le=365,
-                default=30,
-                description="Retention period",
-            ),
-        ]
-        settings: Annotated[
-            t.ConfigurationMapping,
-            Field(
-                description="Type-specific settings",
-            ),
-        ] = Field(default_factory=dict)
-
-        @computed_field
-        def interval_minutes(self) -> float:
-            """Computed interval in minutes."""
-            return self.interval_seconds / 60.0
-
-        @computed_field
-        def retention_hours(self) -> float:
-            """Computed retention in hours."""
-            return self.retention_days * 24.0
-
-    # Domain scalar type alias used in model fields
-    _DomainLabels = dict[str, t.Scalar]
-
     class Observability:
+        class GenericObservabilityEntry(FlextModels.Value):
+            """Generic base model for any observability entry using Pydantic."""
+
+            model_config: ClassVar[ConfigDict] = ConfigDict(
+                validate_assignment=True,
+                extra="allow",
+                frozen=False,
+                str_strip_whitespace=True,
+            )
+
+            id: Annotated[
+                t.NonEmptyStr,
+                Field(
+                    description="Unique entity identifier",
+                ),
+            ] = Field(default_factory=lambda: str(uuid4()))
+            name: Annotated[t.NonEmptyStr, Field(description="Entity name")]
+            type: Annotated[t.NonEmptyStr, Field(description="Entity type")]
+            timestamp: Annotated[
+                datetime,
+                Field(
+                    description="Entry timestamp",
+                ),
+            ] = Field(default_factory=datetime.now)
+            data: Annotated[
+                t.ConfigurationMapping,
+                Field(
+                    description="Generic data payload",
+                ),
+            ] = Field(default_factory=dict)
+            metadata: Annotated[
+                t.ConfigurationMapping,
+                Field(
+                    description="Generic metadata",
+                ),
+            ] = Field(default_factory=dict)
+
+            @computed_field
+            def age_seconds(self) -> float:
+                """Computed age in seconds since creation."""
+                return (datetime.now(tz=UTC) - self.timestamp).total_seconds()
+
+            @computed_field
+            def data_keys(self) -> t.StrSequence:
+                """List of data keys for introspection."""
+                return list(self.data.keys()) if self.data else []
+
+            @computed_field
+            def has_data(self) -> bool:
+                """Check if entry has any data."""
+                return bool(self.data)
+
+        class GenericObservabilityConfig(FlextModels.Value):
+            """Generic configuration using Pydantic patterns."""
+
+            model_config: ClassVar[ConfigDict] = ConfigDict(
+                validate_assignment=True,
+                extra="allow",
+                frozen=False,
+                str_strip_whitespace=True,
+            )
+
+            enabled: Annotated[
+                bool,
+                Field(default=True, description="Enable observability"),
+            ]
+            interval_seconds: Annotated[
+                t.PositiveFloat,
+                Field(
+                    default=60.0,
+                    description="Collection interval",
+                ),
+            ]
+            retention_days: Annotated[
+                t.PositiveInt,
+                Field(
+                    le=365,
+                    default=30,
+                    description="Retention period",
+                ),
+            ]
+            settings: Annotated[
+                t.ConfigurationMapping,
+                Field(
+                    description="Type-specific settings",
+                ),
+            ] = Field(default_factory=dict)
+
+            @computed_field
+            def interval_minutes(self) -> float:
+                """Computed interval in minutes."""
+                return self.interval_seconds / 60.0
+
+            @computed_field
+            def retention_hours(self) -> float:
+                """Computed retention in hours."""
+                return self.retention_days * 24.0
+
+        # Domain scalar type alias used in model fields
+        _DomainLabels = dict[str, t.Scalar]
         """Metrics domain models."""
 
         class MetricEntry(FlextModels.Entity):

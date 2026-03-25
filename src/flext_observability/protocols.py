@@ -37,24 +37,24 @@ class FlextObservabilityProtocols(FlextProtocols):
     tracing: p.Observability.Tracing
     """
 
-    @runtime_checkable
-    class _Span(Protocol):
-        """Protocol for OpenTelemetry Span interface."""
-
-        def set_attribute(self, key: str, *, value: t.Scalar) -> None:
-            """Set span attribute."""
-            ...
-
-        def set_status(self, status: int) -> None:
-            """Set span status."""
-            ...
-
     class Observability:
         """Observability domain-specific protocols.
 
         Provides protocols for metrics collection, distributed tracing,
         alerting, health checks, logging, and dashboard visualization.
         """
+
+        @runtime_checkable
+        class _Span(Protocol):
+            """Protocol for OpenTelemetry Span interface."""
+
+            def set_attribute(self, key: str, *, value: t.Scalar) -> None:
+                """Set span attribute."""
+                ...
+
+            def set_status(self, status: int) -> None:
+                """Set span status."""
+                ...
 
         @runtime_checkable
         class Metrics(FlextProtocols.Service[bool], Protocol):

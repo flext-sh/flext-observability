@@ -175,53 +175,57 @@ class FlextObservabilityConstants(FlextConstants):
         class FunctionArgs:
             """Function argument length constants."""
 
-    METRIC_UNIT_COUNT: ClassVar[str] = "count"
-    METRIC_UNIT_PERCENT: ClassVar[str] = "percent"
-    METRIC_UNIT_BYTES: ClassVar[str] = "bytes"
-    METRIC_UNIT_SECONDS: ClassVar[str] = "seconds"
-    ALERT_LEVEL_INFO: ClassVar[str] = "info"
-    ALERT_LEVEL_WARNING: ClassVar[str] = "warning"
-    ALERT_LEVEL_ERROR: ClassVar[str] = "error"
-    ALERT_LEVEL_CRITICAL: ClassVar[str] = "critical"
-    TRACE_STATUS_STARTED: ClassVar[str] = "started"
-    TRACE_STATUS_RUNNING: ClassVar[str] = "running"
-    TRACE_STATUS_COMPLETED: ClassVar[str] = "completed"
-    TRACE_STATUS_FAILED: ClassVar[str] = "failed"
-    HEALTH_STATUS_HEALTHY: ClassVar[str] = "healthy"
-    HEALTH_STATUS_DEGRADED: ClassVar[str] = "degraded"
-    HEALTH_STATUS_UNHEALTHY: ClassVar[str] = "unhealthy"
-    LOG_LEVEL_DEBUG: ClassVar[str] = "debug"
-    LOG_LEVEL_INFO: ClassVar[str] = "info"
-    LOG_LEVEL_WARNING: ClassVar[str] = "warning"
-    LOG_LEVEL_ERROR: ClassVar[str] = "error"
-    LOG_LEVEL_CRITICAL: ClassVar[str] = "critical"
-    MAX_METRIC_NAME_LENGTH: ClassVar[int] = 128
-    MAX_TRACE_NAME_LENGTH: ClassVar[int] = 256
-    MAX_ALERT_MESSAGE_LENGTH: ClassVar[int] = 1024
-    MAX_LOG_MESSAGE_LENGTH: ClassVar[int] = 4096
-    DEFAULT_ENVIRONMENT: ClassVar[str] = "development"
+        @unique
+        class ObservabilityProjectType(StrEnum):
+            """Project-type identifiers for observability packages."""
 
-    @unique
-    class ObservabilityProjectType(StrEnum):
-        """Project-type identifiers for observability packages."""
+            MONITORING_SERVICE = "monitoring-service"
+            METRICS_COLLECTOR = "metrics-collector"
+            TRACING_SERVICE = "tracing-service"
+            ALERTING_SYSTEM = "alerting-system"
+            OBSERVABILITY_PLATFORM = "observability-platform"
+            MONITORING_DASHBOARD = "monitoring-dashboard"
+            METRICS_AGGREGATOR = "metrics-aggregator"
+            TRACE_COLLECTOR = "trace-collector"
+            HEALTH_MONITOR = "health-monitor"
+            LOG_AGGREGATOR = "log-aggregator"
+            APM_SERVICE = "apm-service"
+            MONITORING_API = "monitoring-api"
+            METRICS_EXPORTER = "metrics-exporter"
+            ALERTMANAGER = "alertmanager"
+            OBSERVABILITY_GATEWAY = "observability-gateway"
+            TELEMETRY_SERVICE = "telemetry-service"
 
-        MONITORING_SERVICE = "monitoring-service"
-        METRICS_COLLECTOR = "metrics-collector"
-        TRACING_SERVICE = "tracing-service"
-        ALERTING_SYSTEM = "alerting-system"
-        OBSERVABILITY_PLATFORM = "observability-platform"
-        MONITORING_DASHBOARD = "monitoring-dashboard"
-        METRICS_AGGREGATOR = "metrics-aggregator"
-        TRACE_COLLECTOR = "trace-collector"
-        HEALTH_MONITOR = "health-monitor"
-        LOG_AGGREGATOR = "log-aggregator"
-        APM_SERVICE = "apm-service"
-        MONITORING_API = "monitoring-api"
-        METRICS_EXPORTER = "metrics-exporter"
-        ALERTMANAGER = "alertmanager"
-        OBSERVABILITY_GATEWAY = "observability-gateway"
-        TELEMETRY_SERVICE = "telemetry-service"
+        METRIC_UNIT_COUNT: ClassVar[str] = "count"
+        METRIC_UNIT_PERCENT: ClassVar[str] = "percent"
+        METRIC_UNIT_BYTES: ClassVar[str] = "bytes"
+        METRIC_UNIT_SECONDS: ClassVar[str] = "seconds"
+        ALERT_LEVEL_INFO: ClassVar[str] = "info"
+        ALERT_LEVEL_WARNING: ClassVar[str] = "warning"
+        ALERT_LEVEL_ERROR: ClassVar[str] = "error"
+        ALERT_LEVEL_CRITICAL: ClassVar[str] = "critical"
+        TRACE_STATUS_STARTED: ClassVar[str] = "started"
+        TRACE_STATUS_RUNNING: ClassVar[str] = "running"
+        TRACE_STATUS_COMPLETED: ClassVar[str] = "completed"
+        TRACE_STATUS_FAILED: ClassVar[str] = "failed"
+        HEALTH_STATUS_HEALTHY: ClassVar[str] = "healthy"
+        HEALTH_STATUS_DEGRADED: ClassVar[str] = "degraded"
+        HEALTH_STATUS_UNHEALTHY: ClassVar[str] = "unhealthy"
+        LOG_LEVEL_DEBUG: ClassVar[str] = "debug"
+        LOG_LEVEL_INFO: ClassVar[str] = "info"
+        LOG_LEVEL_WARNING: ClassVar[str] = "warning"
+        LOG_LEVEL_ERROR: ClassVar[str] = "error"
+        LOG_LEVEL_CRITICAL: ClassVar[str] = "critical"
+        MAX_METRIC_NAME_LENGTH: ClassVar[int] = 128
+        MAX_TRACE_NAME_LENGTH: ClassVar[int] = 256
+        MAX_ALERT_MESSAGE_LENGTH: ClassVar[int] = 1024
+        MAX_LOG_MESSAGE_LENGTH: ClassVar[int] = 4096
+        DEFAULT_ENVIRONMENT: ClassVar[str] = "development"
 
+
+ObservabilityProjectType = (
+    FlextObservabilityConstants.Observability.ObservabilityProjectType
+)
 
 c = FlextObservabilityConstants
 __all__ = ["FlextObservabilityConstants", "c"]
