@@ -61,7 +61,7 @@ try:
         tags={"method": "POST", "endpoint": "/api/users"},
     )
     assert metric_result.is_success
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     factory = FlextObservabilityMasterFactory()
@@ -89,7 +89,7 @@ try:
         tags={"system": "postgresql", "operation": "SELECT"},
     )
     assert result.is_success
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     FlextObservabilityContext.set_correlation_id("error-test-001")
@@ -108,7 +108,7 @@ try:
         if i == 2:
             escalated = handler.get_escalated_severity(error)
             assert escalated is not None
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     correlation_id = "dist-trace-001"
@@ -145,7 +145,7 @@ try:
         tags={"component": "api"},
     )
     assert api_success.is_success
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     ctx = FlextObservabilityAdvancedContext.get_context()
@@ -169,7 +169,7 @@ try:
     assert not ctx.get_all_metadata()
     ctx.restore(snapshot)
     assert ctx.get_metadata("user_id") == "user-123"
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     registry = FlextObservabilityCustomMetrics.get_registry()
@@ -192,7 +192,7 @@ try:
     sampler.set_operation_rate("user_signup", 1.0)
     metrics = registry.get_metrics_by_type(c.Observability.MetricType.COUNTER)
     assert any("user_signup" in m for m in metrics)
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     sampler = FlextObservabilitySampling.get_sampler()
@@ -208,7 +208,7 @@ try:
     assert performance.is_performance_acceptable(perf_metrics), (
         "Sampling performance overhead should be acceptable"
     )
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     FlextObservabilityContext.set_correlation_id("e2e-test-001")
@@ -256,7 +256,7 @@ try:
     assert error_result.is_success
     result = factory.create_metric("workflow.errors", 1.0, "counter")
     assert result.is_success
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     correlation_id = "multi-service-001"
@@ -278,7 +278,7 @@ try:
     json_snapshot = snapshot.model_dump_json()
     assert json_snapshot is not None
     assert "correlation_id" in json_snapshot
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     FlextObservabilityContext.set_correlation_id("setup-001")
@@ -301,5 +301,5 @@ try:
     sampler.set_environment("production")
     should_sample = sampler.should_sample("test", "service")
     assert should_sample is not None
-except Exception:
+except (AssertionError, RuntimeError, ValueError, TypeError):
     pass

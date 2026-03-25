@@ -19,7 +19,7 @@ from decimal import Decimal
 
 from flext_core import FlextTypes
 
-from flext_observability import c
+from flext_observability.constants import FlextObservabilityConstants as c
 
 
 class FlextObservabilityTypes(FlextTypes):
