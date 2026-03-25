@@ -74,14 +74,14 @@ class FlextObservabilityHTTP:
 
     @staticmethod
     def _is_flask_app(
-        obj: t.RegisterableService,
+        obj: t.RegisterableService | p.Observability.Http.FlaskApp,
     ) -> TypeIs[p.Observability.Http.FlaskApp]:
         """Type guard to check if object is a Flask app."""
         return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
     @staticmethod
     def _is_fastapi_app(
-        obj: t.RegisterableService,
+        obj: t.RegisterableService | p.Observability.Http.FastAPIApp,
     ) -> TypeIs[p.Observability.Http.FastAPIApp]:
         """Type guard to check if object is a FastAPI app."""
         return hasattr(obj, "add_middleware")
@@ -130,8 +130,8 @@ class FlextObservabilityHTTP:
             try:
                 if not FlextObservabilityHTTP._is_flask_app(app):
                     return r[bool].fail("Invalid Flask app - missing request hooks")
-                before_request_hook = app.before_request
-                after_request_hook = app.after_request
+                before_request_hook: p.Observability.Http.FlaskHook = app.before_request
+                after_request_hook: p.Observability.Http.FlaskHook = app.after_request
 
                 @before_request_hook
                 def flext_before_request() -> None:
@@ -219,7 +219,7 @@ class FlextObservabilityHTTP:
                         )
                     return response
 
-                errorhandler = app.errorhandler
+                errorhandler: p.Observability.Http.FlaskErrorHandler = app.errorhandler
 
                 @errorhandler(Exception)
                 def flext_error_handler(error: Exception) -> tuple[t.Dict, int]:
