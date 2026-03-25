@@ -39,7 +39,9 @@ def demonstrate_simple_api() -> None:
     trace_result = flext_trace("user_registration")
     if trace_result.is_success:
         pass
-    alert_result = flext_alert("monitoring", "High CPU usage detected", AlertLevel.WARNING)
+    alert_result = flext_alert(
+        "monitoring", "High CPU usage detected", AlertLevel.WARNING
+    )
     if alert_result.is_success:
         pass
     health_result = flext_health_check("database", HealthStatus.HEALTHY)
