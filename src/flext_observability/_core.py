@@ -11,9 +11,9 @@ from datetime import UTC, datetime
 from typing import ClassVar
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextRuntime, p, r, t
+from flext_core import FlextContainer, FlextRuntime, p, r
 
-from flext_observability import FlextObservabilityModels as _m, c
+from flext_observability import FlextObservabilityModels as _m, c, t
 
 
 class FlextObservability:

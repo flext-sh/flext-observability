@@ -21,10 +21,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping, MutableMapping
 
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 from structlog.typing import BindableLogger
 
-from flext_observability import FlextObservabilityContext, m
+from flext_observability import FlextObservabilityContext, m, t
 
 
 class FlextObservabilityLogging:

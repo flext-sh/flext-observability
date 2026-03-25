@@ -24,13 +24,14 @@ import time
 from collections.abc import Awaitable, Callable, MutableMapping
 from typing import ClassVar, TypeIs
 
-from flext_core import FlextRuntime, r, t
+from flext_core import FlextRuntime, r
 from pydantic import ValidationError
 
 from flext_observability import (
     FlextObservabilityContext,
     m,
     p,
+    t,
 )
 from flext_observability.logging_integration import (
     FlextObservabilityLogging,

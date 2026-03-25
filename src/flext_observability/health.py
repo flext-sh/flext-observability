@@ -11,10 +11,10 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from flext_core import r, t
+from flext_core import r
 from pydantic import ValidationError
 
-from flext_observability import m
+from flext_observability import m, t
 
 
 class FlextObservabilityHealth:
