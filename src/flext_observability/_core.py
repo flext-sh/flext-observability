@@ -6,9 +6,9 @@ Internal module; use flext_observability package API.
 from __future__ import annotations
 
 import math
-from collections.abc import Mapping, MutableMapping, MutableSequence
+from collections.abc import MutableMapping, MutableSequence
 from datetime import UTC, datetime
-from typing import ClassVar
+from typing import ClassVar, TypeAlias
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, p, r
@@ -54,11 +54,11 @@ class FlextObservability:
         }
 
     # Model classes live in models.py — aliases kept here for backward compatibility
-    Metric = _m.Observability.Metric
-    Trace = _m.Observability.Trace
-    Alert = _m.Observability.Alert
-    HealthCheck = _m.Observability.HealthCheck
-    LogEntry = _m.Observability.LogEntry
+    Metric: TypeAlias = _m.Observability.Metric
+    Trace: TypeAlias = _m.Observability.Trace
+    Alert: TypeAlias = _m.Observability.Alert
+    HealthCheck: TypeAlias = _m.Observability.HealthCheck
+    LogEntry: TypeAlias = _m.Observability.LogEntry
 
     class MetricsService:
         """Service for metrics collection and recording.
@@ -101,7 +101,7 @@ class FlextObservability:
                     metric_type = c.Observability.MetricType.COUNTER
                 elif name.endswith(("_duration", "_seconds")):
                     metric_type = c.Observability.MetricType.HISTOGRAM
-                resolved_labels: Mapping[str, t.Scalar] = (
+                resolved_labels: dict[str, t.Scalar] = (
                     dict(labels) if labels is not None else {}
                 )
                 metric = FlextObservability.Metric(
@@ -145,7 +145,7 @@ class FlextObservability:
                     return r[FlextObservability.Trace].fail(
                         "Trace name must be non-empty string",
                     )
-                resolved_attrs: Mapping[str, t.Scalar] = (
+                resolved_attrs: dict[str, t.Scalar] = (
                     dict(attributes) if attributes is not None else {}
                 )
                 trace = FlextObservability.Trace(
@@ -191,7 +191,7 @@ class FlextObservability:
                     return r[FlextObservability.Alert].fail(
                         "Alert message cannot be empty",
                     )
-                resolved_labels: Mapping[str, t.Scalar] = (
+                resolved_labels: dict[str, t.Scalar] = (
                     dict(labels) if labels is not None else {}
                 )
                 alert = FlextObservability.Alert(
@@ -238,7 +238,7 @@ class FlextObservability:
                     return r[FlextObservability.HealthCheck].fail(
                         f"Invalid health status: {status}",
                     )
-                resolved_details: Mapping[str, t.Scalar] = (
+                resolved_details: dict[str, t.Scalar] = (
                     dict(details) if details is not None else {}
                 )
                 health = FlextObservability.HealthCheck(
@@ -282,7 +282,7 @@ class FlextObservability:
                     return r[FlextObservability.LogEntry].fail(
                         "Log message cannot be empty",
                     )
-                resolved_context: Mapping[str, t.Scalar] = (
+                resolved_context: dict[str, t.Scalar] = (
                     dict(context) if context is not None else {}
                 )
                 entry = FlextObservability.LogEntry(
@@ -364,7 +364,7 @@ class FlextObservability:
                 return r[FlextObservability.Trace].fail(
                     "Trace name must be non-empty string",
                 )
-            resolved_attrs: Mapping[str, t.Scalar] = (
+            resolved_attrs: dict[str, t.Scalar] = (
                 dict(attributes) if attributes is not None else {}
             )
             trace = FlextObservability.Trace(
@@ -394,7 +394,7 @@ class FlextObservability:
                 return r[FlextObservability.Alert].fail("Alert message cannot be empty")
             if not title and message:
                 return r[FlextObservability.Alert].fail("Alert title cannot be empty")
-            resolved_labels: Mapping[str, t.Scalar] = (
+            resolved_labels: dict[str, t.Scalar] = (
                 dict(labels) if labels is not None else {}
             )
             alert = FlextObservability.Alert(
@@ -428,7 +428,7 @@ class FlextObservability:
                 return r[FlextObservability.HealthCheck].fail(
                     f"Invalid health status: {status}",
                 )
-            resolved_details: Mapping[str, t.Scalar] = (
+            resolved_details: dict[str, t.Scalar] = (
                 dict(details) if details is not None else {}
             )
             health = FlextObservability.HealthCheck(
@@ -458,7 +458,7 @@ class FlextObservability:
                 return r[FlextObservability.LogEntry].fail(
                     "Log message cannot be empty",
                 )
-            resolved_context: Mapping[str, t.Scalar] = (
+            resolved_context: dict[str, t.Scalar] = (
                 dict(context) if context is not None else {}
             )
             entry = FlextObservability.LogEntry(
@@ -534,23 +534,23 @@ class FlextObservabilityMasterFactory:
         valid_severity: c.Observability.AlertLevel
         match severity:
             case "info" | "low":
-                valid_severity = "info"
+                valid_severity = c.Observability.AlertLevel.INFO
             case "warning" | "medium":
-                valid_severity = "warning"
+                valid_severity = c.Observability.AlertLevel.WARNING
             case "error" | "high":
-                valid_severity = "error"
+                valid_severity = c.Observability.AlertLevel.ERROR
             case "critical":
-                valid_severity = "critical"
+                valid_severity = c.Observability.AlertLevel.CRITICAL
             case _:
-                valid_severity = "warning"
+                valid_severity = c.Observability.AlertLevel.WARNING
         valid_status: c.Observability.AlertStatus
         match status:
             case "firing" | "active":
-                valid_status = "firing"
+                valid_status = c.Observability.AlertStatus.FIRING
             case "resolved":
-                valid_status = "resolved"
+                valid_status = c.Observability.AlertStatus.RESOLVED
             case _:
-                valid_status = "firing"
+                valid_status = c.Observability.AlertStatus.FIRING
         return FlextObservability.flext_alert(
             title=title,
             message=message,
@@ -623,13 +623,13 @@ class FlextObservabilityMasterFactory:
         valid_status: c.Observability.HealthStatus
         match status:
             case "healthy":
-                valid_status = "healthy"
+                valid_status = c.Observability.HealthStatus.HEALTHY
             case "degraded":
-                valid_status = "degraded"
+                valid_status = c.Observability.HealthStatus.DEGRADED
             case "unhealthy":
-                valid_status = "unhealthy"
+                valid_status = c.Observability.HealthStatus.UNHEALTHY
             case _:
-                valid_status = "healthy"
+                valid_status = c.Observability.HealthStatus.HEALTHY
         return FlextObservability.flext_health_check(
             component,
             status=valid_status,
@@ -638,7 +638,9 @@ class FlextObservabilityMasterFactory:
 
     def health_status(self) -> r[FlextObservability.HealthCheck]:
         """Get overall health status."""
-        return FlextObservability.flext_health_check("system", status="healthy")
+        return FlextObservability.flext_health_check(
+            "system", status=c.Observability.HealthStatus.HEALTHY,
+        )
 
     def log(
         self,
@@ -651,17 +653,17 @@ class FlextObservabilityMasterFactory:
         valid_level: c.Observability.ErrorSeverity
         match level:
             case "debug":
-                valid_level = "debug"
+                valid_level = c.Observability.ErrorSeverity.DEBUG
             case "info":
-                valid_level = "info"
+                valid_level = c.Observability.ErrorSeverity.INFO
             case "warning":
-                valid_level = "warning"
+                valid_level = c.Observability.ErrorSeverity.WARNING
             case "error":
-                valid_level = "error"
+                valid_level = c.Observability.ErrorSeverity.ERROR
             case "critical":
-                valid_level = "critical"
+                valid_level = c.Observability.ErrorSeverity.CRITICAL
             case _:
-                valid_level = "info"
+                valid_level = c.Observability.ErrorSeverity.INFO
         return FlextObservability.flext_log_entry(
             message,
             level=valid_level,

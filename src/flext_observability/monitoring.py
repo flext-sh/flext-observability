@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable, Sequence
-from typing import override
+from typing import TypeAlias, override
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
@@ -21,6 +21,8 @@ from flext_observability import (
     p,
     t,
 )
+
+_ObservabilityService: TypeAlias = p.Observability.ObservabilityService
 
 
 class FlextObservabilityMonitor:
@@ -36,7 +38,6 @@ class FlextObservabilityMonitor:
 
     object_callable = Callable[..., t.Scalar]
     logger = FlextRuntime.get_logger(__name__)
-    ObservabilityService = p.Observability.ObservabilityService
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""
@@ -152,12 +153,12 @@ class FlextObservabilityMonitor:
         self._initialized = False
         self._running = False
         self._observability_service: (
-            FlextObservabilityMonitor.ObservabilityService | None
+            _ObservabilityService | None
         ) = None
-        self._health_service: FlextObservabilityMonitor.ObservabilityService | None = (
+        self._health_service: _ObservabilityService | None = (
             None
         )
-        self._metrics_service: FlextObservabilityMonitor.ObservabilityService | None = (
+        self._metrics_service: _ObservabilityService | None = (
             None
         )
         self._monitor_start_time = time.time()
@@ -216,9 +217,7 @@ class FlextObservabilityMonitor:
                 )
             try:
                 service = FlextObservabilityServices()
-                self._observability_service: (
-                    p.Observability.ObservabilityService | None
-                ) = service
+                self._observability_service = service
                 self._metrics_service = self._observability_service
                 self._health_service = self._observability_service
             except (ValueError, TypeError, KeyError) as e:
@@ -297,7 +296,7 @@ class FlextObservabilityMonitor:
 
     def get_observability_service(
         self,
-    ) -> FlextObservabilityMonitor.ObservabilityService | None:
+    ) -> _ObservabilityService | None:
         """Public method to get unified observability service."""
         return self._observability_service
 

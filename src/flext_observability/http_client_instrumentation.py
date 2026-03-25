@@ -248,7 +248,7 @@ class FlextObservabilityHTTPClient:
                     typed_async_client.request = traced_async_request
                 elif FlextObservabilityHTTPClient._is_httpx_client(client):
                     typed_sync_client: p.Observability.HttpClient.HTTPXClient = client
-                    original_request: Callable[
+                    original_sync_request: Callable[
                         ...,
                         p.Observability.HttpClient.HTTPXResponse
                         | Awaitable[p.Observability.HttpClient.HTTPXResponse],
@@ -289,7 +289,7 @@ class FlextObservabilityHTTPClient:
                             k: v for k, v in kwargs.items() if k != "headers"
                         }
                         try:
-                            response_candidate = original_request(
+                            response_candidate = original_sync_request(
                                 method,
                                 url,
                                 *args,

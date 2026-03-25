@@ -128,12 +128,12 @@ class TestFlextObservabilityMasterFactoryReal:
         """Test global factory with real functionality."""
         reset_global_factory()
         factory1 = get_global_factory()
-        tm.that(hasattr(factory1, "get_status"), eq=True)
+        tm.that(hasattr(factory1, "health_status"), eq=True)
         factory2 = get_global_factory()
-        tm.that(hasattr(factory2, "get_status"), eq=True)
+        tm.that(hasattr(factory2, "health_status"), eq=True)
         reset_global_factory()
         factory3 = get_global_factory()
-        tm.that(hasattr(factory3, "get_status"), eq=True)
+        tm.that(hasattr(factory3, "health_status"), eq=True)
 
     def test_factory_error_handling_real(self) -> None:
         """Test factory error handling with real scenarios."""
