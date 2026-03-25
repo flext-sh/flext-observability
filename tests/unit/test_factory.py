@@ -159,12 +159,11 @@ class TestFlextObservabilityMasterFactoryReal:
         alert = factory.create_alert("High request count", "monitoring", "medium")
         trace = factory.create_trace("process_request", "api_service")
         health = factory.create_health_check("api_service", "healthy")
-        results = [metric, log, alert, trace, health]
-        for result in results:
+        for result in (metric, log, alert, trace, health):
             tm.that(hasattr(result, "is_success"), eq=True)
             tm.that(result.is_success, eq=True)
         timestamp_fields = ("timestamp", "created_at", "start_time")
-        for result in results:
+        for result in (metric, log, alert, trace, health):
             entity = result.value if hasattr(result, "unwrap") else result
             has_timestamp = any(hasattr(entity, f) for f in timestamp_fields)
             tm.that(has_timestamp, eq=True)

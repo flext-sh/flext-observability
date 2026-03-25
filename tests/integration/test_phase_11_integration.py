@@ -102,8 +102,8 @@ try:
             message="Failed to connect to database",
             severity=c.Observability.ErrorSeverity.ERROR,
         )
-        result = handler.record_error(error)
-        assert result.is_success, "Error should be recorded"
+        error_result = handler.record_error(error)
+        assert error_result.is_success, "Error should be recorded"
         should_alert = handler.should_alert_for_error(error)
         if i == 2:
             escalated = handler.get_escalated_severity(error)
@@ -174,20 +174,20 @@ except (AssertionError, RuntimeError, ValueError, TypeError):
 try:
     registry = FlextObservabilityCustomMetrics.get_registry()
     sampler = FlextObservabilitySampling.get_sampler()
-    result = registry.register_metric(
+    reg_result = registry.register_metric(
         name="user_signup",
         metric_type=c.Observability.MetricType.COUNTER,
         description="User signup events",
         namespace="auth",
     )
-    assert result.is_success
-    result = registry.register_metric(
+    assert reg_result.is_success
+    reg_result = registry.register_metric(
         name="active_sessions",
         metric_type=c.Observability.MetricType.GAUGE,
         description="Currently active sessions",
         namespace="auth",
     )
-    assert result.is_success
+    assert reg_result.is_success
     sampler.set_service_rate("auth_service", 0.5)
     sampler.set_operation_rate("user_signup", 1.0)
     metrics = registry.get_metrics_by_type(c.Observability.MetricType.COUNTER)
@@ -225,7 +225,7 @@ try:
     adv_ctx.set_metadata("workflow_type", "integration_test")
     adv_ctx.set_baggage("test_phase", "11")
     registry = FlextObservabilityCustomMetrics.get_registry()
-    metric_result = registry.register_metric(
+    reg_result2 = registry.register_metric(
         name="e2e_tests",
         metric_type=c.Observability.MetricType.COUNTER,
         description="E2E workflow tests",

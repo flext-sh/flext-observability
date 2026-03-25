@@ -455,6 +455,9 @@ split-on-trailing-comma = true
   "PLC2801",
   "S107",
 ]
+"examples/**" = [
+  "PLC2701",
+]
 "**/*models*" = [
   "ANN401",
   "FBT001",

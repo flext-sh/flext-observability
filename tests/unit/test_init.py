@@ -11,11 +11,11 @@ from flext_core import FlextConstants, FlextContainer, FlextLogger
 from flext_tests import tm
 
 import flext_observability
-from flext_observability.constants import FlextObservabilityConstants as c
 from flext_observability._core import (
     FlextObservability,
     FlextObservabilityMasterFactory,
 )
+from flext_observability.constants import FlextObservabilityConstants as c
 from flext_observability.models import FlextObservabilityModels
 
 flext_alert = FlextObservability.flext_alert
