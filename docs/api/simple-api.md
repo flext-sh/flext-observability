@@ -402,7 +402,11 @@ ______________________________________________________________________
 from flext_observability import flext_create_metric, flext_create_trace
 
 
+<<<<<<< Updated upstream
 def process_business_operation(data: dict) -> r[t.Dict]:
+=======
+def process_business_operation(data: dict) -> FlextResult[t.Dict]:
+>>>>>>> Stashed changes
     """Example of chaining observability operations."""
 
     # Create metric - handle potential failure

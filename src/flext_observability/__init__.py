@@ -1,22 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make codegen
 #
-"""Enterprise observability and monitoring library for FLEXT ecosystem.
-
-FLEXT Observability provides unified observability patterns for monitoring, metrics,
-tracing, and alerting across the FLEXT ecosystem using r railway pattern.
-
-Architecture:
-- Single FlextObservability class (domain library pattern)
-- Nested domain entities (Metric, Trace, Alert, HealthCheck, LogEntry)
-- Nested application services (MetricsService, TracingService, etc.)
-- Clean Architecture layers with SOLID principles
-- Railway-oriented programming with r[T]
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
-"""
+"""Flext observability package."""
 
 from __future__ import annotations
 
@@ -25,8 +10,10 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
+
 if TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, h, r, s, x
+    from flext_core import FlextTypes
+    from flext_core import d, e, h, r, s, x
 
     from flext_observability.__version__ import (
         __all__,
@@ -80,82 +67,25 @@ if TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "FlextObservabilityAdvancedContext": [
-        "flext_observability.advanced_context",
-        "FlextObservabilityAdvancedContext",
-    ],
-    "FlextObservabilityConstants": [
-        "flext_observability.constants",
-        "FlextObservabilityConstants",
-    ],
-    "FlextObservabilityContext": [
-        "flext_observability.context",
-        "FlextObservabilityContext",
-    ],
-    "FlextObservabilityCustomMetrics": [
-        "flext_observability.custom_metrics",
-        "FlextObservabilityCustomMetrics",
-    ],
-    "FlextObservabilityErrorHandling": [
-        "flext_observability.error_handling",
-        "FlextObservabilityErrorHandling",
-    ],
-    "FlextObservabilityFields": [
-        "flext_observability.fields",
-        "FlextObservabilityFields",
-    ],
-    "FlextObservabilityHTTP": [
-        "flext_observability.http_instrumentation",
-        "FlextObservabilityHTTP",
-    ],
-    "FlextObservabilityHTTPClient": [
-        "flext_observability.http_client_instrumentation",
-        "FlextObservabilityHTTPClient",
-    ],
-    "FlextObservabilityHealth": [
-        "flext_observability.health",
-        "FlextObservabilityHealth",
-    ],
-    "FlextObservabilityLogging": [
-        "flext_observability.logging",
-        "FlextObservabilityLogging",
-    ],
-    "FlextObservabilityModels": [
-        "flext_observability.models",
-        "FlextObservabilityModels",
-    ],
-    "FlextObservabilityMonitor": [
-        "flext_observability.monitoring",
-        "FlextObservabilityMonitor",
-    ],
-    "FlextObservabilityPerformance": [
-        "flext_observability.performance",
-        "FlextObservabilityPerformance",
-    ],
-    "FlextObservabilityProtocols": [
-        "flext_observability.protocols",
-        "FlextObservabilityProtocols",
-    ],
-    "FlextObservabilitySampling": [
-        "flext_observability.sampling",
-        "FlextObservabilitySampling",
-    ],
-    "FlextObservabilityServices": [
-        "flext_observability.services",
-        "FlextObservabilityServices",
-    ],
-    "FlextObservabilitySettings": [
-        "flext_observability.settings",
-        "FlextObservabilitySettings",
-    ],
-    "FlextObservabilityTypes": [
-        "flext_observability.typings",
-        "FlextObservabilityTypes",
-    ],
-    "FlextObservabilityUtilities": [
-        "flext_observability.utilities",
-        "FlextObservabilityUtilities",
-    ],
+    "FlextObservabilityAdvancedContext": ["flext_observability.advanced_context", "FlextObservabilityAdvancedContext"],
+    "FlextObservabilityConstants": ["flext_observability.constants", "FlextObservabilityConstants"],
+    "FlextObservabilityContext": ["flext_observability.context", "FlextObservabilityContext"],
+    "FlextObservabilityCustomMetrics": ["flext_observability.custom_metrics", "FlextObservabilityCustomMetrics"],
+    "FlextObservabilityErrorHandling": ["flext_observability.error_handling", "FlextObservabilityErrorHandling"],
+    "FlextObservabilityFields": ["flext_observability.fields", "FlextObservabilityFields"],
+    "FlextObservabilityHTTP": ["flext_observability.http_instrumentation", "FlextObservabilityHTTP"],
+    "FlextObservabilityHTTPClient": ["flext_observability.http_client_instrumentation", "FlextObservabilityHTTPClient"],
+    "FlextObservabilityHealth": ["flext_observability.health", "FlextObservabilityHealth"],
+    "FlextObservabilityLogging": ["flext_observability.logging", "FlextObservabilityLogging"],
+    "FlextObservabilityModels": ["flext_observability.models", "FlextObservabilityModels"],
+    "FlextObservabilityMonitor": ["flext_observability.monitoring", "FlextObservabilityMonitor"],
+    "FlextObservabilityPerformance": ["flext_observability.performance", "FlextObservabilityPerformance"],
+    "FlextObservabilityProtocols": ["flext_observability.protocols", "FlextObservabilityProtocols"],
+    "FlextObservabilitySampling": ["flext_observability.sampling", "FlextObservabilitySampling"],
+    "FlextObservabilityServices": ["flext_observability.services", "FlextObservabilityServices"],
+    "FlextObservabilitySettings": ["flext_observability.settings", "FlextObservabilitySettings"],
+    "FlextObservabilityTypes": ["flext_observability.typings", "FlextObservabilityTypes"],
+    "FlextObservabilityUtilities": ["flext_observability.utilities", "FlextObservabilityUtilities"],
     "__all__": ["flext_observability.__version__", "__all__"],
     "__author__": ["flext_observability.__version__", "__author__"],
     "__author_email__": ["flext_observability.__version__", "__author_email__"],
@@ -168,10 +98,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "c": ["flext_observability.constants", "FlextObservabilityConstants"],
     "d": ["flext_core", "d"],
     "e": ["flext_core", "e"],
-    "flext_monitor_function": [
-        "flext_observability.monitoring",
-        "flext_monitor_function",
-    ],
+    "flext_monitor_function": ["flext_observability.monitoring", "flext_monitor_function"],
     "h": ["flext_core", "h"],
     "m": ["flext_observability.models", "FlextObservabilityModels"],
     "p": ["flext_observability.protocols", "FlextObservabilityProtocols"],
@@ -243,7 +170,6 @@ def __getattr__(name: str) -> FlextTypes.ModuleExport:
 
     Raises:
         AttributeError: If attribute not registered.
-
     """
     if name in _LAZY_CACHE:
         return _LAZY_CACHE[name]
@@ -258,7 +184,6 @@ def __dir__() -> Sequence[str]:
 
     Returns:
         List of public names from module exports.
-
     """
     return sorted(__all__)
 

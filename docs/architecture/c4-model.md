@@ -378,6 +378,7 @@ class FlextMetric(FlextModels.Entity):
     tags: t.StrMapping
 
 
+
 class FlextTrace(FlextModels.Entity):
     """Distributed trace entity with span hierarchy."""
 
@@ -420,7 +421,13 @@ class FlextObservabilityServices(u):
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
+<<<<<<< Updated upstream
     def create_metric(self, name: str, value: float, unit: str) -> r[FlextMetric]:
+=======
+    def create_metric(
+        self, name: str, value: float, unit: str
+    ) -> FlextResult[FlextMetric]:
+>>>>>>> Stashed changes
         """Create validated metric entity."""
 
     def create_trace(self, operation: str, context: dict) -> r[FlextTrace]:
