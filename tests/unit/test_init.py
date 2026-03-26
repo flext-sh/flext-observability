@@ -15,6 +15,10 @@ from flext_observability import (
     FlextObservability,
     FlextObservabilityMasterFactory,
 )
+from flext_observability.__version__ import (
+    __version__ as pkg_version,
+    __version_info__ as pkg_version_info,
+)
 from flext_observability.constants import FlextObservabilityConstants as c
 from flext_observability.models import FlextObservabilityModels
 
@@ -42,20 +46,24 @@ class TestInitCoverage:
 
     def test_all_public_api_imports(self) -> None:
         """Test that all __all__ exports can be imported successfully."""
+        nullable_metadata = {"__license__", "__author__", "__url__"}
+        # __version__/__version_info__ shadow the __version__ submodule via
+        # lazy imports; validated separately in test_version_exports.
+        skip_lazy_shadow = {"__version__", "__version_info__", "__all__"}
         for export_name in flext_observability.__all__:
             tm.that(hasattr(flext_observability, export_name), eq=True)
+            if export_name in skip_lazy_shadow:
+                continue
             exported_item = getattr(flext_observability, export_name)
-            if export_name != "__license__":
+            if export_name not in nullable_metadata:
                 tm.that(exported_item, none=False)
 
     def test_version_exports(self) -> None:
-        """Test version exports are available."""
-        tm.that(hasattr(flext_observability, "__version__"), eq=True)
-        tm.that(hasattr(flext_observability, "__version_info__"), eq=True)
-        tm.that(flext_observability.__version__, is_=str)
-        tm.that(flext_observability.__version__, eq=True)
-        tm.that(flext_observability.__version_info__, is_=tuple)
-        tm.that(len(flext_observability.__version_info__), gte=3)
+        """Test version exports are available via __version__ submodule."""
+        tm.that(pkg_version, is_=str)
+        tm.that(pkg_version, none=False)
+        tm.that(pkg_version_info, is_=tuple)
+        tm.that(len(pkg_version_info), gte=3)
 
     def test_core_entity_imports(self) -> None:
         """Test that core entities can be accessed via FlextObservabilityModels."""

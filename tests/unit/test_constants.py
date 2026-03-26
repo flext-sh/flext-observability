@@ -22,10 +22,11 @@ class TestFlextObservabilityConstants:
 
     def test_metric_constants(self) -> None:
         """Test metric-related constants."""
-        tm.that(hasattr(FlextObservabilityConstants, "METRIC_UNIT_COUNT"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "METRIC_UNIT_PERCENT"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "METRIC_UNIT_BYTES"), eq=True)
-        tm.that(hasattr(FlextObservabilityConstants, "METRIC_UNIT_SECONDS"), eq=True)
+        obs = FlextObservabilityConstants.Observability
+        tm.that(obs.METRIC_UNIT_COUNT, eq="count")
+        tm.that(obs.METRIC_UNIT_PERCENT, eq="percent")
+        tm.that(obs.METRIC_UNIT_BYTES, eq="bytes")
+        tm.that(obs.METRIC_UNIT_SECONDS, eq="seconds")
 
     def test_alert_constants(self) -> None:
         """Test alert-related constants."""
