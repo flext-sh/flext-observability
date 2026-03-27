@@ -18,7 +18,7 @@ class TestFlextObservabilityConstants:
 
     def test_inherits_from_flext_constants(self) -> None:
         """Test that FlextObservabilityConstants inherits from FlextConstants."""
-        tm.that(issubclass(FlextObservabilityConstants, FlextConstants), eq=True)
+        tm.that(FlextConstants in FlextObservabilityConstants.__mro__, eq=True)
 
     def test_metric_constants(self) -> None:
         """Test metric-related constants."""

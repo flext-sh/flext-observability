@@ -55,8 +55,7 @@ def demonstrate_solid_design() -> None:
     factory.create_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
     for result in results:
-        if hasattr(result, "is_success") and result.is_success:
-            pass
+        hasattr(result, "is_success") and result.is_success
 
 
 def demonstrate_metrics_collection() -> None:
@@ -69,9 +68,7 @@ def demonstrate_metrics_collection() -> None:
         ("active_connections", 127.0, "count"),
     ]
     for name, value, unit in metrics:
-        result = flext_metric(name, value, unit)
-        if result.is_success:
-            pass
+        flext_metric(name, value, unit)
 
 
 def demonstrate_distributed_tracing() -> None:
@@ -84,9 +81,7 @@ def demonstrate_distributed_tracing() -> None:
         ("cache", "result_caching"),
     ]
     for _service, operation in services:
-        result = flext_trace(operation)
-        if result.is_success:
-            pass
+        flext_trace(operation)
 
 
 def demonstrate_health_monitoring() -> None:
@@ -98,9 +93,7 @@ def demonstrate_health_monitoring() -> None:
         ("auth_service", HealthStatus.HEALTHY),
     ]
     for service, status in services_health:
-        result = flext_health_check(service, status)
-        if result.is_success:
-            pass
+        flext_health_check(service, status)
 
 
 def demonstrate_alerting_system() -> None:

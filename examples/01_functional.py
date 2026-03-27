@@ -33,39 +33,23 @@ flext_trace = FlextObservability.flext_trace
 
 def demonstrate_simple_api() -> None:
     """Demonstrate the simple API for creating observability entities."""
-    metric_result = flext_metric("api_requests", 150.0, "count")
-    if metric_result.is_success:
-        pass
-    trace_result = flext_trace("user_registration")
-    if trace_result.is_success:
-        pass
-    alert_result = flext_alert(
-        "monitoring", "High CPU usage detected", AlertLevel.WARNING
-    )
-    if alert_result.is_success:
-        pass
-    health_result = flext_health_check("database", HealthStatus.HEALTHY)
-    if health_result.is_success:
-        pass
-    log_result = flext_log_entry(
+    flext_metric("api_requests", 150.0, "count")
+    flext_trace("user_registration")
+    flext_alert("monitoring", "High CPU usage detected", AlertLevel.WARNING)
+    flext_health_check("database", HealthStatus.HEALTHY)
+    flext_log_entry(
         "User authentication successful",
         ErrorSeverity.INFO,
         "auth-service",
     )
-    if log_result.is_success:
-        pass
 
 
 def demonstrate_factory_pattern() -> None:
     """Demonstrate the factory pattern for advanced usage."""
     container = FlextContainer()
     factory = FlextObservabilityMasterFactory(container)
-    metric_result = factory.create_metric("response_time", 45.2, "milliseconds")
-    if metric_result.is_success:
-        pass
-    trace_result = factory.create_trace("payment_processing", "payment-service")
-    if trace_result.is_success:
-        pass
+    factory.create_metric("response_time", 45.2, "milliseconds")
+    factory.create_trace("payment_processing", "payment-service")
 
 
 def monitored_function(data: str) -> str:
@@ -102,9 +86,7 @@ def demonstrate_health_monitoring() -> None:
         HealthStatus.HEALTHY,
     ]
     for service, status in zip(services, statuses, strict=False):
-        health_result = flext_health_check(service, status)
-        if health_result.is_success:
-            pass
+        flext_health_check(service, status)
 
 
 def demonstrate_alerting_scenario() -> None:
@@ -131,9 +113,7 @@ def demonstrate_global_factory() -> None:
     """Demonstrate global factory usage."""
     container = FlextContainer()
     factory = FlextObservabilityMasterFactory(container)
-    metric_result = factory.create_metric("global_metric", 42.0, "count")
-    if metric_result.is_success:
-        pass
+    factory.create_metric("global_metric", 42.0, "count")
 
 
 def main() -> None:
