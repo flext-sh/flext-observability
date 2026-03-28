@@ -42,6 +42,7 @@ if TYPE_CHECKING:
         FlextObservabilityHTTPClient,
     )
     from flext_observability.http_instrumentation import FlextObservabilityHTTP
+    from flext_observability.logging_integration import FlextObservabilityLogging
     from flext_observability.models import (
         FlextObservabilityModels,
         FlextObservabilityModels as m,
@@ -50,7 +51,6 @@ if TYPE_CHECKING:
         FlextObservabilityMonitor,
         flext_monitor_function,
     )
-    from flext_observability.observability_logging import FlextObservabilityLogging
     from flext_observability.performance import FlextObservabilityPerformance
     from flext_observability.protocols import (
         FlextObservabilityProtocols,
@@ -107,7 +107,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "FlextObservabilityHealth",
     ],
     "FlextObservabilityLogging": [
-        "flext_observability.observability_logging",
+        "flext_observability.logging_integration",
         "FlextObservabilityLogging",
     ],
     "FlextObservabilityMasterFactory": [
