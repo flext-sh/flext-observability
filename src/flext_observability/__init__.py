@@ -28,10 +28,6 @@ if TYPE_CHECKING:
         FlextObservabilityAdvancedContext,
     )
     from flext_observability._utilities._context import FlextObservabilityContext
-    from flext_observability._utilities._core import (
-        FlextObservability,
-        FlextObservabilityMasterFactory,
-    )
     from flext_observability._utilities._custom_metrics import (
         FlextObservabilityCustomMetrics,
     )
@@ -49,10 +45,6 @@ if TYPE_CHECKING:
     from flext_observability._utilities._logging_integration import (
         FlextObservabilityLogging,
     )
-    from flext_observability._utilities._monitoring import (
-        FlextObservabilityMonitor,
-        flext_monitor_function,
-    )
     from flext_observability._utilities._performance import (
         FlextObservabilityPerformance,
     )
@@ -62,9 +54,17 @@ if TYPE_CHECKING:
         FlextObservabilityConstants,
         FlextObservabilityConstants as c,
     )
+    from flext_observability.core import (
+        FlextObservability,
+        FlextObservabilityMasterFactory,
+    )
     from flext_observability.models import (
         FlextObservabilityModels,
         FlextObservabilityModels as m,
+    )
+    from flext_observability.monitoring import (
+        FlextObservabilityMonitor,
+        flext_monitor_function,
     )
     from flext_observability.protocols import (
         FlextObservabilityProtocols,
@@ -81,10 +81,7 @@ if TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "FlextObservability": [
-        "flext_observability._utilities._core",
-        "FlextObservability",
-    ],
+    "FlextObservability": ["flext_observability.core", "FlextObservability"],
     "FlextObservabilityAdvancedContext": [
         "flext_observability._utilities._advanced_context",
         "FlextObservabilityAdvancedContext",
@@ -126,7 +123,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "FlextObservabilityLogging",
     ],
     "FlextObservabilityMasterFactory": [
-        "flext_observability._utilities._core",
+        "flext_observability.core",
         "FlextObservabilityMasterFactory",
     ],
     "FlextObservabilityModels": [
@@ -134,7 +131,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "FlextObservabilityModels",
     ],
     "FlextObservabilityMonitor": [
-        "flext_observability._utilities._monitoring",
+        "flext_observability.monitoring",
         "FlextObservabilityMonitor",
     ],
     "FlextObservabilityPerformance": [
@@ -178,7 +175,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "d": ["flext_core", "d"],
     "e": ["flext_core", "e"],
     "flext_monitor_function": [
-        "flext_observability._utilities._monitoring",
+        "flext_observability.monitoring",
         "flext_monitor_function",
     ],
     "h": ["flext_core", "h"],
