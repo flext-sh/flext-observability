@@ -55,7 +55,7 @@ def demonstrate_solid_design() -> None:
     factory.create_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
     for result in results:
-        hasattr(result, "is_success") and result.is_success
+        _ = hasattr(result, "is_success") and result.is_success
 
 
 def demonstrate_metrics_collection() -> None:
