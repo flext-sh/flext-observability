@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
 
     from flext_observability.__version__ import (
-        __all__,
         __author__,
         __author_email__,
         __description__,
@@ -162,7 +161,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "flext_observability.utilities",
         "FlextObservabilityUtilities",
     ],
-    "__all__": ["flext_observability.__version__", "__all__"],
     "__author__": ["flext_observability.__version__", "__author__"],
     "__author_email__": ["flext_observability.__version__", "__author_email__"],
     "__description__": ["flext_observability.__version__", "__description__"],
@@ -210,7 +208,6 @@ __all__ = [
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
-    "__all__",
     "__author__",
     "__author_email__",
     "__description__",

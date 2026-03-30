@@ -29,12 +29,10 @@ from pydantic import ValidationError
 
 from flext_observability import (
     FlextObservabilityContext,
+    FlextObservabilityLogging,
     m,
     p,
     t,
-)
-from flext_observability._utilities._logging_integration import (
-    FlextObservabilityLogging,
 )
 
 

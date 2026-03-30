@@ -31,12 +31,10 @@ from pydantic import ValidationError
 
 from flext_observability import (
     FlextObservabilityContext,
+    FlextObservabilityLogging,
     m,
     p,
     t,
-)
-from flext_observability.logging_integration import (
-    FlextObservabilityLogging,
 )
 
 g = flask.g if hasattr(flask, "g") else None

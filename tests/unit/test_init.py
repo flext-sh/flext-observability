@@ -13,14 +13,12 @@ from flext_tests import tm
 import flext_observability
 from flext_observability import (
     FlextObservability,
+    FlextObservabilityConstants as c,
     FlextObservabilityMasterFactory,
-)
-from flext_observability.__version__ import (
+    FlextObservabilityModels,
     __version__ as pkg_version,
     __version_info__ as pkg_version_info,
 )
-from flext_observability.constants import FlextObservabilityConstants as c
-from flext_observability.models import FlextObservabilityModels
 
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
