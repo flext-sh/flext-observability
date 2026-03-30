@@ -16,18 +16,13 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from tests.integration import test_phase_11_integration as test_phase_11_integration
-    from tests.integration.test_phase_11_integration import ErrorEvent as ErrorEvent
+    from tests.integration import test_phase_11_integration
+    from tests.integration.test_phase_11_integration import *
 
-_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "ErrorEvent": ["tests.integration.test_phase_11_integration", "ErrorEvent"],
-    "test_phase_11_integration": ["tests.integration.test_phase_11_integration", ""],
+_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+    "ErrorEvent": "tests.integration.test_phase_11_integration",
+    "test_phase_11_integration": "tests.integration.test_phase_11_integration",
 }
 
-_EXPORTS: Sequence[str] = [
-    "ErrorEvent",
-    "test_phase_11_integration",
-]
 
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))
