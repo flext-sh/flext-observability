@@ -5,101 +5,111 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core.lazy import install_lazy_exports
 
 from flext_observability.__version__ import (
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
+    __author__ as __author__,
+    __author_email__ as __author_email__,
+    __description__ as __description__,
+    __license__ as __license__,
+    __title__ as __title__,
+    __url__ as __url__,
+    __version__ as __version__,
+    __version_info__ as __version_info__,
 )
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, h, r, s, x
-
     from flext_observability import (
-        advanced_context,
-        constants,
-        context,
-        core,
-        custom_metrics,
-        error_handling,
-        fields,
-        health,
-        http_client_instrumentation,
-        http_instrumentation,
-        logging_integration,
-        models,
-        monitoring,
-        observability_logging,
-        performance,
-        protocols,
-        sampling,
-        services,
-        settings,
-        typings,
-        utilities,
+        advanced_context as advanced_context,
+        constants as constants,
+        context as context,
+        core as core,
+        custom_metrics as custom_metrics,
+        error_handling as error_handling,
+        fields as fields,
+        health as health,
+        http_client_instrumentation as http_client_instrumentation,
+        http_instrumentation as http_instrumentation,
+        logging_integration as logging_integration,
+        models as models,
+        monitoring as monitoring,
+        observability_logging as observability_logging,
+        performance as performance,
+        protocols as protocols,
+        sampling as sampling,
+        services as services,
+        settings as settings,
+        typings as typings,
+        utilities as utilities,
     )
     from flext_observability._utilities._advanced_context import (
-        FlextObservabilityAdvancedContext,
+        FlextObservabilityAdvancedContext as FlextObservabilityAdvancedContext,
     )
-    from flext_observability._utilities._context import FlextObservabilityContext
+    from flext_observability._utilities._context import (
+        FlextObservabilityContext as FlextObservabilityContext,
+    )
     from flext_observability._utilities._custom_metrics import (
-        FlextObservabilityCustomMetrics,
+        FlextObservabilityCustomMetrics as FlextObservabilityCustomMetrics,
     )
     from flext_observability._utilities._error_handling import (
-        FlextObservabilityErrorHandling,
+        FlextObservabilityErrorHandling as FlextObservabilityErrorHandling,
     )
-    from flext_observability._utilities._fields import FlextObservabilityFields
-    from flext_observability._utilities._health import FlextObservabilityHealth
+    from flext_observability._utilities._fields import (
+        FlextObservabilityFields as FlextObservabilityFields,
+    )
+    from flext_observability._utilities._health import (
+        FlextObservabilityHealth as FlextObservabilityHealth,
+    )
     from flext_observability._utilities._http_client_instrumentation import (
-        FlextObservabilityHTTPClient,
+        FlextObservabilityHTTPClient as FlextObservabilityHTTPClient,
     )
     from flext_observability._utilities._http_instrumentation import (
-        FlextObservabilityHTTP,
+        FlextObservabilityHTTP as FlextObservabilityHTTP,
     )
     from flext_observability._utilities._logging_integration import (
-        FlextObservabilityLogging,
+        FlextObservabilityLogging as FlextObservabilityLogging,
     )
     from flext_observability._utilities._performance import (
-        FlextObservabilityPerformance,
+        FlextObservabilityPerformance as FlextObservabilityPerformance,
     )
-    from flext_observability._utilities._sampling import FlextObservabilitySampling
-    from flext_observability._utilities._services import FlextObservabilityServices
+    from flext_observability._utilities._sampling import (
+        FlextObservabilitySampling as FlextObservabilitySampling,
+    )
+    from flext_observability._utilities._services import (
+        FlextObservabilityServices as FlextObservabilityServices,
+    )
     from flext_observability.constants import (
-        FlextObservabilityConstants,
+        FlextObservabilityConstants as FlextObservabilityConstants,
         FlextObservabilityConstants as c,
     )
     from flext_observability.core import (
-        FlextObservability,
-        FlextObservabilityMasterFactory,
+        FlextObservability as FlextObservability,
+        FlextObservabilityMasterFactory as FlextObservabilityMasterFactory,
     )
     from flext_observability.models import (
-        FlextObservabilityModels,
+        FlextObservabilityModels as FlextObservabilityModels,
         FlextObservabilityModels as m,
     )
     from flext_observability.monitoring import (
-        FlextObservabilityMonitor,
-        flext_monitor_function,
+        FlextObservabilityMonitor as FlextObservabilityMonitor,
+        flext_monitor_function as flext_monitor_function,
     )
     from flext_observability.protocols import (
-        FlextObservabilityProtocols,
+        FlextObservabilityProtocols as FlextObservabilityProtocols,
         FlextObservabilityProtocols as p,
     )
-    from flext_observability.settings import FlextObservabilitySettings
+    from flext_observability.settings import (
+        FlextObservabilitySettings as FlextObservabilitySettings,
+    )
     from flext_observability.typings import (
-        FlextObservabilityTypes,
+        FlextObservabilityTypes as FlextObservabilityTypes,
         FlextObservabilityTypes as t,
     )
     from flext_observability.utilities import (
-        FlextObservabilityUtilities,
+        FlextObservabilityUtilities as FlextObservabilityUtilities,
         FlextObservabilityUtilities as u,
     )
 
@@ -226,7 +236,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "x": ["flext_core", "x"],
 }
 
-__all__ = [
+_EXPORTS: Sequence[str] = [
     "FlextObservability",
     "FlextObservabilityAdvancedContext",
     "FlextObservabilityConstants",
@@ -292,41 +302,4 @@ __all__ = [
 ]
 
 
-_LAZY_CACHE: MutableMapping[str, FlextTypes.ModuleExport] = {}
-
-
-def __getattr__(name: str) -> FlextTypes.ModuleExport:
-    """Lazy-load module attributes on first access (PEP 562).
-
-    A local cache ``_LAZY_CACHE`` persists resolved objects across repeated
-    accesses during process lifetime.
-
-    Args:
-        name: Attribute name requested by dir()/import.
-
-    Returns:
-        Lazy-loaded module export type.
-
-    Raises:
-        AttributeError: If attribute not registered.
-
-    """
-    if name in _LAZY_CACHE:
-        return _LAZY_CACHE[name]
-
-    value = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
-    _LAZY_CACHE[name] = value
-    return value
-
-
-def __dir__() -> Sequence[str]:
-    """Return list of available attributes for dir() and autocomplete.
-
-    Returns:
-        List of public names from module exports.
-
-    """
-    return sorted(__all__)
-
-
-cleanup_submodule_namespace(__name__, _LAZY_IMPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)
