@@ -10,55 +10,11 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
 
-from flext_observability.__version__ import (
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
-)
+from flext_observability._utilities import _LAZY_IMPORTS as _CHILD_LAZY_0
 
 if TYPE_CHECKING:
-    from flext_core import *
-
-    from flext_observability import (
-        advanced_context,
-        constants,
-        context,
-        core,
-        custom_metrics,
-        error_handling,
-        fields,
-        health,
-        http_client_instrumentation,
-        http_instrumentation,
-        logging_integration,
-        models,
-        monitoring,
-        observability_logging,
-        performance,
-        protocols,
-        sampling,
-        services,
-        settings,
-        typings,
-        utilities,
-    )
-    from flext_observability._utilities._advanced_context import *
-    from flext_observability._utilities._context import *
-    from flext_observability._utilities._custom_metrics import *
-    from flext_observability._utilities._error_handling import *
-    from flext_observability._utilities._fields import *
-    from flext_observability._utilities._health import *
-    from flext_observability._utilities._http_client_instrumentation import *
-    from flext_observability._utilities._http_instrumentation import *
-    from flext_observability._utilities._logging_integration import *
-    from flext_observability._utilities._performance import *
-    from flext_observability._utilities._sampling import *
-    from flext_observability._utilities._services import *
+    from flext_observability.__version__ import *
+    from flext_observability._utilities import *
     from flext_observability.constants import *
     from flext_observability.core import *
     from flext_observability.models import *
@@ -69,27 +25,25 @@ if TYPE_CHECKING:
     from flext_observability.utilities import *
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+    **_CHILD_LAZY_0,
     "FlextObservability": "flext_observability.core",
-    "FlextObservabilityAdvancedContext": "flext_observability._utilities._advanced_context",
     "FlextObservabilityConstants": "flext_observability.constants",
-    "FlextObservabilityContext": "flext_observability._utilities._context",
-    "FlextObservabilityCustomMetrics": "flext_observability._utilities._custom_metrics",
-    "FlextObservabilityErrorHandling": "flext_observability._utilities._error_handling",
-    "FlextObservabilityFields": "flext_observability._utilities._fields",
-    "FlextObservabilityHTTP": "flext_observability._utilities._http_instrumentation",
-    "FlextObservabilityHTTPClient": "flext_observability._utilities._http_client_instrumentation",
-    "FlextObservabilityHealth": "flext_observability._utilities._health",
-    "FlextObservabilityLogging": "flext_observability._utilities._logging_integration",
     "FlextObservabilityMasterFactory": "flext_observability.core",
     "FlextObservabilityModels": "flext_observability.models",
     "FlextObservabilityMonitor": "flext_observability.monitoring",
-    "FlextObservabilityPerformance": "flext_observability._utilities._performance",
     "FlextObservabilityProtocols": "flext_observability.protocols",
-    "FlextObservabilitySampling": "flext_observability._utilities._sampling",
-    "FlextObservabilityServices": "flext_observability._utilities._services",
     "FlextObservabilitySettings": "flext_observability.settings",
     "FlextObservabilityTypes": "flext_observability.typings",
     "FlextObservabilityUtilities": "flext_observability.utilities",
+    "__author__": "flext_observability.__version__",
+    "__author_email__": "flext_observability.__version__",
+    "__description__": "flext_observability.__version__",
+    "__license__": "flext_observability.__version__",
+    "__title__": "flext_observability.__version__",
+    "__url__": "flext_observability.__version__",
+    "__version__": "flext_observability.__version__",
+    "__version_info__": "flext_observability.__version__",
+    "_utilities": "flext_observability._utilities",
     "advanced_context": "flext_observability.advanced_context",
     "c": ["flext_observability.constants", "FlextObservabilityConstants"],
     "constants": "flext_observability.constants",
@@ -126,4 +80,4 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
 }
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
