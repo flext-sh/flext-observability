@@ -14,11 +14,20 @@ if TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
-    from tests import integration, unit
+    from tests import (
+        constants,
+        integration,
+        models,
+        protocols,
+        typings,
+        unit,
+        utilities,
+    )
     from tests.constants import (
         FlextObservabilityTestConstants,
         FlextObservabilityTestConstants as c,
     )
+    from tests.integration import test_phase_11_integration
     from tests.integration.test_phase_11_integration import ErrorEvent
     from tests.models import (
         FlextObservabilityTestModels,
@@ -32,6 +41,7 @@ if TYPE_CHECKING:
         FlextObservabilityTestTypes,
         FlextObservabilityTestTypes as t,
     )
+    from tests.unit import test_constants, test_factory, test_init
     from tests.unit.test_constants import TestFlextObservabilityConstants
     from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
     from tests.unit.test_init import (
@@ -74,6 +84,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     ],
     "TestInitCoverage": ["tests.unit.test_init", "TestInitCoverage"],
     "c": ["tests.constants", "FlextObservabilityTestConstants"],
+    "constants": ["tests.constants", ""],
     "d": ["flext_tests", "d"],
     "e": ["flext_tests", "e"],
     "flext_alert": ["tests.unit.test_init", "flext_alert"],
@@ -84,13 +95,21 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "h": ["flext_tests", "h"],
     "integration": ["tests.integration", ""],
     "m": ["tests.models", "FlextObservabilityTestModels"],
+    "models": ["tests.models", ""],
     "p": ["tests.protocols", "FlextObservabilityTestProtocols"],
+    "protocols": ["tests.protocols", ""],
     "r": ["flext_tests", "r"],
     "reset_global_factory": ["tests.unit.test_init", "reset_global_factory"],
     "s": ["flext_tests", "s"],
     "t": ["tests.typings", "FlextObservabilityTestTypes"],
+    "test_constants": ["tests.unit.test_constants", ""],
+    "test_factory": ["tests.unit.test_factory", ""],
+    "test_init": ["tests.unit.test_init", ""],
+    "test_phase_11_integration": ["tests.integration.test_phase_11_integration", ""],
+    "typings": ["tests.typings", ""],
     "u": ["tests.utilities", "FlextObservabilityTestUtilities"],
     "unit": ["tests.unit", ""],
+    "utilities": ["tests.utilities", ""],
     "x": ["flext_tests", "x"],
 }
 
@@ -105,6 +124,7 @@ __all__ = [
     "TestFlextObservabilityMasterFactoryReal",
     "TestInitCoverage",
     "c",
+    "constants",
     "d",
     "e",
     "flext_alert",
@@ -115,13 +135,21 @@ __all__ = [
     "h",
     "integration",
     "m",
+    "models",
     "p",
+    "protocols",
     "r",
     "reset_global_factory",
     "s",
     "t",
+    "test_constants",
+    "test_factory",
+    "test_init",
+    "test_phase_11_integration",
+    "typings",
     "u",
     "unit",
+    "utilities",
     "x",
 ]
 

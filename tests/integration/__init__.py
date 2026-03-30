@@ -18,14 +18,17 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from tests.integration import test_phase_11_integration
     from tests.integration.test_phase_11_integration import ErrorEvent
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "ErrorEvent": ["tests.integration.test_phase_11_integration", "ErrorEvent"],
+    "test_phase_11_integration": ["tests.integration.test_phase_11_integration", ""],
 }
 
 __all__ = [
     "ErrorEvent",
+    "test_phase_11_integration",
 ]
 
 

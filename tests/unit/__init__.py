@@ -13,6 +13,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from tests.unit import test_constants, test_factory, test_init
     from tests.unit.test_constants import TestFlextObservabilityConstants
     from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
     from tests.unit.test_init import (
@@ -41,6 +42,9 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "flext_trace": ["tests.unit.test_init", "flext_trace"],
     "get_global_factory": ["tests.unit.test_init", "get_global_factory"],
     "reset_global_factory": ["tests.unit.test_init", "reset_global_factory"],
+    "test_constants": ["tests.unit.test_constants", ""],
+    "test_factory": ["tests.unit.test_factory", ""],
+    "test_init": ["tests.unit.test_init", ""],
 }
 
 __all__ = [
@@ -53,6 +57,9 @@ __all__ = [
     "flext_trace",
     "get_global_factory",
     "reset_global_factory",
+    "test_constants",
+    "test_factory",
+    "test_init",
 ]
 
 
