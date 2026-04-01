@@ -18,6 +18,7 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from tests.integration import test_phase_11_integration
     from tests.integration.test_phase_11_integration import ErrorEvent
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
