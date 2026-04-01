@@ -24,55 +24,41 @@ from flext_observability.__version__ import (
 if _TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
 
-    from flext_observability._utilities import *
+    from flext_observability.api import *
+    from flext_observability.base import *
     from flext_observability.constants import *
-    from flext_observability.core import *
     from flext_observability.models import *
-    from flext_observability.monitoring import *
     from flext_observability.protocols import *
+    from flext_observability.services import *
     from flext_observability.settings import *
     from flext_observability.typings import *
     from flext_observability.utilities import *
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
-    ("flext_observability._utilities",),
+    ("flext_observability.services",),
     {
-        "FlextObservability": "flext_observability.core",
+        "FlextObservability": "flext_observability.api",
         "FlextObservabilityConstants": "flext_observability.constants",
-        "FlextObservabilityMasterFactory": "flext_observability.core",
+        "FlextObservabilityMasterFactory": "flext_observability.api",
         "FlextObservabilityModels": "flext_observability.models",
-        "FlextObservabilityMonitor": "flext_observability.monitoring",
         "FlextObservabilityProtocols": "flext_observability.protocols",
+        "FlextObservabilityServiceBase": "flext_observability.base",
         "FlextObservabilitySettings": "flext_observability.settings",
         "FlextObservabilityTypes": "flext_observability.typings",
         "FlextObservabilityUtilities": "flext_observability.utilities",
-        "_utilities": "flext_observability._utilities",
-        "advanced_context": "flext_observability.advanced_context",
+        "api": "flext_observability.api",
+        "base": "flext_observability.base",
         "c": ("flext_observability.constants", "FlextObservabilityConstants"),
         "constants": "flext_observability.constants",
-        "context": "flext_observability.context",
-        "core": "flext_observability.core",
-        "custom_metrics": "flext_observability.custom_metrics",
         "d": "flext_core",
         "e": "flext_core",
-        "error_handling": "flext_observability.error_handling",
-        "fields": "flext_observability.fields",
-        "flext_monitor_function": "flext_observability.monitoring",
         "h": "flext_core",
-        "health": "flext_observability.health",
-        "http_client_instrumentation": "flext_observability.http_client_instrumentation",
-        "http_instrumentation": "flext_observability.http_instrumentation",
-        "logging_integration": "flext_observability.logging_integration",
         "m": ("flext_observability.models", "FlextObservabilityModels"),
         "models": "flext_observability.models",
-        "monitoring": "flext_observability.monitoring",
-        "observability_logging": "flext_observability.observability_logging",
         "p": ("flext_observability.protocols", "FlextObservabilityProtocols"),
-        "performance": "flext_observability.performance",
         "protocols": "flext_observability.protocols",
         "r": "flext_core",
         "s": "flext_core",
-        "sampling": "flext_observability.sampling",
         "services": "flext_observability.services",
         "settings": "flext_observability.settings",
         "t": ("flext_observability.typings", "FlextObservabilityTypes"),

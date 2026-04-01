@@ -150,7 +150,7 @@ try:
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
-    ctx = FlextObservabilityAdvancedContext.get_context()
+    ctx = FlextObservabilityAdvancedContext.get_advanced_context()
     ctx.set_metadata("user_id", "user-123")
     ctx.set_metadata("request_id", "req-456")
     ctx.set_metadata("tenant_id", "tenant-789")
@@ -223,7 +223,7 @@ try:
     assert result.is_success
     perf_monitor = FlextObservabilityPerformance()
     monitor = perf_monitor.start_monitoring("e2e_operation")
-    adv_ctx = FlextObservabilityAdvancedContext.get_context()
+    adv_ctx = FlextObservabilityAdvancedContext.get_advanced_context()
     adv_ctx.set_metadata("workflow_type", "integration_test")
     adv_ctx.set_baggage("test_phase", "11")
     registry = FlextObservabilityCustomMetrics.get_registry()
@@ -269,7 +269,7 @@ try:
     FlextObservabilityContext.set_correlation_id(correlation_id)
     FlextObservabilityContext.set_trace_id("trace-multi-001")
     assert ctx1_corr == FlextObservabilityContext.get_correlation_id()
-    adv_ctx = FlextObservabilityAdvancedContext.get_context()
+    adv_ctx = FlextObservabilityAdvancedContext.get_advanced_context()
     adv_ctx.set_metadata("service", "api")
     adv_ctx.set_metadata("user_id", "user-456")
     snapshot = adv_ctx.snapshot(
@@ -292,7 +292,7 @@ try:
     assert sampler is not None and perf is not None
     errors = FlextObservabilityErrorHandling.get_handler()
     custom_metrics = FlextObservabilityCustomMetrics.get_registry()
-    advanced_ctx = FlextObservabilityAdvancedContext.get_context()
+    advanced_ctx = FlextObservabilityAdvancedContext.get_advanced_context()
     assert errors is not None
     assert custom_metrics is not None
     assert advanced_ctx is not None

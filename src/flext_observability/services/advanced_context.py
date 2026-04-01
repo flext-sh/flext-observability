@@ -39,7 +39,7 @@ class FlextObservabilityAdvancedContext:
             FlextObservabilityAdvancedContext,
         )
 
-        ctx = FlextObservabilityAdvancedContext.get_context()
+        ctx = FlextObservabilityAdvancedContext.get_advanced_context()
 
         # Store request-local data
         ctx.set_metadata("user_id", "user-123")
@@ -237,7 +237,7 @@ class FlextObservabilityAdvancedContext:
             )
 
     @staticmethod
-    def get_context() -> FlextObservabilityAdvancedContext.Context:
+    def get_advanced_context() -> FlextObservabilityAdvancedContext.Context:
         """Get global advanced context instance (singleton).
 
         Returns:
@@ -261,7 +261,7 @@ class FlextObservabilityAdvancedContext:
             JSONValue - Metadata value or None
 
         """
-        ctx = FlextObservabilityAdvancedContext.get_context()
+        ctx = FlextObservabilityAdvancedContext.get_advanced_context()
         return ctx.get_metadata(key)
 
     @staticmethod
@@ -276,7 +276,7 @@ class FlextObservabilityAdvancedContext:
             r[bool] - Ok if successful
 
         """
-        ctx = FlextObservabilityAdvancedContext.get_context()
+        ctx = FlextObservabilityAdvancedContext.get_advanced_context()
         return ctx.set_metadata(key, value)
 
 

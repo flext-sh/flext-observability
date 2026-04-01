@@ -1,6 +1,10 @@
-"""Core FlextObservability class and factory functions.
+"""FlextObservability MRO facade and master factory.
 
-Internal module; use flext_observability package API.
+All service methods come from mixins via MRO. Only factory methods,
+model aliases, and Constants are defined locally.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -14,20 +18,53 @@ from uuid import uuid4
 from flext_core import FlextContainer, FlextRuntime, p, r
 
 from flext_observability import FlextObservabilityModels as _m, c, t
+from flext_observability.services.advanced_context import (
+    FlextObservabilityAdvancedContext,
+)
+from flext_observability.services.context import FlextObservabilityContext
+from flext_observability.services.custom_metrics import (
+    FlextObservabilityCustomMetrics,
+)
+from flext_observability.services.error_handling import (
+    FlextObservabilityErrorHandling,
+)
+from flext_observability.services.fields import FlextObservabilityFields
+from flext_observability.services.health import FlextObservabilityHealth
+from flext_observability.services.http_client_instrumentation import (
+    FlextObservabilityHTTPClient,
+)
+from flext_observability.services.http_instrumentation import FlextObservabilityHTTP
+from flext_observability.services.logging_integration import (
+    FlextObservabilityLogging,
+)
+from flext_observability.services.monitoring import FlextObservabilityMonitor
+from flext_observability.services.performance import FlextObservabilityPerformance
+from flext_observability.services.sampling import FlextObservabilitySampling
+from flext_observability.services.services import FlextObservabilityServices
 
 
-class FlextObservability:
-    """Main observability class - single Flext[Project] class pattern.
+class FlextObservability(
+    FlextObservabilityAdvancedContext,
+    FlextObservabilityContext,
+    FlextObservabilityCustomMetrics,
+    FlextObservabilityErrorHandling,
+    FlextObservabilityFields,
+    FlextObservabilityHealth,
+    FlextObservabilityHTTP,
+    FlextObservabilityHTTPClient,
+    FlextObservabilityLogging,
+    FlextObservabilityMonitor,
+    FlextObservabilityPerformance,
+    FlextObservabilitySampling,
+    FlextObservabilityServices,
+):
+    """MRO facade over all observability services.
 
-    Provides unified observability for the FLEXT ecosystem with complete
-    separation of concerns and SOLID principles.
-
-    Architecture layers:
-    - Layer 0: Constants and enumerations
-    - Layer 1: Domain entities (Metric, Trace, Alert, HealthCheck, LogEntry)
-    - Layer 2: Application services (MetricsService, TracingService, etc.)
-    - Layer 3: Infrastructure and factories
+    All operations come from mixin bases via MRO. Only factory methods,
+    model aliases, and Constants are defined locally.
     """
+
+    _logger = FlextRuntime.get_logger(__name__)
 
     class Constants:
         """Domain constants and enumerations."""
@@ -53,7 +90,6 @@ class FlextObservability:
             "critical",
         }
 
-    # Model classes live in models.py — aliases kept here for backward compatibility
     Metric: TypeAlias = _m.Observability.Metric
     Trace: TypeAlias = _m.Observability.Trace
     Alert: TypeAlias = _m.Observability.Alert
@@ -61,11 +97,7 @@ class FlextObservability:
     LogEntry: TypeAlias = _m.Observability.LogEntry
 
     class MetricsService:
-        """Service for metrics collection and recording.
-
-        Single Responsibility: Handle all metric operations
-        Dependency Inversion: Uses r pattern for error handling
-        """
+        """Service for metrics collection and recording."""
 
         _container: p.Container
         _logger: p.Logger
@@ -705,3 +737,6 @@ class FlextObservabilityMasterFactory:
             attributes=str_attributes,
             trace_id=trace_id,
         )
+
+
+__all__ = ["FlextObservability", "FlextObservabilityMasterFactory"]

@@ -13,9 +13,17 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
-    from tests.unit.test_constants import *
-    from tests.unit.test_factory import *
-    from tests.unit.test_init import *
+    from tests.unit.test_constants import TestFlextObservabilityConstants
+    from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
+    from tests.unit.test_init import (
+        TestInitCoverage,
+        flext_alert,
+        flext_health_check,
+        flext_metric,
+        flext_trace,
+        get_global_factory,
+        reset_global_factory,
+    )
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "TestFlextObservabilityConstants": "tests.unit.test_constants",
