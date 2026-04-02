@@ -14,7 +14,7 @@ if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
     from tests.unit import test_constants, test_factory, test_init
-    from tests.unit.test_constants import TestFlextObservabilityConstants
+    from tests.unit.test_constants import Testc
     from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
     from tests.unit.test_init import (
         TestInitCoverage,
@@ -27,9 +27,9 @@ if _TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
-    "TestFlextObservabilityConstants": "tests.unit.test_constants",
     "TestFlextObservabilityMasterFactoryReal": "tests.unit.test_factory",
     "TestInitCoverage": "tests.unit.test_init",
+    "Testc": "tests.unit.test_constants",
     "flext_alert": "tests.unit.test_init",
     "flext_health_check": "tests.unit.test_init",
     "flext_metric": "tests.unit.test_init",

@@ -41,7 +41,7 @@ if _TYPE_CHECKING:
         FlextObservabilityTestTypes as t,
     )
     from tests.unit import (
-        TestFlextObservabilityConstants,
+        Testc,
         TestFlextObservabilityMasterFactoryReal,
         TestInitCoverage,
         flext_alert,
