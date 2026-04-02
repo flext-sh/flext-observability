@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, MutableMapping, Sequence
+from collections.abc import Awaitable, Callable, Sequence
 from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, r
@@ -414,7 +414,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                 """Protocol for httpx Request t.NormalizedValue."""
 
                 @property
-                def headers(self) -> MutableMapping[str, str]:
+                def headers(self) -> t.MutableStrMapping:
                     """Request headers."""
                     ...
 

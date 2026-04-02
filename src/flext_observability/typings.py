@@ -77,7 +77,7 @@ class FlextObservabilityTypes(FlextTypes):
             FlextTypes.Scalar | FlextTypes.ScalarMapping,
         ]
         type AlertRules = Sequence[
-            Mapping[str, str | bool | int | float | FlextTypes.ScalarMapping]
+            Mapping[str, str | bool | t.Numeric | FlextTypes.ScalarMapping]
         ]
         type AlertChannels = Mapping[str, str | FlextTypes.ScalarMapping]
         type HealthChecks = Mapping[str, Mapping[str, float | str | bool]]

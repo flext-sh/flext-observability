@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import math
-from collections.abc import MutableMapping, MutableSequence
+from collections.abc import MutableSequence
 from datetime import UTC, datetime
 from typing import ClassVar, TypeAlias
 from uuid import uuid4
@@ -351,7 +351,7 @@ class FlextObservability(
                 return r[FlextObservability.Metric].fail(
                     "Metric value must be a valid number",
                 )
-            all_labels_data: MutableMapping[str, t.Scalar] = {}
+            all_labels_data: t.MutableScalarMapping = {}
             if tags:
                 all_labels_data.update(tags)
             if labels:

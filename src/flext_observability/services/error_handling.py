@@ -24,7 +24,7 @@ from collections.abc import Callable, MutableMapping
 from pydantic import ValidationError
 
 from flext_core import FlextLogger, r
-from flext_observability import FlextObservabilityContext, c, m
+from flext_observability import FlextObservabilityContext, c, m, t
 
 
 class FlextObservabilityErrorHandling:
@@ -74,7 +74,7 @@ class FlextObservabilityErrorHandling:
 
         def __init__(self) -> None:
             """Initialize error handler."""
-            self._error_counts: MutableMapping[str, int] = {}
+            self._error_counts: t.MutableIntMapping = {}
             self._last_alert_time: MutableMapping[str, float] = {}
             self._alert_cooldown_sec = 60.0
             self._escalation_threshold = 5

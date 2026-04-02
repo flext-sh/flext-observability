@@ -7,8 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-
 from flext_tests import tm
 
 import flext_observability
@@ -20,7 +18,7 @@ from flext_observability import (
     __version__ as pkg_version,
     __version_info__ as pkg_version_info,
 )
-from tests import c
+from tests import c, t
 
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
@@ -50,7 +48,7 @@ class TestInitCoverage:
         # __version__/__version_info__ shadow the __version__ submodule via
         # lazy imports; validated separately in test_version_exports.
         skip_lazy_shadow = {"__version__", "__version_info__", "__all__"}
-        module_all: Sequence[str] = getattr(flext_observability, "__all__", [])
+        module_all: t.StrSequence = getattr(flext_observability, "__all__", [])
         for export_name in module_all:
             tm.that(hasattr(flext_observability, export_name), eq=True)
             if export_name in skip_lazy_shadow:

@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from typing import TypeAlias, override
 from uuid import uuid4
 
@@ -382,4 +382,4 @@ def flext_monitor_function(
     )
 
 
-__all__: Sequence[str] = ["FlextObservabilityMonitor", "flext_monitor_function"]
+__all__: t.StrSequence = ["FlextObservabilityMonitor", "flext_monitor_function"]

@@ -21,7 +21,7 @@ Key Features:
 from __future__ import annotations
 
 import time
-from collections.abc import Awaitable, Callable, MutableMapping
+from collections.abc import Awaitable, Callable
 from typing import ClassVar, TypeIs
 
 from pydantic import ValidationError
@@ -89,7 +89,7 @@ class FlextObservabilityHTTPClient:
         return hasattr(obj, "request")
 
     @staticmethod
-    def _validated_headers(payload: t.NormalizedValue) -> MutableMapping[str, str]:
+    def _validated_headers(payload: t.NormalizedValue) -> t.MutableStrMapping:
         try:
             return dict(
                 m.Observability.HeadersPayload.model_validate(

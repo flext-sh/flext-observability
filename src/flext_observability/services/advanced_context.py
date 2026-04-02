@@ -18,8 +18,6 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
-
 from pydantic import TypeAdapter
 
 from flext_core import FlextLogger, r
@@ -64,8 +62,8 @@ class FlextObservabilityAdvancedContext:
 
         def __init__(self) -> None:
             """Initialize advanced context."""
-            self._metadata: MutableMapping[str, t.Scalar] = {}
-            self._baggage: MutableMapping[str, str] = {}
+            self._metadata: t.MutableScalarMapping = {}
+            self._baggage: t.MutableStrMapping = {}
             self._request_id: str = ""
             self._parent_context: m.Observability.ContextSnapshot | None = None
 
