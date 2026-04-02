@@ -18,12 +18,8 @@ Key Features:
 
 from __future__ import annotations
 
-from pydantic import TypeAdapter
-
-from flext_core import FlextLogger, r
-from flext_observability import FlextObservabilityTypes as t, m
-
-_SCALAR_ADAPTER: TypeAdapter[t.Scalar] = TypeAdapter(t.Scalar)
+from flext_core import FlextLogger
+from flext_observability import m, r, t
 
 
 class FlextObservabilityAdvancedContext:
@@ -202,7 +198,7 @@ class FlextObservabilityAdvancedContext:
 
             """
             try:
-                _SCALAR_ADAPTER.validate_python(value)
+                t.SCALAR_ADAPTER.validate_python(value)
                 self._metadata[key] = value
                 FlextObservabilityAdvancedContext._logger.debug(f"Metadata set: {key}")
                 return r[bool].ok(value=True)

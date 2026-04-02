@@ -21,7 +21,12 @@ from flext_observability.__version__ import (
 )
 
 if _TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, h, r, s, x
+    from flext_core import FlextTypes
+    from flext_core.decorators import FlextDecorators as d
+    from flext_core.exceptions import FlextExceptions as e
+    from flext_core.handlers import FlextHandlers as h
+    from flext_core.mixins import FlextMixins as x
+    from flext_core.result import FlextResult as r
     from flext_observability import (
         api,
         base,
@@ -37,7 +42,7 @@ if _TYPE_CHECKING:
         FlextObservability,
         FlextObservabilityMasterFactory,
     )
-    from flext_observability.base import FlextObservabilityServiceBase
+    from flext_observability.base import FlextObservabilityServiceBase, s
     from flext_observability.constants import (
         FlextObservabilityConstants,
         FlextObservabilityConstants as c,
@@ -104,22 +109,22 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "base": "flext_observability.base",
         "c": ("flext_observability.constants", "FlextObservabilityConstants"),
         "constants": "flext_observability.constants",
-        "d": "flext_core",
-        "e": "flext_core",
-        "h": "flext_core",
+        "d": ("flext_core.decorators", "FlextDecorators"),
+        "e": ("flext_core.exceptions", "FlextExceptions"),
+        "h": ("flext_core.handlers", "FlextHandlers"),
         "m": ("flext_observability.models", "FlextObservabilityModels"),
         "models": "flext_observability.models",
         "p": ("flext_observability.protocols", "FlextObservabilityProtocols"),
         "protocols": "flext_observability.protocols",
-        "r": "flext_core",
-        "s": "flext_core",
+        "r": ("flext_core.result", "FlextResult"),
+        "s": "flext_observability.base",
         "services": "flext_observability.services",
         "settings": "flext_observability.settings",
         "t": ("flext_observability.typings", "FlextObservabilityTypes"),
         "typings": "flext_observability.typings",
         "u": ("flext_observability.utilities", "FlextObservabilityUtilities"),
         "utilities": "flext_observability.utilities",
-        "x": "flext_core",
+        "x": ("flext_core.mixins", "FlextMixins"),
     },
 )
 

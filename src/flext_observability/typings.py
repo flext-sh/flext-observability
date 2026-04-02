@@ -17,8 +17,10 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from decimal import Decimal
 
+from pydantic import TypeAdapter
+
 from flext_core import FlextTypes
-from flext_observability import FlextObservabilityConstants as c
+from flext_observability import c
 
 
 class FlextObservabilityTypes(FlextTypes):
@@ -28,6 +30,8 @@ class FlextObservabilityTypes(FlextTypes):
     Contains ONLY complex observability-specific types, no simple aliases.
     Uses Python 3.13+ type syntax and patterns.
     """
+
+    SCALAR_ADAPTER: TypeAdapter[FlextTypes.Scalar] = TypeAdapter(FlextTypes.Scalar)
 
     class Observability:
         """Observability-specific project types.
