@@ -15,7 +15,6 @@ import time
 from collections.abc import Sequence
 
 from flext_core import FlextContainer
-
 from flext_observability import (
     FlextObservability,
     FlextObservabilityMasterFactory,

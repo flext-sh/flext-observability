@@ -18,7 +18,6 @@ from collections.abc import Mapping, Sequence
 from decimal import Decimal
 
 from flext_core import FlextTypes
-
 from flext_observability import FlextObservabilityConstants as c
 
 

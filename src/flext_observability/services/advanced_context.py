@@ -20,9 +20,9 @@ from __future__ import annotations
 
 from collections.abc import MutableMapping
 
-from flext_core import FlextLogger, r
 from pydantic import TypeAdapter
 
+from flext_core import FlextLogger, r
 from flext_observability import FlextObservabilityTypes as t, m
 
 _SCALAR_ADAPTER: TypeAdapter[t.Scalar] = TypeAdapter(t.Scalar)

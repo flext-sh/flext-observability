@@ -10,10 +10,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import MutableMapping, Sequence
 
 from flext_core import FlextUtilities, r
-
 from flext_observability import t
 
 
@@ -63,7 +62,7 @@ class FlextObservabilityUtilities(FlextUtilities):
                 *,
                 is_healthy: bool = True,
                 details: str = "",
-            ) -> Mapping[str, str | bool]:
+            ) -> t.FeatureFlagMapping:
                 """Create a health status dictionary."""
                 return {
                     "service": service_name,

@@ -9,10 +9,10 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from flext_core import FlextConstants, FlextContainer, FlextLogger
 from flext_tests import tm
 
 import flext_observability
+from flext_core import FlextConstants, FlextContainer, FlextLogger
 from flext_observability import (
     FlextObservability,
     FlextObservabilityMasterFactory,

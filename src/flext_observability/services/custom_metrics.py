@@ -20,9 +20,9 @@ from __future__ import annotations
 
 from collections.abc import MutableMapping
 
-from flext_core import FlextRuntime, r
 from pydantic import ValidationError
 
+from flext_core import FlextRuntime, r
 from flext_observability import c, m, t
 
 

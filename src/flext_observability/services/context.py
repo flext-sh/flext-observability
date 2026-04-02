@@ -16,9 +16,9 @@ from __future__ import annotations
 from contextvars import ContextVar
 from uuid import uuid4
 
-from flext_core import FlextRuntime, r
 from pydantic import BaseModel, ValidationError
 
+from flext_core import FlextRuntime, r
 from flext_observability import m, t
 
 

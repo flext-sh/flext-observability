@@ -16,9 +16,9 @@ from hashlib import sha256
 from typing import Annotated, ClassVar
 from uuid import uuid4
 
-from flext_core import FlextModels
 from pydantic import ConfigDict, Field, computed_field
 
+from flext_core import FlextModels
 from flext_observability import c, t
 
 # Module-level type alias for domain labels used in model fields

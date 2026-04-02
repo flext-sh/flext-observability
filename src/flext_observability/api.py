@@ -16,7 +16,6 @@ from typing import ClassVar, TypeAlias
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, p, r
-
 from flext_observability import (
     FlextObservabilityAdvancedContext,
     FlextObservabilityContext,

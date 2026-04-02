@@ -12,7 +12,6 @@ from typing import TypeAlias, override
 from uuid import uuid4
 
 from flext_core import FlextContainer, FlextRuntime, r
-
 from flext_observability import (
     FlextObservabilityModels,
     FlextObservabilityServices,

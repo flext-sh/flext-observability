@@ -21,9 +21,9 @@ from __future__ import annotations
 import time
 from collections.abc import Callable, MutableMapping
 
-from flext_core import FlextLogger, r
 from pydantic import ValidationError
 
+from flext_core import FlextLogger, r
 from flext_observability import FlextObservabilityContext, c, m
 
 

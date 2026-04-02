@@ -12,7 +12,6 @@ from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
-
     from tests.unit import test_constants, test_factory, test_init
     from tests.unit.test_constants import Testc
     from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
@@ -26,7 +25,7 @@ if _TYPE_CHECKING:
         reset_global_factory,
     )
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "TestFlextObservabilityMasterFactoryReal": "tests.unit.test_factory",
     "TestInitCoverage": "tests.unit.test_init",
     "Testc": "tests.unit.test_constants",

@@ -16,8 +16,8 @@ import time
 from collections.abc import Mapping
 
 import psutil
-from flext_core import FlextLogger, r
 
+from flext_core import FlextLogger, r
 from flext_observability import m
 
 

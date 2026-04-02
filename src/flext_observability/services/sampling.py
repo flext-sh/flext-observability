@@ -23,7 +23,6 @@ import random
 from collections.abc import MutableMapping
 
 from flext_core import FlextLogger, r
-
 from flext_observability import FlextObservabilityContext, c
 
 

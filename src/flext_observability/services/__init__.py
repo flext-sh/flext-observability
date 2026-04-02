@@ -12,7 +12,6 @@ from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
-
     from flext_observability.services import (
         advanced_context,
         context,
@@ -55,7 +54,7 @@ if _TYPE_CHECKING:
     from flext_observability.services.sampling import FlextObservabilitySampling
     from flext_observability.services.services import FlextObservabilityServices
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "FlextObservabilityAdvancedContext": "flext_observability.services.advanced_context",
     "FlextObservabilityContext": "flext_observability.services.context",
     "FlextObservabilityCustomMetrics": "flext_observability.services.custom_metrics",

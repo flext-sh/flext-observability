@@ -140,6 +140,7 @@ omit = [
 # [MANAGED] deptry
 [tool.deptry]
 known_first_party = [
+  "flext_core",
   "flext_observability",
 ]
 pep621_dev_dependency_groups = [
@@ -550,6 +551,7 @@ select = [
 combine-as-imports = true
 force-single-line = false
 known-first-party = [
+  "flext_core",
   "flext_observability",
 ]
 split-on-trailing-comma = true

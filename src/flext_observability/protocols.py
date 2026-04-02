@@ -10,7 +10,6 @@ from collections.abc import Awaitable, Callable, MutableMapping, Sequence
 from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, r
-
 from flext_observability import t
 
 

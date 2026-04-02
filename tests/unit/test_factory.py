@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from flext_core import FlextContainer
 from flext_tests import tm
 
+from flext_core import FlextContainer
 from flext_observability import (
     FlextObservability,
     FlextObservabilityMasterFactory,
