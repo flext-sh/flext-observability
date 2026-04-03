@@ -22,7 +22,7 @@ from collections.abc import MutableMapping
 
 from pydantic import ValidationError
 
-from flext_core import FlextRuntime, r
+from flext_core import r, u
 from flext_observability import c, m, t
 
 
@@ -59,7 +59,7 @@ class FlextObservabilityCustomMetrics:
         Registry: Metric registry management
     """
 
-    _logger = FlextRuntime.get_logger(__name__)
+    _logger = u.get_logger(__name__)
     _registry_instance: FlextObservabilityCustomMetrics.Registry | None = None
 
     class Registry:

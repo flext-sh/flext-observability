@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from structlog.typing import BindableLogger
 
-from flext_core import FlextContainer, FlextRuntime, r
+from flext_core import FlextContainer, r, u
 from flext_observability import FlextObservabilitySettings, p, t
 
 
@@ -28,7 +28,7 @@ class FlextObservabilityServices:
         """Initialize with FLEXT core components."""
         super().__init__()
         self._container = FlextContainer.get_global()
-        self._logger = FlextRuntime.get_logger(__name__)
+        self._logger = u.get_logger(__name__)
         self._config = FlextObservabilitySettings.get_global()
 
     @property

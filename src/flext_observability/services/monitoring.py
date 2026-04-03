@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import TypeAlias, override
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextRuntime, r
+from flext_core import FlextContainer, r, u
 from flext_observability import (
     FlextObservabilityModels,
     FlextObservabilityServices,
@@ -36,7 +36,7 @@ class FlextObservabilityMonitor:
     """
 
     object_callable = Callable[..., t.Scalar]
-    logger = FlextRuntime.get_logger(__name__)
+    logger = u.get_logger(__name__)
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""
@@ -147,7 +147,7 @@ class FlextObservabilityMonitor:
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
         self._container = container or FlextContainer.get_global()
-        self._logger = FlextRuntime.get_logger(self.__class__.__name__)
+        self._logger = u.get_logger(self.__class__.__name__)
         self._config = FlextObservabilitySettings.get_global()
         self._initialized = False
         self._running = False

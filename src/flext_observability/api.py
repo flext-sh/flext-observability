@@ -15,7 +15,7 @@ from datetime import UTC, datetime
 from typing import ClassVar, TypeAlias
 from uuid import uuid4
 
-from flext_core import FlextContainer, FlextRuntime, p, r
+from flext_core import FlextContainer, p, r, u
 from flext_observability import (
     FlextObservabilityAdvancedContext,
     FlextObservabilityContext,
@@ -57,7 +57,7 @@ class FlextObservability(
     model aliases, and Constants are defined locally.
     """
 
-    _logger = FlextRuntime.get_logger(__name__)
+    _logger = u.get_logger(__name__)
 
     class Constants:
         """Domain constants and enumerations."""
@@ -99,7 +99,7 @@ class FlextObservability(
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize metrics service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextRuntime.get_logger(__name__)
+            self._logger = u.get_logger(__name__)
             self._metrics = list[FlextObservability.Metric]()
 
         def record_metric(
@@ -156,7 +156,7 @@ class FlextObservability(
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize tracing service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextRuntime.get_logger(__name__)
+            self._logger = u.get_logger(__name__)
             self._traces = list[FlextObservability.Trace]()
 
         def start_trace(
@@ -195,7 +195,7 @@ class FlextObservability(
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize alerting service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextRuntime.get_logger(__name__)
+            self._logger = u.get_logger(__name__)
             self._alerts = list[FlextObservability.Alert]()
 
         def create_alert(
@@ -244,7 +244,7 @@ class FlextObservability(
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize health service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextRuntime.get_logger(__name__)
+            self._logger = u.get_logger(__name__)
             self._checks = list[FlextObservability.HealthCheck]()
 
         def check_component(
@@ -291,7 +291,7 @@ class FlextObservability(
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize logging service."""
             self._container = container or FlextContainer.get_global()
-            self._logger = FlextRuntime.get_logger(__name__)
+            self._logger = u.get_logger(__name__)
             self._entries = list[FlextObservability.LogEntry]()
 
         def log_entry(

@@ -28,7 +28,7 @@ from typing import TypeIs
 import flask
 from pydantic import ValidationError
 
-from flext_core import FlextRuntime, r
+from flext_core import r, u
 from flext_observability import (
     FlextObservabilityContext,
     FlextObservabilityLogging,
@@ -67,7 +67,7 @@ class FlextObservabilityHTTP:
         ASGI: Generic ASGI middleware base
     """
 
-    _logger = FlextRuntime.get_logger(__name__)
+    _logger = u.get_logger(__name__)
     HTTP_ERROR_STATUS_THRESHOLD = 400
 
     @staticmethod

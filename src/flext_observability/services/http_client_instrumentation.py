@@ -26,7 +26,7 @@ from typing import ClassVar, TypeIs
 
 from pydantic import ValidationError
 
-from flext_core import FlextRuntime, r
+from flext_core import r, u
 from flext_observability import (
     FlextObservabilityContext,
     FlextObservabilityLogging,
@@ -66,7 +66,7 @@ class FlextObservabilityHTTPClient:
         AIOHTTP: aiohttp client instrumentation (async)
     """
 
-    _logger = FlextRuntime.get_logger(__name__)
+    _logger = u.get_logger(__name__)
 
     @staticmethod
     def _is_httpx_async_client(
