@@ -1,7 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make gen
 #
-"""Unit package."""
+"""Examples package."""
 
 from __future__ import annotations
 
@@ -23,41 +23,17 @@ if _TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from flext_observability import test_constants, test_factory, test_init
-    from flext_observability.test_constants import Testc
-    from flext_observability.test_factory import TestFlextObservabilityMasterFactoryReal
-    from flext_observability.test_init import (
-        TestInitCoverage,
-        flext_alert,
-        flext_health_check,
-        flext_metric,
-        flext_trace,
-        get_global_factory,
-        reset_global_factory,
-    )
 
 _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
-    "TestFlextObservabilityMasterFactoryReal": "flext_observability.test_factory",
-    "TestInitCoverage": "flext_observability.test_init",
-    "Testc": "flext_observability.test_constants",
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
-    "flext_alert": "flext_observability.test_init",
-    "flext_health_check": "flext_observability.test_init",
-    "flext_metric": "flext_observability.test_init",
-    "flext_trace": "flext_observability.test_init",
-    "get_global_factory": "flext_observability.test_init",
     "h": ("flext_core.handlers", "FlextHandlers"),
     "m": ("flext_core.models", "FlextModels"),
     "p": ("flext_core.protocols", "FlextProtocols"),
     "r": ("flext_core.result", "FlextResult"),
-    "reset_global_factory": "flext_observability.test_init",
     "s": ("flext_core.service", "FlextService"),
     "t": ("flext_core.typings", "FlextTypes"),
-    "test_constants": "flext_observability.test_constants",
-    "test_factory": "flext_observability.test_factory",
-    "test_init": "flext_observability.test_init",
     "u": ("flext_core.utilities", "FlextUtilities"),
     "x": ("flext_core.mixins", "FlextMixins"),
 }
