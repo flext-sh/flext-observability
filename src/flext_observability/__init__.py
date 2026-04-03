@@ -9,17 +9,7 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING as _TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
-from flext_observability.__version__ import (
-    __all__,
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
-)
+from flext_observability.__version__ import *
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
@@ -29,27 +19,25 @@ if _TYPE_CHECKING:
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
     from flext_observability import (
-        advanced_context,
         api,
         base,
         constants,
-        context,
-        custom_metrics,
-        error_handling,
-        fields,
-        health,
-        http_client_instrumentation,
-        http_instrumentation,
-        logging_integration,
         models,
-        monitoring,
-        performance,
         protocols,
-        sampling,
         services,
         settings,
         typings,
         utilities,
+    )
+    from flext_observability.__version__ import (
+        __author__,
+        __author_email__,
+        __description__,
+        __license__,
+        __title__,
+        __url__,
+        __version__,
+        __version_info__,
     )
     from flext_observability.api import (
         FlextObservability,
@@ -82,7 +70,19 @@ if _TYPE_CHECKING:
         FlextObservabilityPerformance,
         FlextObservabilitySampling,
         FlextObservabilityServices,
+        advanced_context,
+        context,
+        custom_metrics,
+        error_handling,
+        fields,
         flext_monitor_function,
+        health,
+        http_client_instrumentation,
+        http_instrumentation,
+        logging_integration,
+        monitoring,
+        performance,
+        sampling,
     )
     from flext_observability.settings import FlextObservabilitySettings
     from flext_observability.typings import (
@@ -106,31 +106,27 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "FlextObservabilitySettings": "flext_observability.settings",
         "FlextObservabilityTypes": "flext_observability.typings",
         "FlextObservabilityUtilities": "flext_observability.utilities",
-        "advanced_context": "flext_observability.services.advanced_context",
+        "__author__": "flext_observability.__version__",
+        "__author_email__": "flext_observability.__version__",
+        "__description__": "flext_observability.__version__",
+        "__license__": "flext_observability.__version__",
+        "__title__": "flext_observability.__version__",
+        "__url__": "flext_observability.__version__",
+        "__version__": "flext_observability.__version__",
+        "__version_info__": "flext_observability.__version__",
         "api": "flext_observability.api",
         "base": "flext_observability.base",
         "c": ("flext_observability.constants", "FlextObservabilityConstants"),
         "constants": "flext_observability.constants",
-        "context": "flext_observability.services.context",
-        "custom_metrics": "flext_observability.services.custom_metrics",
         "d": ("flext_core.decorators", "FlextDecorators"),
         "e": ("flext_core.exceptions", "FlextExceptions"),
-        "error_handling": "flext_observability.services.error_handling",
-        "fields": "flext_observability.services.fields",
         "h": ("flext_core.handlers", "FlextHandlers"),
-        "health": "flext_observability.services.health",
-        "http_client_instrumentation": "flext_observability.services.http_client_instrumentation",
-        "http_instrumentation": "flext_observability.services.http_instrumentation",
-        "logging_integration": "flext_observability.services.logging_integration",
         "m": ("flext_observability.models", "FlextObservabilityModels"),
         "models": "flext_observability.models",
-        "monitoring": "flext_observability.services.monitoring",
         "p": ("flext_observability.protocols", "FlextObservabilityProtocols"),
-        "performance": "flext_observability.services.performance",
         "protocols": "flext_observability.protocols",
         "r": ("flext_core.result", "FlextResult"),
         "s": "flext_observability.base",
-        "sampling": "flext_observability.services.sampling",
         "services": "flext_observability.services",
         "settings": "flext_observability.settings",
         "t": ("flext_observability.typings", "FlextObservabilityTypes"),
@@ -142,19 +138,4 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
 )
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    [
-        "__all__",
-        "__author__",
-        "__author_email__",
-        "__description__",
-        "__license__",
-        "__title__",
-        "__url__",
-        "__version__",
-        "__version_info__",
-    ],
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)

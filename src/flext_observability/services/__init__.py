@@ -23,11 +23,7 @@ if _TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from flext_observability import (
-        services,
-    )
     from flext_observability.services import (
-        FlextObservabilityServices,
         advanced_context,
         context,
         custom_metrics,
@@ -40,6 +36,7 @@ if _TYPE_CHECKING:
         monitoring,
         performance,
         sampling,
+        services,
     )
     from flext_observability.services.advanced_context import (
         FlextObservabilityAdvancedContext,
@@ -56,9 +53,7 @@ if _TYPE_CHECKING:
     from flext_observability.services.http_client_instrumentation import (
         FlextObservabilityHTTPClient,
     )
-    from flext_observability.services.http_instrumentation import (
-        FlextObservabilityHTTP,
-    )
+    from flext_observability.services.http_instrumentation import FlextObservabilityHTTP
     from flext_observability.services.logging_integration import (
         FlextObservabilityLogging,
     )
@@ -68,6 +63,7 @@ if _TYPE_CHECKING:
     )
     from flext_observability.services.performance import FlextObservabilityPerformance
     from flext_observability.services.sampling import FlextObservabilitySampling
+    from flext_observability.services.services import FlextObservabilityServices
 
 _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "FlextObservabilityAdvancedContext": "flext_observability.services.advanced_context",
@@ -82,7 +78,7 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "FlextObservabilityMonitor": "flext_observability.services.monitoring",
     "FlextObservabilityPerformance": "flext_observability.services.performance",
     "FlextObservabilitySampling": "flext_observability.services.sampling",
-    "FlextObservabilityServices": "flext_observability.services",
+    "FlextObservabilityServices": "flext_observability.services.services",
     "advanced_context": "flext_observability.services.advanced_context",
     "c": ("flext_core.constants", "FlextConstants"),
     "context": "flext_observability.services.context",
@@ -104,7 +100,7 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "r": ("flext_core.result", "FlextResult"),
     "s": ("flext_core.service", "FlextService"),
     "sampling": "flext_observability.services.sampling",
-    "services": "flext_observability.services",
+    "services": "flext_observability.services.services",
     "t": ("flext_core.typings", "FlextTypes"),
     "u": ("flext_core.utilities", "FlextUtilities"),
     "x": ("flext_core.mixins", "FlextMixins"),
