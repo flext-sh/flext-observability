@@ -20,11 +20,8 @@ if _t.TYPE_CHECKING:
     )
 
     integration = _tests_integration
-    import tests.integration.test_phase_11_integration as _tests_integration_test_phase_11_integration
-
-    test_phase_11_integration = _tests_integration_test_phase_11_integration
     import tests.models as _tests_models
-    from tests.integration.test_phase_11_integration import ErrorEvent
+    from tests.integration import ErrorEvent, test_phase_11_integration
 
     models = _tests_models
     import tests.protocols as _tests_protocols
@@ -48,19 +45,10 @@ if _t.TYPE_CHECKING:
     )
 
     unit = _tests_unit
-    import tests.unit.test_constants as _tests_unit_test_constants
-
-    test_constants = _tests_unit_test_constants
-    import tests.unit.test_factory as _tests_unit_test_factory
-    from tests.unit.test_constants import Testc
-
-    test_factory = _tests_unit_test_factory
-    import tests.unit.test_init as _tests_unit_test_init
-    from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
-
-    test_init = _tests_unit_test_init
     import tests.utilities as _tests_utilities
-    from tests.unit.test_init import (
+    from tests.unit import (
+        Testc,
+        TestFlextObservabilityMasterFactoryReal,
         TestInitCoverage,
         flext_alert,
         flext_health_check,
@@ -68,6 +56,9 @@ if _t.TYPE_CHECKING:
         flext_trace,
         get_global_factory,
         reset_global_factory,
+        test_constants,
+        test_factory,
+        test_init,
     )
 
     utilities = _tests_utilities

@@ -59,71 +59,35 @@ if _t.TYPE_CHECKING:
     )
 
     services = _flext_observability_services
-    import flext_observability.services.advanced_context as _flext_observability_services_advanced_context
-
-    advanced_context = _flext_observability_services_advanced_context
-    import flext_observability.services.context as _flext_observability_services_context
-    from flext_observability.services.advanced_context import (
-        FlextObservabilityAdvancedContext,
-    )
-
-    context = _flext_observability_services_context
-    import flext_observability.services.custom_metrics as _flext_observability_services_custom_metrics
-    from flext_observability.services.context import FlextObservabilityContext
-
-    custom_metrics = _flext_observability_services_custom_metrics
-    import flext_observability.services.error_handling as _flext_observability_services_error_handling
-    from flext_observability.services.custom_metrics import (
-        FlextObservabilityCustomMetrics,
-    )
-
-    error_handling = _flext_observability_services_error_handling
-    import flext_observability.services.fields as _flext_observability_services_fields
-    from flext_observability.services.error_handling import (
-        FlextObservabilityErrorHandling,
-    )
-
-    fields = _flext_observability_services_fields
-    import flext_observability.services.health as _flext_observability_services_health
-    from flext_observability.services.fields import FlextObservabilityFields
-
-    health = _flext_observability_services_health
-    import flext_observability.services.http_client_instrumentation as _flext_observability_services_http_client_instrumentation
-    from flext_observability.services.health import FlextObservabilityHealth
-
-    http_client_instrumentation = (
-        _flext_observability_services_http_client_instrumentation
-    )
-    import flext_observability.services.http_instrumentation as _flext_observability_services_http_instrumentation
-    from flext_observability.services.http_client_instrumentation import (
-        FlextObservabilityHTTPClient,
-    )
-
-    http_instrumentation = _flext_observability_services_http_instrumentation
-    import flext_observability.services.logging_integration as _flext_observability_services_logging_integration
-    from flext_observability.services.http_instrumentation import FlextObservabilityHTTP
-
-    logging_integration = _flext_observability_services_logging_integration
-    import flext_observability.services.monitoring as _flext_observability_services_monitoring
-    from flext_observability.services.logging_integration import (
-        FlextObservabilityLogging,
-    )
-
-    monitoring = _flext_observability_services_monitoring
-    import flext_observability.services.performance as _flext_observability_services_performance
-    from flext_observability.services.monitoring import (
-        FlextObservabilityMonitor,
-        flext_monitor_function,
-    )
-
-    performance = _flext_observability_services_performance
-    import flext_observability.services.sampling as _flext_observability_services_sampling
-    from flext_observability.services.performance import FlextObservabilityPerformance
-
-    sampling = _flext_observability_services_sampling
     import flext_observability.settings as _flext_observability_settings
-    from flext_observability.services.sampling import FlextObservabilitySampling
-    from flext_observability.services.services import FlextObservabilityServices
+    from flext_observability.services import (
+        FlextObservabilityAdvancedContext,
+        FlextObservabilityContext,
+        FlextObservabilityCustomMetrics,
+        FlextObservabilityErrorHandling,
+        FlextObservabilityFields,
+        FlextObservabilityHealth,
+        FlextObservabilityHTTP,
+        FlextObservabilityHTTPClient,
+        FlextObservabilityLogging,
+        FlextObservabilityMonitor,
+        FlextObservabilityPerformance,
+        FlextObservabilitySampling,
+        FlextObservabilityServices,
+        advanced_context,
+        context,
+        custom_metrics,
+        error_handling,
+        fields,
+        flext_monitor_function,
+        health,
+        http_client_instrumentation,
+        http_instrumentation,
+        logging_integration,
+        monitoring,
+        performance,
+        sampling,
+    )
 
     settings = _flext_observability_settings
     import flext_observability.typings as _flext_observability_typings

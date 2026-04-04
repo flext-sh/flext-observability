@@ -41,6 +41,8 @@ class FlextObservabilityTypes(FlextTypes):
         Observability domain owns monitoring-specific types.
         """
 
+        type DomainLabels = FlextTypes.ScalarMapping
+
         type ObservabilityProjectType = c.Observability.ObservabilityProjectType
         type ObservabilityProjectConfig = Mapping[
             str,

@@ -21,9 +21,6 @@ from pydantic import ConfigDict, Field, computed_field
 from flext_core import FlextModels
 from flext_observability import c, t
 
-# Module-level type alias for domain labels used in model fields
-_DomainLabels = dict[str, t.Scalar]
-
 
 class FlextObservabilityModels(FlextModels):
     """Generic observability models with Pydantic patterns.
@@ -154,14 +151,14 @@ class FlextObservabilityModels(FlextModels):
             value: t.PositiveFloat
             unit: t.NonEmptyStr
             metric_type: t.NonEmptyStr
-            labels: _DomainLabels = Field(default_factory=dict)
+            labels: t.Observability.DomainLabels = Field(default_factory=dict)
 
         class Trace(FlextModels.Entity):
             """Distributed trace entity."""
 
             trace_id: str = Field(default_factory=lambda: str(uuid4()))
             name: t.NonEmptyStr
-            attributes: _DomainLabels = Field(default_factory=dict)
+            attributes: t.Observability.DomainLabels = Field(default_factory=dict)
 
         class Alert(FlextModels.Entity):
             """Observability alert entity."""
@@ -171,7 +168,7 @@ class FlextObservabilityModels(FlextModels):
             message: t.NonEmptyStr
             severity: t.NonEmptyStr
             source: t.NonEmptyStr
-            labels: _DomainLabels = Field(default_factory=dict)
+            labels: t.Observability.DomainLabels = Field(default_factory=dict)
 
         class HealthCheck(FlextModels.Entity):
             """Health check entity."""
@@ -179,7 +176,7 @@ class FlextObservabilityModels(FlextModels):
             id: str = Field(default_factory=lambda: str(uuid4()))
             component: t.NonEmptyStr
             status: t.NonEmptyStr
-            details: _DomainLabels = Field(default_factory=dict)
+            details: t.Observability.DomainLabels = Field(default_factory=dict)
 
         class LogEntry(FlextModels.Entity):
             """Structured log entry entity."""
@@ -189,7 +186,7 @@ class FlextObservabilityModels(FlextModels):
             level: t.NonEmptyStr
             component: t.NonEmptyStr
             timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-            context: _DomainLabels = Field(default_factory=dict)
+            context: t.Observability.DomainLabels = Field(default_factory=dict)
 
         class StartTimePayload(FlextModels.Value):
             """Payload for validating HTTP request start time."""
