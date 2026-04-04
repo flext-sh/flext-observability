@@ -332,6 +332,7 @@ class FlextObservabilityProtocols(FlextProtocols):
         class Http:
             """Protocols for Flask and FastAPI HTTP instrumentation."""
 
+            @runtime_checkable
             class FlaskHook(Protocol):
                 """Protocol for Flask request hooks."""
 
@@ -342,6 +343,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     """Call the hook with a callback."""
                     ...
 
+            @runtime_checkable
             class FlaskErrorHandler(Protocol):
                 """Protocol for Flask error handler decorator."""
 
@@ -352,6 +354,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     """Return a hook for the given error type."""
                     ...
 
+            @runtime_checkable
             class FlaskApp(Protocol):
                 """Protocol for Flask application."""
 
@@ -361,6 +364,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     FlextObservabilityProtocols.Observability.Http.FlaskErrorHandler
                 )
 
+            @runtime_checkable
             class FastAPIApp(Protocol):
                 """Protocol for FastAPI application."""
 
@@ -368,16 +372,19 @@ class FlextObservabilityProtocols(FlextProtocols):
                     """Add middleware to the FastAPI app."""
                     ...
 
+            @runtime_checkable
             class RequestURL(Protocol):
                 """Protocol for request URL objects."""
 
                 path: str
 
+            @runtime_checkable
             class RequestClient(Protocol):
                 """Protocol for request client objects."""
 
                 host: str
 
+            @runtime_checkable
             class Request(Protocol):
                 """Protocol for HTTP request objects used by middleware."""
 
@@ -388,6 +395,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     FlextObservabilityProtocols.Observability.Http.RequestClient | None
                 )
 
+            @runtime_checkable
             class Response(Protocol):
                 """Protocol for HTTP response objects used by middleware."""
 
@@ -397,6 +405,7 @@ class FlextObservabilityProtocols(FlextProtocols):
         class HttpClient:
             """Protocols for httpx and aiohttp HTTP client instrumentation."""
 
+            @runtime_checkable
             class HTTPXURL(Protocol):
                 """Protocol for httpx URL t.NormalizedValue."""
 
@@ -410,6 +419,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     """URL scheme (http/https)."""
                     ...
 
+            @runtime_checkable
             class HTTPXRequest(Protocol):
                 """Protocol for httpx Request t.NormalizedValue."""
 
@@ -430,6 +440,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     """Request URL."""
                     ...
 
+            @runtime_checkable
             class HTTPXResponse(Protocol):
                 """Protocol for httpx Response t.NormalizedValue."""
 
@@ -438,6 +449,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     """HTTP status code."""
                     ...
 
+            @runtime_checkable
             class AIOHTTPResponse(Protocol):
                 """Protocol for aiohttp ClientResponse."""
 
@@ -446,6 +458,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     """HTTP status code."""
                     ...
 
+            @runtime_checkable
             class HTTPXAsyncClient(Protocol):
                 """Protocol for async httpx client."""
 
@@ -463,6 +476,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     ],
                 ]
 
+            @runtime_checkable
             class HTTPXClient(Protocol):
                 """Protocol for sync httpx client."""
 
@@ -474,6 +488,7 @@ class FlextObservabilityProtocols(FlextProtocols):
                     ],
                 ]
 
+            @runtime_checkable
             class AIOHTTPSession(Protocol):
                 """Protocol for aiohttp ClientSession."""
 
