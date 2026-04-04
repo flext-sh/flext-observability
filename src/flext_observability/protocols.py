@@ -36,8 +36,7 @@ class FlextObservabilityProtocols(FlextProtocols):
     tracing: p.Observability.Tracing
     """
 
-    @runtime_checkable
-    class Observability(Protocol):
+    class Observability:
         """Observability domain-specific protocols.
 
         Provides protocols for metrics collection, distributed tracing,
