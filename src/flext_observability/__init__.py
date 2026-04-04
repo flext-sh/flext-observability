@@ -12,16 +12,6 @@ from flext_observability.__version__ import *
 
 if _t.TYPE_CHECKING:
     import flext_observability.api as _flext_observability_api
-    from flext_observability.__version__ import (
-        __author__,
-        __author_email__,
-        __description__,
-        __license__,
-        __title__,
-        __url__,
-        __version__,
-        __version_info__,
-    )
 
     api = _flext_observability_api
     import flext_observability.base as _flext_observability_base
