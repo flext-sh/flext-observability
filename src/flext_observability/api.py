@@ -26,12 +26,12 @@ from flext_observability import (
     FlextObservabilityHTTP,
     FlextObservabilityHTTPClient,
     FlextObservabilityLogging,
-    FlextObservabilityModels as _m,
     FlextObservabilityMonitor,
     FlextObservabilityPerformance,
     FlextObservabilitySampling,
     FlextObservabilityServices,
     c,
+    m,
     t,
 )
 
@@ -83,11 +83,11 @@ class FlextObservability(
             "critical",
         }
 
-    Metric: TypeAlias = _m.Observability.Metric
-    Trace: TypeAlias = _m.Observability.Trace
-    Alert: TypeAlias = _m.Observability.Alert
-    HealthCheck: TypeAlias = _m.Observability.HealthCheck
-    LogEntry: TypeAlias = _m.Observability.LogEntry
+    Metric: TypeAlias = m.Observability.Metric
+    Trace: TypeAlias = m.Observability.Trace
+    Alert: TypeAlias = m.Observability.Alert
+    HealthCheck: TypeAlias = m.Observability.HealthCheck
+    LogEntry: TypeAlias = m.Observability.LogEntry
 
     class MetricsService:
         """Service for metrics collection and recording."""

@@ -10,25 +10,21 @@ Tests realistic scenarios combining:
 
 from __future__ import annotations
 
-import sys
 import time
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent / "../../src"))
 
 from flext_observability import (
     FlextObservabilityAdvancedContext,
-    FlextObservabilityConstants as c,
     FlextObservabilityContext,
     FlextObservabilityCustomMetrics,
     FlextObservabilityErrorHandling,
     FlextObservabilityMasterFactory,
-    FlextObservabilityModels as _obs_m,
     FlextObservabilityPerformance,
     FlextObservabilitySampling,
+    c,
+    m,
 )
 
-ErrorEvent = _obs_m.Observability.ErrorEvent
+ErrorEvent = m.Observability.ErrorEvent
 
 try:
     FlextObservabilityContext.set_correlation_id("http-req-001")
