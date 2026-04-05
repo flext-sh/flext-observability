@@ -22,10 +22,7 @@ if _t.TYPE_CHECKING:
 
     base = _flext_observability_base
     import flext_observability.constants as _flext_observability_constants
-    from flext_observability.base import (
-        FlextObservabilityServiceBase,
-        FlextObservabilityServiceBase as s,
-    )
+    from flext_observability.base import FlextObservabilityServiceBase, s
 
     constants = _flext_observability_constants
     import flext_observability.models as _flext_observability_models
@@ -132,7 +129,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
         "p": ("flext_observability.protocols", "FlextObservabilityProtocols"),
         "protocols": "flext_observability.protocols",
         "r": ("flext_core.result", "FlextResult"),
-        "s": ("flext_observability.base", "FlextObservabilityServiceBase"),
+        "s": "flext_observability.base",
         "services": "flext_observability.services",
         "settings": "flext_observability.settings",
         "t": ("flext_observability.typings", "FlextObservabilityTypes"),
