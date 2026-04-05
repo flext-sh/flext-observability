@@ -32,14 +32,12 @@ class FlextObservabilityModels(FlextModels):
     class Observability:
         """Observability domain models namespace."""
 
-        class GenericObservabilityEntry(FlextModels.Value):
+        class GenericObservabilityEntry(FlextModels.DynamicModel):
             """Generic base model for any observability entry using Pydantic."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(
                 validate_assignment=True,
-                extra="allow",
                 frozen=False,
-                str_strip_whitespace=True,
             )
 
             id: Annotated[
@@ -47,7 +45,10 @@ class FlextObservabilityModels(FlextModels):
                 Field(
                     description="Unique entity identifier",
                 ),
-            ] = Field(default_factory=lambda: str(uuid4()))
+            ] = Field(
+                default_factory=lambda: str(uuid4()),
+                description="Unique entity identifier",
+            )
             name: Annotated[t.NonEmptyStr, Field(description="Entity name")]
             type: Annotated[t.NonEmptyStr, Field(description="Entity type")]
             timestamp: Annotated[
@@ -55,19 +56,19 @@ class FlextObservabilityModels(FlextModels):
                 Field(
                     description="Entry timestamp",
                 ),
-            ] = Field(default_factory=datetime.now)
+            ] = Field(default_factory=datetime.now, description="Entry timestamp")
             data: Annotated[
                 t.ConfigurationMapping,
                 Field(
                     description="Generic data payload",
                 ),
-            ] = Field(default_factory=dict)
+            ] = Field(default_factory=dict, description="Generic data payload")
             metadata: Annotated[
                 t.ConfigurationMapping,
                 Field(
                     description="Generic metadata",
                 ),
-            ] = Field(default_factory=dict)
+            ] = Field(default_factory=dict, description="Generic metadata")
 
             @computed_field
             def age_seconds(self) -> float:
@@ -84,14 +85,12 @@ class FlextObservabilityModels(FlextModels):
                 """Check if entry has any data."""
                 return bool(self.data)
 
-        class GenericObservabilityConfig(FlextModels.Value):
+        class GenericObservabilityConfig(FlextModels.DynamicModel):
             """Generic configuration using Pydantic patterns."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(
                 validate_assignment=True,
-                extra="allow",
                 frozen=False,
-                str_strip_whitespace=True,
             )
 
             enabled: Annotated[
@@ -118,7 +117,7 @@ class FlextObservabilityModels(FlextModels):
                 Field(
                     description="Type-specific settings",
                 ),
-            ] = Field(default_factory=dict)
+            ] = Field(default_factory=dict, description="Type-specific settings")
 
             @computed_field
             def interval_minutes(self) -> float:
@@ -135,123 +134,237 @@ class FlextObservabilityModels(FlextModels):
         class MetricEntry(FlextModels.Entity):
             """Metric entry model."""
 
-            metric_id: str = Field(default_factory=lambda: str(uuid4()))
-            name: t.NonEmptyStr
-            value: t.Numeric
-            unit: t.NonEmptyStr
-            source: Annotated[str, Field(default="unknown")]
+            metric_id: Annotated[
+                str,
+                Field(description="Unique metric entry identifier"),
+            ] = Field(
+                default_factory=lambda: str(uuid4()),
+                description="Unique metric entry identifier",
+            )
+            name: Annotated[t.NonEmptyStr, Field(description="Metric name")]
+            value: Annotated[t.Numeric, Field(description="Metric value")]
+            unit: Annotated[t.NonEmptyStr, Field(description="Measurement unit")]
+            source: Annotated[
+                str, Field(default="unknown", description="Metric data source")
+            ]
 
         # --- Domain entity models (moved from _core.py FlextObservability) ---
 
         class Metric(FlextModels.Entity):
             """Observability metric entity."""
 
-            id: str = Field(default_factory=lambda: str(uuid4()))
-            name: t.NonEmptyStr
-            value: t.PositiveFloat
-            unit: t.NonEmptyStr
-            metric_type: t.NonEmptyStr
-            labels: t.Observability.DomainLabels = Field(default_factory=dict)
+            id: Annotated[
+                str,
+                Field(description="Unique metric identifier"),
+            ] = Field(
+                default_factory=lambda: str(uuid4()),
+                description="Unique metric identifier",
+            )
+            name: Annotated[t.NonEmptyStr, Field(description="Metric name")]
+            value: Annotated[t.PositiveFloat, Field(description="Metric value")]
+            unit: Annotated[t.NonEmptyStr, Field(description="Measurement unit")]
+            metric_type: Annotated[t.NonEmptyStr, Field(description="Type of metric")]
+            labels: Annotated[
+                t.Observability.DomainLabels,
+                Field(description="Metric labels for categorization"),
+            ] = Field(
+                default_factory=dict, description="Metric labels for categorization"
+            )
 
         class Trace(FlextModels.Entity):
             """Distributed trace entity."""
 
-            trace_id: str = Field(default_factory=lambda: str(uuid4()))
-            name: t.NonEmptyStr
-            attributes: t.Observability.DomainLabels = Field(default_factory=dict)
+            trace_id: Annotated[
+                str,
+                Field(description="Unique trace identifier"),
+            ] = Field(
+                default_factory=lambda: str(uuid4()),
+                description="Unique trace identifier",
+            )
+            name: Annotated[t.NonEmptyStr, Field(description="Trace name")]
+            attributes: Annotated[
+                t.Observability.DomainLabels,
+                Field(description="Trace attributes"),
+            ] = Field(default_factory=dict, description="Trace attributes")
 
         class Alert(FlextModels.Entity):
             """Observability alert entity."""
 
-            id: str = Field(default_factory=lambda: str(uuid4()))
-            title: t.NonEmptyStr
-            message: t.NonEmptyStr
-            severity: t.NonEmptyStr
-            source: t.NonEmptyStr
-            labels: t.Observability.DomainLabels = Field(default_factory=dict)
+            id: Annotated[
+                str,
+                Field(description="Unique alert identifier"),
+            ] = Field(
+                default_factory=lambda: str(uuid4()),
+                description="Unique alert identifier",
+            )
+            title: Annotated[t.NonEmptyStr, Field(description="Alert title")]
+            message: Annotated[t.NonEmptyStr, Field(description="Alert message")]
+            severity: Annotated[
+                t.NonEmptyStr, Field(description="Alert severity level")
+            ]
+            source: Annotated[t.NonEmptyStr, Field(description="Alert source")]
+            labels: Annotated[
+                t.Observability.DomainLabels,
+                Field(description="Alert labels for categorization"),
+            ] = Field(
+                default_factory=dict, description="Alert labels for categorization"
+            )
 
         class HealthCheck(FlextModels.Entity):
             """Health check entity."""
 
-            id: str = Field(default_factory=lambda: str(uuid4()))
-            component: t.NonEmptyStr
-            status: t.NonEmptyStr
-            details: t.Observability.DomainLabels = Field(default_factory=dict)
+            id: Annotated[
+                str,
+                Field(description="Unique health check identifier"),
+            ] = Field(
+                default_factory=lambda: str(uuid4()),
+                description="Unique health check identifier",
+            )
+            component: Annotated[
+                t.NonEmptyStr, Field(description="Component being checked")
+            ]
+            status: Annotated[t.NonEmptyStr, Field(description="Health check status")]
+            details: Annotated[
+                t.Observability.DomainLabels,
+                Field(description="Health check details"),
+            ] = Field(default_factory=dict, description="Health check details")
 
         class LogEntry(FlextModels.Entity):
             """Structured log entry entity."""
 
-            id: str = Field(default_factory=lambda: str(uuid4()))
-            message: t.NonEmptyStr
-            level: t.NonEmptyStr
-            component: t.NonEmptyStr
-            timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
-            context: t.Observability.DomainLabels = Field(default_factory=dict)
+            id: Annotated[
+                str,
+                Field(description="Unique log entry identifier"),
+            ] = Field(
+                default_factory=lambda: str(uuid4()),
+                description="Unique log entry identifier",
+            )
+            message: Annotated[t.NonEmptyStr, Field(description="Log message")]
+            level: Annotated[t.NonEmptyStr, Field(description="Log level")]
+            component: Annotated[t.NonEmptyStr, Field(description="Source component")]
+            timestamp: Annotated[
+                datetime,
+                Field(description="Log entry timestamp"),
+            ] = Field(
+                default_factory=lambda: datetime.now(tz=UTC),
+                description="Log entry timestamp",
+            )
+            context: Annotated[
+                t.Observability.DomainLabels,
+                Field(description="Log context metadata"),
+            ] = Field(default_factory=dict, description="Log context metadata")
 
         class StartTimePayload(FlextModels.Value):
             """Payload for validating HTTP request start time."""
 
-            value: Annotated[float, Field(ge=0)]
+            value: Annotated[
+                float,
+                Field(ge=0, description="Request start time in seconds since epoch"),
+            ]
 
         class HeadersPayload(FlextModels.Value):
             """Payload for validating HTTP client headers."""
 
-            headers: t.StrMapping = Field(default_factory=dict)
+            headers: Annotated[
+                t.StrMapping,
+                Field(description="HTTP header key-value pairs"),
+            ] = Field(default_factory=dict, description="HTTP header key-value pairs")
 
         # --- Moved from advanced_context.py ---
         class ContextSnapshot(FlextModels.Value):
             """Snapshot of observability context for restoration in async operations."""
 
-            correlation_id: Annotated[str, Field(default="")]
-            trace_id: Annotated[str, Field(default="")]
-            span_id: Annotated[str, Field(default="")]
-            baggage: t.StrMapping = Field(default_factory=dict)
-            metadata: t.ConfigurationMapping = Field(default_factory=dict)
+            correlation_id: Annotated[
+                str, Field(default="", description="Correlation identifier")
+            ]
+            trace_id: Annotated[str, Field(default="", description="Trace identifier")]
+            span_id: Annotated[str, Field(default="", description="Span identifier")]
+            baggage: Annotated[
+                t.StrMapping,
+                Field(description="Propagated baggage key-value pairs"),
+            ] = Field(
+                default_factory=dict, description="Propagated baggage key-value pairs"
+            )
+            metadata: Annotated[
+                t.ConfigurationMapping,
+                Field(description="Additional context metadata"),
+            ] = Field(default_factory=dict, description="Additional context metadata")
 
         # --- Moved from context.py ---
         class BaggageKeyModel(FlextModels.Value):
             """Validation model for baggage keys."""
 
-            key: t.NonEmptyStr
+            key: Annotated[t.NonEmptyStr, Field(description="Baggage key name")]
 
         # --- Moved from custom_metrics.py ---
         class MetricTypeInput(FlextModels.Value):
             """Validation model for metric type input."""
 
-            metric_type: c.Observability.MetricType
+            metric_type: Annotated[
+                c.Observability.MetricType,
+                Field(description="Type of metric to create"),
+            ]
 
         class CustomMetricDefinition(FlextModels.Value):
             """Definition of a custom business metric with type and metadata."""
 
-            name: t.NonEmptyStr
-            metric_type: c.Observability.MetricType
-            description: t.NonEmptyStr
-            unit: Annotated[str, Field(default="1", min_length=1)]
-            labels: t.StrMapping = Field(default_factory=dict)
+            name: Annotated[t.NonEmptyStr, Field(description="Custom metric name")]
+            metric_type: Annotated[
+                c.Observability.MetricType,
+                Field(description="Type of metric"),
+            ]
+            description: Annotated[
+                t.NonEmptyStr, Field(description="Human-readable metric description")
+            ]
+            unit: Annotated[
+                str,
+                Field(
+                    default="1",
+                    min_length=1,
+                    description="Measurement unit",
+                ),
+            ]
+            labels: Annotated[
+                t.StrMapping,
+                Field(description="Metric labels for categorization"),
+            ] = Field(
+                default_factory=dict, description="Metric labels for categorization"
+            )
 
         # --- Moved from error_handling.py ---
         class CooldownInput(FlextModels.Value):
             """Validation model for cooldown seconds input."""
 
-            seconds: t.PositiveFloat
+            seconds: Annotated[
+                t.PositiveFloat, Field(description="Cooldown duration in seconds")
+            ]
 
         class ThresholdInput(FlextModels.Value):
             """Validation model for threshold input."""
 
-            threshold: t.PositiveInt
+            threshold: Annotated[
+                t.PositiveInt, Field(description="Error count threshold")
+            ]
 
         class ErrorEvent(FlextModels.Value):
             """Error event with fingerprinting for deduplication and alerting."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
 
-            error_type: t.NonEmptyStr
-            message: t.NonEmptyStr
-            severity: c.Observability.ErrorSeverity = (
-                c.Observability.ErrorSeverity.ERROR
-            )
-            fingerprint: str = ""
-            correlation_id: str = ""
+            error_type: Annotated[
+                t.NonEmptyStr, Field(description="Error classification type")
+            ]
+            message: Annotated[t.NonEmptyStr, Field(description="Error message")]
+            severity: Annotated[
+                c.Observability.ErrorSeverity,
+                Field(description="Error severity level"),
+            ] = c.Observability.ErrorSeverity.ERROR
+            fingerprint: Annotated[
+                str, Field(default="", description="SHA256 deduplication fingerprint")
+            ]
+            correlation_id: Annotated[
+                str, Field(default="", description="Correlation identifier")
+            ]
 
             def calculate_fingerprint(self) -> None:
                 """Calculate SHA256 fingerprint from error type and message."""
@@ -263,19 +376,47 @@ class FlextObservabilityModels(FlextModels):
         class HealthCheckFactoryKwargs(FlextModels.Value):
             """Validation model for health check factory kwargs."""
 
-            metrics: t.Dict | None = None
-            timestamp: datetime | None = None
+            metrics: Annotated[
+                t.Dict | None,
+                Field(description="Health check metric values"),
+            ] = None
+            timestamp: Annotated[
+                datetime | None,
+                Field(description="Health check timestamp"),
+            ] = None
 
         class HealthCheckModel(FlextModels.Value):
             """Health check result model."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
 
-            component: t.NonEmptyStr
-            status: Annotated[str, Field(default="unknown", min_length=1)]
-            message: Annotated[str, Field(default="")]
-            metrics: t.Dict = Field(default_factory=lambda: t.Dict({}))
-            timestamp: datetime = Field(default_factory=datetime.now)
+            component: Annotated[
+                t.NonEmptyStr, Field(description="Component being checked")
+            ]
+            status: Annotated[
+                str,
+                Field(
+                    default="unknown",
+                    min_length=1,
+                    description="Health check status",
+                ),
+            ]
+            message: Annotated[
+                str, Field(default="", description="Health check message")
+            ]
+            metrics: Annotated[
+                t.Dict,
+                Field(description="Health check metric values"),
+            ] = Field(
+                default_factory=lambda: t.Dict({}),
+                description="Health check metric values",
+            )
+            timestamp: Annotated[
+                datetime,
+                Field(description="Health check timestamp"),
+            ] = Field(
+                default_factory=datetime.now, description="Health check timestamp"
+            )
 
         # --- Moved from logging_integration.py ---
         class LogContext(FlextModels.Value):
@@ -283,11 +424,29 @@ class FlextObservabilityModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
 
-            correlation_id: str | None = None
-            trace_id: str | None = None
-            span_id: str | None = None
-            baggage: str | None = None
-            extra: t.Dict = Field(default_factory=lambda: t.Dict({}))
+            correlation_id: Annotated[
+                str | None,
+                Field(description="Correlation identifier"),
+            ] = None
+            trace_id: Annotated[
+                str | None,
+                Field(description="Trace identifier"),
+            ] = None
+            span_id: Annotated[
+                str | None,
+                Field(description="Span identifier"),
+            ] = None
+            baggage: Annotated[
+                str | None,
+                Field(description="Serialized baggage string"),
+            ] = None
+            extra: Annotated[
+                t.Dict,
+                Field(description="Additional context data"),
+            ] = Field(
+                default_factory=lambda: t.Dict({}),
+                description="Additional context data",
+            )
 
         # --- Moved from performance.py ---
         class PerformanceMetrics(FlextModels.Value):
@@ -295,14 +454,42 @@ class FlextObservabilityModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
 
-            operation: t.NonEmptyStr
-            start_time: float = Field(default_factory=time.time)
-            end_time: float = 0.0
-            duration_ms: float = 0.0
-            memory_used_mb: float = 0.0
-            cpu_percent: float = 0.0
-            success: bool = True
-            error_message: str = ""
+            operation: Annotated[
+                t.NonEmptyStr, Field(description="Operation name being measured")
+            ]
+            start_time: Annotated[
+                float,
+                Field(description="Operation start time in seconds since epoch"),
+            ] = Field(
+                default_factory=time.time,
+                description="Operation start time in seconds since epoch",
+            )
+            end_time: Annotated[
+                float,
+                Field(
+                    default=0.0, description="Operation end time in seconds since epoch"
+                ),
+            ]
+            duration_ms: Annotated[
+                float,
+                Field(default=0.0, description="Operation duration in milliseconds"),
+            ]
+            memory_used_mb: Annotated[
+                float,
+                Field(default=0.0, description="Memory used in megabytes"),
+            ]
+            cpu_percent: Annotated[
+                float,
+                Field(default=0.0, description="CPU usage percentage"),
+            ]
+            success: Annotated[
+                bool,
+                Field(default=True, description="Whether the operation succeeded"),
+            ]
+            error_message: Annotated[
+                str,
+                Field(default="", description="Error message if operation failed"),
+            ]
 
             def calculate_duration(self) -> None:
                 """Calculate operation duration in milliseconds from start and end times."""

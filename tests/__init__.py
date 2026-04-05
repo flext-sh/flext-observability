@@ -10,7 +10,11 @@ import typing as _t
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 
 if _t.TYPE_CHECKING:
+    import tests.conftest as _tests_conftest
+
+    conftest = _tests_conftest
     import tests.constants as _tests_constants
+    from tests.conftest import observability_settings, pytest_plugins
 
     constants = _tests_constants
     import tests.integration as _tests_integration
@@ -84,6 +88,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
         "FlextObservabilityTestTypes": "tests.typings",
         "FlextObservabilityTestUtilities": "tests.utilities",
         "c": ("tests.constants", "FlextObservabilityTestConstants"),
+        "conftest": "tests.conftest",
         "constants": "tests.constants",
         "d": ("flext_core.decorators", "FlextDecorators"),
         "e": ("flext_core.exceptions", "FlextExceptions"),
@@ -91,8 +96,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
         "integration": "tests.integration",
         "m": ("tests.models", "FlextObservabilityTestModels"),
         "models": "tests.models",
+        "observability_settings": "tests.conftest",
         "p": ("tests.protocols", "FlextObservabilityTestProtocols"),
         "protocols": "tests.protocols",
+        "pytest_plugins": "tests.conftest",
         "r": ("flext_core.result", "FlextResult"),
         "s": ("flext_core.service", "FlextService"),
         "t": ("tests.typings", "FlextObservabilityTestTypes"),
@@ -115,6 +122,7 @@ __all__ = [
     "TestInitCoverage",
     "Testc",
     "c",
+    "conftest",
     "constants",
     "d",
     "e",
@@ -127,8 +135,10 @@ __all__ = [
     "integration",
     "m",
     "models",
+    "observability_settings",
     "p",
     "protocols",
+    "pytest_plugins",
     "r",
     "reset_global_factory",
     "s",

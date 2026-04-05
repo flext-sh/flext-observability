@@ -43,6 +43,16 @@ class FlextObservabilityConstants(FlextConstants):
             DEFAULT_LOG_LEVEL: Final[str] = "INFO"
             DEFAULT_METRIC_UNIT: Final[str] = "1"
 
+        class SettingsDefaults:
+            """Settings field defaults."""
+
+            SERVICE_NAME: Final[str] = "flext-observability"
+            ENVIRONMENT: Final[str] = "development"
+            DEFAULT_FLUSH_INTERVAL: Final[int] = 30
+            DEFAULT_METRICS_ENABLED: Final[bool] = True
+            DEFAULT_TRACES_ENABLED: Final[bool] = True
+            DEFAULT_ALERTS_ENABLED: Final[bool] = True
+
         @unique
         class MetricType(StrEnum):
             """Metric type enumeration.

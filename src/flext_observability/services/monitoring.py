@@ -365,21 +365,8 @@ class FlextObservabilityMonitor:
             return decorator
 
 
-def flext_monitor_function(
-    monitor: FlextObservabilityMonitor | None = None,
-    metric_name: str | None = None,
-) -> Callable[
-    [FlextObservabilityMonitor.object_callable],
-    FlextObservabilityMonitor.object_callable,
-]:
-    """Create a monitoring decorator for automatic function instrumentation.
-
-    Delegates to FlextObservabilityMonitor.flext_monitor_function.
-    """
-    return FlextObservabilityMonitor.flext_monitor_function(
-        monitor=monitor,
-        metric_name=metric_name,
-    )
+flext_monitor_function = FlextObservabilityMonitor.flext_monitor_function
+"""Module-level alias for FlextObservabilityMonitor.flext_monitor_function."""
 
 
 __all__: t.StrSequence = ["FlextObservabilityMonitor", "flext_monitor_function"]
