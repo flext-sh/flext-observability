@@ -26,7 +26,7 @@ if _t.TYPE_CHECKING:
     from flext_core.utilities import FlextUtilities as u
     from tests.integration.test_phase_11_integration import ErrorEvent
 _LAZY_IMPORTS = {
-    "ErrorEvent": "tests.integration.test_phase_11_integration",
+    "ErrorEvent": ("tests.integration.test_phase_11_integration", "ErrorEvent"),
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),

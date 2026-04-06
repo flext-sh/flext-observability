@@ -89,19 +89,58 @@ if _t.TYPE_CHECKING:
     from flext_core.utilities import FlextUtilities as u
     from flext_observability.services.services import FlextObservabilityServices
 _LAZY_IMPORTS = {
-    "FlextObservabilityAdvancedContext": "flext_observability.services.advanced_context",
-    "FlextObservabilityContext": "flext_observability.services.context",
-    "FlextObservabilityCustomMetrics": "flext_observability.services.custom_metrics",
-    "FlextObservabilityErrorHandling": "flext_observability.services.error_handling",
-    "FlextObservabilityFields": "flext_observability.services.fields",
-    "FlextObservabilityHTTP": "flext_observability.services.http_instrumentation",
-    "FlextObservabilityHTTPClient": "flext_observability.services.http_client_instrumentation",
-    "FlextObservabilityHealth": "flext_observability.services.health",
-    "FlextObservabilityLogging": "flext_observability.services.logging_integration",
-    "FlextObservabilityMonitor": "flext_observability.services.monitoring",
-    "FlextObservabilityPerformance": "flext_observability.services.performance",
-    "FlextObservabilitySampling": "flext_observability.services.sampling",
-    "FlextObservabilityServices": "flext_observability.services.services",
+    "FlextObservabilityAdvancedContext": (
+        "flext_observability.services.advanced_context",
+        "FlextObservabilityAdvancedContext",
+    ),
+    "FlextObservabilityContext": (
+        "flext_observability.services.context",
+        "FlextObservabilityContext",
+    ),
+    "FlextObservabilityCustomMetrics": (
+        "flext_observability.services.custom_metrics",
+        "FlextObservabilityCustomMetrics",
+    ),
+    "FlextObservabilityErrorHandling": (
+        "flext_observability.services.error_handling",
+        "FlextObservabilityErrorHandling",
+    ),
+    "FlextObservabilityFields": (
+        "flext_observability.services.fields",
+        "FlextObservabilityFields",
+    ),
+    "FlextObservabilityHTTP": (
+        "flext_observability.services.http_instrumentation",
+        "FlextObservabilityHTTP",
+    ),
+    "FlextObservabilityHTTPClient": (
+        "flext_observability.services.http_client_instrumentation",
+        "FlextObservabilityHTTPClient",
+    ),
+    "FlextObservabilityHealth": (
+        "flext_observability.services.health",
+        "FlextObservabilityHealth",
+    ),
+    "FlextObservabilityLogging": (
+        "flext_observability.services.logging_integration",
+        "FlextObservabilityLogging",
+    ),
+    "FlextObservabilityMonitor": (
+        "flext_observability.services.monitoring",
+        "FlextObservabilityMonitor",
+    ),
+    "FlextObservabilityPerformance": (
+        "flext_observability.services.performance",
+        "FlextObservabilityPerformance",
+    ),
+    "FlextObservabilitySampling": (
+        "flext_observability.services.sampling",
+        "FlextObservabilitySampling",
+    ),
+    "FlextObservabilityServices": (
+        "flext_observability.services.services",
+        "FlextObservabilityServices",
+    ),
     "advanced_context": "flext_observability.services.advanced_context",
     "c": ("flext_core.constants", "FlextConstants"),
     "context": "flext_observability.services.context",
@@ -110,7 +149,10 @@ _LAZY_IMPORTS = {
     "e": ("flext_core.exceptions", "FlextExceptions"),
     "error_handling": "flext_observability.services.error_handling",
     "fields": "flext_observability.services.fields",
-    "flext_monitor_function": "flext_observability.services.monitoring",
+    "flext_monitor_function": (
+        "flext_observability.services.monitoring",
+        "flext_monitor_function",
+    ),
     "h": ("flext_core.handlers", "FlextHandlers"),
     "health": "flext_observability.services.health",
     "http_client_instrumentation": "flext_observability.services.http_client_instrumentation",
