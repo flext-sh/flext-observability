@@ -30,6 +30,7 @@ from flext_observability import (
     FlextObservabilityPerformance,
     FlextObservabilitySampling,
     FlextObservabilityServices,
+    FlextObservabilitySettings,
     c,
     m,
     t,
@@ -57,7 +58,9 @@ class FlextObservability(
     model aliases, and Constants are defined locally.
     """
 
-    _logger = u.get_logger(__name__)
+    _config: FlextObservabilitySettings
+    _container: p.Container
+    _logger: p.Logger = u.get_logger(__name__)
 
     class Constants:
         """Domain constants and enumerations."""

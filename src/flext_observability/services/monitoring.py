@@ -36,7 +36,7 @@ class FlextObservabilityMonitor:
     """
 
     object_callable = Callable[..., t.Scalar]
-    logger = u.get_logger(__name__)
+    _logger: p.Logger = u.get_logger(__name__)
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""
@@ -116,11 +116,11 @@ class FlextObservabilityMonitor:
                         source="monitoring",
                     )
                     if alert_result.is_failure:
-                        FlextObservabilityMonitor.logger.warning(
+                        FlextObservabilityMonitor._logger.warning(
                             f"Alert creation failed: {alert_result.error}",
                         )
                 except (ValueError, TypeError, AttributeError) as e:
-                    FlextObservabilityMonitor.logger.warning(
+                    FlextObservabilityMonitor._logger.warning(
                         f"Alert creation failed: {e}",
                     )
 
