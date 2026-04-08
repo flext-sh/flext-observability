@@ -60,23 +60,10 @@ _LAZY_IMPORTS = {
         "flext_observability.services.services",
         "FlextObservabilityServices",
     ),
-    "advanced_context": "flext_observability.services.advanced_context",
-    "context": "flext_observability.services.context",
-    "custom_metrics": "flext_observability.services.custom_metrics",
-    "error_handling": "flext_observability.services.error_handling",
-    "fields": "flext_observability.services.fields",
     "flext_monitor_function": (
         "flext_observability.services.monitoring",
         "flext_monitor_function",
     ),
-    "health": "flext_observability.services.health",
-    "http_client_instrumentation": "flext_observability.services.http_client_instrumentation",
-    "http_instrumentation": "flext_observability.services.http_instrumentation",
-    "logging_integration": "flext_observability.services.logging_integration",
-    "monitoring": "flext_observability.services.monitoring",
-    "performance": "flext_observability.services.performance",
-    "sampling": "flext_observability.services.sampling",
-    "services": "flext_observability.services.services",
 }
 
 
