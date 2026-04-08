@@ -19,11 +19,11 @@ from decimal import Decimal
 
 from pydantic import TypeAdapter
 
-from flext_core import FlextTypes
+from flext_core import t
 from flext_observability import c
 
 
-class FlextObservabilityTypes(FlextTypes):
+class FlextObservabilityTypes(t):
     """Observability-specific type definitions extending t.
 
     Domain-specific type system for observability and monitoring operations.
@@ -31,7 +31,7 @@ class FlextObservabilityTypes(FlextTypes):
     Uses Python 3.13+ type syntax and patterns.
     """
 
-    SCALAR_ADAPTER: TypeAdapter[FlextTypes.Scalar] = TypeAdapter(FlextTypes.Scalar)
+    SCALAR_ADAPTER: TypeAdapter[t.Scalar] = TypeAdapter(t.Scalar)
 
     class Observability:
         """Observability-specific project types.
@@ -41,23 +41,23 @@ class FlextObservabilityTypes(FlextTypes):
         Observability domain owns monitoring-specific types.
         """
 
-        type DomainLabels = FlextTypes.ScalarMapping
+        type DomainLabels = t.ScalarMapping
 
         type ObservabilityProjectType = c.Observability.ObservabilityProjectType
         type ObservabilityProjectConfig = Mapping[
             str,
-            FlextTypes.Scalar | FlextTypes.StrSequence | FlextTypes.Dict,
+            t.Scalar | t.StrSequence | t.Dict,
         ]
-        type MonitoringConfig = Mapping[str, FlextTypes.Scalar | FlextTypes.StrSequence]
-        type MetricsConfig = Mapping[str, bool | str | FlextTypes.ScalarMapping]
+        type MonitoringConfig = Mapping[str, t.Scalar | t.StrSequence]
+        type MetricsConfig = Mapping[str, bool | str | t.ScalarMapping]
         type TracingConfig = Mapping[
             str,
-            FlextTypes.Scalar | FlextTypes.StrSequence | FlextTypes.Dict,
+            t.Scalar | t.StrSequence | t.Dict,
         ]
 
         type MetricCollection = Mapping[
             str,
-            float | int | Decimal | FlextTypes.ScalarMapping,
+            float | int | Decimal | t.ScalarMapping,
         ]
         type MetricAggregation = Mapping[
             str,
@@ -65,50 +65,50 @@ class FlextObservabilityTypes(FlextTypes):
         ]
         type MetricThresholds = Mapping[
             str,
-            float | int | bool | FlextTypes.ScalarMapping,
+            float | int | bool | t.ScalarMapping,
         ]
         type MetricConfiguration = Mapping[
             str,
-            bool | str | int | FlextTypes.ScalarMapping,
+            bool | str | int | t.ScalarMapping,
         ]
         type TraceConfiguration = Mapping[
             str,
-            FlextTypes.Scalar | FlextTypes.ScalarMapping,
+            t.Scalar | t.ScalarMapping,
         ]
-        type SpanAttributes = Mapping[str, FlextTypes.Scalar | FlextTypes.ScalarMapping]
-        type TraceContext = Mapping[str, str | int | FlextTypes.ScalarMapping]
-        type SpanHierarchy = Mapping[str, Sequence[FlextTypes.Dict]]
+        type SpanAttributes = Mapping[str, t.Scalar | t.ScalarMapping]
+        type TraceContext = Mapping[str, str | int | t.ScalarMapping]
+        type SpanHierarchy = Mapping[str, Sequence[t.Dict]]
         type AlertConfiguration = Mapping[
             str,
-            FlextTypes.Scalar | FlextTypes.ScalarMapping,
+            t.Scalar | t.ScalarMapping,
         ]
         type AlertRules = Sequence[
-            Mapping[str, str | bool | t.Numeric | FlextTypes.ScalarMapping]
+            Mapping[str, str | bool | t.Numeric | t.ScalarMapping]
         ]
-        type AlertChannels = Mapping[str, str | FlextTypes.ScalarMapping]
+        type AlertChannels = Mapping[str, str | t.ScalarMapping]
         type HealthChecks = Mapping[str, Mapping[str, float | str | bool]]
-        type ComponentStatus = Mapping[str, str | int | FlextTypes.ScalarMapping]
-        type SystemMetrics = Mapping[str, float | int | FlextTypes.ScalarMapping]
+        type ComponentStatus = Mapping[str, str | int | t.ScalarMapping]
+        type SystemMetrics = Mapping[str, float | int | t.ScalarMapping]
         type LogConfiguration = Mapping[
             str,
-            FlextTypes.Scalar | FlextTypes.ScalarMapping,
+            t.Scalar | t.ScalarMapping,
         ]
         type LogFilters = Mapping[
             str,
-            str | FlextTypes.StrSequence | FlextTypes.ScalarMapping,
+            str | t.StrSequence | t.ScalarMapping,
         ]
-        type LogProcessing = Mapping[str, str | FlextTypes.ScalarMapping | bool]
+        type LogProcessing = Mapping[str, str | t.ScalarMapping | bool]
         type ServiceRegistry = Mapping[
             str,
-            Mapping[str, str | int | FlextTypes.ScalarMapping],
+            Mapping[str, str | int | t.ScalarMapping],
         ]
-        type ServiceDiscovery = Mapping[str, Sequence[FlextTypes.Dict]]
-        type ServiceHealth = Mapping[str, str | FlextTypes.ScalarMapping]
-        type MetadataDict = FlextTypes.ConfigurationMapping
-        type ServicesList = Sequence[tuple[str, FlextTypes.Dict]]
-        type HealthMetricsDict = FlextTypes.ContainerMapping
-        type MetricDict = FlextTypes.ContainerMapping
-        type StringList = FlextTypes.StrSequence
+        type ServiceDiscovery = Mapping[str, Sequence[t.Dict]]
+        type ServiceHealth = Mapping[str, str | t.ScalarMapping]
+        type MetadataDict = t.ConfigurationMapping
+        type ServicesList = Sequence[tuple[str, t.Dict]]
+        type HealthMetricsDict = t.ContainerMapping
+        type MetricDict = t.ContainerMapping
+        type StringList = t.StrSequence
 
 
 t = FlextObservabilityTypes

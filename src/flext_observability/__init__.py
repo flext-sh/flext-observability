@@ -15,21 +15,22 @@ if _t.TYPE_CHECKING:
 
     api = _flext_observability_api
     import flext_observability.base as _flext_observability_base
-    from flext_observability.api import (
-        FlextObservability,
-        FlextObservabilityMasterFactory,
-    )
+    from flext_observability.api import FlextObservability
 
     base = _flext_observability_base
     import flext_observability.constants as _flext_observability_constants
     from flext_observability.base import FlextObservabilityServiceBase, s
 
     constants = _flext_observability_constants
+    import flext_observability.factory as _flext_observability_factory
     import flext_observability.models as _flext_observability_models
     from flext_observability.constants import (
         FlextObservabilityConstants,
         FlextObservabilityConstants as c,
     )
+
+    factory = _flext_observability_factory
+    from flext_observability.factory import FlextObservabilityMasterFactory
 
     models = _flext_observability_models
     import flext_observability.protocols as _flext_observability_protocols
@@ -135,7 +136,7 @@ _LAZY_IMPORTS = {
         "FlextObservabilityLogging",
     ),
     "FlextObservabilityMasterFactory": (
-        "flext_observability.api",
+        "flext_observability.factory",
         "FlextObservabilityMasterFactory",
     ),
     "FlextObservabilityModels": (
@@ -192,6 +193,7 @@ _LAZY_IMPORTS = {
     "constants": "flext_observability.constants",
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
+    "factory": "flext_observability.factory",
     "flext_monitor_function": (
         "flext_observability.services.monitoring",
         "flext_monitor_function",
@@ -248,6 +250,7 @@ __all__ = [
     "constants",
     "d",
     "e",
+    "factory",
     "flext_monitor_function",
     "h",
     "m",

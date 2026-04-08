@@ -18,11 +18,11 @@ from uuid import uuid4
 
 from pydantic import ConfigDict, Field, computed_field
 
-from flext_core import FlextModels
+from flext_core import m
 from flext_observability import c, t
 
 
-class FlextObservabilityModels(FlextModels):
+class FlextObservabilityModels(m):
     """Generic observability models with Pydantic patterns.
 
     Single class providing generic base models using composition and delegation.
@@ -32,7 +32,7 @@ class FlextObservabilityModels(FlextModels):
     class Observability:
         """Observability domain models namespace."""
 
-        class GenericObservabilityEntry(FlextModels.DynamicModel):
+        class GenericObservabilityEntry(m.DynamicModel):
             """Generic base model for any observability entry using Pydantic."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(
@@ -85,7 +85,7 @@ class FlextObservabilityModels(FlextModels):
                 """Check if entry has any data."""
                 return bool(self.data)
 
-        class GenericObservabilityConfig(FlextModels.DynamicModel):
+        class GenericObservabilityConfig(m.DynamicModel):
             """Generic configuration using Pydantic patterns."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(
@@ -131,7 +131,7 @@ class FlextObservabilityModels(FlextModels):
 
         """Metrics domain models."""
 
-        class MetricEntry(FlextModels.Entity):
+        class MetricEntry(m.Entity):
             """Metric entry model."""
 
             metric_id: Annotated[
@@ -150,7 +150,7 @@ class FlextObservabilityModels(FlextModels):
 
         # --- Domain entity models (moved from _core.py FlextObservability) ---
 
-        class Metric(FlextModels.Entity):
+        class Metric(m.Entity):
             """Observability metric entity."""
 
             id: Annotated[
@@ -171,7 +171,7 @@ class FlextObservabilityModels(FlextModels):
                 default_factory=dict, description="Metric labels for categorization"
             )
 
-        class Trace(FlextModels.Entity):
+        class Trace(m.Entity):
             """Distributed trace entity."""
 
             trace_id: Annotated[
@@ -187,7 +187,7 @@ class FlextObservabilityModels(FlextModels):
                 Field(description="Trace attributes"),
             ] = Field(default_factory=dict, description="Trace attributes")
 
-        class Alert(FlextModels.Entity):
+        class Alert(m.Entity):
             """Observability alert entity."""
 
             id: Annotated[
@@ -210,7 +210,7 @@ class FlextObservabilityModels(FlextModels):
                 default_factory=dict, description="Alert labels for categorization"
             )
 
-        class HealthCheck(FlextModels.Entity):
+        class HealthCheck(m.Entity):
             """Health check entity."""
 
             id: Annotated[
@@ -229,7 +229,7 @@ class FlextObservabilityModels(FlextModels):
                 Field(description="Health check details"),
             ] = Field(default_factory=dict, description="Health check details")
 
-        class LogEntry(FlextModels.Entity):
+        class LogEntry(m.Entity):
             """Structured log entry entity."""
 
             id: Annotated[
@@ -254,7 +254,7 @@ class FlextObservabilityModels(FlextModels):
                 Field(description="Log context metadata"),
             ] = Field(default_factory=dict, description="Log context metadata")
 
-        class StartTimePayload(FlextModels.Value):
+        class StartTimePayload(m.Value):
             """Payload for validating HTTP request start time."""
 
             value: Annotated[
@@ -262,7 +262,7 @@ class FlextObservabilityModels(FlextModels):
                 Field(ge=0, description="Request start time in seconds since epoch"),
             ]
 
-        class HeadersPayload(FlextModels.Value):
+        class HeadersPayload(m.Value):
             """Payload for validating HTTP client headers."""
 
             headers: Annotated[
@@ -271,7 +271,7 @@ class FlextObservabilityModels(FlextModels):
             ] = Field(default_factory=dict, description="HTTP header key-value pairs")
 
         # --- Moved from advanced_context.py ---
-        class ContextSnapshot(FlextModels.Value):
+        class ContextSnapshot(m.Value):
             """Snapshot of observability context for restoration in async operations."""
 
             correlation_id: Annotated[
@@ -291,13 +291,13 @@ class FlextObservabilityModels(FlextModels):
             ] = Field(default_factory=dict, description="Additional context metadata")
 
         # --- Moved from context.py ---
-        class BaggageKeyModel(FlextModels.Value):
+        class BaggageKeyModel(m.Value):
             """Validation model for baggage keys."""
 
             key: Annotated[t.NonEmptyStr, Field(description="Baggage key name")]
 
         # --- Moved from custom_metrics.py ---
-        class MetricTypeInput(FlextModels.Value):
+        class MetricTypeInput(m.Value):
             """Validation model for metric type input."""
 
             metric_type: Annotated[
@@ -305,7 +305,7 @@ class FlextObservabilityModels(FlextModels):
                 Field(description="Type of metric to create"),
             ]
 
-        class CustomMetricDefinition(FlextModels.Value):
+        class CustomMetricDefinition(m.Value):
             """Definition of a custom business metric with type and metadata."""
 
             name: Annotated[t.NonEmptyStr, Field(description="Custom metric name")]
@@ -332,21 +332,21 @@ class FlextObservabilityModels(FlextModels):
             )
 
         # --- Moved from error_handling.py ---
-        class CooldownInput(FlextModels.Value):
+        class CooldownInput(m.Value):
             """Validation model for cooldown seconds input."""
 
             seconds: Annotated[
                 t.PositiveFloat, Field(description="Cooldown duration in seconds")
             ]
 
-        class ThresholdInput(FlextModels.Value):
+        class ThresholdInput(m.Value):
             """Validation model for threshold input."""
 
             threshold: Annotated[
                 t.PositiveInt, Field(description="Error count threshold")
             ]
 
-        class ErrorEvent(FlextModels.Value):
+        class ErrorEvent(m.Value):
             """Error event with fingerprinting for deduplication and alerting."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
@@ -373,7 +373,7 @@ class FlextObservabilityModels(FlextModels):
                 ).hexdigest()
 
         # --- Moved from health.py ---
-        class HealthCheckFactoryKwargs(FlextModels.Value):
+        class HealthCheckFactoryKwargs(m.Value):
             """Validation model for health check factory kwargs."""
 
             metrics: Annotated[
@@ -385,7 +385,7 @@ class FlextObservabilityModels(FlextModels):
                 Field(description="Health check timestamp"),
             ] = None
 
-        class HealthCheckModel(FlextModels.Value):
+        class HealthCheckModel(m.Value):
             """Health check result model."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
@@ -419,7 +419,7 @@ class FlextObservabilityModels(FlextModels):
             )
 
         # --- Moved from logging_integration.py ---
-        class LogContext(FlextModels.Value):
+        class LogContext(m.Value):
             """Trace context for enriching log entries with correlation and span IDs."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)
@@ -449,7 +449,7 @@ class FlextObservabilityModels(FlextModels):
             )
 
         # --- Moved from performance.py ---
-        class PerformanceMetrics(FlextModels.Value):
+        class PerformanceMetrics(m.Value):
             """Metrics for tracking performance of observability operations."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=False)

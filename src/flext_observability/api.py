@@ -61,6 +61,9 @@ class FlextObservability(
     _config: FlextObservabilitySettings
     _container: p.Container
     _logger: p.Logger = u.get_logger(__name__)
+    _global_factory: ClassVar[
+        FlextObservability.FlextObservabilityMasterFactory | None
+    ] = None
 
     class Constants:
         """Domain constants and enumerations."""
@@ -505,234 +508,238 @@ class FlextObservability(
             )
 
     @staticmethod
-    def get_global_factory() -> FlextObservabilityMasterFactory:
+    def get_global_factory() -> FlextObservability.FlextObservabilityMasterFactory:
         """Get or create the global factory instance."""
-        if _global_factory_state.factory is None:
-            _global_factory_state.factory = FlextObservabilityMasterFactory()
-        return _global_factory_state.factory
+        if FlextObservability._global_factory is None:
+            FlextObservability._global_factory = (
+                FlextObservability.FlextObservabilityMasterFactory()
+            )
+        return FlextObservability._global_factory
 
     @staticmethod
     def reset_global_factory() -> None:
         """Reset the global factory instance."""
-        _global_factory_state.factory = None
+        FlextObservability._global_factory = None
+
+    class FlextObservabilityMasterFactory:
+        """Master factory for creating observability entities."""
+
+        _container: p.Container
+        _metrics_service: FlextObservability.MetricsService
+        _tracing_service: FlextObservability.TracingService
+        _alerting_service: FlextObservability.AlertingService
+        _health_service: FlextObservability.HealthService
+        _logging_service: FlextObservability.LoggingService
+
+        def __init__(self, container: FlextContainer | None = None) -> None:
+            """Initialize factory with optional container."""
+            self._container = container or FlextContainer.get_global()
+            self._metrics_service = FlextObservability.MetricsService(self._container)
+            self._tracing_service = FlextObservability.TracingService(self._container)
+            self._alerting_service = FlextObservability.AlertingService(self._container)
+            self._health_service = FlextObservability.HealthService(self._container)
+            self._logging_service = FlextObservability.LoggingService(self._container)
+
+        @property
+        def container(self) -> p.Container:
+            """Return the container."""
+            return self._container
+
+        def alert(
+            self,
+            title: str,
+            message: str,
+            severity: str = "warning",
+            tags: t.ScalarMapping | None = None,
+            status: str = c.Observability.AlertStatus.FIRING,
+            timestamp: datetime | None = None,
+        ) -> r[FlextObservability.Alert]:
+            """Create an alert."""
+            _ = timestamp
+            valid_severity: c.Observability.AlertLevel
+            match severity:
+                case "info" | "low":
+                    valid_severity = c.Observability.AlertLevel.INFO
+                case "warning" | "medium":
+                    valid_severity = c.Observability.AlertLevel.WARNING
+                case "error" | "high":
+                    valid_severity = c.Observability.AlertLevel.ERROR
+                case "critical":
+                    valid_severity = c.Observability.AlertLevel.CRITICAL
+                case _:
+                    valid_severity = c.Observability.AlertLevel.WARNING
+            valid_status: c.Observability.AlertStatus
+            match status:
+                case "firing" | "active":
+                    valid_status = c.Observability.AlertStatus.FIRING
+                case "resolved":
+                    valid_status = c.Observability.AlertStatus.RESOLVED
+                case _:
+                    valid_status = c.Observability.AlertStatus.FIRING
+            return FlextObservability.flext_alert(
+                title=title,
+                message=message,
+                severity=valid_severity,
+                status=valid_status,
+                labels=tags,
+            )
+
+        def create_alert(
+            self,
+            message: str,
+            service: str = "default",
+            severity: str = "warning",
+            tags: t.ScalarMapping | None = None,
+        ) -> r[FlextObservability.Alert]:
+            """Create an alert (alias)."""
+            return self.alert(
+                f"Alert: {service}",
+                message,
+                severity=severity,
+                tags=tags,
+            )
+
+        def create_health_check(
+            self,
+            component: str,
+            status: str = c.Observability.HealthStatus.HEALTHY,
+            details: t.ScalarMapping | None = None,
+        ) -> r[FlextObservability.HealthCheck]:
+            """Create a health check (alias)."""
+            return self.health_check(component, status=status, metrics=details)
+
+        def create_log_entry(
+            self,
+            message: str,
+            level: str = "info",
+            context: t.ScalarMapping | None = None,
+        ) -> r[FlextObservability.LogEntry]:
+            """Create a log entry (alias)."""
+            return self.log(message, level=level, context=context)
+
+        def create_metric(
+            self,
+            name: str,
+            value: float,
+            unit: str = "count",
+            tags: t.ScalarMapping | None = None,
+        ) -> r[FlextObservability.Metric]:
+            """Create a metric (alias)."""
+            return self.metric(name, value, unit=unit, tags=tags)
+
+        def create_trace(
+            self,
+            operation: str,
+            service: str = "default",
+            tags: t.ScalarMapping | None = None,
+        ) -> r[FlextObservability.Trace]:
+            """Create a trace (alias)."""
+            attrs: t.ScalarMapping | None = None
+            if tags is not None:
+                attrs = dict(tags.items())
+            return self.trace(f"trace-{service}", operation, span_attributes=attrs)
+
+        def health_check(
+            self,
+            component: str,
+            status: str = c.Observability.HealthStatus.HEALTHY,
+            message: str | None = None,
+            metrics: t.ScalarMapping | None = None,
+            timestamp: datetime | None = None,
+        ) -> r[FlextObservability.HealthCheck]:
+            """Create a health check."""
+            _ = timestamp
+            _ = message
+            valid_status: c.Observability.HealthStatus
+            match status:
+                case "healthy":
+                    valid_status = c.Observability.HealthStatus.HEALTHY
+                case "degraded":
+                    valid_status = c.Observability.HealthStatus.DEGRADED
+                case "unhealthy":
+                    valid_status = c.Observability.HealthStatus.UNHEALTHY
+                case _:
+                    valid_status = c.Observability.HealthStatus.HEALTHY
+            return FlextObservability.flext_health_check(
+                component,
+                status=valid_status,
+                details=metrics,
+            )
+
+        def health_status(self) -> r[FlextObservability.HealthCheck]:
+            """Get overall health status."""
+            return FlextObservability.flext_health_check(
+                "system",
+                status=c.Observability.HealthStatus.HEALTHY,
+            )
+
+        def log(
+            self,
+            message: str,
+            level: str = c.Observability.ErrorSeverity.INFO,
+            context: t.ScalarMapping | None = None,
+            timestamp: datetime | None = None,
+        ) -> r[FlextObservability.LogEntry]:
+            """Create a log entry."""
+            valid_level: c.Observability.ErrorSeverity
+            match level:
+                case "debug":
+                    valid_level = c.Observability.ErrorSeverity.DEBUG
+                case "info":
+                    valid_level = c.Observability.ErrorSeverity.INFO
+                case "warning":
+                    valid_level = c.Observability.ErrorSeverity.WARNING
+                case "error":
+                    valid_level = c.Observability.ErrorSeverity.ERROR
+                case "critical":
+                    valid_level = c.Observability.ErrorSeverity.CRITICAL
+                case _:
+                    valid_level = c.Observability.ErrorSeverity.INFO
+            return FlextObservability.flext_log_entry(
+                message,
+                level=valid_level,
+                context=context,
+                timestamp=timestamp,
+            )
+
+        def metric(
+            self,
+            name: str,
+            value: float,
+            unit: str = "count",
+            tags: t.ScalarMapping | None = None,
+            timestamp: datetime | None = None,
+        ) -> r[FlextObservability.Metric]:
+            """Create a metric."""
+            _ = timestamp
+            return FlextObservability.flext_metric(
+                name,
+                value,
+                unit=unit,
+                tags=tags,
+            )
+
+        def trace(
+            self,
+            trace_id: str,
+            operation: str,
+            span_id: str | None = None,
+            span_attributes: t.ScalarMapping | None = None,
+            duration_ms: float | None = None,
+            status: str = "unset",
+        ) -> r[FlextObservability.Trace]:
+            """Create a trace span."""
+            _ = span_id
+            _ = duration_ms
+            _ = status
+            str_attributes: t.ScalarMapping = {}
+            if span_attributes:
+                str_attributes = {k: str(v) for k, v in span_attributes.items()}
+            return FlextObservability.flext_trace(
+                operation,
+                attributes=str_attributes,
+                trace_id=trace_id,
+            )
 
 
-class _GlobalFactoryState:
-    factory: FlextObservabilityMasterFactory | None = None
-
-
-_global_factory_state = _GlobalFactoryState()
-
-
-class FlextObservabilityMasterFactory:
-    """Master factory for creating observability entities."""
-
-    _container: p.Container
-    _metrics_service: FlextObservability.MetricsService
-    _tracing_service: FlextObservability.TracingService
-    _alerting_service: FlextObservability.AlertingService
-    _health_service: FlextObservability.HealthService
-    _logging_service: FlextObservability.LoggingService
-
-    def __init__(self, container: FlextContainer | None = None) -> None:
-        """Initialize factory with optional container."""
-        self._container = container or FlextContainer.get_global()
-        self._metrics_service = FlextObservability.MetricsService(self._container)
-        self._tracing_service = FlextObservability.TracingService(self._container)
-        self._alerting_service = FlextObservability.AlertingService(self._container)
-        self._health_service = FlextObservability.HealthService(self._container)
-        self._logging_service = FlextObservability.LoggingService(self._container)
-
-    @property
-    def container(self) -> p.Container:
-        """Return the container."""
-        return self._container
-
-    def alert(
-        self,
-        title: str,
-        message: str,
-        severity: str = "warning",
-        tags: t.ScalarMapping | None = None,
-        status: str = c.Observability.AlertStatus.FIRING,
-        timestamp: datetime | None = None,
-    ) -> r[FlextObservability.Alert]:
-        """Create an alert."""
-        _ = timestamp
-        valid_severity: c.Observability.AlertLevel
-        match severity:
-            case "info" | "low":
-                valid_severity = c.Observability.AlertLevel.INFO
-            case "warning" | "medium":
-                valid_severity = c.Observability.AlertLevel.WARNING
-            case "error" | "high":
-                valid_severity = c.Observability.AlertLevel.ERROR
-            case "critical":
-                valid_severity = c.Observability.AlertLevel.CRITICAL
-            case _:
-                valid_severity = c.Observability.AlertLevel.WARNING
-        valid_status: c.Observability.AlertStatus
-        match status:
-            case "firing" | "active":
-                valid_status = c.Observability.AlertStatus.FIRING
-            case "resolved":
-                valid_status = c.Observability.AlertStatus.RESOLVED
-            case _:
-                valid_status = c.Observability.AlertStatus.FIRING
-        return FlextObservability.flext_alert(
-            title=title,
-            message=message,
-            severity=valid_severity,
-            status=valid_status,
-            labels=tags,
-        )
-
-    def create_alert(
-        self,
-        message: str,
-        service: str = "default",
-        severity: str = "warning",
-        tags: t.ScalarMapping | None = None,
-    ) -> r[FlextObservability.Alert]:
-        """Create an alert (alias)."""
-        return self.alert(f"Alert: {service}", message, severity=severity, tags=tags)
-
-    def create_health_check(
-        self,
-        component: str,
-        status: str = c.Observability.HealthStatus.HEALTHY,
-        details: t.ScalarMapping | None = None,
-    ) -> r[FlextObservability.HealthCheck]:
-        """Create a health check (alias)."""
-        return self.health_check(component, status=status, metrics=details)
-
-    def create_log_entry(
-        self,
-        message: str,
-        level: str = "info",
-        context: t.ScalarMapping | None = None,
-    ) -> r[FlextObservability.LogEntry]:
-        """Create a log entry (alias)."""
-        return self.log(message, level=level, context=context)
-
-    def create_metric(
-        self,
-        name: str,
-        value: float,
-        unit: str = "count",
-        tags: t.ScalarMapping | None = None,
-    ) -> r[FlextObservability.Metric]:
-        """Create a metric (alias)."""
-        return self.metric(name, value, unit=unit, tags=tags)
-
-    def create_trace(
-        self,
-        operation: str,
-        service: str = "default",
-        tags: t.ScalarMapping | None = None,
-    ) -> r[FlextObservability.Trace]:
-        """Create a trace (alias)."""
-        attrs: t.ScalarMapping | None = None
-        if tags is not None:
-            attrs = dict(tags.items())
-        return self.trace(f"trace-{service}", operation, span_attributes=attrs)
-
-    def health_check(
-        self,
-        component: str,
-        status: str = c.Observability.HealthStatus.HEALTHY,
-        message: str | None = None,
-        metrics: t.ScalarMapping | None = None,
-        timestamp: datetime | None = None,
-    ) -> r[FlextObservability.HealthCheck]:
-        """Create a health check."""
-        _ = timestamp
-        _ = message
-        valid_status: c.Observability.HealthStatus
-        match status:
-            case "healthy":
-                valid_status = c.Observability.HealthStatus.HEALTHY
-            case "degraded":
-                valid_status = c.Observability.HealthStatus.DEGRADED
-            case "unhealthy":
-                valid_status = c.Observability.HealthStatus.UNHEALTHY
-            case _:
-                valid_status = c.Observability.HealthStatus.HEALTHY
-        return FlextObservability.flext_health_check(
-            component,
-            status=valid_status,
-            details=metrics,
-        )
-
-    def health_status(self) -> r[FlextObservability.HealthCheck]:
-        """Get overall health status."""
-        return FlextObservability.flext_health_check(
-            "system",
-            status=c.Observability.HealthStatus.HEALTHY,
-        )
-
-    def log(
-        self,
-        message: str,
-        level: str = c.Observability.ErrorSeverity.INFO,
-        context: t.ScalarMapping | None = None,
-        timestamp: datetime | None = None,
-    ) -> r[FlextObservability.LogEntry]:
-        """Create a log entry."""
-        valid_level: c.Observability.ErrorSeverity
-        match level:
-            case "debug":
-                valid_level = c.Observability.ErrorSeverity.DEBUG
-            case "info":
-                valid_level = c.Observability.ErrorSeverity.INFO
-            case "warning":
-                valid_level = c.Observability.ErrorSeverity.WARNING
-            case "error":
-                valid_level = c.Observability.ErrorSeverity.ERROR
-            case "critical":
-                valid_level = c.Observability.ErrorSeverity.CRITICAL
-            case _:
-                valid_level = c.Observability.ErrorSeverity.INFO
-        return FlextObservability.flext_log_entry(
-            message,
-            level=valid_level,
-            context=context,
-            timestamp=timestamp,
-        )
-
-    def metric(
-        self,
-        name: str,
-        value: float,
-        unit: str = "count",
-        tags: t.ScalarMapping | None = None,
-        timestamp: datetime | None = None,
-    ) -> r[FlextObservability.Metric]:
-        """Create a metric."""
-        _ = timestamp
-        return FlextObservability.flext_metric(name, value, unit=unit, tags=tags)
-
-    def trace(
-        self,
-        trace_id: str,
-        operation: str,
-        span_id: str | None = None,
-        span_attributes: t.ScalarMapping | None = None,
-        duration_ms: float | None = None,
-        status: str = "unset",
-    ) -> r[FlextObservability.Trace]:
-        """Create a trace span."""
-        _ = span_id
-        _ = duration_ms
-        _ = status
-        str_attributes: t.ScalarMapping = {}
-        if span_attributes:
-            str_attributes = {k: str(v) for k, v in span_attributes.items()}
-        return FlextObservability.flext_trace(
-            operation,
-            attributes=str_attributes,
-            trace_id=trace_id,
-        )
-
-
-__all__ = ["FlextObservability", "FlextObservabilityMasterFactory"]
+__all__ = ["FlextObservability"]

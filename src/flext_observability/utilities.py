@@ -10,11 +10,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextUtilities, r
-from flext_observability import t
+from flext_core import u
+from flext_observability import r, t
 
 
-class FlextObservabilityUtilities(FlextUtilities):
+class FlextObservabilityUtilities(u):
     """Centralized utilities for FLEXT Observability.
 
     Inherits core FLEXT utilities, providing additional namespace classes
