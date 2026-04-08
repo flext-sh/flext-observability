@@ -3,24 +3,28 @@
 
 from __future__ import annotations
 
-from flext_core.lazy import install_lazy_exports
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
-_LAZY_IMPORTS = {
-    "FlextObservabilityAdvancedContext": ".advanced_context",
-    "FlextObservabilityContext": ".context",
-    "FlextObservabilityCustomMetrics": ".custom_metrics",
-    "FlextObservabilityErrorHandling": ".error_handling",
-    "FlextObservabilityFields": ".fields",
-    "FlextObservabilityHTTP": ".http_instrumentation",
-    "FlextObservabilityHTTPClient": ".http_client_instrumentation",
-    "FlextObservabilityHealth": ".health",
-    "FlextObservabilityLogging": ".logging_integration",
-    "FlextObservabilityMonitor": ".monitoring",
-    "FlextObservabilityPerformance": ".performance",
-    "FlextObservabilitySampling": ".sampling",
-    "FlextObservabilityServices": ".services",
-    "flext_monitor_function": ".monitoring",
-}
+_LAZY_IMPORTS = build_lazy_import_map(
+    {
+        ".advanced_context": ("FlextObservabilityAdvancedContext",),
+        ".context": ("FlextObservabilityContext",),
+        ".custom_metrics": ("FlextObservabilityCustomMetrics",),
+        ".error_handling": ("FlextObservabilityErrorHandling",),
+        ".fields": ("FlextObservabilityFields",),
+        ".health": ("FlextObservabilityHealth",),
+        ".http_client_instrumentation": ("FlextObservabilityHTTPClient",),
+        ".http_instrumentation": ("FlextObservabilityHTTP",),
+        ".logging_integration": ("FlextObservabilityLogging",),
+        ".monitoring": (
+            "FlextObservabilityMonitor",
+            "flext_monitor_function",
+        ),
+        ".performance": ("FlextObservabilityPerformance",),
+        ".sampling": ("FlextObservabilitySampling",),
+        ".services": ("FlextObservabilityServices",),
+    },
+)
 
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
