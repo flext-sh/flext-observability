@@ -154,9 +154,9 @@ from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
-from flext_core import FlextDecorators
+from flext_core import d
 from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
+from flext_core import e
 from flext_core import h
 from flext_core import FlextLogger
 from flext_core import x
@@ -166,7 +166,7 @@ from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import r
 from flext_core import u
-from flext_core import FlextService
+from flext_core import s
 from flext_core import t
 from flext_core import u, T  # ImportError
 
@@ -176,9 +176,9 @@ from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
-from flext_core import FlextDecorators
+from flext_core import d
 from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
+from flext_core import e
 from flext_core import h
 from flext_core import FlextLogger
 from flext_core import x
@@ -188,7 +188,7 @@ from flext_core import p
 from flext_core import FlextRegistry
 from flext_core import r
 from flext_core import u
-from flext_core import FlextService
+from flext_core import s
 from flext_core import t
 from flext_core import u
 ```
@@ -211,7 +211,7 @@ but `T` is not exported in flext-core's `__init__.py`.
 **Solution Required**:
 
 1. **flext-core fix**: Export `T` in flext-core `__init__.py` OR
-1. **flext-observability fix**: Change import to `from flext_core import FlextBus from flext_core import FlextSettings from flext_core import FlextConstants from flext_core import FlextContainer from flext_core import FlextContext from flext_core import FlextDecorators from flext_core import FlextDispatcher from flext_core import FlextExceptions from flext_core import h from flext_core import FlextLogger from flext_core import x from flext_core import FlextModels from flext_core import FlextProcessors from flext_core import p from flext_core import FlextRegistry from flext_core import r from flext_core import u from flext_core import FlextService from flext_core import t from flext_core import u`
+1. **flext-observability fix**: Change import to `from flext_core import FlextBus from flext_core import FlextSettings from flext_core import FlextConstants from flext_core import FlextContainer from flext_core import FlextContext from flext_core import d from flext_core import FlextDispatcher from flext_core import e from flext_core import h from flext_core import FlextLogger from flext_core import x from flext_core import FlextModels from flext_core import FlextProcessors from flext_core import p from flext_core import FlextRegistry from flext_core import r from flext_core import u from flext_core import s from flext_core import t from flext_core import u`
 
 **Impact**: Unblocks all testing, type checking, and quality validation.
 
