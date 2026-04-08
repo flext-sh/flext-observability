@@ -11,7 +11,7 @@ from flext_tests import FlextTestsTypes
 from flext_observability import FlextObservabilityTypes
 
 
-class FlextObservabilityTestTypes(FlextTestsTypes, FlextObservabilityTypes):
+class TestsFlextObservabilityTypes(FlextTestsTypes, FlextObservabilityTypes):
     """Test type aliases for flext-observability."""
 
     class Observability(FlextObservabilityTypes.Observability):
@@ -21,5 +21,5 @@ class FlextObservabilityTestTypes(FlextTestsTypes, FlextObservabilityTypes):
             """Test-specific type aliases."""
 
 
-t = FlextObservabilityTestTypes
-__all__ = ["FlextObservabilityTestTypes", "t"]
+t = TestsFlextObservabilityTypes
+__all__ = ["TestsFlextObservabilityTypes", "t"]

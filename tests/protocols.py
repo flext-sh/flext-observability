@@ -11,7 +11,9 @@ from flext_tests import FlextTestsProtocols
 from flext_observability import FlextObservabilityProtocols
 
 
-class FlextObservabilityTestProtocols(FlextTestsProtocols, FlextObservabilityProtocols):
+class TestsFlextObservabilityProtocols(
+    FlextTestsProtocols, FlextObservabilityProtocols
+):
     """Test protocols for flext-observability."""
 
     class Observability(FlextObservabilityProtocols.Observability):
@@ -21,5 +23,5 @@ class FlextObservabilityTestProtocols(FlextTestsProtocols, FlextObservabilityPro
             """Test-specific protocols."""
 
 
-p = FlextObservabilityTestProtocols
-__all__ = ["FlextObservabilityTestProtocols", "p"]
+p = TestsFlextObservabilityProtocols
+__all__ = ["TestsFlextObservabilityProtocols", "p"]

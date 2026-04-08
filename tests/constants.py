@@ -11,7 +11,9 @@ from flext_tests import FlextTestsConstants
 from flext_observability import FlextObservabilityConstants
 
 
-class FlextObservabilityTestConstants(FlextTestsConstants, FlextObservabilityConstants):
+class TestsFlextObservabilityConstants(
+    FlextTestsConstants, FlextObservabilityConstants
+):
     """Test constants for flext-observability."""
 
     class Observability(FlextObservabilityConstants.Observability):
@@ -21,5 +23,5 @@ class FlextObservabilityTestConstants(FlextTestsConstants, FlextObservabilityCon
             """Test-specific constants."""
 
 
-c = FlextObservabilityTestConstants
-__all__ = ["FlextObservabilityTestConstants", "c"]
+c = TestsFlextObservabilityConstants
+__all__ = ["TestsFlextObservabilityConstants", "c"]

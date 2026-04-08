@@ -11,9 +11,9 @@ from flext_tests import FlextTestsModels
 from flext_observability import FlextObservabilityModels
 
 
-class FlextObservabilityTestModels(FlextTestsModels, FlextObservabilityModels):
+class TestsFlextObservabilityModels(FlextTestsModels, FlextObservabilityModels):
     """Test models for flext-observability."""
 
 
-m = FlextObservabilityTestModels
-__all__ = ["FlextObservabilityTestModels", "m"]
+m = TestsFlextObservabilityModels
+__all__ = ["TestsFlextObservabilityModels", "m"]

@@ -11,9 +11,11 @@ from flext_tests import FlextTestsUtilities
 from flext_observability import FlextObservabilityUtilities
 
 
-class FlextObservabilityTestUtilities(FlextTestsUtilities, FlextObservabilityUtilities):
+class TestsFlextObservabilityUtilities(
+    FlextTestsUtilities, FlextObservabilityUtilities
+):
     """Test utilities for flext-observability."""
 
 
-u = FlextObservabilityTestUtilities
-__all__ = ["FlextObservabilityTestUtilities", "u"]
+u = TestsFlextObservabilityUtilities
+__all__ = ["TestsFlextObservabilityUtilities", "u"]
