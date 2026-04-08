@@ -37,30 +37,21 @@ if _t.TYPE_CHECKING:
         TestsFlextObservabilityUtilities as u,
     )
 _LAZY_IMPORTS = {
-    "TestsFlextObservabilityConstants": (
-        "tests.constants",
-        "TestsFlextObservabilityConstants",
-    ),
-    "TestsFlextObservabilityModels": ("tests.models", "TestsFlextObservabilityModels"),
-    "TestsFlextObservabilityProtocols": (
-        "tests.protocols",
-        "TestsFlextObservabilityProtocols",
-    ),
-    "TestsFlextObservabilityTypes": ("tests.typings", "TestsFlextObservabilityTypes"),
-    "TestsFlextObservabilityUtilities": (
-        "tests.utilities",
-        "TestsFlextObservabilityUtilities",
-    ),
-    "c": ("tests.constants", "TestsFlextObservabilityConstants"),
+    "TestsFlextObservabilityConstants": ".constants",
+    "TestsFlextObservabilityModels": ".models",
+    "TestsFlextObservabilityProtocols": ".protocols",
+    "TestsFlextObservabilityTypes": ".typings",
+    "TestsFlextObservabilityUtilities": ".utilities",
+    "c": (".constants", "TestsFlextObservabilityConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
     "h": ("flext_core.handlers", "FlextHandlers"),
-    "m": ("tests.models", "TestsFlextObservabilityModels"),
-    "p": ("tests.protocols", "TestsFlextObservabilityProtocols"),
+    "m": (".models", "TestsFlextObservabilityModels"),
+    "p": (".protocols", "TestsFlextObservabilityProtocols"),
     "r": ("flext_core.result", "FlextResult"),
     "s": ("flext_core.service", "FlextService"),
-    "t": ("tests.typings", "TestsFlextObservabilityTypes"),
-    "u": ("tests.utilities", "TestsFlextObservabilityUtilities"),
+    "t": (".typings", "TestsFlextObservabilityTypes"),
+    "u": (".utilities", "TestsFlextObservabilityUtilities"),
     "x": ("flext_core.mixins", "FlextMixins"),
 }
 
