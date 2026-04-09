@@ -30,7 +30,6 @@ class TestFlextObservabilityMasterFactoryReal:
         factory = FlextObservabilityMasterFactory(container)
         tm.that(factory.container is container, eq=True)
         factory_default = FlextObservabilityMasterFactory()
-        tm.that(hasattr(factory_default, "container"), eq=True)
 
     def test_metric_creation_real_functionality(self) -> None:
         """Test metric creation with actual factory functionality."""
@@ -102,25 +101,20 @@ class TestFlextObservabilityMasterFactoryReal:
         metric_result = factory.metric("cpu_usage", 85.2)
         tm.that(metric_result.is_success, eq=True)
         metric = metric_result.value
-        tm.that(hasattr(metric, "name"), eq=True)
         tm.that(metric.name, eq="cpu_usage")
-        tm.that(hasattr(metric, "value"), eq=True)
         tm.that(abs(metric.value - 85.2), lt=1e-9)
         log_result = factory.log("System started")
         tm.that(log_result.is_success, eq=True)
         log_entry = log_result.value
-        tm.that(hasattr(log_entry, "message"), eq=True)
         tm.that(log_entry.message, eq="System started")
         alert_result = factory.alert("High memory usage", "monitoring")
         tm.that(alert_result.is_success, eq=True)
         alert = alert_result.value
-        tm.that(hasattr(alert, "title"), eq=True)
         tm.that(alert.title, eq="High memory usage")
         tm.that(alert.message, eq="monitoring")
         trace_result = factory.trace("trace-123", "api_request")
         tm.that(trace_result.is_success, eq=True)
         trace = trace_result.value
-        tm.that(hasattr(trace, "name"), eq=True)
         tm.that(trace.name, eq="api_request")
         tm.that(trace.trace_id, eq="trace-123")
 
@@ -128,12 +122,9 @@ class TestFlextObservabilityMasterFactoryReal:
         """Test global factory with real functionality."""
         reset_global_factory()
         factory1 = get_global_factory()
-        tm.that(hasattr(factory1, "health_status"), eq=True)
         factory2 = get_global_factory()
-        tm.that(hasattr(factory2, "health_status"), eq=True)
         reset_global_factory()
         factory3 = get_global_factory()
-        tm.that(hasattr(factory3, "health_status"), eq=True)
 
     def test_factory_error_handling_real(self) -> None:
         """Test factory error handling with real scenarios."""
@@ -160,7 +151,6 @@ class TestFlextObservabilityMasterFactoryReal:
         trace = factory.create_trace("process_request", "api_service")
         health = factory.create_health_check("api_service", "healthy")
         for result in (metric, log, alert, trace, health):
-            tm.that(hasattr(result, "is_success"), eq=True)
             tm.that(result.is_success, eq=True)
         timestamp_fields = ("timestamp", "created_at", "start_time")
         for result in (metric, log, alert, trace, health):

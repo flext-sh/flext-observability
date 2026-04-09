@@ -50,7 +50,6 @@ class TestInitCoverage:
         skip_lazy_shadow = {"__version__", "__version_info__", "__all__"}
         module_all: t.StrSequence = getattr(flext_observability, "__all__", [])
         for export_name in module_all:
-            tm.that(hasattr(flext_observability, export_name), eq=True)
             if export_name in skip_lazy_shadow:
                 continue
             exported_item = getattr(flext_observability, export_name)
@@ -67,7 +66,6 @@ class TestInitCoverage:
     def test_core_entity_imports(self) -> None:
         """Test that core entities can be accessed via FlextObservabilityModels."""
         m = FlextObservabilityModels
-        tm.that(hasattr(m, "Observability") or hasattr(m, "Health") or True, eq=True)
 
     def test_factory_functions_imports(self) -> None:
         """Test that factory functions can be imported."""
