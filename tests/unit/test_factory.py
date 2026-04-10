@@ -29,7 +29,7 @@ class TestFlextObservabilityMasterFactoryReal:
         container = FlextContainer()
         factory = FlextObservabilityMasterFactory(container)
         tm.that(factory.container is container, eq=True)
-        factory_default = FlextObservabilityMasterFactory()
+        FlextObservabilityMasterFactory()
 
     def test_metric_creation_real_functionality(self) -> None:
         """Test metric creation with actual factory functionality."""
@@ -121,10 +121,10 @@ class TestFlextObservabilityMasterFactoryReal:
     def test_global_factory_real_functionality(self) -> None:
         """Test global factory with real functionality."""
         reset_global_factory()
-        factory1 = get_global_factory()
-        factory2 = get_global_factory()
+        get_global_factory()
+        get_global_factory()
         reset_global_factory()
-        factory3 = get_global_factory()
+        get_global_factory()
 
     def test_factory_error_handling_real(self) -> None:
         """Test factory error handling with real scenarios."""

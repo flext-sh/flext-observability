@@ -30,7 +30,6 @@ class Testc:
 
     def test_alert_constants(self) -> None:
         """Test alert-related constants."""
-        obs = c.Observability
         tm.that(c.Observability.ALERT_LEVEL_INFO, eq="info")
         tm.that(c.Observability.ALERT_LEVEL_WARNING, eq="warning")
         tm.that(c.Observability.ALERT_LEVEL_ERROR, eq="error")
@@ -41,7 +40,6 @@ class Testc:
 
     def test_trace_constants(self) -> None:
         """Test trace-related constants."""
-        obs = c.Observability
         tm.that(c.Observability.TRACE_STATUS_STARTED, eq="started")
         tm.that(c.Observability.TRACE_STATUS_RUNNING, eq="running")
         tm.that(
@@ -52,7 +50,6 @@ class Testc:
 
     def test_health_constants(self) -> None:
         """Test health-related constants."""
-        obs = c.Observability
         tm.that(
             c.Observability.HEALTH_STATUS_HEALTHY,
             eq="healthy",
@@ -68,7 +65,6 @@ class Testc:
 
     def test_log_constants(self) -> None:
         """Test logging-related constants."""
-        obs = c.Observability
         tm.that(c.Observability.LOG_LEVEL_DEBUG, eq="debug")
         tm.that(c.Observability.LOG_LEVEL_INFO, eq="info")
         tm.that(c.Observability.LOG_LEVEL_WARNING, eq="warning")
@@ -77,7 +73,6 @@ class Testc:
 
     def test_validation_constants(self) -> None:
         """Test validation-related constants."""
-        obs = c.Observability
         tm.that(c.Observability.MAX_METRIC_NAME_LENGTH, gt=0)
         tm.that(c.Observability.MAX_TRACE_NAME_LENGTH, gt=0)
         tm.that(c.Observability.MAX_ALERT_MESSAGE_LENGTH, gt=0)
@@ -85,7 +80,6 @@ class Testc:
 
     def test_service_constants(self) -> None:
         """Test service-related constants."""
-        obs = c.Observability
         tm.that(
             c.Observability.Defaults.DEFAULT_SERVICE_NAME,
             eq="flext-service",

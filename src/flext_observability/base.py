@@ -26,6 +26,3 @@ class FlextObservabilityServiceBase(s[t.Dict], ABC):
         return FlextSettings.get_global().get_namespace(
             "observability", FlextObservabilitySettings
         )
-
-
-__all__: t.StrSequence = ["FlextObservabilityServiceBase", "s"]

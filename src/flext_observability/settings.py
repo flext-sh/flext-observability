@@ -13,7 +13,7 @@ from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextSettings
-from flext_observability import c, t
+from flext_observability import c
 
 
 @FlextSettings.auto_register("observability")
@@ -69,6 +69,3 @@ class FlextObservabilitySettings(FlextSettings):
             description="Interval in seconds between metric flushes",
         ),
     ]
-
-
-__all__: t.StrSequence = ["FlextObservabilitySettings"]

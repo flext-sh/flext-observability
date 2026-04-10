@@ -14,7 +14,6 @@ from flext_core import FlextConstants, FlextContainer, FlextLogger
 from flext_observability import (
     FlextObservability,
     FlextObservabilityMasterFactory,
-    FlextObservabilityModels,
     __version__ as pkg_version,
     __version_info__ as pkg_version_info,
 )
@@ -65,7 +64,6 @@ class TestInitCoverage:
 
     def test_core_entity_imports(self) -> None:
         """Test that core entities can be accessed via FlextObservabilityModels."""
-        m = FlextObservabilityModels
 
     def test_factory_functions_imports(self) -> None:
         """Test that factory functions can be imported."""

@@ -233,9 +233,5 @@ class FlextObservabilityConstants(c):
         DEFAULT_ENVIRONMENT: ClassVar[str] = "development"
 
 
-ObservabilityProjectType = (
-    FlextObservabilityConstants.Observability.ObservabilityProjectType
-)
-
 c = FlextObservabilityConstants
 __all__ = ["FlextObservabilityConstants", "c"]
