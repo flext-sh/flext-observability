@@ -38,7 +38,10 @@ if _t.TYPE_CHECKING:
     from flext_observability.services.logging_integration import (
         FlextObservabilityLogging,
     )
-    from flext_observability.services.monitoring import FlextObservabilityMonitor
+    from flext_observability.services.monitoring import (
+        FlextObservabilityMonitor,
+        flext_monitor_function,
+    )
     from flext_observability.services.performance import FlextObservabilityPerformance
     from flext_observability.services.sampling import FlextObservabilitySampling
     from flext_observability.services.services import FlextObservabilityServices
@@ -140,6 +143,7 @@ __all__ = [
     "c",
     "d",
     "e",
+    "flext_monitor_function",
     "h",
     "m",
     "p",
