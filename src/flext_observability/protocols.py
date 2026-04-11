@@ -239,7 +239,7 @@ class FlextObservabilityProtocols(p):
 
             def configure_logging(
                 self,
-                config: t.ConfigurationMapping,
+                settings: t.ConfigurationMapping,
             ) -> p.Result[bool]:
                 """Configure logging system."""
                 ...

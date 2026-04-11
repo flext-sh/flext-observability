@@ -58,7 +58,7 @@ class FlextObservability(
     model aliases, and Constants are defined locally.
     """
 
-    _config: FlextObservabilitySettings
+    _settings: FlextObservabilitySettings
     _container: p.Container
     _logger: p.Logger = u.fetch_logger(__name__)
     _global_factory: ClassVar[

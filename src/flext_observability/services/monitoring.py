@@ -194,7 +194,7 @@ class FlextObservabilityMonitor:
         )
 
     def flext_initialize_observability(self) -> r[None]:
-        """Initialize all observability services with real functionality and config integration."""
+        """Initialize all observability services with real functionality and settings integration."""
         if self._initialized:
             return r[None].ok(None)
         try:
@@ -235,7 +235,7 @@ class FlextObservabilityMonitor:
         value: float,
         metric_type: str = _obs_c.Observability.MetricType.GAUGE,
     ) -> r[None]:
-        """Record metric through the monitoring system with config validation."""
+        """Record metric through the monitoring system with settings validation."""
         try:
             if not self._config.metrics_enabled:
                 self._logger.debug("Metrics recording disabled in configuration")

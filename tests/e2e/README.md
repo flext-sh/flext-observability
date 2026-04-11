@@ -147,13 +147,13 @@ def e2e_environment():
     platform = FlextObservabilityPlatformV2()
 
     # Setup realistic configuration
-    config = {
+    settings = {
         "metrics_retention": "24h",
         "trace_sampling": 0.1,
         "alert_thresholds": {"cpu": 80, "memory": 85},
     }
 
-    return platform, config
+    return platform, settings
 ```
 
 ## Execution

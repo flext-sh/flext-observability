@@ -32,8 +32,8 @@ class FlextObservabilityServices:
         self._config = FlextObservabilitySettings.fetch_global()
 
     @property
-    def config(self) -> FlextObservabilitySettings:
-        """Access observability config."""
+    def settings(self) -> FlextObservabilitySettings:
+        """Access observability settings."""
         return self._config
 
     @property

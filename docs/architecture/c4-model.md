@@ -351,7 +351,7 @@ src/flext_observability/
 ├── factories.py                # Factory functions and master factory
 ├── monitoring.py               # Monitoring decorators and utilities
 │
-├── config.py                   # Configuration management
+├── settings.py                   # Configuration management
 ├── constants.py                # Domain constants
 ├── exceptions.py               # Custom exceptions
 │

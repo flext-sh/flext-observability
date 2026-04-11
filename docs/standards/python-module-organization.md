@@ -1462,12 +1462,12 @@ def create_business_observability_dashboard(
         }
 
         # Setup metrics based on configuration
-        for metric_name, config in metrics_config.items():
+        for metric_name, settings in metrics_config.items():
             metric_result = flext_create_metric(
                 name=f"{service_name}_{metric_name}",
                 value=0,  # Initial value
-                unit=config.get("unit", "count"),
-                metric_type=config.get("type", "gauge"),
+                unit=settings.get("unit", "count"),
+                metric_type=settings.get("type", "gauge"),
             )
 
             if metric_result.is_failure:
