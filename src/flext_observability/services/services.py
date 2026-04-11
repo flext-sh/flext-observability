@@ -20,7 +20,7 @@ class FlextObservabilityServices:
     """Generic observability services delegating to FLEXT core patterns.
 
     Single unified class providing generic observability operations through
-    complete delegation to FlextContainer, FlextLogger, and r patterns.
+    complete delegation to FlextContainer, `u.fetch_logger(...)` / `p.Logger`, and r patterns.
     No domain-specific logic - pure generic foundation.
     """
 

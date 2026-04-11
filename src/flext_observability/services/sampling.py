@@ -22,8 +22,7 @@ from __future__ import annotations
 import random
 from collections.abc import MutableMapping
 
-from flext_core import r
-from flext_observability import FlextObservabilityContext, c
+from flext_observability import FlextObservabilityContext, c, r, u
 
 
 class FlextObservabilitySampling:

@@ -17,8 +17,7 @@ from collections.abc import Mapping
 
 import psutil
 
-from flext_core import r
-from flext_observability import m
+from flext_observability import m, r, u
 
 
 class FlextObservabilityPerformance:

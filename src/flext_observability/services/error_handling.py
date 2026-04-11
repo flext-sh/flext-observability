@@ -23,7 +23,7 @@ from collections.abc import Callable, MutableMapping
 
 from pydantic import ValidationError
 
-from flext_observability import FlextObservabilityContext, c, m, t, r, u
+from flext_observability import FlextObservabilityContext, c, m, r, t, u
 
 
 class FlextObservabilityErrorHandling:

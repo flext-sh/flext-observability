@@ -10,14 +10,14 @@ from __future__ import annotations
 from flext_tests import tm
 
 import flext_observability
-from flext_core import FlextConstants, FlextContainer, FlextLogger
+from flext_core import FlextConstants, FlextContainer
 from flext_observability import (
     FlextObservability,
     FlextObservabilityMasterFactory,
     __version__ as pkg_version,
     __version_info__ as pkg_version_info,
 )
-from tests import c, t
+from tests import c, t, u
 
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
@@ -86,4 +86,4 @@ class TestInitCoverage:
         """Test that flext-core re-exports are available."""
         tm.that(callable(FlextContainer), eq=True)
         tm.that(FlextConstants, none=False)
-        tm.that(callable(FlextLogger), eq=True)
+        tm.that(callable(u.create_module_logger), eq=True)

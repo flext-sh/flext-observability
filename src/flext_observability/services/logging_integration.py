@@ -6,7 +6,7 @@ from the current context.
 
 FLEXT Pattern:
 - Single FlextObservabilityLogging class
-- Integration with flext-core FlextLogger
+- Integration with flext-core `u.fetch_logger(...)` / `p.Logger`
 - Automatic trace context injection
 - Async-safe context propagation
 
@@ -21,8 +21,7 @@ from __future__ import annotations
 
 from structlog.typing import BindableLogger
 
-from flext_core import r
-from flext_observability import FlextObservabilityContext, m, t
+from flext_observability import FlextObservabilityContext, m, r, t, u
 
 
 class FlextObservabilityLogging:
