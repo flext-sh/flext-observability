@@ -17,7 +17,6 @@ from collections.abc import Sequence
 from flext_core import FlextContainer
 from flext_observability import (
     FlextObservability,
-    FlextObservabilityMasterFactory,
     c,
     t,
 )
@@ -50,7 +49,7 @@ def demonstrate_solid_design() -> None:
     alert_result = flext_alert("monitoring", "High CPU usage", AlertLevel.WARNING)
     health_result = flext_health_check("database", HealthStatus.HEALTHY)
     container = FlextContainer()
-    factory = FlextObservabilityMasterFactory(container)
+    factory = FlextObservability.FlextObservabilityMasterFactory(container)
     factory.create_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
     for result in results:
@@ -124,9 +123,9 @@ def demonstrate_function_monitoring() -> None:
 def demonstrate_factory_patterns() -> None:
     """Demonstrate factory pattern usage."""
     container = FlextContainer()
-    factory = FlextObservabilityMasterFactory(container)
+    factory = FlextObservability.FlextObservabilityMasterFactory(container)
     factory.create_metric("global_metric", 42.0, "count")
-    custom_factory = FlextObservabilityMasterFactory(container)
+    custom_factory = FlextObservability.FlextObservabilityMasterFactory(container)
     custom_factory.create_metric("custom_metric", 24.0, "count")
 
 

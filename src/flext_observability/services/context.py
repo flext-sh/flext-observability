@@ -40,10 +40,10 @@ class FlextObservabilityContext:
         from flext_observability import FlextObservabilityContext
 
         # Set correlation ID for request
-        correlation_id = FlextObservabilityContext.set_correlation_id()
+        correlation_id = FlextObservabilityContext.update_correlation_id()
 
         # Get current correlation ID (available in nested async calls)
-        current_id = FlextObservabilityContext.get_correlation_id()
+        current_id = FlextObservabilityContext.correlation_id()
 
         # Extract/set from HTTP headers
         FlextObservabilityContext.from_headers(dict(request.headers))
@@ -76,7 +76,7 @@ class FlextObservabilityContext:
             ```python
             try:
                 # Process request with context
-                FlextObservabilityContext.set_correlation_id()
+                FlextObservabilityContext.update_correlation_id()
                 process_request()
             finally:
                 # Always clear at end to prevent leaks
@@ -129,7 +129,7 @@ class FlextObservabilityContext:
             FlextObservabilityContext.from_headers(dict(request.headers))
 
             # Now context is available in nested calls
-            correlation_id = FlextObservabilityContext.get_correlation_id()
+            correlation_id = FlextObservabilityContext.correlation_id()
             ```
 
         """
@@ -139,24 +139,24 @@ class FlextObservabilityContext:
                 for header_key, header_value in headers.items()
             }
             correlation_id = normalized_headers.get("x-correlation-id") or str(uuid4())
-            FlextObservabilityContext.set_correlation_id(correlation_id)
+            FlextObservabilityContext.update_correlation_id(correlation_id)
             if trace_id := normalized_headers.get("x-trace-id"):
-                FlextObservabilityContext.set_trace_id(trace_id)
+                FlextObservabilityContext.update_trace_id(trace_id)
             if span_id := normalized_headers.get("x-span-id"):
-                FlextObservabilityContext.set_span_id(span_id)
+                FlextObservabilityContext.update_span_id(span_id)
             return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
             FlextObservabilityContext._logger.warning(
                 f"Failed to extract context from headers: {e}",
             )
-            FlextObservabilityContext.set_correlation_id()
+            FlextObservabilityContext.update_correlation_id()
             return r[bool].ok(value=True)
 
     @staticmethod
-    def get_baggage(
+    def resolve_baggage(
         key: str | None = None,
     ) -> BaseModel | t.NormalizedValue | t.Dict | None:
-        """Get baggage value.
+        """Resolve baggage value.
 
         Args:
             key: Optional specific baggage key. If None, returns all baggage.
@@ -167,10 +167,10 @@ class FlextObservabilityContext:
         Example:
             ```python
             # Get all baggage
-            baggage = FlextObservabilityContext.get_baggage()
+            baggage = FlextObservabilityContext.resolve_baggage()
 
             # Get specific value
-            user_id = FlextObservabilityContext.get_baggage("user_id")
+            user_id = FlextObservabilityContext.resolve_baggage("user_id")
             ```
 
         """
@@ -180,8 +180,8 @@ class FlextObservabilityContext:
         return baggage.get(key)
 
     @staticmethod
-    def get_context() -> t.Dict:
-        """Get complete context snapshot.
+    def context_payload() -> t.Dict:
+        """Return complete context snapshot.
 
         Returns all context variables as a dictionary. Useful for
         debugging and context propagation.
@@ -191,7 +191,7 @@ class FlextObservabilityContext:
 
         Example:
             ```python
-            context = FlextObservabilityContext.get_context()
+            context = FlextObservabilityContext.context_payload()
             logger.debug(f"Current context: {context}")
             # Output: {
             #   "correlation_id": "abc-123",
@@ -203,15 +203,15 @@ class FlextObservabilityContext:
 
         """
         return t.Dict({
-            "correlation_id": FlextObservabilityContext.get_correlation_id(),
-            "trace_id": FlextObservabilityContext.get_trace_id(),
-            "span_id": FlextObservabilityContext.get_span_id(),
-            "baggage": FlextObservabilityContext.get_baggage(),
+            "correlation_id": FlextObservabilityContext.correlation_id(),
+            "trace_id": FlextObservabilityContext.trace_id(),
+            "span_id": FlextObservabilityContext.span_id(),
+            "baggage": FlextObservabilityContext.resolve_baggage(),
         })
 
     @staticmethod
-    def get_correlation_id() -> str:
-        """Get current correlation ID.
+    def correlation_id() -> str:
+        """Return current correlation ID.
 
         Returns the correlation ID for current request/operation context.
         If no correlation ID is set, returns empty string.
@@ -221,7 +221,7 @@ class FlextObservabilityContext:
 
         Example:
             ```python
-            correlation_id = FlextObservabilityContext.get_correlation_id()
+            correlation_id = FlextObservabilityContext.correlation_id()
             logger.info(f"Processing request {correlation_id}")
             ```
 
@@ -229,18 +229,18 @@ class FlextObservabilityContext:
         return FlextObservabilityContext._correlation_id.get("")
 
     @staticmethod
-    def get_span_id() -> str:
-        """Get current span ID."""
+    def span_id() -> str:
+        """Return current span ID."""
         return FlextObservabilityContext._span_id.get("")
 
     @staticmethod
-    def get_trace_id() -> str:
-        """Get current trace ID."""
+    def trace_id() -> str:
+        """Return current trace ID."""
         return FlextObservabilityContext._trace_id.get("")
 
     @staticmethod
-    def set_baggage(key: str, value: t.NormalizedValue) -> r[bool]:
-        """Set baggage value for metadata propagation.
+    def update_baggage(key: str, value: t.NormalizedValue) -> r[bool]:
+        """Update baggage value for metadata propagation.
 
         Baggage allows passing metadata across service boundaries
         without including it in every operation parameter.
@@ -255,8 +255,8 @@ class FlextObservabilityContext:
         Example:
             ```python
             # Set user context
-            FlextObservabilityContext.set_baggage("user_id", "user-123")
-            FlextObservabilityContext.set_baggage("tenant", "acme-corp")
+            FlextObservabilityContext.update_baggage("user_id", "user-123")
+            FlextObservabilityContext.update_baggage("tenant", "acme-corp")
 
             # Values automatically propagated to nested operations
             ```
@@ -278,8 +278,8 @@ class FlextObservabilityContext:
             return r[bool].fail(f"Baggage set failed: {e}")
 
     @staticmethod
-    def set_correlation_id(correlation_id: str | None = None) -> str:
-        """Set correlation ID for request tracking.
+    def update_correlation_id(correlation_id: str | None = None) -> str:
+        """Update correlation ID for request tracking.
 
         Sets or generates correlation ID that will be propagated to all
         nested operations and across async boundaries.
@@ -293,10 +293,10 @@ class FlextObservabilityContext:
         Example:
             ```python
             # Auto-generate correlation ID
-            correlation_id = FlextObservabilityContext.set_correlation_id()
+            correlation_id = FlextObservabilityContext.update_correlation_id()
 
             # Set specific correlation ID
-            FlextObservabilityContext.set_correlation_id("user-123-request-456")
+            FlextObservabilityContext.update_correlation_id("user-123-request-456")
             ```
 
         """
@@ -306,16 +306,16 @@ class FlextObservabilityContext:
         return correlation_id
 
     @staticmethod
-    def set_span_id(span_id: str | None = None) -> str:
-        """Set current span ID."""
+    def update_span_id(span_id: str | None = None) -> str:
+        """Update current span ID."""
         if span_id is None:
             span_id = str(uuid4())
         FlextObservabilityContext._span_id.set(span_id)
         return span_id
 
     @staticmethod
-    def set_trace_id(trace_id: str | None = None) -> str:
-        """Set trace ID for distributed tracing.
+    def update_trace_id(trace_id: str | None = None) -> str:
+        """Update trace ID for distributed tracing.
 
         Sets OpenTelemetry trace ID for span correlation across services.
         If None, generates UUID4.
@@ -360,13 +360,13 @@ class FlextObservabilityContext:
 
         """
         headers = t.Dict({})
-        correlation_id = FlextObservabilityContext.get_correlation_id()
+        correlation_id = FlextObservabilityContext.correlation_id()
         if correlation_id:
             headers["X-Correlation-ID"] = correlation_id
-        trace_id = FlextObservabilityContext.get_trace_id()
+        trace_id = FlextObservabilityContext.trace_id()
         if trace_id:
             headers["X-Trace-ID"] = trace_id
-        span_id = FlextObservabilityContext.get_span_id()
+        span_id = FlextObservabilityContext.span_id()
         if span_id:
             headers["X-Span-ID"] = span_id
         return headers

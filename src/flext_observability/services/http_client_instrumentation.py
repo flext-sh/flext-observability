@@ -69,21 +69,21 @@ class FlextObservabilityHTTPClient:
     _logger = u.fetch_logger(__name__)
 
     @staticmethod
-    def _is_httpx_async_client(
+    def _matches_httpx_async_client(
         obj: t.RegisterableService | p.Observability.HttpClient.HTTPXAsyncClient,
     ) -> TypeIs[p.Observability.HttpClient.HTTPXAsyncClient]:
         """Type guard to check if t.NormalizedValue is an async httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send")
 
     @staticmethod
-    def _is_httpx_client(
+    def _matches_httpx_client(
         obj: t.RegisterableService | p.Observability.HttpClient.HTTPXClient,
     ) -> TypeIs[p.Observability.HttpClient.HTTPXClient]:
         """Type guard to check if t.NormalizedValue is an httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send") is False
 
     @staticmethod
-    def _is_aiohttp_session(
+    def _matches_aiohttp_session(
         obj: t.RegisterableService | p.Observability.HttpClient.AIOHTTPSession,
     ) -> TypeIs[p.Observability.HttpClient.AIOHTTPSession]:
         return hasattr(obj, "request")
@@ -157,7 +157,7 @@ class FlextObservabilityHTTPClient:
                 client_id = id(client)
                 if client_id in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
                     return r[bool].ok(value=True)
-                if FlextObservabilityHTTPClient._is_httpx_async_client(client):
+                if FlextObservabilityHTTPClient._matches_httpx_async_client(client):
                     typed_async_client: p.Observability.HttpClient.HTTPXAsyncClient = (
                         client
                     )
@@ -170,9 +170,9 @@ class FlextObservabilityHTTPClient:
                         **kwargs: t.Scalar,
                     ) -> p.Observability.HttpClient.HTTPXResponse:
                         start_time = time.time()
-                        correlation_id = FlextObservabilityContext.get_correlation_id()
-                        trace_id = FlextObservabilityContext.get_trace_id()
-                        span_id = FlextObservabilityContext.get_span_id()
+                        correlation_id = FlextObservabilityContext.correlation_id()
+                        trace_id = FlextObservabilityContext.trace_id()
+                        span_id = FlextObservabilityContext.span_id()
                         headers = FlextObservabilityHTTPClient._validated_headers(
                             kwargs.get("headers", {}),
                         )
@@ -244,7 +244,7 @@ class FlextObservabilityHTTPClient:
                             raise
 
                     typed_async_client.request = traced_async_request
-                elif FlextObservabilityHTTPClient._is_httpx_client(client):
+                elif FlextObservabilityHTTPClient._matches_httpx_client(client):
                     typed_sync_client: p.Observability.HttpClient.HTTPXClient = client
                     original_sync_request: Callable[
                         ...,
@@ -260,9 +260,9 @@ class FlextObservabilityHTTPClient:
                     ) -> p.Observability.HttpClient.HTTPXResponse:
                         """Traced request wrapper for sync httpx."""
                         start_time = time.time()
-                        correlation_id = FlextObservabilityContext.get_correlation_id()
-                        trace_id = FlextObservabilityContext.get_trace_id()
-                        span_id = FlextObservabilityContext.get_span_id()
+                        correlation_id = FlextObservabilityContext.correlation_id()
+                        trace_id = FlextObservabilityContext.trace_id()
+                        span_id = FlextObservabilityContext.span_id()
                         headers = FlextObservabilityHTTPClient._validated_headers(
                             kwargs.get("headers", {}),
                         )
@@ -393,7 +393,7 @@ class FlextObservabilityHTTPClient:
 
             """
             try:
-                if not FlextObservabilityHTTPClient._is_aiohttp_session(session):
+                if not FlextObservabilityHTTPClient._matches_aiohttp_session(session):
                     return r[bool].fail(
                         "Invalid aiohttp session - missing request method",
                     )
@@ -413,9 +413,9 @@ class FlextObservabilityHTTPClient:
                 ) -> p.Observability.HttpClient.AIOHTTPResponse:
                     """Traced request wrapper for aiohttp."""
                     start_time = time.time()
-                    correlation_id = FlextObservabilityContext.get_correlation_id()
-                    trace_id = FlextObservabilityContext.get_trace_id()
-                    span_id = FlextObservabilityContext.get_span_id()
+                    correlation_id = FlextObservabilityContext.correlation_id()
+                    trace_id = FlextObservabilityContext.trace_id()
+                    span_id = FlextObservabilityContext.span_id()
                     headers = FlextObservabilityHTTPClient._validated_headers(
                         kwargs.get("headers", {}),
                     )

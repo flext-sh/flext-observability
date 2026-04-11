@@ -36,9 +36,9 @@ class FlextObservabilitySampling:
         from flext_observability import FlextObservabilitySampling
 
         # Configure sampling
-        sampler = FlextObservabilitySampling.get_sampler()
-        sampler.set_environment("production")
-        sampler.set_default_rate(0.1)  # 10% sampling in production
+        sampler = FlextObservabilitySampling.active_sampler()
+        sampler.update_environment("production")
+        sampler.update_default_rate(0.1)  # 10% sampling in production
 
         # Make sampling decision at request entry
         should_sample = sampler.should_sample(
@@ -76,12 +76,12 @@ class FlextObservabilitySampling:
             self._operation_overrides: MutableMapping[str, float] = {}
             self._sampled_trace_ids: set[str] = set()
 
-        def get_current_rate(
+        def current_rate(
             self,
             operation: str | None = None,
             service: str | None = None,
         ) -> float:
-            """Get effective sampling rate for given operation/service.
+            """Return the effective sampling rate for an operation/service.
 
             Args:
                 operation: Operation name
@@ -98,12 +98,12 @@ class FlextObservabilitySampling:
                 rate = self._operation_overrides[operation]
             return rate
 
-        def get_sampling_decision(
+        def sampling_decision(
             self,
             operation: str | None = None,
             service: str | None = None,
         ) -> c.Observability.SamplingDecision:
-            """Get sampling decision as enum.
+            """Return the sampling decision as an enum.
 
             Args:
                 operation: Operation name
@@ -117,8 +117,8 @@ class FlextObservabilitySampling:
                 return c.Observability.SamplingDecision.SAMPLED
             return c.Observability.SamplingDecision.NOT_SAMPLED
 
-        def set_default_rate(self, rate: float) -> r[bool]:
-            """Set default sampling rate (0.0 to 1.0).
+        def update_default_rate(self, rate: float) -> r[bool]:
+            """Update the default sampling rate (0.0 to 1.0).
 
             Args:
                 rate: Sampling rate (0.0 = never sample, 1.0 = always sample)
@@ -143,8 +143,8 @@ class FlextObservabilitySampling:
             )
             return r[bool].ok(value=True)
 
-        def set_environment(self, environment: str) -> r[bool]:
-            """Set current environment for sampling configuration.
+        def update_environment(self, environment: str) -> r[bool]:
+            """Update the current environment for sampling configuration.
 
             Args:
                 environment: Environment name (development, staging, production)
@@ -155,7 +155,7 @@ class FlextObservabilitySampling:
             Behavior:
                 - Updates default sampling rate based on environment
                 - Follows: dev=100%, staging=50%, prod=10%
-                - Can be overridden with set_default_rate()
+                - Can be overridden with update_default_rate()
 
             """
             valid_envs = ["development", "staging", "production"]
@@ -170,8 +170,8 @@ class FlextObservabilitySampling:
             )
             return r[bool].ok(value=True)
 
-        def set_operation_rate(self, operation: str, rate: float) -> r[bool]:
-            """Set sampling rate for specific operation.
+        def update_operation_rate(self, operation: str, rate: float) -> r[bool]:
+            """Update the sampling rate for a specific operation.
 
             Args:
                 operation: Operation name (e.g., "POST /api/users")
@@ -195,8 +195,8 @@ class FlextObservabilitySampling:
             )
             return r[bool].ok(value=True)
 
-        def set_service_rate(self, service: str, rate: float) -> r[bool]:
-            """Set sampling rate for specific service.
+        def update_service_rate(self, service: str, rate: float) -> r[bool]:
+            """Update the sampling rate for a specific service.
 
             Args:
                 service: Service name (e.g., "user-service")
@@ -251,15 +251,15 @@ class FlextObservabilitySampling:
             if sampling_rate <= 0.0:
                 return False
             try:
-                correlation_id = FlextObservabilityContext.get_correlation_id()
+                correlation_id = FlextObservabilityContext.correlation_id()
                 hash_val = hash(correlation_id) % 100
                 return hash_val / 100 < sampling_rate
             except (ValueError, TypeError, KeyError):
                 return random.SystemRandom().random() < sampling_rate
 
     @staticmethod
-    def get_sampler() -> FlextObservabilitySampling.Sampler:
-        """Get global sampler instance (singleton).
+    def active_sampler() -> FlextObservabilitySampling.Sampler:
+        """Return the global sampler instance.
 
         Returns:
             Sampler - Global sampler instance
@@ -277,11 +277,11 @@ class FlextObservabilitySampling:
         return FlextObservabilitySampling._sampler_instance
 
     @staticmethod
-    def get_sampling_decision(
+    def sampling_decision(
         operation: str | None = None,
         service: str | None = None,
     ) -> c.Observability.SamplingDecision:
-        """Convenience function: get sampling decision as enum.
+        """Convenience function: return the sampling decision as an enum.
 
         Args:
             operation: Operation name
@@ -291,8 +291,8 @@ class FlextObservabilitySampling:
             c.Observability.SamplingDecision - SAMPLED or NOT_SAMPLED
 
         """
-        sampler = FlextObservabilitySampling.get_sampler()
-        return sampler.get_sampling_decision(operation=operation, service=service)
+        sampler = FlextObservabilitySampling.active_sampler()
+        return sampler.sampling_decision(operation=operation, service=service)
 
     @staticmethod
     def should_sample(operation: str | None = None, service: str | None = None) -> bool:
@@ -306,7 +306,7 @@ class FlextObservabilitySampling:
             bool - True if request should be sampled
 
         """
-        sampler = FlextObservabilitySampling.get_sampler()
+        sampler = FlextObservabilitySampling.active_sampler()
         return sampler.should_sample(operation=operation, service=service)
 
 

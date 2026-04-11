@@ -71,14 +71,14 @@ class FlextObservabilityHTTP:
     HTTP_ERROR_STATUS_THRESHOLD = 400
 
     @staticmethod
-    def _is_flask_app(
+    def _matches_flask_app(
         obj: t.RegisterableService | p.Observability.Http.FlaskApp,
     ) -> TypeIs[p.Observability.Http.FlaskApp]:
         """Type guard to check if object is a Flask app."""
         return hasattr(obj, "before_request") and hasattr(obj, "after_request")
 
     @staticmethod
-    def _is_fastapi_app(
+    def _matches_fastapi_app(
         obj: t.RegisterableService | p.Observability.Http.FastAPIApp,
     ) -> TypeIs[p.Observability.Http.FastAPIApp]:
         """Type guard to check if object is a FastAPI app."""
@@ -119,14 +119,14 @@ class FlextObservabilityHTTP:
 
 
                 @app.route("/api/users")
-                def get_users():
+                def list_users():
                     # Automatically instrumented
                     return {"users": []}
                 ```
 
             """
             try:
-                if not FlextObservabilityHTTP._is_flask_app(app):
+                if not FlextObservabilityHTTP._matches_flask_app(app):
                     return r[bool].fail("Invalid Flask app - missing request hooks")
                 before_request_hook: p.Observability.Http.FlaskHook = app.before_request
                 after_request_hook: p.Observability.Http.FlaskHook = app.after_request
@@ -140,7 +140,7 @@ class FlextObservabilityHTTP:
                         )
                         if request:
                             FlextObservabilityContext.from_headers(headers_dict)
-                        correlation_id = FlextObservabilityContext.get_correlation_id()
+                        correlation_id = FlextObservabilityContext.correlation_id()
                         if g:
                             g.flext_start_time = time.time()
                         if g:
@@ -288,14 +288,14 @@ class FlextObservabilityHTTP:
 
 
                 @app.get("/api/users")
-                async def get_users():
+                async def list_users():
                     # Automatically instrumented, async-safe
                     return {"users": []}
                 ```
 
             """
             try:
-                if not FlextObservabilityHTTP._is_fastapi_app(app):
+                if not FlextObservabilityHTTP._matches_fastapi_app(app):
                     return r[bool].fail(
                         "Invalid FastAPI app - missing add_middleware method",
                     )
@@ -321,9 +321,7 @@ class FlextObservabilityHTTP:
                                 str(k): str(v) for k, v in request.headers.items()
                             }
                             FlextObservabilityContext.from_headers(headers_dict)
-                            correlation_id = (
-                                FlextObservabilityContext.get_correlation_id()
-                            )
+                            correlation_id = FlextObservabilityContext.correlation_id()
                             start_time = time.time()
                             await FlextObservabilityHTTP._async_log_with_context(
                                 f"HTTP {request.method} {request.url.path}",

@@ -62,7 +62,7 @@ class FlextObservabilityLogging:
         Example:
             ```python
             logger_result = FlextObservabilityLogging.create_logger(__name__)
-            if logger_result.is_success:
+            if logger_result.success:
                 logger = logger_result.value
                 logger.info("Application started")
                 # Log automatically includes correlation IDs
@@ -105,7 +105,7 @@ class FlextObservabilityLogging:
             ```python
             # Get context to enrich log
             context_result = FlextObservabilityLogging.enrich_log_context(logger)
-            if context_result.is_success:
+            if context_result.success:
                 context = context_result.value
                 logger.info("Processing", extra=context)
                 # Log output: [...] correlation_id=abc-123 trace_id=def-456
@@ -114,17 +114,17 @@ class FlextObservabilityLogging:
         """
         try:
             context_payload = m.Observability.LogContext()
-            correlation_id = FlextObservabilityContext.get_correlation_id()
+            correlation_id = FlextObservabilityContext.correlation_id()
             if correlation_id:
                 context_payload.correlation_id = correlation_id
-            trace_id = FlextObservabilityContext.get_trace_id()
+            trace_id = FlextObservabilityContext.trace_id()
             if trace_id:
                 context_payload.trace_id = trace_id
-            span_id = FlextObservabilityContext.get_span_id()
+            span_id = FlextObservabilityContext.span_id()
             if span_id:
                 context_payload.span_id = span_id
             if include_baggage:
-                baggage = FlextObservabilityContext.get_baggage()
+                baggage = FlextObservabilityContext.resolve_baggage()
                 if baggage is not None:
                     context_payload.baggage = str(baggage)
             return r[m.Observability.LogContext].ok(context_payload)
@@ -151,9 +151,9 @@ class FlextObservabilityLogging:
             ```
 
         """
-        current_id = FlextObservabilityContext.get_correlation_id()
+        current_id = FlextObservabilityContext.correlation_id()
         if not current_id:
-            return FlextObservabilityContext.set_correlation_id()
+            return FlextObservabilityContext.update_correlation_id()
         return current_id
 
     @staticmethod
@@ -181,7 +181,7 @@ class FlextObservabilityLogging:
 
         """
         try:
-            context = FlextObservabilityContext.get_context()
+            context = FlextObservabilityContext.context_payload()
             if not context:
                 FlextObservabilityLogging._logger.debug(
                     "No trace context currently set",
@@ -270,17 +270,17 @@ class FlextObservabilityLogging:
             ```python
             # Validate at start of request processing
             validation_result = FlextObservabilityLogging.validate_context()
-            if validation_result.is_failure:
+            if validation_result.failure:
                 # Generate new context if invalid
                 FlextObservabilityLogging.ensure_correlation_id()
             ```
 
         """
         try:
-            context = FlextObservabilityContext.get_context()
+            context = FlextObservabilityContext.context_payload()
             if not context.get("correlation_id"):
                 _ = FlextObservabilityLogging.ensure_correlation_id()
-                context = FlextObservabilityContext.get_context()
+                context = FlextObservabilityContext.context_payload()
             return r[m.Observability.LogContext].ok(
                 m.Observability.LogContext(
                     correlation_id=str(context.get("correlation_id"))

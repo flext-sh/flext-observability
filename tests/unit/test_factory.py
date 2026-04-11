@@ -12,13 +12,10 @@ from datetime import datetime
 from flext_tests import tm
 
 from flext_core import FlextContainer
-from flext_observability import (
-    FlextObservability,
-    FlextObservabilityMasterFactory,
-)
+from flext_observability import FlextObservability
 
-get_global_factory = FlextObservability.get_global_factory
-reset_global_factory = FlextObservability.reset_global_factory
+global_factory = FlextObservability.global_factory
+clear_global_factory = FlextObservability.clear_global_factory
 
 
 class TestFlextObservabilityMasterFactoryReal:
@@ -27,13 +24,13 @@ class TestFlextObservabilityMasterFactoryReal:
     def test_factory_initialization_and_container_real(self) -> None:
         """Test factory initialization with real container integration."""
         container = FlextContainer()
-        factory = FlextObservabilityMasterFactory(container)
+        factory = FlextObservability.FlextObservabilityMasterFactory(container)
         tm.that(factory.container is container, eq=True)
-        FlextObservabilityMasterFactory()
+        FlextObservability.FlextObservabilityMasterFactory()
 
     def test_metric_creation_real_functionality(self) -> None:
         """Test metric creation with actual factory functionality."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         metric_result = factory.create_metric("test_metric", 42.5, "gauge")
         tm.that(metric_result.success, eq=True)
         tm.that(metric_result.value.name, eq="test_metric")
@@ -42,7 +39,7 @@ class TestFlextObservabilityMasterFactoryReal:
 
     def test_metric_creation_with_validation_real(self) -> None:
         """Test metric creation with real validation logic."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         invalid_result = factory.create_metric("", 10.0)
         tm.that(invalid_result.failure, eq=True)
         tm.that(invalid_result.error, none=False)
@@ -51,7 +48,7 @@ class TestFlextObservabilityMasterFactoryReal:
 
     def test_log_creation_real_functionality(self) -> None:
         """Test log entry creation with real functionality."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         log_result = factory.create_log_entry("Test log message", "info")
         tm.that(log_result.success, eq=True)
         tm.that(log_result.value.message, eq="Test log message")
@@ -59,7 +56,7 @@ class TestFlextObservabilityMasterFactoryReal:
 
     def test_log_creation_validation_real(self) -> None:
         """Test log creation with real validation."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         custom_level_result = factory.create_log_entry("Test", "INVALID_LEVEL")
         if custom_level_result.failure:
             tm.that(custom_level_result.error, none=False)
@@ -68,7 +65,7 @@ class TestFlextObservabilityMasterFactoryReal:
 
     def test_alert_creation_real_functionality(self) -> None:
         """Test alert creation with real functionality."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         alert_result = factory.create_alert(
             "Critical error detected",
             "monitoring",
@@ -81,7 +78,7 @@ class TestFlextObservabilityMasterFactoryReal:
 
     def test_trace_creation_real_functionality(self) -> None:
         """Test trace creation with real functionality."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         trace_result = factory.create_trace("user_authentication", "auth_service")
         tm.that(trace_result.success, eq=True)
         tm.that(trace_result.value.name, eq="user_authentication")
@@ -89,7 +86,7 @@ class TestFlextObservabilityMasterFactoryReal:
 
     def test_health_check_creation_real_functionality(self) -> None:
         """Test health check creation with real functionality."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         health_result = factory.create_health_check("database", "healthy")
         tm.that(health_result.success, eq=True)
         tm.that(health_result.value.component, eq="database")
@@ -97,7 +94,7 @@ class TestFlextObservabilityMasterFactoryReal:
 
     def test_factory_shorthand_methods_real(self) -> None:
         """Test factory shorthand methods with real functionality."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         metric_result = factory.metric("cpu_usage", 85.2)
         tm.that(metric_result.success, eq=True)
         metric = metric_result.value
@@ -120,15 +117,15 @@ class TestFlextObservabilityMasterFactoryReal:
 
     def test_global_factory_real_functionality(self) -> None:
         """Test global factory with real functionality."""
-        reset_global_factory()
-        get_global_factory()
-        get_global_factory()
-        reset_global_factory()
-        get_global_factory()
+        clear_global_factory()
+        global_factory()
+        global_factory()
+        clear_global_factory()
+        global_factory()
 
     def test_factory_error_handling_real(self) -> None:
         """Test factory error handling with real scenarios."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         test_cases = [
             ("create_metric", ("", 10.0), "must be non-empty string"),
             ("create_log_entry", ("",), "Log message cannot be empty"),
@@ -144,7 +141,7 @@ class TestFlextObservabilityMasterFactoryReal:
 
     def test_factory_integration_with_services_real(self) -> None:
         """Test factory integration with real service workflows."""
-        factory = FlextObservabilityMasterFactory()
+        factory = FlextObservability.FlextObservabilityMasterFactory()
         metric = factory.create_metric("request_count", 100, "counter")
         log = factory.create_log_entry("Request processed", "info")
         alert = factory.create_alert("High request count", "monitoring", "medium")

@@ -508,8 +508,8 @@ class FlextObservability(
             )
 
     @staticmethod
-    def get_global_factory() -> FlextObservability.FlextObservabilityMasterFactory:
-        """Get or create the global factory instance."""
+    def global_factory() -> FlextObservability.FlextObservabilityMasterFactory:
+        """Return the global factory instance, creating it on first access."""
         if FlextObservability._global_factory is None:
             FlextObservability._global_factory = (
                 FlextObservability.FlextObservabilityMasterFactory()
@@ -517,8 +517,8 @@ class FlextObservability(
         return FlextObservability._global_factory
 
     @staticmethod
-    def reset_global_factory() -> None:
-        """Reset the global factory instance."""
+    def clear_global_factory() -> None:
+        """Clear the global factory instance."""
         FlextObservability._global_factory = None
 
     class FlextObservabilityMasterFactory:
@@ -742,4 +742,6 @@ class FlextObservability(
             )
 
 
-__all__ = ["FlextObservability"]
+observability = FlextObservability
+
+__all__ = ["FlextObservability", "observability"]

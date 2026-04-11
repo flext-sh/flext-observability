@@ -13,11 +13,11 @@ from __future__ import annotations
 import time
 
 from flext_observability import (
+    FlextObservability,
     FlextObservabilityAdvancedContext,
     FlextObservabilityContext,
     FlextObservabilityCustomMetrics,
     FlextObservabilityErrorHandling,
-    FlextObservabilityMasterFactory,
     FlextObservabilityPerformance,
     FlextObservabilitySampling,
     c,
@@ -27,14 +27,14 @@ from flext_observability import (
 ErrorEvent = m.Observability.ErrorEvent
 
 try:
-    FlextObservabilityContext.set_correlation_id("http-req-001")
-    FlextObservabilityContext.set_trace_id("trace-http-001")
-    sampler = FlextObservabilitySampling.get_sampler()
-    sampler.set_environment("production")
-    sampler.set_operation_rate("http_request", 1.0)
+    FlextObservabilityContext.update_correlation_id("http-req-001")
+    FlextObservabilityContext.update_trace_id("trace-http-001")
+    sampler = FlextObservabilitySampling.active_sampler()
+    sampler.update_environment("production")
+    sampler.update_operation_rate("http_request", 1.0)
     should_sample = sampler.should_sample("http_request", "api")
     assert should_sample is not None, "Sampling decision should be made"
-    factory = FlextObservabilityMasterFactory()
+    factory = FlextObservability.FlextObservabilityMasterFactory()
     metric_result = factory.create_metric(
         "http.requests.total",
         1.0,
@@ -62,7 +62,7 @@ try:
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
-    factory = FlextObservabilityMasterFactory()
+    factory = FlextObservability.FlextObservabilityMasterFactory()
     start_time = time.time()
     time.sleep(0.02)
     duration = time.time() - start_time
@@ -90,10 +90,10 @@ try:
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
-    FlextObservabilityContext.set_correlation_id("error-test-001")
-    handler = FlextObservabilityErrorHandling.get_handler()
-    handler.set_escalation_threshold(3)
-    handler.set_alert_cooldown(30)
+    FlextObservabilityContext.update_correlation_id("error-test-001")
+    handler = FlextObservabilityErrorHandling.active_handler()
+    handler.update_escalation_threshold(3)
+    handler.update_alert_cooldown(30)
     for i in range(3):
         error = ErrorEvent(
             error_type="DatabaseConnectionError",
@@ -104,14 +104,14 @@ try:
         assert error_result.success, "Error should be recorded"
         should_alert = handler.should_alert_for_error(error)
         if i == 2:
-            escalated = handler.get_escalated_severity(error)
+            escalated = handler.resolve_escalated_severity(error)
             assert escalated is not None
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     correlation_id = "dist-trace-001"
-    FlextObservabilityContext.set_correlation_id(correlation_id)
-    factory = FlextObservabilityMasterFactory()
+    FlextObservabilityContext.update_correlation_id(correlation_id)
+    factory = FlextObservability.FlextObservabilityMasterFactory()
     api_result = factory.create_metric(
         "api.requests",
         1.0,
@@ -146,12 +146,12 @@ try:
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
-    ctx = FlextObservabilityAdvancedContext.get_advanced_context()
-    ctx.set_metadata("user_id", "user-123")
-    ctx.set_metadata("request_id", "req-456")
-    ctx.set_metadata("tenant_id", "tenant-789")
-    ctx.set_baggage("user_name", "alice")
-    ctx.set_baggage("org_id", "org-456")
+    ctx = FlextObservabilityAdvancedContext.active_context()
+    ctx.update_metadata("user_id", "user-123")
+    ctx.update_metadata("request_id", "req-456")
+    ctx.update_metadata("tenant_id", "tenant-789")
+    ctx.update_baggage("user_name", "alice")
+    ctx.update_baggage("org_id", "org-456")
     snapshot = ctx.snapshot(
         correlation_id="async-001",
         trace_id="trace-async-001",
@@ -164,14 +164,14 @@ try:
     assert json_data is not None
     assert "correlation_id" in json_data
     ctx.clear()
-    assert not ctx.get_all_metadata()
+    assert not ctx.metadata
     ctx.restore(snapshot)
-    assert ctx.get_metadata("user_id") == "user-123"
+    assert ctx.resolve_metadata("user_id") == "user-123"
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
-    registry = FlextObservabilityCustomMetrics.get_registry()
-    sampler = FlextObservabilitySampling.get_sampler()
+    registry = FlextObservabilityCustomMetrics.active_registry()
+    sampler = FlextObservabilitySampling.active_sampler()
     reg_result = registry.register_metric(
         name="user_signup",
         metric_type=c.Observability.MetricType.COUNTER,
@@ -186,43 +186,43 @@ try:
         namespace="auth",
     )
     assert reg_result.success
-    sampler.set_service_rate("auth_service", 0.5)
-    sampler.set_operation_rate("user_signup", 1.0)
-    metrics = registry.get_metrics_by_type(c.Observability.MetricType.COUNTER)
+    sampler.update_service_rate("auth_service", 0.5)
+    sampler.update_operation_rate("user_signup", 1.0)
+    metrics = registry.resolve_metrics_by_type(c.Observability.MetricType.COUNTER)
     assert any("user_signup" in m for m in metrics)
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
-    sampler = FlextObservabilitySampling.get_sampler()
+    sampler = FlextObservabilitySampling.active_sampler()
     performance = FlextObservabilityPerformance()
-    sampler.set_environment("production")
-    sampler.set_default_rate(0.1)
+    sampler.update_environment("production")
+    sampler.update_default_rate(0.1)
     should_sample = sampler.should_sample("sample_test", "service")
     assert should_sample is not None, "Sampling decision should be made"
     monitor = performance.start_monitoring("sampling_operation")
     time.sleep(0.001)
     monitor.mark_success()
     perf_metrics = monitor.metrics
-    assert performance.is_performance_acceptable(perf_metrics), (
+    assert performance.performance_acceptable(perf_metrics), (
         "Sampling performance overhead should be acceptable"
     )
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
-    FlextObservabilityContext.set_correlation_id("e2e-test-001")
-    FlextObservabilityContext.set_trace_id("trace-e2e-001")
-    sampler = FlextObservabilitySampling.get_sampler()
-    sampler.set_environment("staging")
-    sampler.set_operation_rate("e2e_workflow", 1.0)
-    factory = FlextObservabilityMasterFactory()
+    FlextObservabilityContext.update_correlation_id("e2e-test-001")
+    FlextObservabilityContext.update_trace_id("trace-e2e-001")
+    sampler = FlextObservabilitySampling.active_sampler()
+    sampler.update_environment("staging")
+    sampler.update_operation_rate("e2e_workflow", 1.0)
+    factory = FlextObservability.FlextObservabilityMasterFactory()
     result = factory.create_metric("workflow.started", 1.0, "counter")
     assert result.success
     perf_monitor = FlextObservabilityPerformance()
     monitor = perf_monitor.start_monitoring("e2e_operation")
-    adv_ctx = FlextObservabilityAdvancedContext.get_advanced_context()
-    adv_ctx.set_metadata("workflow_type", "integration_test")
-    adv_ctx.set_baggage("test_phase", "11")
-    registry = FlextObservabilityCustomMetrics.get_registry()
+    adv_ctx = FlextObservabilityAdvancedContext.active_context()
+    adv_ctx.update_metadata("workflow_type", "integration_test")
+    adv_ctx.update_baggage("test_phase", "11")
+    registry = FlextObservabilityCustomMetrics.active_registry()
     reg_result2 = registry.register_metric(
         name="e2e_tests",
         metric_type=c.Observability.MetricType.COUNTER,
@@ -232,19 +232,19 @@ try:
     time.sleep(0.015)
     monitor.mark_success()
     perf_metrics = monitor.metrics
-    assert perf_monitor.is_performance_acceptable(perf_metrics)
+    assert perf_monitor.performance_acceptable(perf_metrics)
     result = factory.create_metric("workflow.completed", 1.0, "counter")
     assert result.success
     result = factory.create_metric("workflow.duration_ms", perf_metrics.duration_ms)
     assert result.success
     snapshot = adv_ctx.snapshot(
-        correlation_id=FlextObservabilityContext.get_correlation_id(),
-        trace_id=FlextObservabilityContext.get_trace_id(),
+        correlation_id=FlextObservabilityContext.correlation_id(),
+        trace_id=FlextObservabilityContext.trace_id(),
         span_id="span-e2e-001",
     )
     assert snapshot is not None
     assert snapshot.correlation_id == "e2e-test-001"
-    error_handler = FlextObservabilityErrorHandling.get_handler()
+    error_handler = FlextObservabilityErrorHandling.active_handler()
     test_error = ErrorEvent(
         error_type="IntegrationTestError",
         message="Simulated error in workflow",
@@ -258,16 +258,16 @@ except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
     correlation_id = "multi-service-001"
-    FlextObservabilityContext.set_correlation_id(correlation_id)
-    FlextObservabilityContext.set_trace_id("trace-multi-001")
-    ctx1_corr = FlextObservabilityContext.get_correlation_id()
+    FlextObservabilityContext.update_correlation_id(correlation_id)
+    FlextObservabilityContext.update_trace_id("trace-multi-001")
+    ctx1_corr = FlextObservabilityContext.correlation_id()
     assert ctx1_corr == correlation_id
-    FlextObservabilityContext.set_correlation_id(correlation_id)
-    FlextObservabilityContext.set_trace_id("trace-multi-001")
-    assert ctx1_corr == FlextObservabilityContext.get_correlation_id()
-    adv_ctx = FlextObservabilityAdvancedContext.get_advanced_context()
-    adv_ctx.set_metadata("service", "api")
-    adv_ctx.set_metadata("user_id", "user-456")
+    FlextObservabilityContext.update_correlation_id(correlation_id)
+    FlextObservabilityContext.update_trace_id("trace-multi-001")
+    assert ctx1_corr == FlextObservabilityContext.correlation_id()
+    adv_ctx = FlextObservabilityAdvancedContext.active_context()
+    adv_ctx.update_metadata("service", "api")
+    adv_ctx.update_metadata("user_id", "user-456")
     snapshot = adv_ctx.snapshot(
         correlation_id=correlation_id,
         trace_id="trace-multi-001",
@@ -279,24 +279,24 @@ try:
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
-    FlextObservabilityContext.set_correlation_id("setup-001")
-    assert FlextObservabilityContext.get_correlation_id() == "setup-001"
-    factory = FlextObservabilityMasterFactory()
+    FlextObservabilityContext.update_correlation_id("setup-001")
+    assert FlextObservabilityContext.correlation_id() == "setup-001"
+    factory = FlextObservability.FlextObservabilityMasterFactory()
     assert factory is not None
-    sampler = FlextObservabilitySampling.get_sampler()
+    sampler = FlextObservabilitySampling.active_sampler()
     perf = FlextObservabilityPerformance()
     assert sampler is not None and perf is not None
-    errors = FlextObservabilityErrorHandling.get_handler()
-    custom_metrics = FlextObservabilityCustomMetrics.get_registry()
-    advanced_ctx = FlextObservabilityAdvancedContext.get_advanced_context()
+    errors = FlextObservabilityErrorHandling.active_handler()
+    custom_metrics = FlextObservabilityCustomMetrics.active_registry()
+    advanced_ctx = FlextObservabilityAdvancedContext.active_context()
     assert errors is not None
     assert custom_metrics is not None
     assert advanced_ctx is not None
     metrics_service = factory
     assert metrics_service is not None
-    FlextObservabilityContext.set_correlation_id("example-001")
-    assert FlextObservabilityContext.get_correlation_id() == "example-001"
-    sampler.set_environment("production")
+    FlextObservabilityContext.update_correlation_id("example-001")
+    assert FlextObservabilityContext.correlation_id() == "example-001"
+    sampler.update_environment("production")
     should_sample = sampler.should_sample("test", "service")
     assert should_sample is not None
 except (AssertionError, RuntimeError, ValueError, TypeError):

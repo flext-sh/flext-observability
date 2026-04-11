@@ -13,7 +13,6 @@ import flext_observability
 from flext_core import FlextConstants, FlextContainer
 from flext_observability import (
     FlextObservability,
-    FlextObservabilityMasterFactory,
     __version__ as pkg_version,
     __version_info__ as pkg_version_info,
 )
@@ -23,8 +22,8 @@ flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
 flext_metric = FlextObservability.flext_metric
 flext_trace = FlextObservability.flext_trace
-get_global_factory = FlextObservability.get_global_factory
-reset_global_factory = FlextObservability.reset_global_factory
+global_factory = FlextObservability.global_factory
+clear_global_factory = FlextObservability.clear_global_factory
 
 
 class TestInitCoverage:
@@ -78,9 +77,9 @@ class TestInitCoverage:
 
     def test_factory_class_imports(self) -> None:
         """Test that factory classes can be imported."""
-        tm.that(callable(FlextObservabilityMasterFactory), eq=True)
-        tm.that(callable(get_global_factory), eq=True)
-        tm.that(callable(reset_global_factory), eq=True)
+        tm.that(callable(FlextObservability.FlextObservabilityMasterFactory), eq=True)
+        tm.that(callable(global_factory), eq=True)
+        tm.that(callable(clear_global_factory), eq=True)
 
     def test_flext_core_reexports(self) -> None:
         """Test that flext-core re-exports are available."""

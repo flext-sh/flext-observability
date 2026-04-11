@@ -367,13 +367,13 @@ from flext_observability import flext_create_metric, flext_create_trace
 
 def flext_create_metric(name: str, value: float, unit: str = "") -> r[FlextMetric]:
     """Simple API for metric creation."""
-    factory = get_global_factory()
+    factory = global_factory()
     return factory.create_metric(name, value, unit)
 
 
 def flext_create_trace(operation_name: str, service_name: str) -> r[FlextTrace]:
     """Simple API for trace creation."""
-    factory = get_global_factory()
+    factory = global_factory()
     return factory.create_trace(operation_name, service_name)
 ```
 
@@ -500,12 +500,12 @@ def flext_create_log_entry(level: str, message: str) -> r[FlextLogEntry]
 
 # Monitoring functions use flext_monitor_ prefix
 def flext_monitor_function(operation_name: str) -> Callable
-def flext_get_correlation_id() -> str
-def flext_set_correlation_id(correlation_id: str) -> None
+def correlation_id() -> str
+def update_correlation_id(correlation_id: str) -> None
 
 # Factory access functions
-def get_global_factory() -> FlextObservabilityMasterFactory
-def reset_global_factory() -> None
+def global_factory() -> FlextObservabilityMasterFactory
+def clear_global_factory() -> None
 ```
 
 **Pattern**: Consistent prefixing for easy discoverability and namespace protection.
@@ -708,13 +708,13 @@ Infrastructure Layer  →  Foundation Layer  →  flext-core
 
 ```python
 # Handled via decorators and context management
-from flext_observability import flext_monitor_function, flext_get_correlation_id
+from flext_observability import flext_monitor_function, correlation_id
 
 
 @flext_monitor_function("critical_business_operation")
 def process_payment(payment_data: dict) -> r[t.Dict]:
     """Function automatically gets observability patterns."""
-    correlation_id = flext_get_correlation_id()
+    request_correlation_id = correlation_id()
 
     # Business logic with automatic:
     # - Execution time metrics

@@ -55,12 +55,12 @@ class FlextObservabilityServices:
         """Generic alert creation - not implemented in base service."""
         return r[t.Dict].fail("Alert creation not implemented in generic service")
 
-    def get_metrics_summary(self) -> r[t.Dict]:
+    def metrics_summary(self) -> r[t.Dict]:
         """Generic metrics summary - not implemented in base service."""
         return r[t.Dict].fail("Metrics summary not implemented in generic service")
 
-    def get_status(self) -> r[t.Dict]:
-        """Get generic service status through FLEXT patterns."""
+    def status(self) -> r[t.Dict]:
+        """Resolve generic service status through FLEXT patterns."""
         try:
             status = {
                 "service": "flext_observability",

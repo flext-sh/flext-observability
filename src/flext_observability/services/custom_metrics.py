@@ -37,7 +37,7 @@ class FlextObservabilityCustomMetrics:
         from flext_observability import FlextObservabilityCustomMetrics
 
         # Define custom metrics
-        metrics = FlextObservabilityCustomMetrics.get_registry()
+        metrics = FlextObservabilityCustomMetrics.active_registry()
 
         # Register business metric
         metrics.register_metric(
@@ -48,11 +48,11 @@ class FlextObservabilityCustomMetrics:
         )
 
         # Use metric
-        counter = metrics.get_metric("user_logins")
+        counter = metrics.resolve_metric("user_logins")
         counter.increment()
 
         # List all registered metrics
-        all_metrics = metrics.get_all_metrics()
+        all_metrics = metrics.resolve_metrics()
         ```
 
     Nested Classes:
@@ -100,8 +100,8 @@ class FlextObservabilityCustomMetrics:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to clear metrics: {e}")
 
-        def get_all_metrics(self, namespace: str | None = None) -> t.Dict:
-            """Get all registered metrics.
+        def resolve_metrics(self, namespace: str | None = None) -> t.Dict:
+            """Resolve all registered metrics.
 
             Args:
                 namespace: Optional namespace filter
@@ -119,12 +119,12 @@ class FlextObservabilityCustomMetrics:
                 return t.Dict.model_validate(filtered)
             return t.Dict.model_validate(self._metrics)
 
-        def get_metric(
+        def resolve_metric(
             self,
             name: str,
             namespace: str = "default",
         ) -> m.Observability.CustomMetricDefinition | None:
-            """Get metric definition by name.
+            """Resolve a metric definition by name.
 
             Args:
                 name: Metric name
@@ -140,12 +140,12 @@ class FlextObservabilityCustomMetrics:
                 return value
             return None
 
-        def get_metric_info(
+        def resolve_metric_info(
             self,
             name: str,
             namespace: str = "default",
         ) -> t.Dict | None:
-            """Get detailed metric information.
+            """Resolve detailed metric information.
 
             Args:
                 name: Metric name
@@ -155,7 +155,7 @@ class FlextObservabilityCustomMetrics:
                 dict - Metric information or None
 
             """
-            metric = self.get_metric(name, namespace)
+            metric = self.resolve_metric(name, namespace)
             if not metric:
                 return None
             return t.Dict({
@@ -166,11 +166,11 @@ class FlextObservabilityCustomMetrics:
                 "labels": metric.labels,
             })
 
-        def get_metrics_by_type(
+        def resolve_metrics_by_type(
             self,
             metric_type: c.Observability.MetricType,
         ) -> t.Dict:
-            """Get all metrics of a specific type.
+            """Resolve all metrics of a specific type.
 
             Args:
                 metric_type: Metric type to filter
@@ -284,11 +284,11 @@ class FlextObservabilityCustomMetrics:
                 return r[bool].fail(f"Metric unregistration failed: {e}")
 
     @staticmethod
-    def get_metric(
+    def resolve_metric(
         name: str,
         namespace: str = "default",
     ) -> m.Observability.CustomMetricDefinition | None:
-        """Convenience function: get metric definition.
+        """Convenience function: resolve a metric definition.
 
         Args:
             name: Metric name
@@ -298,12 +298,12 @@ class FlextObservabilityCustomMetrics:
             CustomMetricDefinition or None
 
         """
-        registry = FlextObservabilityCustomMetrics.get_registry()
-        return registry.get_metric(name, namespace)
+        registry = FlextObservabilityCustomMetrics.active_registry()
+        return registry.resolve_metric(name, namespace)
 
     @staticmethod
-    def get_registry() -> FlextObservabilityCustomMetrics.Registry:
-        """Get global metric registry instance (singleton).
+    def active_registry() -> FlextObservabilityCustomMetrics.Registry:
+        """Return the global metric registry instance.
 
         Returns:
             Registry - Global metric registry
@@ -323,7 +323,7 @@ class FlextObservabilityCustomMetrics:
             list - All registered metric names
 
         """
-        registry = FlextObservabilityCustomMetrics.get_registry()
+        registry = FlextObservabilityCustomMetrics.active_registry()
         return registry.list_metrics()
 
     @staticmethod
@@ -347,7 +347,7 @@ class FlextObservabilityCustomMetrics:
             r[bool] - Ok if successful
 
         """
-        registry = FlextObservabilityCustomMetrics.get_registry()
+        registry = FlextObservabilityCustomMetrics.active_registry()
         return registry.register_metric(
             name=name,
             metric_type=metric_type,

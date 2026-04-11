@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_observability import m, r, t
+from flext_observability import m, r, t, u
 
 
 class FlextObservabilityAdvancedContext:
@@ -32,11 +32,11 @@ class FlextObservabilityAdvancedContext:
             FlextObservabilityAdvancedContext,
         )
 
-        ctx = FlextObservabilityAdvancedContext.get_advanced_context()
+        ctx = FlextObservabilityAdvancedContext.active_context()
 
         # Store request-local data
-        ctx.set_metadata("user_id", "user-123")
-        ctx.set_metadata("api_key", "secret-key")
+        ctx.update_metadata("user_id", "user-123")
+        ctx.update_metadata("api_key", "secret-key")
 
         # Get context snapshot
         snapshot = ctx.snapshot()
@@ -78,8 +78,9 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to clear context: {e}")
 
-        def get_all_baggage(self) -> t.StrMapping:
-            """Get all baggage items.
+        @property
+        def baggage(self) -> t.StrMapping:
+            """Return all baggage items.
 
             Returns:
                 dict - All baggage
@@ -87,8 +88,9 @@ class FlextObservabilityAdvancedContext:
             """
             return dict(self._baggage)
 
-        def get_all_metadata(self) -> t.ConfigurationMapping:
-            """Get all request-local metadata.
+        @property
+        def metadata(self) -> t.ConfigurationMapping:
+            """Return all request-local metadata.
 
             Returns:
                 dict - All metadata
@@ -96,8 +98,8 @@ class FlextObservabilityAdvancedContext:
             """
             return dict(self._metadata)
 
-        def get_baggage(self, key: str) -> str | None:
-            """Get baggage item.
+        def resolve_baggage(self, key: str) -> str | None:
+            """Resolve a baggage item.
 
             Args:
                 key: Baggage key
@@ -108,8 +110,8 @@ class FlextObservabilityAdvancedContext:
             """
             return self._baggage.get(key)
 
-        def get_metadata(self, key: str) -> t.Scalar | None:
-            """Get request-local metadata.
+        def resolve_metadata(self, key: str) -> t.Scalar | None:
+            """Resolve request-local metadata.
 
             Args:
                 key: Metadata key
@@ -131,8 +133,8 @@ class FlextObservabilityAdvancedContext:
 
             """
             try:
-                self._metadata.update(other.get_all_metadata())
-                self._baggage.update(other.get_all_baggage())
+                self._metadata.update(other.metadata)
+                self._baggage.update(other.baggage)
                 FlextObservabilityAdvancedContext._logger.debug("Context merged")
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
@@ -162,8 +164,8 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to restore context: {e}")
 
-        def set_baggage(self, key: str, value: str) -> r[bool]:
-            """Set baggage item (W3C Baggage API).
+        def update_baggage(self, key: str, value: str) -> r[bool]:
+            """Update a baggage item (W3C Baggage API).
 
             Args:
                 key: Baggage key
@@ -180,8 +182,8 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to set baggage: {e}")
 
-        def set_metadata(self, key: str, value: t.Scalar) -> r[bool]:
-            """Set request-local metadata.
+        def update_metadata(self, key: str, value: t.Scalar) -> r[bool]:
+            """Update request-local metadata.
 
             Args:
                 key: Metadata key
@@ -225,13 +227,13 @@ class FlextObservabilityAdvancedContext:
                 correlation_id=correlation_id,
                 trace_id=trace_id,
                 span_id=span_id,
-                baggage=dict(self.get_all_baggage()),
-                metadata=dict(self.get_all_metadata()),
+                baggage=dict(self.baggage),
+                metadata=dict(self.metadata),
             )
 
     @staticmethod
-    def get_advanced_context() -> FlextObservabilityAdvancedContext.Context:
-        """Get global advanced context instance (singleton).
+    def active_context() -> FlextObservabilityAdvancedContext.Context:
+        """Return the global advanced context instance.
 
         Returns:
             Context - Global advanced context
@@ -244,8 +246,8 @@ class FlextObservabilityAdvancedContext:
         return FlextObservabilityAdvancedContext._context_instance
 
     @staticmethod
-    def get_metadata(key: str) -> t.Scalar | None:
-        """Convenience function: get metadata.
+    def resolve_metadata(key: str) -> t.Scalar | None:
+        """Convenience function: resolve metadata.
 
         Args:
             key: Metadata key
@@ -254,12 +256,12 @@ class FlextObservabilityAdvancedContext:
             JSONValue - Metadata value or None
 
         """
-        ctx = FlextObservabilityAdvancedContext.get_advanced_context()
-        return ctx.get_metadata(key)
+        ctx = FlextObservabilityAdvancedContext.active_context()
+        return ctx.resolve_metadata(key)
 
     @staticmethod
-    def set_metadata(key: str, value: t.Scalar) -> r[bool]:
-        """Convenience function: set metadata.
+    def update_metadata(key: str, value: t.Scalar) -> r[bool]:
+        """Convenience function: update metadata.
 
         Args:
             key: Metadata key
@@ -269,8 +271,8 @@ class FlextObservabilityAdvancedContext:
             r[bool] - Ok if successful
 
         """
-        ctx = FlextObservabilityAdvancedContext.get_advanced_context()
-        return ctx.set_metadata(key, value)
+        ctx = FlextObservabilityAdvancedContext.active_context()
+        return ctx.update_metadata(key, value)
 
 
 __all__ = ["FlextObservabilityAdvancedContext"]

@@ -47,11 +47,11 @@ class FlextObservabilityProtocols(p):
         class _Span(Protocol):
             """Protocol for OpenTelemetry Span interface."""
 
-            def set_attribute(self, key: str, *, value: t.Scalar) -> None:
+            def update_attribute(self, key: str, *, value: t.Scalar) -> None:
                 """Set span attribute."""
                 ...
 
-            def set_status(self, status: int) -> None:
+            def update_status(self, status: int) -> None:
                 """Set span status."""
                 ...
 
@@ -90,7 +90,7 @@ class FlextObservabilityProtocols(p):
                 """Create a histogram metric."""
                 ...
 
-            def get_metrics(
+            def fetch_metrics(
                 self,
                 name_pattern: t.Scalar | None = None,
                 *,
@@ -134,7 +134,7 @@ class FlextObservabilityProtocols(p):
                 """Finish a trace span."""
                 ...
 
-            def get_trace(self, trace_id: str) -> p.Result[t.RuntimeData]:
+            def fetch_trace(self, trace_id: str) -> p.Result[t.RuntimeData]:
                 """Get trace by ID."""
                 ...
 
@@ -185,7 +185,7 @@ class FlextObservabilityProtocols(p):
                 """Create an alert rule."""
                 ...
 
-            def get_alerts(
+            def fetch_alerts(
                 self,
                 *,
                 level: t.Scalar | None = None,
@@ -210,13 +210,13 @@ class FlextObservabilityProtocols(p):
                 """Perform health check for a service."""
                 ...
 
-            def get_all_services_status(
+            def services_status(
                 self,
             ) -> p.Result[t.RuntimeData]:
                 """Get health status for all services."""
                 ...
 
-            def get_service_status(
+            def service_status(
                 self,
                 service_name: str,
             ) -> p.Result[t.RuntimeData]:
@@ -254,7 +254,7 @@ class FlextObservabilityProtocols(p):
                 """Create a logger instance."""
                 ...
 
-            def get_logs(
+            def fetch_logs(
                 self,
                 *,
                 level: t.Scalar | None = None,
@@ -286,7 +286,7 @@ class FlextObservabilityProtocols(p):
                 """Create an alert with given parameters."""
                 ...
 
-            def get_metrics_summary(self) -> r[t.Dict]:
+            def metrics_summary(self) -> r[t.Dict]:
                 """Get summary of collected metrics."""
                 ...
 
@@ -312,14 +312,14 @@ class FlextObservabilityProtocols(p):
                 """Create a dashboard."""
                 ...
 
-            def get_dashboard(
+            def fetch_dashboard(
                 self,
                 dashboard_id: str,
             ) -> p.Result[t.RuntimeData]:
                 """Get dashboard by ID."""
                 ...
 
-            def get_dashboard_data(
+            def fetch_dashboard_data(
                 self,
                 dashboard_id: str,
                 *,

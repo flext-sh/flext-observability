@@ -35,7 +35,7 @@ class FlextObservabilityErrorHandling:
         ```python
         from flext_observability import FlextObservabilityErrorHandling
 
-        handler = FlextObservabilityErrorHandling.get_handler()
+        handler = FlextObservabilityErrorHandling.active_handler()
 
         # Create error event
         error = ErrorEvent(
@@ -104,8 +104,8 @@ class FlextObservabilityErrorHandling:
                 error_prefix="Failed to clear error counts",
             )
 
-        def get_error_count(self, fingerprint: str) -> int:
-            """Get count of errors with given fingerprint.
+        def resolve_error_count(self, fingerprint: str) -> int:
+            """Resolve the count of errors with a given fingerprint.
 
             Args:
                 fingerprint: Error fingerprint
@@ -116,11 +116,11 @@ class FlextObservabilityErrorHandling:
             """
             return self._error_counts.get(fingerprint, 0)
 
-        def get_escalated_severity(
+        def resolve_escalated_severity(
             self,
             error: m.Observability.ErrorEvent,
         ) -> c.Observability.ErrorSeverity:
-            """Get escalated severity based on error count.
+            """Resolve escalated severity based on error count.
 
             Args:
                 error: Error event
@@ -173,9 +173,7 @@ class FlextObservabilityErrorHandling:
             def operation() -> m.Observability.ErrorEvent:
                 error.calculate_fingerprint()
                 try:
-                    error.correlation_id = (
-                        FlextObservabilityContext.get_correlation_id()
-                    )
+                    error.correlation_id = FlextObservabilityContext.correlation_id()
                 except (ValueError, TypeError, KeyError) as e:
                     FlextObservabilityErrorHandling._logger.warning(
                         f"Could not set correlation_id, falling back to empty: {e}",
@@ -194,8 +192,8 @@ class FlextObservabilityErrorHandling:
                 error_prefix="Failed to record error",
             )
 
-        def set_alert_cooldown(self, seconds: float) -> r[bool]:
-            """Set minimum seconds between alerts for same error.
+        def update_alert_cooldown(self, seconds: float) -> r[bool]:
+            """Update minimum seconds between alerts for the same error.
 
             Args:
                 seconds: Cooldown duration in seconds
@@ -218,8 +216,8 @@ class FlextObservabilityErrorHandling:
             )
             return r[bool].ok(value=True)
 
-        def set_escalation_threshold(self, threshold: int) -> r[bool]:
-            """Set threshold for error escalation.
+        def update_escalation_threshold(self, threshold: int) -> r[bool]:
+            """Update the threshold for error escalation.
 
             Args:
                 threshold: Number of errors before escalation
@@ -280,8 +278,8 @@ class FlextObservabilityErrorHandling:
                 return r[TResult].fail(f"{error_prefix}: {e}")
 
     @staticmethod
-    def get_handler() -> FlextObservabilityErrorHandling.Handler:
-        """Get global error handler instance (singleton).
+    def active_handler() -> FlextObservabilityErrorHandling.Handler:
+        """Return the global error handler instance.
 
         Returns:
             Handler - Global error handler
@@ -306,7 +304,7 @@ class FlextObservabilityErrorHandling:
             r[ErrorEvent] - Updated error with fingerprint
 
         """
-        handler = FlextObservabilityErrorHandling.get_handler()
+        handler = FlextObservabilityErrorHandling.active_handler()
         return handler.record_error(error)
 
     @staticmethod
@@ -320,7 +318,7 @@ class FlextObservabilityErrorHandling:
             bool - True if should alert
 
         """
-        handler = FlextObservabilityErrorHandling.get_handler()
+        handler = FlextObservabilityErrorHandling.active_handler()
         return handler.should_alert_for_error(error)
 
 
