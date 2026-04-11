@@ -27,9 +27,9 @@ class FlextObservabilityServices:
     def __init__(self) -> None:
         """Initialize with FLEXT core components."""
         super().__init__()
-        self._container = FlextContainer.get_global()
-        self._logger = u.get_logger(__name__)
-        self._config = FlextObservabilitySettings.get_global()
+        self._container = FlextContainer.fetch_global()
+        self._logger = u.fetch_logger(__name__)
+        self._config = FlextObservabilitySettings.fetch_global()
 
     @property
     def config(self) -> FlextObservabilitySettings:

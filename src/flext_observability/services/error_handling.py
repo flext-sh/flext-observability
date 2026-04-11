@@ -23,8 +23,7 @@ from collections.abc import Callable, MutableMapping
 
 from pydantic import ValidationError
 
-from flext_core import FlextLogger, r
-from flext_observability import FlextObservabilityContext, c, m, t
+from flext_observability import FlextObservabilityContext, c, m, t, r, u
 
 
 class FlextObservabilityErrorHandling:
@@ -55,7 +54,7 @@ class FlextObservabilityErrorHandling:
         Handler: Error handling and deduplication logic
     """
 
-    _logger = FlextLogger(__name__)
+    _logger = u.fetch_logger(__name__)
     _handler_instance: FlextObservabilityErrorHandling.Handler | None = None
 
     @staticmethod

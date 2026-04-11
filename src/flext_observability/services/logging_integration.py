@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from structlog.typing import BindableLogger
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_observability import FlextObservabilityContext, m, t
 
 
@@ -45,7 +45,7 @@ class FlextObservabilityLogging:
         ```
     """
 
-    _logger = FlextLogger(__name__)
+    _logger = u.fetch_logger(__name__)
 
     @staticmethod
     def create_logger(name: str) -> r[BindableLogger]:
@@ -73,7 +73,7 @@ class FlextObservabilityLogging:
         try:
             if not name:
                 return r[BindableLogger].fail("Logger name must be non-empty string")
-            logger = FlextLogger.get_logger(name)
+            logger = u.fetch_logger(name)
             return r[BindableLogger].ok(logger)
         except (ValueError, TypeError, KeyError) as e:
             return r[BindableLogger].fail(f"Logger creation failed: {e}")
@@ -172,7 +172,7 @@ class FlextObservabilityLogging:
 
         Example:
             ```python
-            logger = FlextLogger.get_logger("mymodule")
+            logger = u.fetch_logger("mymodule")
             result = FlextObservabilityLogging.inject_trace_context(logger)
 
             # Now all logs from this logger include trace context
@@ -218,7 +218,7 @@ class FlextObservabilityLogging:
 
         Example:
             ```python
-            logger = FlextLogger.get_logger("myapp")
+            logger = u.fetch_logger("myapp")
             result = FlextObservabilityLogging.log_with_context(
                 logger,
                 "info",

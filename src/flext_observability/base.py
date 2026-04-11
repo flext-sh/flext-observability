@@ -23,6 +23,6 @@ class FlextObservabilityServiceBase(s[t.Dict], ABC):
     @override
     def settings(self) -> FlextObservabilitySettings:
         """Return the typed observability settings namespace."""
-        return FlextSettings.get_global().get_namespace(
+        return FlextSettings.fetch_global().fetch_namespace(
             "observability", FlextObservabilitySettings
         )

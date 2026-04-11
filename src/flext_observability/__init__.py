@@ -14,7 +14,7 @@ from flext_observability.__version__ import *
 
 if _t.TYPE_CHECKING:
     from flext_core import d, e, h, r, s, x
-    from flext_observability.api import FlextObservability
+    from flext_observability.api import FlextObservability, observability
     from flext_observability.base import FlextObservabilityServiceBase
     from flext_observability.constants import FlextObservabilityConstants, c
     from flext_observability.models import FlextObservabilityModels, m
@@ -62,7 +62,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "__version__",
                 "__version_info__",
             ),
-            ".api": ("FlextObservability",),
+            ".api": (
+                "FlextObservability",
+                "observability",
+            ),
             ".base": ("FlextObservabilityServiceBase",),
             ".constants": (
                 "FlextObservabilityConstants",
@@ -146,6 +149,7 @@ __all__ = [
     "flext_monitor_function",
     "h",
     "m",
+    "observability",
     "p",
     "r",
     "s",

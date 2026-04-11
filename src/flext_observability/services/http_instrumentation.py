@@ -67,7 +67,7 @@ class FlextObservabilityHTTP:
         ASGI: Generic ASGI middleware base
     """
 
-    _logger = u.get_logger(__name__)
+    _logger = u.fetch_logger(__name__)
     HTTP_ERROR_STATUS_THRESHOLD = 400
 
     @staticmethod

@@ -18,7 +18,6 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_core import FlextLogger
 from flext_observability import m, r, t
 
 
@@ -50,7 +49,7 @@ class FlextObservabilityAdvancedContext:
         Context: Request-local context management
     """
 
-    _logger = FlextLogger.get_logger(__name__)
+    _logger = u.fetch_logger(__name__)
     _context_instance: FlextObservabilityAdvancedContext.Context | None = None
 
     class Context:

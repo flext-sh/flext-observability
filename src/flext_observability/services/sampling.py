@@ -22,7 +22,7 @@ from __future__ import annotations
 import random
 from collections.abc import MutableMapping
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_observability import FlextObservabilityContext, c
 
 
@@ -58,7 +58,7 @@ class FlextObservabilitySampling:
         Sampler: Sampling strategy configuration and decisions
     """
 
-    _logger = FlextLogger(__name__)
+    _logger = u.fetch_logger(__name__)
     _sampler_instance: FlextObservabilitySampling.Sampler | None = None
 
     class Sampler:

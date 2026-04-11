@@ -58,7 +58,7 @@ class FlextObservabilityContext:
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
     _baggage: ContextVar[t.Dict | None] = ContextVar("baggage", default=None)
-    _logger = u.get_logger(__name__)
+    _logger = u.fetch_logger(__name__)
 
     @staticmethod
     def clear_baggage() -> None:

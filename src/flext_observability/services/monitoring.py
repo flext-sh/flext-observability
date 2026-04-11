@@ -36,7 +36,7 @@ class FlextObservabilityMonitor:
     """
 
     object_callable = Callable[..., t.Scalar]
-    _logger: p.Logger = u.get_logger(__name__)
+    _logger: p.Logger = u.fetch_logger(__name__)
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""
@@ -146,9 +146,9 @@ class FlextObservabilityMonitor:
     @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
-        self._container = container or FlextContainer.get_global()
-        self._logger = u.get_logger(self.__class__.__name__)
-        self._config = FlextObservabilitySettings.get_global()
+        self._container = container or FlextContainer.fetch_global()
+        self._logger = u.fetch_logger(self.__class__.__name__)
+        self._config = FlextObservabilitySettings.fetch_global()
         self._initialized = False
         self._running = False
         self._observability_service: _ObservabilityService | None = None

@@ -59,7 +59,7 @@ class FlextObservabilityCustomMetrics:
         Registry: Metric registry management
     """
 
-    _logger = u.get_logger(__name__)
+    _logger = u.fetch_logger(__name__)
     _registry_instance: FlextObservabilityCustomMetrics.Registry | None = None
 
     class Registry:

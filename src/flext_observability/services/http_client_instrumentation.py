@@ -66,7 +66,7 @@ class FlextObservabilityHTTPClient:
         AIOHTTP: aiohttp client instrumentation (async)
     """
 
-    _logger = u.get_logger(__name__)
+    _logger = u.fetch_logger(__name__)
 
     @staticmethod
     def _is_httpx_async_client(

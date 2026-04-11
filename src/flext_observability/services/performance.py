@@ -17,7 +17,7 @@ from collections.abc import Mapping
 
 import psutil
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_observability import m
 
 
@@ -48,7 +48,7 @@ class FlextObservabilityPerformance:
         Monitor: Performance monitoring for individual operations
     """
 
-    _logger = FlextLogger.get_logger(__name__)
+    _logger = u.fetch_logger(__name__)
     _process: psutil.Process = psutil.Process()
 
     class Monitor:
