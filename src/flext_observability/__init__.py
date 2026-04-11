@@ -19,37 +19,29 @@ if _t.TYPE_CHECKING:
     from flext_core.mixins import x
     from flext_core.result import r
     from flext_core.service import s
+    from flext_observability.advanced_context import FlextObservabilityAdvancedContext
     from flext_observability.api import FlextObservability
     from flext_observability.base import FlextObservabilityServiceBase
     from flext_observability.constants import FlextObservabilityConstants, c
-    from flext_observability.models import FlextObservabilityModels, m
-    from flext_observability.protocols import FlextObservabilityProtocols, p
-    from flext_observability.services.advanced_context import (
-        FlextObservabilityAdvancedContext,
-    )
-    from flext_observability.services.context import FlextObservabilityContext
-    from flext_observability.services.custom_metrics import (
-        FlextObservabilityCustomMetrics,
-    )
-    from flext_observability.services.error_handling import (
-        FlextObservabilityErrorHandling,
-    )
-    from flext_observability.services.fields import FlextObservabilityFields
-    from flext_observability.services.health import FlextObservabilityHealth
-    from flext_observability.services.http_client_instrumentation import (
+    from flext_observability.context import FlextObservabilityContext
+    from flext_observability.custom_metrics import FlextObservabilityCustomMetrics
+    from flext_observability.error_handling import FlextObservabilityErrorHandling
+    from flext_observability.fields import FlextObservabilityFields
+    from flext_observability.health import FlextObservabilityHealth
+    from flext_observability.http_client_instrumentation import (
         FlextObservabilityHTTPClient,
     )
-    from flext_observability.services.http_instrumentation import FlextObservabilityHTTP
-    from flext_observability.services.logging_integration import (
-        FlextObservabilityLogging,
-    )
-    from flext_observability.services.monitoring import (
+    from flext_observability.http_instrumentation import FlextObservabilityHTTP
+    from flext_observability.logging_integration import FlextObservabilityLogging
+    from flext_observability.models import FlextObservabilityModels, m
+    from flext_observability.monitoring import (
         FlextObservabilityMonitor,
         flext_monitor_function,
     )
-    from flext_observability.services.performance import FlextObservabilityPerformance
-    from flext_observability.services.sampling import FlextObservabilitySampling
-    from flext_observability.services.services import FlextObservabilityServices
+    from flext_observability.performance import FlextObservabilityPerformance
+    from flext_observability.protocols import FlextObservabilityProtocols, p
+    from flext_observability.sampling import FlextObservabilitySampling
+    from flext_observability.services import FlextObservabilityServices
     from flext_observability.settings import FlextObservabilitySettings
     from flext_observability.typings import FlextObservabilityTypes, t
     from flext_observability.utilities import FlextObservabilityUtilities, u
@@ -67,20 +59,36 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "__version__",
                 "__version_info__",
             ),
+            ".advanced_context": ("FlextObservabilityAdvancedContext",),
             ".api": ("FlextObservability",),
             ".base": ("FlextObservabilityServiceBase",),
             ".constants": (
                 "FlextObservabilityConstants",
                 "c",
             ),
+            ".context": ("FlextObservabilityContext",),
+            ".custom_metrics": ("FlextObservabilityCustomMetrics",),
+            ".error_handling": ("FlextObservabilityErrorHandling",),
+            ".fields": ("FlextObservabilityFields",),
+            ".health": ("FlextObservabilityHealth",),
+            ".http_client_instrumentation": ("FlextObservabilityHTTPClient",),
+            ".http_instrumentation": ("FlextObservabilityHTTP",),
+            ".logging_integration": ("FlextObservabilityLogging",),
             ".models": (
                 "FlextObservabilityModels",
                 "m",
             ),
+            ".monitoring": (
+                "FlextObservabilityMonitor",
+                "flext_monitor_function",
+            ),
+            ".performance": ("FlextObservabilityPerformance",),
             ".protocols": (
                 "FlextObservabilityProtocols",
                 "p",
             ),
+            ".sampling": ("FlextObservabilitySampling",),
+            ".services": ("FlextObservabilityServices",),
             ".settings": ("FlextObservabilitySettings",),
             ".typings": (
                 "FlextObservabilityTypes",
