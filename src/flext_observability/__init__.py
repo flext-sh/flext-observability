@@ -13,12 +13,7 @@ from flext_core.lazy import (
 from flext_observability.__version__ import *
 
 if _t.TYPE_CHECKING:
-    from flext_core.decorators import d
-    from flext_core.exceptions import e
-    from flext_core.handlers import h
-    from flext_core.mixins import x
-    from flext_core.result import r
-    from flext_core.service import s
+    from flext_core import d, e, h, r, s, x
     from flext_observability.api import FlextObservability
     from flext_observability.base import FlextObservabilityServiceBase
     from flext_observability.constants import FlextObservabilityConstants, c
@@ -43,10 +38,7 @@ if _t.TYPE_CHECKING:
     from flext_observability.services.logging_integration import (
         FlextObservabilityLogging,
     )
-    from flext_observability.services.monitoring import (
-        FlextObservabilityMonitor,
-        flext_monitor_function,
-    )
+    from flext_observability.services.monitoring import FlextObservabilityMonitor
     from flext_observability.services.performance import FlextObservabilityPerformance
     from flext_observability.services.sampling import FlextObservabilitySampling
     from flext_observability.services.services import FlextObservabilityServices
@@ -90,12 +82,14 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextObservabilityUtilities",
                 "u",
             ),
-            "flext_core.decorators": ("d",),
-            "flext_core.exceptions": ("e",),
-            "flext_core.handlers": ("h",),
-            "flext_core.mixins": ("x",),
-            "flext_core.result": ("r",),
-            "flext_core.service": ("s",),
+            "flext_core": (
+                "d",
+                "e",
+                "h",
+                "r",
+                "s",
+                "x",
+            ),
         },
     ),
     exclude_names=(
@@ -146,7 +140,6 @@ __all__ = [
     "c",
     "d",
     "e",
-    "flext_monitor_function",
     "h",
     "m",
     "p",

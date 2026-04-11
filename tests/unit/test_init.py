@@ -36,7 +36,7 @@ class TestInitCoverage:
             "flext-observability",
             c.Observability.HealthStatus.HEALTHY,
         )
-        tm.that(result.is_success, eq=True)
+        tm.that(result.success, eq=True)
         health_check = result.value
         tm.that(health_check.status, eq="healthy")
         tm.that(health_check.component, eq="flext-observability")

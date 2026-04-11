@@ -239,7 +239,7 @@ class FlextObservabilityLogging:
                 logger,
                 include_baggage=include_baggage,
             )
-            if context_result.is_failure:
+            if context_result.failure:
                 return r[bool].fail(
                     f"Failed to get trace context: {context_result.error}",
                 )

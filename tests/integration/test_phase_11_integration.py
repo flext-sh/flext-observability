@@ -41,7 +41,7 @@ try:
         "counter",
         tags={"method": "POST", "endpoint": "/api/users"},
     )
-    assert metric_result.is_success
+    assert metric_result.success
     start_time = time.time()
     time.sleep(0.01)
     duration = time.time() - start_time
@@ -51,14 +51,14 @@ try:
         "histogram",
         tags={"method": "POST", "endpoint": "/api/users"},
     )
-    assert metric_result.is_success
+    assert metric_result.success
     metric_result = factory.create_metric(
         "http.requests.success",
         1.0,
         "counter",
         tags={"method": "POST", "endpoint": "/api/users"},
     )
-    assert metric_result.is_success
+    assert metric_result.success
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
@@ -72,21 +72,21 @@ try:
         "counter",
         tags={"system": "postgresql", "operation": "SELECT"},
     )
-    assert result.is_success
+    assert result.success
     result = factory.create_metric(
         "db.query.duration_ms",
         duration * 1000,
         "histogram",
         tags={"system": "postgresql", "operation": "SELECT"},
     )
-    assert result.is_success
+    assert result.success
     result = factory.create_metric(
         "db.query.rows_returned",
         1.0,
         "gauge",
         tags={"system": "postgresql", "operation": "SELECT"},
     )
-    assert result.is_success
+    assert result.success
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
@@ -101,7 +101,7 @@ try:
             severity=c.Observability.ErrorSeverity.ERROR,
         )
         error_result = handler.record_error(error)
-        assert error_result.is_success, "Error should be recorded"
+        assert error_result.success, "Error should be recorded"
         should_alert = handler.should_alert_for_error(error)
         if i == 2:
             escalated = handler.get_escalated_severity(error)
@@ -118,7 +118,7 @@ try:
         "counter",
         tags={"component": "api"},
     )
-    assert api_result.is_success
+    assert api_result.success
     time.sleep(0.005)
     business_result = factory.create_metric(
         "business.operations",
@@ -126,7 +126,7 @@ try:
         "counter",
         tags={"component": "business"},
     )
-    assert business_result.is_success
+    assert business_result.success
     time.sleep(0.005)
     db_result = factory.create_metric(
         "database.queries",
@@ -134,7 +134,7 @@ try:
         "counter",
         tags={"component": "database"},
     )
-    assert db_result.is_success
+    assert db_result.success
     time.sleep(0.01)
     api_success = factory.create_metric(
         "api.success",
@@ -142,7 +142,7 @@ try:
         "counter",
         tags={"component": "api"},
     )
-    assert api_success.is_success
+    assert api_success.success
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:
@@ -178,14 +178,14 @@ try:
         description="User signup events",
         namespace="auth",
     )
-    assert reg_result.is_success
+    assert reg_result.success
     reg_result = registry.register_metric(
         name="active_sessions",
         metric_type=c.Observability.MetricType.GAUGE,
         description="Currently active sessions",
         namespace="auth",
     )
-    assert reg_result.is_success
+    assert reg_result.success
     sampler.set_service_rate("auth_service", 0.5)
     sampler.set_operation_rate("user_signup", 1.0)
     metrics = registry.get_metrics_by_type(c.Observability.MetricType.COUNTER)
@@ -216,7 +216,7 @@ try:
     sampler.set_operation_rate("e2e_workflow", 1.0)
     factory = FlextObservabilityMasterFactory()
     result = factory.create_metric("workflow.started", 1.0, "counter")
-    assert result.is_success
+    assert result.success
     perf_monitor = FlextObservabilityPerformance()
     monitor = perf_monitor.start_monitoring("e2e_operation")
     adv_ctx = FlextObservabilityAdvancedContext.get_advanced_context()
@@ -234,9 +234,9 @@ try:
     perf_metrics = monitor.metrics
     assert perf_monitor.is_performance_acceptable(perf_metrics)
     result = factory.create_metric("workflow.completed", 1.0, "counter")
-    assert result.is_success
+    assert result.success
     result = factory.create_metric("workflow.duration_ms", perf_metrics.duration_ms)
-    assert result.is_success
+    assert result.success
     snapshot = adv_ctx.snapshot(
         correlation_id=FlextObservabilityContext.get_correlation_id(),
         trace_id=FlextObservabilityContext.get_trace_id(),
@@ -251,9 +251,9 @@ try:
         severity=c.Observability.ErrorSeverity.WARNING,
     )
     error_result = error_handler.record_error(test_error)
-    assert error_result.is_success
+    assert error_result.success
     result = factory.create_metric("workflow.errors", 1.0, "counter")
-    assert result.is_success
+    assert result.success
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
 try:

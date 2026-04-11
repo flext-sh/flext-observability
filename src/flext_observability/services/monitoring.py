@@ -115,7 +115,7 @@ class FlextObservabilityMonitor:
                         severity="high",
                         source="monitoring",
                     )
-                    if alert_result.is_failure:
+                    if alert_result.failure:
                         FlextObservabilityMonitor._logger.warning(
                             f"Alert creation failed: {alert_result.error}",
                         )
@@ -189,7 +189,7 @@ class FlextObservabilityMonitor:
         result = self._metrics_service.get_metrics_summary()
         return (
             r[t.Dict].ok(result.value)
-            if result.is_success
+            if result.success
             else r[t.Dict].fail(result.error)
         )
 
@@ -255,7 +255,7 @@ class FlextObservabilityMonitor:
                 metric_result = r[
                     FlextObservabilityModels.Observability.MetricEntry
                 ].fail(str(e))
-            if metric_result.is_failure:
+            if metric_result.failure:
                 return r[None].fail(metric_result.error or "Failed to create metric")
             self._logger.debug("Recorded metric: %s=%s (%s)", name, value, metric_type)
             return r[None].ok(None)
@@ -335,7 +335,7 @@ class FlextObservabilityMonitor:
                     active_monitor = monitor or FlextObservabilityMonitor()
                     if not active_monitor.flext_is_initialized():
                         init_result = active_monitor.flext_initialize_observability()
-                        if init_result.is_failure:
+                        if init_result.failure:
                             return FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
                                 func,
                                 *args,

@@ -16,10 +16,7 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".http_client_instrumentation": ("FlextObservabilityHTTPClient",),
         ".http_instrumentation": ("FlextObservabilityHTTP",),
         ".logging_integration": ("FlextObservabilityLogging",),
-        ".monitoring": (
-            "FlextObservabilityMonitor",
-            "flext_monitor_function",
-        ),
+        ".monitoring": ("FlextObservabilityMonitor",),
         ".performance": ("FlextObservabilityPerformance",),
         ".sampling": ("FlextObservabilitySampling",),
         ".services": ("FlextObservabilityServices",),

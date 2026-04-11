@@ -65,11 +65,11 @@ def demonstrate_monitoring() -> None:
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     metric_result = flext_metric("valid_metric", 100.0, "count")
-    if metric_result.is_success:
+    if metric_result.success:
         print(f"Created metric: {metric_result.value}")
     try:
         invalid_metric_result = flext_metric("invalid_metric", -10.0, "count")
-        if invalid_metric_result.is_success:
+        if invalid_metric_result.success:
             print(f"Created invalid metric: {invalid_metric_result.value}")
     except Exception as e:
         print(f"Validation error (expected): {e}")
@@ -98,7 +98,7 @@ def demonstrate_alerting_scenario() -> None:
     ]
     for level, message, service in alert_scenarios:
         alert_result = flext_alert(service, message, level)
-        if alert_result.is_success:
+        if alert_result.success:
             icons = {
                 "info": "[INFO]",
                 "warning": "[WARN]",

@@ -54,7 +54,7 @@ def demonstrate_solid_design() -> None:
     factory.create_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
     for result in results:
-        _ = hasattr(result, "is_success") and result.is_success
+        _ = hasattr(result, "success") and result.success
 
 
 def demonstrate_metrics_collection() -> None:
@@ -105,7 +105,7 @@ def demonstrate_alerting_system() -> None:
     ]
     for level, message, service in alerts:
         result = flext_alert(service, message, level)
-        if result.is_success:
+        if result.success:
             icons = {
                 "info": "[INFO]",
                 "warning": "[WARN]",
@@ -133,16 +133,16 @@ def demonstrate_factory_patterns() -> None:
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     metric_res = flext_metric("valid_metric", 100.0, "count")
-    if metric_res.is_success:
+    if metric_res.success:
         print(f"Validation successful for {type(metric_res.value).__name__}")
     trace_res = flext_trace("valid_operation")
-    if trace_res.is_success:
+    if trace_res.success:
         print(f"Validation successful for {type(trace_res.value).__name__}")
     alert_res = flext_alert("system", "Valid alert", AlertLevel.INFO)
-    if alert_res.is_success:
+    if alert_res.success:
         print(f"Validation successful for {type(alert_res.value).__name__}")
     health_res = flext_health_check("service", HealthStatus.HEALTHY)
-    if health_res.is_success:
+    if health_res.success:
         print(f"Validation successful for {type(health_res.value).__name__}")
 
 
