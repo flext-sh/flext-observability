@@ -18,23 +18,12 @@ if _t.TYPE_CHECKING:
     from flext_core.handlers import h
     from flext_core.mixins import x
     from flext_core.result import r
+    from flext_core.service import s
     from flext_observability.api import FlextObservability
-    from flext_observability.base import (
-        FlextObservabilityServiceBase,
-        FlextObservabilityServiceBase as s,
-    )
-    from flext_observability.constants import (
-        FlextObservabilityConstants,
-        FlextObservabilityConstants as c,
-    )
-    from flext_observability.models import (
-        FlextObservabilityModels,
-        FlextObservabilityModels as m,
-    )
-    from flext_observability.protocols import (
-        FlextObservabilityProtocols,
-        FlextObservabilityProtocols as p,
-    )
+    from flext_observability.base import FlextObservabilityServiceBase
+    from flext_observability.constants import FlextObservabilityConstants, c
+    from flext_observability.models import FlextObservabilityModels, m
+    from flext_observability.protocols import FlextObservabilityProtocols, p
     from flext_observability.services.advanced_context import (
         FlextObservabilityAdvancedContext,
     )
@@ -62,14 +51,8 @@ if _t.TYPE_CHECKING:
     from flext_observability.services.sampling import FlextObservabilitySampling
     from flext_observability.services.services import FlextObservabilityServices
     from flext_observability.settings import FlextObservabilitySettings
-    from flext_observability.typings import (
-        FlextObservabilityTypes,
-        FlextObservabilityTypes as t,
-    )
-    from flext_observability.utilities import (
-        FlextObservabilityUtilities,
-        FlextObservabilityUtilities as u,
-    )
+    from flext_observability.typings import FlextObservabilityTypes, t
+    from flext_observability.utilities import FlextObservabilityUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
     (".services",),
     build_lazy_import_map(
@@ -86,25 +69,33 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ),
             ".api": ("FlextObservability",),
             ".base": ("FlextObservabilityServiceBase",),
-            ".constants": ("FlextObservabilityConstants",),
-            ".models": ("FlextObservabilityModels",),
-            ".protocols": ("FlextObservabilityProtocols",),
+            ".constants": (
+                "FlextObservabilityConstants",
+                "c",
+            ),
+            ".models": (
+                "FlextObservabilityModels",
+                "m",
+            ),
+            ".protocols": (
+                "FlextObservabilityProtocols",
+                "p",
+            ),
             ".settings": ("FlextObservabilitySettings",),
-            ".typings": ("FlextObservabilityTypes",),
-            ".utilities": ("FlextObservabilityUtilities",),
+            ".typings": (
+                "FlextObservabilityTypes",
+                "t",
+            ),
+            ".utilities": (
+                "FlextObservabilityUtilities",
+                "u",
+            ),
             "flext_core.decorators": ("d",),
             "flext_core.exceptions": ("e",),
             "flext_core.handlers": ("h",),
             "flext_core.mixins": ("x",),
             "flext_core.result": ("r",),
-        },
-        alias_groups={
-            ".base": (("s", "FlextObservabilityServiceBase"),),
-            ".constants": (("c", "FlextObservabilityConstants"),),
-            ".models": (("m", "FlextObservabilityModels"),),
-            ".protocols": (("p", "FlextObservabilityProtocols"),),
-            ".typings": (("t", "FlextObservabilityTypes"),),
-            ".utilities": (("u", "FlextObservabilityUtilities"),),
+            "flext_core.service": ("s",),
         },
     ),
     exclude_names=(
@@ -118,6 +109,9 @@ _LAZY_IMPORTS = merge_lazy_imports(
     ),
     module_name=__name__,
 )
+
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__ = [
     "FlextObservability",
@@ -162,6 +156,3 @@ __all__ = [
     "u",
     "x",
 ]
-
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
