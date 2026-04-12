@@ -101,7 +101,7 @@ Provides comprehensive test fixtures and configuration:
 ```python
 # Core testing fixtures
 @pytest.fixture
-def clean_container() -> FlextContainer:
+def clean_container() -> p.Container:
     """Provide clean dependency injection container."""
 
 
