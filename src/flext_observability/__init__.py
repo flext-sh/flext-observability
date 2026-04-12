@@ -38,7 +38,10 @@ if _t.TYPE_CHECKING:
     from flext_observability.services.logging_integration import (
         FlextObservabilityLogging,
     )
-    from flext_observability.services.monitoring import FlextObservabilityMonitor
+    from flext_observability.services.monitoring import (
+        FlextObservabilityMonitor,
+        flext_monitor_function,
+    )
     from flext_observability.services.performance import FlextObservabilityPerformance
     from flext_observability.services.sampling import FlextObservabilitySampling
     from flext_observability.services.services import FlextObservabilityServices
@@ -96,6 +99,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
         },
     ),
     exclude_names=(
+        "FlextDispatcher",
+        "FlextLogger",
+        "FlextRegistry",
+        "FlextRuntime",
         "cleanup_submodule_namespace",
         "install_lazy_exports",
         "lazy_getattr",
@@ -143,6 +150,7 @@ __all__: list[str] = [
     "c",
     "d",
     "e",
+    "flext_monitor_function",
     "h",
     "m",
     "observability",
