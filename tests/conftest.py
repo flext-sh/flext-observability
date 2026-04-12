@@ -12,8 +12,6 @@ import pytest
 
 from flext_observability import FlextObservabilitySettings
 
-pytest_plugins = ["flext_tests.conftest_plugin"]
-
 
 @pytest.fixture
 def observability_settings(
