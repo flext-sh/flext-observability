@@ -21,8 +21,7 @@ class FlextObservabilitySettings(FlextSettings):
     """Runtime settings for observability components."""
 
     model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
-        env_prefix="FLEXT_OBSERVABILITY_",
-        extra="ignore",
+        env_prefix="FLEXT_OBSERVABILITY_", extra="ignore"
     )
 
     service_name: Annotated[
