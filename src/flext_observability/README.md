@@ -205,7 +205,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> t.ContainerMapping:
+def process_order(order_data: dict) -> t.RecursiveContainerMapping:
     # Automatically monitored for execution time, success/failure
     return {"status": "processed", "order_id": order_data["id"]}
 ```

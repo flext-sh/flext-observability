@@ -407,7 +407,7 @@ class FlextObservabilityProtocols(p):
 
             @runtime_checkable
             class HTTPXURL(Protocol):
-                """Protocol for httpx URL t.NormalizedValue."""
+                """Protocol for httpx URL t.RecursiveContainer."""
 
                 @property
                 def host(self) -> str | None:
@@ -421,7 +421,7 @@ class FlextObservabilityProtocols(p):
 
             @runtime_checkable
             class HTTPXRequest(Protocol):
-                """Protocol for httpx Request t.NormalizedValue."""
+                """Protocol for httpx Request t.RecursiveContainer."""
 
                 @property
                 def headers(self) -> t.MutableStrMapping:
@@ -442,7 +442,7 @@ class FlextObservabilityProtocols(p):
 
             @runtime_checkable
             class HTTPXResponse(Protocol):
-                """Protocol for httpx Response t.NormalizedValue."""
+                """Protocol for httpx Response t.RecursiveContainer."""
 
                 @property
                 def status_code(self) -> int:

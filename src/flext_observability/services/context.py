@@ -155,7 +155,7 @@ class FlextObservabilityContext:
     @staticmethod
     def resolve_baggage(
         key: str | None = None,
-    ) -> BaseModel | t.NormalizedValue | t.Dict | None:
+    ) -> BaseModel | t.RecursiveContainer | t.Dict | None:
         """Resolve baggage value.
 
         Args:
@@ -239,7 +239,7 @@ class FlextObservabilityContext:
         return FlextObservabilityContext._trace_id.get("")
 
     @staticmethod
-    def update_baggage(key: str, value: t.NormalizedValue) -> r[bool]:
+    def update_baggage(key: str, value: t.RecursiveContainer) -> r[bool]:
         """Update baggage value for metadata propagation.
 
         Baggage allows passing metadata across service boundaries
