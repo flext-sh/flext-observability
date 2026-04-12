@@ -411,4 +411,4 @@ class FlextObservabilityHTTP:
             )
 
 
-__all__ = ["FlextObservabilityHTTP"]
+__all__: list[str] = ["FlextObservabilityHTTP"]

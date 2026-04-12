@@ -113,4 +113,4 @@ class FlextObservabilityTypes(t):
 
 t = FlextObservabilityTypes
 
-__all__ = ["FlextObservabilityTypes", "t"]
+__all__: list[str] = ["FlextObservabilityTypes", "t"]

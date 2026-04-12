@@ -118,11 +118,13 @@ class FlextObservability(
             """Record a metric with validation."""
             try:
                 if not name:
-                    return r[FlextObservability.Metric].fail(
+                    return r[FlextObservability.Metric].fail_op(
+                        "record metric",
                         "Metric name must be non-empty string",
                     )
                 if math.isnan(float(value)):
-                    return r[FlextObservability.Metric].fail(
+                    return r[FlextObservability.Metric].fail_op(
+                        "record metric",
                         "Metric value must be a valid number",
                     )
                 metric_type: c.Observability.MetricType = (
@@ -148,9 +150,7 @@ class FlextObservability(
                 return r[FlextObservability.Metric].ok(metric)
             except (ValueError, TypeError, AttributeError) as e:
                 self._logger.warning(f"Metric recording failed: %s: {e}", exc_info=True)
-                return r[FlextObservability.Metric].fail(
-                    f"Metric recording failed: {e}",
-                )
+                return r[FlextObservability.Metric].fail_op("record metric", e)
 
     class TracingService:
         """Service for distributed tracing."""
@@ -173,7 +173,8 @@ class FlextObservability(
             """Start a distributed trace."""
             try:
                 if not name:
-                    return r[FlextObservability.Trace].fail(
+                    return r[FlextObservability.Trace].fail_op(
+                        "start trace",
                         "Trace name must be non-empty string",
                     )
                 resolved_attrs: dict[str, t.Scalar] = (
@@ -189,7 +190,7 @@ class FlextObservability(
                 return r[FlextObservability.Trace].ok(trace)
             except (ValueError, TypeError, AttributeError) as e:
                 self._logger.warning(f"Trace creation failed: %s: {e}", exc_info=True)
-                return r[FlextObservability.Trace].fail(f"Trace creation failed: {e}")
+                return r[FlextObservability.Trace].fail_op("start trace", e)
 
     class AlertingService:
         """Service for alert management."""
@@ -215,11 +216,13 @@ class FlextObservability(
             """Create an alert with validation."""
             try:
                 if not title:
-                    return r[FlextObservability.Alert].fail(
+                    return r[FlextObservability.Alert].fail_op(
+                        "create alert",
                         "Alert title cannot be empty",
                     )
                 if not message:
-                    return r[FlextObservability.Alert].fail(
+                    return r[FlextObservability.Alert].fail_op(
+                        "create alert",
                         "Alert message cannot be empty",
                     )
                 resolved_labels: dict[str, t.Scalar] = (
@@ -238,7 +241,7 @@ class FlextObservability(
                 return r[FlextObservability.Alert].ok(alert)
             except (ValueError, TypeError, AttributeError) as e:
                 self._logger.warning(f"Alert creation failed: %s: {e}", exc_info=True)
-                return r[FlextObservability.Alert].fail(f"Alert creation failed: {e}")
+                return r[FlextObservability.Alert].fail_op("create alert", e)
 
     class HealthService:
         """Service for health check management."""
@@ -262,11 +265,13 @@ class FlextObservability(
             """Create a health check."""
             try:
                 if not component:
-                    return r[FlextObservability.HealthCheck].fail(
+                    return r[FlextObservability.HealthCheck].fail_op(
+                        "create health check",
                         "Component name cannot be empty",
                     )
                 if status not in FlextObservability.Constants.HEALTH_STATUSES:
-                    return r[FlextObservability.HealthCheck].fail(
+                    return r[FlextObservability.HealthCheck].fail_op(
+                        "create health check",
                         f"Invalid health status: {status}",
                     )
                 resolved_details: dict[str, t.Scalar] = (
@@ -283,8 +288,9 @@ class FlextObservability(
                 return r[FlextObservability.HealthCheck].ok(health)
             except (ValueError, TypeError, AttributeError) as e:
                 self._logger.warning(f"Health check failed: %s: {e}", exc_info=True)
-                return r[FlextObservability.HealthCheck].fail(
-                    f"Health check failed: {e}",
+                return r[FlextObservability.HealthCheck].fail_op(
+                    "create health check",
+                    e,
                 )
 
     class LoggingService:
@@ -310,7 +316,8 @@ class FlextObservability(
             """Create a log entry."""
             try:
                 if not message:
-                    return r[FlextObservability.LogEntry].fail(
+                    return r[FlextObservability.LogEntry].fail_op(
+                        "create log entry",
                         "Log message cannot be empty",
                     )
                 resolved_context: dict[str, t.Scalar] = (
@@ -332,9 +339,7 @@ class FlextObservability(
                     f"Log entry creation failed: %s: {e}",
                     exc_info=True,
                 )
-                return r[FlextObservability.LogEntry].fail(
-                    f"Log entry creation failed: {e}",
-                )
+                return r[FlextObservability.LogEntry].fail_op("create log entry", e)
 
     @staticmethod
     def flext_metric(
@@ -350,11 +355,13 @@ class FlextObservability(
         _ = metric_id
         try:
             if not name:
-                return r[FlextObservability.Metric].fail(
+                return r[FlextObservability.Metric].fail_op(
+                    "create metric",
                     "Metric name must be non-empty string",
                 )
             if math.isnan(float(value)):
-                return r[FlextObservability.Metric].fail(
+                return r[FlextObservability.Metric].fail_op(
+                    "create metric",
                     "Metric value must be a valid number",
                 )
             all_labels_data: t.MutableScalarMapping = {}
@@ -381,7 +388,7 @@ class FlextObservability(
             )
             return r[FlextObservability.Metric].ok(metric)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[FlextObservability.Metric].fail(f"Metric creation failed: {e}")
+            return r[FlextObservability.Metric].fail_op("create metric", e)
 
     @staticmethod
     def flext_trace(
@@ -392,7 +399,8 @@ class FlextObservability(
         """Create a trace entity directly."""
         try:
             if not name:
-                return r[FlextObservability.Trace].fail(
+                return r[FlextObservability.Trace].fail_op(
+                    "create trace",
                     "Trace name must be non-empty string",
                 )
             resolved_attrs: dict[str, t.Scalar] = (
@@ -406,7 +414,7 @@ class FlextObservability(
             )
             return r[FlextObservability.Trace].ok(trace)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[FlextObservability.Trace].fail(f"Trace creation failed: {e}")
+            return r[FlextObservability.Trace].fail_op("create trace", e)
 
     @staticmethod
     def flext_alert(
@@ -422,9 +430,15 @@ class FlextObservability(
         _ = status
         try:
             if not message and (not title):
-                return r[FlextObservability.Alert].fail("Alert message cannot be empty")
+                return r[FlextObservability.Alert].fail_op(
+                    "create alert",
+                    "Alert message cannot be empty",
+                )
             if not title and message:
-                return r[FlextObservability.Alert].fail("Alert title cannot be empty")
+                return r[FlextObservability.Alert].fail_op(
+                    "create alert",
+                    "Alert title cannot be empty",
+                )
             resolved_labels: dict[str, t.Scalar] = (
                 dict(labels) if labels is not None else {}
             )
@@ -439,7 +453,7 @@ class FlextObservability(
             )
             return r[FlextObservability.Alert].ok(alert)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[FlextObservability.Alert].fail(f"Alert creation failed: {e}")
+            return r[FlextObservability.Alert].fail_op("create alert", e)
 
     @staticmethod
     def flext_health_check(
@@ -452,11 +466,13 @@ class FlextObservability(
         _ = health_check_id
         try:
             if not component:
-                return r[FlextObservability.HealthCheck].fail(
+                return r[FlextObservability.HealthCheck].fail_op(
+                    "create health check",
                     "Component name cannot be empty",
                 )
             if status not in FlextObservability.Constants.HEALTH_STATUSES:
-                return r[FlextObservability.HealthCheck].fail(
+                return r[FlextObservability.HealthCheck].fail_op(
+                    "create health check",
                     f"Invalid health status: {status}",
                 )
             resolved_details: dict[str, t.Scalar] = (
@@ -471,8 +487,9 @@ class FlextObservability(
             )
             return r[FlextObservability.HealthCheck].ok(health)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[FlextObservability.HealthCheck].fail(
-                f"Health check creation failed: {e}",
+            return r[FlextObservability.HealthCheck].fail_op(
+                "create health check",
+                e,
             )
 
     @staticmethod
@@ -486,7 +503,8 @@ class FlextObservability(
         """Create a log entry entity directly."""
         try:
             if not message:
-                return r[FlextObservability.LogEntry].fail(
+                return r[FlextObservability.LogEntry].fail_op(
+                    "create log entry",
                     "Log message cannot be empty",
                 )
             resolved_context: dict[str, t.Scalar] = (
@@ -503,9 +521,7 @@ class FlextObservability(
             )
             return r[FlextObservability.LogEntry].ok(entry)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[FlextObservability.LogEntry].fail(
-                f"Log entry creation failed: {e}",
-            )
+            return r[FlextObservability.LogEntry].fail_op("create log entry", e)
 
     @staticmethod
     def global_factory() -> FlextObservability.FlextObservabilityMasterFactory:
@@ -744,4 +760,4 @@ class FlextObservability(
 
 observability = FlextObservability
 
-__all__ = ["FlextObservability", "observability"]
+__all__: list[str] = ["FlextObservability", "observability"]

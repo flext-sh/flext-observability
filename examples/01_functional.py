@@ -12,7 +12,6 @@ from __future__ import annotations
 import time
 from collections.abc import Sequence
 
-from flext_core import FlextContainer
 from flext_observability import (
     FlextObservability,
     c,
@@ -43,11 +42,9 @@ def demonstrate_simple_api() -> None:
 
 
 def demonstrate_factory_pattern() -> None:
-    """Demonstrate the factory pattern for advanced usage."""
-    container = FlextContainer()
-    factory = FlextObservability.FlextObservabilityMasterFactory(container)
-    factory.create_metric("response_time", 45.2, "milliseconds")
-    factory.create_trace("payment_processing", "payment-service")
+    """Demonstrate direct facade usage for advanced flows."""
+    flext_metric("response_time", 45.2, "milliseconds")
+    flext_trace("payment_processing", {"service": "payment-service"})
 
 
 def monitored_function(data: str) -> str:
@@ -108,10 +105,8 @@ def demonstrate_alerting_scenario() -> None:
 
 
 def demonstrate_global_factory() -> None:
-    """Demonstrate global factory usage."""
-    container = FlextContainer()
-    factory = FlextObservability.FlextObservabilityMasterFactory(container)
-    factory.create_metric("global_metric", 42.0, "count")
+    """Demonstrate repeated facade usage without factory indirection."""
+    flext_metric("global_metric", 42.0, "count")
 
 
 def main() -> None:

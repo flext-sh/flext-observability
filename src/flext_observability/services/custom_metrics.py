@@ -357,4 +357,4 @@ class FlextObservabilityCustomMetrics:
         )
 
 
-__all__ = ["FlextObservabilityCustomMetrics"]
+__all__: list[str] = ["FlextObservabilityCustomMetrics"]

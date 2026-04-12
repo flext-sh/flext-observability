@@ -234,4 +234,4 @@ class FlextObservabilityConstants(c):
 
 
 c = FlextObservabilityConstants
-__all__ = ["FlextObservabilityConstants", "c"]
+__all__: list[str] = ["FlextObservabilityConstants", "c"]

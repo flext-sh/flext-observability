@@ -372,4 +372,4 @@ class FlextObservabilityContext:
         return headers
 
 
-__all__ = ["FlextObservabilityContext"]
+__all__: list[str] = ["FlextObservabilityContext"]

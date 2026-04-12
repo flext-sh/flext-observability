@@ -106,4 +106,4 @@ class FlextObservabilityFields:
         return Field(min_length=1, max_length=255, description="Trace operation name")
 
 
-__all__ = ["FlextObservabilityFields"]
+__all__: list[str] = ["FlextObservabilityFields"]

@@ -493,4 +493,4 @@ class FlextObservabilityHTTPClient:
                 return r[bool].fail(f"aiohttp instrumentation setup failed: {e}")
 
 
-__all__ = ["FlextObservabilityHTTPClient"]
+__all__: list[str] = ["FlextObservabilityHTTPClient"]

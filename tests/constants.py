@@ -24,4 +24,4 @@ class TestsFlextObservabilityConstants(
 
 
 c = TestsFlextObservabilityConstants
-__all__ = ["TestsFlextObservabilityConstants", "c"]
+__all__: list[str] = ["TestsFlextObservabilityConstants", "c"]

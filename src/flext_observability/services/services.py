@@ -91,4 +91,4 @@ class FlextObservabilityServices:
             return r[t.Dict].fail(f"Entry processing failed: {e}")
 
 
-__all__ = ["FlextObservabilityServices"]
+__all__: list[str] = ["FlextObservabilityServices"]

@@ -209,4 +209,4 @@ class FlextObservabilityPerformance:
         return FlextObservabilityPerformance.Monitor(operation)
 
 
-__all__ = ["FlextObservabilityPerformance"]
+__all__: list[str] = ["FlextObservabilityPerformance"]

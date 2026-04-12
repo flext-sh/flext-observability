@@ -22,4 +22,4 @@ class TestsFlextObservabilityTypes(FlextTestsTypes, FlextObservabilityTypes):
 
 
 t = TestsFlextObservabilityTypes
-__all__ = ["TestsFlextObservabilityTypes", "t"]
+__all__: list[str] = ["TestsFlextObservabilityTypes", "t"]

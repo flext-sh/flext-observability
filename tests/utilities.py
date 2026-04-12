@@ -18,4 +18,4 @@ class TestsFlextObservabilityUtilities(
 
 
 u = TestsFlextObservabilityUtilities
-__all__ = ["TestsFlextObservabilityUtilities", "u"]
+__all__: list[str] = ["TestsFlextObservabilityUtilities", "u"]

@@ -16,4 +16,4 @@ class TestsFlextObservabilityModels(FlextTestsModels, FlextObservabilityModels):
 
 
 m = TestsFlextObservabilityModels
-__all__ = ["TestsFlextObservabilityModels", "m"]
+__all__: list[str] = ["TestsFlextObservabilityModels", "m"]

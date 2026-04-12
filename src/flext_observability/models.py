@@ -500,4 +500,4 @@ class FlextObservabilityModels(m):
 
 m = FlextObservabilityModels
 
-__all__ = ["FlextObservabilityModels", "m"]
+__all__: list[str] = ["FlextObservabilityModels", "m"]

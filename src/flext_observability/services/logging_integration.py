@@ -300,4 +300,4 @@ class FlextObservabilityLogging:
             )
 
 
-__all__ = ["FlextObservabilityLogging"]
+__all__: list[str] = ["FlextObservabilityLogging"]

@@ -161,7 +161,8 @@ class FlextObservabilityMonitor:
         """Resolve complete health status with real metrics."""
         try:
             if not self._observability_service:
-                return r[t.Observability.HealthMetricsDict].fail(
+                return r[t.Observability.HealthMetricsDict].fail_op(
+                    "resolve health status",
                     "Observability service not available",
                 )
             health_data: t.MutableContainerMapping = {
@@ -178,19 +179,26 @@ class FlextObservabilityMonitor:
             }
             return r[t.Observability.HealthMetricsDict].ok(health_data)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[t.Observability.HealthMetricsDict].fail(
-                f"Health status check failed: {e}",
+            return r[t.Observability.HealthMetricsDict].fail_op(
+                "resolve health status",
+                e,
             )
 
     def flext_metrics_summary(self) -> r[t.Dict]:
         """Resolve complete metrics summary."""
         if not self._metrics_service:
-            return r[t.Dict].fail("Metrics service not available")
+            return r[t.Dict].fail_op(
+                "resolve metrics summary",
+                "Metrics service not available",
+            )
         result = self._metrics_service.metrics_summary()
         return (
             r[t.Dict].ok(result.value)
             if result.success
-            else r[t.Dict].fail(result.error)
+            else r[t.Dict].fail_op(
+                "resolve metrics summary",
+                result.error or "Metrics summary failed",
+            )
         )
 
     def flext_initialize_observability(self) -> r[None]:
@@ -199,7 +207,10 @@ class FlextObservabilityMonitor:
             return r[None].ok(None)
         try:
             if not self._config:
-                return r[None].fail("Configuration not available")
+                return r[None].fail_op(
+                    "initialize observability",
+                    "Configuration not available",
+                )
             if (
                 not self._config.metrics_enabled
                 and (not self._config.tracing_enabled)
@@ -214,12 +225,12 @@ class FlextObservabilityMonitor:
                 self._metrics_service = self._observability_service
                 self._health_service = self._observability_service
             except (ValueError, TypeError, KeyError) as e:
-                return r[None].fail(f"Observability initialization failed: {e}")
+                return r[None].fail_op("initialize observability", e)
             self._initialized = True
             self._logger.info("Observability monitor initialized successfully")
             return r[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[None].fail(f"Observability initialization failed: {e}")
+            return r[None].fail_op("initialize observability", e)
 
     def flext_initialized(self) -> bool:
         """Return whether observability services are initialized."""
@@ -254,18 +265,24 @@ class FlextObservabilityMonitor:
             except (ValueError, TypeError, KeyError) as e:
                 metric_result = r[
                     FlextObservabilityModels.Observability.MetricEntry
-                ].fail(str(e))
+                ].fail_op("build metric entry", e)
             if metric_result.failure:
-                return r[None].fail(metric_result.error or "Failed to create metric")
+                return r[None].fail_op(
+                    "record metric",
+                    metric_result.error or "Failed to create metric",
+                )
             self._logger.debug("Recorded metric: %s=%s (%s)", name, value, metric_type)
             return r[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[None].fail(f"Failed to record metric: {e}")
+            return r[None].fail_op("record metric", e)
 
     def flext_start_monitoring(self) -> r[None]:
         """Start real observability monitoring with service coordination."""
         if not self._initialized:
-            return r[None].fail("Monitor not initialized")
+            return r[None].fail_op(
+                "start monitoring",
+                "Monitor not initialized",
+            )
         if self._running:
             return r[None].ok(None)
         try:
@@ -274,7 +291,7 @@ class FlextObservabilityMonitor:
             self._monitor_start_time = time.time()
             return r[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[None].fail(f"Failed to start monitoring: {e}")
+            return r[None].fail_op("start monitoring", e)
 
     def flext_stop_monitoring(self) -> r[None]:
         """Stop observability monitoring with graceful service shutdown."""
@@ -285,7 +302,7 @@ class FlextObservabilityMonitor:
             self._running = False
             return r[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
-            return r[None].fail(f"Failed to stop monitoring: {e}")
+            return r[None].fail_op("stop monitoring", e)
 
     @property
     def observability_service(self) -> _ObservabilityService | None:

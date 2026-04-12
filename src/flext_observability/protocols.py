@@ -501,4 +501,4 @@ class FlextObservabilityProtocols(p):
 
 
 p = FlextObservabilityProtocols
-__all__ = ["FlextObservabilityProtocols", "p"]
+__all__: list[str] = ["FlextObservabilityProtocols", "p"]

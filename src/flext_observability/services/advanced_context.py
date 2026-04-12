@@ -275,4 +275,4 @@ class FlextObservabilityAdvancedContext:
         return ctx.update_metadata(key, value)
 
 
-__all__ = ["FlextObservabilityAdvancedContext"]
+__all__: list[str] = ["FlextObservabilityAdvancedContext"]

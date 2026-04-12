@@ -310,4 +310,4 @@ class FlextObservabilitySampling:
         return sampler.should_sample(operation=operation, service=service)
 
 
-__all__ = ["FlextObservabilitySampling"]
+__all__: list[str] = ["FlextObservabilitySampling"]

@@ -322,4 +322,4 @@ class FlextObservabilityErrorHandling:
         return handler.should_alert_for_error(error)
 
 
-__all__ = ["FlextObservabilityErrorHandling"]
+__all__: list[str] = ["FlextObservabilityErrorHandling"]

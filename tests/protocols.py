@@ -24,4 +24,4 @@ class TestsFlextObservabilityProtocols(
 
 
 p = TestsFlextObservabilityProtocols
-__all__ = ["TestsFlextObservabilityProtocols", "p"]
+__all__: list[str] = ["TestsFlextObservabilityProtocols", "p"]

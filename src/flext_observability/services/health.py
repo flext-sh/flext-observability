@@ -18,4 +18,4 @@ class FlextObservabilityHealth:
     """
 
 
-__all__ = ["FlextObservabilityHealth"]
+__all__: list[str] = ["FlextObservabilityHealth"]
