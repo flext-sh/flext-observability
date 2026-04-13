@@ -251,7 +251,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
+from flext_core import r, p
 from flext_core import u
 from flext_core import s
 from flext_core import t
@@ -306,7 +306,9 @@ flext-observability
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-    def create_metric(self, name: str, value: float, unit: str = "") -> r[FlextMetric]:
+    def create_metric(
+        self, name: str, value: float, unit: str = ""
+    ) -> p.Result[FlextMetric]:
         """Create validated metric with domain rules."""
         # Domain validation
         # Entity creation
@@ -324,7 +326,7 @@ class FlextMetricsService:
         self._container = container
         # Dependency injection setup
 
-    def record_metric(self, metric: FlextMetric) -> r[FlextMetric]:
+    def record_metric(self, metric: FlextMetric) -> p.Result[FlextMetric]:
         """Record metric with business logic."""
         # Business validation
         # Storage operations
@@ -338,11 +340,11 @@ class FlextMetricsService:
 class FlextMetricsRepository(Protocol):
     """Repository interface for metrics persistence."""
 
-    def store_metric(self, metric: FlextMetric) -> r[bool]:
+    def store_metric(self, metric: FlextMetric) -> p.Result[bool]:
         """Store metric with persistence abstraction."""
         ...
 
-    def query_metrics(self, criteria: MetricsCriteria) -> r[List[FlextMetric]]:
+    def query_metrics(self, criteria: MetricsCriteria) -> p.Result[List[FlextMetric]]:
         """Query metrics with filtering."""
         ...
 ```
@@ -412,11 +414,11 @@ class FlextMetricsRepository(Protocol):
 class FlextObservabilityPlugin(Protocol):
     """Plugin interface for extending observability."""
 
-    def on_metric_created(self, metric: FlextMetric) -> r[bool]:
+    def on_metric_created(self, metric: FlextMetric) -> p.Result[bool]:
         """Hook called when metrics are created."""
         ...
 
-    def on_trace_started(self, trace: FlextTrace) -> r[bool]:
+    def on_trace_started(self, trace: FlextTrace) -> p.Result[bool]:
         """Hook called when traces are started."""
         ...
 ```

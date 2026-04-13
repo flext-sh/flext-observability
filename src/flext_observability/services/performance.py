@@ -17,7 +17,7 @@ from collections.abc import Mapping
 
 import psutil
 
-from flext_observability import m, r, u
+from flext_observability import m, p, r, u
 
 
 class FlextObservabilityPerformance:
@@ -171,7 +171,9 @@ class FlextObservabilityPerformance:
         return metrics.duration_ms < threshold
 
     @staticmethod
-    def log_performance_metrics(metrics: m.Observability.PerformanceMetrics) -> r[bool]:
+    def log_performance_metrics(
+        metrics: m.Observability.PerformanceMetrics,
+    ) -> p.Result[bool]:
         """Log performance metrics for operation.
 
         Args:

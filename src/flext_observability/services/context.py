@@ -18,7 +18,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ValidationError
 
-from flext_core import r, u
+from flext_core import p, r, u
 from flext_observability import m, t
 
 
@@ -109,7 +109,7 @@ class FlextObservabilityContext:
         FlextObservabilityContext._trace_id.set("")
 
     @staticmethod
-    def from_headers(headers: t.Dict | t.ScalarMapping) -> r[bool]:
+    def from_headers(headers: t.Dict | t.ScalarMapping) -> p.Result[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -239,7 +239,7 @@ class FlextObservabilityContext:
         return FlextObservabilityContext._trace_id.get("")
 
     @staticmethod
-    def update_baggage(key: str, value: t.RecursiveContainer) -> r[bool]:
+    def update_baggage(key: str, value: t.RecursiveContainer) -> p.Result[bool]:
         """Update baggage value for metadata propagation.
 
         Baggage allows passing metadata across service boundaries

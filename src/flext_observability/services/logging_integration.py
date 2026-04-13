@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from structlog.typing import BindableLogger
 
-from flext_observability import FlextObservabilityContext, m, r, t, u
+from flext_observability import FlextObservabilityContext, m, p, r, t, u
 
 
 class FlextObservabilityLogging:
@@ -47,7 +47,7 @@ class FlextObservabilityLogging:
     _logger = u.fetch_logger(__name__)
 
     @staticmethod
-    def create_logger(name: str) -> r[BindableLogger]:
+    def create_logger(name: str) -> p.Result[BindableLogger]:
         """Create logger with trace context enrichment.
 
         Creates a logger that automatically includes correlation ID,
@@ -82,7 +82,7 @@ class FlextObservabilityLogging:
         _logger: BindableLogger,
         *,
         include_baggage: bool = False,
-    ) -> r[m.Observability.LogContext]:
+    ) -> p.Result[m.Observability.LogContext]:
         """Get trace context for log enrichment.
 
         Retrieves current trace context (correlation ID, trace ID, span ID)
@@ -157,7 +157,7 @@ class FlextObservabilityLogging:
         return current_id
 
     @staticmethod
-    def inject_trace_context(logger: BindableLogger) -> r[bool]:
+    def inject_trace_context(logger: BindableLogger) -> p.Result[bool]:
         """Inject trace context into logger for structured logging.
 
         Configures logger to automatically include trace context in all
@@ -199,7 +199,7 @@ class FlextObservabilityLogging:
         extra: t.ConfigurationMapping | None = None,
         *,
         include_baggage: bool = False,
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Log message with automatic trace context.
 
         Logs a message while automatically enriching it with correlation ID,
@@ -259,7 +259,7 @@ class FlextObservabilityLogging:
             return r[bool].fail(f"Logging with context failed: {e}")
 
     @staticmethod
-    def validate_context() -> r[m.Observability.LogContext]:
+    def validate_context() -> p.Result[m.Observability.LogContext]:
         """Validate current trace context is properly configured.
 
         Checks that essential trace context (correlation ID) is set.

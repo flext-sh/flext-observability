@@ -22,7 +22,7 @@ from __future__ import annotations
 import random
 from collections.abc import MutableMapping
 
-from flext_observability import FlextObservabilityContext, c, r, u
+from flext_observability import FlextObservabilityContext, c, p, r, u
 
 
 class FlextObservabilitySampling:
@@ -117,7 +117,7 @@ class FlextObservabilitySampling:
                 return c.Observability.SamplingDecision.SAMPLED
             return c.Observability.SamplingDecision.NOT_SAMPLED
 
-        def update_default_rate(self, rate: float) -> r[bool]:
+        def update_default_rate(self, rate: float) -> p.Result[bool]:
             """Update the default sampling rate (0.0 to 1.0).
 
             Args:
@@ -143,7 +143,7 @@ class FlextObservabilitySampling:
             )
             return r[bool].ok(value=True)
 
-        def update_environment(self, environment: str) -> r[bool]:
+        def update_environment(self, environment: str) -> p.Result[bool]:
             """Update the current environment for sampling configuration.
 
             Args:
@@ -170,7 +170,7 @@ class FlextObservabilitySampling:
             )
             return r[bool].ok(value=True)
 
-        def update_operation_rate(self, operation: str, rate: float) -> r[bool]:
+        def update_operation_rate(self, operation: str, rate: float) -> p.Result[bool]:
             """Update the sampling rate for a specific operation.
 
             Args:
@@ -195,7 +195,7 @@ class FlextObservabilitySampling:
             )
             return r[bool].ok(value=True)
 
-        def update_service_rate(self, service: str, rate: float) -> r[bool]:
+        def update_service_rate(self, service: str, rate: float) -> p.Result[bool]:
             """Update the sampling rate for a specific service.
 
             Args:

@@ -402,15 +402,15 @@ class FlextObservabilityServices(u):
     """Unified service class with all observability operations."""
 
     @classmethod
-    def record_counter(cls, name: str, value: float = 1.0) -> r[bool]:
+    def record_counter(cls, name: str, value: float = 1.0) -> p.Result[bool]:
         """Record counter metric with thread safety."""
 
     @classmethod
-    def create_trace(cls, operation: str) -> r[FlextTrace]:
+    def create_trace(cls, operation: str) -> p.Result[FlextTrace]:
         """Create new distributed trace."""
 
     @classmethod
-    def evaluate_alert(cls, alert: FlextAlert) -> r[bool]:
+    def evaluate_alert(cls, alert: FlextAlert) -> p.Result[bool]:
         """Evaluate alert conditions."""
 ```
 
@@ -420,10 +420,12 @@ class FlextObservabilityServices(u):
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
-    def create_metric(self, name: str, value: float, unit: str) -> r[FlextMetric]:
+    def create_metric(
+        self, name: str, value: float, unit: str
+    ) -> p.Result[FlextMetric]:
         """Create validated metric entity."""
 
-    def create_trace(self, operation: str, context: dict) -> r[FlextTrace]:
+    def create_trace(self, operation: str, context: dict) -> p.Result[FlextTrace]:
         """Create validated trace entity."""
 ```
 

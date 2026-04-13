@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_observability import m, r, t, u
+from flext_observability import m, p, r, t, u
 
 
 class FlextObservabilityAdvancedContext:
@@ -62,7 +62,7 @@ class FlextObservabilityAdvancedContext:
             self._request_id: str = ""
             self._parent_context: m.Observability.ContextSnapshot | None = None
 
-        def clear(self) -> r[bool]:
+        def clear(self) -> p.Result[bool]:
             """Clear all request-local context.
 
             Returns:
@@ -122,7 +122,9 @@ class FlextObservabilityAdvancedContext:
             """
             return self._metadata.get(key)
 
-        def merge(self, other: FlextObservabilityAdvancedContext.Context) -> r[bool]:
+        def merge(
+            self, other: FlextObservabilityAdvancedContext.Context
+        ) -> p.Result[bool]:
             """Merge another context into this one.
 
             Args:
@@ -140,7 +142,7 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to merge context: {e}")
 
-        def restore(self, snapshot: m.Observability.ContextSnapshot) -> r[bool]:
+        def restore(self, snapshot: m.Observability.ContextSnapshot) -> p.Result[bool]:
             """Restore context from snapshot.
 
             Args:
@@ -164,7 +166,7 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to restore context: {e}")
 
-        def update_baggage(self, key: str, value: str) -> r[bool]:
+        def update_baggage(self, key: str, value: str) -> p.Result[bool]:
             """Update a baggage item (W3C Baggage API).
 
             Args:
@@ -182,7 +184,7 @@ class FlextObservabilityAdvancedContext:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to set baggage: {e}")
 
-        def update_metadata(self, key: str, value: t.Scalar) -> r[bool]:
+        def update_metadata(self, key: str, value: t.Scalar) -> p.Result[bool]:
             """Update request-local metadata.
 
             Args:
@@ -260,7 +262,7 @@ class FlextObservabilityAdvancedContext:
         return ctx.resolve_metadata(key)
 
     @staticmethod
-    def update_metadata(key: str, value: t.Scalar) -> r[bool]:
+    def update_metadata(key: str, value: t.Scalar) -> p.Result[bool]:
         """Convenience function: update metadata.
 
         Args:

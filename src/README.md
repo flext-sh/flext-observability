@@ -58,7 +58,7 @@ src/flext_observability/
 
 ## Integration Points
 
-- **flext-core**: Foundation patterns (FlextModels.Entity, r, FlextContainer)
+- **flext-core**: Foundation patterns (FlextModels.Entity, r, p, FlextContainer)
 - **OpenTelemetry**: Industry-standard telemetry (future integration)
 - **Prometheus**: Metrics export and collection compatibility
 - **Structured Logging**: JSON logging with correlation ID support

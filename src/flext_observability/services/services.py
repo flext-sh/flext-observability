@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from structlog.typing import BindableLogger
 
-from flext_core import FlextContainer, r, u
+from flext_core import FlextContainer, p, r, u
 from flext_observability import FlextObservabilitySettings, p, t
 
 
@@ -51,15 +51,15 @@ class FlextObservabilityServices:
         """Access FLEXT logger."""
         return self._logger
 
-    def create_alert(self, **_kwargs: t.Scalar) -> r[t.Dict]:
+    def create_alert(self, **_kwargs: t.Scalar) -> p.Result[t.Dict]:
         """Generic alert creation - not implemented in base service."""
         return r[t.Dict].fail("Alert creation not implemented in generic service")
 
-    def metrics_summary(self) -> r[t.Dict]:
+    def metrics_summary(self) -> p.Result[t.Dict]:
         """Generic metrics summary - not implemented in base service."""
         return r[t.Dict].fail("Metrics summary not implemented in generic service")
 
-    def status(self) -> r[t.Dict]:
+    def status(self) -> p.Result[t.Dict]:
         """Resolve generic service status through FLEXT patterns."""
         try:
             status = {
@@ -78,7 +78,7 @@ class FlextObservabilityServices:
         except (ValueError, TypeError, KeyError) as e:
             return r[t.Dict].fail(f"Status check failed: {e}")
 
-    def process_entry(self, entry_data: t.Dict) -> r[t.Dict]:
+    def process_entry(self, entry_data: t.Dict) -> p.Result[t.Dict]:
         """Process generic observability entry through FLEXT patterns."""
         try:
             if not entry_data:

@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import TypeAlias, override
 from uuid import uuid4
 
-from flext_core import FlextContainer, r, u
+from flext_core import FlextContainer, p, r, u
 from flext_observability import (
     FlextObservabilityModels,
     FlextObservabilityServices,
@@ -157,7 +157,7 @@ class FlextObservabilityMonitor:
         self._monitor_start_time = time.time()
         self._functions_monitored = 0
 
-    def flext_health_status(self) -> r[t.Observability.HealthMetricsDict]:
+    def flext_health_status(self) -> p.Result[t.Observability.HealthMetricsDict]:
         """Resolve complete health status with real metrics."""
         try:
             if not self._observability_service:
@@ -184,7 +184,7 @@ class FlextObservabilityMonitor:
                 e,
             )
 
-    def flext_metrics_summary(self) -> r[t.Dict]:
+    def flext_metrics_summary(self) -> p.Result[t.Dict]:
         """Resolve complete metrics summary."""
         if not self._metrics_service:
             return r[t.Dict].fail_op(
@@ -201,7 +201,7 @@ class FlextObservabilityMonitor:
             )
         )
 
-    def flext_initialize_observability(self) -> r[None]:
+    def flext_initialize_observability(self) -> p.Result[None]:
         """Initialize all observability services with real functionality and settings integration."""
         if self._initialized:
             return r[None].ok(None)
@@ -245,7 +245,7 @@ class FlextObservabilityMonitor:
         name: str,
         value: float,
         metric_type: str = _obs_c.Observability.MetricType.GAUGE,
-    ) -> r[None]:
+    ) -> p.Result[None]:
         """Record metric through the monitoring system with settings validation."""
         try:
             if not self._config.metrics_enabled:
@@ -276,7 +276,7 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return r[None].fail_op("record metric", e)
 
-    def flext_start_monitoring(self) -> r[None]:
+    def flext_start_monitoring(self) -> p.Result[None]:
         """Start real observability monitoring with service coordination."""
         if not self._initialized:
             return r[None].fail_op(
@@ -293,7 +293,7 @@ class FlextObservabilityMonitor:
         except (ValueError, TypeError, AttributeError) as e:
             return r[None].fail_op("start monitoring", e)
 
-    def flext_stop_monitoring(self) -> r[None]:
+    def flext_stop_monitoring(self) -> p.Result[None]:
         """Stop observability monitoring with graceful service shutdown."""
         if not self._running:
             return r[None].ok(None)

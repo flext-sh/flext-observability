@@ -23,7 +23,7 @@ from collections.abc import Callable, MutableMapping
 
 from pydantic import ValidationError
 
-from flext_observability import FlextObservabilityContext, c, m, r, t, u
+from flext_observability import FlextObservabilityContext, c, m, p, r, t, u
 
 
 class FlextObservabilityErrorHandling:
@@ -79,7 +79,9 @@ class FlextObservabilityErrorHandling:
             self._escalation_threshold = 5
             self._deduplication_window_sec = 300
 
-        def clear_error_counts(self, older_than_sec: float | None = None) -> r[bool]:
+        def clear_error_counts(
+            self, older_than_sec: float | None = None
+        ) -> p.Result[bool]:
             """Clear error counts.
 
             Args:
@@ -154,7 +156,7 @@ class FlextObservabilityErrorHandling:
         def record_error(
             self,
             error: m.Observability.ErrorEvent,
-        ) -> r[m.Observability.ErrorEvent]:
+        ) -> p.Result[m.Observability.ErrorEvent]:
             """Record an error event.
 
             Args:
@@ -192,7 +194,7 @@ class FlextObservabilityErrorHandling:
                 error_prefix="Failed to record error",
             )
 
-        def update_alert_cooldown(self, seconds: float) -> r[bool]:
+        def update_alert_cooldown(self, seconds: float) -> p.Result[bool]:
             """Update minimum seconds between alerts for the same error.
 
             Args:
@@ -216,7 +218,7 @@ class FlextObservabilityErrorHandling:
             )
             return r[bool].ok(value=True)
 
-        def update_escalation_threshold(self, threshold: int) -> r[bool]:
+        def update_escalation_threshold(self, threshold: int) -> p.Result[bool]:
             """Update the threshold for error escalation.
 
             Args:
@@ -270,7 +272,7 @@ class FlextObservabilityErrorHandling:
             operation: Callable[[], TResult],
             *,
             error_prefix: str,
-        ) -> r[TResult]:
+        ) -> p.Result[TResult]:
             try:
                 return r[TResult].ok(operation())
             except (ValueError, TypeError, KeyError) as e:
@@ -294,7 +296,7 @@ class FlextObservabilityErrorHandling:
     @staticmethod
     def record_error(
         error: m.Observability.ErrorEvent,
-    ) -> r[m.Observability.ErrorEvent]:
+    ) -> p.Result[m.Observability.ErrorEvent]:
         """Convenience function: record an error.
 
         Args:

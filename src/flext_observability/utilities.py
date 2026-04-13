@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import u
-from flext_observability import r, t
+from flext_observability import p, r, t
 
 
 class FlextObservabilityUtilities(u):
@@ -45,7 +45,7 @@ class FlextObservabilityUtilities(u):
             """Performance tracking helpers."""
 
             @staticmethod
-            def calculate_duration(start_ns: int, end_ns: int) -> r[float]:
+            def calculate_duration(start_ns: int, end_ns: int) -> p.Result[float]:
                 """Calculate duration in seconds from nanosecond timestamps."""
                 if end_ns < start_ns:
                     return r[float].fail("end_ns must be >= start_ns")

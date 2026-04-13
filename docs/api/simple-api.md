@@ -98,7 +98,7 @@ def flext_create_metric(
     unit: str = "",
     tags: t.StringDict | None = None,
     metric_type: str = "gauge"
-) -> r[FlextMetric]
+) -> p.Result[FlextMetric]
 ```
 
 #### Parameters
@@ -169,7 +169,7 @@ def flext_create_trace(
     service_name: str,
     context: t.StringDict | None = None,
     parent_trace_id: str | None = None
-) -> r[FlextTrace]
+) -> p.Result[FlextTrace]
 ```
 
 #### Parameters
@@ -227,7 +227,7 @@ def flext_create_alert(
     severity: str,
     message: str,
     details: t.StringDict | None = None
-) -> r[FlextAlert]
+) -> p.Result[FlextAlert]
 ```
 
 #### Parameters
@@ -287,7 +287,7 @@ def flext_create_health_check(
     status: str,
     message: str = "",
     details: t.StringDict | None = None
-) -> r[FlextHealthCheck]
+) -> p.Result[FlextHealthCheck]
 ```
 
 #### Parameters
@@ -346,7 +346,7 @@ def flext_create_log_entry(
     message: str,
     context: t.StringDict | None = None,
     correlation_id: str | None = None
-) -> r[FlextLogEntry]
+) -> p.Result[FlextLogEntry]
 ```
 
 #### Parameters
@@ -402,7 +402,7 @@ ______________________________________________________________________
 from flext_observability import flext_create_metric, flext_create_trace
 
 
-def process_business_operation(data: dict) -> r[t.Dict]:
+def process_business_operation(data: dict) -> p.Result[t.Dict]:
     """Example of chaining observability operations."""
 
     # Create metric - handle potential failure
@@ -452,7 +452,7 @@ def create_system_metrics() -> Sequence[r[FlextMetric]]:
 ### Pattern 3: Observability Context Propagation
 
 ```python
-def handle_user_request(user_id: str, operation: str) -> r[t.Dict]:
+def handle_user_request(user_id: str, operation: str) -> p.Result[t.Dict]:
     """Example of propagating context through observability."""
 
     # Create base context

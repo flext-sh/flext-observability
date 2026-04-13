@@ -28,13 +28,14 @@ from typing import TypeIs
 import flask
 from pydantic import ValidationError
 
-from flext_core import r, u
 from flext_observability import (
     FlextObservabilityContext,
     FlextObservabilityLogging,
     m,
     p,
+    r,
     t,
+    u,
 )
 
 g = flask.g if hasattr(flask, "g") else None
@@ -88,7 +89,7 @@ class FlextObservabilityHTTP:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: t.RegisterableService) -> r[bool]:
+        def setup_instrumentation(app: t.RegisterableService) -> p.Result[bool]:
             """Setup Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -255,7 +256,7 @@ class FlextObservabilityHTTP:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @staticmethod
-        def setup_instrumentation(app: t.RegisterableService) -> r[bool]:
+        def setup_instrumentation(app: t.RegisterableService) -> p.Result[bool]:
             """Setup FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,

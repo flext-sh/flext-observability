@@ -22,7 +22,7 @@ from collections.abc import MutableMapping
 
 from pydantic import ValidationError
 
-from flext_core import r, u
+from flext_core import p, r, u
 from flext_observability import c, m, t
 
 
@@ -74,7 +74,7 @@ class FlextObservabilityCustomMetrics:
             self._metric_instances: t.MutableScalarMapping = {}
             self._namespaces: t.MutableStrMapping = {}
 
-        def clear_metrics(self, namespace: str | None = None) -> r[bool]:
+        def clear_metrics(self, namespace: str | None = None) -> p.Result[bool]:
             """Clear metrics from registry.
 
             Args:
@@ -201,7 +201,7 @@ class FlextObservabilityCustomMetrics:
             description: str,
             unit: str = "1",
             namespace: str = "default",
-        ) -> r[bool]:
+        ) -> p.Result[bool]:
             """Register a custom metric.
 
             Args:
@@ -258,7 +258,9 @@ class FlextObservabilityCustomMetrics:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Metric registration failed: {e}")
 
-        def unregister_metric(self, name: str, namespace: str = "default") -> r[bool]:
+        def unregister_metric(
+            self, name: str, namespace: str = "default"
+        ) -> p.Result[bool]:
             """Unregister a metric.
 
             Args:
@@ -333,7 +335,7 @@ class FlextObservabilityCustomMetrics:
         description: str,
         unit: str = "1",
         namespace: str = "default",
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Convenience function: register a metric.
 
         Args:

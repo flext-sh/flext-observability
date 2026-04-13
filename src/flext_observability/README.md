@@ -159,7 +159,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
+from flext_core import r, p
 from flext_core import u
 from flext_core import s
 from flext_core import t
@@ -226,7 +226,7 @@ All modules follow FLEXT ecosystem standards:
 ```python
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
-def handle_user_request(request: dict) -> r[t.Dict]:
+def handle_user_request(request: dict) -> p.Result[t.Dict]:
     # Automatic metrics, tracing, and logging
     return r[bool].ok({"status": "processed"})
 ```

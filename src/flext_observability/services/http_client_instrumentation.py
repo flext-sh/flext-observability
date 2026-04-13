@@ -26,7 +26,7 @@ from typing import ClassVar, TypeIs
 
 from pydantic import ValidationError
 
-from flext_core import r, u
+from flext_core import p, r, u
 from flext_observability import (
     FlextObservabilityContext,
     FlextObservabilityLogging,
@@ -105,7 +105,7 @@ class FlextObservabilityHTTPClient:
         instrumented_clients: ClassVar[set[int]] = set()
 
         @staticmethod
-        def setup_instrumentation(client: t.RegisterableService) -> r[bool]:
+        def setup_instrumentation(client: t.RegisterableService) -> p.Result[bool]:
             """Setup httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -356,7 +356,7 @@ class FlextObservabilityHTTPClient:
         ] = set()
 
         @staticmethod
-        def setup_instrumentation(session: t.RegisterableService) -> r[bool]:
+        def setup_instrumentation(session: t.RegisterableService) -> p.Result[bool]:
             """Setup aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests

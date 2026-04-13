@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable, Sequence
 from typing import Protocol, runtime_checkable
 
-from flext_core import p, r
+from flext_core import p
 from flext_observability import t
 
 
@@ -282,11 +282,11 @@ class FlextObservabilityProtocols(p):
         class ObservabilityService(Protocol):
             """Protocol for observability services providing alerts and metrics."""
 
-            def create_alert(self, **kwargs: t.Scalar) -> r[t.Dict]:
+            def create_alert(self, **kwargs: t.Scalar) -> p.Result[t.Dict]:
                 """Create an alert with given parameters."""
                 ...
 
-            def metrics_summary(self) -> r[t.Dict]:
+            def metrics_summary(self) -> p.Result[t.Dict]:
                 """Get summary of collected metrics."""
                 ...
 
