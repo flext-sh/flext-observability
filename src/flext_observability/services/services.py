@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from structlog.typing import BindableLogger
 
-from flext_core import FlextContainer, p, r, u
-from flext_observability import FlextObservabilitySettings, p, t
+from flext_core import FlextContainer
+from flext_observability import FlextObservabilitySettings, p, r, t, u
 
 
 class FlextObservabilityServices:
