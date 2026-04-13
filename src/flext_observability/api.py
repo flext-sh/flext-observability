@@ -104,7 +104,7 @@ class FlextObservability(
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize metrics service."""
-            self._container = container or FlextContainer.fetch_global()
+            self._container = container or FlextContainer.shared()
             self._logger = u.fetch_logger(__name__)
             self._metrics = list[FlextObservability.Metric]()
 
@@ -161,7 +161,7 @@ class FlextObservability(
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize tracing service."""
-            self._container = container or FlextContainer.fetch_global()
+            self._container = container or FlextContainer.shared()
             self._logger = u.fetch_logger(__name__)
             self._traces = list[FlextObservability.Trace]()
 
@@ -201,7 +201,7 @@ class FlextObservability(
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize alerting service."""
-            self._container = container or FlextContainer.fetch_global()
+            self._container = container or FlextContainer.shared()
             self._logger = u.fetch_logger(__name__)
             self._alerts = list[FlextObservability.Alert]()
 
@@ -252,7 +252,7 @@ class FlextObservability(
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize health service."""
-            self._container = container or FlextContainer.fetch_global()
+            self._container = container or FlextContainer.shared()
             self._logger = u.fetch_logger(__name__)
             self._checks = list[FlextObservability.HealthCheck]()
 
@@ -302,7 +302,7 @@ class FlextObservability(
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize logging service."""
-            self._container = container or FlextContainer.fetch_global()
+            self._container = container or FlextContainer.shared()
             self._logger = u.fetch_logger(__name__)
             self._entries = list[FlextObservability.LogEntry]()
 
@@ -549,7 +549,7 @@ class FlextObservability(
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize factory with optional container."""
-            self._container = container or FlextContainer.fetch_global()
+            self._container = container or FlextContainer.shared()
             self._metrics_service = FlextObservability.MetricsService(self._container)
             self._tracing_service = FlextObservability.TracingService(self._container)
             self._alerting_service = FlextObservability.AlertingService(self._container)

@@ -146,7 +146,7 @@ class FlextObservabilityMonitor:
     @override
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
-        self._container = container or FlextContainer.fetch_global()
+        self._container = container or FlextContainer.shared()
         self._logger = u.fetch_logger(self.__class__.__name__)
         self._config = FlextObservabilitySettings.fetch_global()
         self._initialized = False
