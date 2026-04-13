@@ -15,7 +15,7 @@ from datetime import UTC, datetime
 from typing import ClassVar, TypeAlias
 from uuid import uuid4
 
-from flext_core import FlextContainer, p, r, u
+from flext_core import FlextContainer, u
 from flext_observability import (
     FlextObservabilityAdvancedContext,
     FlextObservabilityContext,
@@ -33,6 +33,8 @@ from flext_observability import (
     FlextObservabilitySettings,
     c,
     m,
+    p,
+    r,
     t,
 )
 

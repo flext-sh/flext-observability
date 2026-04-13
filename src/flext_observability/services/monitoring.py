@@ -11,14 +11,16 @@ from collections.abc import Callable
 from typing import TypeAlias, override
 from uuid import uuid4
 
-from flext_core import FlextContainer, p, r, u
+from flext_core import FlextContainer
 from flext_observability import (
-    FlextObservabilityModels,
-    FlextObservabilityServices,
     FlextObservabilitySettings,
-    c as _obs_c,
+    c,
+    m,
     p,
+    r,
+    s,
     t,
+    u,
 )
 
 _ObservabilityService: TypeAlias = p.Observability.ObservabilityService
@@ -99,12 +101,12 @@ class FlextObservabilityMonitor:
             monitor.flext_record_metric(
                 f"{metric_name}_error_total",
                 1,
-                _obs_c.Observability.MetricType.COUNTER,
+                c.Observability.MetricType.COUNTER,
             )
             monitor.flext_record_metric(
                 f"{metric_name}_error_duration_seconds",
                 execution_time,
-                _obs_c.Observability.MetricType.HISTOGRAM,
+                c.Observability.MetricType.HISTOGRAM,
             )
             observability_service = monitor.observability_service
             if observability_service:
@@ -134,12 +136,12 @@ class FlextObservabilityMonitor:
             monitor.flext_record_metric(
                 f"{metric_name}_duration_seconds",
                 execution_time,
-                _obs_c.Observability.MetricType.HISTOGRAM,
+                c.Observability.MetricType.HISTOGRAM,
             )
             monitor.flext_record_metric(
                 f"{metric_name}_success_total",
                 1,
-                _obs_c.Observability.MetricType.COUNTER,
+                c.Observability.MetricType.COUNTER,
             )
             monitor.increment_functions_monitored()
 
@@ -166,7 +168,7 @@ class FlextObservabilityMonitor:
                     "Observability service not available",
                 )
             health_data: t.MutableRecursiveContainerMapping = {
-                "status": _obs_c.Observability.HealthStatus.HEALTHY
+                "status": c.Observability.HealthStatus.HEALTHY
                 if self._initialized
                 else "initializing",
                 "timestamp": time.time(),
@@ -220,7 +222,7 @@ class FlextObservabilityMonitor:
                     "All observability features are disabled in configuration",
                 )
             try:
-                service = FlextObservabilityServices()
+                service = s()
                 self._observability_service = service
                 self._metrics_service = self._observability_service
                 self._health_service = self._observability_service
@@ -244,7 +246,7 @@ class FlextObservabilityMonitor:
         self,
         name: str,
         value: float,
-        metric_type: str = _obs_c.Observability.MetricType.GAUGE,
+        metric_type: str = c.Observability.MetricType.GAUGE,
     ) -> p.Result[None]:
         """Record metric through the monitoring system with settings validation."""
         try:
@@ -252,20 +254,18 @@ class FlextObservabilityMonitor:
                 self._logger.debug("Metrics recording disabled in configuration")
                 return r[None].ok(None)
             try:
-                metric = FlextObservabilityModels.Observability.MetricEntry(
+                metric = m.Observability.MetricEntry(
                     metric_id=str(uuid4()),
                     name=name,
                     value=value,
                     unit=metric_type,
                     source="monitoring_system",
                 )
-                metric_result = r[
-                    FlextObservabilityModels.Observability.MetricEntry
-                ].ok(metric)
+                metric_result = r[m.Observability.MetricEntry].ok(metric)
             except (ValueError, TypeError, KeyError) as e:
-                metric_result = r[
-                    FlextObservabilityModels.Observability.MetricEntry
-                ].fail_op("build metric entry", e)
+                metric_result = r[m.Observability.MetricEntry].fail_op(
+                    "build metric entry", e
+                )
             if metric_result.failure:
                 return r[None].fail_op(
                     "record metric",

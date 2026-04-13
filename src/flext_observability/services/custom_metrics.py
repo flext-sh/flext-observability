@@ -22,8 +22,8 @@ from collections.abc import MutableMapping
 
 from pydantic import ValidationError
 
-from flext_core import p, r, u
-from flext_observability import c, m, t
+from flext_core import u
+from flext_observability import c, m, p, r, t
 
 
 class FlextObservabilityCustomMetrics:

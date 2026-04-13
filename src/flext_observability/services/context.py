@@ -18,8 +18,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ValidationError
 
-from flext_core import p, r, u
-from flext_observability import m, t
+from flext_core import u
+from flext_observability import m, p, r, t
 
 
 class FlextObservabilityContext:
