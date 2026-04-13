@@ -26,13 +26,14 @@ from typing import ClassVar, TypeIs
 
 from pydantic import ValidationError
 
-from flext_core import p, r, u
 from flext_observability import (
     FlextObservabilityContext,
     FlextObservabilityLogging,
     m,
     p,
+    r,
     t,
+    u,
 )
 
 
