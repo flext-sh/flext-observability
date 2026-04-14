@@ -293,7 +293,7 @@ ______________________________________________________________________
 - **Clean Architecture**: Proper layer separation maintained throughout
 - **Domain-Driven Design**: Rich domain entities with business logic
 - **Type Safety**: Complete Python 3.13+ annotations
-- **Railway Pattern**: r[T] used consistently for error handling
+- **Railway Pattern**: p.Result[T] used consistently for error handling
 - **Dependency Injection**: Proper service registration and resolution
 
 ### **Implementation Decisions**

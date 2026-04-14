@@ -52,7 +52,7 @@ src/flext_observability/
 
 1. **Clean Architecture**: Clear separation between domain, application, and infrastructure layers
 1. **Domain-Driven Design**: Rich domain models with business logic encapsulation
-1. **Railway-Oriented Programming**: r[T] patterns throughout
+1. **Railway-Oriented Programming**: p.Result[T] patterns throughout
 1. **Type Safety**: MyPy strict mode adoption; aiming for complete annotations
 1. **Enterprise Standards**: Professional code quality and documentation
 

@@ -13,10 +13,10 @@ from abc import ABC
 from typing import override
 
 from flext_core import FlextSettings, s
-from flext_observability import FlextObservabilitySettings, t
+from flext_observability import FlextObservabilitySettings
 
 
-class FlextObservabilityServiceBase(s[t.Dict], ABC):
+class FlextObservabilityServiceBase(s, ABC):
     """Base class for flext-observability services with typed configuration access."""
 
     @property

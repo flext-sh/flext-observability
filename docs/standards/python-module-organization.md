@@ -163,7 +163,7 @@ and telemetry concerns. This structure serves as the observability foundation fo
 1. **Observability-First**: Every pattern designed for monitoring and telemetry
 1. **Explicit Dependencies**: Clear import paths with minimal coupling to flext-core
 1. **Type-Safe Observability**: Comprehensive type hints for all observability entities
-1. **Railway-Oriented Telemetry**: r[T] threading through all observability operations
+1. **Railway-Oriented Telemetry**: p.Result[T] threading through all observability operations
 1. **Ecosystem Consistency**: Observability patterns work identically across 33 projects
 
 ______________________________________________________________________
@@ -1326,7 +1326,9 @@ T = TypeVar("T")
 U = TypeVar("U")
 
 
-def map_observability_result(result: r[T], func: Callable[[T], U]) -> p.Result[U]:
+def map_observability_result(
+    result: p.Result[T], func: Callable[[T], U]
+) -> p.Result[U]:
     """Generic result mapping for observability operations."""
     if result.success:
         return r[bool].ok(func(result.data))

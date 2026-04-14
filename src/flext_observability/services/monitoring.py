@@ -18,10 +18,10 @@ from flext_observability import (
     m,
     p,
     r,
-    s,
     t,
     u,
 )
+from flext_observability.services.services import FlextObservabilityServices
 
 _ObservabilityService: TypeAlias = p.Observability.ObservabilityService
 
@@ -222,7 +222,7 @@ class FlextObservabilityMonitor:
                     "All observability features are disabled in configuration",
                 )
             try:
-                service = s()
+                service: _ObservabilityService = FlextObservabilityServices()
                 self._observability_service = service
                 self._metrics_service = self._observability_service
                 self._health_service = self._observability_service
