@@ -121,7 +121,7 @@ from flext_observability import flext_create_metric
 # Basic metric
 result = flext_create_metric("response_time", 150.5, "milliseconds")
 if result.success:
-    print(f"Created: {result.data.name} = {result.data.value}")
+    print(f"Created: {result.value.name} = {result.value.value}")
 
 # Business metric with tags
 result = flext_create_metric(
@@ -191,7 +191,7 @@ from flext_observability import flext_create_trace
 # Basic trace
 result = flext_create_trace("user_login", "authentication-service")
 if result.success:
-    trace = result.data
+    trace = result.value
     print(f"Started trace: {trace.operation_name} in {trace.service_name}")
 
 # Trace with context
@@ -211,7 +211,7 @@ if parent_result.success:
     child_result = flext_create_trace(
         operation_name="database_query",
         service_name="user-api",
-        parent_trace_id=parent_result.data.id,
+        parent_trace_id=parent_result.value.id,
     )
 ```
 
@@ -407,12 +407,12 @@ def process_business_operation(data: dict) -> p.Result[t.Dict]:
 
     # Create metric - handle potential failure
     metric_result = flext_create_metric("operations_started", 1, "count")
-    if not metric_result.success:
+    if metric_result.failure:
         return r[bool].fail(f"Failed to create metric: {metric_result.error}")
 
     # Create trace - handle potential failure
     trace_result = flext_create_trace("business_operation", "main-service")
-    if not trace_result.success:
+    if trace_result.failure:
         return r[bool].fail(f"Failed to create trace: {trace_result.error}")
 
     # Business logic here
@@ -443,7 +443,7 @@ def create_system_metrics() -> Sequence[r[FlextMetric]]:
         result = flext_create_metric(name, value, unit)
         results.append(result)
 
-        if not result.success:
+        if result.failure:
             print(f"⚠️  Failed to create {name}: {result.error}")
 
     return results
@@ -463,10 +463,10 @@ def handle_user_request(user_id: str, operation: str) -> p.Result[t.Dict]:
         operation_name=operation, service_name="user-service", context=context
     )
 
-    if not trace_result.success:
+    if trace_result.failure:
         return r[bool].fail(f"Tracing failed: {trace_result.error}")
 
-    trace_id = trace_result.data.id
+    trace_id = trace_result.value.id
 
     # Create metric with tags from context
     metric_result = flext_create_metric(

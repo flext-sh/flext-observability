@@ -265,7 +265,7 @@ service = FlextMetricsService(container)
 result = service.record_metric(metric)
 if result.success:
     # Success path
-    return result.data
+    return result.value
 else:
     # Error path - no exceptions
     return result.error
