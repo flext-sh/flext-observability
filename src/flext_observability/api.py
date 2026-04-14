@@ -84,11 +84,11 @@ class FlextObservability(
         ALERT_STATUSES: ClassVar[set[str]] = set(c.Observability.AlertStatus)
         HEALTH_STATUSES: ClassVar[set[str]] = set(c.Observability.HealthStatus)
         LOG_LEVELS: ClassVar[set[str]] = {
-            "debug",
-            "info",
-            "warning",
-            "error",
-            "critical",
+            c.Observability.ErrorSeverity.DEBUG,
+            c.Observability.ErrorSeverity.INFO,
+            c.Observability.ErrorSeverity.WARNING,
+            c.Observability.ErrorSeverity.ERROR,
+            c.Observability.ErrorSeverity.CRITICAL,
         }
 
     Metric: TypeAlias = m.Observability.Metric
@@ -567,7 +567,7 @@ class FlextObservability(
             self,
             title: str,
             message: str,
-            severity: str = "warning",
+            severity: str = c.Observability.AlertLevel.WARNING,
             tags: t.ScalarMapping | None = None,
             status: str = c.Observability.AlertStatus.FIRING,
             timestamp: datetime | None = None,
@@ -576,21 +576,21 @@ class FlextObservability(
             _ = timestamp
             valid_severity: c.Observability.AlertLevel
             match severity:
-                case "info" | "low":
+                case c.Observability.AlertLevel.INFO | "low":
                     valid_severity = c.Observability.AlertLevel.INFO
-                case "warning" | "medium":
+                case c.Observability.AlertLevel.WARNING | "medium":
                     valid_severity = c.Observability.AlertLevel.WARNING
-                case "error" | "high":
+                case c.Observability.AlertLevel.ERROR | "high":
                     valid_severity = c.Observability.AlertLevel.ERROR
-                case "critical":
+                case c.Observability.AlertLevel.CRITICAL:
                     valid_severity = c.Observability.AlertLevel.CRITICAL
                 case _:
                     valid_severity = c.Observability.AlertLevel.WARNING
             valid_status: c.Observability.AlertStatus
             match status:
-                case "firing" | "active":
+                case c.Observability.AlertStatus.FIRING | "active":
                     valid_status = c.Observability.AlertStatus.FIRING
-                case "resolved":
+                case c.Observability.AlertStatus.RESOLVED:
                     valid_status = c.Observability.AlertStatus.RESOLVED
                 case _:
                     valid_status = c.Observability.AlertStatus.FIRING
@@ -606,7 +606,7 @@ class FlextObservability(
             self,
             message: str,
             service: str = "default",
-            severity: str = "warning",
+            severity: str = c.Observability.AlertLevel.WARNING,
             tags: t.ScalarMapping | None = None,
         ) -> p.Result[FlextObservability.Alert]:
             """Create an alert (alias)."""
@@ -629,7 +629,7 @@ class FlextObservability(
         def create_log_entry(
             self,
             message: str,
-            level: str = "info",
+            level: str = c.Observability.ErrorSeverity.INFO,
             context: t.ScalarMapping | None = None,
         ) -> p.Result[FlextObservability.LogEntry]:
             """Create a log entry (alias)."""
@@ -670,11 +670,11 @@ class FlextObservability(
             _ = message
             valid_status: c.Observability.HealthStatus
             match status:
-                case "healthy":
+                case c.Observability.HealthStatus.HEALTHY:
                     valid_status = c.Observability.HealthStatus.HEALTHY
-                case "degraded":
+                case c.Observability.HealthStatus.DEGRADED:
                     valid_status = c.Observability.HealthStatus.DEGRADED
-                case "unhealthy":
+                case c.Observability.HealthStatus.UNHEALTHY:
                     valid_status = c.Observability.HealthStatus.UNHEALTHY
                 case _:
                     valid_status = c.Observability.HealthStatus.HEALTHY
@@ -701,15 +701,15 @@ class FlextObservability(
             """Create a log entry."""
             valid_level: c.Observability.ErrorSeverity
             match level:
-                case "debug":
+                case c.Observability.ErrorSeverity.DEBUG:
                     valid_level = c.Observability.ErrorSeverity.DEBUG
-                case "info":
+                case c.Observability.ErrorSeverity.INFO:
                     valid_level = c.Observability.ErrorSeverity.INFO
-                case "warning":
+                case c.Observability.ErrorSeverity.WARNING:
                     valid_level = c.Observability.ErrorSeverity.WARNING
-                case "error":
+                case c.Observability.ErrorSeverity.ERROR:
                     valid_level = c.Observability.ErrorSeverity.ERROR
-                case "critical":
+                case c.Observability.ErrorSeverity.CRITICAL:
                     valid_level = c.Observability.ErrorSeverity.CRITICAL
                 case _:
                     valid_level = c.Observability.ErrorSeverity.INFO

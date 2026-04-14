@@ -29,6 +29,7 @@ from pydantic import ValidationError
 from flext_observability import (
     FlextObservabilityContext,
     FlextObservabilityLogging,
+    c,
     m,
     p,
     r,
@@ -185,7 +186,7 @@ class FlextObservabilityHTTPClient:
                             headers["X-Span-ID"] = span_id
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
-                            "debug",
+                            c.Observability.ErrorSeverity.DEBUG.value,
                             f"HTTP client request: {method} {url}",
                             extra={
                                 "http_method": method,
@@ -214,7 +215,7 @@ class FlextObservabilityHTTPClient:
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
-                                "debug",
+                                c.Observability.ErrorSeverity.DEBUG.value,
                                 f"HTTP client response: {method} {url} -> {response.status_code}",
                                 extra={
                                     "http_method": method,
@@ -230,7 +231,7 @@ class FlextObservabilityHTTPClient:
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
-                                "error",
+                                c.Observability.ErrorSeverity.ERROR.value,
                                 f"HTTP client error: {method} {url}",
                                 extra={
                                     "http_method": method,
@@ -275,7 +276,7 @@ class FlextObservabilityHTTPClient:
                             headers["X-Span-ID"] = span_id
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
-                            "debug",
+                            c.Observability.ErrorSeverity.DEBUG.value,
                             f"HTTP client request: {method} {url}",
                             extra={
                                 "http_method": method,
@@ -306,7 +307,7 @@ class FlextObservabilityHTTPClient:
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
-                                "debug",
+                                c.Observability.ErrorSeverity.DEBUG.value,
                                 f"HTTP client response: {method} {url} -> {response.status_code}",
                                 extra={
                                     "http_method": method,
@@ -322,7 +323,7 @@ class FlextObservabilityHTTPClient:
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient._logger,
-                                "error",
+                                c.Observability.ErrorSeverity.ERROR.value,
                                 f"HTTP client error: {method} {url}",
                                 extra={
                                     "http_method": method,
@@ -428,7 +429,7 @@ class FlextObservabilityHTTPClient:
                         headers["X-Span-ID"] = span_id
                     _ = FlextObservabilityLogging.log_with_context(
                         FlextObservabilityHTTPClient._logger,
-                        "debug",
+                        c.Observability.ErrorSeverity.DEBUG.value,
                         f"HTTP client request: {method} {url}",
                         extra={
                             "http_method": method,
@@ -452,7 +453,7 @@ class FlextObservabilityHTTPClient:
                         status = response.status
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
-                            "debug",
+                            c.Observability.ErrorSeverity.DEBUG.value,
                             f"HTTP client response: {method} {url} -> {status}",
                             extra={
                                 "http_method": method,
@@ -468,7 +469,7 @@ class FlextObservabilityHTTPClient:
                         duration_ms = (time.time() - start_time) * 1000
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient._logger,
-                            "error",
+                            c.Observability.ErrorSeverity.ERROR.value,
                             f"HTTP client error: {method} {url}",
                             extra={
                                 "http_method": method,

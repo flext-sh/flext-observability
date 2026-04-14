@@ -17,7 +17,7 @@ from collections.abc import Mapping
 
 import psutil
 
-from flext_observability import m, p, r, u
+from flext_observability import c, m, p, r, u
 
 
 class FlextObservabilityPerformance:
@@ -185,11 +185,15 @@ class FlextObservabilityPerformance:
         """
         try:
             status = "OK" if metrics.success else "ERROR"
-            level = "debug" if metrics.success else "warning"
+            level = (
+                c.Observability.ErrorSeverity.DEBUG.value
+                if metrics.success
+                else c.Observability.ErrorSeverity.WARNING.value
+            )
             message = f"{status} {metrics.operation}: duration={metrics.duration_ms:.2f}ms, memory={metrics.memory_used_mb:.2f}MB, cpu={metrics.cpu_percent:.1f}%"
             if metrics.error_message:
                 message += f", error={metrics.error_message}"
-            if level == "debug":
+            if level == c.Observability.ErrorSeverity.DEBUG.value:
                 FlextObservabilityPerformance._logger.debug(message)
             else:
                 FlextObservabilityPerformance._logger.warning(message)

@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from structlog.typing import BindableLogger
 
-from flext_observability import FlextObservabilityContext, m, p, r, t, u
+from flext_observability import FlextObservabilityContext, c, m, p, r, t, u
 
 
 class FlextObservabilityLogging:
@@ -232,7 +232,13 @@ class FlextObservabilityLogging:
         try:
             if not message:
                 return r[bool].fail("Message must be non-empty string")
-            if level not in {"debug", "info", "warning", "error", "critical"}:
+            if level not in {
+                c.Observability.ErrorSeverity.DEBUG,
+                c.Observability.ErrorSeverity.INFO,
+                c.Observability.ErrorSeverity.WARNING,
+                c.Observability.ErrorSeverity.ERROR,
+                c.Observability.ErrorSeverity.CRITICAL,
+            }:
                 return r[bool].fail(f"Invalid log level: {level}")
             context_result = FlextObservabilityLogging.enrich_log_context(
                 logger,

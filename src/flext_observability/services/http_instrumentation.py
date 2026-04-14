@@ -31,6 +31,7 @@ from pydantic import ValidationError
 from flext_observability import (
     FlextObservabilityContext,
     FlextObservabilityLogging,
+    c,
     m,
     p,
     r,
@@ -162,7 +163,7 @@ class FlextObservabilityHTTP:
                         }
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
-                            "debug",
+                            c.Observability.ErrorSeverity.DEBUG.value,
                             f"HTTP {request_method} {request_path}",
                             extra=extra_before,
                         )
@@ -203,7 +204,9 @@ class FlextObservabilityHTTP:
                         )
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
-                            "info" if not is_error else "warning",
+                            c.Observability.ErrorSeverity.INFO.value
+                            if not is_error
+                            else c.Observability.ErrorSeverity.WARNING.value,
                             f"HTTP {(request.method if request else 'UNKNOWN')} {(request.path if request else 'UNKNOWN')} -> {status_code}",
                             extra={
                                 "http_method": request.method if request else "UNKNOWN",
@@ -226,7 +229,7 @@ class FlextObservabilityHTTP:
                     try:
                         FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTP._logger,
-                            "error",
+                            c.Observability.ErrorSeverity.ERROR.value,
                             f"HTTP request error: {error!s}",
                             extra={
                                 "http_method": request.method if request else "UNKNOWN",
@@ -326,7 +329,7 @@ class FlextObservabilityHTTP:
                             start_time = time.time()
                             await FlextObservabilityHTTP._async_log_with_context(
                                 f"HTTP {request.method} {request.url.path}",
-                                "debug",
+                                c.Observability.ErrorSeverity.DEBUG.value,
                                 {
                                     "http_method": str(request.method),
                                     "http_path": str(request.url.path),
@@ -352,7 +355,9 @@ class FlextObservabilityHTTP:
                                 )
                                 await FlextObservabilityHTTP._async_log_with_context(
                                     f"HTTP {request.method} {request.url.path} -> {status_code}",
-                                    "info" if not is_error else "warning",
+                                    c.Observability.ErrorSeverity.INFO.value
+                                    if not is_error
+                                    else c.Observability.ErrorSeverity.WARNING.value,
                                     {
                                         "http_method": request.method,
                                         "http_path": request.url.path,
@@ -365,7 +370,7 @@ class FlextObservabilityHTTP:
                             except (ValueError, TypeError, KeyError) as e:
                                 await FlextObservabilityHTTP._async_log_with_context(
                                     f"HTTP request error: {e!s}",
-                                    "error",
+                                    c.Observability.ErrorSeverity.ERROR.value,
                                     {
                                         "http_method": request.method,
                                         "http_path": request.url.path,
