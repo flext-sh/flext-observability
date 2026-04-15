@@ -13,6 +13,7 @@ from uuid import uuid4
 
 from flext_core import FlextContainer
 from flext_observability import (
+    FlextObservabilityServices,
     FlextObservabilitySettings,
     c,
     m,
@@ -21,7 +22,6 @@ from flext_observability import (
     t,
     u,
 )
-from flext_observability.services.services import FlextObservabilityServices
 
 _ObservabilityService: TypeAlias = p.Observability.ObservabilityService
 

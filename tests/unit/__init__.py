@@ -10,6 +10,19 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_constants": ("test_constants",),
         ".test_factory": ("test_factory",),
         ".test_init": ("test_init",),
+        "flext_observability": (
+            "c",
+            "d",
+            "e",
+            "h",
+            "m",
+            "p",
+            "r",
+            "s",
+            "t",
+            "u",
+            "x",
+        ),
     },
 )
 

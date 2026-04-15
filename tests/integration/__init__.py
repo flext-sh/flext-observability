@@ -8,6 +8,19 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 _LAZY_IMPORTS = build_lazy_import_map(
     {
         ".test_phase_11_integration": ("test_phase_11_integration",),
+        "flext_observability": (
+            "c",
+            "d",
+            "e",
+            "h",
+            "m",
+            "p",
+            "r",
+            "s",
+            "t",
+            "u",
+            "x",
+        ),
     },
 )
 
