@@ -9,62 +9,55 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextSettings
-from flext_observability import c
+from flext_observability import c, m
 
 
 @FlextSettings.auto_register("observability")
 class FlextObservabilitySettings(FlextSettings):
     """Runtime settings for observability components."""
 
-    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+    model_config: ClassVar[SettingsConfigDict] = m.SettingsConfigDict(
         env_prefix="FLEXT_OBSERVABILITY_", extra="ignore"
     )
 
     service_name: Annotated[
         str,
-        Field(
-            default=c.Observability.SettingsDefaults.SERVICE_NAME,
+        m.Field(
             description="Observability service name identifier",
         ),
-    ]
+    ] = c.Observability.SettingsDefaults.SERVICE_NAME
     environment: Annotated[
         str,
-        Field(
-            default=c.Observability.SettingsDefaults.ENVIRONMENT,
+        m.Field(
             description="Deployment environment name",
         ),
-    ]
+    ] = c.Observability.SettingsDefaults.ENVIRONMENT
     metrics_enabled: Annotated[
         bool,
-        Field(
-            default=c.Observability.SettingsDefaults.DEFAULT_METRICS_ENABLED,
+        m.Field(
             description="Enable metrics collection",
         ),
-    ]
+    ] = c.Observability.SettingsDefaults.DEFAULT_METRICS_ENABLED
     traces_enabled: Annotated[
         bool,
-        Field(
-            default=c.Observability.SettingsDefaults.DEFAULT_TRACES_ENABLED,
+        m.Field(
             description="Enable distributed tracing",
         ),
-    ]
+    ] = c.Observability.SettingsDefaults.DEFAULT_TRACES_ENABLED
     alerts_enabled: Annotated[
         bool,
-        Field(
-            default=c.Observability.SettingsDefaults.DEFAULT_ALERTS_ENABLED,
+        m.Field(
             description="Enable alert notifications",
         ),
-    ]
+    ] = c.Observability.SettingsDefaults.DEFAULT_ALERTS_ENABLED
     flush_interval_seconds: Annotated[
         int,
-        Field(
-            default=c.Observability.SettingsDefaults.DEFAULT_FLUSH_INTERVAL,
+        m.Field(
             ge=1,
             le=300,
             description="Interval in seconds between metric flushes",
         ),
-    ]
+    ] = c.Observability.SettingsDefaults.DEFAULT_FLUSH_INTERVAL

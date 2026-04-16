@@ -24,8 +24,6 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import ClassVar, TypeIs
 
-from pydantic import ValidationError
-
 from flext_observability import (
     FlextObservabilityContext,
     FlextObservabilityLogging,
@@ -98,7 +96,7 @@ class FlextObservabilityHTTPClient:
                     obj={"headers": payload},
                 ).headers,
             )
-        except ValidationError:
+        except c.ValidationError:
             return {}
 
     class HTTPX:

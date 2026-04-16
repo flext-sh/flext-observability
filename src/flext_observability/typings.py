@@ -17,10 +17,8 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from decimal import Decimal
 
-from pydantic import TypeAdapter
-
 from flext_core import t
-from flext_observability import c
+from flext_observability import c, m
 
 
 class FlextObservabilityTypes(t):
@@ -31,7 +29,7 @@ class FlextObservabilityTypes(t):
     Uses Python 3.13+ type syntax and patterns.
     """
 
-    SCALAR_ADAPTER: TypeAdapter[t.Scalar] = TypeAdapter(t.Scalar)
+    SCALAR_ADAPTER: m.TypeAdapter[t.Scalar] = m.TypeAdapter(t.Scalar)
 
     class Observability:
         """Observability-specific project types.

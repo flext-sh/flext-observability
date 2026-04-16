@@ -20,8 +20,6 @@ from __future__ import annotations
 
 from collections.abc import MutableMapping
 
-from pydantic import ValidationError
-
 from flext_core import u
 from flext_observability import c, m, p, r, t
 
@@ -231,7 +229,7 @@ class FlextObservabilityCustomMetrics:
                     metric_type_enum = m.Observability.MetricTypeInput.model_validate(
                         obj={"metric_type": metric_input},
                     ).metric_type
-                except ValidationError:
+                except c.ValidationError:
                     return r[bool].fail(
                         f"Invalid metric type: {metric_type}. Must be one of ['counter', 'gauge', 'histogram']",
                     )

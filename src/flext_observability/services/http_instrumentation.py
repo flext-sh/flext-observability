@@ -26,7 +26,6 @@ from collections.abc import Awaitable, Callable
 from typing import TypeIs
 
 import flask
-from pydantic import ValidationError
 
 from flext_observability import (
     FlextObservabilityContext,
@@ -191,7 +190,7 @@ class FlextObservabilityHTTP:
                                 ).value
                             )
                             duration_ms = (time.time() - validated_start) * 1000
-                        except ValidationError:
+                        except c.ValidationError:
                             duration_ms = 0.0
                         status_code = int(
                             response.status_code

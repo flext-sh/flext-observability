@@ -208,7 +208,7 @@ class FlextObservabilityErrorHandling:
                 validated_seconds = m.Observability.CooldownInput.model_validate(
                     obj={"seconds": seconds},
                 ).seconds
-            except ValidationError as error:
+            except c.ValidationError as error:
                 return r[bool].fail(
                     FlextObservabilityErrorHandling._extract_validation_message(error),
                 )
@@ -232,7 +232,7 @@ class FlextObservabilityErrorHandling:
                 validated_threshold = m.Observability.ThresholdInput.model_validate(
                     obj={"threshold": threshold},
                 ).threshold
-            except ValidationError as error:
+            except c.ValidationError as error:
                 return r[bool].fail(
                     FlextObservabilityErrorHandling._extract_validation_message(error),
                 )

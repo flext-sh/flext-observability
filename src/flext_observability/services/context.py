@@ -16,10 +16,10 @@ from __future__ import annotations
 from contextvars import ContextVar
 from uuid import uuid4
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from flext_core import u
-from flext_observability import m, p, r, t
+from flext_observability import c, m, p, r, t
 
 
 class FlextObservabilityContext:
@@ -265,7 +265,7 @@ class FlextObservabilityContext:
         try:
             try:
                 m.Observability.BaggageKeyModel.model_validate(obj={"key": key})
-            except ValidationError:
+            except c.ValidationError:
                 return r[bool].fail("Baggage key must be non-empty string")
             current_baggage = FlextObservabilityContext._baggage.get() or t.Dict({})
             updated_baggage = t.Dict({
