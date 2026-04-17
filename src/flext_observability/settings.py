@@ -12,7 +12,7 @@ from typing import Annotated, ClassVar
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextSettings
-from flext_observability import c, m
+from flext_observability import c, m, u
 
 
 @FlextSettings.auto_register("observability")
@@ -25,37 +25,37 @@ class FlextObservabilitySettings(FlextSettings):
 
     service_name: Annotated[
         str,
-        m.Field(
+        u.Field(
             description="Observability service name identifier",
         ),
     ] = c.Observability.SettingsDefaults.SERVICE_NAME
     environment: Annotated[
         str,
-        m.Field(
+        u.Field(
             description="Deployment environment name",
         ),
     ] = c.Observability.SettingsDefaults.ENVIRONMENT
     metrics_enabled: Annotated[
         bool,
-        m.Field(
+        u.Field(
             description="Enable metrics collection",
         ),
     ] = c.Observability.SettingsDefaults.DEFAULT_METRICS_ENABLED
     traces_enabled: Annotated[
         bool,
-        m.Field(
+        u.Field(
             description="Enable distributed tracing",
         ),
     ] = c.Observability.SettingsDefaults.DEFAULT_TRACES_ENABLED
     alerts_enabled: Annotated[
         bool,
-        m.Field(
+        u.Field(
             description="Enable alert notifications",
         ),
     ] = c.Observability.SettingsDefaults.DEFAULT_ALERTS_ENABLED
     flush_interval_seconds: Annotated[
         int,
-        m.Field(
+        u.Field(
             ge=1,
             le=300,
             description="Interval in seconds between metric flushes",
