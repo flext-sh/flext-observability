@@ -19,6 +19,9 @@ if _t.TYPE_CHECKING:
     from tests.models import TestsFlextObservabilityModels, m
     from tests.protocols import TestsFlextObservabilityProtocols, p
     from tests.typings import TestsFlextObservabilityTypes, t
+    from tests.unit.test_constants import Testc
+    from tests.unit.test_factory import TestFlextObservabilityMasterFactoryReal
+    from tests.unit.test_init import TestInitCoverage
     from tests.utilities import TestsFlextObservabilityUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
     (
@@ -43,6 +46,9 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextObservabilityTypes",
                 "t",
             ),
+            ".unit.test_constants": ("Testc",),
+            ".unit.test_factory": ("TestFlextObservabilityMasterFactoryReal",),
+            ".unit.test_init": ("TestInitCoverage",),
             ".utilities": (
                 "TestsFlextObservabilityUtilities",
                 "u",
@@ -80,6 +86,9 @@ _LAZY_IMPORTS = merge_lazy_imports(
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__: list[str] = [
+    "TestFlextObservabilityMasterFactoryReal",
+    "TestInitCoverage",
+    "Testc",
     "TestsFlextObservabilityConstants",
     "TestsFlextObservabilityModels",
     "TestsFlextObservabilityProtocols",

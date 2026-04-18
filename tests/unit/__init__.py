@@ -7,22 +7,9 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 _LAZY_IMPORTS = build_lazy_import_map(
     {
-        ".test_constants": ("test_constants",),
-        ".test_factory": ("test_factory",),
-        ".test_init": ("test_init",),
-        "flext_observability": (
-            "c",
-            "d",
-            "e",
-            "h",
-            "m",
-            "p",
-            "r",
-            "s",
-            "t",
-            "u",
-            "x",
-        ),
+        ".test_constants": ("Testc",),
+        ".test_factory": ("TestFlextObservabilityMasterFactoryReal",),
+        ".test_init": ("TestInitCoverage",),
     },
 )
 
