@@ -16,8 +16,6 @@ from hashlib import sha256
 from typing import Annotated, ClassVar
 from uuid import uuid4
 
-from pydantic import ConfigDict
-
 from flext_core import m
 from flext_observability import c, t, u
 
@@ -35,7 +33,7 @@ class FlextObservabilityModels(m):
         class GenericObservabilityEntry(m.DynamicModel):
             """Generic base model for any observability entry using Pydantic."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
                 validate_assignment=True,
                 frozen=False,
             )
@@ -91,7 +89,7 @@ class FlextObservabilityModels(m):
         class GenericObservabilityConfig(m.DynamicModel):
             """Generic configuration using Pydantic patterns."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
                 validate_assignment=True,
                 frozen=False,
             )
@@ -348,7 +346,7 @@ class FlextObservabilityModels(m):
         class ErrorEvent(m.Value):
             """Error event with fingerprinting for deduplication and alerting."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(frozen=False)
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
 
             error_type: Annotated[
                 t.NonEmptyStr, u.Field(description="Error classification type")
@@ -387,7 +385,7 @@ class FlextObservabilityModels(m):
         class HealthCheckModel(m.Value):
             """Health check result model."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(frozen=False)
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
 
             component: Annotated[
                 t.NonEmptyStr, u.Field(description="Component being checked")
@@ -418,7 +416,7 @@ class FlextObservabilityModels(m):
         class LogContext(m.Value):
             """Trace context for enriching log entries with correlation and span IDs."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(frozen=False)
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
 
             correlation_id: Annotated[
                 str | None,
@@ -448,7 +446,7 @@ class FlextObservabilityModels(m):
         class PerformanceMetrics(m.Value):
             """Metrics for tracking performance of observability operations."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(frozen=False)
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
 
             operation: Annotated[
                 t.NonEmptyStr, u.Field(description="Operation name being measured")
