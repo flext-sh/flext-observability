@@ -16,8 +16,6 @@ from __future__ import annotations
 from contextvars import ContextVar
 from uuid import uuid4
 
-from pydantic import BaseModel
-
 from flext_core import u
 from flext_observability import c, m, p, r, t
 
@@ -155,7 +153,7 @@ class FlextObservabilityContext:
     @staticmethod
     def resolve_baggage(
         key: str | None = None,
-    ) -> BaseModel | t.RecursiveContainer | t.Dict | None:
+    ) -> m.BaseModel | t.RecursiveContainer | t.Dict | None:
         """Resolve baggage value.
 
         Args:

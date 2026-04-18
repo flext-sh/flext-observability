@@ -21,8 +21,6 @@ from __future__ import annotations
 import time
 from collections.abc import Callable, MutableMapping
 
-from pydantic import ValidationError
-
 from flext_observability import FlextObservabilityContext, c, m, p, r, t, u
 
 
@@ -58,7 +56,7 @@ class FlextObservabilityErrorHandling:
     _handler_instance: FlextObservabilityErrorHandling.Handler | None = None
 
     @staticmethod
-    def _extract_validation_message(error: ValidationError) -> str:
+    def _extract_validation_message(error: c.ValidationError) -> str:
         errors = error.errors()
         if not errors:
             return str(error)
