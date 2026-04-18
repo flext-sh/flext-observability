@@ -19,8 +19,6 @@ Key Features:
 
 from __future__ import annotations
 
-from structlog.typing import BindableLogger
-
 from flext_observability import FlextObservabilityContext, c, m, p, r, t, u
 
 
@@ -47,7 +45,7 @@ class FlextObservabilityLogging:
     _logger = u.fetch_logger(__name__)
 
     @staticmethod
-    def create_logger(name: str) -> p.Result[BindableLogger]:
+    def create_logger(name: str) -> p.Result[p.Logger]:
         """Create logger with trace context enrichment.
 
         Creates a logger that automatically includes correlation ID,
@@ -71,15 +69,15 @@ class FlextObservabilityLogging:
         """
         try:
             if not name:
-                return r[BindableLogger].fail("Logger name must be non-empty string")
+                return r[p.Logger].fail("Logger name must be non-empty string")
             logger = u.fetch_logger(name)
-            return r[BindableLogger].ok(logger)
+            return r[p.Logger].ok(logger)
         except (ValueError, TypeError, KeyError) as e:
-            return r[BindableLogger].fail(f"Logger creation failed: {e}")
+            return r[p.Logger].fail(f"Logger creation failed: {e}")
 
     @staticmethod
     def enrich_log_context(
-        _logger: BindableLogger,
+        _logger: p.Logger,
         *,
         include_baggage: bool = False,
     ) -> p.Result[m.Observability.LogContext]:
@@ -157,7 +155,7 @@ class FlextObservabilityLogging:
         return current_id
 
     @staticmethod
-    def inject_trace_context(logger: BindableLogger) -> p.Result[bool]:
+    def inject_trace_context(logger: p.Logger) -> p.Result[bool]:
         """Inject trace context into logger for structured logging.
 
         Configures logger to automatically include trace context in all
@@ -193,7 +191,7 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def log_with_context(
-        logger: BindableLogger,
+        logger: p.Logger,
         level: str,
         message: str,
         extra: t.ConfigurationMapping | None = None,

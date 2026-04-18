@@ -10,8 +10,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from structlog.typing import BindableLogger
-
 from flext_core import FlextContainer
 from flext_observability import FlextObservabilitySettings, p, r, t, u
 
@@ -47,7 +45,7 @@ class FlextObservabilityServices:
         return None
 
     @property
-    def logger(self) -> BindableLogger:
+    def logger(self) -> p.Logger:
         """Access FLEXT logger."""
         return self._logger
 
