@@ -33,6 +33,8 @@ class FlextObservabilityModels(m):
         class GenericObservabilityEntry(m.DynamicModel):
             """Generic base model for any observability entry using Pydantic."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
                 validate_assignment=True,
                 frozen=False,
@@ -88,6 +90,8 @@ class FlextObservabilityModels(m):
 
         class GenericObservabilityConfig(m.DynamicModel):
             """Generic configuration using Pydantic patterns."""
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
                 validate_assignment=True,
@@ -151,6 +155,8 @@ class FlextObservabilityModels(m):
         class Metric(m.Entity):
             """Observability metric entity."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             id: Annotated[
                 str,
                 u.Field(description="Unique metric identifier"),
@@ -172,6 +178,8 @@ class FlextObservabilityModels(m):
         class Trace(m.Entity):
             """Distributed trace entity."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             trace_id: Annotated[
                 str,
                 u.Field(description="Unique trace identifier"),
@@ -187,6 +195,8 @@ class FlextObservabilityModels(m):
 
         class Alert(m.Entity):
             """Observability alert entity."""
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             id: Annotated[
                 str,
@@ -211,6 +221,8 @@ class FlextObservabilityModels(m):
         class HealthCheck(m.Entity):
             """Health check entity."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             id: Annotated[
                 str,
                 u.Field(description="Unique health check identifier"),
@@ -229,6 +241,8 @@ class FlextObservabilityModels(m):
 
         class LogEntry(m.Entity):
             """Structured log entry entity."""
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             id: Annotated[
                 str,
@@ -263,6 +277,8 @@ class FlextObservabilityModels(m):
         class HeadersPayload(m.Value):
             """Payload for validating HTTP client headers."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             headers: Annotated[
                 t.StrMapping,
                 u.Field(description="HTTP header key-value pairs"),
@@ -271,6 +287,8 @@ class FlextObservabilityModels(m):
         # --- Moved from advanced_context.py ---
         class ContextSnapshot(m.Value):
             """Snapshot of observability context for restoration in async operations."""
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             correlation_id: Annotated[
                 str, u.Field(description="Correlation identifier")
@@ -305,6 +323,8 @@ class FlextObservabilityModels(m):
 
         class CustomMetricDefinition(m.Value):
             """Definition of a custom business metric with type and metadata."""
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             name: Annotated[t.NonEmptyStr, u.Field(description="Custom metric name")]
             metric_type: Annotated[

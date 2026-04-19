@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Sequence
-from typing import Protocol, runtime_checkable
+from typing import ClassVar, Protocol, runtime_checkable
 
 from flext_core import p
 from flext_observability import t
@@ -202,6 +202,8 @@ class FlextObservabilityProtocols(p):
         @runtime_checkable
         class HealthCheck(p.Service[bool], Protocol):
             """Protocol for health check operations."""
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             def check_health(
                 self,
