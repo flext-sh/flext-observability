@@ -44,7 +44,7 @@ class FlextObservabilityProtocols(p):
         """
 
         @runtime_checkable
-        class _Span(Protocol):
+        class Span(Protocol):
             """Protocol for OpenTelemetry Span interface."""
 
             def update_attribute(self, key: str, *, value: t.Scalar) -> None:
@@ -117,7 +117,7 @@ class FlextObservabilityProtocols(p):
 
             def add_span_tag(
                 self,
-                span: FlextObservabilityProtocols.Observability._Span,
+                    span: FlextObservabilityProtocols.Observability.Span,
                 key: str,
                 value: t.Scalar,
             ) -> p.Result[bool]:
@@ -126,7 +126,7 @@ class FlextObservabilityProtocols(p):
 
             def finish_span(
                 self,
-                span: FlextObservabilityProtocols.Observability._Span,
+                    span: FlextObservabilityProtocols.Observability.Span,
                 *,
                 status: str = "ok",
                 error: t.Scalar | None = None,

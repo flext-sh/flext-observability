@@ -9,8 +9,6 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from pydantic_settings import SettingsConfigDict
-
 from flext_core import FlextSettings
 from flext_observability import c, m, u
 
@@ -19,7 +17,7 @@ from flext_observability import c, m, u
 class FlextObservabilitySettings(FlextSettings):
     """Runtime settings for observability components."""
 
-    model_config: ClassVar[SettingsConfigDict] = m.SettingsConfigDict(
+    model_config: ClassVar[m.SettingsConfigDict] = m.SettingsConfigDict(
         env_prefix="FLEXT_OBSERVABILITY_", extra="ignore"
     )
 
