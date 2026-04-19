@@ -394,7 +394,7 @@ class FlextObservabilityModels(m):
             """Validation model for health check factory kwargs."""
 
             metrics: Annotated[
-                t.Dict | None,
+                m.Dict | None,
                 u.Field(description="Health check metric values"),
             ] = None
             timestamp: Annotated[
@@ -419,10 +419,10 @@ class FlextObservabilityModels(m):
             ] = "unknown"
             message: Annotated[str, u.Field(description="Health check message")] = ""
             metrics: Annotated[
-                t.Dict,
+                m.Dict,
                 u.Field(description="Health check metric values"),
             ] = u.Field(
-                default_factory=lambda: t.Dict({}),
+                default_factory=dict,
                 description="Health check metric values",
             )
             timestamp: Annotated[
@@ -455,10 +455,10 @@ class FlextObservabilityModels(m):
                 u.Field(description="Serialized baggage string"),
             ] = None
             extra: Annotated[
-                t.Dict,
+                m.Dict,
                 u.Field(description="Additional context data"),
             ] = u.Field(
-                default_factory=lambda: t.Dict({}),
+                default_factory=dict,
                 description="Additional context data",
             )
 

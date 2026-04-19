@@ -55,13 +55,13 @@ class FlextObservabilityContext:
     _correlation_id: ContextVar[str] = ContextVar("correlation_id", default="")
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
-    _baggage: ContextVar[t.Dict | None] = ContextVar("baggage", default=None)
+    _baggage: ContextVar[m.Dict | None] = ContextVar("baggage", default=None)
     _logger = u.fetch_logger(__name__)
 
     @staticmethod
     def clear_baggage() -> None:
         """Clear all baggage from context."""
-        FlextObservabilityContext._baggage.set(t.Dict({}))
+        FlextObservabilityContext._baggage.set({})
 
     @staticmethod
     def clear_context() -> None:
@@ -107,7 +107,7 @@ class FlextObservabilityContext:
         FlextObservabilityContext._trace_id.set("")
 
     @staticmethod
-    def from_headers(headers: t.Dict | t.ScalarMapping) -> p.Result[bool]:
+    def from_headers(headers: m.Dict | t.ScalarMapping) -> p.Result[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -153,7 +153,7 @@ class FlextObservabilityContext:
     @staticmethod
     def resolve_baggage(
         key: str | None = None,
-    ) -> m.BaseModel | t.RecursiveContainer | t.Dict | None:
+    ) -> m.BaseModel | t.Container | m.Dict | None:
         """Resolve baggage value.
 
         Args:
@@ -172,13 +172,13 @@ class FlextObservabilityContext:
             ```
 
         """
-        baggage = FlextObservabilityContext._baggage.get() or t.Dict({})
+        baggage = FlextObservabilityContext._baggage.get() or {}
         if key is None:
             return baggage
         return baggage.get(key)
 
     @staticmethod
-    def context_payload() -> t.Dict:
+    def context_payload() -> m.Dict:
         """Return complete context snapshot.
 
         Returns all context variables as a dictionary. Useful for
@@ -200,7 +200,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        return t.Dict({
+        return m.Dict({
             "correlation_id": FlextObservabilityContext.correlation_id(),
             "trace_id": FlextObservabilityContext.trace_id(),
             "span_id": FlextObservabilityContext.span_id(),
@@ -237,7 +237,7 @@ class FlextObservabilityContext:
         return FlextObservabilityContext._trace_id.get("")
 
     @staticmethod
-    def update_baggage(key: str, value: t.RecursiveContainer) -> p.Result[bool]:
+    def update_baggage(key: str, value: t.Container) -> p.Result[bool]:
         """Update baggage value for metadata propagation.
 
         Baggage allows passing metadata across service boundaries
@@ -265,8 +265,8 @@ class FlextObservabilityContext:
                 m.Observability.BaggageKeyModel.model_validate(obj={"key": key})
             except c.ValidationError:
                 return r[bool].fail("Baggage key must be non-empty string")
-            current_baggage = FlextObservabilityContext._baggage.get() or t.Dict({})
-            updated_baggage = t.Dict({
+            current_baggage = FlextObservabilityContext._baggage.get() or {}
+            updated_baggage = m.Dict({
                 **dict(current_baggage.items()),
                 key: value,
             })
@@ -331,7 +331,7 @@ class FlextObservabilityContext:
         return trace_id
 
     @staticmethod
-    def to_headers() -> t.Dict:
+    def to_headers() -> m.Dict:
         """Get context as HTTP headers.
 
         Converts current context (correlation ID, trace ID, span ID) to
@@ -357,7 +357,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        headers = t.Dict({})
+        headers = {}
         correlation_id = FlextObservabilityContext.correlation_id()
         if correlation_id:
             headers["X-Correlation-ID"] = correlation_id

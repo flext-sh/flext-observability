@@ -284,11 +284,11 @@ class FlextObservabilityProtocols(p):
         class ObservabilityService(Protocol):
             """Protocol for observability services providing alerts and metrics."""
 
-            def create_alert(self, **kwargs: t.Scalar) -> p.Result[t.Dict]:
+            def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
                 """Create an alert with given parameters."""
                 ...
 
-            def metrics_summary(self) -> p.Result[t.Dict]:
+            def metrics_summary(self) -> p.Result[m.Dict]:
                 """Get summary of collected metrics."""
                 ...
 
@@ -390,7 +390,7 @@ class FlextObservabilityProtocols(p):
             class Request(Protocol):
                 """Protocol for HTTP request objects used by middleware."""
 
-                headers: t.Dict
+                headers: m.Dict
                 method: str
                 url: FlextObservabilityProtocols.Observability.Http.RequestURL
                 client: (
@@ -402,14 +402,14 @@ class FlextObservabilityProtocols(p):
                 """Protocol for HTTP response objects used by middleware."""
 
                 status_code: int
-                headers: t.Dict
+                headers: m.Dict
 
         class HttpClient:
             """Protocols for httpx and aiohttp HTTP client instrumentation."""
 
             @runtime_checkable
             class HTTPXURL(Protocol):
-                """Protocol for httpx URL t.RecursiveContainer."""
+                """Protocol for httpx URL t.Container."""
 
                 @property
                 def host(self) -> str | None:
@@ -423,7 +423,7 @@ class FlextObservabilityProtocols(p):
 
             @runtime_checkable
             class HTTPXRequest(Protocol):
-                """Protocol for httpx Request t.RecursiveContainer."""
+                """Protocol for httpx Request t.Container."""
 
                 @property
                 def headers(self) -> t.MutableStrMapping:
@@ -444,7 +444,7 @@ class FlextObservabilityProtocols(p):
 
             @runtime_checkable
             class HTTPXResponse(Protocol):
-                """Protocol for httpx Response t.RecursiveContainer."""
+                """Protocol for httpx Response t.Container."""
 
                 @property
                 def status_code(self) -> int:

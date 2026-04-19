@@ -115,7 +115,7 @@ class UserService:
         self.metrics = FlextMetricsService(container)
         self.factory = FlextObservabilityMasterFactory()
 
-    def create_user(self, user_data: dict) -> p.Result[t.Dict]:
+    def create_user(self, user_data: dict) -> p.Result[m.Dict]:
         """Create user with comprehensive observability."""
         # Create business metrics
         metric_result = self.factory.create_metric(
@@ -140,7 +140,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> t.RecursiveContainerMapping:
+def process_order(order_data: dict) -> Mapping[str, t.Container]:
     """Process order with automatic monitoring.
 
     This function automatically gets:
@@ -161,7 +161,7 @@ def process_order(order_data: dict) -> t.RecursiveContainerMapping:
 
 # Advanced monitoring with context
 @flext_monitor_function("payment_processing")
-def process_payment(amount: float, currency: str) -> p.Result[t.Dict]:
+def process_payment(amount: float, currency: str) -> p.Result[m.Dict]:
     """Process payment with error handling and monitoring."""
     if amount <= 0:
         return r[bool].fail("Invalid payment amount")
@@ -184,7 +184,7 @@ def process_payment(amount: float, currency: str) -> p.Result[t.Dict]:
 from flext_observability import flext_create_health_check, FlextHealthService
 
 
-def monitor_database_health() -> p.Result[t.Dict]:
+def monitor_database_health() -> p.Result[m.Dict]:
     """Monitor database connectivity and performance."""
     try:
         # Test database connection
@@ -226,7 +226,7 @@ def monitor_database_health() -> p.Result[t.Dict]:
 from flext_observability import flext_create_trace
 
 
-def process_user_workflow(user_id: str) -> p.Result[t.Dict]:
+def process_user_workflow(user_id: str) -> p.Result[m.Dict]:
     """Process user workflow with distributed tracing."""
 
     # Create parent trace
@@ -257,7 +257,7 @@ def process_user_workflow(user_id: str) -> p.Result[t.Dict]:
     })
 
 
-def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[t.Dict]:
+def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
     """Validate user with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="user_validation",
@@ -288,7 +288,7 @@ class FlextTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> Sequence[t.Dict]:
+    def extract_records(self, table_name: str) -> Sequence[m.Dict]:
         """Extract records with automatic monitoring."""
 
         # Extract data (business logic)
@@ -323,7 +323,7 @@ class FlextAPIService:
     """Example FastAPI service with observability."""
 
     @flext_monitor_function("api_endpoint")
-    def handle_user_request(self, request_data: dict) -> p.Result[t.Dict]:
+    def handle_user_request(self, request_data: dict) -> p.Result[m.Dict]:
         """Handle API request with comprehensive observability."""
 
         # Request metrics

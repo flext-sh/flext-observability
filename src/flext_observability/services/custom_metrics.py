@@ -98,7 +98,7 @@ class FlextObservabilityCustomMetrics:
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to clear metrics: {e}")
 
-        def resolve_metrics(self, namespace: str | None = None) -> t.Dict:
+        def resolve_metrics(self, namespace: str | None = None) -> m.Dict:
             """Resolve all registered metrics.
 
             Args:
@@ -114,8 +114,8 @@ class FlextObservabilityCustomMetrics:
                     for metric_name, metric in self._metrics.items()
                     if metric_name.startswith(f"{namespace}:")
                 }
-                return t.Dict.model_validate(filtered)
-            return t.Dict.model_validate(self._metrics)
+                return m.Dict.model_validate(filtered)
+            return m.Dict.model_validate(self._metrics)
 
         def resolve_metric(
             self,
@@ -142,7 +142,7 @@ class FlextObservabilityCustomMetrics:
             self,
             name: str,
             namespace: str = "default",
-        ) -> t.Dict | None:
+        ) -> m.Dict | None:
             """Resolve detailed metric information.
 
             Args:
@@ -156,7 +156,7 @@ class FlextObservabilityCustomMetrics:
             metric = self.resolve_metric(name, namespace)
             if not metric:
                 return None
-            return t.Dict({
+            return m.Dict({
                 "name": metric.name,
                 "type": metric.metric_type.value,
                 "description": metric.description,
@@ -167,7 +167,7 @@ class FlextObservabilityCustomMetrics:
         def resolve_metrics_by_type(
             self,
             metric_type: c.Observability.MetricType,
-        ) -> t.Dict:
+        ) -> m.Dict:
             """Resolve all metrics of a specific type.
 
             Args:
@@ -177,7 +177,7 @@ class FlextObservabilityCustomMetrics:
                 dict - Metrics matching the type
 
             """
-            return t.Dict({
+            return m.Dict({
                 metric_name: metric
                 for metric_name, metric in self._metrics.items()
                 if metric.metric_type == metric_type

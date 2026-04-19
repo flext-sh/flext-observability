@@ -56,7 +56,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[t.Scalar, ...],
-            kwargs: t.ConfigurationMapping | t.Dict,
+            kwargs: t.ConfigurationMapping | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> t.Scalar:
@@ -186,18 +186,18 @@ class FlextObservabilityMonitor:
                 e,
             )
 
-    def flext_metrics_summary(self) -> p.Result[t.Dict]:
+    def flext_metrics_summary(self) -> p.Result[m.Dict]:
         """Resolve complete metrics summary."""
         if not self._metrics_service:
-            return r[t.Dict].fail_op(
+            return r[m.Dict].fail_op(
                 "resolve metrics summary",
                 "Metrics service not available",
             )
         result = self._metrics_service.metrics_summary()
         return (
-            r[t.Dict].ok(result.value)
+            r[m.Dict].ok(result.value)
             if result.success
-            else r[t.Dict].fail_op(
+            else r[m.Dict].fail_op(
                 "resolve metrics summary",
                 result.error or "Metrics summary failed",
             )

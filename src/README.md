@@ -89,7 +89,7 @@ trace_result = flext_create_trace("user_login", "auth-service")
 
 # Use monitoring decorators
 @flext_monitor_function("business_operation")
-def process_order(order_data: dict) -> t.RecursiveContainerMapping:
+def process_order(order_data: dict) -> Mapping[str, t.Container]:
     return {"status": "processed"}
 ```
 

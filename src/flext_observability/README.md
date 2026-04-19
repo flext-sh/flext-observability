@@ -205,7 +205,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> t.RecursiveContainerMapping:
+def process_order(order_data: dict) -> Mapping[str, t.Container]:
     # Automatically monitored for execution time, success/failure
     return {"status": "processed", "order_id": order_data["id"]}
 ```
@@ -226,7 +226,7 @@ All modules follow FLEXT ecosystem standards:
 ```python
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
-def handle_user_request(request: dict) -> p.Result[t.Dict]:
+def handle_user_request(request: dict) -> p.Result[m.Dict]:
     # Automatic metrics, tracing, and logging
     return r[bool].ok({"status": "processed"})
 ```

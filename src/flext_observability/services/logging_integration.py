@@ -251,9 +251,9 @@ class FlextObservabilityLogging:
                     exclude_none=True,
                 )
             )
-            extra_context: t.RecursiveContainer = log_context.pop("extra", {})
+            extra_context: t.Container = log_context.pop("extra", {})
             if isinstance(extra_context, dict):
-                typed_extra: t.RecursiveContainerMapping = extra_context
+                typed_extra: Mapping[str, t.Container] = extra_context
                 log_context.update(typed_extra)
             if extra:
                 log_context.update(extra)

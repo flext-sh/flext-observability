@@ -223,7 +223,7 @@ class FlextObservabilityHTTP:
                 errorhandler: p.Observability.Http.FlaskErrorHandler = app.errorhandler
 
                 @errorhandler(Exception)
-                def flext_error_handler(error: Exception) -> tuple[t.Dict, int]:
+                def flext_error_handler(error: Exception) -> tuple[m.Dict, int]:
                     """Handle exceptions with logging and alerting."""
                     try:
                         FlextObservabilityLogging.log_with_context(
@@ -241,7 +241,7 @@ class FlextObservabilityHTTP:
                         FlextObservabilityHTTP._logger.error(
                             f"Error in error handler: {log_error}",
                         )
-                    return (t.Dict({"error": str(error)}), 500)
+                    return (m.Dict({"error": str(error)}), 500)
 
                 _ = flext_before_request
                 _ = flext_after_request

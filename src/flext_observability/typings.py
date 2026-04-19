@@ -44,13 +44,13 @@ class FlextObservabilityTypes(t):
         type ObservabilityProjectType = c.Observability.ObservabilityProjectType
         type ObservabilityProjectConfig = Mapping[
             str,
-            t.Scalar | t.StrSequence | t.Dict,
+            t.Scalar | t.StrSequence | m.Dict,
         ]
         type MonitoringConfig = Mapping[str, t.Scalar | t.StrSequence]
         type MetricsConfig = Mapping[str, bool | str | t.ScalarMapping]
         type TracingConfig = Mapping[
             str,
-            t.Scalar | t.StrSequence | t.Dict,
+            t.Scalar | t.StrSequence | m.Dict,
         ]
 
         type MetricCollection = Mapping[
@@ -75,7 +75,7 @@ class FlextObservabilityTypes(t):
         ]
         type SpanAttributes = Mapping[str, t.Scalar | t.ScalarMapping]
         type TraceContext = Mapping[str, str | int | t.ScalarMapping]
-        type SpanHierarchy = Mapping[str, Sequence[t.Dict]]
+        type SpanHierarchy = Mapping[str, Sequence[m.Dict]]
         type AlertConfiguration = Mapping[
             str,
             t.Scalar | t.ScalarMapping,
@@ -100,12 +100,12 @@ class FlextObservabilityTypes(t):
             str,
             Mapping[str, str | int | t.ScalarMapping],
         ]
-        type ServiceDiscovery = Mapping[str, Sequence[t.Dict]]
+        type ServiceDiscovery = Mapping[str, Sequence[m.Dict]]
         type ServiceHealth = Mapping[str, str | t.ScalarMapping]
         type MetadataDict = t.ConfigurationMapping
-        type ServicesList = Sequence[tuple[str, t.Dict]]
-        type HealthMetricsDict = t.RecursiveContainerMapping
-        type MetricDict = t.RecursiveContainerMapping
+        type ServicesList = Sequence[tuple[str, m.Dict]]
+        type HealthMetricsDict = Mapping[str, t.Container]
+        type MetricDict = Mapping[str, t.Container]
         type StringList = t.StrSequence
 
 
