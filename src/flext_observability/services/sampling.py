@@ -20,7 +20,9 @@ Key Features:
 from __future__ import annotations
 
 import random
-from collections.abc import MutableMapping
+from collections.abc import (
+    MutableMapping,
+)
 
 from flext_observability import FlextObservabilityContext, c, p, r, u
 

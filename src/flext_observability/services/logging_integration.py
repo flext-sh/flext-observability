@@ -19,6 +19,10 @@ Key Features:
 
 from __future__ import annotations
 
+from collections.abc import (
+    Mapping,
+)
+
 from flext_observability import FlextObservabilityContext, c, m, p, r, t, u
 
 

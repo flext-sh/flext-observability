@@ -18,7 +18,9 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
+from collections.abc import (
+    MutableMapping,
+)
 
 from flext_core import u
 from flext_observability import c, m, p, r, t

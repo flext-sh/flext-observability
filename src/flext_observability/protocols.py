@@ -6,10 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Sequence
+from collections.abc import (
+    Awaitable,
+    Callable,
+    Sequence,
+)
 from typing import ClassVar, Protocol, runtime_checkable
 
-from flext_core import p
+from flext_core import m, p
 from flext_observability import t
 
 

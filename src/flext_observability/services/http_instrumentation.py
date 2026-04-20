@@ -22,7 +22,10 @@ Key Features:
 from __future__ import annotations
 
 import time
-from collections.abc import Awaitable, Callable
+from collections.abc import (
+    Awaitable,
+    Callable,
+)
 from typing import TypeIs
 
 import flask

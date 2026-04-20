@@ -19,7 +19,10 @@ Key Features:
 from __future__ import annotations
 
 import time
-from collections.abc import Callable, MutableMapping
+from collections.abc import (
+    Callable,
+    MutableMapping,
+)
 
 from flext_observability import FlextObservabilityContext, c, m, p, r, t, u
 
