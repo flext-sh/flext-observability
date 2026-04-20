@@ -422,7 +422,7 @@ class FlextObservabilityModels(m):
                 m.Dict,
                 u.Field(description="Health check metric values"),
             ] = u.Field(
-                default_factory=dict,
+                default_factory=lambda: m.Dict({}),
                 description="Health check metric values",
             )
             timestamp: Annotated[
@@ -458,7 +458,7 @@ class FlextObservabilityModels(m):
                 m.Dict,
                 u.Field(description="Additional context data"),
             ] = u.Field(
-                default_factory=dict,
+                default_factory=lambda: m.Dict({}),
                 description="Additional context data",
             )
 

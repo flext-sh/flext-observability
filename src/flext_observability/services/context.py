@@ -61,7 +61,7 @@ class FlextObservabilityContext:
     @staticmethod
     def clear_baggage() -> None:
         """Clear all baggage from context."""
-        FlextObservabilityContext._baggage.set({})
+        FlextObservabilityContext._baggage.set(m.Dict({}))
 
     @staticmethod
     def clear_context() -> None:
@@ -367,7 +367,7 @@ class FlextObservabilityContext:
         span_id = FlextObservabilityContext.span_id()
         if span_id:
             headers["X-Span-ID"] = span_id
-        return headers
+        return m.Dict(headers)
 
 
 __all__: list[str] = ["FlextObservabilityContext"]
