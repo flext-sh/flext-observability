@@ -13,6 +13,7 @@ from abc import ABC
 from typing import override
 
 from flext_core import FlextSettings, s
+
 from flext_observability import FlextObservabilitySettings
 
 

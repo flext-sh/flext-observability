@@ -17,6 +17,7 @@ from typing import Annotated, ClassVar
 from uuid import uuid4
 
 from flext_core import m
+
 from flext_observability import c, t, u
 
 

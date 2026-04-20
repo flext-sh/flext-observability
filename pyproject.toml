@@ -153,7 +153,24 @@ omit = [ "*/dependency_injector/providers.pyx" ]
 
 # [MANAGED] deptry
 [tool.deptry]
-known_first_party = [ "flext_core", "flext_observability" ]
+known_first_party = [
+  "flask",
+  "flext-core",
+  "flext_observability",
+  "opentelemetry-api",
+  "opentelemetry-exporter-otlp-proto-grpc",
+  "opentelemetry-exporter-prometheus",
+  "opentelemetry-sdk",
+  "prometheus-client",
+  "psutil",
+  "pydantic",
+  "pydantic-core",
+  "pydantic-settings",
+  "rich",
+  "starlette",
+  "structlog",
+  "typer",
+]
 pep621_dev_dependency_groups = [ "dev" ]
 
 [tool.flext.docs]
@@ -483,7 +500,24 @@ select = [ "ALL" ]
 [tool.ruff.lint.isort]
 combine-as-imports = true
 force-single-line = false
-known-first-party = [ "flext_core", "flext_observability" ]
+known-first-party = [
+  "flask",
+  "flext-core",
+  "flext_observability",
+  "opentelemetry-api",
+  "opentelemetry-exporter-otlp-proto-grpc",
+  "opentelemetry-exporter-prometheus",
+  "opentelemetry-sdk",
+  "prometheus-client",
+  "psutil",
+  "pydantic",
+  "pydantic-core",
+  "pydantic-settings",
+  "rich",
+  "starlette",
+  "structlog",
+  "typer",
+]
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]

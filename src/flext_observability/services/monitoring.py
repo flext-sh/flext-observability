@@ -14,6 +14,7 @@ from typing import TypeAlias, override
 from uuid import uuid4
 
 from flext_core import FlextContainer
+
 from flext_observability import (
     FlextObservabilityServices,
     FlextObservabilitySettings,

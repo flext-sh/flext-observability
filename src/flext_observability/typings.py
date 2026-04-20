@@ -21,6 +21,7 @@ from collections.abc import (
 from decimal import Decimal
 
 from flext_core import t
+
 from flext_observability import c, m
 
 

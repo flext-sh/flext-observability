@@ -14,6 +14,7 @@ from collections.abc import (
 from typing import ClassVar, Protocol, runtime_checkable
 
 from flext_core import m, p
+
 from flext_observability import t
 
 

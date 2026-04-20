@@ -18,7 +18,6 @@ from collections.abc import (
 )
 
 import psutil
-
 from flext_observability import c, m, p, r, u
 
 

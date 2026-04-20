@@ -23,6 +23,7 @@ from collections.abc import (
 )
 
 from flext_core import u
+
 from flext_observability import c, m, p, r, t
 
 
