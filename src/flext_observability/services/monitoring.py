@@ -169,7 +169,7 @@ class FlextObservabilityMonitor:
                     "resolve health status",
                     "Observability service not available",
                 )
-            health_data: t.MutableRecursiveContainerMapping = {
+            health_data: t.MutableFlatContainerMapping = {
                 "status": c.Observability.HealthStatus.HEALTHY
                 if self._initialized
                 else "initializing",

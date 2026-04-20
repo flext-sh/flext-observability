@@ -250,7 +250,7 @@ class FlextObservabilityLogging:
                 return r[bool].fail(
                     f"Failed to get trace context: {context_result.error}",
                 )
-            log_context: t.MutableRecursiveContainerMapping = (
+            log_context: t.MutableFlatContainerMapping = (
                 context_result.value.model_dump(
                     exclude_none=True,
                 )
