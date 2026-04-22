@@ -29,6 +29,7 @@ from collections.abc import (
 from typing import TypeIs
 
 import flask
+
 from flext_observability import (
     FlextObservabilityContext,
     FlextObservabilityLogging,
