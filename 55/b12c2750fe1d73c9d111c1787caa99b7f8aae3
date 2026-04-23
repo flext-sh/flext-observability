@@ -1,0 +1,36 @@
+src/flext_observability/services/http_instrumentation.py
+  h_9db9d35f50cf33 74,167,173,208,221,233,244,253,385,392,411,417
+src/flext_observability/services/http_client_instrumentation.py
+  h_9db9d35f50cf33 72,191,220,236,281,312,328,349,434,458,474,493
+src/flext_observability/services/logging_integration.py
+  h_9db9d35f50cf33 45,80,90,184
+src/flext_observability/api.py
+  h_9db9d35f50cf33 68,107,113,157,164,170,197,204,210,248,255,261,295,305-306,311-312,340,343
+src/flext_observability/services/advanced_context.py
+  h_9db9d35f50cf33 52,76,140,162,182,206
+src/flext_observability/services/services.py
+  h_9db9d35f50cf33 30-31,36,51,53
+src/flext_observability/services/performance.py
+  h_9db9d35f50cf33 52,199,201
+src/flext_observability/services/custom_metrics.py
+  h_9db9d35f50cf33 63,97,255,282
+src/flext_observability/services/context.py
+  h_9db9d35f50cf33 60,148
+src/flext_observability/services/monitoring.py
+  h_9db9d35f50cf33 44,124,128,155-156,214,220-222,224,235,256-257,277,292,304
+src/flext_observability/services/error_handling.py
+  h_9db9d35f50cf33 58,102,181,188,217,241,280
+src/flext_observability/services/sampling.py
+  h_9db9d35f50cf33 62,143,170,195,221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "55b12c2750fe1d73c9d111c1787caa99b7f8aae3",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
