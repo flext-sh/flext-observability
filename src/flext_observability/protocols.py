@@ -139,7 +139,7 @@ class FlextObservabilityProtocols(p):
                 """Finish a trace span."""
                 ...
 
-            def fetch_trace(self, trace_id: str) -> p.Result[t.RuntimeData]:
+            def fetch_trace(self, trace_id: str) -> p.Result[t.JsonPayload]:
                 """Get trace by ID."""
                 ...
 
@@ -160,7 +160,7 @@ class FlextObservabilityProtocols(p):
                 *,
                 service_name: t.Scalar | None = None,
                 parent_span_id: t.Scalar | None = None,
-            ) -> p.Result[t.RuntimeData]:
+            ) -> p.Result[t.JsonPayload]:
                 """Start a new trace span."""
                 ...
 
@@ -211,20 +211,20 @@ class FlextObservabilityProtocols(p):
             def check_health(
                 self,
                 service_name: str,
-            ) -> p.Result[t.RuntimeData]:
+            ) -> p.Result[t.JsonPayload]:
                 """Perform health check for a service."""
                 ...
 
             def services_status(
                 self,
-            ) -> p.Result[t.RuntimeData]:
+            ) -> p.Result[t.JsonPayload]:
                 """Get health status for all services."""
                 ...
 
             def service_status(
                 self,
                 service_name: str,
-            ) -> p.Result[t.RuntimeData]:
+            ) -> p.Result[t.JsonPayload]:
                 """Get service health status."""
                 ...
 
@@ -320,7 +320,7 @@ class FlextObservabilityProtocols(p):
             def fetch_dashboard(
                 self,
                 dashboard_id: str,
-            ) -> p.Result[t.RuntimeData]:
+            ) -> p.Result[t.JsonPayload]:
                 """Get dashboard by ID."""
                 ...
 
@@ -330,7 +330,7 @@ class FlextObservabilityProtocols(p):
                 *,
                 start_time: t.Scalar | None = None,
                 end_time: t.Scalar | None = None,
-            ) -> p.Result[t.RuntimeData]:
+            ) -> p.Result[t.JsonPayload]:
                 """Get dashboard data."""
                 ...
 

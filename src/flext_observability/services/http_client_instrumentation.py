@@ -92,7 +92,9 @@ class FlextObservabilityHTTPClient:
         return hasattr(obj, "request")
 
     @staticmethod
-    def _validated_headers(payload: t.JsonValue) -> t.MutableStrMapping:
+    def _validated_headers(
+        payload: t.Scalar | t.JsonValue | None,
+    ) -> t.MutableStrMapping:
         try:
             return dict(
                 m.Observability.HeadersPayload.model_validate(

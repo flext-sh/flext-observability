@@ -254,7 +254,11 @@ class FlextObservabilityLogging:
                 typed_extra: t.JsonMapping = extra_context
                 log_context.update(typed_extra)
             if extra:
-                log_context.update(extra)
+                validated_extra = m.Dict.model_validate(extra).root
+                for extra_key, extra_value in validated_extra.items():
+                    log_context[extra_key] = m.TypeAdapter(t.JsonValue).validate_python(
+                        extra_value,
+                    )
             getattr(logger, level)(message, extra=log_context)
             return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:

@@ -173,10 +173,13 @@ class FlextObservabilityContext:
             ```
 
         """
-        baggage = FlextObservabilityContext._baggage.get() or {}
+        baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
         if key is None:
             return baggage
-        return baggage.get(key)
+        value = baggage.root.get(key)
+        if value is None:
+            return None
+        return m.TypeAdapter(t.JsonValue).validate_python(value)
 
     @staticmethod
     def context_payload() -> m.Dict:
