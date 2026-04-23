@@ -139,7 +139,7 @@ def test_factory_service_monitor_integration():
 
 ### Test Configuration
 
-```python
+```text
 @pytest.fixture(scope="module")
 def e2e_environment():
     """Setup production-like test environment."""

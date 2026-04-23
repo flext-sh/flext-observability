@@ -54,7 +54,7 @@ def test_flext_metric_domain_validation():
 
 ### Service Layer Testing
 
-```python
+```text
 @pytest.fixture
 def mock_container():
     """Mock container for service testing."""

@@ -98,7 +98,7 @@ Provides comprehensive test fixtures and configuration:
 
 ### Test Fixtures Available
 
-```python
+```text
 # Core testing fixtures
 @pytest.fixture
 def clean_container() -> p.Container:

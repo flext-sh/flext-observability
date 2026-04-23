@@ -67,7 +67,7 @@ def test_metrics_service_with_factory_integration():
 
 ### External System Integration
 
-```python
+```text
 def test_flext_core_container_integration():
     """Test integration with flext-core dependency injection."""
 from flext_core import FlextBus
@@ -106,7 +106,7 @@ from flext_core import u
 
 ### Configuration
 
-```python
+```text
 @pytest.fixture(scope="module")
 def integration_container():
     """Shared container for integration tests."""
