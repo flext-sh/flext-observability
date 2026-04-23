@@ -108,8 +108,8 @@ class FlextObservabilityTypes(t):
         type ServiceHealth = Mapping[str, str | t.ScalarMapping]
         type MetadataDict = t.ConfigurationMapping
         type ServicesList = Sequence[tuple[str, m.Dict]]
-        type HealthMetricsDict = Mapping[str, t.Container]
-        type MetricDict = Mapping[str, t.Container]
+        type HealthMetricsDict = t.JsonMapping
+        type MetricDict = t.JsonMapping
         type StringList = t.StrSequence
 
 

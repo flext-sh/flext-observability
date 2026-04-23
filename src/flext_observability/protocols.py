@@ -412,7 +412,7 @@ class FlextObservabilityProtocols(p):
 
             @runtime_checkable
             class HTTPXURL(Protocol):
-                """Protocol for httpx URL t.Container."""
+                """Protocol for httpx URL t.JsonValue."""
 
                 @property
                 def host(self) -> str | None:
@@ -426,7 +426,7 @@ class FlextObservabilityProtocols(p):
 
             @runtime_checkable
             class HTTPXRequest(Protocol):
-                """Protocol for httpx Request t.Container."""
+                """Protocol for httpx Request t.JsonValue."""
 
                 @property
                 def headers(self) -> t.MutableStrMapping:
@@ -447,7 +447,7 @@ class FlextObservabilityProtocols(p):
 
             @runtime_checkable
             class HTTPXResponse(Protocol):
-                """Protocol for httpx Response t.Container."""
+                """Protocol for httpx Response t.JsonValue."""
 
                 @property
                 def status_code(self) -> int:

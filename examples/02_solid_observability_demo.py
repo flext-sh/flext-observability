@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import time
 from collections.abc import (
-    Mapping,
     Sequence,
 )
 
@@ -34,13 +33,13 @@ flext_metric = FlextObservability.flext_metric
 flext_trace = FlextObservability.flext_trace
 
 
-def database_query(query: str) -> Mapping[str, t.Container]:
+def database_query(query: str) -> t.JsonMapping:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> Mapping[str, t.Container]:
+def process_api_request(endpoint: str) -> t.JsonMapping:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}

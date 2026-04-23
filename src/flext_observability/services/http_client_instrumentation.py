@@ -75,14 +75,14 @@ class FlextObservabilityHTTPClient:
     def _matches_httpx_async_client(
         obj: t.RegisterableService | p.Observability.HttpClient.HTTPXAsyncClient,
     ) -> TypeIs[p.Observability.HttpClient.HTTPXAsyncClient]:
-        """Type guard to check if t.Container is an async httpx client."""
+        """Type guard to check if t.JsonValue is an async httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send")
 
     @staticmethod
     def _matches_httpx_client(
         obj: t.RegisterableService | p.Observability.HttpClient.HTTPXClient,
     ) -> TypeIs[p.Observability.HttpClient.HTTPXClient]:
-        """Type guard to check if t.Container is an httpx client."""
+        """Type guard to check if t.JsonValue is an httpx client."""
         return hasattr(obj, "request") and hasattr(obj, "_send") is False
 
     @staticmethod
@@ -92,7 +92,7 @@ class FlextObservabilityHTTPClient:
         return hasattr(obj, "request")
 
     @staticmethod
-    def _validated_headers(payload: t.Container) -> t.MutableStrMapping:
+    def _validated_headers(payload: t.JsonValue) -> t.MutableStrMapping:
         try:
             return dict(
                 m.Observability.HeadersPayload.model_validate(
