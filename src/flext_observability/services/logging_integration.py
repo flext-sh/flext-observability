@@ -237,7 +237,6 @@ class FlextObservabilityLogging:
             }:
                 return r[bool].fail(f"Invalid log level: {level}")
             context_result = FlextObservabilityLogging.enrich_log_context(
-                logger,
                 include_baggage=include_baggage,
             )
             if context_result.failure:
