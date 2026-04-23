@@ -42,7 +42,7 @@ class FlextObservabilityLogging:
         ```
     """
 
-    _logger = u.fetch_logger(__name__)
+    logger = u.fetch_logger(__name__)
 
     @staticmethod
     def create_logger(name: str) -> p.Result[p.Logger]:
@@ -77,7 +77,7 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def enrich_log_context(
-        _logger: p.Logger,
+        logger: p.Logger,
         *,
         include_baggage: bool = False,
     ) -> p.Result[m.Observability.LogContext]:
@@ -87,7 +87,7 @@ class FlextObservabilityLogging:
         that should be included in log entries. Can optionally include baggage.
 
         Args:
-            _logger: Logger instance to enrich (reserved for future use)
+            logger: Logger instance to enrich (reserved for future use)
             include_baggage: Whether to include baggage in context
 
         Returns:
@@ -181,7 +181,7 @@ class FlextObservabilityLogging:
         try:
             context = FlextObservabilityContext.context_payload()
             if not context:
-                FlextObservabilityLogging._logger.debug(
+                FlextObservabilityLogging.logger.debug(
                     "No trace context currently set",
                 )
             _ = logger

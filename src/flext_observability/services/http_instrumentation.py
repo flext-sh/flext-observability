@@ -71,7 +71,7 @@ class FlextObservabilityHTTP:
         ASGI: Generic ASGI middleware base
     """
 
-    _logger = u.fetch_logger(__name__)
+    logger = u.fetch_logger(__name__)
     HTTP_ERROR_STATUS_THRESHOLD = 400
 
     @staticmethod
@@ -164,13 +164,13 @@ class FlextObservabilityHTTP:
                             "http_user_agent": str(user_agent),
                         }
                         FlextObservabilityLogging.log_with_context(
-                            FlextObservabilityHTTP._logger,
+                            FlextObservabilityHTTP.logger,
                             c.Observability.ErrorSeverity.DEBUG.value,
                             f"HTTP {request_method} {request_path}",
                             extra=extra_before,
                         )
                     except (ValueError, TypeError, KeyError) as e:
-                        FlextObservabilityHTTP._logger.warning(
+                        FlextObservabilityHTTP.logger.warning(
                             f"Error in before_request hook: {e}",
                         )
 
@@ -205,7 +205,7 @@ class FlextObservabilityHTTP:
                             >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
                         )
                         FlextObservabilityLogging.log_with_context(
-                            FlextObservabilityHTTP._logger,
+                            FlextObservabilityHTTP.logger,
                             c.Observability.ErrorSeverity.INFO.value
                             if not is_error
                             else c.Observability.ErrorSeverity.WARNING.value,
@@ -218,7 +218,7 @@ class FlextObservabilityHTTP:
                             },
                         )
                     except (ValueError, TypeError, KeyError) as e:
-                        FlextObservabilityHTTP._logger.warning(
+                        FlextObservabilityHTTP.logger.warning(
                             f"Error in after_request hook: {e}",
                         )
                     return response
@@ -230,7 +230,7 @@ class FlextObservabilityHTTP:
                     """Handle exceptions with logging and alerting."""
                     try:
                         FlextObservabilityLogging.log_with_context(
-                            FlextObservabilityHTTP._logger,
+                            FlextObservabilityHTTP.logger,
                             c.Observability.ErrorSeverity.ERROR.value,
                             f"HTTP request error: {error!s}",
                             extra={
@@ -241,7 +241,7 @@ class FlextObservabilityHTTP:
                             },
                         )
                     except (ValueError, TypeError, KeyError) as log_error:
-                        FlextObservabilityHTTP._logger.error(
+                        FlextObservabilityHTTP.logger.error(
                             f"Error in error handler: {log_error}",
                         )
                     return (m.Dict({"error": str(error)}), 500)
@@ -250,7 +250,7 @@ class FlextObservabilityHTTP:
                 _ = flext_after_request
                 _ = flext_error_handler
 
-                FlextObservabilityHTTP._logger.debug(
+                FlextObservabilityHTTP.logger.debug(
                     "Flask HTTP instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
@@ -382,14 +382,14 @@ class FlextObservabilityHTTP:
                                 )
                                 raise
                         except (ValueError, TypeError, KeyError) as e:
-                            FlextObservabilityHTTP._logger.warning(
+                            FlextObservabilityHTTP.logger.warning(
                                 f"Middleware error: {e}",
                             )
                             raise
 
                 add_middleware = typed_app.add_middleware
                 add_middleware(FlextObservabilityMiddleware)
-                FlextObservabilityHTTP._logger.debug(
+                FlextObservabilityHTTP.logger.debug(
                     "FastAPI HTTP instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
@@ -408,13 +408,13 @@ class FlextObservabilityHTTP:
         """
         try:
             FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTP._logger,
+                FlextObservabilityHTTP.logger,
                 level,
                 message,
                 extra=extra,
             )
         except (ValueError, TypeError, KeyError) as e:
-            FlextObservabilityHTTP._logger.warning(
+            FlextObservabilityHTTP.logger.warning(
                 f"Error logging in async context: {e}",
             )
 

@@ -69,7 +69,7 @@ class FlextObservabilityHTTPClient:
         AIOHTTP: aiohttp client instrumentation (async)
     """
 
-    _logger = u.fetch_logger(__name__)
+    logger = u.fetch_logger(__name__)
 
     @staticmethod
     def _matches_httpx_async_client(
@@ -188,7 +188,7 @@ class FlextObservabilityHTTPClient:
                         if span_id:
                             headers["X-Span-ID"] = span_id
                         _ = FlextObservabilityLogging.log_with_context(
-                            FlextObservabilityHTTPClient._logger,
+                            FlextObservabilityHTTPClient.logger,
                             c.Observability.ErrorSeverity.DEBUG.value,
                             f"HTTP client request: {method} {url}",
                             extra={
@@ -217,7 +217,7 @@ class FlextObservabilityHTTPClient:
                             response = await response_candidate
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
-                                FlextObservabilityHTTPClient._logger,
+                                FlextObservabilityHTTPClient.logger,
                                 c.Observability.ErrorSeverity.DEBUG.value,
                                 f"HTTP client response: {method} {url} -> {response.status_code}",
                                 extra={
@@ -233,7 +233,7 @@ class FlextObservabilityHTTPClient:
                         except (ValueError, TypeError, KeyError) as e:
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
-                                FlextObservabilityHTTPClient._logger,
+                                FlextObservabilityHTTPClient.logger,
                                 c.Observability.ErrorSeverity.ERROR.value,
                                 f"HTTP client error: {method} {url}",
                                 extra={
@@ -278,7 +278,7 @@ class FlextObservabilityHTTPClient:
                         if span_id:
                             headers["X-Span-ID"] = span_id
                         _ = FlextObservabilityLogging.log_with_context(
-                            FlextObservabilityHTTPClient._logger,
+                            FlextObservabilityHTTPClient.logger,
                             c.Observability.ErrorSeverity.DEBUG.value,
                             f"HTTP client request: {method} {url}",
                             extra={
@@ -309,7 +309,7 @@ class FlextObservabilityHTTPClient:
                             response = response_candidate
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
-                                FlextObservabilityHTTPClient._logger,
+                                FlextObservabilityHTTPClient.logger,
                                 c.Observability.ErrorSeverity.DEBUG.value,
                                 f"HTTP client response: {method} {url} -> {response.status_code}",
                                 extra={
@@ -325,7 +325,7 @@ class FlextObservabilityHTTPClient:
                         except (ValueError, TypeError, KeyError) as e:
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
-                                FlextObservabilityHTTPClient._logger,
+                                FlextObservabilityHTTPClient.logger,
                                 c.Observability.ErrorSeverity.ERROR.value,
                                 f"HTTP client error: {method} {url}",
                                 extra={
@@ -346,7 +346,7 @@ class FlextObservabilityHTTPClient:
                         "Invalid httpx client - unsupported client type",
                     )
                 FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client_id)
-                FlextObservabilityHTTPClient._logger.debug(
+                FlextObservabilityHTTPClient.logger.debug(
                     "httpx client instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
@@ -431,7 +431,7 @@ class FlextObservabilityHTTPClient:
                     if span_id:
                         headers["X-Span-ID"] = span_id
                     _ = FlextObservabilityLogging.log_with_context(
-                        FlextObservabilityHTTPClient._logger,
+                        FlextObservabilityHTTPClient.logger,
                         c.Observability.ErrorSeverity.DEBUG.value,
                         f"HTTP client request: {method} {url}",
                         extra={
@@ -455,7 +455,7 @@ class FlextObservabilityHTTPClient:
                         duration_ms = (time.time() - start_time) * 1000
                         status = response.status
                         _ = FlextObservabilityLogging.log_with_context(
-                            FlextObservabilityHTTPClient._logger,
+                            FlextObservabilityHTTPClient.logger,
                             c.Observability.ErrorSeverity.DEBUG.value,
                             f"HTTP client response: {method} {url} -> {status}",
                             extra={
@@ -471,7 +471,7 @@ class FlextObservabilityHTTPClient:
                     except (ValueError, TypeError, KeyError) as e:
                         duration_ms = (time.time() - start_time) * 1000
                         _ = FlextObservabilityLogging.log_with_context(
-                            FlextObservabilityHTTPClient._logger,
+                            FlextObservabilityHTTPClient.logger,
                             c.Observability.ErrorSeverity.ERROR.value,
                             f"HTTP client error: {method} {url}",
                             extra={
@@ -490,7 +490,7 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions.add(
                     typed_session,
                 )
-                FlextObservabilityHTTPClient._logger.debug(
+                FlextObservabilityHTTPClient.logger.debug(
                     "aiohttp session instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)

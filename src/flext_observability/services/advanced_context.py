@@ -49,7 +49,7 @@ class FlextObservabilityAdvancedContext:
         Context: Request-local context management
     """
 
-    _logger = u.fetch_logger(__name__)
+    logger = u.fetch_logger(__name__)
     _context_instance: FlextObservabilityAdvancedContext.Context | None = None
 
     class Context:
@@ -73,7 +73,7 @@ class FlextObservabilityAdvancedContext:
                 self._metadata.clear()
                 self._baggage.clear()
                 self._request_id = ""
-                FlextObservabilityAdvancedContext._logger.debug("Context cleared")
+                FlextObservabilityAdvancedContext.logger.debug("Context cleared")
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to clear context: {e}")
@@ -137,7 +137,7 @@ class FlextObservabilityAdvancedContext:
             try:
                 self._metadata.update(other.metadata)
                 self._baggage.update(other.baggage)
-                FlextObservabilityAdvancedContext._logger.debug("Context merged")
+                FlextObservabilityAdvancedContext.logger.debug("Context merged")
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to merge context: {e}")
@@ -159,7 +159,7 @@ class FlextObservabilityAdvancedContext:
             try:
                 self._metadata = dict(snapshot.metadata)
                 self._baggage = dict(snapshot.baggage)
-                FlextObservabilityAdvancedContext._logger.debug(
+                FlextObservabilityAdvancedContext.logger.debug(
                     "Context restored from snapshot",
                 )
                 return r[bool].ok(value=True)
@@ -179,7 +179,7 @@ class FlextObservabilityAdvancedContext:
             """
             try:
                 self._baggage[key] = value
-                FlextObservabilityAdvancedContext._logger.debug(f"Baggage set: {key}")
+                FlextObservabilityAdvancedContext.logger.debug(f"Baggage set: {key}")
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
                 return r[bool].fail(f"Failed to set baggage: {e}")
@@ -203,7 +203,7 @@ class FlextObservabilityAdvancedContext:
             try:
                 t.SCALAR_ADAPTER.validate_python(value)
                 self._metadata[key] = value
-                FlextObservabilityAdvancedContext._logger.debug(f"Metadata set: {key}")
+                FlextObservabilityAdvancedContext.logger.debug(f"Metadata set: {key}")
                 return r[bool].ok(value=True)
             except (TypeError, ValueError) as e:
                 return r[bool].fail(f"Metadata value not JSON serializable: {e}")

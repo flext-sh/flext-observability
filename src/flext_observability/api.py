@@ -65,7 +65,7 @@ class FlextObservability(
 
     _settings: FlextObservabilitySettings
     _container: p.Container
-    _logger: p.Logger = u.fetch_logger(__name__)
+    logger: p.Logger = u.fetch_logger(__name__)
     _global_factory: ClassVar[
         FlextObservability.FlextObservabilityMasterFactory | None
     ] = None
@@ -104,13 +104,13 @@ class FlextObservability(
         """Service for metrics collection and recording."""
 
         _container: p.Container
-        _logger: p.Logger
+        logger: p.Logger
         _metrics: MutableSequence[FlextObservability.Metric]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize metrics service."""
             self._container = container or FlextContainer.shared()
-            self._logger = u.fetch_logger(__name__)
+            self.logger = u.fetch_logger(__name__)
             self._metrics = list[FlextObservability.Metric]()
 
         def record_metric(
@@ -154,20 +154,20 @@ class FlextObservability(
                 self._metrics.append(metric)
                 return r[FlextObservability.Metric].ok(metric)
             except (ValueError, TypeError, AttributeError) as e:
-                self._logger.warning(f"Metric recording failed: %s: {e}", exc_info=True)
+                self.logger.warning(f"Metric recording failed: %s: {e}", exc_info=True)
                 return r[FlextObservability.Metric].fail_op("record metric", e)
 
     class TracingService:
         """Service for distributed tracing."""
 
         _container: p.Container
-        _logger: p.Logger
+        logger: p.Logger
         _traces: MutableSequence[FlextObservability.Trace]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize tracing service."""
             self._container = container or FlextContainer.shared()
-            self._logger = u.fetch_logger(__name__)
+            self.logger = u.fetch_logger(__name__)
             self._traces = list[FlextObservability.Trace]()
 
         def start_trace(
@@ -194,20 +194,20 @@ class FlextObservability(
                 self._traces.append(trace)
                 return r[FlextObservability.Trace].ok(trace)
             except (ValueError, TypeError, AttributeError) as e:
-                self._logger.warning(f"Trace creation failed: %s: {e}", exc_info=True)
+                self.logger.warning(f"Trace creation failed: %s: {e}", exc_info=True)
                 return r[FlextObservability.Trace].fail_op("start trace", e)
 
     class AlertingService:
         """Service for alert management."""
 
         _container: p.Container
-        _logger: p.Logger
+        logger: p.Logger
         _alerts: MutableSequence[FlextObservability.Alert]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize alerting service."""
             self._container = container or FlextContainer.shared()
-            self._logger = u.fetch_logger(__name__)
+            self.logger = u.fetch_logger(__name__)
             self._alerts = list[FlextObservability.Alert]()
 
         def create_alert(
@@ -245,20 +245,20 @@ class FlextObservability(
                 self._alerts.append(alert)
                 return r[FlextObservability.Alert].ok(alert)
             except (ValueError, TypeError, AttributeError) as e:
-                self._logger.warning(f"Alert creation failed: %s: {e}", exc_info=True)
+                self.logger.warning(f"Alert creation failed: %s: {e}", exc_info=True)
                 return r[FlextObservability.Alert].fail_op("create alert", e)
 
     class HealthService:
         """Service for health check management."""
 
         _container: p.Container
-        _logger: p.Logger
+        logger: p.Logger
         _checks: MutableSequence[FlextObservability.HealthCheck]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize health service."""
             self._container = container or FlextContainer.shared()
-            self._logger = u.fetch_logger(__name__)
+            self.logger = u.fetch_logger(__name__)
             self._checks = list[FlextObservability.HealthCheck]()
 
         def check_component(
@@ -292,7 +292,7 @@ class FlextObservability(
                 self._checks.append(health)
                 return r[FlextObservability.HealthCheck].ok(health)
             except (ValueError, TypeError, AttributeError) as e:
-                self._logger.warning(f"Health check failed: %s: {e}", exc_info=True)
+                self.logger.warning(f"Health check failed: %s: {e}", exc_info=True)
                 return r[FlextObservability.HealthCheck].fail_op(
                     "create health check",
                     e,
@@ -302,14 +302,14 @@ class FlextObservability(
         """Service for structured logging."""
 
         _container: p.Container
-        _logger: p.Logger
-        _entries: MutableSequence[FlextObservability.LogEntry]
+        logger: p.Logger
+        entries: MutableSequence[FlextObservability.LogEntry]
 
         def __init__(self, container: FlextContainer | None = None) -> None:
             """Initialize logging service."""
             self._container = container or FlextContainer.shared()
-            self._logger = u.fetch_logger(__name__)
-            self._entries = list[FlextObservability.LogEntry]()
+            self.logger = u.fetch_logger(__name__)
+            self.entries = list[FlextObservability.LogEntry]()
 
         def log_entry(
             self,
@@ -337,10 +337,10 @@ class FlextObservability(
                     context=resolved_context,
                     domain_events=[],
                 )
-                self._entries.append(entry)
+                self.entries.append(entry)
                 return r[FlextObservability.LogEntry].ok(entry)
             except (ValueError, TypeError, AttributeError) as e:
-                self._logger.warning(
+                self.logger.warning(
                     f"Log entry creation failed: %s: {e}",
                     exc_info=True,
                 )

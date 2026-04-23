@@ -57,7 +57,7 @@ class FlextObservabilityContext:
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
     _baggage: ContextVar[m.Dict | None] = ContextVar("baggage", default=None)
-    _logger = u.fetch_logger(__name__)
+    logger = u.fetch_logger(__name__)
 
     @staticmethod
     def clear_baggage() -> None:
@@ -145,7 +145,7 @@ class FlextObservabilityContext:
                 FlextObservabilityContext.update_span_id(span_id)
             return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
-            FlextObservabilityContext._logger.warning(
+            FlextObservabilityContext.logger.warning(
                 f"Failed to extract context from headers: {e}",
             )
             FlextObservabilityContext.update_correlation_id()

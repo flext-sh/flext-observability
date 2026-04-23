@@ -27,13 +27,13 @@ class FlextObservabilityServices:
         """Initialize with FLEXT core components."""
         super().__init__()
         self._container = FlextContainer.shared()
-        self._logger = u.fetch_logger(__name__)
-        self._config = FlextObservabilitySettings.fetch_global()
+        self.logger = u.fetch_logger(__name__)
+        self.config = FlextObservabilitySettings.fetch_global()
 
     @property
     def settings(self) -> FlextObservabilitySettings:
         """Access observability settings."""
-        return self._config
+        return self.config
 
     @property
     def container(self) -> p.Container:
@@ -48,9 +48,9 @@ class FlextObservabilityServices:
     @property
     def logger(self) -> p.Logger:
         """Access FLEXT logger."""
-        return self._logger
+        return self.logger
 
-    def create_alert(self, **_kwargs: t.Scalar) -> p.Result[m.Dict]:
+    def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
         """Generic alert creation - not implemented in base service."""
         return r[m.Dict].fail("Alert creation not implemented in generic service")
 

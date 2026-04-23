@@ -41,7 +41,7 @@ class FlextObservabilityMonitor:
     """
 
     object_callable = Callable[..., t.Scalar]
-    _logger: p.Logger = u.fetch_logger(__name__)
+    logger: p.Logger = u.fetch_logger(__name__)
 
     class MonitoringHelpers:
         """Nested helper class for monitoring operations - unified pattern."""
@@ -121,11 +121,11 @@ class FlextObservabilityMonitor:
                         source="monitoring",
                     )
                     if alert_result.failure:
-                        FlextObservabilityMonitor._logger.warning(
+                        FlextObservabilityMonitor.logger.warning(
                             f"Alert creation failed: {alert_result.error}",
                         )
                 except (ValueError, TypeError, AttributeError) as e:
-                    FlextObservabilityMonitor._logger.warning(
+                    FlextObservabilityMonitor.logger.warning(
                         f"Alert creation failed: {e}",
                     )
 
@@ -152,8 +152,8 @@ class FlextObservabilityMonitor:
     def __init__(self, container: FlextContainer | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
         self._container = container or FlextContainer.shared()
-        self._logger = u.fetch_logger(self.__class__.__name__)
-        self._config = FlextObservabilitySettings.fetch_global()
+        self.logger = u.fetch_logger(self.__class__.__name__)
+        self.config = FlextObservabilitySettings.fetch_global()
         self._initialized = False
         self._running = False
         self._observability_service: _ObservabilityService | None = None
@@ -211,17 +211,17 @@ class FlextObservabilityMonitor:
         if self._initialized:
             return r[None].ok(None)
         try:
-            if not self._config:
+            if not self.config:
                 return r[None].fail_op(
                     "initialize observability",
                     "Configuration not available",
                 )
             if (
-                not self._config.metrics_enabled
-                and (not self._config.tracing_enabled)
-                and (not self._config.monitoring_enabled)
+                not self.config.metrics_enabled
+                and (not self.config.tracing_enabled)
+                and (not self.config.monitoring_enabled)
             ):
-                self._logger.warning(
+                self.logger.warning(
                     "All observability features are disabled in configuration",
                 )
             try:
@@ -232,7 +232,7 @@ class FlextObservabilityMonitor:
             except (ValueError, TypeError, KeyError) as e:
                 return r[None].fail_op("initialize observability", e)
             self._initialized = True
-            self._logger.info("Observability monitor initialized successfully")
+            self.logger.info("Observability monitor initialized successfully")
             return r[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
             return r[None].fail_op("initialize observability", e)
@@ -253,8 +253,8 @@ class FlextObservabilityMonitor:
     ) -> p.Result[None]:
         """Record metric through the monitoring system with settings validation."""
         try:
-            if not self._config.metrics_enabled:
-                self._logger.debug("Metrics recording disabled in configuration")
+            if not self.config.metrics_enabled:
+                self.logger.debug("Metrics recording disabled in configuration")
                 return r[None].ok(None)
             try:
                 metric = m.Observability.MetricEntry(
@@ -274,7 +274,7 @@ class FlextObservabilityMonitor:
                     "record metric",
                     metric_result.error or "Failed to create metric",
                 )
-            self._logger.debug("Recorded metric: %s=%s (%s)", name, value, metric_type)
+            self.logger.debug("Recorded metric: %s=%s (%s)", name, value, metric_type)
             return r[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:
             return r[None].fail_op("record metric", e)
@@ -289,7 +289,7 @@ class FlextObservabilityMonitor:
         if self._running:
             return r[None].ok(None)
         try:
-            self._logger.info("Starting real observability monitoring")
+            self.logger.info("Starting real observability monitoring")
             self._running = True
             self._monitor_start_time = time.time()
             return r[None].ok(None)
@@ -301,7 +301,7 @@ class FlextObservabilityMonitor:
         if not self._running:
             return r[None].ok(None)
         try:
-            self._logger.info("Stopping observability monitoring")
+            self.logger.info("Stopping observability monitoring")
             self._running = False
             return r[None].ok(None)
         except (ValueError, TypeError, AttributeError) as e:

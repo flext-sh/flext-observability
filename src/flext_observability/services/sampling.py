@@ -59,7 +59,7 @@ class FlextObservabilitySampling:
         Sampler: Sampling strategy configuration and decisions
     """
 
-    _logger = u.fetch_logger(__name__)
+    logger = u.fetch_logger(__name__)
     _sampler_instance: FlextObservabilitySampling.Sampler | None = None
 
     class Sampler:
@@ -140,7 +140,7 @@ class FlextObservabilitySampling:
                     f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
             self._default_rate = rate
-            FlextObservabilitySampling._logger.debug(
+            FlextObservabilitySampling.logger.debug(
                 f"Default sampling rate set to {rate}",
             )
             return r[bool].ok(value=True)
@@ -167,7 +167,7 @@ class FlextObservabilitySampling:
                 )
             self._environment = environment
             self._default_rate = self._environment_rates.get(environment, 0.1)
-            FlextObservabilitySampling._logger.debug(
+            FlextObservabilitySampling.logger.debug(
                 f"Sampling environment set to {environment} (rate: {self._default_rate})",
             )
             return r[bool].ok(value=True)
@@ -192,7 +192,7 @@ class FlextObservabilitySampling:
                     f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
             self._operation_overrides[operation] = rate
-            FlextObservabilitySampling._logger.debug(
+            FlextObservabilitySampling.logger.debug(
                 f"Sampling rate for operation '{operation}' set to {rate}",
             )
             return r[bool].ok(value=True)
@@ -218,7 +218,7 @@ class FlextObservabilitySampling:
                     f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
             self._service_overrides[service] = rate
-            FlextObservabilitySampling._logger.debug(
+            FlextObservabilitySampling.logger.debug(
                 f"Sampling rate for service '{service}' set to {rate}",
             )
             return r[bool].ok(value=True)

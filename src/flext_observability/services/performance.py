@@ -49,7 +49,7 @@ class FlextObservabilityPerformance:
         Monitor: Performance monitoring for individual operations
     """
 
-    _logger = u.fetch_logger(__name__)
+    logger = u.fetch_logger(__name__)
     _process: psutil.Process = psutil.Process()
 
     class Monitor:
@@ -196,9 +196,9 @@ class FlextObservabilityPerformance:
             if metrics.error_message:
                 message += f", error={metrics.error_message}"
             if level == c.Observability.ErrorSeverity.DEBUG.value:
-                FlextObservabilityPerformance._logger.debug(message)
+                FlextObservabilityPerformance.logger.debug(message)
             else:
-                FlextObservabilityPerformance._logger.warning(message)
+                FlextObservabilityPerformance.logger.warning(message)
             return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
             return r[bool].fail(f"Failed to log metrics: {e}")

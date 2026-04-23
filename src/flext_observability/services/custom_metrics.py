@@ -60,7 +60,7 @@ class FlextObservabilityCustomMetrics:
         Registry: Metric registry management
     """
 
-    _logger = u.fetch_logger(__name__)
+    logger = u.fetch_logger(__name__)
     _registry_instance: FlextObservabilityCustomMetrics.Registry | None = None
 
     class Registry:
@@ -94,7 +94,7 @@ class FlextObservabilityCustomMetrics:
                         del self._metrics[key]
                 else:
                     self._metrics.clear()
-                FlextObservabilityCustomMetrics._logger.debug(
+                FlextObservabilityCustomMetrics.logger.debug(
                     f"Metrics cleared: {namespace or 'all'}",
                 )
                 return r[bool].ok(value=True)
@@ -252,7 +252,7 @@ class FlextObservabilityCustomMetrics:
                 )
                 self._metrics[namespaced_name] = definition
                 self._namespaces[namespace] = namespace
-                FlextObservabilityCustomMetrics._logger.debug(
+                FlextObservabilityCustomMetrics.logger.debug(
                     f"Metric registered: {namespaced_name} ({metric_type_enum.value})",
                 )
                 return r[bool].ok(value=True)
@@ -279,7 +279,7 @@ class FlextObservabilityCustomMetrics:
                 if namespaced_name not in self._metrics:
                     return r[bool].fail(f"Metric '{namespaced_name}' not found")
                 del self._metrics[namespaced_name]
-                FlextObservabilityCustomMetrics._logger.debug(
+                FlextObservabilityCustomMetrics.logger.debug(
                     f"Metric unregistered: {namespaced_name}",
                 )
                 return r[bool].ok(value=True)

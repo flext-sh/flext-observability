@@ -55,7 +55,7 @@ class FlextObservabilityErrorHandling:
         Handler: Error handling and deduplication logic
     """
 
-    _logger = u.fetch_logger(__name__)
+    logger = u.fetch_logger(__name__)
     _handler_instance: FlextObservabilityErrorHandling.Handler | None = None
 
     @staticmethod
@@ -99,7 +99,7 @@ class FlextObservabilityErrorHandling:
                     self._last_alert_time.clear()
                 else:
                     self._error_counts.clear()
-                FlextObservabilityErrorHandling._logger.debug("Error counts cleared")
+                FlextObservabilityErrorHandling.logger.debug("Error counts cleared")
                 return True
 
             return self._run_with_result(
@@ -178,14 +178,14 @@ class FlextObservabilityErrorHandling:
                 try:
                     error.correlation_id = FlextObservabilityContext.correlation_id()
                 except (ValueError, TypeError, KeyError) as e:
-                    FlextObservabilityErrorHandling._logger.warning(
+                    FlextObservabilityErrorHandling.logger.warning(
                         f"Could not set correlation_id, falling back to empty: {e}",
                     )
                     error.correlation_id = ""
                 self._error_counts[error.fingerprint] = (
                     self._error_counts.get(error.fingerprint, 0) + 1
                 )
-                FlextObservabilityErrorHandling._logger.debug(
+                FlextObservabilityErrorHandling.logger.debug(
                     f"Error recorded: {error.error_type} (fingerprint: {error.fingerprint[:8]})",
                 )
                 return error
@@ -214,7 +214,7 @@ class FlextObservabilityErrorHandling:
                     FlextObservabilityErrorHandling._extract_validation_message(error),
                 )
             self._alert_cooldown_sec = validated_seconds
-            FlextObservabilityErrorHandling._logger.debug(
+            FlextObservabilityErrorHandling.logger.debug(
                 f"Alert cooldown set to {validated_seconds}s",
             )
             return r[bool].ok(value=True)
@@ -238,7 +238,7 @@ class FlextObservabilityErrorHandling:
                     FlextObservabilityErrorHandling._extract_validation_message(error),
                 )
             self._escalation_threshold = validated_threshold
-            FlextObservabilityErrorHandling._logger.debug(
+            FlextObservabilityErrorHandling.logger.debug(
                 f"Escalation threshold set to {validated_threshold}",
             )
             return r[bool].ok(value=True)
@@ -277,7 +277,7 @@ class FlextObservabilityErrorHandling:
             try:
                 return r[TResult].ok(operation())
             except (ValueError, TypeError, KeyError) as e:
-                FlextObservabilityErrorHandling._logger.warning(f"{error_prefix}: {e}")
+                FlextObservabilityErrorHandling.logger.warning(f"{error_prefix}: {e}")
                 return r[TResult].fail(f"{error_prefix}: {e}")
 
     @staticmethod
