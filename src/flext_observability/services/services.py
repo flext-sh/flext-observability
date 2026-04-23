@@ -45,13 +45,12 @@ class FlextObservabilityServices:
         """Generic health service - not implemented in base service."""
         return None
 
-    @property
-    def logger(self) -> p.Logger:
-        """Access FLEXT logger."""
-        return self.logger
-
     def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
         """Generic alert creation - not implemented in base service."""
+        self.logger.debug(
+            "create_alert not implemented in generic service",
+            requested_keys=list(kwargs),
+        )
         return r[m.Dict].fail("Alert creation not implemented in generic service")
 
     def metrics_summary(self) -> p.Result[m.Dict]:

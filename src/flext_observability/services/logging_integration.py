@@ -77,7 +77,6 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def enrich_log_context(
-        logger: p.Logger,
         *,
         include_baggage: bool = False,
     ) -> p.Result[m.Observability.LogContext]:
@@ -87,7 +86,6 @@ class FlextObservabilityLogging:
         that should be included in log entries. Can optionally include baggage.
 
         Args:
-            logger: Logger instance to enrich (reserved for future use)
             include_baggage: Whether to include baggage in context
 
         Returns:
@@ -102,7 +100,7 @@ class FlextObservabilityLogging:
         Example:
             ```python
             # Get context to enrich log
-            context_result = FlextObservabilityLogging.enrich_log_context(logger)
+            context_result = FlextObservabilityLogging.enrich_log_context()
             if context_result.success:
                 context = context_result.value
                 logger.info("Processing", extra=context)
