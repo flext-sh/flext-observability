@@ -1,0 +1,34 @@
+docs/standards/python-module-organization.md
+  h_9db9d35f50cf33 391
+examples/README.md
+  h_9db9d35f50cf33 143
+docs/guides/testing.md
+  h_9db9d35f50cf33 528
+src/flext_observability/protocols.py
+  h_9db9d35f50cf33 415,429,450
+src/flext_observability/README.md
+  h_9db9d35f50cf33 208
+docs/guides/troubleshooting.md
+  h_9db9d35f50cf33 52,61-63,141,155,675,678
+docs/guides/development.md
+  h_9db9d35f50cf33 84,137,154,193,196,202,295,353,356,405
+src/flext_observability/typings.py
+  h_9db9d35f50cf33 111-112
+src/README.md
+  h_9db9d35f50cf33 92
+src/flext_observability/services/http_client_instrumentation.py
+  h_9db9d35f50cf33 78,85,95
+src/flext_observability/services/context.py
+  h_9db9d35f50cf33 157,241
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "36d91a9fdd292c07c0ae4459f3b9286841ba4864",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
