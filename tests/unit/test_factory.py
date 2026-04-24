@@ -18,7 +18,7 @@ global_factory = FlextObservability.global_factory
 clear_global_factory = FlextObservability.clear_global_factory
 
 
-class TestFlextObservabilityMasterFactoryReal:
+class TestsFlextObservabilityFactory:
     """Real functionality tests for master factory without excessive mocking."""
 
     def test_factory_initialization_and_container_real(self) -> None:

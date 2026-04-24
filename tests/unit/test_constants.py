@@ -13,7 +13,7 @@ from flext_tests import tm
 from tests import c
 
 
-class Testc:
+class TestsFlextObservabilityConstantsUnit:
     """Test the c class."""
 
     def test_inherits_from_flext_constants(self) -> None:

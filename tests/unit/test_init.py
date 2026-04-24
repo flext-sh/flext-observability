@@ -26,7 +26,7 @@ global_factory = FlextObservability.global_factory
 clear_global_factory = FlextObservability.clear_global_factory
 
 
-class TestInitCoverage:
+class TestsFlextObservabilityInit:
     """Test coverage for __init__.py public API exports."""
 
     def test_flext_health_status_function(self) -> None:
