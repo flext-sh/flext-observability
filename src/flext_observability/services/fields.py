@@ -1,4 +1,4 @@
-"""FLEXT Observability u.Fields - Unified field validation and definitions.
+"""FLEXT Observability u.Observability.Fields - Unified field validation and definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 """
