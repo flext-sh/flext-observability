@@ -201,7 +201,7 @@ class FlextObservabilityAdvancedContext:
 
             """
             try:
-                t.SCALAR_ADAPTER.validate_python(value)
+                t.scalar_adapter().validate_python(value)
                 self._metadata[key] = value
                 FlextObservabilityAdvancedContext.logger.debug(f"Metadata set: {key}")
                 return r[bool].ok(value=True)
