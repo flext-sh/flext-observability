@@ -13,6 +13,7 @@ FLEXT Pattern:
 
 from __future__ import annotations
 
+import json
 from contextvars import ContextVar
 from uuid import uuid4
 
@@ -204,12 +205,14 @@ class FlextObservabilityContext:
             ```
 
         """
-        return m.Dict({
+        baggage_snapshot = FlextObservabilityContext._baggage.get() or m.Dict({})
+        payload: dict[str, t.JsonPayload] = {
             "correlation_id": FlextObservabilityContext.correlation_id(),
             "trace_id": FlextObservabilityContext.trace_id(),
             "span_id": FlextObservabilityContext.span_id(),
-            "baggage": FlextObservabilityContext.resolve_baggage(),
-        })
+            "baggage": json.dumps(dict(baggage_snapshot.root)),
+        }
+        return m.Dict(payload)
 
     @staticmethod
     def correlation_id() -> str:
@@ -269,9 +272,9 @@ class FlextObservabilityContext:
                 m.Observability.BaggageKeyModel.model_validate(obj={"key": key})
             except c.ValidationError:
                 return r[bool].fail("Baggage key must be non-empty string")
-            current_baggage = FlextObservabilityContext._baggage.get() or {}
+            current_baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
             updated_baggage = m.Dict({
-                **dict(current_baggage.items()),
+                **dict(current_baggage.root),
                 key: value,
             })
             FlextObservabilityContext._baggage.set(updated_baggage)
@@ -361,7 +364,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        headers = {}
+        headers: dict[str, t.JsonPayload] = {}
         correlation_id = FlextObservabilityContext.correlation_id()
         if correlation_id:
             headers["X-Correlation-ID"] = correlation_id
