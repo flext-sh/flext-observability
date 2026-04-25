@@ -19,10 +19,6 @@ from flext_observability import (
     c,
 )
 
-AlertLevel = c.Observability.AlertLevel
-ErrorSeverity = c.Observability.ErrorSeverity
-HealthStatus = c.Observability.HealthStatus
-
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
 flext_log_entry = FlextObservability.flext_log_entry
@@ -34,11 +30,11 @@ def demonstrate_simple_api() -> None:
     """Demonstrate the simple API for creating observability entities."""
     flext_metric("api_requests", 150.0, "count")
     flext_trace("user_registration")
-    flext_alert("monitoring", "High CPU usage detected", AlertLevel.WARNING)
-    flext_health_check("database", HealthStatus.HEALTHY)
+    flext_alert("monitoring", "High CPU usage detected", c.Observability.AlertLevel.WARNING)
+    flext_health_check("database", c.Observability.HealthStatus.HEALTHY)
     flext_log_entry(
         "User authentication successful",
-        ErrorSeverity.INFO,
+        c.Observability.ErrorSeverity.INFO,
         "auth-service",
     )
 
@@ -76,11 +72,11 @@ def demonstrate_validation() -> None:
 def demonstrate_health_monitoring() -> None:
     """Demonstrate health monitoring scenario."""
     services = ["database", "cache", "message-queue", "auth-service"]
-    statuses: Sequence[HealthStatus] = [
-        HealthStatus.HEALTHY,
-        HealthStatus.HEALTHY,
-        HealthStatus.DEGRADED,
-        HealthStatus.HEALTHY,
+    statuses: Sequence[c.Observability.HealthStatus] = [
+        c.Observability.HealthStatus.HEALTHY,
+        c.Observability.HealthStatus.HEALTHY,
+        c.Observability.HealthStatus.DEGRADED,
+        c.Observability.HealthStatus.HEALTHY,
     ]
     for service, status in zip(services, statuses, strict=False):
         flext_health_check(service, status)
@@ -88,11 +84,11 @@ def demonstrate_health_monitoring() -> None:
 
 def demonstrate_alerting_scenario() -> None:
     """Demonstrate alerting in different scenarios."""
-    alert_scenarios: Sequence[tuple[AlertLevel, str, str]] = [
-        (AlertLevel.INFO, "System started successfully", "system"),
-        (AlertLevel.WARNING, "High memory usage: 85%", "monitoring"),
-        (AlertLevel.ERROR, "Database connection failed", "database"),
-        (AlertLevel.CRITICAL, "Payment service unavailable", "payment"),
+    alert_scenarios: Sequence[tuple[c.Observability.AlertLevel, str, str]] = [
+        (c.Observability.AlertLevel.INFO, "System started successfully", "system"),
+        (c.Observability.AlertLevel.WARNING, "High memory usage: 85%", "monitoring"),
+        (c.Observability.AlertLevel.ERROR, "Database connection failed", "database"),
+        (c.Observability.AlertLevel.CRITICAL, "Payment service unavailable", "payment"),
     ]
     for level, message, service in alert_scenarios:
         alert_result = flext_alert(service, message, level)

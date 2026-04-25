@@ -8,9 +8,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import ClassVar
 
-from pydantic.fields import FieldInfo
-
-from flext_observability import c, u
+from flext_observability import c, m, u
 
 
 class FlextObservabilityFields:
@@ -73,9 +71,9 @@ class FlextObservabilityFields:
             return numeric_value
 
     @classmethod
-    def create_alert_message_field(cls) -> FieldInfo:
+    def create_alert_message_field(cls) -> m.FieldInfo:
         """Create alert message field."""
-        field: FieldInfo = u.Field(
+        field: m.FieldInfo = u.Field(
             min_length=1,
             max_length=1000,
             description="Alert message",
@@ -83,9 +81,9 @@ class FlextObservabilityFields:
         return field
 
     @classmethod
-    def create_metric_name_field(cls) -> FieldInfo:
+    def create_metric_name_field(cls) -> m.FieldInfo:
         """Create metric name field."""
-        field: FieldInfo = u.Field(
+        field: m.FieldInfo = u.Field(
             min_length=1,
             max_length=255,
             description="Metric name",
@@ -93,9 +91,9 @@ class FlextObservabilityFields:
         return field
 
     @classmethod
-    def create_metric_unit_field(cls) -> FieldInfo:
+    def create_metric_unit_field(cls) -> m.FieldInfo:
         """Create metric unit field."""
-        field: FieldInfo = u.Field(
+        field: m.FieldInfo = u.Field(
             c.Observability.Defaults.DEFAULT_METRIC_UNIT,
             description="Metric unit",
             validate_default=True,
@@ -103,23 +101,23 @@ class FlextObservabilityFields:
         return field
 
     @classmethod
-    def create_metric_value_field(cls) -> FieldInfo:
+    def create_metric_value_field(cls) -> m.FieldInfo:
         """Create metric value field."""
-        field: FieldInfo = u.Field(ge=0.0, description="Metric value (non-negative)")
+        field: m.FieldInfo = u.Field(ge=0.0, description="Metric value (non-negative)")
         return field
 
     @classmethod
-    def create_timestamp_field(cls) -> FieldInfo:
+    def create_timestamp_field(cls) -> m.FieldInfo:
         """Create timestamp field."""
-        return FieldInfo(
+        return m.FieldInfo(
             default_factory=lambda: datetime.now(UTC),
             description="Timestamp",
         )
 
     @classmethod
-    def create_trace_name_field(cls) -> FieldInfo:
+    def create_trace_name_field(cls) -> m.FieldInfo:
         """Create trace name field."""
-        field: FieldInfo = u.Field(
+        field: m.FieldInfo = u.Field(
             min_length=1,
             max_length=255,
             description="Trace operation name",

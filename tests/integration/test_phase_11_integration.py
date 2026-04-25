@@ -24,8 +24,6 @@ from flext_observability import (
     m,
 )
 
-ErrorEvent = m.Observability.ErrorEvent
-
 try:
     FlextObservabilityContext.update_correlation_id("http-req-001")
     FlextObservabilityContext.update_trace_id("trace-http-001")
@@ -95,7 +93,7 @@ try:
     handler.update_escalation_threshold(3)
     handler.update_alert_cooldown(30)
     for i in range(3):
-        error = ErrorEvent(
+        error = m.Observability.ErrorEvent(
             error_type="DatabaseConnectionError",
             message="Failed to connect to database",
             severity=c.Observability.ErrorSeverity.ERROR,
@@ -245,7 +243,7 @@ try:
     assert snapshot is not None
     assert snapshot.correlation_id == "e2e-test-001"
     error_handler = FlextObservabilityErrorHandling.active_handler()
-    test_error = ErrorEvent(
+    test_error = m.Observability.ErrorEvent(
         error_type="IntegrationTestError",
         message="Simulated error in workflow",
         severity=c.Observability.ErrorSeverity.WARNING,

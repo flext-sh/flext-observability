@@ -24,9 +24,6 @@ from flext_observability import (
     t,
 )
 
-AlertLevel = c.Observability.AlertLevel
-HealthStatus = c.Observability.HealthStatus
-
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
 flext_metric = FlextObservability.flext_metric
@@ -49,8 +46,8 @@ def demonstrate_solid_design() -> None:
     """Demonstrate SOLID design principles in action."""
     metric_result = flext_metric("cpu_usage", 75.5, "percent")
     trace_result = flext_trace("user_login")
-    alert_result = flext_alert("monitoring", "High CPU usage", AlertLevel.WARNING)
-    health_result = flext_health_check("database", HealthStatus.HEALTHY)
+    alert_result = flext_alert("monitoring", "High CPU usage", c.Observability.AlertLevel.WARNING)
+    health_result = flext_health_check("database", c.Observability.HealthStatus.HEALTHY)
     container = FlextContainer()
     factory = FlextObservability.FlextObservabilityMasterFactory(container)
     factory.create_metric("custom_metric", 100.0, "units")
@@ -87,11 +84,11 @@ def demonstrate_distributed_tracing() -> None:
 
 def demonstrate_health_monitoring() -> None:
     """Demonstrate comprehensive health monitoring."""
-    services_health: Sequence[tuple[str, HealthStatus]] = [
-        ("database", HealthStatus.HEALTHY),
-        ("cache", HealthStatus.HEALTHY),
-        ("message_queue", HealthStatus.DEGRADED),
-        ("auth_service", HealthStatus.HEALTHY),
+    services_health: Sequence[tuple[str, c.Observability.HealthStatus]] = [
+        ("database", c.Observability.HealthStatus.HEALTHY),
+        ("cache", c.Observability.HealthStatus.HEALTHY),
+        ("message_queue", c.Observability.HealthStatus.DEGRADED),
+        ("auth_service", c.Observability.HealthStatus.HEALTHY),
     ]
     for service, status in services_health:
         flext_health_check(service, status)
@@ -99,11 +96,11 @@ def demonstrate_health_monitoring() -> None:
 
 def demonstrate_alerting_system() -> None:
     """Demonstrate comprehensive alerting."""
-    alerts: Sequence[tuple[AlertLevel, str, str]] = [
-        (AlertLevel.INFO, "System maintenance scheduled", "system"),
-        (AlertLevel.WARNING, "Database response time increased", "database"),
-        (AlertLevel.ERROR, "Failed to connect to cache", "cache"),
-        (AlertLevel.CRITICAL, "API gateway not responding", "api_gateway"),
+    alerts: Sequence[tuple[c.Observability.AlertLevel, str, str]] = [
+        (c.Observability.AlertLevel.INFO, "System maintenance scheduled", "system"),
+        (c.Observability.AlertLevel.WARNING, "Database response time increased", "database"),
+        (c.Observability.AlertLevel.ERROR, "Failed to connect to cache", "cache"),
+        (c.Observability.AlertLevel.CRITICAL, "API gateway not responding", "api_gateway"),
     ]
     for level, message, service in alerts:
         result = flext_alert(service, message, level)
@@ -140,10 +137,10 @@ def demonstrate_validation() -> None:
     trace_res = flext_trace("valid_operation")
     if trace_res.success:
         print(f"Validation successful for {type(trace_res.value).__name__}")
-    alert_res = flext_alert("system", "Valid alert", AlertLevel.INFO)
+    alert_res = flext_alert("system", "Valid alert", c.Observability.AlertLevel.INFO)
     if alert_res.success:
         print(f"Validation successful for {type(alert_res.value).__name__}")
-    health_res = flext_health_check("service", HealthStatus.HEALTHY)
+    health_res = flext_health_check("service", c.Observability.HealthStatus.HEALTHY)
     if health_res.success:
         print(f"Validation successful for {type(health_res.value).__name__}")
 
