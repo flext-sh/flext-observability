@@ -13,6 +13,7 @@ from __future__ import annotations
 import time
 from datetime import UTC, datetime
 from hashlib import sha256
+from types import MappingProxyType
 from typing import Annotated, ClassVar
 from uuid import uuid4
 
@@ -61,13 +62,19 @@ class FlextObservabilityModels(m):
                 u.Field(
                     description="Generic data payload",
                 ),
-            ] = u.Field(default_factory=dict, description="Generic data payload")
+            ] = u.Field(
+                default_factory=lambda: MappingProxyType({}),
+                description="Generic data payload",
+            )
             metadata: Annotated[
                 t.ConfigurationMapping,
                 u.Field(
                     description="Generic metadata",
                 ),
-            ] = u.Field(default_factory=dict, description="Generic metadata")
+            ] = u.Field(
+                default_factory=lambda: MappingProxyType({}),
+                description="Generic metadata",
+            )
 
             @u.computed_field()
             @property
@@ -114,7 +121,10 @@ class FlextObservabilityModels(m):
                 u.Field(
                     description="Type-specific settings",
                 ),
-            ] = u.Field(default_factory=dict, description="Type-specific settings")
+            ] = u.Field(
+                default_factory=lambda: MappingProxyType({}),
+                description="Type-specific settings",
+            )
 
             @u.computed_field()
             @property
@@ -167,7 +177,8 @@ class FlextObservabilityModels(m):
                 t.Observability.DomainLabels,
                 u.Field(description="Metric labels for categorization"),
             ] = u.Field(
-                default_factory=dict, description="Metric labels for categorization"
+                default_factory=lambda: MappingProxyType({}),
+                description="Metric labels for categorization",
             )
 
         class Trace(m.Entity):
@@ -184,7 +195,10 @@ class FlextObservabilityModels(m):
             attributes: Annotated[
                 t.Observability.DomainLabels,
                 u.Field(description="Trace attributes"),
-            ] = u.Field(default_factory=dict, description="Trace attributes")
+            ] = u.Field(
+                default_factory=lambda: MappingProxyType({}),
+                description="Trace attributes",
+            )
 
         class Alert(m.Entity):
             """Observability alert entity."""
@@ -206,7 +220,8 @@ class FlextObservabilityModels(m):
                 t.Observability.DomainLabels,
                 u.Field(description="Alert labels for categorization"),
             ] = u.Field(
-                default_factory=dict, description="Alert labels for categorization"
+                default_factory=lambda: MappingProxyType({}),
+                description="Alert labels for categorization",
             )
 
         class HealthCheck(m.Entity):
@@ -226,7 +241,10 @@ class FlextObservabilityModels(m):
             details: Annotated[
                 t.Observability.DomainLabels,
                 u.Field(description="Health check details"),
-            ] = u.Field(default_factory=dict, description="Health check details")
+            ] = u.Field(
+                default_factory=lambda: MappingProxyType({}),
+                description="Health check details",
+            )
 
         class LogEntry(m.Entity):
             """Structured log entry entity."""
@@ -251,7 +269,10 @@ class FlextObservabilityModels(m):
             context: Annotated[
                 t.Observability.DomainLabels,
                 u.Field(description="Log context metadata"),
-            ] = u.Field(default_factory=dict, description="Log context metadata")
+            ] = u.Field(
+                default_factory=lambda: MappingProxyType({}),
+                description="Log context metadata",
+            )
 
         class StartTimePayload(m.Value):
             """Payload for validating HTTP request start time."""
@@ -267,7 +288,10 @@ class FlextObservabilityModels(m):
             headers: Annotated[
                 t.StrMapping,
                 u.Field(description="HTTP header key-value pairs"),
-            ] = u.Field(default_factory=dict, description="HTTP header key-value pairs")
+            ] = u.Field(
+                default_factory=lambda: MappingProxyType({}),
+                description="HTTP header key-value pairs",
+            )
 
         # --- Moved from advanced_context.py ---
         class ContextSnapshot(m.Value):
@@ -282,12 +306,16 @@ class FlextObservabilityModels(m):
                 t.StrMapping,
                 u.Field(description="Propagated baggage key-value pairs"),
             ] = u.Field(
-                default_factory=dict, description="Propagated baggage key-value pairs"
+                default_factory=lambda: MappingProxyType({}),
+                description="Propagated baggage key-value pairs",
             )
             metadata: Annotated[
                 t.ConfigurationMapping,
                 u.Field(description="Additional context metadata"),
-            ] = u.Field(default_factory=dict, description="Additional context metadata")
+            ] = u.Field(
+                default_factory=lambda: MappingProxyType({}),
+                description="Additional context metadata",
+            )
 
         # --- Moved from context.py ---
         class BaggageKeyModel(m.Value):
@@ -326,7 +354,8 @@ class FlextObservabilityModels(m):
                 t.StrMapping,
                 u.Field(description="Metric labels for categorization"),
             ] = u.Field(
-                default_factory=dict, description="Metric labels for categorization"
+                default_factory=lambda: MappingProxyType({}),
+                description="Metric labels for categorization",
             )
 
         # --- Moved from error_handling.py ---
