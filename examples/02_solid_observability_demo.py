@@ -46,7 +46,9 @@ def demonstrate_solid_design() -> None:
     """Demonstrate SOLID design principles in action."""
     metric_result = flext_metric("cpu_usage", 75.5, "percent")
     trace_result = flext_trace("user_login")
-    alert_result = flext_alert("monitoring", "High CPU usage", c.Observability.AlertLevel.WARNING)
+    alert_result = flext_alert(
+        "monitoring", "High CPU usage", c.Observability.AlertLevel.WARNING
+    )
     health_result = flext_health_check("database", c.Observability.HealthStatus.HEALTHY)
     container = FlextContainer()
     factory = FlextObservability.FlextObservabilityMasterFactory(container)
@@ -98,9 +100,17 @@ def demonstrate_alerting_system() -> None:
     """Demonstrate comprehensive alerting."""
     alerts: Sequence[tuple[c.Observability.AlertLevel, str, str]] = [
         (c.Observability.AlertLevel.INFO, "System maintenance scheduled", "system"),
-        (c.Observability.AlertLevel.WARNING, "Database response time increased", "database"),
+        (
+            c.Observability.AlertLevel.WARNING,
+            "Database response time increased",
+            "database",
+        ),
         (c.Observability.AlertLevel.ERROR, "Failed to connect to cache", "cache"),
-        (c.Observability.AlertLevel.CRITICAL, "API gateway not responding", "api_gateway"),
+        (
+            c.Observability.AlertLevel.CRITICAL,
+            "API gateway not responding",
+            "api_gateway",
+        ),
     ]
     for level, message, service in alerts:
         result = flext_alert(service, message, level)

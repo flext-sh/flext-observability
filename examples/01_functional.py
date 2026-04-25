@@ -30,7 +30,9 @@ def demonstrate_simple_api() -> None:
     """Demonstrate the simple API for creating observability entities."""
     flext_metric("api_requests", 150.0, "count")
     flext_trace("user_registration")
-    flext_alert("monitoring", "High CPU usage detected", c.Observability.AlertLevel.WARNING)
+    flext_alert(
+        "monitoring", "High CPU usage detected", c.Observability.AlertLevel.WARNING
+    )
     flext_health_check("database", c.Observability.HealthStatus.HEALTHY)
     flext_log_entry(
         "User authentication successful",

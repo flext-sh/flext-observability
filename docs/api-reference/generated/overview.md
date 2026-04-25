@@ -3,15 +3,15 @@
 # flext-observability API Overview
 
 - Package: `flext_observability`
-- Version: `0.12.0-dev`
+- Version: ``
 - Description: FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry
 - Project class: `platform`
 - Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`, `tracing`, `typed`
-- Main facades: `FlextObservability`, `FlextObservabilityConstants`, `FlextObservabilityMasterFactory`, `FlextObservabilityModels`, `FlextObservabilityProtocols`, `FlextObservabilityServiceBase`, `FlextObservabilitySettings`, `FlextObservabilityTypes` (+1 more)
+- Main facades: `FlextObservabilityHTTPClient`, `FlextObservabilityServiceBase`, `FlextObservability`, `FlextObservabilitySettings`, `FlextObservabilityErrorHandling`, `FlextObservabilityMonitor`, `FlextObservabilityHTTP`, `FlextObservabilityCustomMetrics` (+13 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextObservability`, `FlextObservabilityConstants`, `FlextObservabilityMasterFactory`, `FlextObservabilityModels`, `FlextObservabilityProtocols`, `FlextObservabilityServiceBase`, `FlextObservabilitySettings`, `FlextObservabilityTypes`, `FlextObservabilityUtilities`
-- Exported module shortcuts: `api`, `base`, `constants`, `models`, `protocols`, `services`, `settings`, `typings` (+1 more)
-- Generated module pages: `9`
+- Public symbol exports: `FlextObservabilityHTTPClient`, `FlextObservabilityServiceBase`, `FlextObservability`, `FlextObservabilitySettings`, `FlextObservabilityErrorHandling`, `FlextObservabilityMonitor`, `observability`, `FlextObservabilityHTTP`, `FlextObservabilityCustomMetrics`, `FlextObservabilitySampling` (+13 more)
+- Exported module shortcuts: _none_
+- Generated module pages: `22`
 
 ## Next Pages
 
