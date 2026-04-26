@@ -23,8 +23,9 @@ import random
 from collections.abc import (
     MutableMapping,
 )
+from typing import Annotated, ClassVar
 
-from flext_observability import FlextObservabilityContext, c, p, r, u
+from flext_observability import FlextObservabilityContext, c, m, p, r, u
 
 
 class FlextObservabilitySampling:
@@ -64,6 +65,10 @@ class FlextObservabilitySampling:
 
     class Sampler:
         """Sampling decision engine."""
+
+        RATE_ADAPTER: ClassVar[
+            m.TypeAdapter[Annotated[float, m.Field(ge=0.0, le=1.0)]]
+        ] = m.TypeAdapter(Annotated[float, m.Field(ge=0.0, le=1.0)])
 
         def __init__(self) -> None:
             """Initialize sampler with default settings."""
@@ -135,13 +140,56 @@ class FlextObservabilitySampling:
                 - 1.0 = 100% (full observability)
 
             """
-            if not 0.0 <= rate <= 1.0:
+            validated_rate_result = self._validate_rate(rate)
+            if validated_rate_result.failure:
+                return r[bool].fail(
+                    validated_rate_result.error
+                    or f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                )
+            validated_rate = validated_rate_result.map_or(None)
+            if validated_rate is None:
                 return r[bool].fail(
                     f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
                 )
-            self._default_rate = rate
+            self._default_rate = validated_rate
             FlextObservabilitySampling.logger.debug(
-                f"Default sampling rate set to {rate}",
+                f"Default sampling rate set to {validated_rate}",
+            )
+            return r[bool].ok(value=True)
+
+        def _validate_rate(self, rate: float) -> p.Result[float]:
+            """Validate sampling rate with canonical Pydantic constraints."""
+            try:
+                validated_rate = self.RATE_ADAPTER.validate_python(rate)
+            except m.ValidationError:
+                return r[float].fail(
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                )
+            return r[float].ok(validated_rate)
+
+        def _update_named_rate(
+            self,
+            overrides: MutableMapping[str, float],
+            *,
+            scope_name: str,
+            scope_value: str,
+            rate: float,
+        ) -> p.Result[bool]:
+            """Validate and update one named rate override."""
+            validated_rate_result = self._validate_rate(rate)
+            if validated_rate_result.failure:
+                return r[bool].fail(
+                    validated_rate_result.error
+                    or f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                )
+            validated_rate = validated_rate_result.map_or(None)
+            if validated_rate is None:
+                return r[bool].fail(
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                )
+            overrides[scope_value] = validated_rate
+            FlextObservabilitySampling.logger.debug(
+                f"Sampling rate for {scope_name} '{scope_value}' set to {validated_rate}",
             )
             return r[bool].ok(value=True)
 
@@ -187,15 +235,12 @@ class FlextObservabilitySampling:
                 - Useful for critical endpoints or expensive operations
 
             """
-            if not 0.0 <= rate <= 1.0:
-                return r[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
-                )
-            self._operation_overrides[operation] = rate
-            FlextObservabilitySampling.logger.debug(
-                f"Sampling rate for operation '{operation}' set to {rate}",
+            return self._update_named_rate(
+                self._operation_overrides,
+                scope_name="operation",
+                scope_value=operation,
+                rate=rate,
             )
-            return r[bool].ok(value=True)
 
         def update_service_rate(self, service: str, rate: float) -> p.Result[bool]:
             """Update the sampling rate for a specific service.
@@ -213,15 +258,12 @@ class FlextObservabilitySampling:
                 - Or critical services (higher rate)
 
             """
-            if not 0.0 <= rate <= 1.0:
-                return r[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
-                )
-            self._service_overrides[service] = rate
-            FlextObservabilitySampling.logger.debug(
-                f"Sampling rate for service '{service}' set to {rate}",
+            return self._update_named_rate(
+                self._service_overrides,
+                scope_name="service",
+                scope_value=service,
+                rate=rate,
             )
-            return r[bool].ok(value=True)
 
         def should_sample(
             self,
