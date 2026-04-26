@@ -7,10 +7,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextConstants, FlextContainer
 from flext_tests import tm
 
 import flext_observability
+from flext_core import FlextConstants, FlextContainer
 from flext_observability import (
     FlextObservability,
     __version__ as pkg_version,
