@@ -1,0 +1,14 @@
+src/flext_observability/services/sampling.py
+  h_9db9d35f50cf33 26,28,69-72,143-186,190,192,238-242,261-265
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "990dc6c573ebace7926188d43e48eb6df2c01a18",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
