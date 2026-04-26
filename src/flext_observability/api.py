@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import (
+    Mapping,
     MutableSequence,
 )
 from datetime import UTC, datetime
@@ -350,13 +351,9 @@ class FlextObservability(
         name: str,
         value: float,
         unit: str = "count",
-        metric_type: c.Observability.MetricType | None = None,
-        metric_id: str | None = None,
-        tags: t.ScalarMapping | None = None,
-        labels: t.ScalarMapping | None = None,
+        **kwargs: t.JsonPayload,
     ) -> p.Result[FlextObservability.Metric]:
         """Create a metric entity directly."""
-        _ = metric_id
         try:
             if not name:
                 return r[FlextObservability.Metric].fail_op(
@@ -368,21 +365,39 @@ class FlextObservability(
                     "create metric",
                     "Metric value must be a valid number",
                 )
+            metric_type_raw = kwargs.get("metric_type")
+            metric_id_raw = kwargs.get("metric_id")
+            tags_raw = kwargs.get("tags")
+            labels_raw = kwargs.get("labels")
             all_labels_data: t.MutableScalarMapping = {}
-            if tags:
-                all_labels_data.update(tags)
-            if labels:
-                all_labels_data.update(labels)
+            if isinstance(tags_raw, Mapping):
+                all_labels_data.update({
+                    str(key): t.scalar_adapter().validate_python(value)
+                    for key, value in tags_raw.items()
+                })
+            if isinstance(labels_raw, Mapping):
+                all_labels_data.update({
+                    str(key): t.scalar_adapter().validate_python(value)
+                    for key, value in labels_raw.items()
+                })
             detected_type: c.Observability.MetricType = (
-                metric_type or c.Observability.MetricType.GAUGE
+                m.Observability.MetricTypeInput.model_validate(
+                    {"metric_type": metric_type_raw},
+                ).metric_type
+                if metric_type_raw is not None
+                else c.Observability.MetricType.GAUGE
             )
-            if not metric_type:
+            if metric_type_raw is None:
                 if name.endswith(("_total", "_count")):
                     detected_type = c.Observability.MetricType.COUNTER
                 elif name.endswith(("_duration", "_seconds")):
                     detected_type = c.Observability.MetricType.HISTOGRAM
             metric = FlextObservability.Metric(
-                id=metric_id or str(uuid4()),
+                id=(
+                    t.str_adapter().validate_python(metric_id_raw)
+                    if metric_id_raw is not None
+                    else str(uuid4())
+                ),
                 name=name,
                 value=float(value),
                 unit=unit,
@@ -391,7 +406,7 @@ class FlextObservability(
                 domain_events=[],
             )
             return r[FlextObservability.Metric].ok(metric)
-        except (ValueError, TypeError, AttributeError) as e:
+        except (c.ValidationError, ValueError, TypeError, AttributeError) as e:
             return r[FlextObservability.Metric].fail_op("create metric", e)
 
     @staticmethod

@@ -146,18 +146,22 @@ class FlextObservabilityModels(m):
                 "unknown"
             )
 
-        # --- Domain entity models (moved from _core.py FlextObservability) ---
-
-        class Metric(m.Entity):
-            """Observability metric entity."""
+        class _EntityWithId(m.Entity):
+            """Base for domain entities with auto-generated unique ID."""
 
             id: Annotated[
                 str,
                 u.Field(
                     default_factory=lambda: str(uuid4()),
-                    description="Unique metric identifier",
+                    description="Unique entity identifier",
                 ),
             ]
+
+        # --- Domain entity models (moved from _core.py FlextObservability) ---
+
+        class Metric(_EntityWithId):
+            """Observability metric entity."""
+
             name: Annotated[t.NonEmptyStr, u.Field(description="Metric name")]
             value: Annotated[t.PositiveFloat, u.Field(description="Metric value")]
             unit: Annotated[t.NonEmptyStr, u.Field(description="Measurement unit")]
@@ -189,16 +193,9 @@ class FlextObservabilityModels(m):
                 ),
             ]
 
-        class Alert(m.Entity):
+        class Alert(_EntityWithId):
             """Observability alert entity."""
 
-            id: Annotated[
-                str,
-                u.Field(
-                    default_factory=lambda: str(uuid4()),
-                    description="Unique alert identifier",
-                ),
-            ]
             title: Annotated[t.NonEmptyStr, u.Field(description="Alert title")]
             message: Annotated[t.NonEmptyStr, u.Field(description="Alert message")]
             severity: Annotated[
@@ -213,16 +210,9 @@ class FlextObservabilityModels(m):
                 ),
             ]
 
-        class HealthCheck(m.Entity):
+        class HealthCheck(_EntityWithId):
             """Health check entity."""
 
-            id: Annotated[
-                str,
-                u.Field(
-                    default_factory=lambda: str(uuid4()),
-                    description="Unique health check identifier",
-                ),
-            ]
             component: Annotated[
                 t.NonEmptyStr, u.Field(description="Component being checked")
             ]
@@ -235,16 +225,9 @@ class FlextObservabilityModels(m):
                 ),
             ]
 
-        class LogEntry(m.Entity):
+        class LogEntry(_EntityWithId):
             """Structured log entry entity."""
 
-            id: Annotated[
-                str,
-                u.Field(
-                    default_factory=lambda: str(uuid4()),
-                    description="Unique log entry identifier",
-                ),
-            ]
             message: Annotated[t.NonEmptyStr, u.Field(description="Log message")]
             level: Annotated[t.NonEmptyStr, u.Field(description="Log level")]
             component: Annotated[t.NonEmptyStr, u.Field(description="Source component")]
