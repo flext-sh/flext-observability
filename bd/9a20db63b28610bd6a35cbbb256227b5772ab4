@@ -1,0 +1,14 @@
+src/flext_observability/protocols.py
+  h_9db9d35f50cf33 14,19-20,281
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "bd9a20db63b28610bd6a35cbbb256227b5772ab4",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
