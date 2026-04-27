@@ -11,10 +11,13 @@ from collections.abc import (
     Callable,
     Sequence,
 )
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_core import m, p
 from flext_observability import t
+
+if TYPE_CHECKING:
+    from flext_observability.models import FlextObservabilityModels as om
 
 
 class FlextObservabilityProtocols(p):
@@ -275,9 +278,7 @@ class FlextObservabilityProtocols(p):
                 message: str,
                 level: str,
                 *,
-                service: t.Scalar | None = None,
-                correlation_id: t.Scalar | None = None,
-                extra: t.ConfigurationMapping | None = None,
+                context: om.Observability.LogContext | None = None,
             ) -> p.Result[bool]:
                 """Log a message."""
                 ...
