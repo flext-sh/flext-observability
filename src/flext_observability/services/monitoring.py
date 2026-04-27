@@ -10,7 +10,7 @@ import time
 from collections.abc import (
     Callable,
 )
-from typing import TypeAlias, override
+from typing import override
 from uuid import uuid4
 
 from flext_core import FlextContainer
@@ -25,7 +25,7 @@ from flext_observability import (
     u,
 )
 
-_ObservabilityService: TypeAlias = p.Observability.ObservabilityService
+type _ObservabilityService = p.Observability.ObservabilityService
 
 
 class FlextObservabilityMonitor:

@@ -587,11 +587,8 @@ class FlextObservability(
             message: str,
             severity: str = c.Observability.AlertLevel.WARNING,
             tags: t.ScalarMapping | None = None,
-            status: str = c.Observability.AlertStatus.FIRING,
-            timestamp: datetime | None = None,
         ) -> p.Result[FlextObservability.Alert]:
             """Create an alert."""
-            _ = timestamp
             valid_severity: c.Observability.AlertLevel
             match severity:
                 case c.Observability.AlertLevel.INFO | "low":
@@ -604,14 +601,6 @@ class FlextObservability(
                     valid_severity = c.Observability.AlertLevel.CRITICAL
                 case _:
                     valid_severity = c.Observability.AlertLevel.WARNING
-            valid_status: c.Observability.AlertStatus
-            match status:
-                case c.Observability.AlertStatus.FIRING | "active":
-                    valid_status = c.Observability.AlertStatus.FIRING
-                case c.Observability.AlertStatus.RESOLVED:
-                    valid_status = c.Observability.AlertStatus.RESOLVED
-                case _:
-                    valid_status = c.Observability.AlertStatus.FIRING
             json_labels: dict[str, t.JsonValue] | None = (
                 {str(k): str(v) for k, v in tags.items()} if tags is not None else None
             )
@@ -619,7 +608,6 @@ class FlextObservability(
                 title=title,
                 message=message,
                 severity=valid_severity,
-                status=valid_status,
                 labels=json_labels,
             )
 
