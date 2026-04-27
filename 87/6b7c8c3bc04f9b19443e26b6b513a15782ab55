@@ -1,0 +1,36 @@
+src/flext_observability/api.py
+  h_9db9d35f50cf33 439,442-446,451,456-462,466-473,615-617,623
+  c8a4efa99583d305 463-465
+src/flext_observability/services/http_instrumentation.py
+  h_9db9d35f50cf33 95-98,130-132,144-146,151-157,163-166,176-178,187-192,197,242-244
+examples/02_solid_observability_demo.py
+  c8a4efa99583d305 49-52,118-123,157-162
+examples/01_functional.py
+  c8a4efa99583d305 34-37,99-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "876b7c8c3bc04f9b19443e26b6b513a15782ab55",
+  "prompts": {
+    "c8a4efa99583d305": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "064e59bc-4db0-43f3-84df-745838365e34",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 29,
+      "total_deletions": 6,
+      "accepted_lines": 29,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/c3cc8afec6444ddf84caa0563c1b5b0ca8ad3805a2356ec759e56bb041054609"
+    }
+  },
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
