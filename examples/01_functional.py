@@ -31,7 +31,10 @@ def demonstrate_simple_api() -> None:
     flext_metric("api_requests", 150.0, "count")
     flext_trace("user_registration")
     flext_alert(
-        "monitoring", "High CPU usage detected", c.Observability.AlertLevel.WARNING
+        source="monitoring",
+        title="High CPU usage detected",
+        message="High CPU usage detected",
+        severity=c.Observability.AlertLevel.WARNING,
     )
     flext_health_check("database", c.Observability.HealthStatus.HEALTHY)
     flext_log_entry(
@@ -93,7 +96,12 @@ def demonstrate_alerting_scenario() -> None:
         (c.Observability.AlertLevel.CRITICAL, "Payment service unavailable", "payment"),
     ]
     for level, message, service in alert_scenarios:
-        alert_result = flext_alert(service, message, level)
+        alert_result = flext_alert(
+            source=service,
+            title=message,
+            message=message,
+            severity=level,
+        )
         if alert_result.success:
             icons = {
                 "info": "[INFO]",

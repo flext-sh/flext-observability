@@ -436,41 +436,42 @@ class FlextObservability(
             return r[FlextObservability.Trace].fail_op("create trace", e)
 
     @staticmethod
-    def flext_alert(
-        title: str = "",
-        message: str = "",
-        severity: c.Observability.AlertLevel = c.Observability.AlertLevel.WARNING,
-        status: c.Observability.AlertStatus = c.Observability.AlertStatus.FIRING,
-        alert_id: str | None = None,
-        source: str = "system",
-        labels: t.ScalarMapping | None = None,
-    ) -> p.Result[FlextObservability.Alert]:
+    def flext_alert(**kwargs: t.JsonValue) -> p.Result[FlextObservability.Alert]:
         """Create an alert entity directly."""
-        _ = status
         try:
-            if not message and (not title):
+            payload: t.MutableJsonMapping = dict(kwargs)
+            _ = payload.pop("status", c.Observability.AlertStatus.FIRING)
+            payload.setdefault("title", "")
+            payload.setdefault("message", "")
+            if not payload["message"] and (not payload["title"]):
                 return r[FlextObservability.Alert].fail_op(
                     "create alert",
                     "Alert message cannot be empty",
                 )
-            if not title and message:
+            if not payload["title"] and payload["message"]:
                 return r[FlextObservability.Alert].fail_op(
                     "create alert",
                     "Alert title cannot be empty",
                 )
-            resolved_labels: dict[str, t.Scalar] = (
-                dict(labels) if labels is not None else {}
+            alert_id = payload.pop("alert_id", None)
+            if alert_id is not None and "id" not in payload:
+                payload["id"] = alert_id
+            payload.setdefault("severity", c.Observability.AlertLevel.WARNING)
+            payload.setdefault("source", "system")
+            labels_data = payload.get("labels")
+            resolved_labels: dict[str, t.JsonValue] = {
+                str(key): value
+                if isinstance(value, (bool, int, float, str)) or value is None
+                else str(value)
+                for key, value in (
+                    labels_data.items() if isinstance(labels_data, dict) else ()
+                )
+            }
+            payload["labels"] = resolved_labels
+            payload.setdefault("domain_events", [])
+            return r[FlextObservability.Alert].ok(
+                FlextObservability.Alert.model_validate(payload),
             )
-            alert = FlextObservability.Alert(
-                id=alert_id or str(uuid4()),
-                title=title,
-                message=message,
-                severity=severity,
-                source=source,
-                labels=resolved_labels,
-                domain_events=[],
-            )
-            return r[FlextObservability.Alert].ok(alert)
         except (ValueError, TypeError, AttributeError) as e:
             return r[FlextObservability.Alert].fail_op("create alert", e)
 
@@ -611,12 +612,15 @@ class FlextObservability(
                     valid_status = c.Observability.AlertStatus.RESOLVED
                 case _:
                     valid_status = c.Observability.AlertStatus.FIRING
+            json_labels: dict[str, t.JsonValue] | None = (
+                {str(k): str(v) for k, v in tags.items()} if tags is not None else None
+            )
             return FlextObservability.flext_alert(
                 title=title,
                 message=message,
                 severity=valid_severity,
                 status=valid_status,
-                labels=tags,
+                labels=json_labels,
             )
 
         def create_alert(

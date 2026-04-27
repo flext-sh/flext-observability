@@ -46,7 +46,10 @@ def demonstrate_solid_design() -> None:
     metric_result = flext_metric("cpu_usage", 75.5, "percent")
     trace_result = flext_trace("user_login")
     alert_result = flext_alert(
-        "monitoring", "High CPU usage", c.Observability.AlertLevel.WARNING
+        source="monitoring",
+        title="High CPU usage",
+        message="High CPU usage",
+        severity=c.Observability.AlertLevel.WARNING,
     )
     health_result = flext_health_check("database", c.Observability.HealthStatus.HEALTHY)
     container = FlextContainer()
@@ -112,7 +115,12 @@ def demonstrate_alerting_system() -> None:
         ),
     ]
     for level, message, service in alerts:
-        result = flext_alert(service, message, level)
+        result = flext_alert(
+            source=service,
+            title=message,
+            message=message,
+            severity=level,
+        )
         if result.success:
             icons = {
                 "info": "[INFO]",
@@ -146,7 +154,12 @@ def demonstrate_validation() -> None:
     trace_res = flext_trace("valid_operation")
     if trace_res.success:
         print(f"Validation successful for {type(trace_res.value).__name__}")
-    alert_res = flext_alert("system", "Valid alert", c.Observability.AlertLevel.INFO)
+    alert_res = flext_alert(
+        source="system",
+        title="Valid alert",
+        message="Valid alert",
+        severity=c.Observability.AlertLevel.INFO,
+    )
     if alert_res.success:
         print(f"Validation successful for {type(alert_res.value).__name__}")
     health_res = flext_health_check("service", c.Observability.HealthStatus.HEALTHY)
