@@ -750,15 +750,9 @@ class FlextObservability(
             self,
             trace_id: str,
             operation: str,
-            span_id: str | None = None,
             span_attributes: t.ScalarMapping | None = None,
-            duration_ms: float | None = None,
-            status: str = "unset",
         ) -> p.Result[FlextObservability.Trace]:
             """Create a trace span."""
-            _ = span_id
-            _ = duration_ms
-            _ = status
             str_attributes: t.ScalarMapping = {}
             if span_attributes:
                 str_attributes = {k: str(v) for k, v in span_attributes.items()}

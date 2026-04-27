@@ -22,9 +22,7 @@ class FlextObservabilityConstants(c):
     ```python
     from flext_observability import FlextObservabilityConstants
 
-    namespace = (
-        FlextObservabilityConstants.Observability.Defaults.DEFAULT_METRICS_NAMESPACE
-    )
+    service_name = FlextObservabilityConstants.Observability.DEFAULT_SERVICE_NAME
     metric_type = FlextObservabilityConstants.Observability.MetricType.COUNTER
     ```
     """
@@ -36,22 +34,15 @@ class FlextObservabilityConstants(c):
         organization and to enable composition with other domain constants.
         """
 
-        class Defaults:
-            """Configuration defaults."""
-
-            DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
-            DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-            DEFAULT_METRIC_UNIT: Final[str] = "1"
-
-        class SettingsDefaults:
-            """Settings field defaults."""
-
-            SERVICE_NAME: Final[str] = "flext-observability"
-            ENVIRONMENT: Final[str] = "development"
-            DEFAULT_FLUSH_INTERVAL: Final[int] = 30
-            DEFAULT_METRICS_ENABLED: Final[bool] = True
-            DEFAULT_TRACES_ENABLED: Final[bool] = True
-            DEFAULT_ALERTS_ENABLED: Final[bool] = True
+        DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
+        DEFAULT_LOG_LEVEL: Final[str] = "INFO"
+        DEFAULT_METRIC_UNIT: Final[str] = "1"
+        DEFAULT_SETTINGS_SERVICE_NAME: Final[str] = "flext-observability"
+        DEFAULT_ENVIRONMENT: Final[str] = "development"
+        DEFAULT_FLUSH_INTERVAL: Final[int] = 30
+        DEFAULT_METRICS_ENABLED: Final[bool] = True
+        DEFAULT_TRACES_ENABLED: Final[bool] = True
+        DEFAULT_ALERTS_ENABLED: Final[bool] = True
 
         @unique
         class MetricType(StrEnum):
@@ -210,27 +201,26 @@ class FlextObservabilityConstants(c):
         METRIC_UNIT_PERCENT: ClassVar[str] = "percent"
         METRIC_UNIT_BYTES: ClassVar[str] = "bytes"
         METRIC_UNIT_SECONDS: ClassVar[str] = "seconds"
-        ALERT_LEVEL_INFO: ClassVar[str] = "info"
-        ALERT_LEVEL_WARNING: ClassVar[str] = "warning"
-        ALERT_LEVEL_ERROR: ClassVar[str] = "error"
-        ALERT_LEVEL_CRITICAL: ClassVar[str] = "critical"
-        TRACE_STATUS_STARTED: ClassVar[str] = "started"
-        TRACE_STATUS_RUNNING: ClassVar[str] = "running"
-        TRACE_STATUS_COMPLETED: ClassVar[str] = "completed"
-        TRACE_STATUS_FAILED: ClassVar[str] = "failed"
-        HEALTH_STATUS_HEALTHY: ClassVar[str] = "healthy"
-        HEALTH_STATUS_DEGRADED: ClassVar[str] = "degraded"
-        HEALTH_STATUS_UNHEALTHY: ClassVar[str] = "unhealthy"
-        LOG_LEVEL_DEBUG: ClassVar[str] = "debug"
-        LOG_LEVEL_INFO: ClassVar[str] = "info"
-        LOG_LEVEL_WARNING: ClassVar[str] = "warning"
-        LOG_LEVEL_ERROR: ClassVar[str] = "error"
-        LOG_LEVEL_CRITICAL: ClassVar[str] = "critical"
+        ALERT_LEVEL_INFO: ClassVar[str] = AlertLevel.INFO.value
+        ALERT_LEVEL_WARNING: ClassVar[str] = AlertLevel.WARNING.value
+        ALERT_LEVEL_ERROR: ClassVar[str] = AlertLevel.ERROR.value
+        ALERT_LEVEL_CRITICAL: ClassVar[str] = AlertLevel.CRITICAL.value
+        TRACE_STATUS_STARTED: ClassVar[str] = TraceStatus.STARTED.value
+        TRACE_STATUS_RUNNING: ClassVar[str] = TraceStatus.RUNNING.value
+        TRACE_STATUS_COMPLETED: ClassVar[str] = TraceStatus.COMPLETED.value
+        TRACE_STATUS_FAILED: ClassVar[str] = TraceStatus.FAILED.value
+        HEALTH_STATUS_HEALTHY: ClassVar[str] = HealthStatus.HEALTHY.value
+        HEALTH_STATUS_DEGRADED: ClassVar[str] = HealthStatus.DEGRADED.value
+        HEALTH_STATUS_UNHEALTHY: ClassVar[str] = HealthStatus.UNHEALTHY.value
+        LOG_LEVEL_DEBUG: ClassVar[str] = ErrorSeverity.DEBUG.value
+        LOG_LEVEL_INFO: ClassVar[str] = ErrorSeverity.INFO.value
+        LOG_LEVEL_WARNING: ClassVar[str] = ErrorSeverity.WARNING.value
+        LOG_LEVEL_ERROR: ClassVar[str] = ErrorSeverity.ERROR.value
+        LOG_LEVEL_CRITICAL: ClassVar[str] = ErrorSeverity.CRITICAL.value
         MAX_METRIC_NAME_LENGTH: ClassVar[int] = 128
         MAX_TRACE_NAME_LENGTH: ClassVar[int] = 256
         MAX_ALERT_MESSAGE_LENGTH: ClassVar[int] = 1024
         MAX_LOG_MESSAGE_LENGTH: ClassVar[int] = 4096
-        DEFAULT_ENVIRONMENT: ClassVar[str] = "development"
 
 
 c = FlextObservabilityConstants

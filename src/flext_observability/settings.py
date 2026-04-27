@@ -26,31 +26,31 @@ class FlextObservabilitySettings(FlextSettings):
         u.Field(
             description="Observability service name identifier",
         ),
-    ] = c.Observability.SettingsDefaults.SERVICE_NAME
+    ] = c.Observability.DEFAULT_SETTINGS_SERVICE_NAME
     environment: Annotated[
         str,
         u.Field(
             description="Deployment environment name",
         ),
-    ] = c.Observability.SettingsDefaults.ENVIRONMENT
+    ] = c.Observability.DEFAULT_ENVIRONMENT
     metrics_enabled: Annotated[
         bool,
         u.Field(
             description="Enable metrics collection",
         ),
-    ] = c.Observability.SettingsDefaults.DEFAULT_METRICS_ENABLED
+    ] = c.Observability.DEFAULT_METRICS_ENABLED
     traces_enabled: Annotated[
         bool,
         u.Field(
             description="Enable distributed tracing",
         ),
-    ] = c.Observability.SettingsDefaults.DEFAULT_TRACES_ENABLED
+    ] = c.Observability.DEFAULT_TRACES_ENABLED
     alerts_enabled: Annotated[
         bool,
         u.Field(
             description="Enable alert notifications",
         ),
-    ] = c.Observability.SettingsDefaults.DEFAULT_ALERTS_ENABLED
+    ] = c.Observability.DEFAULT_ALERTS_ENABLED
     flush_interval_seconds: Annotated[
         int,
         u.Field(
@@ -58,4 +58,4 @@ class FlextObservabilitySettings(FlextSettings):
             le=300,
             description="Interval in seconds between metric flushes",
         ),
-    ] = c.Observability.SettingsDefaults.DEFAULT_FLUSH_INTERVAL
+    ] = c.Observability.DEFAULT_FLUSH_INTERVAL

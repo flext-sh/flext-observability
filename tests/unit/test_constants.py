@@ -81,7 +81,7 @@ class TestsFlextObservabilityConstantsUnit:
     def test_service_constants(self) -> None:
         """Test service-related constants."""
         tm.that(
-            c.Observability.Defaults.DEFAULT_SERVICE_NAME,
+            c.Observability.DEFAULT_SERVICE_NAME,
             eq="flext-service",
         )
         tm.that(
