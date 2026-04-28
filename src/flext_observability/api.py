@@ -127,7 +127,7 @@ class FlextObservability(
                         "record metric",
                         "Metric name must be non-empty string",
                     )
-                if math.isnan(float(value)):
+                if math.isnan(value):
                     return r[FlextObservability.Metric].fail_op(
                         "record metric",
                         "Metric value must be a valid number",
@@ -145,7 +145,7 @@ class FlextObservability(
                 metric = FlextObservability.Metric(
                     id=str(uuid4()),
                     name=name,
-                    value=float(value),
+                    value=value,
                     unit=unit,
                     metric_type=metric_type,
                     labels=resolved_labels,
@@ -360,7 +360,7 @@ class FlextObservability(
                     "create metric",
                     "Metric name must be non-empty string",
                 )
-            if math.isnan(float(value)):
+            if math.isnan(value):
                 return r[FlextObservability.Metric].fail_op(
                     "create metric",
                     "Metric value must be a valid number",
@@ -372,12 +372,12 @@ class FlextObservability(
             all_labels_data: t.MutableScalarMapping = {}
             if isinstance(tags_raw, Mapping):
                 all_labels_data.update({
-                    str(key): t.scalar_adapter().validate_python(value)
+                    key: t.scalar_adapter().validate_python(value)
                     for key, value in tags_raw.items()
                 })
             if isinstance(labels_raw, Mapping):
                 all_labels_data.update({
-                    str(key): t.scalar_adapter().validate_python(value)
+                    key: t.scalar_adapter().validate_python(value)
                     for key, value in labels_raw.items()
                 })
             detected_type: c.Observability.MetricType = (
@@ -399,7 +399,7 @@ class FlextObservability(
                     else str(uuid4())
                 ),
                 name=name,
-                value=float(value),
+                value=value,
                 unit=unit,
                 metric_type=detected_type,
                 labels=dict(all_labels_data),
@@ -443,36 +443,29 @@ class FlextObservability(
             _ = payload.pop("status", c.Observability.AlertStatus.FIRING)
             payload.setdefault("title", "")
             payload.setdefault("message", "")
-            if not payload["message"] and (not payload["title"]):
-                return r[FlextObservability.Alert].fail_op(
-                    "create alert",
-                    "Alert message cannot be empty",
-                )
-            if not payload["title"] and payload["message"]:
-                return r[FlextObservability.Alert].fail_op(
-                    "create alert",
-                    "Alert title cannot be empty",
-                )
-            alert_id = payload.pop("alert_id", None)
-            if alert_id is not None and "id" not in payload:
-                payload["id"] = alert_id
+            if "alert_id" in payload:
+                alert_id_raw = payload.pop("alert_id")
+                if "id" not in payload:
+                    payload.setdefault(
+                        "id",
+                        t.str_adapter().validate_python(alert_id_raw),
+                    )
             payload.setdefault("severity", c.Observability.AlertLevel.WARNING)
             payload.setdefault("source", "system")
-            labels_data = payload.get("labels")
-            resolved_labels: dict[str, t.JsonValue] = {
-                str(key): value
-                if isinstance(value, (bool, int, float, str)) or value is None
-                else str(value)
-                for key, value in (
-                    labels_data.items() if isinstance(labels_data, dict) else ()
-                )
-            }
+            resolved_labels: dict[str, t.JsonValue] = {}
+            if "labels" in payload and u.mapping(payload["labels"]):
+                for label_key, label_value in payload["labels"].items():
+                    resolved_labels[label_key] = (
+                        label_value
+                        if u.primitive(label_value) or label_value is None
+                        else str(label_value)
+                    )
             payload["labels"] = resolved_labels
             payload.setdefault("domain_events", [])
             return r[FlextObservability.Alert].ok(
                 FlextObservability.Alert.model_validate(payload),
             )
-        except (ValueError, TypeError, AttributeError) as e:
+        except (c.ValidationError, ValueError, TypeError, AttributeError) as e:
             return r[FlextObservability.Alert].fail_op("create alert", e)
 
     @staticmethod
@@ -602,7 +595,7 @@ class FlextObservability(
                 case _:
                     valid_severity = c.Observability.AlertLevel.WARNING
             json_labels: dict[str, t.JsonValue] | None = (
-                {str(k): str(v) for k, v in tags.items()} if tags is not None else None
+                {k: str(v) for k, v in tags.items()} if tags is not None else None
             )
             return FlextObservability.flext_alert(
                 title=title,
