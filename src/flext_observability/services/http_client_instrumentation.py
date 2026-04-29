@@ -193,7 +193,7 @@ class FlextObservabilityHTTPClient:
                             f"HTTP client request: {method} {url}",
                             extra={
                                 "http_method": method,
-                                "http_url": str(url),
+                                "http_url": url,
                                 "client": "httpx",
                                 "async": True,
                             },
@@ -222,7 +222,7 @@ class FlextObservabilityHTTPClient:
                                 f"HTTP client response: {method} {url} -> {response.status_code}",
                                 extra={
                                     "http_method": method,
-                                    "http_url": str(url),
+                                    "http_url": url,
                                     "http_status": response.status_code,
                                     "http_duration_ms": duration_ms,
                                     "client": "httpx",
@@ -238,7 +238,7 @@ class FlextObservabilityHTTPClient:
                                 f"HTTP client error: {method} {url}",
                                 extra={
                                     "http_method": method,
-                                    "http_url": str(url),
+                                    "http_url": url,
                                     "http_duration_ms": duration_ms,
                                     "error_type": type(e).__name__,
                                     "error_message": str(e),
@@ -436,7 +436,7 @@ class FlextObservabilityHTTPClient:
                         f"HTTP client request: {method} {url}",
                         extra={
                             "http_method": method,
-                            "http_url": str(url),
+                            "http_url": url,
                             "client": "aiohttp",
                             "async": True,
                         },
@@ -460,7 +460,7 @@ class FlextObservabilityHTTPClient:
                             f"HTTP client response: {method} {url} -> {status}",
                             extra={
                                 "http_method": method,
-                                "http_url": str(url),
+                                "http_url": url,
                                 "http_status": status,
                                 "http_duration_ms": duration_ms,
                                 "client": "aiohttp",
@@ -476,7 +476,7 @@ class FlextObservabilityHTTPClient:
                             f"HTTP client error: {method} {url}",
                             extra={
                                 "http_method": method,
-                                "http_url": str(url),
+                                "http_url": url,
                                 "http_duration_ms": duration_ms,
                                 "error_type": type(e).__name__,
                                 "error_message": str(e),

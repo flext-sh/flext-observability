@@ -64,7 +64,7 @@ class FlextObservabilityFields:
         @classmethod
         def validate_metric_value(cls, v: float) -> float:
             """Validate metric value is numeric and non-negative."""
-            numeric_value = float(v)
+            numeric_value = v
             if numeric_value < 0:
                 msg = "Metric value cannot be negative"
                 raise ValueError(msg)

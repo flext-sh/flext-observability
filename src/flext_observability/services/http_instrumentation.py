@@ -112,9 +112,9 @@ class FlextObservabilityHTTP:
                     else "unknown"
                 )
                 extra_before: t.StrMapping = {
-                    "http_method": str(request_method),
-                    "http_path": str(request_path),
-                    "http_client_ip": str(request_remote),
+                    "http_method": request_method,
+                    "http_path": request_path,
+                    "http_client_ip": request_remote,
                     "http_user_agent": str(user_agent),
                 }
                 FlextObservabilityLogging.log_with_context(
@@ -147,8 +147,8 @@ class FlextObservabilityHTTP:
                     duration_ms = (time.time() - validated_start) * 1000
                 except c.ValidationError:
                     duration_ms = 0.0
-                status_code = int(
-                    response.status_code if hasattr(response, "status_code") else 200,
+                status_code = (
+                    response.status_code if hasattr(response, "status_code") else 200
                 )
                 is_error = (
                     status_code >= FlextObservabilityHTTP.HTTP_ERROR_STATUS_THRESHOLD
@@ -316,33 +316,35 @@ class FlextObservabilityHTTP:
                     ) -> p.Observability.Http.Response:
                         """Process HTTP request with instrumentation."""
                         try:
-                            headers_dict = {
-                                str(k): str(v) for k, v in request.headers.items()
+                            headers_dict: dict[str, str] = {
+                                key: str(value)
+                                for key, value in request.headers.items()
                             }
                             FlextObservabilityContext.from_headers(headers_dict)
                             correlation_id = FlextObservabilityContext.correlation_id()
                             start_time = time.time()
+                            request_log_extra: dict[str, t.Scalar] = {
+                                "http_method": request.method,
+                                "http_path": request.url.path,
+                                "http_client_ip": request.client.host
+                                if request.client
+                                else "unknown",
+                                "http_user_agent": str(
+                                    request.headers.get("user-agent", "unknown")
+                                ),
+                            }
                             await FlextObservabilityHTTP._async_log_with_context(
                                 f"HTTP {request.method} {request.url.path}",
                                 c.Observability.ErrorSeverity.DEBUG.value,
-                                {
-                                    "http_method": str(request.method),
-                                    "http_path": str(request.url.path),
-                                    "http_client_ip": str(request.client.host)
-                                    if request.client
-                                    else "unknown",
-                                    "http_user_agent": str(
-                                        request.headers.get("user-agent", "unknown"),
-                                    ),
-                                },
+                                request_log_extra,
                             )
                             try:
                                 response = await call_next(request)
                                 duration_ms = (time.time() - start_time) * 1000
-                                status_code = int(
+                                status_code = (
                                     response.status_code
                                     if hasattr(response, "status_code")
-                                    else 200,
+                                    else 200
                                 )
                                 is_error = (
                                     status_code
