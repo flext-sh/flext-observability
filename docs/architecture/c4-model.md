@@ -382,7 +382,7 @@ class FlextTrace(FlextModels.Entity):
     """Distributed trace entity with span hierarchy."""
 
     trace_id: str
-    spans: Sequence[Span]
+    spans: t.SequenceOf[Span]
     context: TraceContext
 
 

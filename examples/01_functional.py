@@ -10,14 +10,8 @@ for the flext-observability module, showcasing 100% functional integration.
 from __future__ import annotations
 
 import time
-from collections.abc import (
-    Sequence,
-)
 
-from flext_observability import (
-    FlextObservability,
-    c,
-)
+from flext_observability import FlextObservability, c, t
 
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
@@ -77,7 +71,7 @@ def demonstrate_validation() -> None:
 def demonstrate_health_monitoring() -> None:
     """Demonstrate health monitoring scenario."""
     services = ["database", "cache", "message-queue", "auth-service"]
-    statuses: Sequence[c.Observability.HealthStatus] = [
+    statuses: t.SequenceOf[c.Observability.HealthStatus] = [
         c.Observability.HealthStatus.HEALTHY,
         c.Observability.HealthStatus.HEALTHY,
         c.Observability.HealthStatus.DEGRADED,
@@ -89,7 +83,7 @@ def demonstrate_health_monitoring() -> None:
 
 def demonstrate_alerting_scenario() -> None:
     """Demonstrate alerting in different scenarios."""
-    alert_scenarios: Sequence[tuple[c.Observability.AlertLevel, str, str]] = [
+    alert_scenarios: t.SequenceOf[tuple[c.Observability.AlertLevel, str, str]] = [
         (c.Observability.AlertLevel.INFO, "System started successfully", "system"),
         (c.Observability.AlertLevel.WARNING, "High memory usage: 85%", "monitoring"),
         (c.Observability.AlertLevel.ERROR, "Database connection failed", "database"),

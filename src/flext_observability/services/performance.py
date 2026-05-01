@@ -13,13 +13,10 @@ FLEXT Pattern:
 from __future__ import annotations
 
 import time
-from collections.abc import (
-    Mapping,
-)
 
 import psutil
 
-from flext_observability import c, m, p, r, u
+from flext_observability import c, m, p, r, t, u
 
 
 class FlextObservabilityPerformance:
@@ -118,7 +115,7 @@ class FlextObservabilityPerformance:
                 return 0.0
 
     @staticmethod
-    def fetch_system_resources() -> Mapping[str, float]:
+    def fetch_system_resources() -> t.MappingKV[str, float]:
         """Fetch current system resource usage.
 
         Returns:
@@ -158,7 +155,7 @@ class FlextObservabilityPerformance:
         """
         if not metrics.success:
             return False
-        acceptable_latencies: Mapping[str, float] = {
+        acceptable_latencies: t.MappingKV[str, float] = {
             "http_": 50.0,
             "database_": 100.0,
             "context_": 10.0,

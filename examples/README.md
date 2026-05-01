@@ -288,7 +288,7 @@ class FlextTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> Sequence[m.Dict]:
+    def extract_records(self, table_name: str) -> t.SequenceOf[m.Dict]:
         """Extract records with automatic monitoring."""
 
         # Extract data (business logic)

@@ -9,7 +9,6 @@ from __future__ import annotations
 from collections.abc import (
     Awaitable,
     Callable,
-    Sequence,
 )
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
@@ -312,7 +311,7 @@ class FlextObservabilityProtocols(p):
                 name: str,
                 description: str,
                 *,
-                widgets: Sequence[t.ConfigurationMapping] | None = None,
+                widgets: t.SequenceOf[t.ConfigurationMapping] | None = None,
             ) -> p.Result[str]:
                 """Create a dashboard."""
                 ...

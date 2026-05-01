@@ -283,7 +283,7 @@ class FlextMetricsService:
 
     def __init__(self, container: FlextContainer) -> None:
         self._container = container
-        self._metrics_store: Mapping[str, FlextMetric] = {}
+        self._metrics_store: t.MappingKV[str, FlextMetric] = {}
 
     def record_metric(self, metric: FlextMetric) -> p.Result[FlextMetric]:
         """Record metric with business validation."""
@@ -421,9 +421,9 @@ class FlextObservabilityRepository:
     """Repository for observability data access."""
 
     def __init__(self) -> None:
-        self._metrics: Mapping[str, FlextMetric] = {}
-        self._traces: Mapping[str, FlextTrace] = {}
-        self._alerts: Mapping[str, FlextAlert] = {}
+        self._metrics: t.MappingKV[str, FlextMetric] = {}
+        self._traces: t.MappingKV[str, FlextTrace] = {}
+        self._alerts: t.MappingKV[str, FlextAlert] = {}
 
     def store_metric(self, metric: FlextMetric) -> p.Result[bool]:
         """Store metric with validation."""

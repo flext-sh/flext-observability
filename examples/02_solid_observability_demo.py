@@ -12,9 +12,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from collections.abc import (
-    Sequence,
-)
 
 from flext_core import FlextContainer
 from flext_observability import (
@@ -88,7 +85,7 @@ def demonstrate_distributed_tracing() -> None:
 
 def demonstrate_health_monitoring() -> None:
     """Demonstrate comprehensive health monitoring."""
-    services_health: Sequence[tuple[str, c.Observability.HealthStatus]] = [
+    services_health: t.SequenceOf[tuple[str, c.Observability.HealthStatus]] = [
         ("database", c.Observability.HealthStatus.HEALTHY),
         ("cache", c.Observability.HealthStatus.HEALTHY),
         ("message_queue", c.Observability.HealthStatus.DEGRADED),
@@ -100,7 +97,7 @@ def demonstrate_health_monitoring() -> None:
 
 def demonstrate_alerting_system() -> None:
     """Demonstrate comprehensive alerting."""
-    alerts: Sequence[tuple[c.Observability.AlertLevel, str, str]] = [
+    alerts: t.SequenceOf[tuple[c.Observability.AlertLevel, str, str]] = [
         (c.Observability.AlertLevel.INFO, "System maintenance scheduled", "system"),
         (
             c.Observability.AlertLevel.WARNING,
