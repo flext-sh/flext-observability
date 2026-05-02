@@ -388,7 +388,7 @@ class FlextObservabilityHTTP:
                     "FastAPI HTTP instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail_op("FastAPI instrumentation setup", e)
 
     @staticmethod
@@ -408,7 +408,7 @@ class FlextObservabilityHTTP:
                 message,
                 extra=extra,
             )
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             FlextObservabilityHTTP.logger.warning(
                 f"Error logging in async context: {e}",
             )

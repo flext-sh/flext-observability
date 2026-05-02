@@ -475,7 +475,7 @@ class FlextObservability(
                 domain_events=[],
             )
             return r[FlextObservability.HealthCheck].ok(health)
-        except (ValueError, TypeError, AttributeError) as e:
+        except c.EXC_BASIC_TYPE as e:
             return r[FlextObservability.HealthCheck].fail_op(
                 "create health check",
                 e,
@@ -509,7 +509,7 @@ class FlextObservability(
                 domain_events=[],
             )
             return r[FlextObservability.LogEntry].ok(entry)
-        except (ValueError, TypeError, AttributeError) as e:
+        except c.EXC_BASIC_TYPE as e:
             return r[FlextObservability.LogEntry].fail_op("create log entry", e)
 
     @staticmethod
