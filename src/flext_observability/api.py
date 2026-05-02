@@ -408,7 +408,7 @@ class FlextObservability(
                 domain_events=[],
             )
             return r[FlextObservability.Trace].ok(trace)
-        except (ValueError, TypeError, AttributeError) as e:
+        except c.EXC_BASIC_TYPE as e:
             return r[FlextObservability.Trace].fail_op("create trace", e)
 
     @staticmethod

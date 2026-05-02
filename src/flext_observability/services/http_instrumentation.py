@@ -376,7 +376,7 @@ class FlextObservabilityHTTP:
                                     },
                                 )
                                 raise
-                        except (ValueError, TypeError, KeyError) as e:
+                        except c.EXC_MAPPING_TYPE as e:
                             FlextObservabilityHTTP.logger.warning(
                                 f"Middleware error: {e}",
                             )

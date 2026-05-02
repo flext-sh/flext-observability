@@ -303,7 +303,7 @@ class FlextObservabilityMonitor:
             self.logger.info("Stopping observability monitoring")
             self._running = False
             return r[None].ok(None)
-        except (ValueError, TypeError, AttributeError) as e:
+        except c.EXC_BASIC_TYPE as e:
             return r[None].fail_op("stop monitoring", e)
 
     @property
