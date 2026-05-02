@@ -230,7 +230,7 @@ class FlextObservabilityHTTPClient:
                                 },
                             )
                             return response
-                        except (ValueError, TypeError, KeyError) as e:
+                        except c.EXC_MAPPING_TYPE as e:
                             duration_ms = (time.time() - start_time) * 1000
                             _ = FlextObservabilityLogging.log_with_context(
                                 FlextObservabilityHTTPClient.logger,

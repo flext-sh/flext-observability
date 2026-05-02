@@ -123,7 +123,7 @@ class FlextObservabilityHTTP:
                     f"HTTP {request_method} {request_path}",
                     extra=extra_before,
                 )
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 FlextObservabilityHTTP.logger.warning(
                     f"Error in before_request hook: {e}",
                 )

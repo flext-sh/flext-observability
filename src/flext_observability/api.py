@@ -129,7 +129,7 @@ class FlextObservability(
                 )
                 self._metrics.append(metric)
                 return r[FlextObservability.Metric].ok(metric)
-            except (ValueError, TypeError, AttributeError) as e:
+            except c.EXC_BASIC_TYPE as e:
                 self.logger.warning(f"Metric recording failed: %s: {e}", exc_info=True)
                 return r[FlextObservability.Metric].fail_op("record metric", e)
 

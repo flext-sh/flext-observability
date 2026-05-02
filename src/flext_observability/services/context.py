@@ -144,7 +144,7 @@ class FlextObservabilityContext:
             if span_id := normalized_headers.get("x-span-id"):
                 FlextObservabilityContext.update_span_id(span_id)
             return r[bool].ok(value=True)
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             FlextObservabilityContext.logger.warning(
                 f"Failed to extract context from headers: {e}",
             )

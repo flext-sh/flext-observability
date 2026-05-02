@@ -177,7 +177,7 @@ class FlextObservabilityErrorHandling:
                 error.calculate_fingerprint()
                 try:
                     error.correlation_id = FlextObservabilityContext.correlation_id()
-                except (ValueError, TypeError, KeyError) as e:
+                except c.EXC_MAPPING_TYPE as e:
                     FlextObservabilityErrorHandling.logger.warning(
                         f"Could not set correlation_id, falling back to empty: {e}",
                     )

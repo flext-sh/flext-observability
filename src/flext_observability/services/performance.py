@@ -35,7 +35,7 @@ class FlextObservabilityPerformance:
         try:
             trace_handler.trace_request(...)
             monitor.mark_success()
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             monitor.mark_error(str(e))
         finally:
             metrics = monitor.finish()

@@ -80,7 +80,7 @@ class FlextObservabilityMonitor:
                     execution_time,
                 )
                 return result
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 execution_time = time.time() - start_time
                 FlextObservabilityMonitor.MonitoringHelpers.record_error_metrics(
                     monitor,
@@ -123,7 +123,7 @@ class FlextObservabilityMonitor:
                         FlextObservabilityMonitor.logger.warning(
                             f"Alert creation failed: {alert_result.error}",
                         )
-                except (ValueError, TypeError, AttributeError) as e:
+                except c.EXC_BASIC_TYPE as e:
                     FlextObservabilityMonitor.logger.warning(
                         f"Alert creation failed: {e}",
                     )

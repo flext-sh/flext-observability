@@ -97,7 +97,7 @@ class FlextObservabilityCustomMetrics:
                     f"Metrics cleared: {namespace or 'all'}",
                 )
                 return r[bool].ok(value=True)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail(f"Failed to clear metrics: {e}")
 
         def resolve_metrics(self, namespace: str | None = None) -> m.Dict:

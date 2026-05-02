@@ -72,7 +72,7 @@ class FlextObservabilityLogging:
                 return r[p.Logger].fail("Logger name must be non-empty string")
             logger = u.fetch_logger(name)
             return r[p.Logger].ok(logger)
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             return r[p.Logger].fail_op("Logger creation", e)
 
     @staticmethod

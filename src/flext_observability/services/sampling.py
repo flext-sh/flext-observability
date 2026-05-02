@@ -298,7 +298,7 @@ class FlextObservabilitySampling:
                 correlation_id = FlextObservabilityContext.correlation_id()
                 hash_val = hash(correlation_id) % 100
                 return hash_val / 100 < sampling_rate
-            except (ValueError, TypeError, KeyError):
+            except c.EXC_MAPPING_TYPE:
                 return random.SystemRandom().random() < sampling_rate
 
     @staticmethod
