@@ -364,7 +364,7 @@ class FlextObservabilityHTTP:
                                 )
                                 response.headers["X-Correlation-ID"] = correlation_id
                                 return response
-                            except (ValueError, TypeError, KeyError) as e:
+                            except c.EXC_MAPPING_TYPE as e:
                                 await FlextObservabilityHTTP._async_log_with_context(
                                     f"HTTP request error: {e!s}",
                                     c.Observability.ErrorSeverity.ERROR.value,

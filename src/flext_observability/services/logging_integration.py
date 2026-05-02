@@ -297,7 +297,7 @@ class FlextObservabilityLogging:
                     else None,
                 ),
             )
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             return r[m.Observability.LogContext].fail_op("Context validation", e)
 
 

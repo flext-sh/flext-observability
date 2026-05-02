@@ -197,7 +197,7 @@ class FlextObservabilityPerformance:
             else:
                 FlextObservabilityPerformance.logger.warning(message)
             return r[bool].ok(value=True)
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             return r[bool].fail(f"Failed to log metrics: {e}")
 
     @staticmethod

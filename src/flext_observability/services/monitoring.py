@@ -292,7 +292,7 @@ class FlextObservabilityMonitor:
             self._running = True
             self._monitor_start_time = time.time()
             return r[None].ok(None)
-        except (ValueError, TypeError, AttributeError) as e:
+        except c.EXC_BASIC_TYPE as e:
             return r[None].fail_op("start monitoring", e)
 
     def flext_stop_monitoring(self) -> p.Result[None]:

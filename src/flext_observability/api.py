@@ -315,7 +315,7 @@ class FlextObservability(
                 )
                 self.entries.append(entry)
                 return r[FlextObservability.LogEntry].ok(entry)
-            except (ValueError, TypeError, AttributeError) as e:
+            except c.EXC_BASIC_TYPE as e:
                 self.logger.warning(
                     f"Log entry creation failed: %s: {e}",
                     exc_info=True,

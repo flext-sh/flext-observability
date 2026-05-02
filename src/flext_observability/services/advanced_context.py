@@ -181,7 +181,7 @@ class FlextObservabilityAdvancedContext:
                 self._baggage[key] = value
                 FlextObservabilityAdvancedContext.logger.debug(f"Baggage set: {key}")
                 return r[bool].ok(value=True)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail(f"Failed to set baggage: {e}")
 
         def update_metadata(self, key: str, value: t.Scalar) -> p.Result[bool]:
