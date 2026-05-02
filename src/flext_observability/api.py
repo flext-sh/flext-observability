@@ -169,7 +169,7 @@ class FlextObservability(
                 )
                 self._traces.append(trace)
                 return r[FlextObservability.Trace].ok(trace)
-            except (ValueError, TypeError, AttributeError) as e:
+            except c.EXC_BASIC_TYPE as e:
                 self.logger.warning(f"Trace creation failed: %s: {e}", exc_info=True)
                 return r[FlextObservability.Trace].fail_op("start trace", e)
 

@@ -278,7 +278,7 @@ class FlextObservabilityContext:
             })
             FlextObservabilityContext._baggage.set(updated_baggage)
             return r[bool].ok(value=True)
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             return r[bool].fail_op("Baggage set", e)
 
     @staticmethod

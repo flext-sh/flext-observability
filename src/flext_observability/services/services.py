@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextContainer
-from flext_observability import FlextObservabilitySettings, m, p, r, t, u
+from flext_observability import FlextObservabilitySettings, c, m, p, r, t, u
 
 
 class FlextObservabilityServices:
@@ -73,7 +73,7 @@ class FlextObservabilityServices:
                 "version": status["version"],
             })
             return r[m.Dict].ok(status_result)
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             return r[m.Dict].fail_op("Status check", e)
 
     def process_entry(self, entry_data: m.Dict) -> p.Result[m.Dict]:

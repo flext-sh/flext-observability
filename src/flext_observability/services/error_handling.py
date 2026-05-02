@@ -276,7 +276,7 @@ class FlextObservabilityErrorHandling:
         ) -> p.Result[TResult]:
             try:
                 return r[TResult].ok(operation())
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 FlextObservabilityErrorHandling.logger.warning(f"{error_prefix}: {e}")
                 return r[TResult].fail(f"{error_prefix}: {e}")
 

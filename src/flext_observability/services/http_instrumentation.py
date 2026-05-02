@@ -168,7 +168,7 @@ class FlextObservabilityHTTP:
                         "http_duration_ms": duration_ms,
                     },
                 )
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 FlextObservabilityHTTP.logger.warning(
                     f"Error in after_request hook: {e}",
                 )

@@ -124,7 +124,7 @@ class FlextObservabilityLogging:
                 if baggage is not None:
                     context_payload.baggage = str(baggage)
             return r[m.Observability.LogContext].ok(context_payload)
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             return r[m.Observability.LogContext].fail_op("Context enrichment", e)
 
     @staticmethod

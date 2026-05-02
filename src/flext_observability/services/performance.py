@@ -102,7 +102,7 @@ class FlextObservabilityPerformance:
                     interval=0.01,
                 )
                 return cpu
-            except (ValueError, TypeError, KeyError):
+            except c.EXC_MAPPING_TYPE:
                 return 0.0
 
         def _memory_usage(self) -> float:

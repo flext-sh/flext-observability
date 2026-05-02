@@ -255,7 +255,7 @@ class FlextObservabilityCustomMetrics:
                     f"Metric registered: {namespaced_name} ({metric_type_enum.value})",
                 )
                 return r[bool].ok(value=True)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail_op("Metric registration", e)
 
         def unregister_metric(

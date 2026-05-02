@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_observability import m, p, r, t, u
+from flext_observability import c, m, p, r, t, u
 
 
 class FlextObservabilityAdvancedContext:
@@ -75,7 +75,7 @@ class FlextObservabilityAdvancedContext:
                 self._request_id = ""
                 FlextObservabilityAdvancedContext.logger.debug("Context cleared")
                 return r[bool].ok(value=True)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail(f"Failed to clear context: {e}")
 
         @property
@@ -205,7 +205,7 @@ class FlextObservabilityAdvancedContext:
                 self._metadata[key] = value
                 FlextObservabilityAdvancedContext.logger.debug(f"Metadata set: {key}")
                 return r[bool].ok(value=True)
-            except (TypeError, ValueError) as e:
+            except c.EXC_TYPE_VALIDATION as e:
                 return r[bool].fail(f"Metadata value not JSON serializable: {e}")
 
         def snapshot(

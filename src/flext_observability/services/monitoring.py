@@ -182,7 +182,7 @@ class FlextObservabilityMonitor:
                 "monitoring_active": self._running,
             }
             return r[t.Observability.HealthMetricsDict].ok(health_data)
-        except (ValueError, TypeError, AttributeError) as e:
+        except c.EXC_BASIC_TYPE as e:
             return r[t.Observability.HealthMetricsDict].fail_op(
                 "resolve health status",
                 e,
@@ -228,7 +228,7 @@ class FlextObservabilityMonitor:
                 self._observability_service = service
                 self._metrics_service = self._observability_service
                 self._health_service = self._observability_service
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[None].fail_op("initialize observability", e)
             self._initialized = True
             self.logger.info("Observability monitor initialized successfully")
