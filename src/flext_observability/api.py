@@ -59,8 +59,8 @@ class FlextObservability(
 ):
     """MRO facade over all observability services.
 
-    All operations come from mixin bases via MRO. Only factory methods,
-    model aliases, and Constants are defined locally.
+    All operations come from mixin bases via MRO. Only factory methods
+    and model aliases are defined locally.
     """
 
     _settings: FlextObservabilitySettings
@@ -69,30 +69,6 @@ class FlextObservability(
     _global_factory: ClassVar[
         FlextObservability.FlextObservabilityMasterFactory | None
     ] = None
-
-    class Constants:
-        """Domain constants and enumerations."""
-
-        METRIC_TYPES: ClassVar[set[str]] = {
-            c.Observability.MetricType.COUNTER,
-            c.Observability.MetricType.GAUGE,
-            c.Observability.MetricType.HISTOGRAM,
-        }
-        TRACE_STATUSES: ClassVar[set[str]] = {
-            c.Observability.TraceStatus.UNSET,
-            c.Observability.TraceStatus.OK,
-            c.Observability.TraceStatus.ERROR,
-        }
-        ALERT_SEVERITIES: ClassVar[set[str]] = set(c.Observability.AlertSeverity)
-        ALERT_STATUSES: ClassVar[set[str]] = set(c.Observability.AlertStatus)
-        HEALTH_STATUSES: ClassVar[set[str]] = set(c.Observability.HealthStatus)
-        LOG_LEVELS: ClassVar[set[str]] = {
-            c.Observability.ErrorSeverity.DEBUG,
-            c.Observability.ErrorSeverity.INFO,
-            c.Observability.ErrorSeverity.WARNING,
-            c.Observability.ErrorSeverity.ERROR,
-            c.Observability.ErrorSeverity.CRITICAL,
-        }
 
     Metric: TypeAlias = m.Observability.Metric
     Trace: TypeAlias = m.Observability.Trace
@@ -274,7 +250,7 @@ class FlextObservability(
                         "create health check",
                         "Component name cannot be empty",
                     )
-                if status not in FlextObservability.Constants.HEALTH_STATUSES:
+                if status not in c.Observability.HealthStatus:
                     return r[FlextObservability.HealthCheck].fail_op(
                         "create health check",
                         f"Invalid health status: {status}",
@@ -483,7 +459,7 @@ class FlextObservability(
                     "create health check",
                     "Component name cannot be empty",
                 )
-            if status not in FlextObservability.Constants.HEALTH_STATUSES:
+            if status not in c.Observability.HealthStatus:
                 return r[FlextObservability.HealthCheck].fail_op(
                     "create health check",
                     f"Invalid health status: {status}",

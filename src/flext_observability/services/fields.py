@@ -18,7 +18,7 @@ class FlextObservabilityFields:
     for observability entities. Follows FLEXT namespace class pattern.
     """
 
-    METRIC_VALID_UNITS: ClassVar[set[str]] = {
+    METRIC_VALID_UNITS: ClassVar[frozenset[str]] = frozenset({
         "count",
         "percent",
         "bytes",
@@ -29,24 +29,7 @@ class FlextObservabilityFields:
         "connections",
         "memory",
         "cpu",
-    }
-    ALERT_VALID_LEVELS: ClassVar[set[str]] = {
-        c.Observability.AlertLevel.INFO,
-        c.Observability.AlertLevel.WARNING,
-        c.Observability.AlertLevel.ERROR,
-        c.Observability.AlertLevel.CRITICAL,
-    }
-    TRACE_VALID_STATUSES: ClassVar[set[str]] = {
-        c.Observability.TraceStatus.STARTED,
-        c.Observability.TraceStatus.RUNNING,
-        c.Observability.TraceStatus.COMPLETED,
-        c.Observability.TraceStatus.FAILED,
-    }
-    HEALTH_VALID_STATUSES: ClassVar[set[str]] = {
-        c.Observability.HealthStatus.HEALTHY,
-        c.Observability.HealthStatus.DEGRADED,
-        c.Observability.HealthStatus.UNHEALTHY,
-    }
+    })
 
     class MetricFields:
         """Nested class for metric field validation."""
