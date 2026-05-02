@@ -220,7 +220,7 @@ class FlextObservability(
                 )
                 self._alerts.append(alert)
                 return r[FlextObservability.Alert].ok(alert)
-            except (ValueError, TypeError, AttributeError) as e:
+            except c.EXC_BASIC_TYPE as e:
                 self.logger.warning(f"Alert creation failed: %s: {e}", exc_info=True)
                 return r[FlextObservability.Alert].fail_op("create alert", e)
 
@@ -267,7 +267,7 @@ class FlextObservability(
                 )
                 self._checks.append(health)
                 return r[FlextObservability.HealthCheck].ok(health)
-            except (ValueError, TypeError, AttributeError) as e:
+            except c.EXC_BASIC_TYPE as e:
                 self.logger.warning(f"Health check failed: %s: {e}", exc_info=True)
                 return r[FlextObservability.HealthCheck].fail_op(
                     "create health check",

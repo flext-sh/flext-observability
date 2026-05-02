@@ -111,7 +111,7 @@ class FlextObservabilityPerformance:
                 memory_info = FlextObservabilityPerformance._process.memory_info()
                 rss_bytes: int = memory_info.rss
                 return float(rss_bytes) / 1024 / 1024
-            except (ValueError, TypeError, KeyError):
+            except c.EXC_MAPPING_TYPE:
                 return 0.0
 
     @staticmethod
@@ -134,7 +134,7 @@ class FlextObservabilityPerformance:
                 "memory_percent": FlextObservabilityPerformance._process.memory_percent(),
                 "cpu_percent": FlextObservabilityPerformance._process.cpu_percent(),
             }
-        except (ValueError, TypeError, KeyError):
+        except c.EXC_MAPPING_TYPE:
             return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
 
     @staticmethod

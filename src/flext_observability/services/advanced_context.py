@@ -139,7 +139,7 @@ class FlextObservabilityAdvancedContext:
                 self._baggage.update(other.baggage)
                 FlextObservabilityAdvancedContext.logger.debug("Context merged")
                 return r[bool].ok(value=True)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail(f"Failed to merge context: {e}")
 
         def restore(self, snapshot: m.Observability.ContextSnapshot) -> p.Result[bool]:
@@ -163,7 +163,7 @@ class FlextObservabilityAdvancedContext:
                     "Context restored from snapshot",
                 )
                 return r[bool].ok(value=True)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail(f"Failed to restore context: {e}")
 
         def update_baggage(self, key: str, value: str) -> p.Result[bool]:

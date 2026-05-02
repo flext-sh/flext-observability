@@ -182,7 +182,7 @@ class FlextObservabilityLogging:
                 )
             _ = logger
             return r[bool].ok(value=True)
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             return r[bool].fail_op("Trace context injection", e)
 
     @staticmethod
@@ -256,7 +256,7 @@ class FlextObservabilityLogging:
                     )
             getattr(logger, level)(message, extra=log_context)
             return r[bool].ok(value=True)
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             return r[bool].fail_op("Logging with context", e)
 
     @staticmethod

@@ -350,7 +350,7 @@ class FlextObservabilityHTTPClient:
                     "httpx client instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail_op("httpx instrumentation setup", e)
 
     class AIOHTTP:
@@ -468,7 +468,7 @@ class FlextObservabilityHTTPClient:
                             },
                         )
                         return response
-                    except (ValueError, TypeError, KeyError) as e:
+                    except c.EXC_MAPPING_TYPE as e:
                         duration_ms = (time.time() - start_time) * 1000
                         _ = FlextObservabilityLogging.log_with_context(
                             FlextObservabilityHTTPClient.logger,

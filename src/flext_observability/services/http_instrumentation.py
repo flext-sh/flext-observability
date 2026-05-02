@@ -189,7 +189,7 @@ class FlextObservabilityHTTP:
                         "error_message": str(error),
                     },
                 )
-            except (ValueError, TypeError, KeyError) as log_error:
+            except c.EXC_MAPPING_TYPE as log_error:
                 FlextObservabilityHTTP.logger.error(
                     f"Error in error handler: {log_error}",
                 )
@@ -247,7 +247,7 @@ class FlextObservabilityHTTP:
                     "Flask HTTP instrumentation setup complete",
                 )
                 return r[bool].ok(value=True)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail_op("Flask instrumentation setup", e)
 
     class FastAPI:

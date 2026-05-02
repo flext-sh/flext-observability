@@ -233,7 +233,7 @@ class FlextObservabilityMonitor:
             self._initialized = True
             self.logger.info("Observability monitor initialized successfully")
             return r[None].ok(None)
-        except (ValueError, TypeError, AttributeError) as e:
+        except c.EXC_BASIC_TYPE as e:
             return r[None].fail_op("initialize observability", e)
 
     def flext_initialized(self) -> bool:
@@ -264,7 +264,7 @@ class FlextObservabilityMonitor:
                     source="monitoring_system",
                 )
                 metric_result = r[m.Observability.MetricEntry].ok(metric)
-            except (ValueError, TypeError, KeyError) as e:
+            except c.EXC_MAPPING_TYPE as e:
                 metric_result = r[m.Observability.MetricEntry].fail_op(
                     "build metric entry", e
                 )
@@ -275,7 +275,7 @@ class FlextObservabilityMonitor:
                 )
             self.logger.debug("Recorded metric: %s=%s (%s)", name, value, metric_type)
             return r[None].ok(None)
-        except (ValueError, TypeError, AttributeError) as e:
+        except c.EXC_BASIC_TYPE as e:
             return r[None].fail_op("record metric", e)
 
     def flext_start_monitoring(self) -> p.Result[None]:

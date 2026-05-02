@@ -85,7 +85,7 @@ class FlextObservabilityServices:
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
             return r[m.Dict].ok(processed)
-        except (ValueError, TypeError, KeyError) as e:
+        except c.EXC_MAPPING_TYPE as e:
             return r[m.Dict].fail_op("Entry processing", e)
 
 
