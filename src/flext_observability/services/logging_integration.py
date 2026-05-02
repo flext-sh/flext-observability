@@ -73,7 +73,7 @@ class FlextObservabilityLogging:
             logger = u.fetch_logger(name)
             return r[p.Logger].ok(logger)
         except (ValueError, TypeError, KeyError) as e:
-            return r[p.Logger].fail(f"Logger creation failed: {e}")
+            return r[p.Logger].fail_op("Logger creation", e)
 
     @staticmethod
     def enrich_log_context(
@@ -185,7 +185,7 @@ class FlextObservabilityLogging:
             _ = logger
             return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
-            return r[bool].fail(f"Trace context injection failed: {e}")
+            return r[bool].fail_op("Trace context injection", e)
 
     @staticmethod
     def log_with_context(
@@ -259,7 +259,7 @@ class FlextObservabilityLogging:
             getattr(logger, level)(message, extra=log_context)
             return r[bool].ok(value=True)
         except (ValueError, TypeError, KeyError) as e:
-            return r[bool].fail(f"Logging with context failed: {e}")
+            return r[bool].fail_op("Logging with context", e)
 
     @staticmethod
     def validate_context() -> p.Result[m.Observability.LogContext]:
