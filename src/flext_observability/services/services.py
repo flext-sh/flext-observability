@@ -74,7 +74,7 @@ class FlextObservabilityServices:
             })
             return r[m.Dict].ok(status_result)
         except (ValueError, TypeError, KeyError) as e:
-            return r[m.Dict].fail(f"Status check failed: {e}")
+            return r[m.Dict].fail_op("Status check", e)
 
     def process_entry(self, entry_data: m.Dict) -> p.Result[m.Dict]:
         """Process generic observability entry through FLEXT patterns."""
@@ -86,7 +86,7 @@ class FlextObservabilityServices:
             processed["processor"] = "flext_observability"
             return r[m.Dict].ok(processed)
         except (ValueError, TypeError, KeyError) as e:
-            return r[m.Dict].fail(f"Entry processing failed: {e}")
+            return r[m.Dict].fail_op("Entry processing", e)
 
 
 __all__: list[str] = ["FlextObservabilityServices"]

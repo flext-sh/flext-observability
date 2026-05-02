@@ -351,7 +351,7 @@ class FlextObservabilityHTTPClient:
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return r[bool].fail(f"httpx instrumentation setup failed: {e}")
+                return r[bool].fail_op("httpx instrumentation setup", e)
 
     class AIOHTTP:
         """aiohttp client instrumentation for automatic request tracing."""
@@ -495,7 +495,7 @@ class FlextObservabilityHTTPClient:
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return r[bool].fail(f"aiohttp instrumentation setup failed: {e}")
+                return r[bool].fail_op("aiohttp instrumentation setup", e)
 
 
 __all__: list[str] = ["FlextObservabilityHTTPClient"]

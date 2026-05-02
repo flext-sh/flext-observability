@@ -248,7 +248,7 @@ class FlextObservabilityHTTP:
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return r[bool].fail(f"Flask instrumentation setup failed: {e}")
+                return r[bool].fail_op("Flask instrumentation setup", e)
 
     class FastAPI:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
@@ -389,7 +389,7 @@ class FlextObservabilityHTTP:
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return r[bool].fail(f"FastAPI instrumentation setup failed: {e}")
+                return r[bool].fail_op("FastAPI instrumentation setup", e)
 
     @staticmethod
     async def _async_log_with_context(

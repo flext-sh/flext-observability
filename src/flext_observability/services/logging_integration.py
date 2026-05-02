@@ -125,9 +125,7 @@ class FlextObservabilityLogging:
                     context_payload.baggage = str(baggage)
             return r[m.Observability.LogContext].ok(context_payload)
         except (ValueError, TypeError, KeyError) as e:
-            return r[m.Observability.LogContext].fail(
-                f"Context enrichment failed: {e}",
-            )
+            return r[m.Observability.LogContext].fail_op("Context enrichment", e)
 
     @staticmethod
     def ensure_correlation_id() -> str:
@@ -300,9 +298,7 @@ class FlextObservabilityLogging:
                 ),
             )
         except (ValueError, TypeError, KeyError) as e:
-            return r[m.Observability.LogContext].fail(
-                f"Context validation failed: {e}",
-            )
+            return r[m.Observability.LogContext].fail_op("Context validation", e)
 
 
 __all__: list[str] = ["FlextObservabilityLogging"]

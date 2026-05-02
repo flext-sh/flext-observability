@@ -256,7 +256,7 @@ class FlextObservabilityCustomMetrics:
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return r[bool].fail(f"Metric registration failed: {e}")
+                return r[bool].fail_op("Metric registration", e)
 
         def unregister_metric(
             self, name: str, namespace: str = "default"
@@ -283,7 +283,7 @@ class FlextObservabilityCustomMetrics:
                 )
                 return r[bool].ok(value=True)
             except (ValueError, TypeError, KeyError) as e:
-                return r[bool].fail(f"Metric unregistration failed: {e}")
+                return r[bool].fail_op("Metric unregistration", e)
 
     @staticmethod
     def resolve_metric(
