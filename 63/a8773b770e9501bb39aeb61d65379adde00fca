@@ -1,0 +1,29 @@
+src/flext_observability/services/advanced_context.py
+  59721e408c0da1b2 21,78-79,142-143,166-167,184-185,208-211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "63a8773b770e9501bb39aeb61d65379adde00fca",
+  "prompts": {
+    "59721e408c0da1b2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "556b2347-c380-4f70-8574-35960061b3be",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 13,
+      "total_deletions": 11,
+      "accepted_lines": 13,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/621c153c93b9e97ed38e88b4fb8190a3e9eccd360f3251300ca1e6da17f99cbe"
+    }
+  },
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
