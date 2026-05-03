@@ -1,0 +1,29 @@
+src/flext_observability/services/custom_metrics.py
+  59721e408c0da1b2 26,100-101,226,228,234-235,237-238,244-248,263-264,284,290-291
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "35f6178b75fda374ee71c8adfd2acc57e09a5edc",
+  "prompts": {
+    "59721e408c0da1b2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "556b2347-c380-4f70-8574-35960061b3be",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 19,
+      "total_deletions": 14,
+      "accepted_lines": 19,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/894b07bb57efe2ea86acd95c22273d4bf2db75390bfe4c3a385ec498a3b88425"
+    }
+  },
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
