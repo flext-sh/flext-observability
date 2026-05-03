@@ -223,9 +223,13 @@ class FlextObservabilityCustomMetrics:
             """
             try:
                 if not name or not name.strip():
-                    return e.fail_validation("Metric name cannot be empty", result_type=r[bool])
+                    return e.fail_validation(
+                        "Metric name cannot be empty", result_type=r[bool]
+                    )
                 if not description or not description.strip():
-                    return e.fail_validation("Metric description cannot be empty", result_type=r[bool])
+                    return e.fail_validation(
+                        "Metric description cannot be empty", result_type=r[bool]
+                    )
                 metric_input = metric_type.lower()
                 try:
                     metric_type_enum = m.Observability.MetricTypeInput.model_validate(
@@ -281,14 +285,18 @@ class FlextObservabilityCustomMetrics:
                     f"{namespace}:{name}" if namespace != "default" else name
                 )
                 if namespaced_name not in self._metrics:
-                    return e.fail_not_found("Metric", namespaced_name, result_type=r[bool])
+                    return e.fail_not_found(
+                        "Metric", namespaced_name, result_type=r[bool]
+                    )
                 del self._metrics[namespaced_name]
                 FlextObservabilityCustomMetrics.logger.debug(
                     f"Metric unregistered: {namespaced_name}",
                 )
                 return r[bool].ok(value=True)
             except c.EXC_MAPPING_TYPE as exc:
-                return e.fail_operation("Metric unregistration", exc, result_type=r[bool])
+                return e.fail_operation(
+                    "Metric unregistration", exc, result_type=r[bool]
+                )
 
     @staticmethod
     def resolve_metric(

@@ -207,7 +207,9 @@ class FlextObservabilityAdvancedContext:
                 return r[bool].ok(value=True)
             except c.EXC_TYPE_VALIDATION as exc:
                 return e.fail_validation(
-                    "Metadata value not JSON serializable", error=exc, result_type=r[bool]
+                    "Metadata value not JSON serializable",
+                    error=exc,
+                    result_type=r[bool],
                 )
 
         def snapshot(
