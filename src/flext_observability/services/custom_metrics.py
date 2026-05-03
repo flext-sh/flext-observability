@@ -23,7 +23,7 @@ from collections.abc import (
 )
 
 from flext_core import u
-from flext_observability import c, m, p, r, t
+from flext_observability import c, e, m, p, r, t
 
 
 class FlextObservabilityCustomMetrics:
@@ -97,8 +97,8 @@ class FlextObservabilityCustomMetrics:
                     f"Metrics cleared: {namespace or 'all'}",
                 )
                 return r[bool].ok(value=True)
-            except c.EXC_MAPPING_TYPE as e:
-                return r[bool].fail(f"Failed to clear metrics: {e}")
+            except c.EXC_MAPPING_TYPE as exc:
+                return e.fail_operation("clear metrics", exc, result_type=r[bool])
 
         def resolve_metrics(self, namespace: str | None = None) -> m.Dict:
             """Resolve all registered metrics.
@@ -223,24 +223,29 @@ class FlextObservabilityCustomMetrics:
             """
             try:
                 if not name or not name.strip():
-                    return r[bool].fail("Metric name cannot be empty")
+                    return e.fail_validation("Metric name cannot be empty", result_type=r[bool])
                 if not description or not description.strip():
-                    return r[bool].fail("Metric description cannot be empty")
+                    return e.fail_validation("Metric description cannot be empty", result_type=r[bool])
                 metric_input = metric_type.lower()
                 try:
                     metric_type_enum = m.Observability.MetricTypeInput.model_validate(
                         obj={"metric_type": metric_input},
                     ).metric_type
-                except c.ValidationError:
-                    return r[bool].fail(
+                except c.ValidationError as exc_validate:
+                    return e.fail_validation(
                         f"Invalid metric type: {metric_type}. Must be one of ['counter', 'gauge', 'histogram']",
+                        error=exc_validate,
+                        result_type=r[bool],
                     )
                 namespaced_name = (
                     f"{namespace}:{name}" if namespace != "default" else name
                 )
                 if namespaced_name in self._metrics:
-                    return r[bool].fail(
-                        f"Metric '{namespaced_name}' already registered",
+                    return e.fail_conflict(
+                        "Metric",
+                        namespaced_name,
+                        reason="already registered",
+                        result_type=r[bool],
                     )
                 definition = m.Observability.CustomMetricDefinition(
                     name=name,
@@ -255,8 +260,8 @@ class FlextObservabilityCustomMetrics:
                     f"Metric registered: {namespaced_name} ({metric_type_enum.value})",
                 )
                 return r[bool].ok(value=True)
-            except c.EXC_MAPPING_TYPE as e:
-                return r[bool].fail_op("Metric registration", e)
+            except c.EXC_MAPPING_TYPE as exc:
+                return e.fail_operation("Metric registration", exc, result_type=r[bool])
 
         def unregister_metric(
             self, name: str, namespace: str = "default"
@@ -276,14 +281,14 @@ class FlextObservabilityCustomMetrics:
                     f"{namespace}:{name}" if namespace != "default" else name
                 )
                 if namespaced_name not in self._metrics:
-                    return r[bool].fail(f"Metric '{namespaced_name}' not found")
+                    return e.fail_not_found("Metric", namespaced_name, result_type=r[bool])
                 del self._metrics[namespaced_name]
                 FlextObservabilityCustomMetrics.logger.debug(
                     f"Metric unregistered: {namespaced_name}",
                 )
                 return r[bool].ok(value=True)
-            except c.EXC_MAPPING_TYPE as e:
-                return r[bool].fail_op("Metric unregistration", e)
+            except c.EXC_MAPPING_TYPE as exc:
+                return e.fail_operation("Metric unregistration", exc, result_type=r[bool])
 
     @staticmethod
     def resolve_metric(
