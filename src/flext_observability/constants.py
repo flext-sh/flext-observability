@@ -85,7 +85,6 @@ class FlextObservabilityConstants(c):
             RUNNING = "running"
             COMPLETED = "completed"
             FAILED = "failed"
-            UNSET = "unset"
             OK = "ok"
             ERROR = "error"
 
@@ -126,7 +125,6 @@ class FlextObservabilityConstants(c):
             """
 
             FIRING = "firing"
-            RESOLVED = "resolved"
 
         class Storage:
             """Storage limits for metrics service."""
@@ -140,9 +138,6 @@ class FlextObservabilityConstants(c):
                 or Service.METRICS directly - no base strings needed.
             """
 
-            METRICS = "metrics"
-            TRACING = "tracing"
-            ALERTS = "alerts"
             HEALTH = "health"
             LOGGING = "logging"
 
