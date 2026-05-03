@@ -18,7 +18,7 @@ Key Features:
 
 from __future__ import annotations
 
-from flext_observability import c, m, p, r, t, u
+from flext_observability import c, e, m, p, r, t, u
 
 
 class FlextObservabilityAdvancedContext:
@@ -75,8 +75,8 @@ class FlextObservabilityAdvancedContext:
                 self._request_id = ""
                 FlextObservabilityAdvancedContext.logger.debug("Context cleared")
                 return r[bool].ok(value=True)
-            except c.EXC_MAPPING_TYPE as e:
-                return r[bool].fail(f"Failed to clear context: {e}")
+            except c.EXC_MAPPING_TYPE as exc:
+                return e.fail_operation("clear context", exc, result_type=r[bool])
 
         @property
         def baggage(self) -> t.StrMapping:
@@ -139,8 +139,8 @@ class FlextObservabilityAdvancedContext:
                 self._baggage.update(other.baggage)
                 FlextObservabilityAdvancedContext.logger.debug("Context merged")
                 return r[bool].ok(value=True)
-            except c.EXC_MAPPING_TYPE as e:
-                return r[bool].fail(f"Failed to merge context: {e}")
+            except c.EXC_MAPPING_TYPE as exc:
+                return e.fail_operation("merge context", exc, result_type=r[bool])
 
         def restore(self, snapshot: m.Observability.ContextSnapshot) -> p.Result[bool]:
             """Restore context from snapshot.
@@ -163,8 +163,8 @@ class FlextObservabilityAdvancedContext:
                     "Context restored from snapshot",
                 )
                 return r[bool].ok(value=True)
-            except c.EXC_MAPPING_TYPE as e:
-                return r[bool].fail(f"Failed to restore context: {e}")
+            except c.EXC_MAPPING_TYPE as exc:
+                return e.fail_operation("restore context", exc, result_type=r[bool])
 
         def update_baggage(self, key: str, value: str) -> p.Result[bool]:
             """Update a baggage item (W3C Baggage API).
@@ -181,8 +181,8 @@ class FlextObservabilityAdvancedContext:
                 self._baggage[key] = value
                 FlextObservabilityAdvancedContext.logger.debug(f"Baggage set: {key}")
                 return r[bool].ok(value=True)
-            except c.EXC_MAPPING_TYPE as e:
-                return r[bool].fail(f"Failed to set baggage: {e}")
+            except c.EXC_MAPPING_TYPE as exc:
+                return e.fail_operation("set baggage", exc, result_type=r[bool])
 
         def update_metadata(self, key: str, value: t.Scalar) -> p.Result[bool]:
             """Update request-local metadata.
@@ -205,8 +205,10 @@ class FlextObservabilityAdvancedContext:
                 self._metadata[key] = value
                 FlextObservabilityAdvancedContext.logger.debug(f"Metadata set: {key}")
                 return r[bool].ok(value=True)
-            except c.EXC_TYPE_VALIDATION as e:
-                return r[bool].fail(f"Metadata value not JSON serializable: {e}")
+            except c.EXC_TYPE_VALIDATION as exc:
+                return e.fail_validation(
+                    "Metadata value not JSON serializable", error=exc, result_type=r[bool]
+                )
 
         def snapshot(
             self,
