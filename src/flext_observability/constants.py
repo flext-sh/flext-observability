@@ -173,30 +173,6 @@ class FlextObservabilityConstants(c):
             ERROR = "error"
             CRITICAL = "critical"
 
-        class FunctionArgs:
-            """Function argument length constants."""
-
-        @unique
-        class ObservabilityProjectType(StrEnum):
-            """Project-type identifiers for observability packages."""
-
-            MONITORING_SERVICE = "monitoring-service"
-            METRICS_COLLECTOR = "metrics-collector"
-            TRACING_SERVICE = "tracing-service"
-            ALERTING_SYSTEM = "alerting-system"
-            OBSERVABILITY_PLATFORM = "observability-platform"
-            MONITORING_DASHBOARD = "monitoring-dashboard"
-            METRICS_AGGREGATOR = "metrics-aggregator"
-            TRACE_COLLECTOR = "trace-collector"
-            HEALTH_MONITOR = "health-monitor"
-            LOG_AGGREGATOR = "log-aggregator"
-            APM_SERVICE = "apm-service"
-            MONITORING_API = "monitoring-api"
-            METRICS_EXPORTER = "metrics-exporter"
-            ALERTMANAGER = "alertmanager"
-            OBSERVABILITY_GATEWAY = "observability-gateway"
-            TELEMETRY_SERVICE = "telemetry-service"
-
         METRIC_UNIT_COUNT: ClassVar[str] = "count"
         METRIC_UNIT_PERCENT: ClassVar[str] = "percent"
         METRIC_UNIT_BYTES: ClassVar[str] = "bytes"

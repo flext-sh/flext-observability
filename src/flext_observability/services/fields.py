@@ -31,28 +31,6 @@ class FlextObservabilityFields:
         "cpu",
     })
 
-    class MetricFields:
-        """Nested class for metric field validation."""
-
-        @u.field_validator("unit")
-        @classmethod
-        def validate_metric_unit(cls, v: str) -> str:
-            """Validate metric unit is from allowed set."""
-            if v not in FlextObservabilityFields.METRIC_VALID_UNITS:
-                msg = f"Invalid metric unit: {v}. Must be one of {FlextObservabilityFields.METRIC_VALID_UNITS}"
-                raise ValueError(msg)
-            return v
-
-        @u.field_validator("value")
-        @classmethod
-        def validate_metric_value(cls, v: float) -> float:
-            """Validate metric value is numeric and non-negative."""
-            numeric_value = v
-            if numeric_value < 0:
-                msg = "Metric value cannot be negative"
-                raise ValueError(msg)
-            return numeric_value
-
     @classmethod
     def create_alert_message_field(cls) -> m.FieldInfo:
         """Create alert message field."""

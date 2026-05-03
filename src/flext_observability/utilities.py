@@ -132,24 +132,6 @@ class FlextObservabilityUtilities(u):
                     return "auth"
                 return "unknown"
 
-        class TraceContext:
-            """Context management helpers."""
-
-            @staticmethod
-            def create_trace_context(
-                trace_id: str,
-                span_id: str,
-                parent_span_id: str = "",
-            ) -> t.StrMapping:
-                """Create a trace context dictionary."""
-                ctx: t.MutableStrMapping = {
-                    "trace_id": trace_id,
-                    "span_id": span_id,
-                }
-                if parent_span_id:
-                    ctx["parent_span_id"] = parent_span_id
-                return ctx
-
 
 u = FlextObservabilityUtilities
 
