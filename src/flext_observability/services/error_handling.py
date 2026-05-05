@@ -63,10 +63,11 @@ class FlextObservabilityErrorHandling:
         errors = error.errors()
         if not errors:
             return str(error)
-        message = errors[0].get("msg", "Validation failed")
+        message: str = errors[0].get("msg", "Validation failed")
         prefix = "Value error, "
         if message.startswith(prefix):
-            return message.removeprefix(prefix)
+            stripped: str = message.removeprefix(prefix)
+            return stripped
         return message
 
     class Handler:

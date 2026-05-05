@@ -167,7 +167,8 @@ class FlextObservabilityPerformance:
             if metrics.operation.lower().startswith(prefix):
                 threshold = latency
                 break
-        return metrics.duration_ms < threshold
+        within_threshold: bool = metrics.duration_ms < threshold
+        return within_threshold
 
     @staticmethod
     def log_performance_metrics(

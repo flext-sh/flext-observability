@@ -179,7 +179,7 @@ class FlextObservabilityHTTPClient:
                         trace_id = FlextObservabilityContext.trace_id()
                         span_id = FlextObservabilityContext.span_id()
                         headers = FlextObservabilityHTTPClient._validated_headers(
-                            kwargs.get("headers", {}),
+                            kwargs.get("headers"),
                         )
                         if correlation_id:
                             headers["X-Correlation-ID"] = correlation_id
@@ -269,7 +269,7 @@ class FlextObservabilityHTTPClient:
                         trace_id = FlextObservabilityContext.trace_id()
                         span_id = FlextObservabilityContext.span_id()
                         headers = FlextObservabilityHTTPClient._validated_headers(
-                            kwargs.get("headers", {}),
+                            kwargs.get("headers"),
                         )
                         if correlation_id:
                             headers["X-Correlation-ID"] = correlation_id
