@@ -10,19 +10,19 @@ from flext_core.lazy import (
     install_lazy_exports,
     merge_lazy_imports,
 )
+from flext_observability.__version__ import (
+    __author__,
+    __author_email__,
+    __description__,
+    __license__,
+    __title__,
+    __url__,
+    __version__,
+    __version_info__,
+)
 
 if _t.TYPE_CHECKING:
     from flext_core import d, e, h, r, s, x
-    from flext_observability.__version__ import (
-        __author__,
-        __author_email__,
-        __description__,
-        __license__,
-        __title__,
-        __url__,
-        __version__,
-        __version_info__,
-    )
     from flext_observability.api import FlextObservability, observability
     from flext_observability.constants import FlextObservabilityConstants, c
     from flext_observability.models import FlextObservabilityModels, m
@@ -60,16 +60,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
     (".services",),
     build_lazy_import_map(
         {
-            ".__version__": (
-                "__author__",
-                "__author_email__",
-                "__description__",
-                "__license__",
-                "__title__",
-                "__url__",
-                "__version__",
-                "__version_info__",
-            ),
             ".api": (
                 "FlextObservability",
                 "observability",
@@ -144,7 +134,21 @@ _LAZY_IMPORTS = merge_lazy_imports(
 )
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
+install_lazy_exports(
+    __name__,
+    globals(),
+    _LAZY_IMPORTS,
+    [
+        "__author__",
+        "__author_email__",
+        "__description__",
+        "__license__",
+        "__title__",
+        "__url__",
+        "__version__",
+        "__version_info__",
+    ],
+)
 
 __all__: list[str] = [
     "FlextObservability",
