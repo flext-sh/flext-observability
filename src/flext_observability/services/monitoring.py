@@ -217,8 +217,8 @@ class FlextObservabilityMonitor:
                 )
             if (
                 not self.config.metrics_enabled
-                and (not self.config.tracing_enabled)
-                and (not self.config.monitoring_enabled)
+                and (not self.config.traces_enabled)
+                and (not self.config.alerts_enabled)
             ):
                 self.logger.warning(
                     "All observability features are disabled in configuration",

@@ -9,12 +9,13 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from flext_core import FlextSettings
+from pydantic_settings import BaseSettings
+
+from flext_core import FlextSettingsBase
 from flext_observability import c, m, u
 
 
-@FlextSettings.auto_register("observability")
-class FlextObservabilitySettings(FlextSettings):
+class FlextObservabilitySettings(FlextSettingsBase, BaseSettings):
     """Runtime settings for observability components."""
 
     model_config: ClassVar[m.SettingsConfigDict] = m.SettingsConfigDict(

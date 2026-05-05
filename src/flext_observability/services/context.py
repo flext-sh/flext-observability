@@ -13,9 +13,10 @@ FLEXT Pattern:
 
 from __future__ import annotations
 
-import json
 from contextvars import ContextVar
 from uuid import uuid4
+
+from flext_cli import u as cli_u
 
 from flext_core import u
 from flext_observability import c, m, p, r, t
@@ -205,11 +206,15 @@ class FlextObservabilityContext:
 
         """
         baggage_snapshot = FlextObservabilityContext._baggage.get() or m.Dict({})
-        payload: dict[str, t.JsonPayload] = {
+        baggage_payload: dict[str, t.JsonValue] = {
+            key: value if isinstance(value, str | int | float | bool) else str(value)
+            for key, value in baggage_snapshot.root.items()
+        }
+        payload: dict[str, t.JsonValue] = {
             "correlation_id": FlextObservabilityContext.correlation_id(),
             "trace_id": FlextObservabilityContext.trace_id(),
             "span_id": FlextObservabilityContext.span_id(),
-            "baggage": json.dumps(dict(baggage_snapshot.root)),
+            "baggage": cli_u.Cli.json_dumps(baggage_payload).unwrap(),
         }
         return m.Dict(payload)
 
