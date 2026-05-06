@@ -1,0 +1,37 @@
+src/flext_observability/api.py
+  s_552d8e4891a938::t_abcbae3243fa3c 431
+  s_552d8e4891a938::t_f174bc936f6560 573
+pyproject.toml
+  s_5a9c2b140a8456::t_8b7121fe2edb7a 157,532-573,577
+src/flext_observability/services/context.py
+  s_552d8e4891a938::t_abcbae3243fa3c 209,213
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "66ae82e304f8bf9980de1fc609b8443c8b928b0f",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  },
+  "sessions": {
+    "s_552d8e4891a938": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "35c0040b-2ae9-466e-90aa-7721509e1e19",
+        "model": "unknown"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>"
+    },
+    "s_5a9c2b140a8456": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019dfddc-86ee-79a0-b5bf-0433a8110b6a",
+        "model": "gpt-5.5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>"
+    }
+  }
+}
