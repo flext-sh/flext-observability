@@ -10,7 +10,7 @@ import time
 from collections.abc import (
     Callable,
 )
-from typing import override
+from typing import ClassVar, override
 from uuid import uuid4
 
 from flext_core import FlextContainer
@@ -38,6 +38,8 @@ class FlextObservabilityMonitor:
 
     Unified class with nested helpers - no loose functions.
     """
+
+    _container_type: ClassVar[p.ContainerType] = FlextContainer
 
     object_callable = Callable[..., t.Scalar]
     logger: p.Logger = u.fetch_logger(__name__)
@@ -148,9 +150,9 @@ class FlextObservabilityMonitor:
             monitor.increment_functions_monitored()
 
     @override
-    def __init__(self, container: FlextContainer | None = None) -> None:
+    def __init__(self, container: p.Container | None = None) -> None:
         """Initialize monitor with real service orchestration and shared configuration."""
-        self._container = container or FlextContainer.shared()
+        self._container = container or self._container_type.shared()
         self.logger = u.fetch_logger(self.__class__.__name__)
         self.config = FlextObservabilitySettings.fetch_global()
         self._initialized = False
@@ -387,4 +389,4 @@ flext_monitor_function = FlextObservabilityMonitor.flext_monitor_function
 """Module-level alias for FlextObservabilityMonitor.flext_monitor_function."""
 
 
-__all__: t.StrSequence = ["FlextObservabilityMonitor", "flext_monitor_function"]
+__all__: t.StrSequence = ("FlextObservabilityMonitor", "flext_monitor_function")

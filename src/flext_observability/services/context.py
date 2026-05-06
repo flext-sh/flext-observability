@@ -17,7 +17,6 @@ from contextvars import ContextVar
 from uuid import uuid4
 
 from flext_cli import u as cli_u
-
 from flext_core import u
 from flext_observability import c, m, p, r, t
 
@@ -180,7 +179,7 @@ class FlextObservabilityContext:
         value = baggage.root.get(key)
         if value is None:
             return None
-        return m.TypeAdapter(t.JsonValue).validate_python(value)
+        return t.json_value_adapter().validate_python(value)
 
     @staticmethod
     def context_payload() -> m.Dict:

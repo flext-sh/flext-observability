@@ -10,6 +10,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from flext_core import FlextContainer
 from flext_observability import FlextObservabilitySettings, c, m, p, r, t, u
 
@@ -22,10 +24,12 @@ class FlextObservabilityServices:
     No domain-specific logic - pure generic foundation.
     """
 
+    _container_type: ClassVar[p.ContainerType] = FlextContainer
+
     def __init__(self) -> None:
         """Initialize with FLEXT core components."""
         super().__init__()
-        self._container = FlextContainer.shared()
+        self._container = self._container_type.shared()
         self.logger = u.fetch_logger(__name__)
         self.config = FlextObservabilitySettings.fetch_global()
 
@@ -81,7 +85,7 @@ class FlextObservabilityServices:
         try:
             if not entry_data:
                 return r[m.Dict].fail("Entry data required")
-            processed = m.Dict(dict(entry_data.items()))
+            processed = entry_data.model_copy(deep=True)
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
             return r[m.Dict].ok(processed)
