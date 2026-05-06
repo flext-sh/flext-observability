@@ -428,7 +428,7 @@ class FlextObservability(
                     )
             payload.setdefault("severity", c.Observability.AlertLevel.WARNING)
             payload.setdefault("source", "system")
-            resolved_labels: dict[str, t.JsonValue] = {}
+            resolved_labels: t.JsonDict = {}
             if "labels" in payload and u.mapping(payload["labels"]):
                 for label_key, label_value in payload["labels"].items():
                     resolved_labels[label_key] = (
@@ -570,7 +570,7 @@ class FlextObservability(
                     valid_severity = c.Observability.AlertLevel.CRITICAL
                 case _:
                     valid_severity = c.Observability.AlertLevel.WARNING
-            json_labels: dict[str, t.JsonValue] | None = (
+            json_labels: t.JsonDict | None = (
                 {k: str(v) for k, v in tags.items()} if tags is not None else None
             )
             return FlextObservability.flext_alert(

@@ -206,11 +206,11 @@ class FlextObservabilityContext:
 
         """
         baggage_snapshot = FlextObservabilityContext._baggage.get() or m.Dict({})
-        baggage_payload: dict[str, t.JsonValue] = {
+        baggage_payload: t.JsonDict = {
             key: value if isinstance(value, str | int | float | bool) else str(value)
             for key, value in baggage_snapshot.root.items()
         }
-        payload: dict[str, t.JsonValue] = {
+        payload: t.JsonDict = {
             "correlation_id": FlextObservabilityContext.correlation_id(),
             "trace_id": FlextObservabilityContext.trace_id(),
             "span_id": FlextObservabilityContext.span_id(),
