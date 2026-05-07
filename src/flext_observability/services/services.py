@@ -50,7 +50,7 @@ class FlextObservabilityServices:
 
     def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
         """Generic alert creation - not implemented in base service."""
-        requested_keys: list[t.JsonValue] = list(kwargs)
+        requested_keys: t.JsonValueList = list(kwargs)
         self.logger.debug(
             "create_alert not implemented in generic service",
             requested_keys=requested_keys,

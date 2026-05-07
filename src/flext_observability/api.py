@@ -302,8 +302,8 @@ class FlextObservability(
                         "create log entry",
                         "Log message cannot be empty",
                     )
-                resolved_context: dict[str, t.Scalar] = (
-                    dict(context) if context is not None else {}
+                resolved_context = t.scalar_mapping_adapter().validate_python(
+                    context or {},
                 )
                 entry = FlextObservability.LogEntry(
                     id=str(uuid4()),
@@ -497,8 +497,8 @@ class FlextObservability(
                     "create log entry",
                     "Log message cannot be empty",
                 )
-            resolved_context: dict[str, t.Scalar] = (
-                dict(context) if context is not None else {}
+            resolved_context = t.scalar_mapping_adapter().validate_python(
+                context or {},
             )
             entry = FlextObservability.LogEntry(
                 id=str(uuid4()),
