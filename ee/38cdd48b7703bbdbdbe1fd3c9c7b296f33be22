@@ -1,0 +1,17 @@
+src/flext_observability/settings.py
+  h_5cf852cc46bf92 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "ee38cdd48b7703bbdbdbe1fd3c9c7b296f33be22",
+  "prompts": {},
+  "humans": {
+    "h_5cf852cc46bf92": {
+      "author": "FLEXT Bot <team@flext.sh>"
+    },
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
