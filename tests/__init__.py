@@ -14,10 +14,12 @@ from flext_core.lazy import (
 if _t.TYPE_CHECKING:
     from flext_tests import td, tf, tk, tm, tv
 
-    from flext_observability import d, e, h, r, s, x
+    from flext_observability import d, e, h, r, x
+    from tests.base import TestsFlextObservabilityServiceBase, s
     from tests.constants import TestsFlextObservabilityConstants, c
     from tests.models import TestsFlextObservabilityModels, m
     from tests.protocols import TestsFlextObservabilityProtocols, p
+    from tests.settings import TestsFlextObservabilitySettings
     from tests.typings import TestsFlextObservabilityTypes, t
     from tests.unit.test_constants import TestsFlextObservabilityConstantsUnit
     from tests.unit.test_factory import TestsFlextObservabilityFactory
@@ -30,6 +32,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
     ),
     build_lazy_import_map(
         {
+            ".base": (
+                "TestsFlextObservabilityServiceBase",
+                "s",
+            ),
             ".constants": (
                 "TestsFlextObservabilityConstants",
                 "c",
@@ -42,6 +48,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextObservabilityProtocols",
                 "p",
             ),
+            ".settings": ("TestsFlextObservabilitySettings",),
             ".typings": (
                 "TestsFlextObservabilityTypes",
                 "t",
@@ -58,7 +65,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "e",
                 "h",
                 "r",
-                "s",
                 "x",
             ),
             "flext_tests": (
@@ -102,6 +108,8 @@ __all__: list[str] = [
     "TestsFlextObservabilityInit",
     "TestsFlextObservabilityModels",
     "TestsFlextObservabilityProtocols",
+    "TestsFlextObservabilityServiceBase",
+    "TestsFlextObservabilitySettings",
     "TestsFlextObservabilityTypes",
     "TestsFlextObservabilityUtilities",
     "c",
