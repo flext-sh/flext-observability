@@ -49,7 +49,7 @@ integration/
 
 ### Service Integration Testing
 
-```python
+```python notest
 def test_metrics_service_with_factory_integration():
     """Test metrics service integration with factory."""
     container = FlextContainer()

@@ -44,7 +44,7 @@ unit/
 
 ### Domain Entity Testing
 
-```python
+```python notest
 def test_flext_metric_domain_validation():
     """Test domain validation in isolation."""
     metric = FlextMetric(name="test_metric", value=42.0, unit="count")

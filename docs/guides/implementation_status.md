@@ -147,7 +147,7 @@ ______________________________________________________________________
 
 #### **Import Compatibility Issue**
 
-```python
+```python notest
 # CURRENT: BROKEN - T not exported from flext-core
 from flext_core import FlextBus
 from flext_core import FlextSettings

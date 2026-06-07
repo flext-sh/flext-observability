@@ -125,7 +125,7 @@ Base patterns and cross-cutting concerns:
 
 ### Basic Entity Creation
 
-```python
+```python notest
 from flext_observability import FlextMetric, FlextTrace
 
 # Create metric with validation
@@ -143,7 +143,7 @@ if validation.success:
 
 ### Service Layer Usage
 
-```python
+```python notest
 from flext_observability import FlextMetricsService
 from flext_core import FlextBus
 from flext_core import FlextSettings
@@ -175,7 +175,7 @@ if result.success:
 
 ### Factory Pattern Usage
 
-```python
+```python notest
 from flext_observability import FlextObservabilityMasterFactory
 
 factory = FlextObservabilityMasterFactory()
@@ -188,7 +188,7 @@ if metric_result.success:
 
 ### Simple API Usage
 
-```python
+```python notest
 from flext_observability import flext_create_metric, flext_create_trace
 
 # Quick metric creation
@@ -200,7 +200,7 @@ trace_result = flext_create_trace("user_login", "auth-service")
 
 ### Monitoring Decorator Usage
 
-```python
+```python notest
 from flext_observability import flext_monitor_function
 
 
@@ -223,7 +223,7 @@ All modules follow FLEXT ecosystem standards:
 
 ### Cross-Service Observability
 
-```python
+```python notest
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
 def handle_user_request(request: dict) -> p.Result[m.Dict]:

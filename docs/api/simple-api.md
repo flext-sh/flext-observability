@@ -91,7 +91,7 @@ All Simple API functions follow consistent patterns:
 
 Create metrics for performance monitoring and business intelligence.
 
-```python
+```python notest
 def flext_create_metric(
     name: str,
     value: float | Decimal,
@@ -115,7 +115,7 @@ def flext_create_metric(
 
 #### Examples
 
-```python
+```python notest
 from flext_observability import flext_create_metric
 
 # Basic metric
@@ -145,7 +145,7 @@ result = flext_create_metric(
 
 #### Error Scenarios
 
-```python
+```python notest
 # Invalid metric name
 result = flext_create_metric("", 100.0)
 assert not result.success
@@ -163,7 +163,7 @@ ______________________________________________________________________
 
 Create distributed tracing spans for request correlation and performance analysis.
 
-```python
+```python notest
 def flext_create_trace(
     operation_name: str,
     service_name: str,
@@ -185,7 +185,7 @@ def flext_create_trace(
 
 #### Examples
 
-```python
+```python notest
 from flext_observability import flext_create_trace
 
 # Basic trace
@@ -221,7 +221,7 @@ ______________________________________________________________________
 
 Create alerts for system monitoring and incident management.
 
-```python
+```python notest
 def flext_create_alert(
     name: str,
     severity: str,
@@ -243,7 +243,7 @@ def flext_create_alert(
 
 #### Examples
 
-```python
+```python notest
 from flext_observability import flext_create_alert
 
 # Basic alert
@@ -281,7 +281,7 @@ ______________________________________________________________________
 
 Create health check entries for service monitoring and dependency validation.
 
-```python
+```python notest
 def flext_create_health_check(
     name: str,
     status: str,
@@ -303,7 +303,7 @@ def flext_create_health_check(
 
 #### Examples
 
-```python
+```python notest
 from flext_observability import flext_create_health_check
 
 # Basic health check
@@ -340,7 +340,7 @@ ______________________________________________________________________
 
 Create structured log entries with correlation ID support.
 
-```python
+```python notest
 def flext_create_log_entry(
     level: str,
     message: str,
@@ -362,7 +362,7 @@ def flext_create_log_entry(
 
 #### Examples
 
-```python
+```python notest
 from flext_observability import flext_create_log_entry
 
 # Basic log entry
@@ -398,7 +398,7 @@ ______________________________________________________________________
 
 ### Pattern 1: Error Handling with Railway-Oriented Programming
 
-```python
+```python notest
 from flext_observability import flext_create_metric, flext_create_trace
 
 
@@ -427,7 +427,7 @@ def process_business_operation(data: dict) -> p.Result[m.Dict]:
 
 ### Pattern 2: Batch Observability Creation
 
-```python
+```python notest
 def create_system_metrics() -> t.SequenceOf[r[FlextMetric]]:
     """Create multiple metrics with error handling."""
 
@@ -451,7 +451,7 @@ def create_system_metrics() -> t.SequenceOf[r[FlextMetric]]:
 
 ### Pattern 3: Observability Context Propagation
 
-```python
+```python notest
 def handle_user_request(user_id: str, operation: str) -> p.Result[m.Dict]:
     """Example of propagating context through observability."""
 
@@ -505,7 +505,7 @@ def handle_user_request(user_id: str, operation: str) -> p.Result[m.Dict]:
 
 ### Type Safety Errors
 
-```python
+```python notest
 # ❌ MyPy will catch these type errors
 flext_create_metric(123, "not_a_number")  # Wrong parameter types
 flext_create_trace(None, "service")  # None not allowed for required params

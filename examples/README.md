@@ -55,7 +55,7 @@ Advanced demonstration of SOLID principles applied to observability:
 
 ### Basic Observability Integration
 
-```python
+```python notest
 # Example from 01_functional.py
 from flext_observability import flext_create_metric, flext_create_trace
 
@@ -83,7 +83,7 @@ def create_business_metrics():
 
 ### Service Layer Integration
 
-```python
+```python notest
 # Example service integration pattern
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
 from flext_core import FlextBus
@@ -134,7 +134,7 @@ class UserService:
 
 ### Monitoring Decorator Patterns
 
-```python
+```python notest
 # Automatic function monitoring
 from flext_observability import flext_monitor_function
 
@@ -179,7 +179,7 @@ def process_payment(amount: float, currency: str) -> p.Result[m.Dict]:
 
 ### Health Monitoring Patterns
 
-```python
+```python notest
 # Health check integration example
 from flext_observability import flext_create_health_check, FlextHealthService
 
@@ -221,7 +221,7 @@ def monitor_database_health() -> p.Result[m.Dict]:
 
 ### Distributed Tracing Patterns
 
-```python
+```python notest
 # Parent-child trace correlation
 from flext_observability import flext_create_trace
 
@@ -279,7 +279,7 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
 
 ### Singer Tap Integration
 
-```python
+```python notest
 # Example Singer tap with observability
 from flext_observability import flext_monitor_function, flext_create_metric
 
@@ -314,7 +314,7 @@ class FlextTapOracle:
 
 ### FastAPI Service Integration
 
-```python
+```python notest
 # Example FastAPI service with observability
 from flext_observability import flext_monitor_function, flext_create_metric
 

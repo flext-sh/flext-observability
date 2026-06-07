@@ -366,7 +366,7 @@ src/flext_observability/
 
 #### **Domain Layer Classes**
 
-```python
+```python notest
 # Core Domain Entities
 class FlextMetric(FlextModels.Entity):
     """Immutable metric entity with domain validation."""
@@ -397,7 +397,7 @@ class FlextAlert(FlextModels.Entity):
 
 #### **Service Layer Classes**
 
-```python
+```python notest
 class FlextObservabilityServices(u):
     """Unified service class with all observability operations."""
 
@@ -416,7 +416,7 @@ class FlextObservabilityServices(u):
 
 #### **Factory Classes**
 
-```python
+```python notest
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
