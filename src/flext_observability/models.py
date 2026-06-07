@@ -11,13 +11,13 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from datetime import UTC, datetime
+from datetime import datetime
 from hashlib import sha256
 from types import MappingProxyType
 from typing import Annotated, ClassVar
 from uuid import uuid4
 
-from flext_core import m
+from flext_core import FlextUtilities, m
 from flext_observability import c, t, u
 
 
@@ -138,7 +138,7 @@ class FlextObservabilityModels(m):
             timestamp: Annotated[
                 datetime,
                 u.Field(
-                    default_factory=lambda: datetime.now(tz=UTC),
+                    default_factory=lambda: FlextUtilities.now(),
                     description="Log entry timestamp",
                 ),
             ]
