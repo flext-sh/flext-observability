@@ -5,7 +5,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
 from typing import ClassVar
 
 from flext_observability import c, m, u
@@ -71,7 +70,7 @@ class FlextObservabilityFields:
     def create_timestamp_field(cls) -> m.FieldInfo:
         """Create timestamp field."""
         return m.FieldInfo(
-            default_factory=lambda: datetime.now(UTC),
+            default_factory=lambda: u.now(),
             description="Timestamp",
         )
 
