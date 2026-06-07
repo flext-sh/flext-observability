@@ -1,0 +1,43 @@
+docs/architecture/README.md
+  s_73cbfc60e45e37::t_1d03e09874548f 277-278
+  s_73cbfc60e45e37::t_c670a2ed8132e8 276
+docs/guides/testing.md
+  s_73cbfc60e45e37::t_c670a2ed8132e8 176,221,296,339,596,621,650
+  s_73cbfc60e45e37::t_1d03e09874548f 177-178,222-223,297-298,340-341,597-598,622-623,651-652
+docs/standards/python-module-organization.md
+  s_73cbfc60e45e37::t_c670a2ed8132e8 1265
+  s_73cbfc60e45e37::t_1d03e09874548f 1266-1267
+tests/README.md
+  s_73cbfc60e45e37::t_1d03e09874548f 125-126,149-150,165-166,182-183
+  s_73cbfc60e45e37::t_c670a2ed8132e8 124,148,164,181
+tests/e2e/README.md
+  s_73cbfc60e45e37::t_c670a2ed8132e8 58,86,109,208
+  s_73cbfc60e45e37::t_1d03e09874548f 59-60,87-88,110-111,209-210
+tests/integration/README.md
+  s_73cbfc60e45e37::t_1d03e09874548f 53-54
+  s_73cbfc60e45e37::t_c670a2ed8132e8 52
+docs/guides/troubleshooting.md
+  s_73cbfc60e45e37::t_1d03e09874548f 197-198,411-412,563-564,626-627
+  s_73cbfc60e45e37::t_c670a2ed8132e8 118,196,317,359,399,410,434,562,625,816
+docs/guides/configuration.md
+  s_73cbfc60e45e37::t_c670a2ed8132e8 144,164
+tests/unit/README.md
+  s_73cbfc60e45e37::t_1d03e09874548f 48-49
+  s_73cbfc60e45e37::t_c670a2ed8132e8 47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "354c50fe2dc6c141167e1f18fda30c32daefc4eb",
+  "prompts": {},
+  "sessions": {
+    "s_73cbfc60e45e37": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "80f2c44c-f1f2-49a0-8035-ccac60ac602b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Zed <hi@zed.dev>"
+    }
+  }
+}
