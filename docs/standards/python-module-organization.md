@@ -1262,7 +1262,9 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
 
 ### **Monitoring Decorator Testing Patterns**
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import flext_monitor_function
 import time
 

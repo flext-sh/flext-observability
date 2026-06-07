@@ -121,7 +121,9 @@ def metrics_service(clean_container) -> FlextMetricsService:
 
 All tests validate r patterns:
 
-```python notest
+```python
+from __future__ import annotations
+
 def test_metric_creation_success():
     """Test successful metric creation with r validation."""
     result = flext_create_metric("api_requests", 42.0, "count")
@@ -143,7 +145,9 @@ def test_metric_creation_failure():
 
 ### Domain Entity Testing
 
-```python notest
+```python
+from __future__ import annotations
+
 def test_metric_domain_validation():
     """Test domain rule validation for metrics."""
     metric = FlextMetric(name="cpu_usage", value=75.5, unit="percent")
@@ -157,7 +161,9 @@ def test_metric_domain_validation():
 
 ### Service Integration Testing
 
-```python notest
+```python
+from __future__ import annotations
+
 def test_metrics_service_integration(metrics_service, observability_factory):
     """Test service integration with factory patterns."""
     # Create metric via factory
@@ -172,7 +178,9 @@ def test_metrics_service_integration(metrics_service, observability_factory):
 
 ### Monitoring Decorator Testing
 
-```python notest
+```python
+from __future__ import annotations
+
 def test_monitoring_decorator_functionality():
     """Test automatic function monitoring."""
 

@@ -273,7 +273,9 @@ else:
 
 #### **Cross-Service Observability**
 
-```python notest
+```python
+from __future__ import annotations
+
 # Consistent monitoring across all FLEXT projects
 from flext_observability import flext_monitor_function
 

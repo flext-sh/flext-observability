@@ -115,7 +115,7 @@ poetry install
 
 ### r
 
-```python notest
+```python
 # Debug import issues
 import sys
 
@@ -193,7 +193,9 @@ pytest tests/unit/test_module.py::TestClass::test_method -v --pdb
 
 **Check test data:**
 
-```python notest
+```python
+from __future__ import annotations
+
 def test_with_debug():
     result = my_function()
     print(f"Result: {result}")
@@ -312,7 +314,7 @@ if result.failure:
 
 **Enable debug logging:**
 
-```python notest
+```python
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -354,7 +356,7 @@ LdifMigrationException: Server compatibility error
 
 **Check server configuration:**
 
-```python notest
+```python
 from flext_ldif import FlextLdifSettings
 
 settings = FlextLdifSettings(
@@ -394,7 +396,7 @@ else:
 
 #### Problem: Slow processing
 
-```python notest
+```python
 # Symptoms
 # - High memory usage
 # - Slow response times
@@ -405,7 +407,9 @@ else:
 
 **Profile memory usage:**
 
-```python notest
+```python
+from __future__ import annotations
+
 import psutil
 import os
 
@@ -427,7 +431,7 @@ profile_memory()
 
 **Optimize batch size:**
 
-```python notest
+```python
 from flext_ldif import FlextLdifSettings
 
 # Reduce batch size for memory-constrained environments
@@ -555,7 +559,9 @@ print(f"Log level: {settings.log_level}")
 
 ### 4. Step-by-Step Debugging
 
-```python notest
+```python
+from __future__ import annotations
+
 def debug_ldif_processing(content: str):
     """Debug LDIF processing step by step."""
     print(f"Input content length: {len(content)}")
@@ -616,7 +622,9 @@ def debug_ldif_processing(content: str):
 
 ### Memory Issues
 
-```python notest
+```python
+from __future__ import annotations
+
 # Monitor memory usage
 import psutil
 import os
@@ -805,7 +813,7 @@ def process(data: dict) -> ProcessedData:
 
 1. **Test Thoroughly**
 
-   ```python notest
+   ```python
    def test_process_data():
        # Test success case
        result = process_data({"key": "value"})

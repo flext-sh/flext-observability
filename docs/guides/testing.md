@@ -173,7 +173,9 @@ class TestLdifIntegration:
 
 Test complete workflows and user scenarios:
 
-```python notest
+```python
+from __future__ import annotations
+
 import pytest
 from pathlib import Path
 from flext_ldif import ldif, FlextLdifSettings
@@ -216,7 +218,9 @@ objectClass: inetOrgPerson"""
 
 FLEXT uses pytest markers to categorize tests:
 
-```python notest
+```python
+from __future__ import annotations
+
 import pytest
 
 
@@ -289,7 +293,9 @@ pytest -n 4
 
 ### Pytest Fixtures
 
-```python notest
+```python
+from __future__ import annotations
+
 import pytest
 from pathlib import Path
 from flext_ldif import ldif, FlextLdifSettings
@@ -330,7 +336,9 @@ def temp_directories(tmp_path):
 
 ### Using Fixtures
 
-```python notest
+```python
+from __future__ import annotations
+
 def test_ldif_parsing(ldif_service, sample_ldif_content):
     """Test LDIF parsing with fixtures."""
     result = ldif_service.parse(sample_ldif_content)
@@ -585,7 +593,9 @@ jobs:
 
 ### 1. Test Naming
 
-```python notest
+```python
+from __future__ import annotations
+
 # ✅ GOOD - Descriptive test names
 def test_parse_valid_ldif_returns_success():
     """Test that parsing valid LDIF returns success result."""
@@ -608,7 +618,9 @@ def test_ldif():
 
 ### 2. Test Organization
 
-```python notest
+```python
+from __future__ import annotations
+
 class TestLdifParsing:
     """Test LDIF parsing functionality."""
 
@@ -635,7 +647,9 @@ class TestLdifMigration:
 
 ### 3. Assertion Quality
 
-```python notest
+```python
+from __future__ import annotations
+
 # ✅ GOOD - Specific assertions
 def test_parse_result():
     result = ldif.parse(content)
