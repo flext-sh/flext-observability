@@ -14,7 +14,7 @@ from collections.abc import (
     Mapping,
     MutableSequence,
 )
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import ClassVar, TypeAlias
 from uuid import uuid4
 
@@ -310,7 +310,7 @@ class FlextObservability(
                     message=message,
                     level=level,
                     component=component,
-                    timestamp=datetime.now(tz=UTC),
+                    timestamp=u.now(),
                     context=resolved_context,
                     domain_events=[],
                 )
@@ -505,7 +505,7 @@ class FlextObservability(
                 message=message,
                 level=level,
                 component=component,
-                timestamp=timestamp or datetime.now(tz=UTC),
+                timestamp=timestamp or u.now(),
                 context=resolved_context,
                 domain_events=[],
             )
