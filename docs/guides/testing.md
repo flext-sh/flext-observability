@@ -339,6 +339,7 @@ def temp_directories(tmp_path):
 ```python
 from __future__ import annotations
 
+
 def test_ldif_parsing(ldif_service, sample_ldif_content):
     """Test LDIF parsing with fixtures."""
     result = ldif_service.parse(sample_ldif_content)
@@ -596,6 +597,7 @@ jobs:
 ```python
 from __future__ import annotations
 
+
 # ✅ GOOD - Descriptive test names
 def test_parse_valid_ldif_returns_success():
     """Test that parsing valid LDIF returns success result."""
@@ -620,6 +622,7 @@ def test_ldif():
 
 ```python
 from __future__ import annotations
+
 
 class TestLdifParsing:
     """Test LDIF parsing functionality."""
@@ -649,6 +652,7 @@ class TestLdifMigration:
 
 ```python
 from __future__ import annotations
+
 
 # ✅ GOOD - Specific assertions
 def test_parse_result():

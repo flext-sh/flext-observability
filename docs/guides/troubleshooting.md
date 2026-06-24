@@ -196,6 +196,7 @@ pytest tests/unit/test_module.py::TestClass::test_method -v --pdb
 ```python
 from __future__ import annotations
 
+
 def test_with_debug():
     result = my_function()
     print(f"Result: {result}")
@@ -561,6 +562,7 @@ print(f"Log level: {settings.log_level}")
 
 ```python
 from __future__ import annotations
+
 
 def debug_ldif_processing(content: str):
     """Debug LDIF processing step by step."""

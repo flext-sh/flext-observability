@@ -52,6 +52,7 @@ integration/
 ```python
 from __future__ import annotations
 
+
 def test_metrics_service_with_factory_integration():
     """Test metrics service integration with factory."""
     container = FlextContainer()

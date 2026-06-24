@@ -47,6 +47,7 @@ unit/
 ```python
 from __future__ import annotations
 
+
 def test_flext_metric_domain_validation():
     """Test domain validation in isolation."""
     metric = FlextMetric(name="test_metric", value=42.0, unit="count")
