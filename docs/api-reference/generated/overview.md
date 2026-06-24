@@ -9,7 +9,7 @@
 - Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`, `tracing`, `typed`
 - Main facades: _none_
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextObservabilityServices`, `FlextObservabilityErrorHandling`, `FlextObservabilityModels`, `FlextObservabilityLogging`, `FlextObservabilityFields`, `FlextObservabilityTypes`, `FlextObservabilityAdvancedContext`, `observability`, `FlextObservabilityCustomMetrics`, `FlextObservabilityHealth` (+12 more)
+- Public symbol exports: `FlextObservability`, `FlextObservabilityPerformance`, `FlextObservabilityContext`, `FlextObservabilityHTTPClient`, `flext_monitor_function`, `FlextObservabilityCustomMetrics`, `FlextObservabilityHTTP`, `FlextObservabilityFields`, `FlextObservabilityModels`, `FlextObservabilityMonitor` (+12 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `20`
 
