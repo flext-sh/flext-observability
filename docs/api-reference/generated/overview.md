@@ -3,15 +3,15 @@
 # flext-observability API Overview
 
 - Package: `flext_observability`
-- Version: ``
+- Version: `0.12.0-dev`
 - Description: FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry
 - Project class: `platform`
 - Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`, `tracing`, `typed`
-- Main facades: `FlextObservabilityTypes`, `FlextObservabilitySettings`, `FlextObservabilityConstants`, `FlextObservabilitySampling`, `FlextObservabilityProtocols`, `FlextObservabilityContext`, `FlextObservabilityHealth`, `FlextObservabilityCustomMetrics` (+13 more)
+- Main facades: _none_
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextObservabilityTypes`, `FlextObservabilitySettings`, `FlextObservabilityConstants`, `FlextObservabilitySampling`, `FlextObservabilityProtocols`, `FlextObservabilityContext`, `observability`, `FlextObservabilityHealth`, `FlextObservabilityCustomMetrics`, `FlextObservabilityServiceBase` (+13 more)
+- Public symbol exports: `FlextObservabilityLogging`, `FlextObservabilitySampling`, `FlextObservabilityHTTPClient`, `FlextObservabilityCustomMetrics`, `flext_monitor_function`, `FlextObservabilityModels`, `FlextObservabilityFields`, `FlextObservability`, `FlextObservabilityAdvancedContext`, `FlextObservabilityServices` (+12 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `22`
+- Generated module pages: `20`
 
 ## Next Pages
 

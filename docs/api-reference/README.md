@@ -19,7 +19,7 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextObservabilityTypes`, `FlextObservabilitySettings`, `FlextObservabilityConstants`, `FlextObservabilitySampling`, `FlextObservabilityProtocols`, `FlextObservabilityContext` (+15 more)
-- Generated module pages: `22`
+- Primary facades: _none_
+- Generated module pages: `20`
 
 - [Back to project docs](../index.md)

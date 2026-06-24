@@ -1,33 +1,5 @@
 # Implementation Status - FLEXT Observability v0.9.0
 
-<!-- TOC START -->
-- [Table of Contents](#table-of-contents)
-- [📊 Overall Project Status](#overall-project-status)
-  - [**Architecture Completion**: 100% ✅](#architecture-completion-100)
-  - [**Implementation Completion**: 100% ✅](#implementation-completion-100)
-  - [**Quality Validation**: 0% ❌ (BLOCKED)](#quality-validation-0-blocked)
-- [🔧 Current Implementation Details](#current-implementation-details)
-  - [**Core Architecture** ✅](#core-architecture)
-  - [**Test Suite** ✅ (READY BUT BLOCKED)](#test-suite-ready-but-blocked)
-  - [**Quality Gates** ❌ (BLOCKED)](#quality-gates-blocked)
-- [🚧 Critical Path Resolution](#critical-path-resolution)
-  - [**Phase 1: Fix Import Compatibility** (CRITICAL - BLOCKING)](#phase-1-fix-import-compatibility-critical-blocking)
-  - [**Phase 2: Quality Validation** (AFTER IMPORT FIX)](#phase-2-quality-validation-after-import-fix)
-  - [**Phase 3: Production Readiness** (AFTER QUALITY VALIDATION)](#phase-3-production-readiness-after-quality-validation)
-- [📈 Progress Metrics](#progress-metrics)
-  - [**Quantitative Metrics**](#quantitative-metrics)
-  - [**Qualitative Metrics**](#qualitative-metrics)
-- [🎯 Next Steps Priority Order](#next-steps-priority-order)
-  - [**IMMEDIATE (Critical Path)**](#immediate-critical-path)
-  - [**SHORT TERM (Post-Import Fix)**](#short-term-post-import-fix)
-  - [**MEDIUM TERM (v1.0.0 Release)**](#medium-term-v100-release)
-- [🔍 Implementation Notes](#implementation-notes)
-  - [**Architecture Strengths**](#architecture-strengths)
-  - [**Implementation Decisions**](#implementation-decisions)
-  - [**Current Blockers**](#current-blockers)
-- [📋 Status Summary](#status-summary)
-<!-- TOC END -->
-
 ## Table of Contents
 
 - [Implementation Status - FLEXT Observability v0.9.0](#implementation-status---flext-observability-v090)
@@ -147,7 +119,7 @@ ______________________________________________________________________
 
 #### **Import Compatibility Issue**
 
-```python notest
+```python
 # CURRENT: BROKEN - T not exported from flext-core
 from flext_core import FlextBus
 from flext_core import FlextSettings
