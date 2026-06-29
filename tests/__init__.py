@@ -12,7 +12,7 @@ from flext_core.lazy import (
 )
 
 if _t.TYPE_CHECKING:
-    from flext_tests import td as td, tf as tf, tk as tk, tv as tv
+    from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
 
     from flext_observability import d as d, e as e, h as h, r as r, x as x
     from tests.base import (
@@ -97,6 +97,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "td",
                 "tf",
                 "tk",
+                "tm",
                 "tv",
             ),
         },
@@ -149,6 +150,7 @@ __all__: list[str] = [
     "td",
     "tf",
     "tk",
+    "tm",
     "tv",
     "u",
     "x",
