@@ -3,54 +3,12 @@
 
 from __future__ import annotations
 
-import typing as _t
-
 from flext_core.lazy import (
     build_lazy_import_map,
     install_lazy_exports,
     merge_lazy_imports,
 )
 
-if _t.TYPE_CHECKING:
-    from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
-
-    from flext_observability import d as d, e as e, h as h, r as r, x as x
-    from tests.base import (
-        TestsFlextObservabilityServiceBase as TestsFlextObservabilityServiceBase,
-        s as s,
-    )
-    from tests.constants import (
-        TestsFlextObservabilityConstants as TestsFlextObservabilityConstants,
-        c as c,
-    )
-    from tests.models import (
-        TestsFlextObservabilityModels as TestsFlextObservabilityModels,
-        m as m,
-    )
-    from tests.protocols import (
-        TestsFlextObservabilityProtocols as TestsFlextObservabilityProtocols,
-        p as p,
-    )
-    from tests.settings import (
-        TestsFlextObservabilitySettings as TestsFlextObservabilitySettings,
-    )
-    from tests.typings import (
-        TestsFlextObservabilityTypes as TestsFlextObservabilityTypes,
-        t as t,
-    )
-    from tests.unit.test_constants import (
-        TestsFlextObservabilityConstantsUnit as TestsFlextObservabilityConstantsUnit,
-    )
-    from tests.unit.test_factory import (
-        TestsFlextObservabilityFactory as TestsFlextObservabilityFactory,
-    )
-    from tests.unit.test_init import (
-        TestsFlextObservabilityInit as TestsFlextObservabilityInit,
-    )
-    from tests.utilities import (
-        TestsFlextObservabilityUtilities as TestsFlextObservabilityUtilities,
-        u as u,
-    )
 _LAZY_IMPORTS = merge_lazy_imports(
     (
         ".integration",
@@ -62,10 +20,12 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextObservabilityServiceBase",
                 "s",
             ),
+            ".conftest": ("conftest",),
             ".constants": (
                 "TestsFlextObservabilityConstants",
                 "c",
             ),
+            ".integration": ("integration",),
             ".models": (
                 "TestsFlextObservabilityModels",
                 "m",
@@ -79,6 +39,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextObservabilityTypes",
                 "t",
             ),
+            ".unit": ("unit",),
             ".unit.test_constants": ("TestsFlextObservabilityConstantsUnit",),
             ".unit.test_factory": ("TestsFlextObservabilityFactory",),
             ".unit.test_init": ("TestsFlextObservabilityInit",),
@@ -86,19 +47,17 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextObservabilityUtilities",
                 "u",
             ),
-            "flext_observability": (
+            "flext_tests": (
                 "d",
                 "e",
                 "h",
                 "r",
-                "x",
-            ),
-            "flext_tests": (
                 "td",
                 "tf",
                 "tk",
                 "tm",
                 "tv",
+                "x",
             ),
         },
     ),
@@ -125,33 +84,9 @@ _LAZY_IMPORTS = merge_lazy_imports(
 )
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
-
-__all__: list[str] = [
-    "TestsFlextObservabilityConstants",
-    "TestsFlextObservabilityConstantsUnit",
-    "TestsFlextObservabilityFactory",
-    "TestsFlextObservabilityInit",
-    "TestsFlextObservabilityModels",
-    "TestsFlextObservabilityProtocols",
-    "TestsFlextObservabilityServiceBase",
-    "TestsFlextObservabilitySettings",
-    "TestsFlextObservabilityTypes",
-    "TestsFlextObservabilityUtilities",
-    "c",
-    "d",
-    "e",
-    "h",
-    "m",
-    "p",
-    "r",
-    "s",
-    "t",
-    "td",
-    "tf",
-    "tk",
-    "tm",
-    "tv",
-    "u",
-    "x",
-]
+install_lazy_exports(
+    __name__,
+    globals(),
+    _LAZY_IMPORTS,
+    publish_all=False,
+)
