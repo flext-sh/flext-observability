@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import time
 
+from flext_cli import u as cli_u
 from flext_observability import FlextObservability, c, t
 
 flext_alert = FlextObservability.flext_alert
@@ -18,6 +19,11 @@ flext_health_check = FlextObservability.flext_health_check
 flext_log_entry = FlextObservability.flext_log_entry
 flext_metric = FlextObservability.flext_metric
 flext_trace = FlextObservability.flext_trace
+
+
+def _emit(message: str) -> None:
+    """Emit example output through the canonical CLI facade."""
+    cli_u.Cli.formatters_print(message)
 
 
 def demonstrate_simple_api() -> None:
@@ -59,13 +65,13 @@ def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     metric_result = flext_metric("valid_metric", 100.0, "count")
     if metric_result.success:
-        print(f"Created metric: {metric_result.value}")
+        _emit(f"Created metric: {metric_result.value}")
     try:
         invalid_metric_result = flext_metric("invalid_metric", -10.0, "count")
         if invalid_metric_result.success:
-            print(f"Created invalid metric: {invalid_metric_result.value}")
+            _emit(f"Created invalid metric: {invalid_metric_result.value}")
     except Exception as e:
-        print(f"Validation error (expected): {e}")
+        _emit(f"Validation error (expected): {e}")
 
 
 def demonstrate_health_monitoring() -> None:

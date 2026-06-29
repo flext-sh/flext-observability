@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import time
 
+from flext_cli import u as cli_u
 from flext_core import FlextContainer
 from flext_observability import (
     FlextObservability,
@@ -24,6 +25,11 @@ flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
 flext_metric = FlextObservability.flext_metric
 flext_trace = FlextObservability.flext_trace
+
+
+def _emit(message: str) -> None:
+    """Emit example output through the canonical CLI facade."""
+    cli_u.Cli.formatters_print(message)
 
 
 def database_query(query: str) -> t.JsonMapping:
@@ -147,10 +153,10 @@ def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
     metric_res = flext_metric("valid_metric", 100.0, "count")
     if metric_res.success:
-        print(f"Validation successful for {type(metric_res.value).__name__}")
+        _emit(f"Validation successful for {type(metric_res.value).__name__}")
     trace_res = flext_trace("valid_operation")
     if trace_res.success:
-        print(f"Validation successful for {type(trace_res.value).__name__}")
+        _emit(f"Validation successful for {type(trace_res.value).__name__}")
     alert_res = flext_alert(
         source="system",
         title="Valid alert",
@@ -158,10 +164,10 @@ def demonstrate_validation() -> None:
         severity=c.Observability.AlertLevel.INFO,
     )
     if alert_res.success:
-        print(f"Validation successful for {type(alert_res.value).__name__}")
+        _emit(f"Validation successful for {type(alert_res.value).__name__}")
     health_res = flext_health_check("service", c.Observability.HealthStatus.HEALTHY)
     if health_res.success:
-        print(f"Validation successful for {type(health_res.value).__name__}")
+        _emit(f"Validation successful for {type(health_res.value).__name__}")
 
 
 def main() -> None:
