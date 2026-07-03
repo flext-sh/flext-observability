@@ -10,7 +10,7 @@ from __future__ import annotations
 from flext_tests import tm
 
 import flext_observability
-from flext_core import FlextConstants, FlextContainer
+from flext_core import FlextContainer, c as core_c
 from flext_observability import (
     FlextObservability,
     __version__ as pkg_version,
@@ -86,5 +86,5 @@ class TestsFlextObservabilityInit:
     def test_flext_core_reexports(self) -> None:
         """Test that flext-core re-exports are available."""
         tm.that(callable(FlextContainer), eq=True)
-        tm.that(FlextConstants, none=False)
+        tm.that(core_c, none=False)
         tm.that(callable(u.create_module_logger), eq=True)

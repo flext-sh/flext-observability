@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from flext_tests import tm
 
-from flext_core import FlextConstants
+from flext_core import c as core_c
 from tests.constants import c
 
 
@@ -18,7 +18,7 @@ class TestsFlextObservabilityConstantsUnit:
 
     def test_inherits_from_flext_constants(self) -> None:
         """Test that c inherits from FlextConstants."""
-        tm.that(FlextConstants in c.__mro__, eq=True)
+        tm.that(core_c in c.__mro__, eq=True)
 
     def test_metric_constants(self) -> None:
         """Test metric-related constants."""
