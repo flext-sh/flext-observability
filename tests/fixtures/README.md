@@ -49,7 +49,7 @@ fixtures/
 
 ### Entity Test Fixtures
 
-```python
+```text
 # Example entity fixtures
 @pytest.fixture
 def sample_metric() -> FlextMetric:
@@ -71,7 +71,7 @@ def sample_trace() -> FlextTrace:
 
 ### Service Mock Fixtures
 
-```python
+```text
 # Example service mocks
 @pytest.fixture
 def mock_metrics_service() -> Mock:
@@ -90,7 +90,7 @@ def mock_container() -> Mock:
 
 ### Test Data Factories
 
-```python
+```text
 # Example test data factories
 class MetricsTestDataFactory:
     """Factory for creating test metrics data."""
@@ -117,7 +117,7 @@ class MetricsTestDataFactory:
 
 ### Using Fixtures in Tests
 
-```python
+```text
 def test_metric_processing(sample_metric, mock_metrics_service):
     """Test using shared fixtures."""
     result = mock_metrics_service.record_metric(sample_metric)
@@ -134,7 +134,7 @@ def test_with_factory_data():
 
 ### Fixture Composition
 
-```python
+```text
 @pytest.fixture
 def configured_observability_platform(mock_container):
     """Compose fixtures for complex testing scenarios."""
@@ -146,7 +146,7 @@ def configured_observability_platform(mock_container):
 
 ### Shared Configuration
 
-```python
+```text
 @pytest.fixture(scope="session")
 def test_config():
     """Shared test configuration."""
@@ -159,7 +159,7 @@ def test_config():
 
 ### Cleanup Fixtures
 
-```python
+```text
 @pytest.fixture(autouse=True)
 def cleanup_test_state():
     """Automatic cleanup after each test."""

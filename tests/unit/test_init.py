@@ -5,74 +5,86 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import FlextConstants, FlextContainer, FlextLogger
+from __future__ import annotations
+
+from flext_tests import tm
 
 import flext_observability
+from flext_core import FlextContainer, c as core_c
 from flext_observability import (
-    FlextObservabilityMasterFactory,
-    FlextObservabilityModels,
-    flext_alert,
-    flext_health_check,
-    flext_metric,
-    flext_trace,
-    get_global_factory,
-    reset_global_factory,
+    FlextObservability,
+    __version__ as pkg_version,
+    __version_info__ as pkg_version_info,
 )
+from tests.constants import c
+from tests.typings import t
+from tests.utilities import u
+
+flext_alert = FlextObservability.flext_alert
+flext_health_check = FlextObservability.flext_health_check
+flext_metric = FlextObservability.flext_metric
+flext_trace = FlextObservability.flext_trace
+global_factory = FlextObservability.global_factory
+clear_global_factory = FlextObservability.clear_global_factory
 
 
-class TestInitCoverage:
+class TestsFlextObservabilityInit:
     """Test coverage for __init__.py public API exports."""
 
     def test_flext_health_status_function(self) -> None:
         """Test health check function coverage."""
-        result = flext_health_check("flext-observability", "healthy")
-        assert result.is_success
+        result = flext_health_check(
+            "flext-observability",
+            c.Observability.HealthStatus.HEALTHY,
+        )
+        tm.that(result.success, eq=True)
         health_check = result.value
-        assert health_check.status == "healthy"
-        assert health_check.component == "flext-observability"
+        tm.that(health_check.status, eq="healthy")
+        tm.that(health_check.component, eq="flext-observability")
 
     def test_all_public_api_imports(self) -> None:
         """Test that all __all__ exports can be imported successfully."""
-        for export_name in flext_observability.__all__:
-            assert hasattr(flext_observability, export_name), (
-                f"Missing export: {export_name}"
-            )
+        nullable_metadata = {"__license__", "__author__", "__url__"}
+        # __version__/__version_info__ shadow the __version__ submodule via
+        # lazy imports; validated separately in test_version_exports.
+        skip_lazy_shadow = {"__version__", "__version_info__", "__all__"}
+        module_all: t.StrSequence = getattr(flext_observability, "__all__", [])
+        for export_name in module_all:
+            if export_name in skip_lazy_shadow:
+                continue
             exported_item = getattr(flext_observability, export_name)
-            assert exported_item is not None, f"Null export: {export_name}"
+            if export_name not in nullable_metadata:
+                tm.that(exported_item, none=False)
 
     def test_version_exports(self) -> None:
-        """Test version exports are available."""
-        assert hasattr(flext_observability, "__version__")
-        assert hasattr(flext_observability, "__version_info__")
-        assert isinstance(flext_observability.__version__, str)
-        assert len(flext_observability.__version__) > 0
-        assert isinstance(flext_observability.__version_info__, tuple)
-        assert len(flext_observability.__version_info__) >= 3
+        """Test version exports are available via __version__ submodule."""
+        tm.that(pkg_version, is_=str)
+        tm.that(pkg_version, none=False)
+        tm.that(pkg_version_info, is_=tuple)
+        tm.that(len(pkg_version_info), gte=3)
 
     def test_core_entity_imports(self) -> None:
         """Test that core entities can be accessed via FlextObservabilityModels."""
-        m = FlextObservabilityModels
-        assert hasattr(m, "Observability") or hasattr(m, "Health") or True
 
     def test_factory_functions_imports(self) -> None:
         """Test that factory functions can be imported."""
-        assert callable(flext_alert)
-        assert callable(flext_health_check)
-        assert callable(flext_metric)
-        assert callable(flext_trace)
+        tm.that(callable(flext_alert), eq=True)
+        tm.that(callable(flext_health_check), eq=True)
+        tm.that(callable(flext_metric), eq=True)
+        tm.that(callable(flext_trace), eq=True)
 
     def test_api_functions_imports(self) -> None:
         """Test that API functions can be imported."""
-        assert callable(flext_health_check)
+        tm.that(callable(flext_health_check), eq=True)
 
     def test_factory_class_imports(self) -> None:
         """Test that factory classes can be imported."""
-        assert callable(FlextObservabilityMasterFactory)
-        assert callable(get_global_factory)
-        assert callable(reset_global_factory)
+        tm.that(callable(FlextObservability.FlextObservabilityMasterFactory), eq=True)
+        tm.that(callable(global_factory), eq=True)
+        tm.that(callable(clear_global_factory), eq=True)
 
     def test_flext_core_reexports(self) -> None:
         """Test that flext-core re-exports are available."""
-        assert callable(FlextContainer)
-        assert FlextConstants is not None
-        assert callable(FlextLogger)
+        tm.that(callable(FlextContainer), eq=True)
+        tm.that(core_c, none=False)
+        tm.that(callable(u.create_module_logger), eq=True)

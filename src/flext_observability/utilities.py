@@ -10,131 +10,129 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from flext_cli import u
+from flext_observability import p, r, t
 
-from flext_core import FlextUtilities, r
 
-
-class FlextObservabilityUtilities(FlextUtilities):
+class FlextObservabilityUtilities(u):
     """Centralized utilities for FLEXT Observability.
 
-    Inherits core FLEXT utilities, providing additional namespace classes
+    Inherits CLI FLEXT utilities, providing additional namespace classes
     for observability domain operations.
     """
 
-    class Monitoring:
-        """Monitoring and observation helpers."""
+    class Observability:
+        """Observability-specific project utilities."""
 
-        @staticmethod
-        def create_monitor_config(
-            service_name: str, interval_seconds: int = 60, *, enabled: bool = True
-        ) -> Mapping[str, str | int | bool]:
-            """Create a monitoring configuration dictionary."""
-            return {
-                "service_name": service_name,
-                "interval_seconds": interval_seconds,
-                "enabled": enabled,
-            }
+        class Monitoring:
+            """Monitoring and observation helpers."""
 
-    class Performance:
-        """Performance tracking helpers."""
+            @staticmethod
+            def create_monitor_config(
+                service_name: str,
+                interval_seconds: int = 60,
+                *,
+                enabled: bool = True,
+            ) -> t.ConfigurationMapping:
+                """Create a monitoring configuration dictionary."""
+                return {
+                    "service_name": service_name,
+                    "interval_seconds": interval_seconds,
+                    "enabled": enabled,
+                }
 
-        @staticmethod
-        def calculate_duration(start_ns: int, end_ns: int) -> r[float]:
-            """Calculate duration in seconds from nanosecond timestamps."""
-            if end_ns < start_ns:
-                return r[float].fail("end_ns must be >= start_ns")
-            return r[float].ok((end_ns - start_ns) / 1000000000)
+        class Performance:
+            """Performance tracking helpers."""
 
-    class Health:
-        """Health check helpers."""
+            @staticmethod
+            def calculate_duration(start_ns: int, end_ns: int) -> p.Result[float]:
+                """Calculate duration in seconds from nanosecond timestamps."""
+                if end_ns < start_ns:
+                    return r[float].fail("end_ns must be >= start_ns")
+                return r[float].ok((end_ns - start_ns) / 1000000000)
 
-        @staticmethod
-        def create_health_status(
-            service_name: str, *, is_healthy: bool = True, details: str = ""
-        ) -> Mapping[str, str | bool]:
-            """Create a health status dictionary."""
-            return {"service": service_name, "healthy": is_healthy, "details": details}
+        class Health:
+            """Health check helpers."""
 
-    class Sampling:
-        """Sampling strategy helpers."""
+            @staticmethod
+            def create_health_status(
+                service_name: str,
+                *,
+                is_healthy: bool = True,
+                details: str = "",
+            ) -> t.FeatureFlagMapping:
+                """Create a health status dictionary."""
+                return {
+                    "service": service_name,
+                    "healthy": is_healthy,
+                    "details": details,
+                }
 
-        @staticmethod
-        def should_sample(rate: float, request_id: int) -> bool:
-            """Determine if a request should be sampled based on rate."""
-            if rate <= 0.0:
-                return False
-            if rate >= 1.0:
-                return True
-            return request_id % 100 < int(rate * 100)
+        class Sampling:
+            """Sampling strategy helpers."""
 
-    class HTTP:
-        """HTTP instrumentation helpers."""
+            @staticmethod
+            def should_sample(rate: float, request_id: int) -> bool:
+                """Determine if a request should be sampled based on rate."""
+                if rate <= 0.0:
+                    return False
+                if rate >= 1.0:
+                    return True
+                return request_id % 100 < int(rate * 100)
 
-        @staticmethod
-        def extract_route_pattern(path: str) -> str:
-            """Extract a generic route pattern from a concrete URL path."""
-            parts = path.strip("/").split("/")
-            normalized: list[str] = []
-            for part in parts:
-                if part.isdigit():
-                    normalized.append("{id}")
-                else:
-                    normalized.append(part)
-            return "/" + "/".join(normalized) if normalized else "/"
+        class HTTP:
+            """HTTP instrumentation helpers."""
 
-    class Logging:
-        """Logging integration helpers."""
+            @staticmethod
+            def extract_route_pattern(path: str) -> str:
+                """Extract a generic route pattern from a concrete URL path."""
+                parts = path.strip("/").split("/")
+                normalized: t.StrSequence = [
+                    "{id}" if part.isdigit() else part for part in parts
+                ]
+                return "/" + "/".join(normalized) if normalized else "/"
 
-        @staticmethod
-        def build_log_context(
-            service_name: str, correlation_id: str = ""
-        ) -> Mapping[str, str]:
-            """Build a structured logging context dictionary."""
-            ctx: dict[str, str] = {"service": service_name}
-            if correlation_id:
-                ctx["correlation_id"] = correlation_id
-            return ctx
+        class Logging:
+            """Logging integration helpers."""
 
-    class Metrics:
-        """Custom metrics helpers."""
+            @staticmethod
+            def build_log_context(
+                service_name: str,
+                correlation_id: str = "",
+            ) -> t.StrMapping:
+                """Build a structured logging context dictionary."""
+                ctx: t.MutableStrMapping = {"service": service_name}
+                if correlation_id:
+                    ctx["correlation_id"] = correlation_id
+                return ctx
 
-        @staticmethod
-        def create_metric_key(namespace: str, name: str, unit: str = "") -> str:
-            """Create a standardized metric key."""
-            base = f"{namespace}.{name}"
-            if unit:
-                return f"{base}.{unit}"
-            return base
+        class Metrics:
+            """Custom metrics helpers."""
 
-    class ErrorHandling:
-        """Error handling helpers."""
+            @staticmethod
+            def create_metric_key(namespace: str, name: str, unit: str = "") -> str:
+                """Create a standardized metric key."""
+                base = f"{namespace}.{name}"
+                if unit:
+                    return f"{base}.{unit}"
+                return base
 
-        @staticmethod
-        def classify_error(error: Exception) -> str:
-            """Classify an error into a standard category string."""
-            error_type = type(error).__name__
-            if "Timeout" in error_type:
-                return "timeout"
-            if "Connection" in error_type:
-                return "connection"
-            if "Permission" in error_type or "Auth" in error_type:
-                return "auth"
-            return "unknown"
+        class ErrorHandling:
+            """Error handling helpers."""
 
-    class TraceContext:
-        """Context management helpers."""
-
-        @staticmethod
-        def create_trace_context(
-            trace_id: str, span_id: str, parent_span_id: str = ""
-        ) -> Mapping[str, str]:
-            """Create a trace context dictionary."""
-            ctx: dict[str, str] = {"trace_id": trace_id, "span_id": span_id}
-            if parent_span_id:
-                ctx["parent_span_id"] = parent_span_id
-            return ctx
+            @staticmethod
+            def classify_error(error: Exception) -> str:
+                """Classify an error into a standard category string."""
+                error_type = type(error).__name__
+                if "Timeout" in error_type:
+                    return "timeout"
+                if "Connection" in error_type:
+                    return "connection"
+                if "Permission" in error_type or "Auth" in error_type:
+                    return "auth"
+                return "unknown"
 
 
 u = FlextObservabilityUtilities
-__all__ = ["FlextObservabilityUtilities", "u"]
+
+__all__: list[str] = ["FlextObservabilityUtilities", "u"]

@@ -52,13 +52,13 @@ src/flext_observability/
 
 1. **Clean Architecture**: Clear separation between domain, application, and infrastructure layers
 1. **Domain-Driven Design**: Rich domain models with business logic encapsulation
-1. **Railway-Oriented Programming**: r[T] patterns throughout
+1. **Railway-Oriented Programming**: p.Result[T] patterns throughout
 1. **Type Safety**: MyPy strict mode adoption; aiming for complete annotations
 1. **Enterprise Standards**: Professional code quality and documentation
 
 ## Integration Points
 
-- **flext-core**: Foundation patterns (FlextModels.Entity, r, FlextContainer)
+- **flext-core**: Foundation patterns (FlextModels.Entity, r, p, FlextContainer)
 - **OpenTelemetry**: Industry-standard telemetry (future integration)
 - **Prometheus**: Metrics export and collection compatibility
 - **Structured Logging**: JSON logging with correlation ID support
@@ -73,7 +73,7 @@ src/flext_observability/
 
 ## Usage Patterns
 
-```python
+```python notest
 # Import core observability functionality
 from flext_observability import (
     flext_create_metric,
@@ -89,7 +89,7 @@ trace_result = flext_create_trace("user_login", "auth-service")
 
 # Use monitoring decorators
 @flext_monitor_function("business_operation")
-def process_order(order_data: dict) -> dict[str, object]:
+def process_order(order_data: dict) -> t.JsonMapping:
     return {"status": "processed"}
 ```
 

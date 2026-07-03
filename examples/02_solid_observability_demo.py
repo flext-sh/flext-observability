@@ -13,25 +13,32 @@ from __future__ import annotations
 
 import time
 
-from flext_core import FlextContainer, r
-
+from flext_cli import u as cli_u
+from flext_core import FlextContainer
 from flext_observability import (
-    FlextObservabilityMasterFactory,
-    flext_alert,
-    flext_create_health_check,
-    flext_metric,
-    flext_trace,
-    get_global_factory,
+    FlextObservability,
+    c,
+    t,
 )
 
+flext_alert = FlextObservability.flext_alert
+flext_health_check = FlextObservability.flext_health_check
+flext_metric = FlextObservability.flext_metric
+flext_trace = FlextObservability.flext_trace
 
-def database_query(query: str) -> dict[str, object]:
+
+def _emit(message: str) -> None:
+    """Emit example output through the canonical CLI facade."""
+    cli_u.Cli.formatters_print(message)
+
+
+def database_query(query: str) -> t.JsonMapping:
     """Simulate a database operation with monitoring."""
     time.sleep(0.05)
     return {"query": query, "rows": 42, "execution_time": 0.05}
 
 
-def process_api_request(endpoint: str) -> dict[str, object]:
+def process_api_request(endpoint: str) -> t.JsonMapping:
     """Simulate API request processing with monitoring."""
     time.sleep(0.1)
     return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
@@ -41,22 +48,19 @@ def demonstrate_solid_design() -> None:
     """Demonstrate SOLID design principles in action."""
     metric_result = flext_metric("cpu_usage", 75.5, "percent")
     trace_result = flext_trace("user_login")
-    alert_result = flext_alert("monitoring", "High CPU usage", "warning")
-    health_result = flext_create_health_check("database", "healthy")
+    alert_result = flext_alert(
+        source="monitoring",
+        title="High CPU usage",
+        message="High CPU usage",
+        severity=c.Observability.AlertLevel.WARNING,
+    )
+    health_result = flext_health_check("database", c.Observability.HealthStatus.HEALTHY)
     container = FlextContainer()
-    factory = FlextObservabilityMasterFactory(container)
+    factory = FlextObservability.FlextObservabilityMasterFactory(container)
     factory.create_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
-    entities: list[object] = [
-        result.value
-        for result in results
-        if hasattr(result, "success")
-        and result.is_success
-        and hasattr(result, "unwrap")
-    ]
-    for entity in entities:
-        if hasattr(entity, "validate_business_rules"):
-            entity.validate_business_rules()
+    for result in results:
+        _ = hasattr(result, "success") and result.success
 
 
 def demonstrate_metrics_collection() -> None:
@@ -69,9 +73,7 @@ def demonstrate_metrics_collection() -> None:
         ("active_connections", 127.0, "count"),
     ]
     for name, value, unit in metrics:
-        result = flext_metric(name, value, unit)
-        if result.is_success:
-            pass
+        flext_metric(name, value, unit)
 
 
 def demonstrate_distributed_tracing() -> None:
@@ -84,38 +86,45 @@ def demonstrate_distributed_tracing() -> None:
         ("cache", "result_caching"),
     ]
     for _service, operation in services:
-        result = flext_trace(operation)
-        if result.is_success:
-            pass
+        flext_trace(operation)
 
 
 def demonstrate_health_monitoring() -> None:
     """Demonstrate comprehensive health monitoring."""
-    services_health = [
-        ("api_gateway", "healthy"),
-        ("auth_service", "healthy"),
-        ("user_service", "healthy"),
-        ("database", "degraded"),
-        ("cache", "healthy"),
-        ("message_queue", "healthy"),
+    services_health: t.SequenceOf[tuple[str, c.Observability.HealthStatus]] = [
+        ("database", c.Observability.HealthStatus.HEALTHY),
+        ("cache", c.Observability.HealthStatus.HEALTHY),
+        ("message_queue", c.Observability.HealthStatus.DEGRADED),
+        ("auth_service", c.Observability.HealthStatus.HEALTHY),
     ]
     for service, status in services_health:
-        result = flext_create_health_check(service, status)
-        if result.is_success:
-            pass
+        flext_health_check(service, status)
 
 
 def demonstrate_alerting_system() -> None:
     """Demonstrate comprehensive alerting."""
-    alerts = [
-        ("info", "System maintenance scheduled", "system"),
-        ("warning", "Database response time increased", "database"),
-        ("error", "Failed to connect to cache", "cache"),
-        ("critical", "API gateway not responding", "api_gateway"),
+    alerts: t.SequenceOf[tuple[c.Observability.AlertLevel, str, str]] = [
+        (c.Observability.AlertLevel.INFO, "System maintenance scheduled", "system"),
+        (
+            c.Observability.AlertLevel.WARNING,
+            "Database response time increased",
+            "database",
+        ),
+        (c.Observability.AlertLevel.ERROR, "Failed to connect to cache", "cache"),
+        (
+            c.Observability.AlertLevel.CRITICAL,
+            "API gateway not responding",
+            "api_gateway",
+        ),
     ]
     for level, message, service in alerts:
-        result = flext_alert(service, message, level)
-        if result.is_success:
+        result = flext_alert(
+            source=service,
+            title=message,
+            message=message,
+            severity=level,
+        )
+        if result.success:
             icons = {
                 "info": "[INFO]",
                 "warning": "[WARN]",
@@ -133,25 +142,32 @@ def demonstrate_function_monitoring() -> None:
 
 def demonstrate_factory_patterns() -> None:
     """Demonstrate factory pattern usage."""
-    global_factory = get_global_factory()
-    global_factory.create_metric("global_metric", 42.0, "count")
     container = FlextContainer()
-    custom_factory = FlextObservabilityMasterFactory(container)
+    factory = FlextObservability.FlextObservabilityMasterFactory(container)
+    factory.create_metric("global_metric", 42.0, "count")
+    custom_factory = FlextObservability.FlextObservabilityMasterFactory(container)
     custom_factory.create_metric("custom_metric", 24.0, "count")
 
 
 def demonstrate_validation() -> None:
     """Demonstrate entity validation."""
-    entities_to_validate: list[r[dict[str, object]]] = [
-        flext_metric("valid_metric", 100.0, "count"),
-        flext_trace("valid_operation"),
-        flext_alert("system", "Valid alert", "info"),
-        flext_create_health_check("service", "healthy"),
-    ]
-    for result in entities_to_validate:
-        if result.is_success and result.data:
-            result_type = type(result.data).__name__
-            print(f"Validation successful for {result_type}")
+    metric_res = flext_metric("valid_metric", 100.0, "count")
+    if metric_res.success:
+        _emit(f"Validation successful for {type(metric_res.value).__name__}")
+    trace_res = flext_trace("valid_operation")
+    if trace_res.success:
+        _emit(f"Validation successful for {type(trace_res.value).__name__}")
+    alert_res = flext_alert(
+        source="system",
+        title="Valid alert",
+        message="Valid alert",
+        severity=c.Observability.AlertLevel.INFO,
+    )
+    if alert_res.success:
+        _emit(f"Validation successful for {type(alert_res.value).__name__}")
+    health_res = flext_health_check("service", c.Observability.HealthStatus.HEALTHY)
+    if health_res.success:
+        _emit(f"Validation successful for {type(health_res.value).__name__}")
 
 
 def main() -> None:

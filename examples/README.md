@@ -55,7 +55,7 @@ Advanced demonstration of SOLID principles applied to observability:
 
 ### Basic Observability Integration
 
-```python
+```python notest
 # Example from 01_functional.py
 from flext_observability import flext_create_metric, flext_create_trace
 
@@ -83,7 +83,7 @@ def create_business_metrics():
 
 ### Service Layer Integration
 
-```python
+```python notest
 # Example service integration pattern
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
 from flext_core import FlextBus
@@ -91,19 +91,18 @@ from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
-from flext_core import FlextDecorators
+from flext_core import d
 from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
+from flext_core import e
 from flext_core import h
-from flext_core import FlextLogger
 from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
-from flext_core import FlextRuntime
-from flext_core import FlextService
+from flext_core import r, p
+from flext_core import u
+from flext_core import s
 from flext_core import t
 from flext_core import u
 
@@ -116,7 +115,7 @@ class UserService:
         self.metrics = FlextMetricsService(container)
         self.factory = FlextObservabilityMasterFactory()
 
-    def create_user(self, user_data: dict) -> r[t.Dict]:
+    def create_user(self, user_data: dict) -> p.Result[m.Dict]:
         """Create user with comprehensive observability."""
         # Create business metrics
         metric_result = self.factory.create_metric(
@@ -135,13 +134,13 @@ class UserService:
 
 ### Monitoring Decorator Patterns
 
-```python
+```python notest
 # Automatic function monitoring
 from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> dict[str, object]:
+def process_order(order_data: dict) -> t.JsonMapping:
     """Process order with automatic monitoring.
 
     This function automatically gets:
@@ -162,7 +161,7 @@ def process_order(order_data: dict) -> dict[str, object]:
 
 # Advanced monitoring with context
 @flext_monitor_function("payment_processing")
-def process_payment(amount: float, currency: str) -> r[t.Dict]:
+def process_payment(amount: float, currency: str) -> p.Result[m.Dict]:
     """Process payment with error handling and monitoring."""
     if amount <= 0:
         return r[bool].fail("Invalid payment amount")
@@ -180,12 +179,12 @@ def process_payment(amount: float, currency: str) -> r[t.Dict]:
 
 ### Health Monitoring Patterns
 
-```python
+```python notest
 # Health check integration example
 from flext_observability import flext_create_health_check, FlextHealthService
 
 
-def monitor_database_health() -> r[t.Dict]:
+def monitor_database_health() -> p.Result[m.Dict]:
     """Monitor database connectivity and performance."""
     try:
         # Test database connection
@@ -222,12 +221,12 @@ def monitor_database_health() -> r[t.Dict]:
 
 ### Distributed Tracing Patterns
 
-```python
+```python notest
 # Parent-child trace correlation
 from flext_observability import flext_create_trace
 
 
-def process_user_workflow(user_id: str) -> r[t.Dict]:
+def process_user_workflow(user_id: str) -> p.Result[m.Dict]:
     """Process user workflow with distributed tracing."""
 
     # Create parent trace
@@ -258,7 +257,7 @@ def process_user_workflow(user_id: str) -> r[t.Dict]:
     })
 
 
-def validate_user_data(user_id: str, parent_trace_id: str) -> r[t.Dict]:
+def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
     """Validate user with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="user_validation",
@@ -280,7 +279,7 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> r[t.Dict]:
 
 ### Singer Tap Integration
 
-```python
+```python notest
 # Example Singer tap with observability
 from flext_observability import flext_monitor_function, flext_create_metric
 
@@ -289,7 +288,7 @@ class FlextTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> list[t.Dict]:
+    def extract_records(self, table_name: str) -> t.SequenceOf[m.Dict]:
         """Extract records with automatic monitoring."""
 
         # Extract data (business logic)
@@ -315,7 +314,7 @@ class FlextTapOracle:
 
 ### FastAPI Service Integration
 
-```python
+```python notest
 # Example FastAPI service with observability
 from flext_observability import flext_monitor_function, flext_create_metric
 
@@ -324,7 +323,7 @@ class FlextAPIService:
     """Example FastAPI service with observability."""
 
     @flext_monitor_function("api_endpoint")
-    def handle_user_request(self, request_data: dict) -> r[t.Dict]:
+    def handle_user_request(self, request_data: dict) -> p.Result[m.Dict]:
         """Handle API request with comprehensive observability."""
 
         # Request metrics

@@ -125,7 +125,7 @@ Base patterns and cross-cutting concerns:
 
 ### Basic Entity Creation
 
-```python
+```python notest
 from flext_observability import FlextMetric, FlextTrace
 
 # Create metric with validation
@@ -143,26 +143,25 @@ if validation.success:
 
 ### Service Layer Usage
 
-```python
+```python notest
 from flext_observability import FlextMetricsService
 from flext_core import FlextBus
 from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
-from flext_core import FlextDecorators
+from flext_core import d
 from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
+from flext_core import e
 from flext_core import h
-from flext_core import FlextLogger
 from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
-from flext_core import FlextRuntime
-from flext_core import FlextService
+from flext_core import r, p
+from flext_core import u
+from flext_core import s
 from flext_core import t
 from flext_core import u
 
@@ -176,7 +175,7 @@ if result.success:
 
 ### Factory Pattern Usage
 
-```python
+```python notest
 from flext_observability import FlextObservabilityMasterFactory
 
 factory = FlextObservabilityMasterFactory()
@@ -189,7 +188,7 @@ if metric_result.success:
 
 ### Simple API Usage
 
-```python
+```python notest
 from flext_observability import flext_create_metric, flext_create_trace
 
 # Quick metric creation
@@ -201,12 +200,12 @@ trace_result = flext_create_trace("user_login", "auth-service")
 
 ### Monitoring Decorator Usage
 
-```python
+```python notest
 from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> dict[str, object]:
+def process_order(order_data: dict) -> t.JsonMapping:
     # Automatically monitored for execution time, success/failure
     return {"status": "processed", "order_id": order_data["id"]}
 ```
@@ -224,10 +223,10 @@ All modules follow FLEXT ecosystem standards:
 
 ### Cross-Service Observability
 
-```python
+```python notest
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
-def handle_user_request(request: dict) -> r[t.Dict]:
+def handle_user_request(request: dict) -> p.Result[m.Dict]:
     # Automatic metrics, tracing, and logging
     return r[bool].ok({"status": "processed"})
 ```

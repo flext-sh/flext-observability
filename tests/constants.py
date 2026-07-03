@@ -1,15 +1,18 @@
-"""Module skeleton for TestsFlextObservabilityConstants.
-
-Test constants for flextobservability.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+"""Test constants for flext-observability."""
 
 from __future__ import annotations
 
-from flext_tests.constants import FlextTestsConstants
+from flext_tests import FlextTestsConstants
+
+from flext_observability import FlextObservabilityConstants
 
 
-class TestsFlextObservabilityConstants(FlextTestsConstants):
-    """Test constants for flextobservability."""
+class TestsFlextObservabilityConstants(
+    FlextTestsConstants, FlextObservabilityConstants
+):
+    class Observability(FlextObservabilityConstants.Observability):
+        class Tests: ...
+
+
+c = TestsFlextObservabilityConstants
+__all__: list[str] = ["TestsFlextObservabilityConstants", "c"]

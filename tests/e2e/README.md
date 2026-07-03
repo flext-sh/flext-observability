@@ -56,6 +56,9 @@ e2e/
 ### Complete Workflow Testing
 
 ```python
+from __future__ import annotations
+
+
 def test_complete_observability_workflow():
     """Test complete observability workflow from creation to export."""
 
@@ -82,6 +85,9 @@ def test_complete_observability_workflow():
 ### Real-World Scenario Testing
 
 ```python
+from __future__ import annotations
+
+
 def test_production_monitoring_scenario():
     """Test production-like monitoring scenario."""
 
@@ -103,6 +109,9 @@ def test_production_monitoring_scenario():
 ### Cross-Component Integration
 
 ```python
+from __future__ import annotations
+
+
 def test_factory_service_monitor_integration():
     """Test integration across factory, service, and monitoring components."""
 
@@ -139,7 +148,7 @@ def test_factory_service_monitor_integration():
 
 ### Test Configuration
 
-```python
+```text
 @pytest.fixture(scope="module")
 def e2e_environment():
     """Setup production-like test environment."""
@@ -147,13 +156,13 @@ def e2e_environment():
     platform = FlextObservabilityPlatformV2()
 
     # Setup realistic configuration
-    config = {
+    settings = {
         "metrics_retention": "24h",
         "trace_sampling": 0.1,
         "alert_thresholds": {"cpu": 80, "memory": 85},
     }
 
-    return platform, config
+    return platform, settings
 ```
 
 ## Execution
@@ -200,6 +209,9 @@ pytest tests/e2e/ -v --benchmark-only
 ### Benchmarking
 
 ```python
+from __future__ import annotations
+
+
 def test_performance_under_load(benchmark):
     """Benchmark observability performance under load."""
 
