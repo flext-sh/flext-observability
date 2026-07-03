@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+from flext_observability.utilities import u
 
 import math
 from collections.abc import (
@@ -18,7 +19,7 @@ from datetime import datetime
 from typing import ClassVar, TypeAlias
 from uuid import uuid4
 
-from flext_core import FlextContainer, u
+from flext_core import FlextContainer
 from flext_observability import (
     FlextObservabilityAdvancedContext,
     FlextObservabilityContext,

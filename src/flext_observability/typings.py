@@ -6,8 +6,7 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-
-from flext_core import t
+from flext_observability.typings import t
 
 
 class FlextObservabilityTypes(t):

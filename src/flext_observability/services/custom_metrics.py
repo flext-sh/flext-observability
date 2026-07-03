@@ -17,12 +17,11 @@ Key Features:
 """
 
 from __future__ import annotations
+from flext_observability.utilities import u
 
 from collections.abc import (
     MutableMapping,
 )
-
-from flext_core import u
 from flext_observability import c, e, m, p, r, t
 
 
