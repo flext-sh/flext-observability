@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_observability.utilities import u
 
 import math
 from collections.abc import (
@@ -41,6 +40,7 @@ from flext_observability import (
     r,
     t,
 )
+from flext_observability.utilities import u
 
 
 class FlextObservability(

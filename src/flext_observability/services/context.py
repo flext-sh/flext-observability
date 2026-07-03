@@ -12,13 +12,13 @@ FLEXT Pattern:
 """
 
 from __future__ import annotations
-from flext_observability.utilities import u
 
 from contextvars import ContextVar
 from uuid import uuid4
 
 from flext_cli import u as cli_u
 from flext_observability import c, m, p, r, t
+from flext_observability.utilities import u
 
 
 class FlextObservabilityContext:

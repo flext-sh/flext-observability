@@ -8,10 +8,11 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_observability.constants import c
 
 from enum import StrEnum, unique
 from typing import ClassVar, Final
+
+from flext_core import c
 
 
 class FlextObservabilityConstants(c):

@@ -9,7 +9,6 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_observability.models import m
 
 import time
 from datetime import datetime
@@ -18,7 +17,7 @@ from types import MappingProxyType
 from typing import Annotated, ClassVar
 from uuid import uuid4
 
-from flext_core import FlextUtilities
+from flext_core import FlextUtilities, m
 from flext_observability import c, t, u
 
 

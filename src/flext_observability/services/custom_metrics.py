@@ -17,12 +17,13 @@ Key Features:
 """
 
 from __future__ import annotations
-from flext_observability.utilities import u
 
 from collections.abc import (
     MutableMapping,
 )
+
 from flext_observability import c, e, m, p, r, t
+from flext_observability.utilities import u
 
 
 class FlextObservabilityCustomMetrics:
@@ -70,8 +71,8 @@ class FlextObservabilityCustomMetrics:
                 str,
                 m.Observability.CustomMetricDefinition,
             ] = {}
-            self._metric_instances: t.MutableScalarMapping = {}
-            self._namespaces: t.MutableStrMapping = {}
+            self._metric_instances: t.MutableScalarMapping = dict[str, t.Scalar]()
+            self._namespaces: t.MutableStrMapping = dict[str, str]()
 
         def clear_metrics(self, namespace: str | None = None) -> p.Result[bool]:
             """Clear metrics from registry.
