@@ -7,9 +7,13 @@ from flext_core.lazy import merge_lazy_imports
 from flext_observability._exports_lazy_part_01 import (
     FLEXT_OBSERVABILITY_LAZY_IMPORTS_PART_01,
 )
+from flext_observability._exports_lazy_part_02 import (
+    FLEXT_OBSERVABILITY_LAZY_IMPORTS_PART_02,
+)
 
 _LOCAL_LAZY_IMPORTS = {
     **FLEXT_OBSERVABILITY_LAZY_IMPORTS_PART_01,
+    **FLEXT_OBSERVABILITY_LAZY_IMPORTS_PART_02,
 }
 
 FLEXT_OBSERVABILITY_LAZY_IMPORTS = merge_lazy_imports(

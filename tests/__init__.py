@@ -25,39 +25,39 @@ if TYPE_CHECKING:
         x as x,
     )
 
-    from flext_observability.tests.base import (
+    from tests.base import (
         TestsFlextObservabilityServiceBase as TestsFlextObservabilityServiceBase,
         s as s,
     )
-    from flext_observability.tests.constants import (
+    from tests.constants import (
         TestsFlextObservabilityConstants as TestsFlextObservabilityConstants,
         c as c,
     )
-    from flext_observability.tests.models import (
+    from tests.models import (
         TestsFlextObservabilityModels as TestsFlextObservabilityModels,
         m as m,
     )
-    from flext_observability.tests.protocols import (
+    from tests.protocols import (
         TestsFlextObservabilityProtocols as TestsFlextObservabilityProtocols,
         p as p,
     )
-    from flext_observability.tests.settings import (
+    from tests.settings import (
         TestsFlextObservabilitySettings as TestsFlextObservabilitySettings,
     )
-    from flext_observability.tests.typings import (
+    from tests.typings import (
         TestsFlextObservabilityTypes as TestsFlextObservabilityTypes,
         t as t,
     )
-    from flext_observability.tests.unit.test_constants import (
+    from tests.unit.test_constants import (
         TestsFlextObservabilityConstantsUnit as TestsFlextObservabilityConstantsUnit,
     )
-    from flext_observability.tests.unit.test_factory import (
+    from tests.unit.test_factory import (
         TestsFlextObservabilityFactory as TestsFlextObservabilityFactory,
     )
-    from flext_observability.tests.unit.test_init import (
+    from tests.unit.test_init import (
         TestsFlextObservabilityInit as TestsFlextObservabilityInit,
     )
-    from flext_observability.tests.utilities import (
+    from tests.utilities import (
         TestsFlextObservabilityUtilities as TestsFlextObservabilityUtilities,
         u as u,
     )
