@@ -11,14 +11,16 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from datetime import datetime
 from hashlib import sha256
 from types import MappingProxyType
-from typing import Annotated, ClassVar
+from typing import TYPE_CHECKING, Annotated, ClassVar
 from uuid import uuid4
 
 from flext_core import FlextUtilities, m
 from flext_observability import c, t, u
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class FlextObservabilityModels(m):
@@ -103,7 +105,8 @@ class FlextObservabilityModels(m):
             title: Annotated[t.NonEmptyStr, u.Field(description="Alert title")]
             message: Annotated[t.NonEmptyStr, u.Field(description="Alert message")]
             severity: Annotated[
-                t.NonEmptyStr, u.Field(description="Alert severity level")
+                t.NonEmptyStr,
+                u.Field(description="Alert severity level"),
             ]
             source: Annotated[t.NonEmptyStr, u.Field(description="Alert source")]
             labels: Annotated[
@@ -118,7 +121,8 @@ class FlextObservabilityModels(m):
             """Health check entity."""
 
             component: Annotated[
-                t.NonEmptyStr, u.Field(description="Component being checked")
+                t.NonEmptyStr,
+                u.Field(description="Component being checked"),
             ]
             status: Annotated[t.NonEmptyStr, u.Field(description="Health check status")]
             details: Annotated[
@@ -138,7 +142,7 @@ class FlextObservabilityModels(m):
             timestamp: Annotated[
                 datetime,
                 u.Field(
-                    default_factory=lambda: FlextUtilities.now(),
+                    default_factory=FlextUtilities.now,
                     description="Log entry timestamp",
                 ),
             ]
@@ -174,7 +178,8 @@ class FlextObservabilityModels(m):
             """Snapshot of observability context for restoration in async operations."""
 
             correlation_id: Annotated[
-                str, u.Field(description="Correlation identifier")
+                str,
+                u.Field(description="Correlation identifier"),
             ] = ""
             trace_id: Annotated[str, u.Field(description="Trace identifier")] = ""
             span_id: Annotated[str, u.Field(description="Span identifier")] = ""
@@ -217,7 +222,8 @@ class FlextObservabilityModels(m):
                 u.Field(description="Type of metric"),
             ]
             description: Annotated[
-                t.NonEmptyStr, u.Field(description="Human-readable metric description")
+                t.NonEmptyStr,
+                u.Field(description="Human-readable metric description"),
             ]
             unit: Annotated[
                 str,
@@ -239,14 +245,16 @@ class FlextObservabilityModels(m):
             """Validation model for cooldown seconds input."""
 
             seconds: Annotated[
-                t.PositiveFloat, u.Field(description="Cooldown duration in seconds")
+                t.PositiveFloat,
+                u.Field(description="Cooldown duration in seconds"),
             ]
 
         class ThresholdInput(m.Value):
             """Validation model for threshold input."""
 
             threshold: Annotated[
-                t.PositiveInt, u.Field(description="Error count threshold")
+                t.PositiveInt,
+                u.Field(description="Error count threshold"),
             ]
 
         class ErrorEvent(m.Value):
@@ -255,7 +263,8 @@ class FlextObservabilityModels(m):
             model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
 
             error_type: Annotated[
-                t.NonEmptyStr, u.Field(description="Error classification type")
+                t.NonEmptyStr,
+                u.Field(description="Error classification type"),
             ]
             message: Annotated[t.NonEmptyStr, u.Field(description="Error message")]
             severity: Annotated[
@@ -263,10 +272,12 @@ class FlextObservabilityModels(m):
                 u.Field(description="Error severity level"),
             ] = c.Observability.ErrorSeverity.ERROR
             fingerprint: Annotated[
-                str, u.Field(description="SHA256 deduplication fingerprint")
+                str,
+                u.Field(description="SHA256 deduplication fingerprint"),
             ] = ""
             correlation_id: Annotated[
-                str, u.Field(description="Correlation identifier")
+                str,
+                u.Field(description="Correlation identifier"),
             ] = ""
 
             def calculate_fingerprint(self) -> None:
@@ -313,7 +324,8 @@ class FlextObservabilityModels(m):
             model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
 
             operation: Annotated[
-                t.NonEmptyStr, u.Field(description="Operation name being measured")
+                t.NonEmptyStr,
+                u.Field(description="Operation name being measured"),
             ]
             start_time: Annotated[
                 float,
@@ -322,22 +334,28 @@ class FlextObservabilityModels(m):
                 ),
             ] = u.Field(default_factory=time.time)
             end_time: Annotated[
-                float, u.Field(description="Operation end time in seconds since epoch")
+                float,
+                u.Field(description="Operation end time in seconds since epoch"),
             ] = 0.0
             duration_ms: Annotated[
-                float, u.Field(description="Operation duration in milliseconds")
+                float,
+                u.Field(description="Operation duration in milliseconds"),
             ] = 0.0
             memory_used_mb: Annotated[
-                float, u.Field(description="Memory used in megabytes")
+                float,
+                u.Field(description="Memory used in megabytes"),
             ] = 0.0
             cpu_percent: Annotated[
-                float, u.Field(description="CPU usage percentage")
+                float,
+                u.Field(description="CPU usage percentage"),
             ] = 0.0
             success: Annotated[
-                bool, u.Field(description="Whether the operation succeeded")
+                bool,
+                u.Field(description="Whether the operation succeeded"),
             ] = True
             error_message: Annotated[
-                str, u.Field(description="Error message if operation failed")
+                str,
+                u.Field(description="Error message if operation failed"),
             ] = ""
 
             def calculate_duration(self) -> None:

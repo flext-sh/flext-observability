@@ -12,7 +12,8 @@ from flext_observability import FlextObservabilityUtilities
 
 
 class TestsFlextObservabilityUtilities(
-    FlextTestsUtilities, FlextObservabilityUtilities
+    FlextTestsUtilities,
+    FlextObservabilityUtilities,
 ):
     """Test utilities for flext-observability."""
 

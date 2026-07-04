@@ -22,11 +22,7 @@ Key Features:
 from __future__ import annotations
 
 import time
-from collections.abc import (
-    Awaitable,
-    Callable,
-)
-from typing import TypeIs
+from typing import TYPE_CHECKING, TypeIs
 
 import flask
 
@@ -40,6 +36,12 @@ from flext_observability import (
     t,
     u,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Awaitable,
+        Callable,
+    )
 
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None

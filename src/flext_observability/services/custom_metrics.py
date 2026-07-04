@@ -18,11 +18,14 @@ Key Features:
 
 from __future__ import annotations
 
-from collections.abc import (
-    MutableMapping,
-)
+from typing import TYPE_CHECKING
 
 from flext_observability import c, e, m, p, r, t, u
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        MutableMapping,
+    )
 
 
 class FlextObservabilityCustomMetrics:
@@ -308,7 +311,9 @@ class FlextObservabilityCustomMetrics:
             return r[c.Observability.MetricType].ok(metric_type_enum)
 
         def unregister_metric(
-            self, name: str, namespace: str = "default"
+            self,
+            name: str,
+            namespace: str = "default",
         ) -> p.Result[bool]:
             """Unregister a metric.
 
@@ -326,7 +331,9 @@ class FlextObservabilityCustomMetrics:
                 )
                 if namespaced_name not in self._metrics:
                     return e.fail_not_found(
-                        "Metric", namespaced_name, result_type=r[bool]
+                        "Metric",
+                        namespaced_name,
+                        result_type=r[bool],
                     )
                 del self._metrics[namespaced_name]
                 FlextObservabilityCustomMetrics.logger.debug(
@@ -335,7 +342,9 @@ class FlextObservabilityCustomMetrics:
                 return r[bool].ok(value=True)
             except c.EXC_MAPPING_TYPE as exc:
                 return e.fail_operation(
-                    "Metric unregistration", exc, result_type=r[bool]
+                    "Metric unregistration",
+                    exc,
+                    result_type=r[bool],
                 )
 
     @staticmethod

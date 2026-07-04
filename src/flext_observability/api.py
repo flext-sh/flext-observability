@@ -14,8 +14,7 @@ from collections.abc import (
     Mapping,
     MutableSequence,
 )
-from datetime import datetime
-from typing import ClassVar, TypeAlias
+from typing import TYPE_CHECKING, ClassVar
 from uuid import uuid4
 
 from flext_core import FlextContainer
@@ -41,6 +40,9 @@ from flext_observability import (
     t,
     u,
 )
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class FlextObservability(
@@ -72,11 +74,11 @@ class FlextObservability(
         FlextObservability.FlextObservabilityMasterFactory | None
     ] = None
 
-    Metric: TypeAlias = m.Observability.Metric
-    Trace: TypeAlias = m.Observability.Trace
-    Alert: TypeAlias = m.Observability.Alert
-    HealthCheck: TypeAlias = m.Observability.HealthCheck
-    LogEntry: TypeAlias = m.Observability.LogEntry
+    type Metric = m.Observability.Metric
+    type Trace = m.Observability.Trace
+    type Alert = m.Observability.Alert
+    type HealthCheck = m.Observability.HealthCheck
+    type LogEntry = m.Observability.LogEntry
 
     class MetricsService:
         """Service for metrics collection and recording."""

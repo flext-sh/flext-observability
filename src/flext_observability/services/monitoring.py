@@ -249,7 +249,7 @@ class FlextObservabilityMonitor:
         """Create the concrete observability service facade."""
         try:
             return r[p.Observability.ObservabilityService].ok(
-                FlextObservabilityServices()
+                FlextObservabilityServices(),
             )
         except c.EXC_MAPPING_TYPE as e:
             return r[p.Observability.ObservabilityService].fail_op(
@@ -311,7 +311,7 @@ class FlextObservabilityMonitor:
                     value=value,
                     unit=metric_type,
                     source="monitoring_system",
-                )
+                ),
             )
         except c.EXC_MAPPING_TYPE as e:
             return r[m.Observability.MetricEntry].fail_op("build metric entry", e)

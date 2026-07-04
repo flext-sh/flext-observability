@@ -55,7 +55,7 @@ class FlextObservabilityFields:
     def create_timestamp_field(cls) -> m.FieldInfo:
         """Create timestamp field."""
         return m.FieldInfo(
-            default_factory=lambda: u.now(),
+            default_factory=u.now,
             description="Timestamp",
         )
 

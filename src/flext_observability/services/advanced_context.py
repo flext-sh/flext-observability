@@ -123,7 +123,8 @@ class FlextObservabilityAdvancedContext:
             return self._metadata.get(key)
 
         def merge(
-            self, other: FlextObservabilityAdvancedContext.Context
+            self,
+            other: FlextObservabilityAdvancedContext.Context,
         ) -> p.Result[bool]:
             """Merge another context into this one.
 

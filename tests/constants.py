@@ -8,7 +8,8 @@ from flext_observability import FlextObservabilityConstants
 
 
 class TestsFlextObservabilityConstants(
-    FlextTestsConstants, FlextObservabilityConstants
+    FlextTestsConstants,
+    FlextObservabilityConstants,
 ):
     class Observability(FlextObservabilityConstants.Observability):
         class Tests: ...
