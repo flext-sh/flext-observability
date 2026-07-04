@@ -12,19 +12,20 @@ from __future__ import annotations
 
 import time
 
-from flext_observability import (
-    FlextObservability,
+from flext_observability.api import FlextObservability
+from flext_observability.constants import c
+from flext_observability.models import m
+from flext_observability.services.advanced_context import (
     FlextObservabilityAdvancedContext,
-    FlextObservabilityContext,
-    FlextObservabilityCustomMetrics,
-    FlextObservabilityErrorHandling,
-    FlextObservabilityPerformance,
-    FlextObservabilitySampling,
-    c,
-    m,
 )
+from flext_observability.services.context import FlextObservabilityContext
+from flext_observability.services.custom_metrics import FlextObservabilityCustomMetrics
+from flext_observability.services.error_handling import FlextObservabilityErrorHandling
+from flext_observability.services.performance import FlextObservabilityPerformance
+from flext_observability.services.sampling import FlextObservabilitySampling
 
-try:
+
+def _run_http_observability_test() -> None:
     FlextObservabilityContext.update_correlation_id("http-req-001")
     FlextObservabilityContext.update_trace_id("trace-http-001")
     sampler = FlextObservabilitySampling.active_sampler()
@@ -57,9 +58,9 @@ try:
         tags={"method": "POST", "endpoint": "/api/users"},
     )
     assert metric_result.success
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
+
+
+def _run_db_observability_test() -> None:
     factory = FlextObservability.FlextObservabilityMasterFactory()
     start_time = time.time()
     time.sleep(0.02)
@@ -85,9 +86,9 @@ try:
         tags={"system": "postgresql", "operation": "SELECT"},
     )
     assert result.success
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
+
+
+def _run_error_handling_test() -> None:
     FlextObservabilityContext.update_correlation_id("error-test-001")
     handler = FlextObservabilityErrorHandling.active_handler()
     handler.update_escalation_threshold(3)
@@ -100,13 +101,13 @@ try:
         )
         error_result = handler.record_error(error)
         assert error_result.success, "Error should be recorded"
-        should_alert = handler.should_alert_for_error(error)
+        handler.should_alert_for_error(error)
         if i == 2:
             escalated = handler.resolve_escalated_severity(error)
             assert escalated is not None
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
+
+
+def _run_distributed_trace_test() -> None:
     correlation_id = "dist-trace-001"
     FlextObservabilityContext.update_correlation_id(correlation_id)
     factory = FlextObservability.FlextObservabilityMasterFactory()
@@ -141,9 +142,9 @@ try:
         tags={"component": "api"},
     )
     assert api_success.success
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
+
+
+def _run_advanced_context_test() -> None:
     ctx = FlextObservabilityAdvancedContext.active_context()
     ctx.update_metadata("user_id", "user-123")
     ctx.update_metadata("request_id", "req-456")
@@ -165,9 +166,9 @@ try:
     assert not ctx.metadata
     ctx.restore(snapshot)
     assert ctx.resolve_metadata("user_id") == "user-123"
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
+
+
+def _run_custom_metrics_test() -> None:
     registry = FlextObservabilityCustomMetrics.active_registry()
     sampler = FlextObservabilitySampling.active_sampler()
     reg_result = registry.register_metric(
@@ -188,9 +189,9 @@ try:
     sampler.update_operation_rate("user_signup", 1.0)
     metrics = registry.resolve_metrics_by_type(c.Observability.MetricType.COUNTER)
     assert any("user_signup" in m for m in metrics)
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
+
+
+def _run_performance_sampling_test() -> None:
     sampler = FlextObservabilitySampling.active_sampler()
     performance = FlextObservabilityPerformance()
     sampler.update_environment("production")
@@ -204,9 +205,9 @@ try:
     assert performance.performance_acceptable(perf_metrics), (
         "Sampling performance overhead should be acceptable"
     )
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
+
+
+def _run_e2e_workflow_test() -> None:
     FlextObservabilityContext.update_correlation_id("e2e-test-001")
     FlextObservabilityContext.update_trace_id("trace-e2e-001")
     sampler = FlextObservabilitySampling.active_sampler()
@@ -221,7 +222,7 @@ try:
     adv_ctx.update_metadata("workflow_type", "integration_test")
     adv_ctx.update_baggage("test_phase", "11")
     registry = FlextObservabilityCustomMetrics.active_registry()
-    reg_result2 = registry.register_metric(
+    registry.register_metric(
         name="e2e_tests",
         metric_type=c.Observability.MetricType.COUNTER,
         description="E2E workflow tests",
@@ -252,9 +253,9 @@ try:
     assert error_result.success
     result = factory.create_metric("workflow.errors", 1.0, "counter")
     assert result.success
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
+
+
+def _run_multi_service_test() -> None:
     correlation_id = "multi-service-001"
     FlextObservabilityContext.update_correlation_id(correlation_id)
     FlextObservabilityContext.update_trace_id("trace-multi-001")
@@ -274,9 +275,9 @@ try:
     json_snapshot = snapshot.model_dump_json()
     assert json_snapshot is not None
     assert "correlation_id" in json_snapshot
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
+
+
+def _run_component_setup_test() -> None:
     FlextObservabilityContext.update_correlation_id("setup-001")
     assert FlextObservabilityContext.correlation_id() == "setup-001"
     factory = FlextObservability.FlextObservabilityMasterFactory()
@@ -297,5 +298,45 @@ try:
     sampler.update_environment("production")
     should_sample = sampler.should_sample("test", "service")
     assert should_sample is not None
+
+
+try:
+    _run_http_observability_test()
+except (AssertionError, RuntimeError, ValueError, TypeError):
+    pass
+try:
+    _run_db_observability_test()
+except (AssertionError, RuntimeError, ValueError, TypeError):
+    pass
+try:
+    _run_error_handling_test()
+except (AssertionError, RuntimeError, ValueError, TypeError):
+    pass
+try:
+    _run_distributed_trace_test()
+except (AssertionError, RuntimeError, ValueError, TypeError):
+    pass
+try:
+    _run_advanced_context_test()
+except (AssertionError, RuntimeError, ValueError, TypeError):
+    pass
+try:
+    _run_custom_metrics_test()
+except (AssertionError, RuntimeError, ValueError, TypeError):
+    pass
+try:
+    _run_performance_sampling_test()
+except (AssertionError, RuntimeError, ValueError, TypeError):
+    pass
+try:
+    _run_e2e_workflow_test()
+except (AssertionError, RuntimeError, ValueError, TypeError):
+    pass
+try:
+    _run_multi_service_test()
+except (AssertionError, RuntimeError, ValueError, TypeError):
+    pass
+try:
+    _run_component_setup_test()
 except (AssertionError, RuntimeError, ValueError, TypeError):
     pass
