@@ -302,10 +302,9 @@ class FlextObservabilityModels(m):
             extra: Annotated[
                 m.Dict,
                 u.Field(
-                    default_factory=lambda: m.Dict({}),
                     description="Additional context data",
                 ),
-            ]
+            ] = u.Field(default_factory=lambda: m.Dict({}))
 
         # --- Moved from performance.py ---
         class PerformanceMetrics(m.Value):
@@ -319,10 +318,9 @@ class FlextObservabilityModels(m):
             start_time: Annotated[
                 float,
                 u.Field(
-                    default_factory=time.time,
                     description="Operation start time in seconds since epoch",
                 ),
-            ]
+            ] = u.Field(default_factory=time.time)
             end_time: Annotated[
                 float, u.Field(description="Operation end time in seconds since epoch")
             ] = 0.0

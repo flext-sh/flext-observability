@@ -53,8 +53,8 @@ class FlextObservabilityFields:
     @classmethod
     def create_metric_unit_field(cls) -> m.FieldInfo:
         """Create metric unit field."""
-        field: m.FieldInfo = u.Field(
-            c.Observability.DEFAULT_METRIC_UNIT,
+        field: m.FieldInfo = m.FieldInfo(
+            default=c.Observability.DEFAULT_METRIC_UNIT,
             description="Metric unit",
             validate_default=True,
         )
