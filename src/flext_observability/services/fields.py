@@ -5,8 +5,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar
-
 from flext_observability import c, m, u
 
 
@@ -16,19 +14,6 @@ class FlextObservabilityFields:
     Single unified class containing all field validation and definition logic
     for observability entities. Follows FLEXT namespace class pattern.
     """
-
-    METRIC_VALID_UNITS: ClassVar[frozenset[str]] = frozenset({
-        "count",
-        "percent",
-        "bytes",
-        "seconds",
-        "milliseconds",
-        "requests",
-        "errors",
-        "connections",
-        "memory",
-        "cpu",
-    })
 
     @classmethod
     def create_alert_message_field(cls) -> m.FieldInfo:

@@ -22,8 +22,7 @@ from collections.abc import (
     MutableMapping,
 )
 
-from flext_observability import c, e, m, p, r, t
-from flext_observability.utilities import u
+from flext_observability import c, e, m, p, r, t, u
 
 
 class FlextObservabilityCustomMetrics:
@@ -85,20 +84,24 @@ class FlextObservabilityCustomMetrics:
 
             """
             try:
-                if namespace:
-                    keys_to_remove = [
-                        k for k in self._metrics if k.startswith(f"{namespace}:")
-                    ]
-                    for key in keys_to_remove:
-                        del self._metrics[key]
-                else:
-                    self._metrics.clear()
-                FlextObservabilityCustomMetrics.logger.debug(
-                    f"Metrics cleared: {namespace or 'all'}",
-                )
-                return r[bool].ok(value=True)
+                return self._clear_metrics(namespace)
             except c.EXC_MAPPING_TYPE as exc:
                 return e.fail_operation("clear metrics", exc, result_type=r[bool])
+
+        def _clear_metrics(self, namespace: str | None) -> p.Result[bool]:
+            """Clear metrics for one namespace or the complete registry."""
+            if namespace:
+                keys_to_remove = [
+                    key for key in self._metrics if key.startswith(f"{namespace}:")
+                ]
+                for key in keys_to_remove:
+                    del self._metrics[key]
+            else:
+                self._metrics.clear()
+            FlextObservabilityCustomMetrics.logger.debug(
+                f"Metrics cleared: {namespace or 'all'}",
+            )
+            return r[bool].ok(value=True)
 
         def resolve_metrics(self, namespace: str | None = None) -> m.Dict:
             """Resolve all registered metrics.
@@ -222,50 +225,87 @@ class FlextObservabilityCustomMetrics:
 
             """
             try:
-                if not name or not name.strip():
-                    return e.fail_validation(
-                        "Metric name cannot be empty", result_type=r[bool]
-                    )
-                if not description or not description.strip():
-                    return e.fail_validation(
-                        "Metric description cannot be empty", result_type=r[bool]
-                    )
-                metric_input = metric_type.lower()
-                try:
-                    metric_type_enum = m.Observability.MetricTypeInput.model_validate(
-                        obj={"metric_type": metric_input},
-                    ).metric_type
-                except c.ValidationError as exc_validate:
-                    return e.fail_validation(
-                        f"Invalid metric type: {metric_type}. Must be one of ['counter', 'gauge', 'histogram']",
-                        error=exc_validate,
-                        result_type=r[bool],
-                    )
-                namespaced_name = (
-                    f"{namespace}:{name}" if namespace != "default" else name
-                )
-                if namespaced_name in self._metrics:
-                    return e.fail_conflict(
-                        "Metric",
-                        namespaced_name,
-                        reason="already registered",
-                        result_type=r[bool],
-                    )
-                definition = m.Observability.CustomMetricDefinition(
+                return self._register_metric_definition(
                     name=name,
-                    metric_type=metric_type_enum,
+                    metric_type=metric_type,
                     description=description,
                     unit=unit,
-                    labels={},
+                    namespace=namespace,
                 )
-                self._metrics[namespaced_name] = definition
-                self._namespaces[namespace] = namespace
-                FlextObservabilityCustomMetrics.logger.debug(
-                    f"Metric registered: {namespaced_name} ({metric_type_enum.value})",
-                )
-                return r[bool].ok(value=True)
             except c.EXC_MAPPING_TYPE as exc:
                 return e.fail_operation("Metric registration", exc, result_type=r[bool])
+
+        def _register_metric_definition(
+            self,
+            *,
+            name: str,
+            metric_type: str | c.Observability.MetricType,
+            description: str,
+            unit: str,
+            namespace: str,
+        ) -> p.Result[bool]:
+            """Validate and store one metric definition."""
+            validation_result = self._validate_metric_definition_input(
+                name,
+                description,
+                metric_type,
+            )
+            if validation_result.failure:
+                return r[bool].fail(
+                    validation_result.error or "Invalid metric definition",
+                    exception=validation_result.exception,
+                )
+            metric_type_enum = validation_result.value
+            namespaced_name = f"{namespace}:{name}" if namespace != "default" else name
+            if namespaced_name in self._metrics:
+                return e.fail_conflict(
+                    "Metric",
+                    namespaced_name,
+                    reason="already registered",
+                    result_type=r[bool],
+                )
+            self._metrics[namespaced_name] = m.Observability.CustomMetricDefinition(
+                name=name,
+                metric_type=metric_type_enum,
+                description=description,
+                unit=unit,
+                labels={},
+            )
+            self._namespaces[namespace] = namespace
+            FlextObservabilityCustomMetrics.logger.debug(
+                f"Metric registered: {namespaced_name} ({metric_type_enum.value})",
+            )
+            return r[bool].ok(value=True)
+
+        @staticmethod
+        def _validate_metric_definition_input(
+            name: str,
+            description: str,
+            metric_type: str | c.Observability.MetricType,
+        ) -> p.Result[c.Observability.MetricType]:
+            """Validate metric definition fields and resolve its enum type."""
+            if not name or not name.strip():
+                return e.fail_validation(
+                    "Metric name cannot be empty",
+                    result_type=r[c.Observability.MetricType],
+                )
+            if not description or not description.strip():
+                return e.fail_validation(
+                    "Metric description cannot be empty",
+                    result_type=r[c.Observability.MetricType],
+                )
+            metric_input = metric_type.lower()
+            try:
+                metric_type_enum = m.Observability.MetricTypeInput.model_validate(
+                    obj={"metric_type": metric_input},
+                ).metric_type
+            except c.ValidationError as exc_validate:
+                return e.fail_validation(
+                    f"Invalid metric type: {metric_type}. Must be one of ['counter', 'gauge', 'histogram']",
+                    error=exc_validate,
+                    result_type=r[c.Observability.MetricType],
+                )
+            return r[c.Observability.MetricType].ok(metric_type_enum)
 
         def unregister_metric(
             self, name: str, namespace: str = "default"
