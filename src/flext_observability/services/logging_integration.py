@@ -76,6 +76,36 @@ class FlextObservabilityLogging:
             return r[p.Logger].fail_op("Logger creation", e)
 
     @staticmethod
+    def _build_enriched_context(
+        *,
+        include_baggage: bool = False,
+    ) -> m.Observability.LogContext:
+        """Build trace context payload for log enrichment.
+
+        Args:
+            include_baggage: Whether to include baggage in context
+
+        Returns:
+            LogContext populated with current trace context
+
+        """
+        context_payload = m.Observability.LogContext()
+        correlation_id = FlextObservabilityContext.correlation_id()
+        if correlation_id:
+            context_payload.correlation_id = correlation_id
+        trace_id = FlextObservabilityContext.trace_id()
+        if trace_id:
+            context_payload.trace_id = trace_id
+        span_id = FlextObservabilityContext.span_id()
+        if span_id:
+            context_payload.span_id = span_id
+        if include_baggage:
+            baggage = FlextObservabilityContext.resolve_baggage()
+            if baggage is not None:
+                context_payload.baggage = str(baggage)
+        return context_payload
+
+    @staticmethod
     def enrich_log_context(
         *,
         include_baggage: bool = False,
@@ -109,20 +139,9 @@ class FlextObservabilityLogging:
 
         """
         try:
-            context_payload = m.Observability.LogContext()
-            correlation_id = FlextObservabilityContext.correlation_id()
-            if correlation_id:
-                context_payload.correlation_id = correlation_id
-            trace_id = FlextObservabilityContext.trace_id()
-            if trace_id:
-                context_payload.trace_id = trace_id
-            span_id = FlextObservabilityContext.span_id()
-            if span_id:
-                context_payload.span_id = span_id
-            if include_baggage:
-                baggage = FlextObservabilityContext.resolve_baggage()
-                if baggage is not None:
-                    context_payload.baggage = str(baggage)
+            context_payload = FlextObservabilityLogging._build_enriched_context(
+                include_baggage=include_baggage,
+            )
             return r[m.Observability.LogContext].ok(context_payload)
         except c.EXC_MAPPING_TYPE as e:
             return r[m.Observability.LogContext].fail_op("Context enrichment", e)
@@ -186,6 +205,75 @@ class FlextObservabilityLogging:
             return r[bool].fail_op("Trace context injection", e)
 
     @staticmethod
+    def _validate_log_args(level: str, message: str) -> p.Result[bool]:
+        """Validate log level and message arguments.
+
+        Args:
+            level: Log level ("debug", "info", "warning", "error", "critical")
+            message: Log message
+
+        Returns:
+            r[bool] - Ok if arguments are valid
+
+        """
+        if not message:
+            return r[bool].fail("Message must be non-empty string")
+        if level not in {
+            c.Observability.ErrorSeverity.DEBUG,
+            c.Observability.ErrorSeverity.INFO,
+            c.Observability.ErrorSeverity.WARNING,
+            c.Observability.ErrorSeverity.ERROR,
+            c.Observability.ErrorSeverity.CRITICAL,
+        }:
+            return r[bool].fail(f"Invalid log level: {level}")
+        return r[bool].ok(value=True)
+
+    @staticmethod
+    def _emit_log(
+        logger: p.Logger,
+        level: str,
+        message: str,
+        extra: t.ConfigurationMapping | None,
+        *,
+        include_baggage: bool,
+    ) -> p.Result[bool]:
+        """Emit a log message enriched with trace context.
+
+        Args:
+            logger: Logger instance
+            level: Validated log level
+            message: Log message
+            extra: Additional context fields to include
+            include_baggage: Whether to include baggage in logs
+
+        Returns:
+            r[bool] - Ok if logging succeeded
+
+        """
+        context_result = FlextObservabilityLogging.enrich_log_context(
+            include_baggage=include_baggage,
+        )
+        if context_result.failure:
+            return r[bool].fail(
+                f"Failed to get trace context: {context_result.error}",
+            )
+        log_context: t.MutableJsonMapping = context_result.value.model_dump(
+            exclude_none=True,
+        )
+        extra_context: t.JsonValue = log_context.pop("extra", {})
+        if isinstance(extra_context, dict):
+            typed_extra: t.JsonMapping = extra_context
+            log_context.update(typed_extra)
+        if extra:
+            validated_extra = m.Dict.model_validate(extra).root
+            for extra_key, extra_value in validated_extra.items():
+                log_context[extra_key] = t.json_value_adapter().validate_python(
+                    extra_value,
+                )
+        getattr(logger, level)(message, extra=log_context)
+        return r[bool].ok(value=True)
+
+    @staticmethod
     def log_with_context(
         logger: p.Logger,
         level: str,
@@ -224,38 +312,16 @@ class FlextObservabilityLogging:
 
         """
         try:
-            if not message:
-                return r[bool].fail("Message must be non-empty string")
-            if level not in {
-                c.Observability.ErrorSeverity.DEBUG,
-                c.Observability.ErrorSeverity.INFO,
-                c.Observability.ErrorSeverity.WARNING,
-                c.Observability.ErrorSeverity.ERROR,
-                c.Observability.ErrorSeverity.CRITICAL,
-            }:
-                return r[bool].fail(f"Invalid log level: {level}")
-            context_result = FlextObservabilityLogging.enrich_log_context(
+            validation = FlextObservabilityLogging._validate_log_args(level, message)
+            if validation.failure:
+                return validation
+            return FlextObservabilityLogging._emit_log(
+                logger,
+                level,
+                message,
+                extra,
                 include_baggage=include_baggage,
             )
-            if context_result.failure:
-                return r[bool].fail(
-                    f"Failed to get trace context: {context_result.error}",
-                )
-            log_context: t.MutableJsonMapping = context_result.value.model_dump(
-                exclude_none=True,
-            )
-            extra_context: t.JsonValue = log_context.pop("extra", {})
-            if isinstance(extra_context, dict):
-                typed_extra: t.JsonMapping = extra_context
-                log_context.update(typed_extra)
-            if extra:
-                validated_extra = m.Dict.model_validate(extra).root
-                for extra_key, extra_value in validated_extra.items():
-                    log_context[extra_key] = t.json_value_adapter().validate_python(
-                        extra_value,
-                    )
-            getattr(logger, level)(message, extra=log_context)
-            return r[bool].ok(value=True)
         except c.EXC_MAPPING_TYPE as e:
             return r[bool].fail_op("Logging with context", e)
 

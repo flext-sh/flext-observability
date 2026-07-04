@@ -171,6 +171,30 @@ class FlextObservabilityPerformance:
         return within_threshold
 
     @staticmethod
+    def _build_performance_log(
+        metrics: m.Observability.PerformanceMetrics,
+    ) -> tuple[str, str]:
+        """Build log level and message for performance metrics.
+
+        Args:
+            metrics: Performance metrics to format
+
+        Returns:
+            Tuple of (logger method name, formatted message)
+
+        """
+        status = "OK" if metrics.success else "ERROR"
+        level = (
+            c.Observability.ErrorSeverity.DEBUG.value
+            if metrics.success
+            else c.Observability.ErrorSeverity.WARNING.value
+        )
+        message = f"{status} {metrics.operation}: duration={metrics.duration_ms:.2f}ms, memory={metrics.memory_used_mb:.2f}MB, cpu={metrics.cpu_percent:.1f}%"
+        if metrics.error_message:
+            message += f", error={metrics.error_message}"
+        return level, message
+
+    @staticmethod
     def log_performance_metrics(
         metrics: m.Observability.PerformanceMetrics,
     ) -> p.Result[bool]:
@@ -184,19 +208,10 @@ class FlextObservabilityPerformance:
 
         """
         try:
-            status = "OK" if metrics.success else "ERROR"
-            level = (
-                c.Observability.ErrorSeverity.DEBUG.value
-                if metrics.success
-                else c.Observability.ErrorSeverity.WARNING.value
+            level, message = FlextObservabilityPerformance._build_performance_log(
+                metrics,
             )
-            message = f"{status} {metrics.operation}: duration={metrics.duration_ms:.2f}ms, memory={metrics.memory_used_mb:.2f}MB, cpu={metrics.cpu_percent:.1f}%"
-            if metrics.error_message:
-                message += f", error={metrics.error_message}"
-            if level == c.Observability.ErrorSeverity.DEBUG.value:
-                FlextObservabilityPerformance.logger.debug(message)
-            else:
-                FlextObservabilityPerformance.logger.warning(message)
+            getattr(FlextObservabilityPerformance.logger, level)(message)
             return r[bool].ok(value=True)
         except c.EXC_MAPPING_TYPE as e:
             return r[bool].fail(f"Failed to log metrics: {e}")
