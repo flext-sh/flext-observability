@@ -492,9 +492,7 @@ class FlextObservability(
         resolved_labels: t.JsonDict = {}
         if u.mapping(raw_labels):
             resolved_labels = {
-                key: value
-                if value is None or u.primitive(value)
-                else str(value)
+                key: value if value is None or u.primitive(value) else str(value)
                 for key, value in raw_labels.items()
             }
         return resolved_labels

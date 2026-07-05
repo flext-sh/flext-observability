@@ -104,7 +104,9 @@ class TestsFlextObservabilityFactory:
 
     def test_create_alert_builds_titled_alert(self) -> None:
         """``create_alert`` derives the title from the service and keeps the message."""
-        result = _Factory().create_alert("Critical error detected", "monitoring", "critical")
+        result = _Factory().create_alert(
+            "Critical error detected", "monitoring", "critical"
+        )
         tm.that(result.success, eq=True)
         alert = result.value
         tm.that(alert.title, eq="Alert: monitoring")
@@ -130,7 +132,9 @@ class TestsFlextObservabilityFactory:
             ("unrecognized", "warning"),
         ],
     )
-    def test_alert_severity_is_normalized(self, severity_in: str, severity_out: str) -> None:
+    def test_alert_severity_is_normalized(
+        self, severity_in: str, severity_out: str
+    ) -> None:
         """Alert severity aliases normalize to the canonical severity level."""
         result = _Factory().create_alert("msg", "svc", severity_in)
         tm.that(result.success, eq=True)

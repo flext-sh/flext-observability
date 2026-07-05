@@ -269,17 +269,12 @@ class TestsFlextObservabilityPhase11Integration:
 
         first = make_error()
         assert error_handler.record_error(first).success
-        assert (
-            error_handler.resolve_escalated_severity(first) == ErrorSeverity.INFO
-        )
+        assert error_handler.resolve_escalated_severity(first) == ErrorSeverity.INFO
 
         second = make_error()
         assert error_handler.record_error(second).success
         assert error_handler.resolve_error_count(second.fingerprint) == 2
-        assert (
-            error_handler.resolve_escalated_severity(second)
-            == ErrorSeverity.WARNING
-        )
+        assert error_handler.resolve_escalated_severity(second) == ErrorSeverity.WARNING
 
     @pytest.mark.parametrize("bad_threshold", [0, -1])
     def test_update_escalation_threshold_rejects_non_positive(
