@@ -185,11 +185,9 @@ class FlextObservabilityHTTP:
                 else None
             )
             try:
-                validated_start = float(
-                    m.Observability.StartTimePayload.model_validate(
-                        obj={"value": start_time},
-                    ).value,
-                )
+                validated_start = m.Observability.StartTimePayload.model_validate(
+                    obj={"value": start_time},
+                ).value
                 return (time.time() - validated_start) * 1000
             except c.ValidationError:
                 return 0.0
