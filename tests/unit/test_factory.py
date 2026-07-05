@@ -27,17 +27,12 @@ from datetime import datetime
 import pytest
 from flext_tests import tm
 
-from flext_core import FlextContainer, FlextProtocols, FlextResult
+from flext_core import FlextContainer, p, r
 from flext_observability import FlextObservability
 
 __all__ = ["TestsFlextObservabilityFactory"]
 
 _Factory = FlextObservability.FlextObservabilityMasterFactory
-
-type _Create = Callable[
-    [FlextObservability.FlextObservabilityMasterFactory],
-    FlextResult[FlextProtocols.HasModelDump],
-]
 
 
 class TestsFlextObservabilityFactory:
@@ -201,7 +196,10 @@ class TestsFlextObservabilityFactory:
     )
     def test_created_entities_expose_datetime_creation_timestamp(
         self,
-        creator: _Create,
+        creator: Callable[
+            [FlextObservability.FlextObservabilityMasterFactory],
+            r[p.HasModelDump],
+        ],
     ) -> None:
         """Every successfully created entity exposes a datetime ``created_at``."""
         result = creator(_Factory())
