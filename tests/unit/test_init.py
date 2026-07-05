@@ -1,4 +1,4 @@
-"""Test __init__.py coverage for public API exports.
+"""Behavioral tests for the flext-observability public API surface.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -7,11 +7,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
+import pytest
 from flext_tests import tm
 
-import flext_observability
 from flext_core import FlextContainer, c as core_c
 from flext_observability import (
     FlextObservability,
@@ -19,10 +17,8 @@ from flext_observability import (
     __version_info__ as pkg_version_info,
 )
 from tests.constants import c
-from tests.utilities import u
 
-if TYPE_CHECKING:
-    from tests.typings import t
+__all__ = ["TestsFlextObservabilityInit"]
 
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
@@ -33,62 +29,137 @@ clear_global_factory = FlextObservability.clear_global_factory
 
 
 class TestsFlextObservabilityInit:
-    """Test coverage for __init__.py public API exports."""
+    """Public contract of the observability factory API and package exports."""
 
-    def test_flext_health_status_function(self) -> None:
-        """Test health check function coverage."""
-        result = flext_health_check(
-            "flext-observability",
-            c.Observability.HealthStatus.HEALTHY,
-        )
-        tm.that(result.success, eq=True)
-        health_check = result.value
-        tm.that(health_check.status, eq="healthy")
-        tm.that(health_check.component, eq="flext-observability")
-
-    def test_all_public_api_imports(self) -> None:
-        """Test that all __all__ exports can be imported successfully."""
-        nullable_metadata = {"__license__", "__author__", "__url__"}
-        # __version__/__version_info__ shadow the __version__ submodule via
-        # lazy imports; validated separately in test_version_exports.
-        skip_lazy_shadow = {"__version__", "__version_info__", "__all__"}
-        module_all: t.StrSequence = getattr(flext_observability, "__all__", [])
-        for export_name in module_all:
-            if export_name in skip_lazy_shadow:
-                continue
-            exported_item = getattr(flext_observability, export_name)
-            if export_name not in nullable_metadata:
-                tm.that(exported_item, none=False)
-
-    def test_version_exports(self) -> None:
-        """Test version exports are available via __version__ submodule."""
+    def test_version_is_non_empty_string(self) -> None:
+        """__version__ is a non-empty version string."""
         tm.that(pkg_version, is_=str)
-        tm.that(pkg_version, none=False)
+        tm.that(bool(pkg_version), eq=True)
+
+    def test_version_info_is_tuple_with_at_least_three_parts(self) -> None:
+        """__version_info__ exposes at least major/minor/patch."""
         tm.that(pkg_version_info, is_=tuple)
-        tm.that(len(pkg_version_info), gte=3)
+        tm.that(len(pkg_version_info) >= 3, eq=True)
 
-    def test_core_entity_imports(self) -> None:
-        """Test that core entities can be accessed via FlextObservabilityModels."""
-
-    def test_factory_functions_imports(self) -> None:
-        """Test that factory functions can be imported."""
-        tm.that(callable(flext_alert), eq=True)
-        tm.that(callable(flext_health_check), eq=True)
-        tm.that(callable(flext_metric), eq=True)
-        tm.that(callable(flext_trace), eq=True)
-
-    def test_api_functions_imports(self) -> None:
-        """Test that API functions can be imported."""
-        tm.that(callable(flext_health_check), eq=True)
-
-    def test_factory_class_imports(self) -> None:
-        """Test that factory classes can be imported."""
-        tm.that(callable(FlextObservability.FlextObservabilityMasterFactory), eq=True)
-        tm.that(callable(global_factory), eq=True)
-        tm.that(callable(clear_global_factory), eq=True)
-
-    def test_flext_core_reexports(self) -> None:
-        """Test that flext-core re-exports are available."""
+    def test_core_reexports_are_usable(self) -> None:
+        """flext-core primitives are re-exported and usable through the package."""
         tm.that(callable(FlextContainer), eq=True)
         tm.that(core_c, none=False)
-        tm.that(callable(u.create_module_logger), eq=True)
+
+    @pytest.mark.parametrize(
+        ("name", "value", "unit"),
+        [
+            ("requests", 1.0, "count"),
+            ("latency", 12.5, "ms"),
+            ("throughput", 3.0, "rps"),
+        ],
+    )
+    def test_flext_metric_returns_metric_with_provided_state(
+        self,
+        name: str,
+        value: float,
+        unit: str,
+    ) -> None:
+        """flext_metric succeeds and exposes the supplied fields on the entity."""
+        result = flext_metric(name, value, unit)
+
+        tm.that(result.success, eq=True)
+        metric = result.value
+        tm.that(metric.name, eq=name)
+        tm.that(metric.value, eq=value)
+        tm.that(metric.unit, eq=unit)
+
+    @pytest.mark.parametrize(
+        ("name", "value"),
+        [
+            ("", 1.0),
+            ("valid", float("nan")),
+        ],
+    )
+    def test_flext_metric_fails_on_invalid_input(
+        self,
+        name: str,
+        value: float,
+    ) -> None:
+        """flext_metric reports failure with an error for invalid inputs."""
+        result = flext_metric(name, value)
+
+        tm.that(result.success, eq=False)
+        tm.that(bool(result.error), eq=True)
+
+    def test_flext_trace_generates_trace_id_when_absent(self) -> None:
+        """flext_trace succeeds and synthesizes a non-empty trace id."""
+        result = flext_trace("checkout")
+
+        tm.that(result.success, eq=True)
+        trace = result.value
+        tm.that(trace.name, eq="checkout")
+        tm.that(bool(trace.trace_id), eq=True)
+
+    def test_flext_trace_preserves_explicit_trace_id(self) -> None:
+        """A caller-supplied trace id is retained on the entity."""
+        result = flext_trace("checkout", trace_id="trace-123")
+
+        tm.that(result.success, eq=True)
+        tm.that(result.value.trace_id, eq="trace-123")
+
+    def test_flext_trace_fails_on_empty_name(self) -> None:
+        """flext_trace rejects an empty name with a failure result."""
+        result = flext_trace("")
+
+        tm.that(result.success, eq=False)
+        tm.that(bool(result.error), eq=True)
+
+    def test_flext_alert_applies_defaults_and_provided_fields(self) -> None:
+        """flext_alert builds an alert with supplied title/message and defaults."""
+        result = flext_alert(title="Disk full", message="Root volume at 95%")
+
+        tm.that(result.success, eq=True)
+        alert = result.value
+        tm.that(alert.title, eq="Disk full")
+        tm.that(alert.message, eq="Root volume at 95%")
+        tm.that(bool(alert.severity), eq=True)
+
+    @pytest.mark.parametrize(
+        "status",
+        [
+            c.Observability.HealthStatus.HEALTHY,
+            c.Observability.HealthStatus.DEGRADED,
+            c.Observability.HealthStatus.UNHEALTHY,
+        ],
+    )
+    def test_flext_health_check_records_component_and_status(
+        self,
+        status: c.Observability.HealthStatus,
+    ) -> None:
+        """flext_health_check echoes the component and status on the entity."""
+        result = flext_health_check("flext-observability", status)
+
+        tm.that(result.success, eq=True)
+        health = result.value
+        tm.that(health.component, eq="flext-observability")
+        tm.that(health.status, eq=status.value)
+
+    def test_flext_health_check_fails_on_empty_component(self) -> None:
+        """flext_health_check rejects an empty component name."""
+        result = flext_health_check("")
+
+        tm.that(result.success, eq=False)
+        tm.that(bool(result.error), eq=True)
+
+    def test_global_factory_is_idempotent(self) -> None:
+        """global_factory returns the same instance until it is cleared."""
+        clear_global_factory()
+        first = global_factory()
+        second = global_factory()
+
+        tm.that(first is second, eq=True)
+
+    def test_clear_global_factory_forces_a_fresh_instance(self) -> None:
+        """clear_global_factory resets the cached instance."""
+        clear_global_factory()
+        original = global_factory()
+        clear_global_factory()
+        replacement = global_factory()
+
+        tm.that(replacement is original, eq=False)

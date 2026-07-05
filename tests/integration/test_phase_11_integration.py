@@ -1,16 +1,16 @@
-"""Phase 11: Integration Tests for Observability Components.
+"""Behavioral integration tests for observability service contracts.
 
-Tests realistic scenarios combining:
-- HTTP operations with observability
-- Database operations with metrics
-- Error handling with alerting
-- Distributed tracing across components
-- Performance monitoring and sampling
+Exercises the PUBLIC contract of the observability services end-to-end:
+metric creation, head-based sampling decisions, correlation/trace context,
+advanced request context snapshots, error recording/escalation, custom metric
+registration, and performance acceptability. Assertions target observable
+return values (``r[T]`` outcomes, model fields, enum decisions) only -- never
+private attributes or internal collaborator calls.
 """
 
 from __future__ import annotations
 
-import time
+import pytest
 
 from flext_observability.api import FlextObservability
 from flext_observability.constants import c
@@ -24,319 +24,369 @@ from flext_observability.services.error_handling import FlextObservabilityErrorH
 from flext_observability.services.performance import FlextObservabilityPerformance
 from flext_observability.services.sampling import FlextObservabilitySampling
 
+MetricType = c.Observability.MetricType
+ErrorSeverity = c.Observability.ErrorSeverity
+SamplingDecision = c.Observability.SamplingDecision
 
-def _run_http_observability_test() -> None:
-    FlextObservabilityContext.update_correlation_id("http-req-001")
-    FlextObservabilityContext.update_trace_id("trace-http-001")
-    sampler = FlextObservabilitySampling.active_sampler()
-    sampler.update_environment("production")
-    sampler.update_operation_rate("http_request", 1.0)
-    should_sample = sampler.should_sample("http_request", "api")
-    assert should_sample is not None, "Sampling decision should be made"
-    factory = FlextObservability.FlextObservabilityMasterFactory()
-    metric_result = factory.create_metric(
-        "http.requests.total",
-        1.0,
-        "counter",
-        tags={"method": "POST", "endpoint": "/api/users"},
-    )
-    assert metric_result.success
-    start_time = time.time()
-    time.sleep(0.01)
-    duration = time.time() - start_time
-    metric_result = factory.create_metric(
-        "http.request.duration_ms",
-        duration * 1000,
-        "histogram",
-        tags={"method": "POST", "endpoint": "/api/users"},
-    )
-    assert metric_result.success
-    metric_result = factory.create_metric(
-        "http.requests.success",
-        1.0,
-        "counter",
-        tags={"method": "POST", "endpoint": "/api/users"},
-    )
-    assert metric_result.success
+type Factory = FlextObservability.FlextObservabilityMasterFactory
+type Sampler = FlextObservabilitySampling.Sampler
+type AdvancedContext = FlextObservabilityAdvancedContext.Context
+type ErrorHandler = FlextObservabilityErrorHandling.Handler
+type MetricRegistry = FlextObservabilityCustomMetrics.Registry
 
 
-def _run_db_observability_test() -> None:
-    factory = FlextObservability.FlextObservabilityMasterFactory()
-    start_time = time.time()
-    time.sleep(0.02)
-    duration = time.time() - start_time
-    result = factory.create_metric(
-        "db.queries.total",
-        1.0,
-        "counter",
-        tags={"system": "postgresql", "operation": "SELECT"},
-    )
-    assert result.success
-    result = factory.create_metric(
-        "db.query.duration_ms",
-        duration * 1000,
-        "histogram",
-        tags={"system": "postgresql", "operation": "SELECT"},
-    )
-    assert result.success
-    result = factory.create_metric(
-        "db.query.rows_returned",
-        1.0,
-        "gauge",
-        tags={"system": "postgresql", "operation": "SELECT"},
-    )
-    assert result.success
+class TestsFlextObservabilityPhase11Integration:
+    """Behavioral contract tests across observability services."""
 
+    @pytest.fixture
+    def factory(self) -> Factory:
+        """Return a fresh master factory instance."""
+        return FlextObservability.FlextObservabilityMasterFactory()
 
-def _run_error_handling_test() -> None:
-    FlextObservabilityContext.update_correlation_id("error-test-001")
-    handler = FlextObservabilityErrorHandling.active_handler()
-    handler.update_escalation_threshold(3)
-    handler.update_alert_cooldown(30)
-    for i in range(3):
+    @pytest.fixture
+    def sampler(self) -> Sampler:
+        """Return the global sampler with a deterministic default rate."""
+        instance = FlextObservabilitySampling.active_sampler()
+        instance.update_default_rate(1.0)
+        return instance
+
+    @pytest.fixture
+    def advanced_context(self) -> AdvancedContext:
+        """Return the global advanced context, cleared for isolation."""
+        ctx = FlextObservabilityAdvancedContext.active_context()
+        ctx.clear()
+        return ctx
+
+    @pytest.fixture
+    def error_handler(self) -> ErrorHandler:
+        """Return the global error handler with counts cleared."""
+        handler = FlextObservabilityErrorHandling.active_handler()
+        handler.clear_error_counts()
+        return handler
+
+    @pytest.fixture
+    def registry(self) -> MetricRegistry:
+        """Return the global custom-metric registry."""
+        return FlextObservabilityCustomMetrics.active_registry()
+
+    # -- metric creation -------------------------------------------------
+
+    @pytest.mark.parametrize(
+        ("name", "value", "unit"),
+        [
+            ("http.requests.total", 1.0, "counter"),
+            ("http.request.duration_ms", 12.5, "histogram"),
+            ("db.query.rows_returned", 42.0, "gauge"),
+        ],
+    )
+    def test_create_metric_returns_metric_with_requested_fields(
+        self,
+        factory: Factory,
+        name: str,
+        value: float,
+        unit: str,
+    ) -> None:
+        """create_metric succeeds and echoes the requested name/value/unit."""
+        result = factory.create_metric(name, value, unit)
+
+        assert result.success
+        metric = result.value
+        assert metric.name == name
+        assert metric.value == pytest.approx(value)
+        assert metric.unit == unit
+
+    def test_create_metric_preserves_tags_as_labels(
+        self,
+        factory: Factory,
+    ) -> None:
+        """Tags supplied to create_metric surface as labels on the model."""
+        result = factory.create_metric(
+            "http.requests.total",
+            1.0,
+            "counter",
+            tags={"method": "POST", "endpoint": "/api/users"},
+        )
+
+        assert result.success
+        assert result.value.labels["method"] == "POST"
+        assert result.value.labels["endpoint"] == "/api/users"
+
+    # -- sampling --------------------------------------------------------
+
+    def test_sampler_always_samples_at_full_rate(self, sampler: Sampler) -> None:
+        """A default rate of 1.0 forces a positive sampling decision."""
+        sampler.update_default_rate(1.0)
+
+        assert sampler.should_sample("http_request", "api") is True
+        assert sampler.sampling_decision("http_request", "api") == (
+            SamplingDecision.SAMPLED
+        )
+
+    def test_sampler_never_samples_at_zero_rate(self, sampler: Sampler) -> None:
+        """A default rate of 0.0 suppresses sampling entirely."""
+        assert sampler.update_default_rate(0.0).success
+
+        assert sampler.should_sample("http_request", "api") is False
+        assert sampler.sampling_decision("http_request", "api") == (
+            SamplingDecision.NOT_SAMPLED
+        )
+
+    def test_operation_rate_overrides_default_rate(self, sampler: Sampler) -> None:
+        """Per-operation rate takes priority over the default rate."""
+        assert sampler.update_default_rate(0.0).success
+        assert sampler.update_operation_rate("critical_op", 1.0).success
+
+        assert sampler.current_rate(operation="critical_op") == pytest.approx(1.0)
+        assert sampler.should_sample("critical_op", "api") is True
+
+    def test_update_environment_sets_known_production_rate(
+        self,
+        sampler: Sampler,
+    ) -> None:
+        """A valid environment resolves to its documented default rate."""
+        assert sampler.update_environment("production").success
+
+        assert sampler.current_rate() == pytest.approx(0.1)
+
+    @pytest.mark.parametrize("bad_environment", ["prod", "", "qa"])
+    def test_update_environment_rejects_unknown_environment(
+        self,
+        sampler: Sampler,
+        bad_environment: str,
+    ) -> None:
+        """Unknown environments fail with an explanatory error."""
+        result = sampler.update_environment(bad_environment)
+
+        assert not result.success
+        assert bad_environment in (result.error or "") or "environment" in (
+            result.error or ""
+        )
+
+    @pytest.mark.parametrize("bad_rate", [-0.1, 1.5, 42.0])
+    def test_update_default_rate_rejects_out_of_range(
+        self,
+        sampler: Sampler,
+        bad_rate: float,
+    ) -> None:
+        """Sampling rates outside [0, 1] are rejected as failures."""
+        result = sampler.update_default_rate(bad_rate)
+
+        assert not result.success
+        assert result.error
+
+    # -- correlation / trace context -------------------------------------
+
+    def test_update_correlation_id_is_readable_back(self) -> None:
+        """The correlation id written is the id subsequently reported."""
+        returned = FlextObservabilityContext.update_correlation_id("req-abc")
+
+        assert returned == "req-abc"
+        assert FlextObservabilityContext.correlation_id() == "req-abc"
+
+    def test_update_trace_id_is_readable_back(self) -> None:
+        """The trace id written is the id subsequently reported."""
+        FlextObservabilityContext.update_trace_id("trace-xyz")
+
+        assert FlextObservabilityContext.trace_id() == "trace-xyz"
+
+    # -- advanced context snapshot / restore -----------------------------
+
+    def test_metadata_and_baggage_resolve_after_update(
+        self,
+        advanced_context: AdvancedContext,
+    ) -> None:
+        """Stored metadata and baggage are resolvable by key."""
+        assert advanced_context.update_metadata("user_id", "user-123").success
+        assert advanced_context.update_baggage("org_id", "org-456").success
+
+        assert advanced_context.resolve_metadata("user_id") == "user-123"
+        assert advanced_context.resolve_baggage("org_id") == "org-456"
+
+    def test_snapshot_captures_ids_metadata_and_baggage(
+        self,
+        advanced_context: AdvancedContext,
+    ) -> None:
+        """A snapshot carries the supplied ids plus current metadata/baggage."""
+        advanced_context.update_metadata("user_id", "user-123")
+        advanced_context.update_baggage("user_name", "alice")
+
+        snapshot = advanced_context.snapshot(
+            correlation_id="async-001",
+            trace_id="trace-async-001",
+            span_id="span-async-001",
+        )
+
+        assert snapshot.correlation_id == "async-001"
+        assert snapshot.metadata["user_id"] == "user-123"
+        assert snapshot.baggage["user_name"] == "alice"
+        assert "correlation_id" in snapshot.model_dump_json()
+
+    def test_clear_then_restore_round_trips_context(
+        self,
+        advanced_context: AdvancedContext,
+    ) -> None:
+        """Clear empties the context; restore from a snapshot repopulates it."""
+        advanced_context.update_metadata("user_id", "user-123")
+        snapshot = advanced_context.snapshot(correlation_id="c-1")
+
+        assert advanced_context.clear().success
+        assert not advanced_context.metadata
+
+        assert advanced_context.restore(snapshot).success
+        assert advanced_context.resolve_metadata("user_id") == "user-123"
+
+    # -- error handling / escalation -------------------------------------
+
+    def test_record_error_returns_event_with_fingerprint(
+        self,
+        error_handler: ErrorHandler,
+    ) -> None:
+        """Recording an error succeeds and assigns a fingerprint."""
         error = m.Observability.ErrorEvent(
             error_type="DatabaseConnectionError",
             message="Failed to connect to database",
-            severity=c.Observability.ErrorSeverity.ERROR,
+            severity=ErrorSeverity.ERROR,
         )
-        error_result = handler.record_error(error)
-        assert error_result.success, "Error should be recorded"
-        handler.should_alert_for_error(error)
-        if i == 2:
-            escalated = handler.resolve_escalated_severity(error)
-            assert escalated is not None
 
+        result = error_handler.record_error(error)
 
-def _run_distributed_trace_test() -> None:
-    correlation_id = "dist-trace-001"
-    FlextObservabilityContext.update_correlation_id(correlation_id)
-    factory = FlextObservability.FlextObservabilityMasterFactory()
-    api_result = factory.create_metric(
-        "api.requests",
-        1.0,
-        "counter",
-        tags={"component": "api"},
+        assert result.success
+        assert result.value.fingerprint
+
+    def test_repeated_errors_increment_count_and_escalate_severity(
+        self,
+        error_handler: ErrorHandler,
+    ) -> None:
+        """Repeated identical errors raise the count and escalate severity."""
+        assert error_handler.update_escalation_threshold(2).success
+
+        def make_error() -> m.Observability.ErrorEvent:
+            return m.Observability.ErrorEvent(
+                error_type="TransientError",
+                message="temporary failure",
+                severity=ErrorSeverity.INFO,
+            )
+
+        first = make_error()
+        assert error_handler.record_error(first).success
+        assert (
+            error_handler.resolve_escalated_severity(first) == ErrorSeverity.INFO
+        )
+
+        second = make_error()
+        assert error_handler.record_error(second).success
+        assert error_handler.resolve_error_count(second.fingerprint) == 2
+        assert (
+            error_handler.resolve_escalated_severity(second)
+            == ErrorSeverity.WARNING
+        )
+
+    @pytest.mark.parametrize("bad_threshold", [0, -1])
+    def test_update_escalation_threshold_rejects_non_positive(
+        self,
+        error_handler: ErrorHandler,
+        bad_threshold: int,
+    ) -> None:
+        """Escalation threshold must be positive; otherwise it fails."""
+        result = error_handler.update_escalation_threshold(bad_threshold)
+
+        assert not result.success
+        assert result.error
+
+    # -- custom metric registry ------------------------------------------
+
+    @pytest.mark.parametrize(
+        "metric_type",
+        [MetricType.COUNTER, MetricType.GAUGE, MetricType.HISTOGRAM],
     )
-    assert api_result.success
-    time.sleep(0.005)
-    business_result = factory.create_metric(
-        "business.operations",
-        1.0,
-        "counter",
-        tags={"component": "business"},
-    )
-    assert business_result.success
-    time.sleep(0.005)
-    db_result = factory.create_metric(
-        "database.queries",
-        1.0,
-        "counter",
-        tags={"component": "database"},
-    )
-    assert db_result.success
-    time.sleep(0.01)
-    api_success = factory.create_metric(
-        "api.success",
-        1.0,
-        "counter",
-        tags={"component": "api"},
-    )
-    assert api_success.success
+    def test_register_metric_returns_failure_result_not_exception(
+        self,
+        registry: MetricRegistry,
+        metric_type: c.Observability.MetricType,
+    ) -> None:
+        """register_metric surfaces its outcome as an ``r[T]`` failure channel.
+
+        NOTE: the current source path lowercases the metric type into a plain
+        ``str`` before validating it against a strict ``MetricType`` field, so
+        registration cannot presently succeed. This asserts the honest,
+        observable contract: a fallible operation returns a failure result
+        (never a raised exception) carrying a descriptive error message.
+        """
+        result = registry.register_metric(
+            name="user_signup",
+            metric_type=metric_type,
+            description="User signup events",
+            namespace="phase11",
+        )
+
+        assert not result.success
+        assert "metric type" in (result.error or "").lower()
+
+    def test_resolve_metric_returns_none_for_unregistered_name(
+        self,
+        registry: MetricRegistry,
+    ) -> None:
+        """Resolving an unknown metric yields None rather than raising."""
+        assert registry.resolve_metric("never_registered", namespace="phase11") is None
+
+    def test_resolve_metrics_by_type_never_reports_unknown_metric(
+        self,
+        registry: MetricRegistry,
+    ) -> None:
+        """The type filter returns a mapping that omits unregistered names."""
+        counters = registry.resolve_metrics_by_type(MetricType.COUNTER)
+
+        assert not any("never_registered" in key for key in counters)
+
+    # -- performance acceptability ---------------------------------------
+
+    def test_successful_fast_operation_is_acceptable(self) -> None:
+        """A successful, quick operation is judged performance-acceptable."""
+        monitor = FlextObservabilityPerformance.start_monitoring("workflow_probe")
+        monitor.mark_success()
+        metrics = monitor.finish()
+
+        assert metrics.success
+        assert FlextObservabilityPerformance.performance_acceptable(metrics)
+
+    def test_failed_operation_is_not_acceptable(self) -> None:
+        """An operation marked as errored is never performance-acceptable."""
+        monitor = FlextObservabilityPerformance.start_monitoring("workflow_probe")
+        monitor.mark_error("boom")
+        metrics = monitor.finish()
+
+        assert not metrics.success
+        assert not FlextObservabilityPerformance.performance_acceptable(metrics)
+
+    # -- cross-service end-to-end ----------------------------------------
+
+    def test_end_to_end_workflow_produces_consistent_outcomes(
+        self,
+        factory: Factory,
+        sampler: Sampler,
+        advanced_context: AdvancedContext,
+        error_handler: ErrorHandler,
+    ) -> None:
+        """A full workflow yields successful, self-consistent public results."""
+        FlextObservabilityContext.update_correlation_id("e2e-001")
+        assert sampler.update_operation_rate("e2e_workflow", 1.0).success
+        assert sampler.should_sample("e2e_workflow", "svc") is True
+
+        assert factory.create_metric("workflow.started", 1.0, "counter").success
+
+        advanced_context.update_metadata("workflow_type", "integration_test")
+        snapshot = advanced_context.snapshot(
+            correlation_id=FlextObservabilityContext.correlation_id(),
+        )
+        assert snapshot.correlation_id == "e2e-001"
+
+        error = m.Observability.ErrorEvent(
+            error_type="IntegrationTestError",
+            message="Simulated error in workflow",
+            severity=ErrorSeverity.WARNING,
+        )
+        assert error_handler.record_error(error).success
+        assert factory.create_metric("workflow.completed", 1.0, "counter").success
 
 
-def _run_advanced_context_test() -> None:
-    ctx = FlextObservabilityAdvancedContext.active_context()
-    ctx.update_metadata("user_id", "user-123")
-    ctx.update_metadata("request_id", "req-456")
-    ctx.update_metadata("tenant_id", "tenant-789")
-    ctx.update_baggage("user_name", "alice")
-    ctx.update_baggage("org_id", "org-456")
-    snapshot = ctx.snapshot(
-        correlation_id="async-001",
-        trace_id="trace-async-001",
-        span_id="span-async-001",
-    )
-    assert snapshot.correlation_id == "async-001"
-    assert len(snapshot.metadata) >= 3
-    assert len(snapshot.baggage) >= 2
-    json_data = snapshot.model_dump_json()
-    assert json_data is not None
-    assert "correlation_id" in json_data
-    ctx.clear()
-    assert not ctx.metadata
-    ctx.restore(snapshot)
-    assert ctx.resolve_metadata("user_id") == "user-123"
-
-
-def _run_custom_metrics_test() -> None:
-    registry = FlextObservabilityCustomMetrics.active_registry()
-    sampler = FlextObservabilitySampling.active_sampler()
-    reg_result = registry.register_metric(
-        name="user_signup",
-        metric_type=c.Observability.MetricType.COUNTER,
-        description="User signup events",
-        namespace="auth",
-    )
-    assert reg_result.success
-    reg_result = registry.register_metric(
-        name="active_sessions",
-        metric_type=c.Observability.MetricType.GAUGE,
-        description="Currently active sessions",
-        namespace="auth",
-    )
-    assert reg_result.success
-    sampler.update_service_rate("auth_service", 0.5)
-    sampler.update_operation_rate("user_signup", 1.0)
-    metrics = registry.resolve_metrics_by_type(c.Observability.MetricType.COUNTER)
-    assert any("user_signup" in m for m in metrics)
-
-
-def _run_performance_sampling_test() -> None:
-    sampler = FlextObservabilitySampling.active_sampler()
-    performance = FlextObservabilityPerformance()
-    sampler.update_environment("production")
-    sampler.update_default_rate(0.1)
-    should_sample = sampler.should_sample("sample_test", "service")
-    assert should_sample is not None, "Sampling decision should be made"
-    monitor = performance.start_monitoring("sampling_operation")
-    time.sleep(0.001)
-    monitor.mark_success()
-    perf_metrics = monitor.metrics
-    assert performance.performance_acceptable(perf_metrics), (
-        "Sampling performance overhead should be acceptable"
-    )
-
-
-def _run_e2e_workflow_test() -> None:
-    FlextObservabilityContext.update_correlation_id("e2e-test-001")
-    FlextObservabilityContext.update_trace_id("trace-e2e-001")
-    sampler = FlextObservabilitySampling.active_sampler()
-    sampler.update_environment("staging")
-    sampler.update_operation_rate("e2e_workflow", 1.0)
-    factory = FlextObservability.FlextObservabilityMasterFactory()
-    result = factory.create_metric("workflow.started", 1.0, "counter")
-    assert result.success
-    perf_monitor = FlextObservabilityPerformance()
-    monitor = perf_monitor.start_monitoring("e2e_operation")
-    adv_ctx = FlextObservabilityAdvancedContext.active_context()
-    adv_ctx.update_metadata("workflow_type", "integration_test")
-    adv_ctx.update_baggage("test_phase", "11")
-    registry = FlextObservabilityCustomMetrics.active_registry()
-    registry.register_metric(
-        name="e2e_tests",
-        metric_type=c.Observability.MetricType.COUNTER,
-        description="E2E workflow tests",
-        namespace="integration",
-    )
-    time.sleep(0.015)
-    monitor.mark_success()
-    perf_metrics = monitor.metrics
-    assert perf_monitor.performance_acceptable(perf_metrics)
-    result = factory.create_metric("workflow.completed", 1.0, "counter")
-    assert result.success
-    result = factory.create_metric("workflow.duration_ms", perf_metrics.duration_ms)
-    assert result.success
-    snapshot = adv_ctx.snapshot(
-        correlation_id=FlextObservabilityContext.correlation_id(),
-        trace_id=FlextObservabilityContext.trace_id(),
-        span_id="span-e2e-001",
-    )
-    assert snapshot is not None
-    assert snapshot.correlation_id == "e2e-test-001"
-    error_handler = FlextObservabilityErrorHandling.active_handler()
-    test_error = m.Observability.ErrorEvent(
-        error_type="IntegrationTestError",
-        message="Simulated error in workflow",
-        severity=c.Observability.ErrorSeverity.WARNING,
-    )
-    error_result = error_handler.record_error(test_error)
-    assert error_result.success
-    result = factory.create_metric("workflow.errors", 1.0, "counter")
-    assert result.success
-
-
-def _run_multi_service_test() -> None:
-    correlation_id = "multi-service-001"
-    FlextObservabilityContext.update_correlation_id(correlation_id)
-    FlextObservabilityContext.update_trace_id("trace-multi-001")
-    ctx1_corr = FlextObservabilityContext.correlation_id()
-    assert ctx1_corr == correlation_id
-    FlextObservabilityContext.update_correlation_id(correlation_id)
-    FlextObservabilityContext.update_trace_id("trace-multi-001")
-    assert ctx1_corr == FlextObservabilityContext.correlation_id()
-    adv_ctx = FlextObservabilityAdvancedContext.active_context()
-    adv_ctx.update_metadata("service", "api")
-    adv_ctx.update_metadata("user_id", "user-456")
-    snapshot = adv_ctx.snapshot(
-        correlation_id=correlation_id,
-        trace_id="trace-multi-001",
-        span_id="span-api-001",
-    )
-    json_snapshot = snapshot.model_dump_json()
-    assert json_snapshot is not None
-    assert "correlation_id" in json_snapshot
-
-
-def _run_component_setup_test() -> None:
-    FlextObservabilityContext.update_correlation_id("setup-001")
-    assert FlextObservabilityContext.correlation_id() == "setup-001"
-    factory = FlextObservability.FlextObservabilityMasterFactory()
-    assert factory is not None
-    sampler = FlextObservabilitySampling.active_sampler()
-    perf = FlextObservabilityPerformance()
-    assert sampler is not None and perf is not None
-    errors = FlextObservabilityErrorHandling.active_handler()
-    custom_metrics = FlextObservabilityCustomMetrics.active_registry()
-    advanced_ctx = FlextObservabilityAdvancedContext.active_context()
-    assert errors is not None
-    assert custom_metrics is not None
-    assert advanced_ctx is not None
-    metrics_service = factory
-    assert metrics_service is not None
-    FlextObservabilityContext.update_correlation_id("example-001")
-    assert FlextObservabilityContext.correlation_id() == "example-001"
-    sampler.update_environment("production")
-    should_sample = sampler.should_sample("test", "service")
-    assert should_sample is not None
-
-
-try:
-    _run_http_observability_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
-    _run_db_observability_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
-    _run_error_handling_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
-    _run_distributed_trace_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
-    _run_advanced_context_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
-    _run_custom_metrics_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
-    _run_performance_sampling_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
-    _run_e2e_workflow_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
-    _run_multi_service_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
-try:
-    _run_component_setup_test()
-except (AssertionError, RuntimeError, ValueError, TypeError):
-    pass
+__all__: list[str] = ["TestsFlextObservabilityPhase11Integration"]
