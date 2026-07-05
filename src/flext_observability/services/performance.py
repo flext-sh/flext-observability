@@ -74,11 +74,20 @@ class FlextObservabilityPerformance:
                 PerformanceMetrics - Operation performance data
 
             """
-            self.metrics.end_time = time.time()
-            self.metrics.calculate_duration()
+            end_time = self.metrics.end_time
+            if end_time <= 0:
+                end_time = time.time()
             final_memory = self._memory_usage()
-            self.metrics.memory_used_mb = max(0, final_memory - self._initial_memory)
-            self.metrics.cpu_percent = self._cpu_percent()
+            memory_used_mb = max(0, final_memory - self._initial_memory)
+            cpu_percent = self._cpu_percent()
+            self.metrics = self.metrics.model_copy(
+                update={
+                    "end_time": end_time,
+                    "memory_used_mb": memory_used_mb,
+                    "cpu_percent": cpu_percent,
+                },
+            )
+            self.metrics = self.metrics.calculate_duration()
             return self.metrics
 
         def mark_error(self, error_message: str) -> None:
@@ -88,12 +97,13 @@ class FlextObservabilityPerformance:
                 error_message: Error description
 
             """
-            self.metrics.success = False
-            self.metrics.error_message = error_message
+            self.metrics = self.metrics.model_copy(
+                update={"success": False, "error_message": error_message},
+            )
 
         def mark_success(self) -> None:
             """Mark operation as successful."""
-            self.metrics.success = True
+            self.metrics = self.metrics.model_copy(update={"success": True})
 
         def _cpu_percent(self) -> float:
             """Get current CPU usage percent."""

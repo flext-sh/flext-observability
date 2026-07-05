@@ -89,21 +89,21 @@ class FlextObservabilityLogging:
             LogContext populated with current trace context
 
         """
-        context_payload = m.Observability.LogContext()
+        updates: dict[str, str] = {}
         correlation_id = FlextObservabilityContext.correlation_id()
         if correlation_id:
-            context_payload.correlation_id = correlation_id
+            updates["correlation_id"] = correlation_id
         trace_id = FlextObservabilityContext.trace_id()
         if trace_id:
-            context_payload.trace_id = trace_id
+            updates["trace_id"] = trace_id
         span_id = FlextObservabilityContext.span_id()
         if span_id:
-            context_payload.span_id = span_id
+            updates["span_id"] = span_id
         if include_baggage:
             baggage = FlextObservabilityContext.resolve_baggage()
             if baggage is not None:
-                context_payload.baggage = str(baggage)
-        return context_payload
+                updates["baggage"] = str(baggage)
+        return m.Observability.LogContext().model_copy(update=updates)
 
     @staticmethod
     def enrich_log_context(

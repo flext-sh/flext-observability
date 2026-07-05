@@ -13,7 +13,7 @@ from __future__ import annotations
 import time
 from hashlib import sha256
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Annotated, ClassVar
+from typing import TYPE_CHECKING, Annotated, Self
 from uuid import uuid4
 
 from flext_core import FlextUtilities, m
@@ -260,8 +260,6 @@ class FlextObservabilityModels(m):
         class ErrorEvent(m.Value):
             """Error event with fingerprinting for deduplication and alerting."""
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
-
             error_type: Annotated[
                 t.NonEmptyStr,
                 u.Field(description="Error classification type"),
@@ -280,19 +278,26 @@ class FlextObservabilityModels(m):
                 u.Field(description="Correlation identifier"),
             ] = ""
 
-            def calculate_fingerprint(self) -> None:
-                """Calculate SHA256 fingerprint from error type and message."""
-                self.fingerprint = sha256(
-                    f"{self.error_type}:{self.message}".encode(),
-                ).hexdigest()
+            def calculate_fingerprint(self) -> Self:
+                """Calculate SHA256 fingerprint from error type and message.
+
+                Returns:
+                    Self: A new instance with the fingerprint populated.
+
+                """
+                return self.model_copy(
+                    update={
+                        "fingerprint": sha256(
+                            f"{self.error_type}:{self.message}".encode(),
+                        ).hexdigest(),
+                    },
+                )
 
         # --- Moved from health.py ---
 
         # --- Moved from logging_integration.py ---
         class LogContext(m.Value):
             """Trace context for enriching log entries with correlation and span IDs."""
-
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
 
             correlation_id: Annotated[
                 str | None,
@@ -320,8 +325,6 @@ class FlextObservabilityModels(m):
         # --- Moved from performance.py ---
         class PerformanceMetrics(m.Value):
             """Metrics for tracking performance of observability operations."""
-
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
 
             operation: Annotated[
                 t.NonEmptyStr,
@@ -358,11 +361,23 @@ class FlextObservabilityModels(m):
                 u.Field(description="Error message if operation failed"),
             ] = ""
 
-            def calculate_duration(self) -> None:
-                """Calculate operation duration in milliseconds from start and end times."""
-                if self.end_time <= 0:
-                    self.end_time = time.time()
-                self.duration_ms = max(0.0, (self.end_time - self.start_time) * 1000.0)
+            def calculate_duration(self) -> Self:
+                """Calculate operation duration in milliseconds from start and end times.
+
+                Returns:
+                    Self: A new instance with end_time and duration_ms populated.
+
+                """
+                end_time = self.end_time
+                if end_time <= 0:
+                    end_time = time.time()
+                duration_ms = max(0.0, (end_time - self.start_time) * 1000.0)
+                return self.model_copy(
+                    update={
+                        "end_time": end_time,
+                        "duration_ms": duration_ms,
+                    },
+                )
 
 
 m = FlextObservabilityModels
