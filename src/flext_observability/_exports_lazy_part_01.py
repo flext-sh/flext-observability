@@ -46,7 +46,7 @@ FLEXT_OBSERVABILITY_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
             "t",
         ),
         ".utilities": ("FlextObservabilityUtilities",),
-        "flext_core": (
+        "flext_core._root_typing_parts": (
             "d",
             "e",
             "h",

@@ -387,7 +387,7 @@ class FlextObservabilityContext:
         span_id = FlextObservabilityContext.span_id()
         if span_id:
             headers["X-Span-ID"] = span_id
-        return m.Dict(headers)
+        return m.Dict(dict(headers))
 
 
 __all__: list[str] = ["FlextObservabilityContext"]

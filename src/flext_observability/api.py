@@ -74,11 +74,20 @@ class FlextObservability(
         FlextObservability.FlextObservabilityMasterFactory | None
     ] = None
 
-    type Metric = m.Observability.Metric
-    type Trace = m.Observability.Trace
-    type Alert = m.Observability.Alert
-    type HealthCheck = m.Observability.HealthCheck
-    type LogEntry = m.Observability.LogEntry
+    class Metric(m.Observability.Metric):
+        """Observability metric entity."""
+
+    class Trace(m.Observability.Trace):
+        """Observability trace entity."""
+
+    class Alert(m.Observability.Alert):
+        """Observability alert entity."""
+
+    class HealthCheck(m.Observability.HealthCheck):
+        """Observability health check entity."""
+
+    class LogEntry(m.Observability.LogEntry):
+        """Observability log entry entity."""
 
     class MetricsService:
         """Service for metrics collection and recording."""
@@ -386,7 +395,8 @@ class FlextObservability(
         """Resolve a direct-factory metric id."""
         if metric_id_raw is None:
             return str(uuid4())
-        return t.str_adapter().validate_python(metric_id_raw)
+        metric_id: str = t.str_adapter().validate_python(metric_id_raw)
+        return metric_id
 
     @staticmethod
     def _flext_metric_type(
@@ -480,14 +490,13 @@ class FlextObservability(
         """Normalize alert labels into JSON primitives."""
         raw_labels = payload.get("labels")
         resolved_labels: t.JsonDict = {}
-        if not u.mapping(raw_labels):
-            return resolved_labels
-        for label_key, label_value in raw_labels.items():
-            resolved_labels[label_key] = (
-                label_value
-                if u.primitive(label_value) or label_value is None
-                else str(label_value)
-            )
+        if u.mapping(raw_labels):
+            resolved_labels = {
+                key: value
+                if value is None or u.primitive(value)
+                else str(value)
+                for key, value in raw_labels.items()
+            }
         return resolved_labels
 
     @staticmethod

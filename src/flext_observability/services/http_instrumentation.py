@@ -134,7 +134,7 @@ class FlextObservabilityHTTP:
                 {
                     "http_method": request_method,
                     "http_path": request_path,
-                    "http_client_ip": request_remote,
+                    "http_client_ip": request_remote or "",
                     "http_user_agent": str(user_agent),
                 },
             )
@@ -185,9 +185,11 @@ class FlextObservabilityHTTP:
                 else None
             )
             try:
-                validated_start = m.Observability.StartTimePayload.model_validate(
-                    obj={"value": start_time},
-                ).value
+                validated_start = float(
+                    m.Observability.StartTimePayload.model_validate(
+                        obj={"value": start_time},
+                    ).value,
+                )
                 return (time.time() - validated_start) * 1000
             except c.ValidationError:
                 return 0.0
