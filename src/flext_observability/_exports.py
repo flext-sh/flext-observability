@@ -3,18 +3,62 @@
 
 from __future__ import annotations
 
-from flext_core.lazy import merge_lazy_imports
-from flext_observability._exports_lazy_part_01 import (
-    FLEXT_OBSERVABILITY_LAZY_IMPORTS_PART_01,
-)
-from flext_observability._exports_lazy_part_02 import (
-    FLEXT_OBSERVABILITY_LAZY_IMPORTS_PART_02,
-)
+from flext_core.lazy import build_lazy_import_map, merge_lazy_imports
 
-_LOCAL_LAZY_IMPORTS = {
-    **FLEXT_OBSERVABILITY_LAZY_IMPORTS_PART_01,
-    **FLEXT_OBSERVABILITY_LAZY_IMPORTS_PART_02,
-}
+_LOCAL_LAZY_IMPORTS = build_lazy_import_map(
+    {
+        ".api": (
+            "FlextObservability",
+            "observability",
+        ),
+        ".constants": (
+            "FlextObservabilityConstants",
+            "c",
+        ),
+        ".models": (
+            "FlextObservabilityModels",
+            "m",
+        ),
+        ".protocols": (
+            "FlextObservabilityProtocols",
+            "p",
+        ),
+        ".services": ("services",),
+        ".services.advanced_context": ("FlextObservabilityAdvancedContext",),
+        ".services.context": ("FlextObservabilityContext",),
+        ".services.custom_metrics": ("FlextObservabilityCustomMetrics",),
+        ".services.error_handling": ("FlextObservabilityErrorHandling",),
+        ".services.fields": ("FlextObservabilityFields",),
+        ".services.health": ("FlextObservabilityHealth",),
+        ".services.http_client_instrumentation": ("FlextObservabilityHTTPClient",),
+        ".services.http_instrumentation": ("FlextObservabilityHTTP",),
+        ".services.logging_integration": ("FlextObservabilityLogging",),
+        ".services.monitoring": (
+            "FlextObservabilityMonitor",
+            "flext_monitor_function",
+        ),
+        ".services.performance": ("FlextObservabilityPerformance",),
+        ".services.sampling": ("FlextObservabilitySampling",),
+        ".services.services": ("FlextObservabilityServices",),
+        ".settings": ("FlextObservabilitySettings",),
+        ".typings": (
+            "FlextObservabilityTypes",
+            "t",
+        ),
+        ".utilities": (
+            "FlextObservabilityUtilities",
+            "u",
+        ),
+        "flext_core._root_typing_parts.facades": (
+            "d",
+            "e",
+            "h",
+            "r",
+            "s",
+            "x",
+        ),
+    },
+)
 
 FLEXT_OBSERVABILITY_LAZY_IMPORTS = merge_lazy_imports(
     (".services",),
