@@ -12,58 +12,21 @@ from flext_core.lazy import (
 )
 
 if TYPE_CHECKING:
-    from flext_tests import (
-        d as d,
-        e as e,
-        h as h,
-        r as r,
-        td as td,
-        tf as tf,
-        tk as tk,
-        tm as tm,
-        tv as tv,
-        x as x,
-    )
+    from flext_tests import d, e, h, r, td, tf, tk, tm, tv, x
 
-    from tests.base import (
-        TestsFlextObservabilityServiceBase as TestsFlextObservabilityServiceBase,
-        s as s,
-    )
-    from tests.constants import (
-        TestsFlextObservabilityConstants as TestsFlextObservabilityConstants,
-        c as c,
-    )
+    from tests.base import TestsFlextObservabilityServiceBase, s
+    from tests.constants import TestsFlextObservabilityConstants, c
     from tests.integration.test_phase_11_integration import (
-        TestsFlextObservabilityPhase11Integration as TestsFlextObservabilityPhase11Integration,
+        TestsFlextObservabilityPhase11Integration,
     )
-    from tests.models import (
-        TestsFlextObservabilityModels as TestsFlextObservabilityModels,
-        m as m,
-    )
-    from tests.protocols import (
-        TestsFlextObservabilityProtocols as TestsFlextObservabilityProtocols,
-        p as p,
-    )
-    from tests.settings import (
-        TestsFlextObservabilitySettings as TestsFlextObservabilitySettings,
-    )
-    from tests.typings import (
-        TestsFlextObservabilityTypes as TestsFlextObservabilityTypes,
-        t as t,
-    )
-    from tests.unit.test_constants import (
-        TestsFlextObservabilityConstantsUnit as TestsFlextObservabilityConstantsUnit,
-    )
-    from tests.unit.test_factory import (
-        TestsFlextObservabilityFactory as TestsFlextObservabilityFactory,
-    )
-    from tests.unit.test_init import (
-        TestsFlextObservabilityInit as TestsFlextObservabilityInit,
-    )
-    from tests.utilities import (
-        TestsFlextObservabilityUtilities as TestsFlextObservabilityUtilities,
-        u as u,
-    )
+    from tests.models import TestsFlextObservabilityModels, m
+    from tests.protocols import TestsFlextObservabilityProtocols, p
+    from tests.settings import TestsFlextObservabilitySettings
+    from tests.typings import TestsFlextObservabilityTypes, t
+    from tests.unit.test_constants import TestsFlextObservabilityConstantsUnit
+    from tests.unit.test_factory import TestsFlextObservabilityFactory
+    from tests.unit.test_init import TestsFlextObservabilityInit
+    from tests.utilities import TestsFlextObservabilityUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
     (
         ".integration",
