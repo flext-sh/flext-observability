@@ -105,7 +105,9 @@ class TestsFlextObservabilityPhase11Integration:
 
     # -- sampling --------------------------------------------------------
 
-    def test_sampler_always_samples_at_full_rate(self, sampler: FlextObservabilitySampling.Sampler) -> None:
+    def test_sampler_always_samples_at_full_rate(
+        self, sampler: FlextObservabilitySampling.Sampler
+    ) -> None:
         """A default rate of 1.0 forces a positive sampling decision."""
         sampler.update_default_rate(1.0)
 
@@ -114,7 +116,9 @@ class TestsFlextObservabilityPhase11Integration:
             SamplingDecision.SAMPLED
         )
 
-    def test_sampler_never_samples_at_zero_rate(self, sampler: FlextObservabilitySampling.Sampler) -> None:
+    def test_sampler_never_samples_at_zero_rate(
+        self, sampler: FlextObservabilitySampling.Sampler
+    ) -> None:
         """A default rate of 0.0 suppresses sampling entirely."""
         assert sampler.update_default_rate(0.0).success
 
@@ -123,7 +127,9 @@ class TestsFlextObservabilityPhase11Integration:
             SamplingDecision.NOT_SAMPLED
         )
 
-    def test_operation_rate_overrides_default_rate(self, sampler: FlextObservabilitySampling.Sampler) -> None:
+    def test_operation_rate_overrides_default_rate(
+        self, sampler: FlextObservabilitySampling.Sampler
+    ) -> None:
         """Per-operation rate takes priority over the default rate."""
         assert sampler.update_default_rate(0.0).success
         assert sampler.update_operation_rate("critical_op", 1.0).success

@@ -33,6 +33,9 @@ if TYPE_CHECKING:
         TestsFlextObservabilityConstants as TestsFlextObservabilityConstants,
         c as c,
     )
+    from tests.integration.test_phase_11_integration import (
+        TestsFlextObservabilityPhase11Integration as TestsFlextObservabilityPhase11Integration,
+    )
     from tests.models import (
         TestsFlextObservabilityModels as TestsFlextObservabilityModels,
         m as m,
@@ -78,6 +81,9 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "c",
             ),
             ".integration": ("integration",),
+            ".integration.test_phase_11_integration": (
+                "TestsFlextObservabilityPhase11Integration",
+            ),
             ".models": (
                 "TestsFlextObservabilityModels",
                 "m",
