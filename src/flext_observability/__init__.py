@@ -23,7 +23,7 @@ from flext_observability.__version__ import (
 
 if TYPE_CHECKING:
     from flext_core._root_typing_parts.facades import d, e, h, r, s, x
-    from flext_observability.api import FlextObservability
+    from flext_observability.api import FlextObservability, observability
     from flext_observability.constants import FlextObservabilityConstants, c
     from flext_observability.models import FlextObservabilityModels, m
     from flext_observability.protocols import FlextObservabilityProtocols, p
@@ -46,7 +46,10 @@ if TYPE_CHECKING:
     from flext_observability.services.logging_integration import (
         FlextObservabilityLogging,
     )
-    from flext_observability.services.monitoring import FlextObservabilityMonitor
+    from flext_observability.services.monitoring import (
+        FlextObservabilityMonitor,
+        flext_monitor_function,
+    )
     from flext_observability.services.performance import FlextObservabilityPerformance
     from flext_observability.services.sampling import FlextObservabilitySampling
     from flext_observability.services.services import FlextObservabilityServices
