@@ -27,8 +27,8 @@ from datetime import datetime
 import pytest
 from flext_tests import tm
 
-from flext_core import FlextContainer, p, r
-from flext_observability import FlextObservability
+from flext_core import FlextContainer
+from flext_observability import FlextObservability, p, r
 
 __all__ = ["TestsFlextObservabilityFactory"]
 
@@ -219,7 +219,10 @@ class TestsFlextObservabilityFactory:
     )
     def test_invalid_input_returns_failure_with_expected_message(
         self,
-        creator: _Create,
+        creator: Callable[
+            [FlextObservability.FlextObservabilityMasterFactory],
+            r[p.HasModelDump],
+        ],
         expected_error: str,
     ) -> None:
         """Each fallible creator surfaces a failure result with a descriptive error."""

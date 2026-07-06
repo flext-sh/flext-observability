@@ -89,7 +89,7 @@ class FlextObservabilityLogging:
             LogContext populated with current trace context
 
         """
-        updates: dict[str, str] = {}
+        updates: t.MutableJsonMapping = {}
         correlation_id = FlextObservabilityContext.correlation_id()
         if correlation_id:
             updates["correlation_id"] = correlation_id
