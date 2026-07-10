@@ -30,6 +30,10 @@ if TYPE_CHECKING:
         s as s,
         x as x,
     )
+    from flext_observability._settings import (
+        FlextObservabilitySettings as FlextObservabilitySettings,
+        settings as settings,
+    )
     from flext_observability.api import (
         FlextObservability as FlextObservability,
         observability as observability,
