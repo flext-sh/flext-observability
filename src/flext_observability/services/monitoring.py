@@ -16,11 +16,11 @@ from uuid import uuid4
 from flext_core import FlextContainer
 from flext_observability import (
     FlextObservabilityServices,
-    FlextObservabilitySettings,
     c,
     m,
     p,
     r,
+    settings,
     t,
     u,
 )
@@ -58,7 +58,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[t.Scalar, ...],
-            kwargs: t.ConfigurationMapping | m.Dict,
+            kwargs: t.settingsurationMapping | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> t.Scalar:
@@ -149,10 +149,9 @@ class FlextObservabilityMonitor:
 
     @override
     def __init__(self, container: p.Container | None = None) -> None:
-        """Initialize monitor with real service orchestration and shared configuration."""
+        """Initialize monitor with real service orchestration and shared settingsuration."""
         self._container = container or self._container_type.shared()
         self.logger = u.fetch_logger(self.__class__.__name__)
-        self.config = FlextObservabilitySettings.fetch_global()
         self._initialized = False
         self._running = False
         self._observability_service: p.Observability.ObservabilityService | None = None
@@ -216,19 +215,6 @@ class FlextObservabilityMonitor:
 
     def _initialize_observability_services(self) -> p.Result[None]:
         """Initialize observability service dependencies."""
-        if not self.config:
-            return r[None].fail_op(
-                "initialize observability",
-                "Configuration not available",
-            )
-        if (
-            not self.config.metrics_enabled
-            and (not self.config.traces_enabled)
-            and (not self.config.alerts_enabled)
-        ):
-            self.logger.warning(
-                "All observability features are disabled in configuration",
-            )
         service_result = self._create_observability_service()
         if service_result.failure:
             return r[None].fail_op(
@@ -284,8 +270,8 @@ class FlextObservabilityMonitor:
         metric_type: str,
     ) -> p.Result[None]:
         """Build and record one monitoring metric entry."""
-        if not self.config.metrics_enabled:
-            self.logger.debug("Metrics recording disabled in configuration")
+        if not settings.Observability.metrics_enabled:
+            self.logger.debug("Metrics recording disabled in settingsuration")
             return r[None].ok(None)
         metric_result = self._build_metric_entry(name, value, metric_type)
         if metric_result.failure:

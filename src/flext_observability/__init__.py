@@ -86,9 +86,6 @@ if TYPE_CHECKING:
     from flext_observability.services.services import (
         FlextObservabilityServices as FlextObservabilityServices,
     )
-    from flext_observability.settings import (
-        FlextObservabilitySettings as FlextObservabilitySettings,
-    )
     from flext_observability.typings import (
         FlextObservabilityTypes as FlextObservabilityTypes,
         t as t,
@@ -101,6 +98,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
     (".services",),
     build_lazy_import_map(
         {
+            "._settings": ("FlextObservabilitySettings", "settings"),
             ".api": (
                 "FlextObservability",
                 "observability",
@@ -133,7 +131,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".services.performance": ("FlextObservabilityPerformance",),
             ".services.sampling": ("FlextObservabilitySampling",),
             ".services.services": ("FlextObservabilityServices",),
-            ".settings": ("FlextObservabilitySettings",),
             ".typings": (
                 "FlextObservabilityTypes",
                 "t",
@@ -176,6 +173,8 @@ _LAZY_IMPORTS = merge_lazy_imports(
 
 
 __all__: tuple[str, ...] = (
+    "FlextObservabilitySettings",
+    "settings",
     "FlextObservability",
     "FlextObservabilityAdvancedContext",
     "FlextObservabilityConstants",
@@ -193,7 +192,6 @@ __all__: tuple[str, ...] = (
     "FlextObservabilityProtocols",
     "FlextObservabilitySampling",
     "FlextObservabilityServices",
-    "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
     "__author__",

@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import ClassVar
 
 from flext_core import FlextContainer
-from flext_observability import FlextObservabilitySettings, c, m, p, r, t, u
+from flext_observability import c, m, p, r, t, u
 
 
 class FlextObservabilityServices:
@@ -31,12 +31,6 @@ class FlextObservabilityServices:
         super().__init__()
         self._container = self._container_type.shared()
         self.logger = u.fetch_logger(__name__)
-        self.config = FlextObservabilitySettings.fetch_global()
-
-    @property
-    def settings(self) -> FlextObservabilitySettings:
-        """Access observability settings."""
-        return self.config
 
     @property
     def container(self) -> p.Container:

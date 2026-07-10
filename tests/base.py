@@ -17,7 +17,6 @@ class TestsFlextObservabilityServiceBase(tests_s):
     @override
     def fetch_settings(cls) -> TestsFlextObservabilitySettings:
         """Return the typed Observability+Tests settings singleton."""
-        return TestsFlextObservabilitySettings.fetch_global()
 
     @classmethod
     @override
