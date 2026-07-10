@@ -173,8 +173,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
 
 
 __all__: tuple[str, ...] = (
-    "FlextObservabilitySettings",
-    "settings",
     "FlextObservability",
     "FlextObservabilityAdvancedContext",
     "FlextObservabilityConstants",
@@ -192,6 +190,7 @@ __all__: tuple[str, ...] = (
     "FlextObservabilityProtocols",
     "FlextObservabilitySampling",
     "FlextObservabilityServices",
+    "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
     "__author__",
@@ -212,6 +211,7 @@ __all__: tuple[str, ...] = (
     "p",
     "r",
     "s",
+    "settings",
     "t",
     "u",
     "x",
