@@ -58,7 +58,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[t.Scalar, ...],
-            kwargs: t.settingsurationMapping | m.Dict,
+            kwargs: t.ConfigurationMapping | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> t.Scalar:
@@ -149,7 +149,7 @@ class FlextObservabilityMonitor:
 
     @override
     def __init__(self, container: p.Container | None = None) -> None:
-        """Initialize monitor with real service orchestration and shared settingsuration."""
+        """Initialize monitor with real service orchestration and shared configuration."""
         self._container = container or self._container_type.shared()
         self.logger = u.fetch_logger(self.__class__.__name__)
         self._initialized = False
@@ -271,7 +271,7 @@ class FlextObservabilityMonitor:
     ) -> p.Result[None]:
         """Build and record one monitoring metric entry."""
         if not settings.Observability.metrics_enabled:
-            self.logger.debug("Metrics recording disabled in settingsuration")
+            self.logger.debug("Metrics recording disabled in configuration")
             return r[None].ok(None)
         metric_result = self._build_metric_entry(name, value, metric_type)
         if metric_result.failure:
