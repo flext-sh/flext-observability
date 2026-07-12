@@ -223,7 +223,9 @@ project-excludes = [
   "typings/**",
   "vendor/**",
 ]
-project-includes = [ "examples/**/*.py*", "src/**/*.py*", "tests/**/*.py*" ]
+# mro-f1fe (agent: kimi): examples moved to gitignored legado/ — out of the
+# active lint/typecheck surface by operator directive (expose unused code).
+project-includes = [ "src/**/*.py*", "tests/**/*.py*" ]
 python-interpreter-path = "../.venv/bin/python"
 python-version = "3.13"
 search-path = [
@@ -350,7 +352,9 @@ exclude = [
   ".venv",
 ]
 extraPaths = [ ".", "src" ]
-include = [ "examples", "src", "tests" ]
+# mro-f1fe (agent: kimi): examples moved to gitignored legado/ — out of the
+# active lint/typecheck surface by operator directive (expose unused code).
+include = [ "src", "tests" ]
 pythonPlatform = "Linux"
 pythonVersion = "3.13"
 reportArgumentType = "none"
@@ -384,11 +388,6 @@ reportUnusedVariable = "error"
 typeCheckingMode = "strict"
 venv = ".venv"
 venvPath = ".."
-
-[[tool.pyright.executionEnvironments]]
-extraPaths = [ ".", "src" ]
-reportPrivateUsage = "none"
-root = "examples"
 
 [[tool.pyright.executionEnvironments]]
 extraPaths = [ "src" ]
@@ -464,7 +463,9 @@ line-length = 88
 preview = true
 respect-gitignore = true
 show-fixes = true
-src = [ "examples", "src", "tests" ]
+# mro-f1fe (agent: kimi): examples moved to gitignored legado/ — out of the
+# active lint/typecheck surface by operator directive (expose unused code).
+src = [ "src", "tests" ]
 target-version = "py313"
 
 [tool.ruff.format]
@@ -581,25 +582,6 @@ split-on-trailing-comma = true
 "**/*_pb2*.py" = [ "ALL" ]
 "**/*dispatcher*" = [  ]
 "**/*docs*" = [ "INP001", "S404", "S603", "T201" ]
-"**/*examples*" = [
-  "ANN401",
-  "C901",
-  "D103",
-  "EXE001",
-  "FBT001",
-  "FBT002",
-  "FIX002",
-  "INP001",
-  "N999",
-  "PLR2004",
-  "S105",
-  "S106",
-  "S112",
-  "S404",
-  "S603",
-  "T201",
-  "TID252",
-]
 "**/*exceptions*" = [ "A001", "S105", "SLF001" ]
 "**/*handlers*" = [  ]
 "**/*instrumentation*" = [ "C901", "FBT001", "SLF001" ]
