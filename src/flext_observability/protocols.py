@@ -18,7 +18,6 @@ if TYPE_CHECKING:
 
     from flext_core import m
     from flext_observability import t
-    from flext_observability.models import FlextObservabilityModels as om
 
 
 class FlextObservabilityProtocols(p):
@@ -40,249 +39,16 @@ class FlextObservabilityProtocols(p):
     service: p.Service[str]
 
     # Observability-specific protocols
-    metrics: p.Observability.Metrics
-    tracing: p.Observability.Tracing
+    service: p.Observability.ObservabilityService
+    request: p.Observability.Http.Request
     """
 
     class Observability:
         """Observability domain-specific protocols.
 
-        Provides protocols for metrics collection, distributed tracing,
-        alerting, health checks, logging, and dashboard visualization.
+        Provides the observability service contract plus HTTP framework
+        instrumentation protocols.
         """
-
-        @runtime_checkable
-        class Span(Protocol):
-            """Protocol for OpenTelemetry Span interface."""
-
-            def update_attribute(self, key: str, *, value: t.Scalar) -> None:
-                """Set span attribute."""
-                ...
-
-            def update_status(self, status: int) -> None:
-                """Set span status."""
-                ...
-
-        @runtime_checkable
-        class Metrics(p.Service[bool], Protocol):
-            """Protocol for metrics collection and management operations."""
-
-            def create_counter(
-                self,
-                name: str,
-                description: str,
-                *,
-                unit: str = "count",
-            ) -> p.Result[bool]:
-                """Create a counter metric."""
-                ...
-
-            def create_gauge(
-                self,
-                name: str,
-                description: str,
-                *,
-                unit: str = "value",
-            ) -> p.Result[bool]:
-                """Create a gauge metric."""
-                ...
-
-            def create_histogram(
-                self,
-                name: str,
-                description: str,
-                *,
-                unit: str = "seconds",
-                buckets: t.ScalarList | None = None,
-            ) -> p.Result[bool]:
-                """Create a histogram metric."""
-                ...
-
-            def fetch_metrics(
-                self,
-                name_pattern: t.Scalar | None = None,
-                *,
-                start_time: t.Scalar | None = None,
-                end_time: t.Scalar | None = None,
-            ) -> p.Result[t.ScalarList]:
-                """Get collected metrics."""
-                ...
-
-            def record_metric(
-                self,
-                name: str,
-                value: float,
-                *,
-                unit: str = "count",
-                tags: t.ConfigurationMapping | None = None,
-            ) -> p.Result[bool]:
-                """Record a metric value."""
-                ...
-
-        @runtime_checkable
-        class Tracing(p.Service[bool], Protocol):
-            """Protocol for distributed tracing operations."""
-
-            def add_span_tag(
-                self,
-                span: FlextObservabilityProtocols.Observability.Span,
-                key: str,
-                value: t.Scalar,
-            ) -> p.Result[bool]:
-                """Add tag to trace span."""
-                ...
-
-            def finish_span(
-                self,
-                span: FlextObservabilityProtocols.Observability.Span,
-                *,
-                status: str = "ok",
-                error: t.Scalar | None = None,
-            ) -> p.Result[bool]:
-                """Finish a trace span."""
-                ...
-
-            def fetch_trace(self, trace_id: str) -> p.Result[t.JsonPayload]:
-                """Get trace by ID."""
-                ...
-
-            def search_traces(
-                self,
-                *,
-                service_name: t.Scalar | None = None,
-                operation_name: t.Scalar | None = None,
-                start_time: t.Scalar | None = None,
-                end_time: t.Scalar | None = None,
-            ) -> p.Result[t.ScalarList]:
-                """Search traces by criteria."""
-                ...
-
-            def start_span(
-                self,
-                operation_name: str,
-                *,
-                service_name: t.Scalar | None = None,
-                parent_span_id: t.Scalar | None = None,
-            ) -> p.Result[t.JsonPayload]:
-                """Start a new trace span."""
-                ...
-
-        @runtime_checkable
-        class Alerting(p.Service[bool], Protocol):
-            """Protocol for alerting and notification operations."""
-
-            def create_alert(
-                self,
-                message: str,
-                level: str,
-                *,
-                service: t.Scalar | None = None,
-                tags: t.ConfigurationMapping | None = None,
-            ) -> p.Result[str]:
-                """Create an alert."""
-                ...
-
-            def create_alert_rule(
-                self,
-                name: str,
-                condition: str,
-                *,
-                threshold: t.Scalar | None = None,
-                duration: t.Scalar | None = None,
-            ) -> p.Result[str]:
-                """Create an alert rule."""
-                ...
-
-            def fetch_alerts(
-                self,
-                *,
-                level: t.Scalar | None = None,
-                service: t.Scalar | None = None,
-                resolved: t.Scalar | None = None,
-            ) -> p.Result[t.ScalarList]:
-                """Get alerts by criteria."""
-                ...
-
-            def resolve_alert(self, alert_id: str) -> p.Result[bool]:
-                """Resolve an alert."""
-                ...
-
-        @runtime_checkable
-        class HealthCheck(p.Service[bool], Protocol):
-            """Protocol for health check operations."""
-
-            def check_health(
-                self,
-                service_name: str,
-            ) -> p.Result[t.JsonPayload]:
-                """Perform health check for a service."""
-                ...
-
-            def services_status(
-                self,
-            ) -> p.Result[t.JsonPayload]:
-                """Get health status for all services."""
-                ...
-
-            def service_status(
-                self,
-                service_name: str,
-            ) -> p.Result[t.JsonPayload]:
-                """Get service health status."""
-                ...
-
-            def register_health_check(
-                self,
-                service_name: str,
-                check_function: Callable[[], bool],
-                *,
-                interval: int = 60,
-            ) -> p.Result[bool]:
-                """Register a health check."""
-                ...
-
-        @runtime_checkable
-        class Logging(p.Service[bool], Protocol):
-            """Protocol for logging operations."""
-
-            def configure_logging(
-                self,
-                settings: t.ConfigurationMapping,
-            ) -> p.Result[bool]:
-                """Configure logging system."""
-                ...
-
-            def create_logger(
-                self,
-                name: str,
-                *,
-                level: str = "info",
-                format_string: t.Scalar | None = None,
-            ) -> p.Result[p.Logger]:
-                """Create a logger instance."""
-                ...
-
-            def fetch_logs(
-                self,
-                *,
-                level: t.Scalar | None = None,
-                service: t.Scalar | None = None,
-                correlation_id: t.Scalar | None = None,
-                start_time: t.Scalar | None = None,
-                end_time: t.Scalar | None = None,
-            ) -> p.Result[t.ScalarList]:
-                """Get logs by criteria."""
-                ...
-
-            def log_message(
-                self,
-                message: str,
-                level: str,
-                *,
-                context: om.Observability.LogContext | None = None,
-            ) -> p.Result[bool]:
-                """Log a message."""
-                ...
 
         @runtime_checkable
         class ObservabilityService(Protocol):
@@ -294,45 +60,6 @@ class FlextObservabilityProtocols(p):
 
             def metrics_summary(self) -> p.Result[m.Dict]:
                 """Get summary of collected metrics."""
-                ...
-
-        @runtime_checkable
-        class Dashboard(p.Service[bool], Protocol):
-            """Protocol for dashboard and visualization operations."""
-
-            def add_widget(
-                self,
-                dashboard_id: str,
-                widget_config: t.ConfigurationMapping,
-            ) -> p.Result[str]:
-                """Add widget to dashboard."""
-                ...
-
-            def create_dashboard(
-                self,
-                name: str,
-                description: str,
-                *,
-                widgets: t.SequenceOf[t.ConfigurationMapping] | None = None,
-            ) -> p.Result[str]:
-                """Create a dashboard."""
-                ...
-
-            def fetch_dashboard(
-                self,
-                dashboard_id: str,
-            ) -> p.Result[t.JsonPayload]:
-                """Get dashboard by ID."""
-                ...
-
-            def fetch_dashboard_data(
-                self,
-                dashboard_id: str,
-                *,
-                start_time: t.Scalar | None = None,
-                end_time: t.Scalar | None = None,
-            ) -> p.Result[t.JsonPayload]:
-                """Get dashboard data."""
                 ...
 
         class Http:
@@ -410,41 +137,6 @@ class FlextObservabilityProtocols(p):
 
         class HttpClient:
             """Protocols for httpx and aiohttp HTTP client instrumentation."""
-
-            @runtime_checkable
-            class HTTPXURL(Protocol):
-                """Protocol for httpx URL t.JsonValue."""
-
-                @property
-                def host(self) -> str | None:
-                    """URL host."""
-                    ...
-
-                @property
-                def scheme(self) -> str:
-                    """URL scheme (http/https)."""
-                    ...
-
-            @runtime_checkable
-            class HTTPXRequest(Protocol):
-                """Protocol for httpx Request t.JsonValue."""
-
-                @property
-                def headers(self) -> t.MutableStrMapping:
-                    """Request headers."""
-                    ...
-
-                @property
-                def method(self) -> str:
-                    """HTTP method."""
-                    ...
-
-                @property
-                def url(
-                    self,
-                ) -> FlextObservabilityProtocols.Observability.HttpClient.HTTPXURL:
-                    """Request URL."""
-                    ...
 
             @runtime_checkable
             class HTTPXResponse(Protocol):
