@@ -22,9 +22,12 @@ Key Features:
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, TypeIs
+from typing import TypeIs, override
 
 import flask
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.requests import Request
+from starlette.responses import Response
 
 from flext_observability import (
     FlextObservabilityContext,
@@ -37,16 +40,8 @@ from flext_observability import (
     u,
 )
 
-if TYPE_CHECKING:
-    from collections.abc import (
-        Awaitable,
-        Callable,
-    )
-
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None
-_flask_available = True
-_starlette_available = True
 
 
 class FlextObservabilityHTTP:
@@ -329,20 +324,18 @@ class FlextObservabilityHTTP:
                 )
             typed_app: p.Observability.Http.FastAPIApp = app
 
-            class FlextObservabilityMiddleware:
+            # mro-ktv9 (kimi-c): middleware now extends BaseHTTPMiddleware so
+            # Starlette actually invokes dispatch per request (was a plain class
+            # with no __call__ — silently broken ASGI registration).
+            class FlextObservabilityMiddleware(BaseHTTPMiddleware):
                 """Starlette-based ASGI middleware for FastAPI."""
 
-                def __init__(self, app: t.Scalar) -> None:
-                    _ = app
-
+                @override
                 async def dispatch(
                     self,
-                    request: p.Observability.Http.Request,
-                    call_next: Callable[
-                        [p.Observability.Http.Request],
-                        Awaitable[p.Observability.Http.Response],
-                    ],
-                ) -> p.Observability.Http.Response:
+                    request: Request,
+                    call_next: RequestResponseEndpoint,
+                ) -> Response:
                     """Process HTTP request with instrumentation."""
                     try:
                         return await FlextObservabilityHTTP.FastAPI._dispatch_request(
@@ -364,16 +357,11 @@ class FlextObservabilityHTTP:
 
         @staticmethod
         async def _dispatch_request(
-            request: p.Observability.Http.Request,
-            call_next: Callable[
-                [p.Observability.Http.Request],
-                Awaitable[p.Observability.Http.Response],
-            ],
-        ) -> p.Observability.Http.Response:
+            request: Request,
+            call_next: RequestResponseEndpoint,
+        ) -> Response:
             """Process one FastAPI request with logging and correlation context."""
-            headers_dict: t.MutableStrMapping = {
-                key: str(value) for key, value in request.headers.items()
-            }
+            headers_dict: t.MutableStrMapping = dict(request.headers.items())
             FlextObservabilityContext.from_headers(headers_dict)
             correlation_id = FlextObservabilityContext.correlation_id()
             start_time = time.time()
@@ -395,26 +383,23 @@ class FlextObservabilityHTTP:
 
         @staticmethod
         def _request_log_extra(
-            request: p.Observability.Http.Request,
+            request: Request,
         ) -> t.MutableScalarMapping:
             """Build FastAPI request log metadata."""
             return {
                 "http_method": request.method,
                 "http_path": request.url.path,
                 "http_client_ip": request.client.host if request.client else "unknown",
-                "http_user_agent": str(request.headers.get("user-agent", "unknown")),
+                "http_user_agent": request.headers.get("user-agent", "unknown"),
             }
 
         @staticmethod
         async def _dispatch_response(
-            request: p.Observability.Http.Request,
-            call_next: Callable[
-                [p.Observability.Http.Request],
-                Awaitable[p.Observability.Http.Response],
-            ],
+            request: Request,
+            call_next: RequestResponseEndpoint,
             correlation_id: str,
             start_time: float,
-        ) -> p.Observability.Http.Response:
+        ) -> Response:
             """Call the FastAPI route and emit response metadata."""
             response = await call_next(request)
             duration_ms = (time.time() - start_time) * 1000
@@ -439,7 +424,7 @@ class FlextObservabilityHTTP:
 
         @staticmethod
         async def _log_dispatch_error(
-            request: p.Observability.Http.Request,
+            request: Request,
             error: Exception,
         ) -> None:
             """Emit FastAPI request error metadata."""
