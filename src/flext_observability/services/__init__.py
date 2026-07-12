@@ -20,9 +20,6 @@ if TYPE_CHECKING:
     from flext_observability.services.error_handling import (
         FlextObservabilityErrorHandling as FlextObservabilityErrorHandling,
     )
-    from flext_observability.services.fields import (
-        FlextObservabilityFields as FlextObservabilityFields,
-    )
     from flext_observability.services.health import (
         FlextObservabilityHealth as FlextObservabilityHealth,
     )
@@ -54,7 +51,6 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".context": ("FlextObservabilityContext",),
         ".custom_metrics": ("FlextObservabilityCustomMetrics",),
         ".error_handling": ("FlextObservabilityErrorHandling",),
-        ".fields": ("FlextObservabilityFields",),
         ".health": ("FlextObservabilityHealth",),
         ".http_client_instrumentation": ("FlextObservabilityHTTPClient",),
         ".http_instrumentation": ("FlextObservabilityHTTP",),

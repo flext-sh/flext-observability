@@ -62,9 +62,6 @@ if TYPE_CHECKING:
     from flext_observability.services.error_handling import (
         FlextObservabilityErrorHandling as FlextObservabilityErrorHandling,
     )
-    from flext_observability.services.fields import (
-        FlextObservabilityFields as FlextObservabilityFields,
-    )
     from flext_observability.services.health import (
         FlextObservabilityHealth as FlextObservabilityHealth,
     )
@@ -123,7 +120,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".services.context": ("FlextObservabilityContext",),
             ".services.custom_metrics": ("FlextObservabilityCustomMetrics",),
             ".services.error_handling": ("FlextObservabilityErrorHandling",),
-            ".services.fields": ("FlextObservabilityFields",),
             ".services.health": ("FlextObservabilityHealth",),
             ".services.http_client_instrumentation": ("FlextObservabilityHTTPClient",),
             ".services.http_instrumentation": ("FlextObservabilityHTTP",),
@@ -183,7 +179,6 @@ __all__: tuple[str, ...] = (
     "FlextObservabilityContext",
     "FlextObservabilityCustomMetrics",
     "FlextObservabilityErrorHandling",
-    "FlextObservabilityFields",
     "FlextObservabilityHTTP",
     "FlextObservabilityHTTPClient",
     "FlextObservabilityHealth",
