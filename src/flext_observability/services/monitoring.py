@@ -51,7 +51,7 @@ class FlextObservabilityMonitor:
             *args: t.Scalar,
             **kwargs: t.Scalar,
         ) -> t.Scalar:
-            """Helper to call function with flexible arguments."""
+            """Call function with flexible arguments."""
             return func(*args, **kwargs)
 
         @staticmethod

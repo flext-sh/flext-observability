@@ -327,7 +327,7 @@ class FlextObservabilitySampling:
         operation: str | None = None,
         service: str | None = None,
     ) -> c.Observability.SamplingDecision:
-        """Convenience function: return the sampling decision as an enum.
+        """Return the sampling decision as an enum.
 
         Args:
             operation: Operation name
@@ -342,7 +342,7 @@ class FlextObservabilitySampling:
 
     @staticmethod
     def should_sample(operation: str | None = None, service: str | None = None) -> bool:
-        """Convenience function: make sampling decision.
+        """Make sampling decision.
 
         Args:
             operation: Operation name

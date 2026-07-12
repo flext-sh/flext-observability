@@ -254,7 +254,7 @@ class FlextObservabilityAdvancedContext:
 
     @staticmethod
     def resolve_metadata(key: str) -> t.Scalar | None:
-        """Convenience function: resolve metadata.
+        """Resolve metadata.
 
         Args:
             key: Metadata key
@@ -268,7 +268,7 @@ class FlextObservabilityAdvancedContext:
 
     @staticmethod
     def update_metadata(key: str, value: t.Scalar) -> p.Result[bool]:
-        """Convenience function: update metadata.
+        """Update metadata.
 
         Args:
             key: Metadata key

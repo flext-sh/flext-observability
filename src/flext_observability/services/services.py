@@ -43,7 +43,7 @@ class FlextObservabilityServices:
         return None
 
     def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
-        """Generic alert creation - not implemented in base service."""
+        """Create a generic alert - not implemented in base service."""
         requested_keys: t.JsonValueList = list(kwargs)
         self.logger.debug(
             "create_alert not implemented in generic service",
@@ -52,7 +52,7 @@ class FlextObservabilityServices:
         return r[m.Dict].fail("Alert creation not implemented in generic service")
 
     def metrics_summary(self) -> p.Result[m.Dict]:
-        """Generic metrics summary - not implemented in base service."""
+        """Summarize generic metrics - not implemented in base service."""
         return r[m.Dict].fail("Metrics summary not implemented in generic service")
 
     def status(self) -> p.Result[m.Dict]:

@@ -352,7 +352,7 @@ class FlextObservabilityCustomMetrics:
         name: str,
         namespace: str = "default",
     ) -> m.Observability.CustomMetricDefinition | None:
-        """Convenience function: resolve a metric definition.
+        """Resolve a metric definition.
 
         Args:
             name: Metric name
@@ -381,7 +381,7 @@ class FlextObservabilityCustomMetrics:
 
     @staticmethod
     def list_all_metrics() -> t.StrSequence:
-        """Convenience function: list all metrics.
+        """List all metrics.
 
         Returns:
             list - All registered metric names
@@ -398,7 +398,7 @@ class FlextObservabilityCustomMetrics:
         unit: str = "1",
         namespace: str = "default",
     ) -> p.Result[bool]:
-        """Convenience function: register a metric.
+        """Register a metric.
 
         Args:
             name: Metric name

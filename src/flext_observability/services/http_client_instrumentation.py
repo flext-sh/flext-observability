@@ -319,7 +319,7 @@ class FlextObservabilityHTTPClient:
 
         @staticmethod
         def setup_instrumentation(client: t.RegisterableService) -> p.Result[bool]:
-            """Setup httpx client request instrumentation.
+            """Set up httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
             with context propagation.
@@ -377,7 +377,7 @@ class FlextObservabilityHTTPClient:
 
         @staticmethod
         def setup_instrumentation(session: t.RegisterableService) -> p.Result[bool]:
-            """Setup aiohttp client session instrumentation.
+            """Set up aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests
             with context propagation.

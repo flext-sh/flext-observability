@@ -215,7 +215,7 @@ class FlextObservabilityHTTP:
 
         @staticmethod
         def setup_instrumentation(app: t.RegisterableService) -> p.Result[bool]:
-            """Setup Flask application HTTP instrumentation.
+            """Set up Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
             and context extraction/propagation.
@@ -277,7 +277,7 @@ class FlextObservabilityHTTP:
 
         @staticmethod
         def setup_instrumentation(app: t.RegisterableService) -> p.Result[bool]:
-            """Setup FastAPI application HTTP instrumentation.
+            """Set up FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,
             and context extraction/propagation. Async-safe implementation for

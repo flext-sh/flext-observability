@@ -306,7 +306,7 @@ class FlextObservabilityErrorHandling:
     def record_error(
         error: m.Observability.ErrorEvent,
     ) -> p.Result[m.Observability.ErrorEvent]:
-        """Convenience function: record an error.
+        """Record an error.
 
         Args:
             error: Error event
@@ -320,7 +320,7 @@ class FlextObservabilityErrorHandling:
 
     @staticmethod
     def should_alert(error: m.Observability.ErrorEvent) -> bool:
-        """Convenience function: check if error should alert.
+        """Check if error should alert.
 
         Args:
             error: Error event
