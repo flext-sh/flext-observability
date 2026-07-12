@@ -21,6 +21,5 @@ These pages are generated from public modules and their docstrings.
 - [flext_observability.services.performance](services/performance.md)
 - [flext_observability.services.sampling](services/sampling.md)
 - [flext_observability.services.services](services/services.md)
-- [flext_observability.settings](settings.md)
 - [flext_observability.typings](typings.md)
 - [flext_observability.utilities](utilities.md)
