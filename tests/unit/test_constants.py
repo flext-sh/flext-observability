@@ -11,7 +11,7 @@ import pytest
 from flext_tests import tm
 
 from flext_core import c as core_c
-from tests.constants import c
+from tests import c
 
 _Obs = c.Observability
 

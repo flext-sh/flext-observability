@@ -16,7 +16,7 @@ from flext_observability import (
     __version__ as pkg_version,
     __version_info__ as pkg_version_info,
 )
-from tests.constants import c
+from tests import c
 
 __all__ = ["TestsFlextObservabilityInit"]
 

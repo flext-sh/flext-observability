@@ -11,6 +11,7 @@ private attributes or internal collaborator calls.
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_observability import FlextObservability, c, m
 from flext_observability.services.advanced_context import (
@@ -81,11 +82,11 @@ class TestsFlextObservabilityPhase11Integration:
         """create_metric succeeds and echoes the requested name/value/unit."""
         result = factory.create_metric(name, value, unit)
 
-        assert result.success
+        tm.ok(result)
         metric = result.value
-        assert metric.name == name
-        assert metric.value == pytest.approx(value)
-        assert metric.unit == unit
+        tm.that(metric.name, eq=name)
+        tm.that(metric.value, eq=pytest.approx(value))
+        tm.that(metric.unit, eq=unit)
 
     def test_create_metric_preserves_tags_as_labels(
         self,
@@ -99,9 +100,9 @@ class TestsFlextObservabilityPhase11Integration:
             tags={"method": "POST", "endpoint": "/api/users"},
         )
 
-        assert result.success
-        assert result.value.labels["method"] == "POST"
-        assert result.value.labels["endpoint"] == "/api/users"
+        tm.ok(result)
+        tm.that(result.value.labels["method"], eq="POST")
+        tm.that(result.value.labels["endpoint"], eq="/api/users")
 
     # -- sampling --------------------------------------------------------
 
@@ -111,40 +112,42 @@ class TestsFlextObservabilityPhase11Integration:
         """A default rate of 1.0 forces a positive sampling decision."""
         sampler.update_default_rate(1.0)
 
-        assert sampler.should_sample("http_request", "api") is True
-        assert sampler.sampling_decision("http_request", "api") == (
-            SamplingDecision.SAMPLED
+        tm.that(sampler.should_sample("http_request", "api"), eq=True)
+        tm.that(
+            sampler.sampling_decision("http_request", "api"),
+            eq=(SamplingDecision.SAMPLED),
         )
 
     def test_sampler_never_samples_at_zero_rate(
         self, sampler: FlextObservabilitySampling.Sampler
     ) -> None:
         """A default rate of 0.0 suppresses sampling entirely."""
-        assert sampler.update_default_rate(0.0).success
+        tm.ok(sampler.update_default_rate(0.0))
 
-        assert sampler.should_sample("http_request", "api") is False
-        assert sampler.sampling_decision("http_request", "api") == (
-            SamplingDecision.NOT_SAMPLED
+        tm.that(sampler.should_sample("http_request", "api"), eq=False)
+        tm.that(
+            sampler.sampling_decision("http_request", "api"),
+            eq=(SamplingDecision.NOT_SAMPLED),
         )
 
     def test_operation_rate_overrides_default_rate(
         self, sampler: FlextObservabilitySampling.Sampler
     ) -> None:
         """Per-operation rate takes priority over the default rate."""
-        assert sampler.update_default_rate(0.0).success
-        assert sampler.update_operation_rate("critical_op", 1.0).success
+        tm.ok(sampler.update_default_rate(0.0))
+        tm.ok(sampler.update_operation_rate("critical_op", 1.0))
 
-        assert sampler.current_rate(operation="critical_op") == pytest.approx(1.0)
-        assert sampler.should_sample("critical_op", "api") is True
+        tm.that(sampler.current_rate(operation="critical_op"), eq=pytest.approx(1.0))
+        tm.that(sampler.should_sample("critical_op", "api"), eq=True)
 
     def test_update_environment_sets_known_production_rate(
         self,
         sampler: FlextObservabilitySampling.Sampler,
     ) -> None:
         """A valid environment resolves to its documented default rate."""
-        assert sampler.update_environment("production").success
+        tm.ok(sampler.update_environment("production"))
 
-        assert sampler.current_rate() == pytest.approx(0.1)
+        tm.that(sampler.current_rate(), eq=pytest.approx(0.1))
 
     @pytest.mark.parametrize("bad_environment", ["prod", "", "qa"])
     def test_update_environment_rejects_unknown_environment(
@@ -155,7 +158,7 @@ class TestsFlextObservabilityPhase11Integration:
         """Unknown environments fail with an explanatory error."""
         result = sampler.update_environment(bad_environment)
 
-        assert not result.success
+        tm.fail(result)
         assert bad_environment in (result.error or "") or "environment" in (
             result.error or ""
         )
@@ -169,7 +172,7 @@ class TestsFlextObservabilityPhase11Integration:
         """Sampling rates outside [0, 1] are rejected as failures."""
         result = sampler.update_default_rate(bad_rate)
 
-        assert not result.success
+        tm.fail(result)
         assert result.error
 
     # -- correlation / trace context -------------------------------------
@@ -178,14 +181,14 @@ class TestsFlextObservabilityPhase11Integration:
         """The correlation id written is the id subsequently reported."""
         returned = FlextObservabilityContext.update_correlation_id("req-abc")
 
-        assert returned == "req-abc"
-        assert FlextObservabilityContext.correlation_id() == "req-abc"
+        tm.that(returned, eq="req-abc")
+        tm.that(FlextObservabilityContext.correlation_id(), eq="req-abc")
 
     def test_update_trace_id_is_readable_back(self) -> None:
         """The trace id written is the id subsequently reported."""
         FlextObservabilityContext.update_trace_id("trace-xyz")
 
-        assert FlextObservabilityContext.trace_id() == "trace-xyz"
+        tm.that(FlextObservabilityContext.trace_id(), eq="trace-xyz")
 
     # -- advanced context snapshot / restore -----------------------------
 
@@ -194,11 +197,11 @@ class TestsFlextObservabilityPhase11Integration:
         advanced_context: FlextObservabilityAdvancedContext.Context,
     ) -> None:
         """Stored metadata and baggage are resolvable by key."""
-        assert advanced_context.update_metadata("user_id", "user-123").success
-        assert advanced_context.update_baggage("org_id", "org-456").success
+        tm.ok(advanced_context.update_metadata("user_id", "user-123"))
+        tm.ok(advanced_context.update_baggage("org_id", "org-456"))
 
-        assert advanced_context.resolve_metadata("user_id") == "user-123"
-        assert advanced_context.resolve_baggage("org_id") == "org-456"
+        tm.that(advanced_context.resolve_metadata("user_id"), eq="user-123")
+        tm.that(advanced_context.resolve_baggage("org_id"), eq="org-456")
 
     def test_snapshot_captures_ids_metadata_and_baggage(
         self,
@@ -214,10 +217,10 @@ class TestsFlextObservabilityPhase11Integration:
             span_id="span-async-001",
         )
 
-        assert snapshot.correlation_id == "async-001"
-        assert snapshot.metadata["user_id"] == "user-123"
-        assert snapshot.baggage["user_name"] == "alice"
-        assert "correlation_id" in snapshot.model_dump_json()
+        tm.that(snapshot.correlation_id, eq="async-001")
+        tm.that(snapshot.metadata["user_id"], eq="user-123")
+        tm.that(snapshot.baggage["user_name"], eq="alice")
+        tm.that(snapshot.model_dump_json(), has="correlation_id")
 
     def test_clear_then_restore_round_trips_context(
         self,
@@ -227,11 +230,11 @@ class TestsFlextObservabilityPhase11Integration:
         advanced_context.update_metadata("user_id", "user-123")
         snapshot = advanced_context.snapshot(correlation_id="c-1")
 
-        assert advanced_context.clear().success
+        tm.ok(advanced_context.clear())
         assert not advanced_context.metadata
 
-        assert advanced_context.restore(snapshot).success
-        assert advanced_context.resolve_metadata("user_id") == "user-123"
+        tm.ok(advanced_context.restore(snapshot))
+        tm.that(advanced_context.resolve_metadata("user_id"), eq="user-123")
 
     # -- error handling / escalation -------------------------------------
 
@@ -248,7 +251,7 @@ class TestsFlextObservabilityPhase11Integration:
 
         result = error_handler.record_error(error)
 
-        assert result.success
+        tm.ok(result)
         assert result.value.fingerprint
 
     def test_repeated_errors_increment_count_and_escalate_severity(
@@ -256,7 +259,7 @@ class TestsFlextObservabilityPhase11Integration:
         error_handler: FlextObservabilityErrorHandling.Handler,
     ) -> None:
         """Repeated identical errors raise the count and escalate severity."""
-        assert error_handler.update_escalation_threshold(2).success
+        tm.ok(error_handler.update_escalation_threshold(2))
 
         def make_error() -> m.Observability.ErrorEvent:
             return m.Observability.ErrorEvent(
@@ -267,7 +270,7 @@ class TestsFlextObservabilityPhase11Integration:
 
         first = make_error()
         first_result = error_handler.record_error(first)
-        assert first_result.success
+        tm.ok(first_result)
         first_recorded = first_result.value
         assert (
             error_handler.resolve_escalated_severity(first_recorded)
@@ -276,9 +279,9 @@ class TestsFlextObservabilityPhase11Integration:
 
         second = make_error()
         second_result = error_handler.record_error(second)
-        assert second_result.success
+        tm.ok(second_result)
         second_recorded = second_result.value
-        assert error_handler.resolve_error_count(second_recorded.fingerprint) == 2
+        tm.that(error_handler.resolve_error_count(second_recorded.fingerprint), eq=2)
         assert (
             error_handler.resolve_escalated_severity(second_recorded)
             == ErrorSeverity.WARNING
@@ -293,7 +296,7 @@ class TestsFlextObservabilityPhase11Integration:
         """Escalation threshold must be positive; otherwise it fails."""
         result = error_handler.update_escalation_threshold(bad_threshold)
 
-        assert not result.success
+        tm.fail(result)
         assert result.error
 
     # -- custom metric registry ------------------------------------------
@@ -322,15 +325,17 @@ class TestsFlextObservabilityPhase11Integration:
             namespace="phase11",
         )
 
-        assert not result.success
-        assert "metric type" in (result.error or "").lower()
+        tm.fail(result)
+        tm.that((result.error or "").lower(), has="metric type")
 
     def test_resolve_metric_returns_none_for_unregistered_name(
         self,
         registry: FlextObservabilityCustomMetrics.Registry,
     ) -> None:
         """Resolving an unknown metric yields None rather than raising."""
-        assert registry.resolve_metric("never_registered", namespace="phase11") is None
+        tm.that(
+            registry.resolve_metric("never_registered", namespace="phase11"), none=True
+        )
 
     def test_resolve_metrics_by_type_never_reports_unknown_metric(
         self,
@@ -349,7 +354,7 @@ class TestsFlextObservabilityPhase11Integration:
         monitor.mark_success()
         metrics = monitor.finish()
 
-        assert metrics.success
+        tm.ok(metrics)
         assert FlextObservabilityPerformance.performance_acceptable(metrics)
 
     def test_failed_operation_is_not_acceptable(self) -> None:
@@ -358,7 +363,7 @@ class TestsFlextObservabilityPhase11Integration:
         monitor.mark_error("boom")
         metrics = monitor.finish()
 
-        assert not metrics.success
+        tm.fail(metrics)
         assert not FlextObservabilityPerformance.performance_acceptable(metrics)
 
     # -- cross-service end-to-end ----------------------------------------
@@ -372,24 +377,24 @@ class TestsFlextObservabilityPhase11Integration:
     ) -> None:
         """A full workflow yields successful, self-consistent public results."""
         FlextObservabilityContext.update_correlation_id("e2e-001")
-        assert sampler.update_operation_rate("e2e_workflow", 1.0).success
-        assert sampler.should_sample("e2e_workflow", "svc") is True
+        tm.ok(sampler.update_operation_rate("e2e_workflow", 1.0))
+        tm.that(sampler.should_sample("e2e_workflow", "svc"), eq=True)
 
-        assert factory.create_metric("workflow.started", 1.0, "counter").success
+        tm.ok(factory.create_metric("workflow.started", 1.0, "counter"))
 
         advanced_context.update_metadata("workflow_type", "integration_test")
         snapshot = advanced_context.snapshot(
             correlation_id=FlextObservabilityContext.correlation_id(),
         )
-        assert snapshot.correlation_id == "e2e-001"
+        tm.that(snapshot.correlation_id, eq="e2e-001")
 
         error = m.Observability.ErrorEvent(
             error_type="IntegrationTestError",
             message="Simulated error in workflow",
             severity=ErrorSeverity.WARNING,
         )
-        assert error_handler.record_error(error).success
-        assert factory.create_metric("workflow.completed", 1.0, "counter").success
+        tm.ok(error_handler.record_error(error))
+        tm.ok(factory.create_metric("workflow.completed", 1.0, "counter"))
 
 
 __all__: list[str] = ["TestsFlextObservabilityPhase11Integration"]
