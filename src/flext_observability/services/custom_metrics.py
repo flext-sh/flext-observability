@@ -18,14 +18,9 @@ Key Features:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from collections.abc import MutableMapping
 
 from flext_observability import c, e, m, p, r, t, u
-
-if TYPE_CHECKING:
-    from collections.abc import (
-        MutableMapping,
-    )
 
 
 class FlextObservabilityCustomMetrics:

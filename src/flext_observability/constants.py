@@ -12,7 +12,7 @@ from __future__ import annotations
 from enum import StrEnum, unique
 from typing import ClassVar, Final
 
-from flext_core import c
+from flext_cli import c
 
 
 class FlextObservabilityConstants(c):

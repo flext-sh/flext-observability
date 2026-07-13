@@ -16,7 +16,6 @@ from __future__ import annotations
 from contextvars import ContextVar
 from uuid import uuid4
 
-from flext_cli import u as cli_u
 from flext_observability import c, m, p, r, t, u
 
 
@@ -218,7 +217,7 @@ class FlextObservabilityContext:
             "correlation_id": FlextObservabilityContext.correlation_id(),
             "trace_id": FlextObservabilityContext.trace_id(),
             "span_id": FlextObservabilityContext.span_id(),
-            "baggage": cli_u.Cli.json_dumps(baggage_payload).unwrap(),
+            "baggage": u.Cli.json_dumps(baggage_payload).unwrap(),
         }
         return m.Dict(payload)
 

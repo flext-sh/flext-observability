@@ -13,7 +13,8 @@ import math
 from collections.abc import (
     Mapping,
 )
-from typing import TYPE_CHECKING, ClassVar
+from datetime import datetime
+from typing import ClassVar
 from uuid import uuid4
 
 from flext_core import FlextContainer
@@ -38,9 +39,6 @@ from flext_observability import (
     t,
     u,
 )
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 
 class FlextObservability(

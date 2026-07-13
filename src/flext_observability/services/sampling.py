@@ -20,14 +20,12 @@ Key Features:
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Annotated, ClassVar
+from collections.abc import (
+    MutableMapping,
+)
+from typing import Annotated, ClassVar
 
 from flext_observability import FlextObservabilityContext, c, m, p, r, u
-
-if TYPE_CHECKING:
-    from collections.abc import (
-        MutableMapping,
-    )
 
 
 class FlextObservabilitySampling:
