@@ -6,17 +6,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import (
+    Awaitable,
+    Callable,
+)
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_core import p
+from flext_core import m, p
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        Awaitable,
-        Callable,
-    )
-
-    from flext_core import m
     from flext_observability import t
 
 
