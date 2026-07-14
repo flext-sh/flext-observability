@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     )
     from tests.protocols import (
         TestsFlextObservabilityProtocols as TestsFlextObservabilityProtocols,
-        p as p,
+        p,
     )
     from tests.typings import (
         TestsFlextObservabilityTypes as TestsFlextObservabilityTypes,
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     )
     from tests.utilities import (
         TestsFlextObservabilityUtilities as TestsFlextObservabilityUtilities,
-        u as u,
+        u,
     )
 
 _LAZY_IMPORTS = build_lazy_import_map(

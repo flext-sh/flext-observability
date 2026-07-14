@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_core import FlextContainer, c as core_c
+from flext_core import FlextContainer, c
 from flext_observability import (
     FlextObservability,
     __version__ as pkg_version,
@@ -44,7 +44,7 @@ class TestsFlextObservabilityInit:
     def test_core_reexports_are_usable(self) -> None:
         """flext-core primitives are re-exported and usable through the package."""
         tm.that(callable(FlextContainer), eq=True)
-        tm.that(core_c, none=False)
+        tm.that(c, none=False)
 
     @pytest.mark.parametrize(
         ("name", "value", "unit"),
