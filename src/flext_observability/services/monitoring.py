@@ -332,7 +332,7 @@ class FlextObservabilityMonitor:
 
     @property
     def observability_service(self) -> p.Observability.ObservabilityService | None:
-        """Return the unified observability service."""
+        """The unified observability service."""
         return self._observability_service
 
     def increment_functions_monitored(self) -> None:
