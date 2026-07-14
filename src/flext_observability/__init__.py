@@ -22,13 +22,13 @@ from flext_observability.__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_core._root_typing_parts.facades import (
-        d as d,
-        e as e,
-        h as h,
-        r as r,
-        s as s,
-        x as x,
+    from flext_core import (
+        d,
+        e,
+        h,
+        r,
+        s,
+        x,
     )
     from flext_observability._settings import (
         FlextObservabilitySettings as FlextObservabilitySettings,
