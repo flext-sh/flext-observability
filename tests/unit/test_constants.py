@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_core import c as core_c
+from flext_core import c
 from tests import c
 
 _Obs = c.Observability
@@ -21,7 +21,7 @@ class TestsFlextObservabilityConstantsUnit:
 
     def test_facade_extends_flext_core_constants(self) -> None:
         """The facade must inherit the flext-core constants contract via MRO."""
-        tm.that(core_c in c.__mro__, eq=True)
+        tm.that(c in c.__mro__, eq=True)
 
     @pytest.mark.parametrize(
         ("member", "expected"),

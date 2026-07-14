@@ -80,7 +80,7 @@ class FlextObservabilityAdvancedContext:
 
         @property
         def baggage(self) -> t.StrMapping:
-            """Return all baggage items.
+            """All baggage items.
 
             Returns:
                 dict - All baggage
@@ -90,7 +90,7 @@ class FlextObservabilityAdvancedContext:
 
         @property
         def metadata(self) -> t.ConfigurationMapping:
-            """Return all request-local metadata.
+            """All request-local metadata.
 
             Returns:
                 dict - All metadata
