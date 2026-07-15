@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_core import FlextContainer, c
+from flext_core import FlextContainer
 from flext_observability import (
     FlextObservability,
     __version__ as pkg_version,
@@ -24,8 +24,6 @@ flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
 flext_metric = FlextObservability.flext_metric
 flext_trace = FlextObservability.flext_trace
-global_factory = FlextObservability.global_factory
-clear_global_factory = FlextObservability.clear_global_factory
 
 
 class TestsFlextObservabilityInit:
@@ -147,19 +145,9 @@ class TestsFlextObservabilityInit:
         tm.that(result.success, eq=False)
         tm.that(bool(result.error), eq=True)
 
-    def test_global_factory_is_idempotent(self) -> None:
-        """global_factory returns the same instance until it is cleared."""
-        clear_global_factory()
-        first = global_factory()
-        second = global_factory()
+    def test_active_registry_is_a_stable_singleton(self) -> None:
+        """active_registry returns the same cached instance across calls."""
+        first = FlextObservability.active_registry()
+        second = FlextObservability.active_registry()
 
         tm.that(first is second, eq=True)
-
-    def test_clear_global_factory_forces_a_fresh_instance(self) -> None:
-        """clear_global_factory resets the cached instance."""
-        clear_global_factory()
-        original = global_factory()
-        clear_global_factory()
-        replacement = global_factory()
-
-        tm.that(replacement is original, eq=False)
