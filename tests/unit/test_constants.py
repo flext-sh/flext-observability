@@ -1,4 +1,4 @@
-"""Behavioral tests for flextc.Observabilityervability.constants public contract.
+"""Behavioral tests for flext_observability.constants public contract.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
