@@ -32,9 +32,9 @@ class TestsFlextObservabilityPhase11Integration:
     """Behavioral contract tests across observability services."""
 
     @pytest.fixture
-    def factory(self) -> FlextObservability.FlextObservabilityMasterFactory:
+    def factory(self) -> FlextObservability:
         """Return a fresh master factory instance."""
-        return FlextObservability.FlextObservabilityMasterFactory()
+        return FlextObservability()
 
     @pytest.fixture
     def sampler(self) -> FlextObservabilitySampling.Sampler:
@@ -74,13 +74,13 @@ class TestsFlextObservabilityPhase11Integration:
     )
     def test_create_metric_returns_metric_with_requested_fields(
         self,
-        factory: FlextObservability.FlextObservabilityMasterFactory,
+        factory: FlextObservability,
         name: str,
         value: float,
         unit: str,
     ) -> None:
         """create_metric succeeds and echoes the requested name/value/unit."""
-        result = factory.create_metric(name, value, unit)
+        result = factory.flext_metric(name, value, unit)
 
         tm.ok(result)
         metric = result.value
@@ -90,10 +90,10 @@ class TestsFlextObservabilityPhase11Integration:
 
     def test_create_metric_preserves_tags_as_labels(
         self,
-        factory: FlextObservability.FlextObservabilityMasterFactory,
+        factory: FlextObservability,
     ) -> None:
         """Tags supplied to create_metric surface as labels on the model."""
-        result = factory.create_metric(
+        result = factory.flext_metric(
             "http.requests.total",
             1.0,
             "counter",
@@ -354,7 +354,7 @@ class TestsFlextObservabilityPhase11Integration:
         monitor.mark_success()
         metrics = monitor.finish()
 
-        tm.ok(metrics)
+        tm.that(metrics.success, eq=True)
         assert FlextObservabilityPerformance.performance_acceptable(metrics)
 
     def test_failed_operation_is_not_acceptable(self) -> None:
@@ -363,14 +363,14 @@ class TestsFlextObservabilityPhase11Integration:
         monitor.mark_error("boom")
         metrics = monitor.finish()
 
-        tm.fail(metrics)
+        tm.that(metrics.success, eq=False)
         assert not FlextObservabilityPerformance.performance_acceptable(metrics)
 
     # -- cross-service end-to-end ----------------------------------------
 
     def test_end_to_end_workflow_produces_consistent_outcomes(
         self,
-        factory: FlextObservability.FlextObservabilityMasterFactory,
+        factory: FlextObservability,
         sampler: FlextObservabilitySampling.Sampler,
         advanced_context: FlextObservabilityAdvancedContext.Context,
         error_handler: FlextObservabilityErrorHandling.Handler,
@@ -380,7 +380,7 @@ class TestsFlextObservabilityPhase11Integration:
         tm.ok(sampler.update_operation_rate("e2e_workflow", 1.0))
         tm.that(sampler.should_sample("e2e_workflow", "svc"), eq=True)
 
-        tm.ok(factory.create_metric("workflow.started", 1.0, "counter"))
+        tm.ok(factory.flext_metric("workflow.started", 1.0, "counter"))
 
         advanced_context.update_metadata("workflow_type", "integration_test")
         snapshot = advanced_context.snapshot(
@@ -394,7 +394,7 @@ class TestsFlextObservabilityPhase11Integration:
             severity=ErrorSeverity.WARNING,
         )
         tm.ok(error_handler.record_error(error))
-        tm.ok(factory.create_metric("workflow.completed", 1.0, "counter"))
+        tm.ok(factory.flext_metric("workflow.completed", 1.0, "counter"))
 
 
 __all__: list[str] = ["TestsFlextObservabilityPhase11Integration"]

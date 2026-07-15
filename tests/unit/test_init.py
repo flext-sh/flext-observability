@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_core import FlextContainer, c
+from flext_core import FlextContainer
 from flext_observability import (
     FlextObservability,
     __version__ as pkg_version,
