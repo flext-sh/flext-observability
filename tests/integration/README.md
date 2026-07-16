@@ -90,7 +90,7 @@ from flext_core import FlextRegistry
 from flext_core import r, p
 from flext_core import u
 from flext_core import s
-from flext_core import t
+from flext_core import p, t
 from flext_core import u
 
     container = FlextContainer()

@@ -74,7 +74,7 @@ class FlextObservabilityServices:
         except c.EXC_MAPPING_TYPE as e:
             return r[p.Dict].fail_op("Status check", e)
 
-    def process_entry(self, entry_data: m.Dict) -> p.Result[p.Dict]:
+    def process_entry(self, entry_data: p.Dict) -> p.Result[p.Dict]:
         """Process generic observability entry through FLEXT patterns."""
         try:
             if not entry_data:

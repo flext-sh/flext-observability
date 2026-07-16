@@ -17,8 +17,8 @@ from types import MappingProxyType
 from typing import Annotated, Self
 from uuid import uuid4
 
-from flext_cli import m, u
-from flext_observability import c, t
+from flext_cli import m, p, u
+from flext_observability import c, p, t
 
 
 class FlextObservabilityModels(m):
@@ -318,7 +318,7 @@ class FlextObservabilityModels(m):
                 u.Field(
                     description="Additional context data",
                 ),
-            ] = u.Field(default_factory=lambda: m.Dict({}))
+            ] = u.Field(default_factory=lambda: p.Dict({}))
 
         # --- Moved from performance.py ---
         class PerformanceMetrics(m.Value):

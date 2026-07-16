@@ -106,7 +106,7 @@ class FlextObservabilityContext:
         FlextObservabilityContext._trace_id.set("")
 
     @staticmethod
-    def from_headers(headers: m.Dict | t.ScalarMapping) -> p.Result[bool]:
+    def from_headers(headers: p.Dict | t.ScalarMapping) -> p.Result[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -141,7 +141,7 @@ class FlextObservabilityContext:
             return r[bool].ok(value=True)
 
     @staticmethod
-    def _apply_headers(headers: m.Dict | t.ScalarMapping) -> None:
+    def _apply_headers(headers: p.Dict | t.ScalarMapping) -> None:
         """Apply normalized trace headers to the context variables."""
         normalized_headers = {
             header_key.lower(): str(header_value)

@@ -12,8 +12,8 @@ from collections.abc import (
 )
 from typing import Protocol, runtime_checkable
 
-from flext_cli import m, p
-from flext_observability import t
+from flext_cli import p
+from flext_observability import p, t
 
 
 class FlextObservabilityProtocols(p):
@@ -117,7 +117,7 @@ class FlextObservabilityProtocols(p):
             class Request(Protocol):
                 """Protocol for HTTP request objects used by middleware."""
 
-                headers: m.Dict
+                headers: p.Dict
                 method: str
                 url: FlextObservabilityProtocols.Observability.Http.RequestURL
                 client: (
@@ -129,7 +129,7 @@ class FlextObservabilityProtocols(p):
                 """Protocol for HTTP response objects used by middleware."""
 
                 status_code: int
-                headers: m.Dict
+                headers: p.Dict
 
         class HttpClient:
             """Protocols for httpx and aiohttp HTTP client instrumentation."""

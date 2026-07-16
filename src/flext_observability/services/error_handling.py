@@ -123,7 +123,7 @@ class FlextObservabilityErrorHandling:
 
         def resolve_escalated_severity(
             self,
-            error: m.Observability.ErrorEvent,
+            error: p.Observability.ErrorEvent,
         ) -> c.Observability.ErrorSeverity:
             """Resolve escalated severity based on error count.
 
@@ -145,7 +145,7 @@ class FlextObservabilityErrorHandling:
                 return c.Observability.ErrorSeverity.WARNING
             return error.severity
 
-        def record_alert_sent(self, error: m.Observability.ErrorEvent) -> None:
+        def record_alert_sent(self, error: p.Observability.ErrorEvent) -> None:
             """Record that alert was sent for error.
 
             Args:
@@ -158,7 +158,7 @@ class FlextObservabilityErrorHandling:
 
         def record_error(
             self,
-            error: m.Observability.ErrorEvent,
+            error: p.Observability.ErrorEvent,
         ) -> p.Result[p.Observability.ErrorEvent]:
             """Record an error event.
 
@@ -248,7 +248,7 @@ class FlextObservabilityErrorHandling:
             )
             return r[bool].ok(value=True)
 
-        def should_alert_for_error(self, error: m.Observability.ErrorEvent) -> bool:
+        def should_alert_for_error(self, error: p.Observability.ErrorEvent) -> bool:
             """Determine if error should trigger an alert.
 
             Args:
@@ -301,7 +301,7 @@ class FlextObservabilityErrorHandling:
 
     @staticmethod
     def record_error(
-        error: m.Observability.ErrorEvent,
+        error: p.Observability.ErrorEvent,
     ) -> p.Result[p.Observability.ErrorEvent]:
         """Record an error.
 
@@ -316,7 +316,7 @@ class FlextObservabilityErrorHandling:
         return handler.record_error(error)
 
     @staticmethod
-    def should_alert(error: m.Observability.ErrorEvent) -> bool:
+    def should_alert(error: p.Observability.ErrorEvent) -> bool:
         """Check if error should alert.
 
         Args:

@@ -60,7 +60,7 @@ class FlextObservabilityAdvancedContext:
             self._metadata: t.MutableScalarMapping = {}
             self._baggage: t.MutableStrMapping = {}
             self._request_id: str = ""
-            self._parent_context: m.Observability.ContextSnapshot | None = None
+            self._parent_context: p.Observability.ContextSnapshot | None = None
 
         def clear(self) -> p.Result[bool]:
             """Clear all request-local context.
@@ -143,7 +143,7 @@ class FlextObservabilityAdvancedContext:
             except c.EXC_MAPPING_TYPE as exc:
                 return e.fail_operation("merge context", exc, result_type=r[bool])
 
-        def restore(self, snapshot: m.Observability.ContextSnapshot) -> p.Result[bool]:
+        def restore(self, snapshot: p.Observability.ContextSnapshot) -> p.Result[bool]:
             """Restore context from snapshot.
 
             Args:
