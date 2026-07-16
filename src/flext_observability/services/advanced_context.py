@@ -218,7 +218,7 @@ class FlextObservabilityAdvancedContext:
             correlation_id: str = "",
             trace_id: str = "",
             span_id: str = "",
-        ) -> m.Observability.ContextSnapshot:
+        ) -> p.Observability.ContextSnapshot:
             """Create snapshot of current context.
 
             Args:

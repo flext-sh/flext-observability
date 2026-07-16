@@ -50,11 +50,11 @@ class FlextObservabilityProtocols(p):
         class ObservabilityService(Protocol):
             """Protocol for observability services providing alerts and metrics."""
 
-            def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
+            def create_alert(self, **kwargs: t.Scalar) -> p.Result[p.Dict]:
                 """Create an alert with given parameters."""
                 ...
 
-            def metrics_summary(self) -> p.Result[m.Dict]:
+            def metrics_summary(self) -> p.Result[p.Dict]:
                 """Get summary of collected metrics."""
                 ...
 

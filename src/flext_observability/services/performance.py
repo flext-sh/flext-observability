@@ -67,7 +67,7 @@ class FlextObservabilityPerformance:
             self._initial_memory = self._memory_usage()
             self._initial_cpu = self._cpu_percent()
 
-        def finish(self) -> m.Observability.PerformanceMetrics:
+        def finish(self) -> p.Observability.PerformanceMetrics:
             """Finish monitoring and return metrics.
 
             Returns:

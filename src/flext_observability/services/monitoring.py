@@ -187,18 +187,18 @@ class FlextObservabilityMonitor:
                 e,
             )
 
-    def flext_metrics_summary(self) -> p.Result[m.Dict]:
+    def flext_metrics_summary(self) -> p.Result[p.Dict]:
         """Resolve complete metrics summary."""
         if not self._metrics_service:
-            return r[m.Dict].fail_op(
+            return r[p.Dict].fail_op(
                 "resolve metrics summary",
                 "Metrics service not available",
             )
         result = self._metrics_service.metrics_summary()
         return (
-            r[m.Dict].ok(result.value)
+            r[p.Dict].ok(result.value)
             if result.success
-            else r[m.Dict].fail_op(
+            else r[p.Dict].fail_op(
                 "resolve metrics summary",
                 result.error or "Metrics summary failed",
             )
@@ -287,10 +287,10 @@ class FlextObservabilityMonitor:
         name: str,
         value: float,
         metric_type: str,
-    ) -> p.Result[m.Observability.MetricEntry]:
+    ) -> p.Result[p.Observability.MetricEntry]:
         """Build a monitoring metric entry."""
         try:
-            return r[m.Observability.MetricEntry].ok(
+            return r[p.Observability.MetricEntry].ok(
                 m.Observability.MetricEntry(
                     metric_id=str(uuid4()),
                     name=name,
@@ -300,7 +300,7 @@ class FlextObservabilityMonitor:
                 ),
             )
         except c.EXC_MAPPING_TYPE as e:
-            return r[m.Observability.MetricEntry].fail_op("build metric entry", e)
+            return r[p.Observability.MetricEntry].fail_op("build metric entry", e)
 
     def flext_start_monitoring(self) -> p.Result[None]:
         """Start real observability monitoring with service coordination."""

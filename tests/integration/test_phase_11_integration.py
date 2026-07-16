@@ -261,7 +261,7 @@ class TestsFlextObservabilityPhase11Integration:
         """Repeated identical errors raise the count and escalate severity."""
         tm.ok(error_handler.update_escalation_threshold(2))
 
-        def make_error() -> m.Observability.ErrorEvent:
+        def make_error() -> p.Observability.ErrorEvent:
             return m.Observability.ErrorEvent(
                 error_type="TransientError",
                 message="temporary failure",

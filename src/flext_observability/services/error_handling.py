@@ -159,7 +159,7 @@ class FlextObservabilityErrorHandling:
         def record_error(
             self,
             error: m.Observability.ErrorEvent,
-        ) -> p.Result[m.Observability.ErrorEvent]:
+        ) -> p.Result[p.Observability.ErrorEvent]:
             """Record an error event.
 
             Args:
@@ -175,7 +175,7 @@ class FlextObservabilityErrorHandling:
 
             """
 
-            def operation() -> m.Observability.ErrorEvent:
+            def operation() -> p.Observability.ErrorEvent:
                 current_error = error.calculate_fingerprint()
                 try:
                     correlation_id = FlextObservabilityContext.correlation_id()
@@ -302,7 +302,7 @@ class FlextObservabilityErrorHandling:
     @staticmethod
     def record_error(
         error: m.Observability.ErrorEvent,
-    ) -> p.Result[m.Observability.ErrorEvent]:
+    ) -> p.Result[p.Observability.ErrorEvent]:
         """Record an error.
 
         Args:

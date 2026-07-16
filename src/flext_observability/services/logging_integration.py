@@ -79,7 +79,7 @@ class FlextObservabilityLogging:
     def _build_enriched_context(
         *,
         include_baggage: bool = False,
-    ) -> m.Observability.LogContext:
+    ) -> p.Observability.LogContext:
         """Build trace context payload for log enrichment.
 
         Args:
@@ -109,7 +109,7 @@ class FlextObservabilityLogging:
     def enrich_log_context(
         *,
         include_baggage: bool = False,
-    ) -> p.Result[m.Observability.LogContext]:
+    ) -> p.Result[p.Observability.LogContext]:
         """Get trace context for log enrichment.
 
         Retrieves current trace context (correlation ID, trace ID, span ID)
@@ -142,9 +142,9 @@ class FlextObservabilityLogging:
             context_payload = FlextObservabilityLogging._build_enriched_context(
                 include_baggage=include_baggage,
             )
-            return r[m.Observability.LogContext].ok(context_payload)
+            return r[p.Observability.LogContext].ok(context_payload)
         except c.EXC_MAPPING_TYPE as e:
-            return r[m.Observability.LogContext].fail_op("Context enrichment", e)
+            return r[p.Observability.LogContext].fail_op("Context enrichment", e)
 
     @staticmethod
     def ensure_correlation_id() -> str:
@@ -326,7 +326,7 @@ class FlextObservabilityLogging:
             return r[bool].fail_op("Logging with context", e)
 
     @staticmethod
-    def validate_context() -> p.Result[m.Observability.LogContext]:
+    def validate_context() -> p.Result[p.Observability.LogContext]:
         """Validate current trace context is properly configured.
 
         Checks that essential trace context (correlation ID) is set.
@@ -350,7 +350,7 @@ class FlextObservabilityLogging:
             if not context.get("correlation_id"):
                 _ = FlextObservabilityLogging.ensure_correlation_id()
                 context = FlextObservabilityContext.context_payload()
-            return r[m.Observability.LogContext].ok(
+            return r[p.Observability.LogContext].ok(
                 m.Observability.LogContext(
                     correlation_id=str(context.get("correlation_id"))
                     if context.get("correlation_id") is not None
@@ -364,7 +364,7 @@ class FlextObservabilityLogging:
                 ),
             )
         except c.EXC_MAPPING_TYPE as e:
-            return r[m.Observability.LogContext].fail_op("Context validation", e)
+            return r[p.Observability.LogContext].fail_op("Context validation", e)
 
 
 __all__: list[str] = ["FlextObservabilityLogging"]

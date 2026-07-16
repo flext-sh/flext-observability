@@ -54,7 +54,7 @@ class FlextObservabilityContext:
     _correlation_id: ContextVar[str] = ContextVar("correlation_id", default="")
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
-    _baggage: ContextVar[m.Dict | None] = ContextVar("baggage", default=None)
+    _baggage: ContextVar[p.Dict | None] = ContextVar("baggage", default=None)
     logger = u.fetch_logger(__name__)
 
     @staticmethod
@@ -157,7 +157,7 @@ class FlextObservabilityContext:
     @staticmethod
     def resolve_baggage(
         key: str | None = None,
-    ) -> m.BaseModel | t.JsonValue | m.Dict | None:
+    ) -> p.BaseModel | t.JsonValue | m.Dict | None:
         """Resolve baggage value.
 
         Args:
@@ -186,7 +186,7 @@ class FlextObservabilityContext:
         return validated_value
 
     @staticmethod
-    def context_payload() -> m.Dict:
+    def context_payload() -> p.Dict:
         """Return complete context snapshot.
 
         Returns all context variables as a dictionary. Useful for
@@ -350,7 +350,7 @@ class FlextObservabilityContext:
         return trace_id
 
     @staticmethod
-    def to_headers() -> m.Dict:
+    def to_headers() -> p.Dict:
         """Get context as HTTP headers.
 
         Converts current context (correlation ID, trace ID, span ID) to

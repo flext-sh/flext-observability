@@ -188,7 +188,7 @@ class FlextObservabilityHTTP:
                 return 0.0
 
         @staticmethod
-        def _error_handler(error: Exception) -> tuple[m.Dict, int]:
+        def _error_handler(error: Exception) -> tuple[p.Dict, int]:
             """Handle exceptions with logging and alerting."""
             try:
                 FlextObservabilityLogging.log_with_context(

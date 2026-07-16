@@ -101,7 +101,7 @@ class FlextObservabilityCustomMetrics:
             )
             return r[bool].ok(value=True)
 
-        def resolve_metrics(self, namespace: str | None = None) -> m.Dict:
+        def resolve_metrics(self, namespace: str | None = None) -> p.Dict:
             """Resolve all registered metrics.
 
             Args:
@@ -124,7 +124,7 @@ class FlextObservabilityCustomMetrics:
             self,
             name: str,
             namespace: str = "default",
-        ) -> m.Observability.CustomMetricDefinition | None:
+        ) -> p.Observability.CustomMetricDefinition | None:
             """Resolve a metric definition by name.
 
             Args:
@@ -145,7 +145,7 @@ class FlextObservabilityCustomMetrics:
             self,
             name: str,
             namespace: str = "default",
-        ) -> m.Dict | None:
+        ) -> p.Dict | None:
             """Resolve detailed metric information.
 
             Args:
@@ -170,7 +170,7 @@ class FlextObservabilityCustomMetrics:
         def resolve_metrics_by_type(
             self,
             metric_type: c.Observability.MetricType,
-        ) -> m.Dict:
+        ) -> p.Dict:
             """Resolve all metrics of a specific type.
 
             Args:
@@ -346,7 +346,7 @@ class FlextObservabilityCustomMetrics:
     def resolve_metric(
         name: str,
         namespace: str = "default",
-    ) -> m.Observability.CustomMetricDefinition | None:
+    ) -> p.Observability.CustomMetricDefinition | None:
         """Resolve a metric definition.
 
         Args:
