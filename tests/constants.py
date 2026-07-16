@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsConstants
 
-from flext_observability import FlextObservabilityConstants
+from flext_observability import c
 
 
 class TestsFlextObservabilityConstants(
     FlextTestsConstants,
-    FlextObservabilityConstants,
+    c,
 ):
-    class Observability(FlextObservabilityConstants.Observability):
-        class Tests: ...
+    class Tests(FlextTestsConstants.Tests):
+        """Test-specific constants."""
 
 
 c = TestsFlextObservabilityConstants

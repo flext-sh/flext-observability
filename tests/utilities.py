@@ -8,14 +8,17 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsUtilities
 
-from flext_observability import FlextObservabilityUtilities
+from flext_observability import u
 
 
 class TestsFlextObservabilityUtilities(
     FlextTestsUtilities,
-    FlextObservabilityUtilities,
+    u,
 ):
     """Test utilities for flext-observability."""
+
+    class Tests(FlextTestsUtilities.Tests):
+        """Test-specific utilities."""
 
 
 u = TestsFlextObservabilityUtilities

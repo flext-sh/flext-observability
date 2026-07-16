@@ -8,20 +8,17 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsProtocols
 
-from flext_observability import FlextObservabilityProtocols
+from flext_observability import p
 
 
 class TestsFlextObservabilityProtocols(
     FlextTestsProtocols,
-    FlextObservabilityProtocols,
+    p,
 ):
     """Test protocols for flext-observability."""
 
-    class Observability(FlextObservabilityProtocols.Observability):
-        """Observability domain test protocols."""
-
-        class Tests:
-            """Test-specific protocols."""
+    class Tests(FlextTestsProtocols.Tests):
+        """Test-specific protocols."""
 
 
 p = TestsFlextObservabilityProtocols

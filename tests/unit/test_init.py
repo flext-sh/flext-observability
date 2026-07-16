@@ -18,8 +18,6 @@ from flext_observability import (
 )
 from tests import c
 
-__all__ = ["TestsFlextObservabilityInit"]
-
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
 flext_metric = FlextObservability.flext_metric
@@ -151,3 +149,6 @@ class TestsFlextObservabilityInit:
         second = FlextObservability.active_registry()
 
         tm.that(first is second, eq=True)
+
+
+__all__ = ["TestsFlextObservabilityInit"]

@@ -24,8 +24,6 @@ from flext_tests import tm
 from flext_core import FlextContainer
 from flext_observability import FlextObservability, p, r
 
-__all__ = ["TestsFlextObservabilityFactory"]
-
 
 class TestsFlextObservabilityFactory:
     """Behavioral contract tests for the observability facade creation API."""
@@ -121,9 +119,7 @@ class TestsFlextObservabilityFactory:
 
     def test_flext_trace_preserves_explicit_trace_id(self) -> None:
         """An explicit trace_id is preserved on the produced trace."""
-        result = FlextObservability().flext_trace(
-            "api_request", trace_id="trace-123"
-        )
+        result = FlextObservability().flext_trace("api_request", trace_id="trace-123")
         tm.that(result.success, eq=True)
         trace = result.value
         tm.that(trace.name, eq="api_request")
@@ -170,3 +166,6 @@ class TestsFlextObservabilityFactory:
         tm.that(result.failure, eq=True)
         tm.that(result.error, none=False)
         tm.that(result.error, has="must be non-empty string")
+
+
+__all__ = ["TestsFlextObservabilityFactory"]

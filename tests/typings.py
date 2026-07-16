@@ -8,17 +8,14 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsTypes
 
-from flext_observability import FlextObservabilityTypes
+from flext_observability import t
 
 
-class TestsFlextObservabilityTypes(FlextTestsTypes, FlextObservabilityTypes):
+class TestsFlextObservabilityTypes(FlextTestsTypes, t):
     """Test type aliases for flext-observability."""
 
-    class Observability(FlextObservabilityTypes.Observability):
-        """Observability domain test type aliases."""
-
-        class Tests:
-            """Test-specific type aliases."""
+    class Tests(FlextTestsTypes.Tests):
+        """Test-specific types."""
 
 
 t = TestsFlextObservabilityTypes
