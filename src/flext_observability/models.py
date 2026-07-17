@@ -11,14 +11,16 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from datetime import datetime
 from hashlib import sha256
 from types import MappingProxyType
-from typing import Annotated, Self
+from typing import TYPE_CHECKING, Annotated, Self
 from uuid import uuid4
 
 from flext_cli import m, p, u
 from flext_observability import c, p, t
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class FlextObservabilityModels(m):

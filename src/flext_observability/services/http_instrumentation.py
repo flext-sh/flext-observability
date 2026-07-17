@@ -22,12 +22,10 @@ Key Features:
 from __future__ import annotations
 
 import time
-from typing import TypeIs, override
+from typing import TYPE_CHECKING, TypeIs, override
 
 import flask
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.requests import Request
-from starlette.responses import Response
 
 from flext_observability import (
     FlextObservabilityContext,
@@ -39,6 +37,10 @@ from flext_observability import (
     t,
     u,
 )
+
+if TYPE_CHECKING:
+    from starlette.requests import Request
+    from starlette.responses import Response
 
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None

@@ -19,12 +19,15 @@ Key Features:
 from __future__ import annotations
 
 import time
-from collections.abc import (
-    Callable,
-    MutableMapping,
-)
+from typing import TYPE_CHECKING
 
 from flext_observability import FlextObservabilityContext, c, m, p, r, t, u
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Callable,
+        MutableMapping,
+    )
 
 
 class FlextObservabilityErrorHandling:
