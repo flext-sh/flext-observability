@@ -51,7 +51,7 @@ def demonstrate_factory_pattern() -> None:
 
 
 def monitored_function(data: str) -> str:
-    """Example function with automatic monitoring."""
+    """Demonstrate automatic monitoring."""
     time.sleep(0.1)
     return f"Processed: {data}"
 

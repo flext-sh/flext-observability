@@ -10,7 +10,6 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_core import c
 from tests import c
 
 _Obs = c.Observability
