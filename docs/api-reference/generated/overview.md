@@ -3,7 +3,7 @@
 # flext-observability API Overview
 
 - Package: `flext_observability`
-- Version: `0.12.0`
+- Version: `0.20.0`
 - Description: FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry
 - Doc summary: Flext Observability package.
 - Classifiers: `Development Status :: 3 - Alpha`, `Intended Audience :: Developers`, `Operating System :: OS Independent`, `Programming Language :: Python :: 3 :: Only`, `Programming Language :: Python :: 3.13`, `Topic :: Software Development :: Libraries :: Python Modules` (+2 more)
