@@ -20,22 +20,22 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-    "flask>=3.1.3",
-    "flext-cli @ git+https://github.com/flext-sh/flext-cli.git@0.12.0-dev",
-    "flext-core @ git+https://github.com/flext-sh/flext-core.git@0.12.0-dev",
-    "opentelemetry-api>=1.41.1",
-    "opentelemetry-exporter-otlp-proto-grpc>=1.41.1",
-    "opentelemetry-exporter-prometheus>=0.62b1",
-    "opentelemetry-sdk>=1.41.1",
-    "prometheus-client>=0.25.0",
-    "psutil>=7.2.2",
-    "pydantic-core>=2.46.3",
-    "pydantic-settings>=2.14.0",
-    "pydantic>=2.13.3",
-    "rich>=14,<15",
-    "starlette>=1.0.0",
-    "structlog>=25.5.0",
-    "typer>=0.25.1",
+  "flask>=3.1.3",
+  "flext-cli @ git+https://github.com/flext-sh/flext-cli.git@0.12.0-dev",
+  "flext-core @ git+https://github.com/flext-sh/flext-core.git@0.12.0-dev",
+  "opentelemetry-api>=1.41.1",
+  "opentelemetry-exporter-otlp-proto-grpc>=1.41.1",
+  "opentelemetry-exporter-prometheus>=0.62b1",
+  "opentelemetry-sdk>=1.41.1",
+  "prometheus-client>=0.25.0",
+  "psutil>=7.2.2",
+  "pydantic-core>=2.46.3",
+  "pydantic-settings>=2.14.0",
+  "pydantic>=2.13.3",
+  "rich>=14,<15",
+  "starlette>=1.0.0",
+  "structlog>=25.5.0",
+  "typer>=0.25.1",
 ]
 description = "FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry"
 keywords = [ "enterprise", "flext", "logging", "metrics", "monitoring", "tracing", "typed" ]
@@ -220,25 +220,24 @@ project-excludes = [
   "**/typings/**",
   "**/vendor/**",
   "**/venv/**",
-  ".flext-deps/**",
   ".venv/**",
   "typings/**",
   "vendor/**",
 ]
 # mro-f1fe (agent: kimi): examples moved to gitignored legado/ — out of the
 # active lint/typecheck surface by operator directive (expose unused code).
-project-includes = [ "src/**/*.py*", "tests/**/*.py*" ]
+project-includes = [
+  "examples/**/*.py*",
+  "src/**/*.py*",
+  "tests/**/*.py*",
+]
 python-interpreter-path = "../.venv/bin/python"
 python-version = "3.13"
 search-path = [
   ".",
-  "../flext-cli/examples",
   "../flext-cli/src",
-  "../flext-core/examples",
-  "../flext-core/scripts",
   "../flext-core/src",
   "../flext-infra/src",
-  "../flext-infra/tmp_flow_test",
   "../flext-tests/src",
   "src",
 ]
