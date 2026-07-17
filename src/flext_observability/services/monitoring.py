@@ -58,7 +58,7 @@ class FlextObservabilityMonitor:
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
             args: tuple[t.Scalar, ...],
-            kwargs: t.ConfigurationMapping | m.Dict,
+            kwargs: t.ConfigurationMapping | p.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> t.Scalar:

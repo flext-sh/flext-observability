@@ -157,7 +157,7 @@ class FlextObservabilityContext:
     @staticmethod
     def resolve_baggage(
         key: str | None = None,
-    ) -> p.BaseModel | t.JsonValue | m.Dict | None:
+    ) -> p.BaseModel | t.JsonValue | p.Dict | None:
         """Resolve baggage value.
 
         Args:
