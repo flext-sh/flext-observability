@@ -22,7 +22,7 @@ from datetime import datetime
 from flext_tests import tm
 
 from flext_core import FlextContainer
-from flext_observability import FlextObservability, p, r
+from flext_observability import FlextObservability, c, p
 
 __all__ = ["TestsFlextObservabilityFactory"]
 
@@ -138,7 +138,9 @@ class TestsFlextObservabilityFactory:
 
     def test_flext_health_check_returns_component_status(self) -> None:
         """A health check request succeeds with the component and status."""
-        result = FlextObservability().flext_health_check("database", "healthy")
+        result = FlextObservability().flext_health_check(
+            "database", c.Observability.HealthStatus.HEALTHY
+        )
         tm.that(result.success, eq=True)
         health = result.value
         tm.that(health.component, eq="database")
@@ -155,7 +157,7 @@ class TestsFlextObservabilityFactory:
 
     def test_created_metric_exposes_datetime_creation_timestamp(self) -> None:
         """A successfully created metric exposes a datetime ``created_at``."""
-        result: r[p.HasModelDump] = FlextObservability().flext_metric(
+        result: p.Result[FlextObservability.Metric] = FlextObservability().flext_metric(
             "request_count", 100.0, "counter"
         )
         tm.that(result.success, eq=True)
@@ -164,7 +166,9 @@ class TestsFlextObservabilityFactory:
 
     def test_invalid_metric_input_returns_failure_with_expected_message(self) -> None:
         """An invalid metric request surfaces a descriptive failure result."""
-        result: r[p.HasModelDump] = FlextObservability().flext_metric("", 10.0)
+        result: p.Result[FlextObservability.Metric] = FlextObservability().flext_metric(
+            "", 10.0
+        )
         tm.that(result.failure, eq=True)
         tm.that(result.error, none=False)
         tm.that(result.error, has="must be non-empty string")
