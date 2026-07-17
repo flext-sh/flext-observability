@@ -20,22 +20,22 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "flask>=3.1.3",
-  "flext-cli",
-  "flext-core",
-  "opentelemetry-api>=1.41.1",
-  "opentelemetry-exporter-otlp-proto-grpc>=1.41.1",
-  "opentelemetry-exporter-prometheus>=0.62b1",
-  "opentelemetry-sdk>=1.41.1",
-  "prometheus-client>=0.25.0",
-  "psutil>=7.2.2",
-  "pydantic-core>=2.46.3",
-  "pydantic-settings>=2.14.0",
-  "pydantic>=2.13.3",
-  "rich>=14,<15",
-  "starlette>=1.0.0",
-  "structlog>=25.5.0",
-  "typer>=0.25.1",
+    "flask>=3.1.3",
+    "flext-cli @ git+https://github.com/flext-sh/flext-cli.git@0.12.0-dev",
+    "flext-core @ git+https://github.com/flext-sh/flext-core.git@0.12.0-dev",
+    "opentelemetry-api>=1.41.1",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.41.1",
+    "opentelemetry-exporter-prometheus>=0.62b1",
+    "opentelemetry-sdk>=1.41.1",
+    "prometheus-client>=0.25.0",
+    "psutil>=7.2.2",
+    "pydantic-core>=2.46.3",
+    "pydantic-settings>=2.14.0",
+    "pydantic>=2.13.3",
+    "rich>=14,<15",
+    "starlette>=1.0.0",
+    "structlog>=25.5.0",
+    "typer>=0.25.1",
 ]
 description = "FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry"
 keywords = [ "enterprise", "flext", "logging", "metrics", "monitoring", "tracing", "typed" ]
@@ -43,7 +43,7 @@ license = "MIT"
 name = "flext-observability"
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
-version = "0.12.0"
+version = "0.12.0.rc0"
 
 [[project.authors]]
 email = "team@flext.sh"
@@ -731,13 +731,6 @@ all = true
 in_place = true
 sort_first = [ "build-system", "dependency-groups", "project", "tool" ]
 
-[tool.uv.sources.flext-cli]
-workspace = true
-
-[tool.uv.sources.flext-core]
-workspace = true
-
-# [MANAGED] yamlfix
 [tool.yamlfix]
 explicit_start = false
 line_length = 88

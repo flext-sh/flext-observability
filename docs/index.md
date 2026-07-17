@@ -2,7 +2,7 @@
 
 # flext-observability Documentation
 
-- Version: `0.12.0-dev`
+- Version: `0.12.0`
 - Project class: `platform`
 - Package: `flext_observability`
 - Description: FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry
