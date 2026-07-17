@@ -18,27 +18,24 @@ from typing import ClassVar
 from uuid import uuid4
 
 from flext_core import FlextContainer
-from flext_observability import (
+from flext_observability import c, m, p, r, t, u
+from flext_observability._settings import FlextObservabilitySettings
+from flext_observability.services.advanced_context import (
     FlextObservabilityAdvancedContext,
-    FlextObservabilityContext,
-    FlextObservabilityCustomMetrics,
-    FlextObservabilityErrorHandling,
-    FlextObservabilityHealth,
-    FlextObservabilityHTTP,
-    FlextObservabilityHTTPClient,
-    FlextObservabilityLogging,
-    FlextObservabilityMonitor,
-    FlextObservabilityPerformance,
-    FlextObservabilitySampling,
-    FlextObservabilityServices,
-    FlextObservabilitySettings,
-    c,
-    m,
-    p,
-    r,
-    t,
-    u,
 )
+from flext_observability.services.context import FlextObservabilityContext
+from flext_observability.services.custom_metrics import FlextObservabilityCustomMetrics
+from flext_observability.services.error_handling import FlextObservabilityErrorHandling
+from flext_observability.services.health import FlextObservabilityHealth
+from flext_observability.services.http_client_instrumentation import (
+    FlextObservabilityHTTPClient,
+)
+from flext_observability.services.http_instrumentation import FlextObservabilityHTTP
+from flext_observability.services.logging_integration import FlextObservabilityLogging
+from flext_observability.services.monitoring import FlextObservabilityMonitor
+from flext_observability.services.performance import FlextObservabilityPerformance
+from flext_observability.services.sampling import FlextObservabilitySampling
+from flext_observability.services.services import FlextObservabilityServices
 
 
 class FlextObservability(

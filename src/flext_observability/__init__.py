@@ -26,6 +26,18 @@ if TYPE_CHECKING:
     from .constants import FlextObservabilityConstants, FlextObservabilityConstants as c
     from .models import FlextObservabilityModels, FlextObservabilityModels as m
     from .protocols import FlextObservabilityProtocols, FlextObservabilityProtocols as p
+    from .services.advanced_context import FlextObservabilityAdvancedContext
+    from .services.context import FlextObservabilityContext
+    from .services.custom_metrics import FlextObservabilityCustomMetrics
+    from .services.error_handling import FlextObservabilityErrorHandling
+    from .services.health import FlextObservabilityHealth
+    from .services.http_client_instrumentation import FlextObservabilityHTTPClient
+    from .services.http_instrumentation import FlextObservabilityHTTP
+    from .services.logging_integration import FlextObservabilityLogging
+    from .services.monitoring import FlextObservabilityMonitor
+    from .services.performance import FlextObservabilityPerformance
+    from .services.sampling import FlextObservabilitySampling
+    from .services.services import FlextObservabilityServices
     from .typings import FlextObservabilityTypes, FlextObservabilityTypes as t
     from .utilities import FlextObservabilityUtilities, FlextObservabilityUtilities as u
 
@@ -50,6 +62,18 @@ if TYPE_CHECKING:
         settings,
         FlextObservability,
         observability,
+        FlextObservabilityAdvancedContext,
+        FlextObservabilityContext,
+        FlextObservabilityCustomMetrics,
+        FlextObservabilityErrorHandling,
+        FlextObservabilityHealth,
+        FlextObservabilityHTTP,
+        FlextObservabilityHTTPClient,
+        FlextObservabilityLogging,
+        FlextObservabilityMonitor,
+        FlextObservabilityPerformance,
+        FlextObservabilitySampling,
+        FlextObservabilityServices,
     )
 
 
@@ -78,6 +102,18 @@ _LAZY_MODULES: dict[str, tuple[str, ...]] = {
         "FlextObservabilityProtocols",
         "p",
     ),
+    ".services.advanced_context": ("FlextObservabilityAdvancedContext",),
+    ".services.context": ("FlextObservabilityContext",),
+    ".services.custom_metrics": ("FlextObservabilityCustomMetrics",),
+    ".services.error_handling": ("FlextObservabilityErrorHandling",),
+    ".services.health": ("FlextObservabilityHealth",),
+    ".services.http_client_instrumentation": ("FlextObservabilityHTTPClient",),
+    ".services.http_instrumentation": ("FlextObservabilityHTTP",),
+    ".services.logging_integration": ("FlextObservabilityLogging",),
+    ".services.monitoring": ("FlextObservabilityMonitor",),
+    ".services.performance": ("FlextObservabilityPerformance",),
+    ".services.sampling": ("FlextObservabilitySampling",),
+    ".services.services": ("FlextObservabilityServices",),
     ".typings": (
         "FlextObservabilityTypes",
         "t",
@@ -108,10 +144,22 @@ _LAZY_IMPORTS = build_lazy_import_map(
 
 _DIRECT_IMPORTS: tuple[str, ...] = (
     "FlextObservability",
+    "FlextObservabilityAdvancedContext",
     "FlextObservabilityConfig",
     "FlextObservabilityConstants",
+    "FlextObservabilityContext",
+    "FlextObservabilityCustomMetrics",
+    "FlextObservabilityErrorHandling",
+    "FlextObservabilityHealth",
+    "FlextObservabilityHTTP",
+    "FlextObservabilityHTTPClient",
+    "FlextObservabilityLogging",
     "FlextObservabilityModels",
+    "FlextObservabilityMonitor",
+    "FlextObservabilityPerformance",
     "FlextObservabilityProtocols",
+    "FlextObservabilitySampling",
+    "FlextObservabilityServices",
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
@@ -142,10 +190,22 @@ _DIRECT_IMPORTS: tuple[str, ...] = (
 
 __all__: tuple[str, ...] = (
     "FlextObservability",
+    "FlextObservabilityAdvancedContext",
     "FlextObservabilityConfig",
     "FlextObservabilityConstants",
+    "FlextObservabilityContext",
+    "FlextObservabilityCustomMetrics",
+    "FlextObservabilityErrorHandling",
+    "FlextObservabilityHTTP",
+    "FlextObservabilityHTTPClient",
+    "FlextObservabilityHealth",
+    "FlextObservabilityLogging",
     "FlextObservabilityModels",
+    "FlextObservabilityMonitor",
+    "FlextObservabilityPerformance",
     "FlextObservabilityProtocols",
+    "FlextObservabilitySampling",
+    "FlextObservabilityServices",
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
