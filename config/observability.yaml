@@ -1,0 +1,30 @@
+Observability:
+  service:
+    default_name: "flext-service"
+    default_settings_name: "flext-observability"
+    default_environment: "development"
+  defaults:
+    log_level: "INFO"
+    metric_unit: "1"
+    flush_interval_seconds: 30
+    metrics_enabled: true
+    traces_enabled: true
+    alerts_enabled: true
+  thresholds:
+    http_error_status: 400
+  validation:
+    metric_name_max_length: 128
+    trace_name_max_length: 256
+    alert_message_max_length: 1024
+    log_message_max_length: 4096
+    valid_metric_units:
+      - "count"
+      - "percent"
+      - "bytes"
+      - "seconds"
+      - "milliseconds"
+      - "requests"
+      - "errors"
+      - "connections"
+      - "memory"
+      - "cpu"

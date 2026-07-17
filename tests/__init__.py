@@ -24,6 +24,9 @@ if TYPE_CHECKING:
         TestsFlextObservabilityProtocols as TestsFlextObservabilityProtocols,
         p,
     )
+    from tests.settings import (
+        TestsFlextObservabilitySettings as TestsFlextObservabilitySettings,
+    )
     from tests.typings import (
         TestsFlextObservabilityTypes as TestsFlextObservabilityTypes,
         t as t,
@@ -36,6 +39,7 @@ if TYPE_CHECKING:
 _LAZY_IMPORTS = build_lazy_import_map(
     {
         ".constants": ("TestsFlextObservabilityConstants", "c"),
+        ".settings": ("TestsFlextObservabilitySettings",),
         ".typings": ("TestsFlextObservabilityTypes", "t"),
         ".protocols": ("TestsFlextObservabilityProtocols", "p"),
         ".models": ("TestsFlextObservabilityModels", "m"),
