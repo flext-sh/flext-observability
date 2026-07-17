@@ -121,9 +121,7 @@ class TestsFlextObservabilityFactory:
 
     def test_flext_trace_preserves_explicit_trace_id(self) -> None:
         """An explicit trace_id is preserved on the produced trace."""
-        result = FlextObservability().flext_trace(
-            "api_request", trace_id="trace-123"
-        )
+        result = FlextObservability().flext_trace("api_request", trace_id="trace-123")
         tm.that(result.success, eq=True)
         trace = result.value
         tm.that(trace.name, eq="api_request")
