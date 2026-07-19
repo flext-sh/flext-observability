@@ -14,7 +14,6 @@ from __future__ import annotations
 import time
 
 from flext_cli import u as cli_u
-from flext_core import FlextContainer
 from flext_observability import (
     FlextObservability,
     c,
@@ -55,9 +54,7 @@ def demonstrate_solid_design() -> None:
         severity=c.Observability.AlertLevel.WARNING,
     )
     health_result = flext_health_check("database", c.Observability.HealthStatus.HEALTHY)
-    container = FlextContainer()
-    factory = FlextObservability.FlextObservabilityMasterFactory(container)
-    factory.create_metric("custom_metric", 100.0, "units")
+    flext_metric("custom_metric", 100.0, "units")
     results = [metric_result, trace_result, alert_result, health_result]
     for result in results:
         _ = hasattr(result, "success") and result.success
@@ -142,11 +139,8 @@ def demonstrate_function_monitoring() -> None:
 
 def demonstrate_factory_patterns() -> None:
     """Demonstrate factory pattern usage."""
-    container = FlextContainer()
-    factory = FlextObservability.FlextObservabilityMasterFactory(container)
-    factory.create_metric("global_metric", 42.0, "count")
-    custom_factory = FlextObservability.FlextObservabilityMasterFactory(container)
-    custom_factory.create_metric("custom_metric", 24.0, "count")
+    flext_metric("global_metric", 42.0, "count")
+    flext_metric("custom_metric", 24.0, "count")
 
 
 def demonstrate_validation() -> None:
