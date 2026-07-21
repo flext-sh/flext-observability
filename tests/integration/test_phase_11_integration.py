@@ -344,7 +344,7 @@ class TestsFlextObservabilityPhase11Integration:
         """The type filter returns a mapping that omits unregistered names."""
         counters = registry.resolve_metrics_by_type(MetricType.COUNTER)
 
-        assert not any("never_registered" in key for key in counters)
+        assert not any("never_registered" in str(key) for key in counters)
 
     # -- performance acceptability ---------------------------------------
 

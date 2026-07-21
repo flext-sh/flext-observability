@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Annotated, Self
 from uuid import uuid4
 
 from flext_cli import m, u
-from flext_observability import c, p, t
+from flext_observability import c, t
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -320,7 +320,7 @@ class FlextObservabilityModels(m):
                 u.Field(
                     description="Additional context data",
                 ),
-            ] = u.Field(default_factory=lambda: p.Dict({}))
+            ] = u.Field(default_factory=lambda: m.Dict({}))
 
         # --- Moved from performance.py ---
         class PerformanceMetrics(m.Value):
