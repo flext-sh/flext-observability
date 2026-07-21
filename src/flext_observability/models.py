@@ -16,7 +16,7 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING, Annotated, Self
 from uuid import uuid4
 
-from flext_cli import m, p, u
+from flext_cli import m, u
 from flext_observability import c, p, t
 
 if TYPE_CHECKING:

@@ -14,11 +14,7 @@ from __future__ import annotations
 import time
 
 from flext_cli import u as cli_u
-from flext_observability import (
-    FlextObservability,
-    c,
-    t,
-)
+from flext_observability import FlextObservability, c, t
 
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check

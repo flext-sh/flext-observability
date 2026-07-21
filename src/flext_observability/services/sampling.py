@@ -25,9 +25,7 @@ from typing import TYPE_CHECKING, Annotated, ClassVar
 from flext_observability import FlextObservabilityContext, c, m, p, r, u
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        MutableMapping,
-    )
+    from collections.abc import MutableMapping
 
 
 class FlextObservabilitySampling:

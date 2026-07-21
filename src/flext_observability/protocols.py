@@ -11,10 +11,7 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 from flext_cli import p
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        Awaitable,
-        Callable,
-    )
+    from collections.abc import Awaitable, Callable
 
     from flext_observability import t
 

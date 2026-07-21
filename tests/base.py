@@ -6,7 +6,7 @@ from typing import override
 
 from flext_tests import s
 
-from tests import TestsFlextObservabilitySettings, m
+from tests import TestsFlextObservabilitySettings, m, p
 
 
 class TestsFlextObservabilityServiceBase(s):

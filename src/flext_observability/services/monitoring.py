@@ -7,23 +7,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from collections.abc import (
-    Callable,
-)
+from collections.abc import Callable
 from typing import ClassVar, override
 from uuid import uuid4
 
 from flext_core import FlextContainer
-from flext_observability import (
-    FlextObservabilityServices,
-    c,
-    m,
-    p,
-    r,
-    settings,
-    t,
-    u,
-)
+from flext_observability import FlextObservabilityServices, c, m, p, r, settings, t, u
 
 
 class FlextObservabilityMonitor:

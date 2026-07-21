@@ -13,7 +13,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_observability import FlextObservability, c, m
+from flext_observability import FlextObservability, c, m, p
 from flext_observability.services.advanced_context import (
     FlextObservabilityAdvancedContext,
 )
