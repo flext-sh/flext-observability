@@ -19,9 +19,7 @@ class FlextObservabilityFields:
     def create_alert_message_field(cls) -> m.FieldInfo:
         """Create alert message field."""
         field: m.FieldInfo = u.Field(
-            min_length=1,
-            max_length=1000,
-            description="Alert message",
+            min_length=1, max_length=1000, description="Alert message"
         )
         return field
 
@@ -29,9 +27,7 @@ class FlextObservabilityFields:
     def create_metric_name_field(cls) -> m.FieldInfo:
         """Create metric name field."""
         field: m.FieldInfo = u.Field(
-            min_length=1,
-            max_length=255,
-            description="Metric name",
+            min_length=1, max_length=255, description="Metric name"
         )
         return field
 
@@ -54,18 +50,13 @@ class FlextObservabilityFields:
     @classmethod
     def create_timestamp_field(cls) -> m.FieldInfo:
         """Create timestamp field."""
-        return m.FieldInfo(
-            default_factory=u.now,
-            description="Timestamp",
-        )
+        return m.FieldInfo(default_factory=u.now, description="Timestamp")
 
     @classmethod
     def create_trace_name_field(cls) -> m.FieldInfo:
         """Create trace name field."""
         field: m.FieldInfo = u.Field(
-            min_length=1,
-            max_length=255,
-            description="Trace operation name",
+            min_length=1, max_length=255, description="Trace operation name"
         )
         return field
 

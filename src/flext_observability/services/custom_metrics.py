@@ -65,8 +65,7 @@ class FlextObservabilityCustomMetrics:
         def __init__(self) -> None:
             """Initialize metric registry."""
             self._metrics: MutableMapping[
-                str,
-                m.Observability.CustomMetricDefinition,
+                str, m.Observability.CustomMetricDefinition
             ] = {}
             self._metric_instances: t.MutableScalarMapping = dict[str, t.Scalar]()
             self._namespaces: t.MutableStrMapping = dict[str, str]()
@@ -97,7 +96,7 @@ class FlextObservabilityCustomMetrics:
             else:
                 self._metrics.clear()
             FlextObservabilityCustomMetrics.logger.debug(
-                f"Metrics cleared: {namespace or 'all'}",
+                f"Metrics cleared: {namespace or 'all'}"
             )
             return r[bool].ok(value=True)
 
@@ -121,9 +120,7 @@ class FlextObservabilityCustomMetrics:
             return m.Dict.model_validate(self._metrics)
 
         def resolve_metric(
-            self,
-            name: str,
-            namespace: str = "default",
+            self, name: str, namespace: str = "default"
         ) -> m.Observability.CustomMetricDefinition | None:
             """Resolve a metric definition by name.
 
@@ -142,9 +139,7 @@ class FlextObservabilityCustomMetrics:
             return None
 
         def resolve_metric_info(
-            self,
-            name: str,
-            namespace: str = "default",
+            self, name: str, namespace: str = "default"
         ) -> m.Dict | None:
             """Resolve detailed metric information.
 
@@ -168,8 +163,7 @@ class FlextObservabilityCustomMetrics:
             })
 
         def resolve_metrics_by_type(
-            self,
-            metric_type: c.Observability.MetricType,
+            self, metric_type: c.Observability.MetricType
         ) -> m.Dict:
             """Resolve all metrics of a specific type.
 
@@ -244,9 +238,7 @@ class FlextObservabilityCustomMetrics:
         ) -> p.Result[bool]:
             """Validate and store one metric definition."""
             validation_result = self._validate_metric_definition_input(
-                name,
-                description,
-                metric_type,
+                name, description, metric_type
             )
             if validation_result.failure:
                 return r[bool].fail(
@@ -271,15 +263,13 @@ class FlextObservabilityCustomMetrics:
             )
             self._namespaces[namespace] = namespace
             FlextObservabilityCustomMetrics.logger.debug(
-                f"Metric registered: {namespaced_name} ({metric_type_enum.value})",
+                f"Metric registered: {namespaced_name} ({metric_type_enum.value})"
             )
             return r[bool].ok(value=True)
 
         @staticmethod
         def _validate_metric_definition_input(
-            name: str,
-            description: str,
-            metric_type: str | c.Observability.MetricType,
+            name: str, description: str, metric_type: str | c.Observability.MetricType
         ) -> p.Result[c.Observability.MetricType]:
             """Validate metric definition fields and resolve its enum type."""
             if not name or not name.strip():
@@ -295,7 +285,7 @@ class FlextObservabilityCustomMetrics:
             metric_input = metric_type.lower()
             try:
                 metric_type_enum = m.Observability.MetricTypeInput.model_validate(
-                    obj={"metric_type": metric_input},
+                    obj={"metric_type": metric_input}
                 ).metric_type
             except c.ValidationError as exc_validate:
                 return e.fail_validation(
@@ -306,9 +296,7 @@ class FlextObservabilityCustomMetrics:
             return r[c.Observability.MetricType].ok(metric_type_enum)
 
         def unregister_metric(
-            self,
-            name: str,
-            namespace: str = "default",
+            self, name: str, namespace: str = "default"
         ) -> p.Result[bool]:
             """Unregister a metric.
 
@@ -326,26 +314,21 @@ class FlextObservabilityCustomMetrics:
                 )
                 if namespaced_name not in self._metrics:
                     return e.fail_not_found(
-                        "Metric",
-                        namespaced_name,
-                        result_type=r[bool],
+                        "Metric", namespaced_name, result_type=r[bool]
                     )
                 del self._metrics[namespaced_name]
                 FlextObservabilityCustomMetrics.logger.debug(
-                    f"Metric unregistered: {namespaced_name}",
+                    f"Metric unregistered: {namespaced_name}"
                 )
                 return r[bool].ok(value=True)
             except c.EXC_MAPPING_TYPE as exc:
                 return e.fail_operation(
-                    "Metric unregistration",
-                    exc,
-                    result_type=r[bool],
+                    "Metric unregistration", exc, result_type=r[bool]
                 )
 
     @staticmethod
     def resolve_metric(
-        name: str,
-        namespace: str = "default",
+        name: str, namespace: str = "default"
     ) -> m.Observability.CustomMetricDefinition | None:
         """Resolve a metric definition.
 

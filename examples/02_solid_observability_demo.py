@@ -14,11 +14,7 @@ from __future__ import annotations
 import time
 
 from flext_cli import u as cli_u
-from flext_observability import (
-    FlextObservability,
-    c,
-    t,
-)
+from flext_observability import FlextObservability, c, t
 
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
@@ -116,10 +112,7 @@ def demonstrate_alerting_system() -> None:
     ]
     for level, message, service in alerts:
         result = flext_alert(
-            source=service,
-            title=message,
-            message=message,
-            severity=level,
+            source=service, title=message, message=message, severity=level
         )
         if result.success:
             icons = {

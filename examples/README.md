@@ -269,10 +269,7 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
         return child_trace_result
 
     # Validation logic here
-    return r[bool].ok({
-        "status": "valid",
-        "trace_id": child_trace_result.data.id,
-    })
+    return r[bool].ok({"status": "valid", "trace_id": child_trace_result.data.id})
 ```
 
 ## FLEXT Ecosystem Integration Examples

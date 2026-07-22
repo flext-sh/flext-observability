@@ -85,7 +85,7 @@ class FlextObservabilityPerformance:
                     "end_time": end_time,
                     "memory_used_mb": memory_used_mb,
                     "cpu_percent": cpu_percent,
-                },
+                }
             )
             self.metrics = self.metrics.calculate_duration()
             return self.metrics
@@ -98,7 +98,7 @@ class FlextObservabilityPerformance:
 
             """
             self.metrics = self.metrics.model_copy(
-                update={"success": False, "error_message": error_message},
+                update={"success": False, "error_message": error_message}
             )
 
         def mark_success(self) -> None:
@@ -109,7 +109,7 @@ class FlextObservabilityPerformance:
             """Get current CPU usage percent."""
             try:
                 cpu: float = FlextObservabilityPerformance._process.cpu_percent(
-                    interval=0.01,
+                    interval=0.01
                 )
                 return cpu
             except c.EXC_MAPPING_TYPE:
@@ -219,7 +219,7 @@ class FlextObservabilityPerformance:
         """
         try:
             level, message = FlextObservabilityPerformance._build_performance_log(
-                metrics,
+                metrics
             )
             getattr(FlextObservabilityPerformance.logger, level)(message)
             return r[bool].ok(value=True)

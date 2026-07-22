@@ -484,11 +484,7 @@ def handle_user_request(user_id: str, operation: str) -> p.Result[m.Dict]:
         correlation_id=trace_id,
     )
 
-    return r[bool].ok({
-        "trace_id": trace_id,
-        "status": "success",
-        "context": context,
-    })
+    return r[bool].ok({"trace_id": trace_id, "status": "success", "context": context})
 ```
 
 ## 🚨 Error Reference

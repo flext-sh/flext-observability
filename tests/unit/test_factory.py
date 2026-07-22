@@ -19,10 +19,9 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from flext_tests import tm
-
 from flext_core import FlextContainer
 from flext_observability import FlextObservability, c, p
+from flext_tests import tm
 
 __all__ = ["TestsFlextObservabilityFactory"]
 

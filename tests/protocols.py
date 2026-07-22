@@ -6,14 +6,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsProtocols
-
 from flext_observability import FlextObservabilityProtocols
+from flext_tests import FlextTestsProtocols
 
 
 class TestsFlextObservabilityProtocols(
-    FlextTestsProtocols,
-    FlextObservabilityProtocols,
+    FlextTestsProtocols, FlextObservabilityProtocols
 ):
     """Test protocols for flext-observability."""
 

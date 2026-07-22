@@ -629,10 +629,7 @@ class DatabaseConnectionService:
                 tags={"database": "postgresql", "host": self.host},
             )
 
-            return r[bool].ok({
-                "status": "healthy",
-                "metrics": [metric_result.value],
-            })
+            return r[bool].ok({"status": "healthy", "metrics": [metric_result.value]})
 
         except Exception as e:
             # Create failure health check
@@ -725,10 +722,7 @@ def process_payment(payment_data: dict) -> p.Result[m.Dict]:
     # - Structured logging with correlation ID
     # - Error capture and categorization
 
-    return r[bool].ok({
-        "status": "processed",
-        "correlation_id": correlation_id,
-    })
+    return r[bool].ok({"status": "processed", "correlation_id": correlation_id})
 ```
 
 ______________________________________________________________________
@@ -828,10 +822,7 @@ def validate_order_with_trace(
         return child_trace_result
 
     # Validation logic with trace context
-    return r[bool].ok({
-        "status": "valid",
-        "trace_id": child_trace_result.value.id,
-    })
+    return r[bool].ok({"status": "valid", "trace_id": child_trace_result.value.id})
 ```
 
 ### **Health Monitoring Patterns**

@@ -81,30 +81,12 @@ if TYPE_CHECKING:
 
 
 _LAZY_MODULES: dict[str, tuple[str, ...]] = {
-    "._config": (
-        "FlextObservabilityConfig",
-        "config",
-    ),
-    "._settings": (
-        "FlextObservabilitySettings",
-        "settings",
-    ),
-    ".api": (
-        "FlextObservability",
-        "observability",
-    ),
-    ".constants": (
-        "FlextObservabilityConstants",
-        "c",
-    ),
-    ".models": (
-        "FlextObservabilityModels",
-        "m",
-    ),
-    ".protocols": (
-        "FlextObservabilityProtocols",
-        "p",
-    ),
+    "._config": ("FlextObservabilityConfig", "config"),
+    "._settings": ("FlextObservabilitySettings", "settings"),
+    ".api": ("FlextObservability", "observability"),
+    ".constants": ("FlextObservabilityConstants", "c"),
+    ".models": ("FlextObservabilityModels", "m"),
+    ".protocols": ("FlextObservabilityProtocols", "p"),
     ".services.advanced_context": ("FlextObservabilityAdvancedContext",),
     ".services.context": ("FlextObservabilityContext",),
     ".services.custom_metrics": ("FlextObservabilityCustomMetrics",),
@@ -113,29 +95,13 @@ _LAZY_MODULES: dict[str, tuple[str, ...]] = {
     ".services.http_client_instrumentation": ("FlextObservabilityHTTPClient",),
     ".services.http_instrumentation": ("FlextObservabilityHTTP",),
     ".services.logging_integration": ("FlextObservabilityLogging",),
-    ".services.monitoring": (
-        "FlextObservabilityMonitor",
-        "flext_monitor_function",
-    ),
+    ".services.monitoring": ("FlextObservabilityMonitor", "flext_monitor_function"),
     ".services.performance": ("FlextObservabilityPerformance",),
     ".services.sampling": ("FlextObservabilitySampling",),
     ".services.services": ("FlextObservabilityServices",),
-    ".typings": (
-        "FlextObservabilityTypes",
-        "t",
-    ),
-    ".utilities": (
-        "FlextObservabilityUtilities",
-        "u",
-    ),
-    "flext_cli": (
-        "d",
-        "e",
-        "h",
-        "r",
-        "s",
-        "x",
-    ),
+    ".typings": ("FlextObservabilityTypes", "t"),
+    ".utilities": ("FlextObservabilityUtilities", "u"),
+    "flext_cli": ("d", "e", "h", "r", "s", "x"),
 }
 
 
@@ -143,9 +109,7 @@ _LAZY_ALIAS_GROUPS: dict[str, tuple[tuple[str, str], ...]] = {}
 
 
 _LAZY_IMPORTS = build_lazy_import_map(
-    _LAZY_MODULES,
-    alias_groups=_LAZY_ALIAS_GROUPS,
-    sort_keys=False,
+    _LAZY_MODULES, alias_groups=_LAZY_ALIAS_GROUPS, sort_keys=False
 )
 
 _DIRECT_IMPORTS: tuple[str, ...] = (
@@ -241,9 +205,4 @@ __all__: tuple[str, ...] = (
 )
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    public_exports=__all__,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

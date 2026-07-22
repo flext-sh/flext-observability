@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_core import FlextContainer
 from flext_observability import (
@@ -16,6 +15,7 @@ from flext_observability import (
     __version__ as pkg_version,
     __version_info__ as pkg_version_info,
 )
+from flext_tests import tm
 from tests import c
 
 __all__ = ["TestsFlextObservabilityInit"]
@@ -53,10 +53,7 @@ class TestsFlextObservabilityInit:
         ],
     )
     def test_flext_metric_returns_metric_with_provided_state(
-        self,
-        name: str,
-        value: float,
-        unit: str,
+        self, name: str, value: float, unit: str
     ) -> None:
         """flext_metric succeeds and exposes the supplied fields on the entity."""
         result = flext_metric(name, value, unit)
@@ -67,18 +64,8 @@ class TestsFlextObservabilityInit:
         tm.that(metric.value, eq=value)
         tm.that(metric.unit, eq=unit)
 
-    @pytest.mark.parametrize(
-        ("name", "value"),
-        [
-            ("", 1.0),
-            ("valid", float("nan")),
-        ],
-    )
-    def test_flext_metric_fails_on_invalid_input(
-        self,
-        name: str,
-        value: float,
-    ) -> None:
+    @pytest.mark.parametrize(("name", "value"), [("", 1.0), ("valid", float("nan"))])
+    def test_flext_metric_fails_on_invalid_input(self, name: str, value: float) -> None:
         """flext_metric reports failure with an error for invalid inputs."""
         result = flext_metric(name, value)
 
@@ -127,8 +114,7 @@ class TestsFlextObservabilityInit:
         ],
     )
     def test_flext_health_check_records_component_and_status(
-        self,
-        status: c.Observability.HealthStatus,
+        self, status: c.Observability.HealthStatus
     ) -> None:
         """flext_health_check echoes the component and status on the entity."""
         result = flext_health_check("flext-observability", status)

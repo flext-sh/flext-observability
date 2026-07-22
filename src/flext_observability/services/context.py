@@ -135,7 +135,7 @@ class FlextObservabilityContext:
             return r[bool].ok(value=True)
         except c.EXC_MAPPING_TYPE as e:
             FlextObservabilityContext.logger.warning(
-                f"Failed to extract context from headers: {e}",
+                f"Failed to extract context from headers: {e}"
             )
             FlextObservabilityContext.update_correlation_id()
             return r[bool].ok(value=True)
@@ -287,10 +287,7 @@ class FlextObservabilityContext:
         except c.ValidationError:
             return r[bool].fail("Baggage key must be non-empty string")
         current_baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
-        updated_baggage = m.Dict({
-            **dict(current_baggage.root),
-            key: value,
-        })
+        updated_baggage = m.Dict({**dict(current_baggage.root), key: value})
         FlextObservabilityContext._baggage.set(updated_baggage)
         return r[bool].ok(value=True)
 

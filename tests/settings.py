@@ -2,15 +2,11 @@
 
 from __future__ import annotations
 
+from flext_observability import FlextObservabilitySettings
 from flext_tests import FlextTestsSettings
 
-from flext_observability import FlextObservabilitySettings
 
-
-class TestsFlextObservabilitySettings(
-    FlextObservabilitySettings,
-    FlextTestsSettings,
-):
+class TestsFlextObservabilitySettings(FlextObservabilitySettings, FlextTestsSettings):
     """Observability settings extended with the shared test namespace."""
 
 
