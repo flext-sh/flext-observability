@@ -160,7 +160,7 @@ def test_config():
 ### Cleanup Fixtures
 
 ```text
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def cleanup_test_state():
     """Automatic cleanup after each test."""
     yield

@@ -73,7 +73,9 @@ src/flext_observability/
 
 ## Usage Patterns
 
-```python notest
+```python
+from __future__ import annotations
+
 # Import core observability functionality
 from flext_observability import (
     flext_create_metric,

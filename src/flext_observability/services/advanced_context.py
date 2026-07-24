@@ -28,9 +28,7 @@ class FlextObservabilityAdvancedContext:
 
     Usage:
         ```python
-        from flext_observability import (
-            FlextObservabilityAdvancedContext,
-        )
+        from flext_observability import FlextObservabilityAdvancedContext
 
         ctx = FlextObservabilityAdvancedContext.active_context()
 
@@ -80,7 +78,7 @@ class FlextObservabilityAdvancedContext:
 
         @property
         def baggage(self) -> t.StrMapping:
-            """Return all baggage items.
+            """All baggage items.
 
             Returns:
                 dict - All baggage
@@ -90,7 +88,7 @@ class FlextObservabilityAdvancedContext:
 
         @property
         def metadata(self) -> t.ConfigurationMapping:
-            """Return all request-local metadata.
+            """All request-local metadata.
 
             Returns:
                 dict - All metadata
@@ -160,7 +158,7 @@ class FlextObservabilityAdvancedContext:
                 self._metadata = dict(snapshot.metadata)
                 self._baggage = dict(snapshot.baggage)
                 FlextObservabilityAdvancedContext.logger.debug(
-                    "Context restored from snapshot",
+                    "Context restored from snapshot"
                 )
                 return r[bool].ok(value=True)
             except c.EXC_MAPPING_TYPE as exc:
@@ -213,10 +211,7 @@ class FlextObservabilityAdvancedContext:
                 )
 
         def snapshot(
-            self,
-            correlation_id: str = "",
-            trace_id: str = "",
-            span_id: str = "",
+            self, correlation_id: str = "", trace_id: str = "", span_id: str = ""
         ) -> m.Observability.ContextSnapshot:
             """Create snapshot of current context.
 
@@ -253,7 +248,7 @@ class FlextObservabilityAdvancedContext:
 
     @staticmethod
     def resolve_metadata(key: str) -> t.Scalar | None:
-        """Convenience function: resolve metadata.
+        """Resolve metadata.
 
         Args:
             key: Metadata key
@@ -267,7 +262,7 @@ class FlextObservabilityAdvancedContext:
 
     @staticmethod
     def update_metadata(key: str, value: t.Scalar) -> p.Result[bool]:
-        """Convenience function: update metadata.
+        """Update metadata.
 
         Args:
             key: Metadata key

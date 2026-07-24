@@ -5,8 +5,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar
-
 from flext_observability import c, m, u
 
 
@@ -17,26 +15,11 @@ class FlextObservabilityFields:
     for observability entities. Follows FLEXT namespace class pattern.
     """
 
-    METRIC_VALID_UNITS: ClassVar[frozenset[str]] = frozenset({
-        "count",
-        "percent",
-        "bytes",
-        "seconds",
-        "milliseconds",
-        "requests",
-        "errors",
-        "connections",
-        "memory",
-        "cpu",
-    })
-
     @classmethod
     def create_alert_message_field(cls) -> m.FieldInfo:
         """Create alert message field."""
         field: m.FieldInfo = u.Field(
-            min_length=1,
-            max_length=1000,
-            description="Alert message",
+            min_length=1, max_length=1000, description="Alert message"
         )
         return field
 
@@ -44,17 +27,15 @@ class FlextObservabilityFields:
     def create_metric_name_field(cls) -> m.FieldInfo:
         """Create metric name field."""
         field: m.FieldInfo = u.Field(
-            min_length=1,
-            max_length=255,
-            description="Metric name",
+            min_length=1, max_length=255, description="Metric name"
         )
         return field
 
     @classmethod
     def create_metric_unit_field(cls) -> m.FieldInfo:
         """Create metric unit field."""
-        field: m.FieldInfo = u.Field(
-            c.Observability.DEFAULT_METRIC_UNIT,
+        field: m.FieldInfo = m.FieldInfo(
+            default=c.Observability.DEFAULT_METRIC_UNIT,
             description="Metric unit",
             validate_default=True,
         )
@@ -69,18 +50,13 @@ class FlextObservabilityFields:
     @classmethod
     def create_timestamp_field(cls) -> m.FieldInfo:
         """Create timestamp field."""
-        return m.FieldInfo(
-            default_factory=lambda: u.now(),
-            description="Timestamp",
-        )
+        return m.FieldInfo(default_factory=u.now, description="Timestamp")
 
     @classmethod
     def create_trace_name_field(cls) -> m.FieldInfo:
         """Create trace name field."""
         field: m.FieldInfo = u.Field(
-            min_length=1,
-            max_length=255,
-            description="Trace operation name",
+            min_length=1, max_length=255, description="Trace operation name"
         )
         return field
 

@@ -14,11 +14,11 @@ import time
 from datetime import datetime
 from hashlib import sha256
 from types import MappingProxyType
-from typing import Annotated, ClassVar
+from typing import Annotated, Self
 from uuid import uuid4
 
-from flext_core import FlextUtilities, m
-from flext_observability import c, t, u
+from flext_cli import m, u
+from flext_observability import c, t
 
 
 class FlextObservabilityModels(m):
@@ -137,10 +137,7 @@ class FlextObservabilityModels(m):
             component: Annotated[t.NonEmptyStr, u.Field(description="Source component")]
             timestamp: Annotated[
                 datetime,
-                u.Field(
-                    default_factory=lambda: FlextUtilities.now(),
-                    description="Log entry timestamp",
-                ),
+                u.Field(default_factory=u.now, description="Log entry timestamp"),
             ]
             context: Annotated[
                 t.Observability.DomainLabels,
@@ -213,18 +210,13 @@ class FlextObservabilityModels(m):
 
             name: Annotated[t.NonEmptyStr, u.Field(description="Custom metric name")]
             metric_type: Annotated[
-                c.Observability.MetricType,
-                u.Field(description="Type of metric"),
+                c.Observability.MetricType, u.Field(description="Type of metric")
             ]
             description: Annotated[
                 t.NonEmptyStr, u.Field(description="Human-readable metric description")
             ]
             unit: Annotated[
-                str,
-                u.Field(
-                    min_length=1,
-                    description="Measurement unit",
-                ),
+                str, u.Field(min_length=1, description="Measurement unit")
             ] = "1"
             labels: Annotated[
                 t.StrMapping,
@@ -252,8 +244,6 @@ class FlextObservabilityModels(m):
         class ErrorEvent(m.Value):
             """Error event with fingerprinting for deduplication and alerting."""
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
-
             error_type: Annotated[
                 t.NonEmptyStr, u.Field(description="Error classification type")
             ]
@@ -269,11 +259,20 @@ class FlextObservabilityModels(m):
                 str, u.Field(description="Correlation identifier")
             ] = ""
 
-            def calculate_fingerprint(self) -> None:
-                """Calculate SHA256 fingerprint from error type and message."""
-                self.fingerprint = sha256(
-                    f"{self.error_type}:{self.message}".encode(),
-                ).hexdigest()
+            def calculate_fingerprint(self) -> Self:
+                """Calculate SHA256 fingerprint from error type and message.
+
+                Returns:
+                    Self: A new instance with the fingerprint populated.
+
+                """
+                return self.model_copy(
+                    update={
+                        "fingerprint": sha256(
+                            f"{self.error_type}:{self.message}".encode()
+                        ).hexdigest()
+                    }
+                )
 
         # --- Moved from health.py ---
 
@@ -281,48 +280,33 @@ class FlextObservabilityModels(m):
         class LogContext(m.Value):
             """Trace context for enriching log entries with correlation and span IDs."""
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
-
             correlation_id: Annotated[
-                str | None,
-                u.Field(description="Correlation identifier"),
+                str | None, u.Field(description="Correlation identifier")
             ] = None
-            trace_id: Annotated[
-                str | None,
-                u.Field(description="Trace identifier"),
-            ] = None
-            span_id: Annotated[
-                str | None,
-                u.Field(description="Span identifier"),
-            ] = None
+            trace_id: Annotated[str | None, u.Field(description="Trace identifier")] = (
+                None
+            )
+            span_id: Annotated[str | None, u.Field(description="Span identifier")] = (
+                None
+            )
             baggage: Annotated[
-                str | None,
-                u.Field(description="Serialized baggage string"),
+                str | None, u.Field(description="Serialized baggage string")
             ] = None
-            extra: Annotated[
-                m.Dict,
-                u.Field(
-                    default_factory=lambda: m.Dict({}),
-                    description="Additional context data",
-                ),
-            ]
+            extra: Annotated[m.Dict, u.Field(description="Additional context data")] = (
+                u.Field(default_factory=lambda: m.Dict({}))
+            )
 
         # --- Moved from performance.py ---
         class PerformanceMetrics(m.Value):
             """Metrics for tracking performance of observability operations."""
-
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(frozen=False)
 
             operation: Annotated[
                 t.NonEmptyStr, u.Field(description="Operation name being measured")
             ]
             start_time: Annotated[
                 float,
-                u.Field(
-                    default_factory=time.time,
-                    description="Operation start time in seconds since epoch",
-                ),
-            ]
+                u.Field(description="Operation start time in seconds since epoch"),
+            ] = u.Field(default_factory=time.time)
             end_time: Annotated[
                 float, u.Field(description="Operation end time in seconds since epoch")
             ] = 0.0
@@ -342,11 +326,20 @@ class FlextObservabilityModels(m):
                 str, u.Field(description="Error message if operation failed")
             ] = ""
 
-            def calculate_duration(self) -> None:
-                """Calculate operation duration in milliseconds from start and end times."""
-                if self.end_time <= 0:
-                    self.end_time = time.time()
-                self.duration_ms = max(0.0, (self.end_time - self.start_time) * 1000.0)
+            def calculate_duration(self) -> Self:
+                """Calculate operation duration in milliseconds from start and end times.
+
+                Returns:
+                    Self: A new instance with end_time and duration_ms populated.
+
+                """
+                end_time = self.end_time
+                if end_time <= 0:
+                    end_time = time.time()
+                duration_ms = max(0.0, (end_time - self.start_time) * 1000.0)
+                return self.model_copy(
+                    update={"end_time": end_time, "duration_ms": duration_ms}
+                )
 
 
 m = FlextObservabilityModels
