@@ -292,8 +292,8 @@ class FlextObservabilityHTTPClient:
             )
             return r[bool].ok(value=True)
 
-        @staticmethod
-        def setup_instrumentation(client: t.RegisterableService) -> p.Result[bool]:
+        @classmethod
+        def setup_instrumentation(cls, client: t.RegisterableService) -> p.Result[bool]:
             """Set up httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -335,9 +335,7 @@ class FlextObservabilityHTTPClient:
 
             """
             try:
-                return FlextObservabilityHTTPClient.HTTPX._apply_httpx_instrumentation(
-                    client
-                )
+                return cls._apply_httpx_instrumentation(client)
             except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail_op("httpx instrumentation setup", e)
 
@@ -348,8 +346,10 @@ class FlextObservabilityHTTPClient:
             set[p.Observability.HttpClient.AIOHTTPSession]
         ] = set()
 
-        @staticmethod
-        def setup_instrumentation(session: t.RegisterableService) -> p.Result[bool]:
+        @classmethod
+        def setup_instrumentation(
+            cls, session: t.RegisterableService
+        ) -> p.Result[bool]:
             """Set up aiohttp client session instrumentation.
 
             Wraps aiohttp session methods to automatically trace all HTTP requests
@@ -384,11 +384,7 @@ class FlextObservabilityHTTPClient:
 
             """
             try:
-                return (
-                    FlextObservabilityHTTPClient.AIOHTTP._apply_aiohttp_instrumentation(
-                        session
-                    )
-                )
+                return cls._apply_aiohttp_instrumentation(session)
             except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail_op("aiohttp instrumentation setup", e)
 

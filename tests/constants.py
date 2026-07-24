@@ -10,7 +10,10 @@ class TestsFlextObservabilityConstants(
     FlextTestsConstants, FlextObservabilityConstants
 ):
     class Observability(FlextObservabilityConstants.Observability):
-        class Tests: ...
+        """Observability domain test constants."""
+
+        class Tests:
+            """Observability test fixture constants."""
 
 
 c = TestsFlextObservabilityConstants
