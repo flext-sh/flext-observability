@@ -1441,9 +1441,11 @@ def create_business_observability_dashboard(
         ... )
         >>> if result.success:
         ...     dashboard = result.value
-        ...     print(f"Created dashboard with {len(dashboard['metrics'])} metrics")
+        ...     u.Cli.print(
+        ...         f"Created dashboard with {len(dashboard['metrics'])} metrics"
+        ...     )
         ... else:
-        ...     print(f"Dashboard creation failed: {result.error}")
+        ...     u.Cli.print(f"Dashboard creation failed: {result.error}")
 
     Integration:
         - Uses FlextMetricsService for metrics collection coordination

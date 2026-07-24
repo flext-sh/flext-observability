@@ -121,7 +121,7 @@ from flext_observability import flext_create_metric
 # Basic metric
 result = flext_create_metric("response_time", 150.5, "milliseconds")
 if result.success:
-    print(f"Created: {result.value.name} = {result.value.value}")
+    u.Cli.print(f"Created: {result.value.name} = {result.value.value}")
 
 # Business metric with tags
 result = flext_create_metric(
@@ -192,7 +192,7 @@ from flext_observability import flext_create_trace
 result = flext_create_trace("user_login", "authentication-service")
 if result.success:
     trace = result.value
-    print(f"Started trace: {trace.operation_name} in {trace.service_name}")
+    u.Cli.print(f"Started trace: {trace.operation_name} in {trace.service_name}")
 
 # Trace with context
 result = flext_create_trace(
@@ -444,7 +444,7 @@ def create_system_metrics() -> t.SequenceOf[r[FlextMetric]]:
         results.append(result)
 
         if result.failure:
-            print(f"⚠️  Failed to create {name}: {result.error}")
+            u.Cli.print(f"⚠️  Failed to create {name}: {result.error}")
 
     return results
 ```
