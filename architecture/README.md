@@ -236,7 +236,9 @@ FLEXT Observability integrates with the ecosystem through standardized patterns:
 
 #### **Foundation Integration**
 
-```python notest
+```python
+from __future__ import annotations
+
 # All services use flext-core patterns
 from flext_cli import u
 from flext_core import FlextSettings
@@ -288,7 +290,10 @@ flext-observability
 
 ### Factory Pattern Implementation
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
 
@@ -304,7 +309,10 @@ class FlextObservabilityMasterFactory:
 
 ### Service Layer Pattern
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class FlextMetricsService:
     """Application service for metrics operations."""
 
@@ -322,7 +330,10 @@ class FlextMetricsService:
 
 ### Repository Pattern (Future Implementation)
 
-```python notest
+```python
+from __future__ import annotations
+
+
 class FlextMetricsRepository(Protocol):
     """Repository interface for metrics persistence."""
 
@@ -395,7 +406,10 @@ class FlextMetricsRepository(Protocol):
 
 ### Integration Hooks
 
-```python notest
+```python
+from __future__ import annotations
+
+
 # Future extension point example
 class FlextObservabilityPlugin(Protocol):
     """Plugin interface for extending observability."""

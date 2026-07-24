@@ -125,7 +125,9 @@ Base patterns and cross-cutting concerns:
 
 ### Basic Entity Creation
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import FlextMetric, FlextTrace
 
 # Create metric with validation
@@ -138,12 +140,14 @@ metric = FlextMetric(
 
 validation = metric.validate_business_rules()
 if validation.success:
-    u.Cli.print(f"Valid metric: {metric.name}")
+    print(f"Valid metric: {metric.name}")
 ```
 
 ### Service Layer Usage
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import FlextMetricsService
 from flext_cli import u
 from flext_core import FlextSettings
@@ -153,12 +157,14 @@ metrics_service = FlextMetricsService(container)
 
 result = metrics_service.record_metric(metric)
 if result.success:
-    u.Cli.print(f"Recorded: {result.data.name}")
+    print(f"Recorded: {result.data.name}")
 ```
 
 ### Factory Pattern Usage
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import FlextObservabilityMasterFactory
 
 factory = FlextObservabilityMasterFactory()
@@ -166,12 +172,14 @@ metric_result = factory.create_metric("cpu_usage", 75.2, "percent")
 
 if metric_result.success:
     metric = metric_result.data
-    u.Cli.print(f"Created metric: {metric.name}")
+    print(f"Created metric: {metric.name}")
 ```
 
 ### Simple API Usage
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import flext_create_metric, flext_create_trace
 
 # Quick metric creation
@@ -183,7 +191,9 @@ trace_result = flext_create_trace("user_login", "auth-service")
 
 ### Monitoring Decorator Usage
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import flext_monitor_function
 
 
@@ -206,7 +216,10 @@ All modules follow FLEXT ecosystem standards:
 
 ### Cross-Service Observability
 
-```python notest
+```python
+from __future__ import annotations
+
+
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
 def handle_user_request(request: dict) -> p.Result[m.Dict]:

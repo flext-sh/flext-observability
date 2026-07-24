@@ -73,7 +73,9 @@ tests/
 
 Test individual functions and classes in isolation:
 
-```python notest
+```python
+from __future__ import annotations
+
 import pytest
 from flext_cli import u
 from flext_core import FlextSettings
@@ -108,7 +110,9 @@ objectClass: inetOrgPerson"""
 
 Test component interactions and workflows:
 
-```python notest
+```python
+from __future__ import annotations
+
 import pytest
 from flext_cli import u
 from flext_core import FlextSettings
@@ -329,7 +333,9 @@ def test_file_migration(ldif_service, temp_directories):
 
 ### Unit Test Mocking
 
-```python notest
+```python
+from __future__ import annotations
+
 from unittest.mock import Mock, patch
 from flext_cli import u
 from flext_core import FlextSettings
@@ -351,7 +357,9 @@ def test_with_mocked_dependency():
 
 ### Integration Test Stubbing
 
-```python notest
+```python
+from __future__ import annotations
+
 from unittest.mock import Mock
 from flext_cli import u
 from flext_core import FlextSettings
@@ -377,7 +385,9 @@ def test_with_stubbed_service():
 
 ### Load Testing
 
-```python notest
+```python
+from __future__ import annotations
+
 import pytest
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -409,7 +419,9 @@ def test_concurrent_processing():
 
 ### Memory Testing
 
-```python notest
+```python
+from __future__ import annotations
+
 import pytest
 import psutil
 import os
@@ -455,7 +467,9 @@ tests/
 
 ### Loading Test Data
 
-```python notest
+```python
+from __future__ import annotations
+
 import json
 from pathlib import Path
 
@@ -605,7 +619,10 @@ def test_parse_result():
 
 ### 4. Test Independence
 
-```python notest
+```python
+from __future__ import annotations
+
+
 # ✅ GOOD - Independent tests
 def test_parse_valid_ldif():
     ldif = ldif()  # Fresh instance
@@ -647,7 +664,7 @@ def test_parse_invalid_ldif():
 
 1. **Fixture Not Found**
 
-   ```python notest
+   ```python
    # Check fixture scope and dependencies
    @pytest.fixture(scope="function")
    def my_fixture():
