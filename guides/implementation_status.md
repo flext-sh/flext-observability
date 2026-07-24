@@ -154,7 +154,7 @@ ______________________________________________________________________
 
 #### **Import Compatibility Issue**
 
-```python
+```python notest
 from __future__ import annotations
 
 # CURRENT: BROKEN - T not exported from flext-core

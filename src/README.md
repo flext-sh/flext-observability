@@ -76,23 +76,21 @@ src/flext_observability/
 ```python
 from __future__ import annotations
 
-# Import core observability functionality
-from flext_observability import (
-    flext_create_metric,
-    flext_create_trace,
-    flext_monitor_function,
-    FlextMetricsService,
-)
+from flext_observability import FlextObservability, flext_monitor_function, t
+
 
 # Create observability data
-metric_result = flext_create_metric("api_requests", 42, "count")
-trace_result = flext_create_trace("user_login", "auth-service")
+metric_result = FlextObservability.flext_metric("api_requests", 42, "count")
+trace_result = FlextObservability.flext_trace("user_login", {"service": "auth-service"})
 
 
 # Use monitoring decorators
 @flext_monitor_function("business_operation")
 def process_order(order_data: dict) -> t.JsonMapping:
     return {"status": "processed"}
+
+
+_ = metric_result, trace_result, process_order
 ```
 
 ## Quality Assurance
