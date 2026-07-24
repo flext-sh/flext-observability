@@ -45,9 +45,7 @@ class FlextObservabilityHTTPClient:
     Usage:
         ```python
         import httpx
-        from flext_observability import (
-            FlextObservabilityHTTPClient,
-        )
+        from flext_observability import FlextObservabilityHTTPClient
 
         # Setup httpx client instrumentation
         client = httpx.Client()
@@ -95,8 +93,8 @@ class FlextObservabilityHTTPClient:
         try:
             return dict(
                 m.Observability.HeadersPayload.model_validate(
-                    obj={"headers": payload},
-                ).headers,
+                    obj={"headers": payload}
+                ).headers
             )
         except c.ValidationError:
             return {}
@@ -132,17 +130,14 @@ class FlextObservabilityHTTPClient:
                 original_request = typed_async_client.request
 
                 async def traced_async_request(
-                    method: str,
-                    url: str,
-                    *args: t.Scalar,
-                    **kwargs: t.Scalar,
+                    method: str, url: str, *args: t.Scalar, **kwargs: t.Scalar
                 ) -> p.Observability.HttpClient.HTTPXResponse:
                     start_time = time.time()
                     correlation_id = FlextObservabilityContext.correlation_id()
                     trace_id = FlextObservabilityContext.trace_id()
                     span_id = FlextObservabilityContext.span_id()
                     headers = FlextObservabilityHTTPClient._validated_headers(
-                        kwargs.get("headers"),
+                        kwargs.get("headers")
                     )
                     if correlation_id:
                         headers["X-Correlation-ID"] = correlation_id
@@ -166,19 +161,13 @@ class FlextObservabilityHTTPClient:
                     }
                     try:
                         response_candidate = original_request(
-                            method,
-                            url,
-                            *args,
-                            headers=headers,
-                            **call_kwargs,
+                            method, url, *args, headers=headers, **call_kwargs
                         )
                         if not isinstance(response_candidate, Awaitable):
                             msg = (
                                 "Async httpx request returned a non-awaitable response"
                             )
-                            raise TypeError(
-                                msg,
-                            )
+                            raise TypeError(msg)
                         response = await response_candidate
                     except c.EXC_MAPPING_TYPE as e:
                         duration_ms = (time.time() - start_time) * 1000
@@ -223,10 +212,7 @@ class FlextObservabilityHTTPClient:
                 ] = typed_sync_client.request
 
                 def traced_request(
-                    method: str,
-                    url: str,
-                    *args: t.Scalar,
-                    **kwargs: t.Scalar,
+                    method: str, url: str, *args: t.Scalar, **kwargs: t.Scalar
                 ) -> p.Observability.HttpClient.HTTPXResponse:
                     """Traced request wrapper for sync httpx."""
                     start_time = time.time()
@@ -234,7 +220,7 @@ class FlextObservabilityHTTPClient:
                     trace_id = FlextObservabilityContext.trace_id()
                     span_id = FlextObservabilityContext.span_id()
                     headers = FlextObservabilityHTTPClient._validated_headers(
-                        kwargs.get("headers"),
+                        kwargs.get("headers")
                     )
                     if correlation_id:
                         headers["X-Correlation-ID"] = correlation_id
@@ -258,17 +244,11 @@ class FlextObservabilityHTTPClient:
                     }
                     try:
                         response_candidate = original_sync_request(
-                            method,
-                            url,
-                            *args,
-                            headers=headers,
-                            **call_kwargs,
+                            method, url, *args, headers=headers, **call_kwargs
                         )
                         if isinstance(response_candidate, Awaitable):
                             msg = "Sync httpx request returned an awaitable response"
-                            raise TypeError(
-                                msg,
-                            )
+                            raise TypeError(msg)
                         response = response_candidate
                     except c.EXC_MAPPING_TYPE as e:
                         duration_ms = (time.time() - start_time) * 1000
@@ -305,12 +285,10 @@ class FlextObservabilityHTTPClient:
 
                 typed_sync_client.request = traced_request
             else:
-                return r[bool].fail(
-                    "Invalid httpx client - unsupported client type",
-                )
+                return r[bool].fail("Invalid httpx client - unsupported client type")
             FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client_id)
             FlextObservabilityHTTPClient.logger.debug(
-                "httpx client instrumentation setup complete",
+                "httpx client instrumentation setup complete"
             )
             return r[bool].ok(value=True)
 
@@ -338,9 +316,7 @@ class FlextObservabilityHTTPClient:
             Example:
                 ```python
                 import httpx
-                from flext_observability import (
-                    FlextObservabilityHTTPClient,
-                )
+                from flext_observability import FlextObservabilityHTTPClient
 
                 # Sync client
                 client = httpx.Client()
@@ -360,7 +336,7 @@ class FlextObservabilityHTTPClient:
             """
             try:
                 return FlextObservabilityHTTPClient.HTTPX._apply_httpx_instrumentation(
-                    client,
+                    client
                 )
             except c.EXC_MAPPING_TYPE as e:
                 return r[bool].fail_op("httpx instrumentation setup", e)
@@ -396,9 +372,7 @@ class FlextObservabilityHTTPClient:
             Example:
                 ```python
                 import aiohttp
-                from flext_observability import (
-                    FlextObservabilityHTTPClient,
-                )
+                from flext_observability import FlextObservabilityHTTPClient
 
                 async with aiohttp.ClientSession() as session:
                     FlextObservabilityHTTPClient.AIOHTTP.setup_instrumentation(session)
@@ -412,7 +386,7 @@ class FlextObservabilityHTTPClient:
             try:
                 return (
                     FlextObservabilityHTTPClient.AIOHTTP._apply_aiohttp_instrumentation(
-                        session,
+                        session
                     )
                 )
             except c.EXC_MAPPING_TYPE as e:
@@ -432,9 +406,7 @@ class FlextObservabilityHTTPClient:
 
             """
             if not FlextObservabilityHTTPClient._matches_aiohttp_session(session):
-                return r[bool].fail(
-                    "Invalid aiohttp session - missing request method",
-                )
+                return r[bool].fail("Invalid aiohttp session - missing request method")
             typed_session: p.Observability.HttpClient.AIOHTTPSession = session
             if (
                 typed_session
@@ -444,10 +416,7 @@ class FlextObservabilityHTTPClient:
             original_request = typed_session.request
 
             async def traced_request(
-                method: str,
-                url: str,
-                *args: t.Scalar,
-                **kwargs: t.Scalar,
+                method: str, url: str, *args: t.Scalar, **kwargs: t.Scalar
             ) -> p.Observability.HttpClient.AIOHTTPResponse:
                 """Traced request wrapper for aiohttp."""
                 start_time = time.time()
@@ -455,7 +424,7 @@ class FlextObservabilityHTTPClient:
                 trace_id = FlextObservabilityContext.trace_id()
                 span_id = FlextObservabilityContext.span_id()
                 headers = FlextObservabilityHTTPClient._validated_headers(
-                    kwargs.get("headers"),
+                    kwargs.get("headers")
                 )
                 if correlation_id:
                     headers["X-Correlation-ID"] = correlation_id
@@ -479,11 +448,7 @@ class FlextObservabilityHTTPClient:
                 }
                 try:
                     response = await original_request(
-                        method,
-                        url,
-                        *args,
-                        headers=headers,
-                        **async_call_kwargs,
+                        method, url, *args, headers=headers, **async_call_kwargs
                     )
                 except c.EXC_MAPPING_TYPE as e:
                     duration_ms = (time.time() - start_time) * 1000
@@ -521,10 +486,10 @@ class FlextObservabilityHTTPClient:
 
             typed_session.request = traced_request
             FlextObservabilityHTTPClient.AIOHTTP.instrumented_sessions.add(
-                typed_session,
+                typed_session
             )
             FlextObservabilityHTTPClient.logger.debug(
-                "aiohttp session instrumentation setup complete",
+                "aiohttp session instrumentation setup complete"
             )
             return r[bool].ok(value=True)
 

@@ -11,10 +11,7 @@ from flext_tests import FlextTestsUtilities
 from flext_observability import u
 
 
-class TestsFlextObservabilityUtilities(
-    FlextTestsUtilities,
-    u,
-):
+class TestsFlextObservabilityUtilities(FlextTestsUtilities, u):
     """Test utilities for flext-observability."""
 
     class Tests(FlextTestsUtilities.Tests):

@@ -112,10 +112,7 @@ def demonstrate_alerting_system() -> None:
     ]
     for level, message, service in alerts:
         result = flext_alert(
-            source=service,
-            title=message,
-            message=message,
-            severity=level,
+            source=service, title=message, message=message, severity=level
         )
         if result.success:
             icons = {

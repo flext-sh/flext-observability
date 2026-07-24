@@ -104,7 +104,7 @@ class FlextObservabilityHTTP:
                 )
             except c.EXC_MAPPING_TYPE as e:
                 FlextObservabilityHTTP.logger.warning(
-                    f"Error in before_request hook: {e}",
+                    f"Error in before_request hook: {e}"
                 )
 
         @staticmethod
@@ -145,7 +145,7 @@ class FlextObservabilityHTTP:
                 FlextObservabilityHTTP.Flask._log_after_request(response)
             except c.EXC_MAPPING_TYPE as e:
                 FlextObservabilityHTTP.logger.warning(
-                    f"Error in after_request hook: {e}",
+                    f"Error in after_request hook: {e}"
                 )
             return response
 
@@ -183,7 +183,7 @@ class FlextObservabilityHTTP:
             )
             try:
                 validated_start = m.Observability.StartTimePayload.model_validate(
-                    obj={"value": start_time},
+                    obj={"value": start_time}
                 ).value
                 return (time.time() - validated_start) * 1000
             except c.ValidationError:
@@ -206,7 +206,7 @@ class FlextObservabilityHTTP:
                 )
             except c.EXC_MAPPING_TYPE as log_error:
                 FlextObservabilityHTTP.logger.error(
-                    f"Error in error handler: {log_error}",
+                    f"Error in error handler: {log_error}"
                 )
             return (m.Dict({"error": str(error)}), 500)
 
@@ -233,9 +233,7 @@ class FlextObservabilityHTTP:
             Example:
                 ```python
                 from flask import Flask
-                from flext_observability import (
-                    FlextObservabilityHTTP,
-                )
+                from flext_observability import FlextObservabilityHTTP
 
                 app = Flask(__name__)
                 FlextObservabilityHTTP.Flask.setup_instrumentation(app)
@@ -265,7 +263,7 @@ class FlextObservabilityHTTP:
             after_request_hook(FlextObservabilityHTTP.Flask._after_request_hook)
             errorhandler(Exception)(FlextObservabilityHTTP.Flask._error_handler)
             FlextObservabilityHTTP.logger.debug(
-                "Flask HTTP instrumentation setup complete",
+                "Flask HTTP instrumentation setup complete"
             )
             return r[bool].ok(value=True)
 
@@ -297,9 +295,7 @@ class FlextObservabilityHTTP:
             Example:
                 ```python
                 from fastapi import FastAPI
-                from flext_observability import (
-                    FlextObservabilityHTTP,
-                )
+                from flext_observability import FlextObservabilityHTTP
 
                 app = FastAPI()
                 FlextObservabilityHTTP.FastAPI.setup_instrumentation(app)
@@ -322,7 +318,7 @@ class FlextObservabilityHTTP:
             """Register FastAPI instrumentation middleware."""
             if not FlextObservabilityHTTP._matches_fastapi_app(app):
                 return r[bool].fail(
-                    "Invalid FastAPI app - missing add_middleware method",
+                    "Invalid FastAPI app - missing add_middleware method"
                 )
             typed_app: p.Observability.Http.FastAPIApp = app
 
@@ -334,33 +330,27 @@ class FlextObservabilityHTTP:
 
                 @override
                 async def dispatch(
-                    self,
-                    request: Request,
-                    call_next: RequestResponseEndpoint,
+                    self, request: Request, call_next: RequestResponseEndpoint
                 ) -> Response:
                     """Process HTTP request with instrumentation."""
                     try:
                         return await FlextObservabilityHTTP.FastAPI._dispatch_request(
-                            request,
-                            call_next,
+                            request, call_next
                         )
                     except c.EXC_MAPPING_TYPE as e:
-                        FlextObservabilityHTTP.logger.warning(
-                            f"Middleware error: {e}",
-                        )
+                        FlextObservabilityHTTP.logger.warning(f"Middleware error: {e}")
                         raise
 
             add_middleware = typed_app.add_middleware
             add_middleware(FlextObservabilityMiddleware)
             FlextObservabilityHTTP.logger.debug(
-                "FastAPI HTTP instrumentation setup complete",
+                "FastAPI HTTP instrumentation setup complete"
             )
             return r[bool].ok(value=True)
 
         @staticmethod
         async def _dispatch_request(
-            request: Request,
-            call_next: RequestResponseEndpoint,
+            request: Request, call_next: RequestResponseEndpoint
         ) -> Response:
             """Process one FastAPI request with logging and correlation context."""
             headers_dict: t.MutableStrMapping = dict(request.headers.items())
@@ -374,19 +364,14 @@ class FlextObservabilityHTTP:
             )
             try:
                 return await FlextObservabilityHTTP.FastAPI._dispatch_response(
-                    request,
-                    call_next,
-                    correlation_id,
-                    start_time,
+                    request, call_next, correlation_id, start_time
                 )
             except c.EXC_MAPPING_TYPE as e:
                 await FlextObservabilityHTTP.FastAPI._log_dispatch_error(request, e)
                 raise
 
         @staticmethod
-        def _request_log_extra(
-            request: Request,
-        ) -> t.MutableScalarMapping:
+        def _request_log_extra(request: Request) -> t.MutableScalarMapping:
             """Build FastAPI request log metadata."""
             return {
                 "http_method": request.method,
@@ -425,10 +410,7 @@ class FlextObservabilityHTTP:
             return response
 
         @staticmethod
-        async def _log_dispatch_error(
-            request: Request,
-            error: Exception,
-        ) -> None:
+        async def _log_dispatch_error(request: Request, error: Exception) -> None:
             """Emit FastAPI request error metadata."""
             await FlextObservabilityHTTP._async_log_with_context(
                 f"HTTP request error: {error!s}",
@@ -443,9 +425,7 @@ class FlextObservabilityHTTP:
 
     @staticmethod
     async def _async_log_with_context(
-        message: str,
-        level: str,
-        extra: t.ConfigurationMapping | None = None,
+        message: str, level: str, extra: t.ConfigurationMapping | None = None
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 
@@ -453,14 +433,11 @@ class FlextObservabilityHTTP:
         """
         try:
             FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTP.logger,
-                level,
-                message,
-                extra=extra,
+                FlextObservabilityHTTP.logger, level, message, extra=extra
             )
         except c.EXC_MAPPING_TYPE as e:
             FlextObservabilityHTTP.logger.warning(
-                f"Error logging in async context: {e}",
+                f"Error logging in async context: {e}"
             )
 
 

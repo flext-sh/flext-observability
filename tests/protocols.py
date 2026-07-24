@@ -11,10 +11,7 @@ from flext_tests import FlextTestsProtocols
 from flext_observability import p
 
 
-class TestsFlextObservabilityProtocols(
-    FlextTestsProtocols,
-    p,
-):
+class TestsFlextObservabilityProtocols(FlextTestsProtocols, p):
     """Test protocols for flext-observability."""
 
     class Tests(FlextTestsProtocols.Tests):

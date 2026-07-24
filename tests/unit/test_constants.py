@@ -43,9 +43,7 @@ class TestsFlextObservabilityConstantsUnit:
         ],
     )
     def test_strenum_members_carry_stable_string_values(
-        self,
-        member: str,
-        expected: str,
+        self, member: str, expected: str
     ) -> None:
         """Each StrEnum member is usable as its documented string value."""
         tm.that(member, eq=expected)
@@ -87,9 +85,7 @@ class TestsFlextObservabilityConstantsUnit:
         ],
     )
     def test_flat_alias_stays_consistent_with_its_enum_source(
-        self,
-        alias: str,
-        source: str,
+        self, alias: str, source: str
     ) -> None:
         """Flat string aliases must equal the value of the enum they derive from."""
         tm.that(alias, eq=source)

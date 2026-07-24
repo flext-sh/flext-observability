@@ -84,9 +84,7 @@ class FlextObservabilitySampling:
             self._sampled_trace_ids: set[str] = set()
 
         def current_rate(
-            self,
-            operation: str | None = None,
-            service: str | None = None,
+            self, operation: str | None = None, service: str | None = None
         ) -> float:
             """Return the effective sampling rate for an operation/service.
 
@@ -106,9 +104,7 @@ class FlextObservabilitySampling:
             return rate
 
         def sampling_decision(
-            self,
-            operation: str | None = None,
-            service: str | None = None,
+            self, operation: str | None = None, service: str | None = None
         ) -> c.Observability.SamplingDecision:
             """Return the sampling decision as an enum.
 
@@ -144,16 +140,16 @@ class FlextObservabilitySampling:
             if validated_rate_result.failure:
                 return r[bool].fail(
                     validated_rate_result.error
-                    or f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                    or f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
                 )
             validated_rate = validated_rate_result.map_or(None)
             if validated_rate is None:
                 return r[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
                 )
             self._default_rate = validated_rate
             FlextObservabilitySampling.logger.debug(
-                f"Default sampling rate set to {validated_rate}",
+                f"Default sampling rate set to {validated_rate}"
             )
             return r[bool].ok(value=True)
 
@@ -163,7 +159,7 @@ class FlextObservabilitySampling:
                 validated_rate = self.RATE_ADAPTER.validate_python(rate)
             except m.ValidationError:
                 return r[float].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
                 )
             return r[float].ok(validated_rate)
 
@@ -180,16 +176,16 @@ class FlextObservabilitySampling:
             if validated_rate_result.failure:
                 return r[bool].fail(
                     validated_rate_result.error
-                    or f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                    or f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
                 )
             validated_rate = validated_rate_result.map_or(None)
             if validated_rate is None:
                 return r[bool].fail(
-                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0",
+                    f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
                 )
             overrides[scope_value] = validated_rate
             FlextObservabilitySampling.logger.debug(
-                f"Sampling rate for {scope_name} '{scope_value}' set to {validated_rate}",
+                f"Sampling rate for {scope_name} '{scope_value}' set to {validated_rate}"
             )
             return r[bool].ok(value=True)
 
@@ -211,12 +207,12 @@ class FlextObservabilitySampling:
             valid_envs = ["development", "staging", "production"]
             if environment not in valid_envs:
                 return r[bool].fail(
-                    f"Invalid environment: {environment}. Must be one of {valid_envs}",
+                    f"Invalid environment: {environment}. Must be one of {valid_envs}"
                 )
             self._environment = environment
             self._default_rate = self._environment_rates.get(environment, 0.1)
             FlextObservabilitySampling.logger.debug(
-                f"Sampling environment set to {environment} (rate: {self._default_rate})",
+                f"Sampling environment set to {environment} (rate: {self._default_rate})"
             )
             return r[bool].ok(value=True)
 
@@ -266,9 +262,7 @@ class FlextObservabilitySampling:
             )
 
         def should_sample(
-            self,
-            operation: str | None = None,
-            service: str | None = None,
+            self, operation: str | None = None, service: str | None = None
         ) -> bool:
             """Determine if request should be sampled (head-based decision).
 
@@ -322,8 +316,7 @@ class FlextObservabilitySampling:
 
     @staticmethod
     def sampling_decision(
-        operation: str | None = None,
-        service: str | None = None,
+        operation: str | None = None, service: str | None = None
     ) -> c.Observability.SamplingDecision:
         """Return the sampling decision as an enum.
 

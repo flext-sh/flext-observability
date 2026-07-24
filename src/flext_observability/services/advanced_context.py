@@ -28,9 +28,7 @@ class FlextObservabilityAdvancedContext:
 
     Usage:
         ```python
-        from flext_observability import (
-            FlextObservabilityAdvancedContext,
-        )
+        from flext_observability import FlextObservabilityAdvancedContext
 
         ctx = FlextObservabilityAdvancedContext.active_context()
 
@@ -123,8 +121,7 @@ class FlextObservabilityAdvancedContext:
             return self._metadata.get(key)
 
         def merge(
-            self,
-            other: FlextObservabilityAdvancedContext.Context,
+            self, other: FlextObservabilityAdvancedContext.Context
         ) -> p.Result[bool]:
             """Merge another context into this one.
 
@@ -161,7 +158,7 @@ class FlextObservabilityAdvancedContext:
                 self._metadata = dict(snapshot.metadata)
                 self._baggage = dict(snapshot.baggage)
                 FlextObservabilityAdvancedContext.logger.debug(
-                    "Context restored from snapshot",
+                    "Context restored from snapshot"
                 )
                 return r[bool].ok(value=True)
             except c.EXC_MAPPING_TYPE as exc:
@@ -214,10 +211,7 @@ class FlextObservabilityAdvancedContext:
                 )
 
         def snapshot(
-            self,
-            correlation_id: str = "",
-            trace_id: str = "",
-            span_id: str = "",
+            self, correlation_id: str = "", trace_id: str = "", span_id: str = ""
         ) -> p.Observability.ContextSnapshot:
             """Create snapshot of current context.
 

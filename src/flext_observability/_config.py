@@ -22,15 +22,13 @@ from flext_observability._models.config import FlextObservabilityConfigModels
 class FlextObservabilityConfig(FlextCliConfig):
     """Observability config auto-loaded from ``config/*.yaml``."""
 
-    CONFIG_DIR: ClassVar[str] = str(
-        Path(__file__).resolve().parents[2] / "config",
-    )
+    CONFIG_DIR: ClassVar[str] = str(Path(__file__).resolve().parents[2] / "config")
 
     @cached_property
     def Observability(self) -> FlextObservabilityConfigModels.Observability:
         """Validated ``Observability`` business-rule config namespace."""
         root = FlextObservabilityConfigModels.Root.model_validate(
-            dict(self.model_extra or {}),
+            dict(self.model_extra or {})
         )
         return root.Observability
 

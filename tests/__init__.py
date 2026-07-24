@@ -36,21 +36,14 @@ if TYPE_CHECKING:
         u,
     )
 
-_LAZY_IMPORTS = build_lazy_import_map(
-    {
-        ".constants": ("TestsFlextObservabilityConstants", "c"),
-        ".settings": ("TestsFlextObservabilitySettings",),
-        ".typings": ("TestsFlextObservabilityTypes", "t"),
-        ".protocols": ("TestsFlextObservabilityProtocols", "p"),
-        ".models": ("TestsFlextObservabilityModels", "m"),
-        ".utilities": ("TestsFlextObservabilityUtilities", "u"),
-        ".base": ("TestsFlextObservabilityServiceBase", "s"),
-    },
-)
+_LAZY_IMPORTS = build_lazy_import_map({
+    ".constants": ("TestsFlextObservabilityConstants", "c"),
+    ".settings": ("TestsFlextObservabilitySettings",),
+    ".typings": ("TestsFlextObservabilityTypes", "t"),
+    ".protocols": ("TestsFlextObservabilityProtocols", "p"),
+    ".models": ("TestsFlextObservabilityModels", "m"),
+    ".utilities": ("TestsFlextObservabilityUtilities", "u"),
+    ".base": ("TestsFlextObservabilityServiceBase", "s"),
+})
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    publish_all=False,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

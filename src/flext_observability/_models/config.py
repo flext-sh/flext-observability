@@ -22,12 +22,8 @@ class FlextObservabilityConfigModels:
         model_config = ConfigDict(frozen=True, extra="forbid")
 
         default_name: str = Field(description="Default service name.")
-        default_settings_name: str = Field(
-            description="Default settings service name.",
-        )
-        default_environment: str = Field(
-            description="Default deployment environment.",
-        )
+        default_settings_name: str = Field(description="Default settings service name.")
+        default_environment: str = Field(description="Default deployment environment.")
 
     class Defaults(BaseModel):
         """Default observability feature flags and units."""
@@ -37,18 +33,13 @@ class FlextObservabilityConfigModels:
         log_level: str = Field(description="Default log level.")
         metric_unit: str = Field(description="Default metric unit.")
         flush_interval_seconds: int = Field(
-            ge=1,
-            description="Default flush interval in seconds.",
+            ge=1, description="Default flush interval in seconds."
         )
         metrics_enabled: bool = Field(
-            description="Default metrics collection enabled flag.",
+            description="Default metrics collection enabled flag."
         )
-        traces_enabled: bool = Field(
-            description="Default tracing enabled flag.",
-        )
-        alerts_enabled: bool = Field(
-            description="Default alerting enabled flag.",
-        )
+        traces_enabled: bool = Field(description="Default tracing enabled flag.")
+        alerts_enabled: bool = Field(description="Default alerting enabled flag.")
 
     class Thresholds(BaseModel):
         """Observability thresholds."""
@@ -67,23 +58,19 @@ class FlextObservabilityConfigModels:
         model_config = ConfigDict(frozen=True, extra="forbid")
 
         metric_name_max_length: int = Field(
-            ge=1,
-            description="Maximum metric name length.",
+            ge=1, description="Maximum metric name length."
         )
         trace_name_max_length: int = Field(
-            ge=1,
-            description="Maximum trace name length.",
+            ge=1, description="Maximum trace name length."
         )
         alert_message_max_length: int = Field(
-            ge=1,
-            description="Maximum alert message length.",
+            ge=1, description="Maximum alert message length."
         )
         log_message_max_length: int = Field(
-            ge=1,
-            description="Maximum log message length.",
+            ge=1, description="Maximum log message length."
         )
         valid_metric_units: frozenset[str] = Field(
-            description="Allowed metric unit strings.",
+            description="Allowed metric unit strings."
         )
 
     class Observability(BaseModel):
@@ -92,16 +79,16 @@ class FlextObservabilityConfigModels:
         model_config = ConfigDict(frozen=True, extra="forbid")
 
         service: FlextObservabilityConfigModels.Service = Field(
-            description="Service identity defaults.",
+            description="Service identity defaults."
         )
         defaults: FlextObservabilityConfigModels.Defaults = Field(
-            description="Default observability feature flags and units.",
+            description="Default observability feature flags and units."
         )
         thresholds: FlextObservabilityConfigModels.Thresholds = Field(
-            description="Observability thresholds.",
+            description="Observability thresholds."
         )
         validation: FlextObservabilityConfigModels.Validation = Field(
-            description="Observability payload validation limits.",
+            description="Observability payload validation limits."
         )
 
     class Root(BaseModel):
@@ -110,7 +97,7 @@ class FlextObservabilityConfigModels:
         model_config = ConfigDict(frozen=True, extra="ignore")
 
         Observability: FlextObservabilityConfigModels.Observability = Field(
-            description="Observability business-rule config namespace.",
+            description="Observability business-rule config namespace."
         )
 
 

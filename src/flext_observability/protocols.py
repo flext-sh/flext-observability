@@ -65,10 +65,7 @@ class FlextObservabilityProtocols(p):
             class FlaskHook(Protocol):
                 """Protocol for Flask request hooks."""
 
-                def __call__[T](
-                    self,
-                    callback: Callable[..., T],
-                ) -> Callable[..., T]:
+                def __call__[T](self, callback: Callable[..., T]) -> Callable[..., T]:
                     """Call the hook with a callback."""
                     ...
 
@@ -77,8 +74,7 @@ class FlextObservabilityProtocols(p):
                 """Protocol for Flask error handler decorator."""
 
                 def __call__(
-                    self,
-                    error_type: type[Exception],
+                    self, error_type: type[Exception]
                 ) -> FlextObservabilityProtocols.Observability.Http.FlaskHook:
                     """Return a hook for the given error type."""
                     ...
