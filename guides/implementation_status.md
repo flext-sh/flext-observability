@@ -1,61 +1,68 @@
 # Implementation Status - FLEXT Observability v0.9.0
 
 <!-- TOC START -->
-- [Table of Contents](#table-of-contents)
-- [📊 Overall Project Status](#overall-project-status)
-  - [**Architecture Completion**: 100% ✅](#architecture-completion-100)
-  - [**Implementation Completion**: 100% ✅](#implementation-completion-100)
-  - [**Quality Validation**: 0% ❌ (BLOCKED)](#quality-validation-0-blocked)
-- [🔧 Current Implementation Details](#current-implementation-details)
-  - [**Core Architecture** ✅](#core-architecture)
-  - [**Test Suite** ✅ (READY BUT BLOCKED)](#test-suite-ready-but-blocked)
-  - [**Quality Gates** ❌ (BLOCKED)](#quality-gates-blocked)
-- [🚧 Critical Path Resolution](#critical-path-resolution)
-  - [**Phase 1: Fix Import Compatibility** (CRITICAL - BLOCKING)](#phase-1-fix-import-compatibility-critical-blocking)
-  - [**Phase 2: Quality Validation** (AFTER IMPORT FIX)](#phase-2-quality-validation-after-import-fix)
-  - [**Phase 3: Production Readiness** (AFTER QUALITY VALIDATION)](#phase-3-production-readiness-after-quality-validation)
-- [📈 Progress Metrics](#progress-metrics)
-  - [**Quantitative Metrics**](#quantitative-metrics)
-  - [**Qualitative Metrics**](#qualitative-metrics)
-- [🎯 Next Steps Priority Order](#next-steps-priority-order)
-  - [**IMMEDIATE (Critical Path)**](#immediate-critical-path)
-  - [**SHORT TERM (Post-Import Fix)**](#short-term-post-import-fix)
-  - [**MEDIUM TERM (v1.0.0 Release)**](#medium-term-v100-release)
-- [🔍 Implementation Notes](#implementation-notes)
-  - [**Architecture Strengths**](#architecture-strengths)
-  - [**Implementation Decisions**](#implementation-decisions)
-  - [**Current Blockers**](#current-blockers)
-- [📋 Status Summary](#status-summary)
-<!-- TOC END -->
-
-## Table of Contents
-
 - [Implementation Status - FLEXT Observability v0.9.0](#implementation-status---flext-observability-v090)
+  - [Table of Contents](#table-of-contents)
   - [📊 Overall Project Status](#-overall-project-status)
     - [**Architecture Completion**: 100% ✅](#architecture-completion-100-)
     - [**Implementation Completion**: 100% ✅](#implementation-completion-100-)
     - [**Quality Validation**: 0% ❌ (BLOCKED)](#quality-validation-0--blocked)
   - [🔧 Current Implementation Details](#-current-implementation-details)
     - [**Core Architecture** ✅](#core-architecture-)
-      - [Domain Layer (Entities & Business Logic)](#domain-layer-entities--business-logic)
-      - [Application Layer (Services & Use Cases)](#application-layer-services--use-cases)
-      - [Interface Layer (APIs & External Integration)](#interface-layer-apis--external-integration)
+      - [Domain Layer (Entities \& Business Logic)](#domain-layer-entities--business-logic)
+      - [Application Layer (Services \& Use Cases)](#application-layer-services--use-cases)
+      - [Interface Layer (APIs \& External Integration)](#interface-layer-apis--external-integration)
     - [**Test Suite** ✅ (READY BUT BLOCKED)](#test-suite--ready-but-blocked)
-      - [Test Coverage & Quality](#test-coverage--quality)
+      - [Test Coverage \& Quality](#test-coverage--quality)
       - [Test Organization](#test-organization)
     - [**Quality Gates** ❌ (BLOCKED)](#quality-gates--blocked)
       - [**Import Compatibility Issue**](#import-compatibility-issue)
-- [CURRENT: BROKEN - T not exported from flext-core](#current-broken---t-not-exported-from-flext-core)
-- [SHOULD BE: Fixed in flext-core **init**.py](#should-be-fixed-in-flext-core-__init__py)
-- [**Test Execution Status**](#test-execution-status)
-  - [🚧 Critical Path Resolution](#critical-path-resolution)
+      - [**Test Execution Status**](#test-execution-status)
+  - [🚧 Critical Path Resolution](#-critical-path-resolution)
     - [**Phase 1: Fix Import Compatibility** (CRITICAL - BLOCKING)](#phase-1-fix-import-compatibility-critical---blocking)
     - [**Phase 2: Quality Validation** (AFTER IMPORT FIX)](#phase-2-quality-validation-after-import-fix)
     - [**Phase 3: Production Readiness** (AFTER QUALITY VALIDATION)](#phase-3-production-readiness-after-quality-validation)
-  - [📈 Progress Metrics](#progress-metrics)
+  - [📈 Progress Metrics](#-progress-metrics)
     - [**Quantitative Metrics**](#quantitative-metrics)
     - [**Qualitative Metrics**](#qualitative-metrics)
-  - [🎯 Next Steps Priority Order](#next-steps-priority-order)
+  - [🎯 Next Steps Priority Order](#-next-steps-priority-order)
+    - [**IMMEDIATE (Critical Path)**](#immediate-critical-path)
+    - [**SHORT TERM (Post-Import Fix)**](#short-term-post-import-fix)
+    - [**MEDIUM TERM (v1.0.0 Release)**](#medium-term-v100-release)
+  - [🔍 Implementation Notes](#-implementation-notes)
+    - [**Architecture Strengths**](#architecture-strengths)
+    - [**Implementation Decisions**](#implementation-decisions)
+    - [**Current Blockers**](#current-blockers)
+  - [📋 Status Summary](#-status-summary)
+<!-- TOC END -->
+
+## Table of Contents
+
+- [Implementation Status - FLEXT Observability v0.9.0](#implementation-status---flext-observability-v090)
+  - [Table of Contents](#table-of-contents)
+  - [📊 Overall Project Status](#-overall-project-status)
+    - [**Architecture Completion**: 100% ✅](#architecture-completion-100-)
+    - [**Implementation Completion**: 100% ✅](#implementation-completion-100-)
+    - [**Quality Validation**: 0% ❌ (BLOCKED)](#quality-validation-0--blocked)
+  - [🔧 Current Implementation Details](#-current-implementation-details)
+    - [**Core Architecture** ✅](#core-architecture-)
+      - [Domain Layer (Entities \& Business Logic)](#domain-layer-entities--business-logic)
+      - [Application Layer (Services \& Use Cases)](#application-layer-services--use-cases)
+      - [Interface Layer (APIs \& External Integration)](#interface-layer-apis--external-integration)
+    - [**Test Suite** ✅ (READY BUT BLOCKED)](#test-suite--ready-but-blocked)
+      - [Test Coverage \& Quality](#test-coverage--quality)
+      - [Test Organization](#test-organization)
+    - [**Quality Gates** ❌ (BLOCKED)](#quality-gates--blocked)
+      - [**Import Compatibility Issue**](#import-compatibility-issue)
+      - [**Test Execution Status**](#test-execution-status)
+  - [🚧 Critical Path Resolution](#-critical-path-resolution)
+    - [**Phase 1: Fix Import Compatibility** (CRITICAL - BLOCKING)](#phase-1-fix-import-compatibility-critical---blocking)
+    - [**Phase 2: Quality Validation** (AFTER IMPORT FIX)](#phase-2-quality-validation-after-import-fix)
+    - [**Phase 3: Production Readiness** (AFTER QUALITY VALIDATION)](#phase-3-production-readiness-after-quality-validation)
+  - [📈 Progress Metrics](#-progress-metrics)
+    - [**Quantitative Metrics**](#quantitative-metrics)
+    - [**Qualitative Metrics**](#qualitative-metrics)
+  - [🎯 Next Steps Priority Order](#-next-steps-priority-order)
     - [**IMMEDIATE (Critical Path)**](#immediate-critical-path)
     - [**SHORT TERM (Post-Import Fix)**](#short-term-post-import-fix)
     - [**MEDIUM TERM (v1.0.0 Release)**](#medium-term-v100-release)
@@ -149,46 +156,12 @@ ______________________________________________________________________
 
 ```python notest
 # CURRENT: BROKEN - T not exported from flext-core
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u, T  # ImportError
+from flext_cli import u
+from flext_core import FlextSettings, T  # ImportError
 
 # SHOULD BE: Fixed in flext-core __init__.py
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 ```
 
 #### **Test Execution Status**

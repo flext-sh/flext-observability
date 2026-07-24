@@ -1,50 +1,54 @@
 # Python Module Organization & Semantic Patterns
 
 <!-- TOC START -->
-- [Table of Contents](#table-of-contents)
-- [🏗️ **Module Architecture Overview**](#module-architecture-overview)
-  - [**Core Design Principles**](#core-design-principles)
-- [📁 **Module Structure & Responsibilities**](#module-structure-responsibilities)
-  - [**Foundation Layer**](#foundation-layer)
-  - [**Domain Entity Layer**](#domain-entity-layer)
-  - [**Application Services Layer**](#application-services-layer)
-  - [**Factory & Creation Layer**](#factory-creation-layer)
-  - [**Interface Adapters Layer**](#interface-adapters-layer)
-  - [**Infrastructure & Utilities Layer**](#infrastructure-utilities-layer)
-- [🎯 **Semantic Naming Conventions**](#semantic-naming-conventions)
-  - [**Public API Naming (FlextXxx)**](#public-api-naming-flextxxx)
-  - [**Module-Level Naming**](#module-level-naming)
-  - [**Function Naming Patterns**](#function-naming-patterns)
-- [📦 **Import Patterns & Best Practices**](#import-patterns-best-practices)
-  - [**Recommended Import Styles**](#recommended-import-styles)
-  - [**Anti-Patterns (Forbidden)**](#anti-patterns-forbidden)
-- [🏛️ **Architectural Patterns**](#architectural-patterns)
-  - [**Layer Separation**](#layer-separation)
-  - [**Dependency Direction**](#dependency-direction)
-  - [**Cross-Cutting Observability Concerns**](#cross-cutting-observability-concerns)
-- [🔄 **Observability-Specific Patterns**](#observability-specific-patterns)
-  - [**Metric Creation Patterns**](#metric-creation-patterns)
-  - [**Distributed Tracing Patterns**](#distributed-tracing-patterns)
-  - [**Health Monitoring Patterns**](#health-monitoring-patterns)
-  - [**Alert Management Patterns**](#alert-management-patterns)
-- [🧪 **Testing Patterns**](#testing-patterns)
-  - [**Test Organization**](#test-organization)
-  - [**r Testing Patterns for Observability**](#r-testing-patterns-for-observability)
-  - [**Observability Entity Testing Patterns**](#observability-entity-testing-patterns)
-  - [**Service Testing Patterns**](#service-testing-patterns)
-  - [**Monitoring Decorator Testing Patterns**](#monitoring-decorator-testing-patterns)
-- [📏 **Code Quality Standards**](#code-quality-standards)
-  - [**Type Annotation Requirements**](#type-annotation-requirements)
-  - [**Error Handling Standards**](#error-handling-standards)
-  - [**Documentation Standards**](#documentation-standards)
-- [🌐 **Ecosystem Integration Guidelines**](#ecosystem-integration-guidelines)
-  - [**Cross-Project Observability Standards**](#cross-project-observability-standards)
-  - [**Configuration Integration Across Services**](#configuration-integration-across-services)
-  - [**Monitoring Integration Patterns**](#monitoring-integration-patterns)
-- [📋 **Checklist for New Observability Modules**](#checklist-for-new-observability-modules)
-  - [**Module Creation Checklist**](#module-creation-checklist)
-  - [**Observability Quality Gate Checklist**](#observability-quality-gate-checklist)
-  - [**Observability-Specific Standards**](#observability-specific-standards)
+- [Python Module Organization \& Semantic Patterns](#python-module-organization--semantic-patterns)
+  - [Table of Contents](#table-of-contents)
+  - [🏗️ **Module Architecture Overview**](#️-module-architecture-overview)
+    - [**Core Design Principles**](#core-design-principles)
+  - [📁 **Module Structure \& Responsibilities**](#-module-structure--responsibilities)
+    - [**Foundation Layer**](#foundation-layer)
+    - [**Domain Entity Layer**](#domain-entity-layer)
+    - [**Application Services Layer**](#application-services-layer)
+    - [**Factory \& Creation Layer**](#factory--creation-layer)
+    - [**Interface Adapters Layer**](#interface-adapters-layer)
+    - [**Infrastructure \& Utilities Layer**](#infrastructure--utilities-layer)
+  - [🎯 **Semantic Naming Conventions**](#-semantic-naming-conventions)
+    - [**Public API Naming (FlextXxx)**](#public-api-naming-flextxxx)
+    - [**Module-Level Naming**](#module-level-naming)
+    - [**Function Naming Patterns**](#function-naming-patterns)
+  - [📦 **Import Patterns \& Best Practices**](#-import-patterns--best-practices)
+    - [**Recommended Import Styles**](#recommended-import-styles)
+      - [**1. Primary Pattern (Recommended for Ecosystem)**](#1-primary-pattern-recommended-for-ecosystem)
+      - [**2. Service Integration Pattern (For FLEXT Services)**](#2-service-integration-pattern-for-flext-services)
+      - [**3. Infrastructure Integration Pattern (For Infrastructure Services)**](#3-infrastructure-integration-pattern-for-infrastructure-services)
+    - [**Anti-Patterns (Forbidden)**](#anti-patterns-forbidden)
+  - [🏛️ **Architectural Patterns**](#️-architectural-patterns)
+    - [**Layer Separation**](#layer-separation)
+    - [**Dependency Direction**](#dependency-direction)
+    - [**Cross-Cutting Observability Concerns**](#cross-cutting-observability-concerns)
+  - [🔄 **Observability-Specific Patterns**](#-observability-specific-patterns)
+    - [**Metric Creation Patterns**](#metric-creation-patterns)
+    - [**Distributed Tracing Patterns**](#distributed-tracing-patterns)
+    - [**Health Monitoring Patterns**](#health-monitoring-patterns)
+    - [**Alert Management Patterns**](#alert-management-patterns)
+  - [🧪 **Testing Patterns**](#-testing-patterns)
+    - [**Test Organization**](#test-organization)
+    - [**r Testing Patterns for Observability**](#r-testing-patterns-for-observability)
+    - [**Observability Entity Testing Patterns**](#observability-entity-testing-patterns)
+    - [**Service Testing Patterns**](#service-testing-patterns)
+    - [**Monitoring Decorator Testing Patterns**](#monitoring-decorator-testing-patterns)
+  - [📏 **Code Quality Standards**](#-code-quality-standards)
+    - [**Type Annotation Requirements**](#type-annotation-requirements)
+    - [**Error Handling Standards**](#error-handling-standards)
+    - [**Documentation Standards**](#documentation-standards)
+  - [🌐 **Ecosystem Integration Guidelines**](#-ecosystem-integration-guidelines)
+    - [**Cross-Project Observability Standards**](#cross-project-observability-standards)
+    - [**Configuration Integration Across Services**](#configuration-integration-across-services)
+    - [**Monitoring Integration Patterns**](#monitoring-integration-patterns)
+  - [📋 **Checklist for New Observability Modules**](#-checklist-for-new-observability-modules)
+    - [**Module Creation Checklist**](#module-creation-checklist)
+    - [**Observability Quality Gate Checklist**](#observability-quality-gate-checklist)
+    - [**Observability-Specific Standards**](#observability-specific-standards)
 <!-- TOC END -->
 
 ## Table of Contents
@@ -202,25 +206,8 @@ from flext_observability import FlextMetric, FlextTrace, flext_create_metric
 **Entity Architecture**:
 
 ```python notest
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 from flext_observability import FlextMetric, FlextTrace
 
 class FlextMetric(FlextModels.Entity):
@@ -256,25 +243,8 @@ class FlextMetric(FlextModels.Entity):
 **Service Pattern**:
 
 ```python notest
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 from flext_observability import FlextMetricsService
 
 
@@ -551,25 +521,8 @@ from flext_observability import (
     FlextTracingService,
     FlextObservabilityMasterFactory,
 )
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 
 
 class UserAPIService:
@@ -1152,25 +1105,8 @@ class TestFlextTrace:
 
 ```python notest
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 
 
 @pytest.fixture
@@ -1506,25 +1442,8 @@ ______________________________________________________________________
 
 ```python notest
 # ✅ Standard observability imports across ecosystem
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 from flext_observability import (
     flext_create_metric,
     flext_create_trace,
@@ -1611,25 +1530,8 @@ class OracleTrace:  # Use FlextTrace instead
 
 ```python notest
 # ✅ Extend observability configuration patterns
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 
 
 class ObservabilitySettings(FlextSettings):

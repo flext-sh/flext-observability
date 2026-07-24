@@ -1,62 +1,25 @@
 # FLEXT Observability - Architecture Overview
 
 <!-- TOC START -->
-- [Table of Contents](#table-of-contents)
-- [🏗️ Architectural Principles](#architectural-principles)
-  - [Clean Architecture Implementation](#clean-architecture-implementation)
-  - [Domain-Driven Design Structure](#domain-driven-design-structure)
-- [📁 Project Structure](#project-structure)
-  - [Source Code Organization](#source-code-organization)
-  - [Layer Responsibilities](#layer-responsibilities)
-- [🔄 Data Flow Architecture](#data-flow-architecture)
-  - [Request Processing Flow](#request-processing-flow)
-  - [Error Handling Flow](#error-handling-flow)
-- [🔗 Integration Architecture](#integration-architecture)
-  - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
-  - [Dependency Management](#dependency-management)
-- [🎯 Design Patterns](#design-patterns)
-  - [Factory Pattern Implementation](#factory-pattern-implementation)
-  - [Service Layer Pattern](#service-layer-pattern)
-  - [Repository Pattern (Future Implementation)](#repository-pattern-future-implementation)
-- [🚀 Scalability Architecture](#scalability-architecture)
-  - [Current Implementation Characteristics](#current-implementation-characteristics)
-  - [Future Scalability Patterns](#future-scalability-patterns)
-- [📊 Performance Considerations](#performance-considerations)
-  - [Current Performance Profile](#current-performance-profile)
-  - [Optimization Strategies](#optimization-strategies)
-- [🔐 Security Architecture](#security-architecture)
-  - [Current Security Measures](#current-security-measures)
-  - [Security Patterns](#security-patterns)
-- [🔄 Extension Points](#extension-points)
-  - [Planned Extension Mechanisms](#planned-extension-mechanisms)
-  - [Integration Hooks](#integration-hooks)
-<!-- TOC END -->
-
-## Table of Contents
-
 - [FLEXT Observability - Architecture Overview](#flext-observability---architecture-overview)
-  - [🏗️ Architectural Principles](#-architectural-principles)
+  - [Table of Contents](#table-of-contents)
+  - [🏗️ Architectural Principles](#️-architectural-principles)
     - [Clean Architecture Implementation](#clean-architecture-implementation)
     - [Domain-Driven Design Structure](#domain-driven-design-structure)
   - [📁 Project Structure](#-project-structure)
     - [Source Code Organization](#source-code-organization)
     - [Layer Responsibilities](#layer-responsibilities)
-      - [**Domain Layer** (`entities.py`, `validation.py`,
-        `constants.py`)](#domain-layer-entitiespy-validationpy-constantspy)
-      - [**Application Services Layer** (`services.py`,
-        `obs_platform.py`)](#application-services-layer-servicespy-obs_platformpy)
-      - [**Interface Adapters Layer** (`flext_simple.py`, `flext_monitor.py`,
-        `factory.py`)](#interface-adapters-layer-flext_simplepy-flext_monitorpy-factorypy)
+      - [**Domain Layer** (`entities.py`, `validation.py`, `constants.py`)](#domain-layer-entitiespy-validationpy-constantspy)
+      - [**Application Services Layer** (`services.py`, `obs_platform.py`)](#application-services-layer-servicespy-obs_platformpy)
+      - [**Interface Adapters Layer** (`flext_simple.py`, `flext_monitor.py`, `factory.py`)](#interface-adapters-layer-flext_simplepy-flext_monitorpy-factorypy)
   - [🔄 Data Flow Architecture](#-data-flow-architecture)
     - [Request Processing Flow](#request-processing-flow)
     - [Error Handling Flow](#error-handling-flow)
   - [🔗 Integration Architecture](#-integration-architecture)
     - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
       - [**Foundation Integration**](#foundation-integration)
-- [All services use flext-core patterns](#all-services-use-flext-core-patterns)
-- [Railway-oriented programming throughout](#railway-oriented-programming-throughout) - [**Cross-Service Observability**](#cross-service-observability)
-- [Consistent monitoring across all FLEXT projects](#consistent-monitoring-across-all-flext-projects)
-  - [Dependency Management](#dependency-management)
+      - [**Cross-Service Observability**](#cross-service-observability)
+    - [Dependency Management](#dependency-management)
   - [🎯 Design Patterns](#-design-patterns)
     - [Factory Pattern Implementation](#factory-pattern-implementation)
     - [Service Layer Pattern](#service-layer-pattern)
@@ -73,7 +36,45 @@
   - [🔄 Extension Points](#-extension-points)
     - [Planned Extension Mechanisms](#planned-extension-mechanisms)
     - [Integration Hooks](#integration-hooks)
-- [Future extension point example](#future-extension-point-example)
+<!-- TOC END -->
+
+## Table of Contents
+
+- [FLEXT Observability - Architecture Overview](#flext-observability---architecture-overview)
+  - [Table of Contents](#table-of-contents)
+  - [🏗️ Architectural Principles](#️-architectural-principles)
+    - [Clean Architecture Implementation](#clean-architecture-implementation)
+    - [Domain-Driven Design Structure](#domain-driven-design-structure)
+  - [📁 Project Structure](#-project-structure)
+    - [Source Code Organization](#source-code-organization)
+    - [Layer Responsibilities](#layer-responsibilities)
+      - [**Domain Layer** (`entities.py`, `validation.py`, `constants.py`)](#domain-layer-entitiespy-validationpy-constantspy)
+      - [**Application Services Layer** (`services.py`, `obs_platform.py`)](#application-services-layer-servicespy-obs_platformpy)
+      - [**Interface Adapters Layer** (`flext_simple.py`, `flext_monitor.py`, `factory.py`)](#interface-adapters-layer-flext_simplepy-flext_monitorpy-factorypy)
+  - [🔄 Data Flow Architecture](#-data-flow-architecture)
+    - [Request Processing Flow](#request-processing-flow)
+    - [Error Handling Flow](#error-handling-flow)
+  - [🔗 Integration Architecture](#-integration-architecture)
+    - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
+      - [**Foundation Integration**](#foundation-integration)
+      - [**Cross-Service Observability**](#cross-service-observability)
+    - [Dependency Management](#dependency-management)
+  - [🎯 Design Patterns](#-design-patterns)
+    - [Factory Pattern Implementation](#factory-pattern-implementation)
+    - [Service Layer Pattern](#service-layer-pattern)
+    - [Repository Pattern (Future Implementation)](#repository-pattern-future-implementation)
+  - [🚀 Scalability Architecture](#-scalability-architecture)
+    - [Current Implementation Characteristics](#current-implementation-characteristics)
+    - [Future Scalability Patterns](#future-scalability-patterns)
+  - [📊 Performance Considerations](#-performance-considerations)
+    - [Current Performance Profile](#current-performance-profile)
+    - [Optimization Strategies](#optimization-strategies)
+  - [🔐 Security Architecture](#-security-architecture)
+    - [Current Security Measures](#current-security-measures)
+    - [Security Patterns](#security-patterns)
+  - [🔄 Extension Points](#-extension-points)
+    - [Planned Extension Mechanisms](#planned-extension-mechanisms)
+    - [Integration Hooks](#integration-hooks)
 
 **Clean Architecture and Domain-Driven Design Patterns for Ecosystem Observability**
 
@@ -237,25 +238,8 @@ FLEXT Observability integrates with the ecosystem through standardized patterns:
 
 ```python notest
 # All services use flext-core patterns
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 from flext_observability import FlextMetricsService
 
 container = FlextContainer()
