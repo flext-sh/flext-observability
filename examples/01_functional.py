@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import time
 
-from flext_cli import u as cli_u
+from flext_cli import cli
 from flext_observability import FlextObservability, c, t
 
 flext_alert = FlextObservability.flext_alert
@@ -23,7 +23,7 @@ flext_trace = FlextObservability.flext_trace
 
 def _emit(message: str) -> None:
     """Emit example output through the canonical CLI facade."""
-    cli_u.Cli.formatters_u.Cli.print(message)
+    cli.print(message)
 
 
 def demonstrate_simple_api() -> None:

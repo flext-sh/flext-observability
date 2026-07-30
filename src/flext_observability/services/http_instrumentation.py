@@ -29,16 +29,9 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import Response
 
-from flext_observability import (
-    FlextObservabilityContext,
-    FlextObservabilityLogging,
-    c,
-    m,
-    p,
-    r,
-    t,
-    u,
-)
+from flext_observability import c, m, p, r, t, u
+from flext_observability.services.context import FlextObservabilityContext
+from flext_observability.services.logging_integration import FlextObservabilityLogging
 
 g = flask.g if hasattr(flask, "g") else None
 request = flask.request if hasattr(flask, "request") else None

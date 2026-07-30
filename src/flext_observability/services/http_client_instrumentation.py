@@ -24,16 +24,9 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import ClassVar, TypeIs
 
-from flext_observability import (
-    FlextObservabilityContext,
-    FlextObservabilityLogging,
-    c,
-    m,
-    p,
-    r,
-    t,
-    u,
-)
+from flext_observability import c, m, p, r, t, u
+from flext_observability.services.context import FlextObservabilityContext
+from flext_observability.services.logging_integration import FlextObservabilityLogging
 
 
 class FlextObservabilityHTTPClient:
