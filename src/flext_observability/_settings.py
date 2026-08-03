@@ -16,10 +16,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated
 
-from pydantic import BaseModel, Field
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextSettings
+from flext_core import FlextSettings, m
 
 
 class FlextObservabilitySettings(FlextSettings):
@@ -29,31 +28,31 @@ class FlextObservabilitySettings(FlextSettings):
         env_prefix="FLEXT_OBSERVABILITY_", env_nested_delimiter="__", extra="ignore"
     )
 
-    class _Observability(BaseModel):
+    class _Observability(m.BaseModel):
         """Namespaced observability settings (metrics + traces + alerts)."""
 
         service_name: Annotated[
             str,
-            Field(
+            m.Field(
                 default="flext-observability",
                 description="Observability service name identifier",
             ),
         ]
         environment: Annotated[
-            str, Field(default="development", description="Deployment environment name")
+            str, m.Field(default="development", description="Deployment environment name")
         ]
         metrics_enabled: Annotated[
-            bool, Field(default=True, description="Enable metrics collection")
+            bool, m.Field(default=True, description="Enable metrics collection")
         ]
         traces_enabled: Annotated[
-            bool, Field(default=True, description="Enable distributed tracing")
+            bool, m.Field(default=True, description="Enable distributed tracing")
         ]
         alerts_enabled: Annotated[
-            bool, Field(default=True, description="Enable alert notifications")
+            bool, m.Field(default=True, description="Enable alert notifications")
         ]
         flush_interval_seconds: Annotated[
             int,
-            Field(
+            m.Field(
                 default=30,
                 ge=1,
                 le=300,
@@ -64,7 +63,7 @@ class FlextObservabilitySettings(FlextSettings):
     if TYPE_CHECKING:
         Observability: _Observability
     else:
-        Observability: _Observability = Field(
+        Observability: _Observability = m.Field(
             default_factory=_Observability,
             description="Namespaced observability settings.",
         )
