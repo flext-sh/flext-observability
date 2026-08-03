@@ -1,166 +1,173 @@
-"""Real functionality tests for FlextObservabilityMasterFactory - NO MOCKS.
+"""Behavioral tests for the FlextObservability facade creation contract.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
+These tests assert observable public behavior only: the ``r[T]`` outcome of the
+facade's fallible creation methods, the public model fields of the produced
+entities, and the error messages returned on invalid input. No private
+attributes, no internal-collaborator spying, no monkeypatching of the unit
+under test.
+
+The ``FlextObservabilityMasterFactory`` class was retired; the canonical
+creation surface is now the ``FlextObservability`` facade itself
+(``flext_metric`` / ``flext_alert`` / ``flext_log_entry`` / ``flext_trace`` /
+``flext_health_check``), constructed with an optional container.
 """
 
 from __future__ import annotations
 
 from datetime import datetime
 
+from flext_core import FlextContainer
+from flext_observability import FlextObservability, c, p
 from flext_tests import tm
 
-from flext_core import FlextContainer
-from flext_observability import FlextObservability
-
-global_factory = FlextObservability.global_factory
-clear_global_factory = FlextObservability.clear_global_factory
+__all__ = ["TestsFlextObservabilityFactory"]
 
 
 class TestsFlextObservabilityFactory:
-    """Real functionality tests for master factory without excessive mocking."""
+    """Behavioral contract tests for the observability facade creation API."""
 
-    def test_factory_initialization_and_container_real(self) -> None:
-        """Test factory initialization with real container integration."""
+    # -- construction / container contract ---------------------------------
+
+    def test_container_passed_at_construction_is_exposed(self) -> None:
+        """The container supplied at construction is the one the facade exposes."""
         container = FlextContainer()
-        factory = FlextObservability.FlextObservabilityMasterFactory(container)
-        tm.that(factory.container is container, eq=True)
-        FlextObservability.FlextObservabilityMasterFactory()
+        facade = FlextObservability(container)
+        tm.that(facade.container is container, eq=True)
 
-    def test_metric_creation_real_functionality(self) -> None:
-        """Test metric creation with actual factory functionality."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        metric_result = factory.create_metric("test_metric", 42.5, "gauge")
-        tm.that(metric_result.success, eq=True)
-        tm.that(metric_result.value.name, eq="test_metric")
-        tm.that(abs(metric_result.value.value - 42.5), lt=1e-9)
-        tm.that(metric_result.value.unit, eq="gauge")
+    def test_facade_constructs_with_default_container(self) -> None:
+        """Constructing without a container still yields a usable facade."""
+        facade = FlextObservability()
+        tm.that(facade.container, none=False)
 
-    def test_metric_creation_with_validation_real(self) -> None:
-        """Test metric creation with real validation logic."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        invalid_result = factory.create_metric("", 10.0)
-        tm.that(invalid_result.failure, eq=True)
-        tm.that(invalid_result.error, none=False)
-        assert invalid_result.error is not None
-        tm.that(invalid_result.error, has="must be non-empty string")
+    # -- metric ------------------------------------------------------------
 
-    def test_log_creation_real_functionality(self) -> None:
-        """Test log entry creation with real functionality."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        log_result = factory.create_log_entry("Test log message", "info")
-        tm.that(log_result.success, eq=True)
-        tm.that(log_result.value.message, eq="Test log message")
-        tm.that(log_result.value.level, eq="info")
+    def test_flext_metric_returns_metric_with_public_fields(self) -> None:
+        """A valid metric request succeeds and echoes name, value and unit."""
+        result = FlextObservability().flext_metric("test_metric", 42.5, "gauge")
+        tm.that(result.success, eq=True)
+        metric = result.value
+        tm.that(metric.name, eq="test_metric")
+        tm.that(abs(metric.value - 42.5), lt=1e-9)
+        tm.that(metric.unit, eq="gauge")
 
-    def test_log_creation_validation_real(self) -> None:
-        """Test log creation with real validation."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        custom_level_result = factory.create_log_entry("Test", "INVALID_LEVEL")
-        if custom_level_result.failure:
-            tm.that(custom_level_result.error, none=False)
-        else:
-            tm.that({"INVALID_LEVEL", "info"}, has=custom_level_result.value.level)
-
-    def test_alert_creation_real_functionality(self) -> None:
-        """Test alert creation with real functionality."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        alert_result = factory.create_alert(
-            "Critical error detected",
-            "monitoring",
-            "critical",
-        )
-        tm.that(alert_result.success, eq=True)
-        tm.that(alert_result.value.message, eq="Critical error detected")
-        tm.that(alert_result.value.title, eq="Alert: monitoring")
-        tm.that(alert_result.value.severity, eq="critical")
-
-    def test_trace_creation_real_functionality(self) -> None:
-        """Test trace creation with real functionality."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        trace_result = factory.create_trace("user_authentication", "auth_service")
-        tm.that(trace_result.success, eq=True)
-        tm.that(trace_result.value.name, eq="user_authentication")
-        tm.that(trace_result.value.trace_id, ne="")
-
-    def test_health_check_creation_real_functionality(self) -> None:
-        """Test health check creation with real functionality."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        health_result = factory.create_health_check("database", "healthy")
-        tm.that(health_result.success, eq=True)
-        tm.that(health_result.value.component, eq="database")
-        tm.that(health_result.value.status, eq="healthy")
-
-    def test_factory_shorthand_methods_real(self) -> None:
-        """Test factory shorthand methods with real functionality."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        metric_result = factory.metric("cpu_usage", 85.2)
-        tm.that(metric_result.success, eq=True)
-        metric = metric_result.value
+    def test_flext_metric_defaults_unit_to_count(self) -> None:
+        """Omitting the unit produces the canonical default unit."""
+        result = FlextObservability().flext_metric("cpu_usage", 85.2)
+        tm.that(result.success, eq=True)
+        metric = result.value
         tm.that(metric.name, eq="cpu_usage")
         tm.that(abs(metric.value - 85.2), lt=1e-9)
-        log_result = factory.log("System started")
-        tm.that(log_result.success, eq=True)
-        log_entry = log_result.value
-        tm.that(log_entry.message, eq="System started")
-        alert_result = factory.alert("High memory usage", "monitoring")
-        tm.that(alert_result.success, eq=True)
-        alert = alert_result.value
-        tm.that(alert.title, eq="High memory usage")
-        tm.that(alert.message, eq="monitoring")
-        trace_result = factory.trace("trace-123", "api_request")
-        tm.that(trace_result.success, eq=True)
-        trace = trace_result.value
+        tm.that(metric.unit, eq="count")
+
+    def test_flext_metric_empty_name_fails_with_message(self) -> None:
+        """An empty metric name is rejected as a failure result, not a raise."""
+        result = FlextObservability().flext_metric("", 10.0)
+        tm.that(result.failure, eq=True)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="must be non-empty string")
+
+    def test_flext_metric_repeatable_with_distinct_identity(self) -> None:
+        """Repeating a metric request yields equal fields but distinct identity."""
+        facade = FlextObservability()
+        first = facade.flext_metric("cpu", 50.0).value
+        second = facade.flext_metric("cpu", 50.0).value
+        tm.that(first.name, eq=second.name)
+        tm.that(abs(first.value - second.value), lt=1e-9)
+        tm.that(first.unique_id != second.unique_id, eq=True)
+
+    # -- log ---------------------------------------------------------------
+
+    def test_flext_log_entry_creates_entry_with_message(self) -> None:
+        """A valid log message produces a log entry echoing the message."""
+        result = FlextObservability().flext_log_entry("hello world")
+        tm.that(result.success, eq=True)
+        tm.that(result.value.message, eq="hello world")
+
+    def test_flext_log_entry_empty_message_fails_with_message(self) -> None:
+        """An empty log message is rejected before model construction."""
+        result = FlextObservability().flext_log_entry("")
+        tm.that(result.failure, eq=True)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="Log message cannot be empty")
+
+    # -- alert -------------------------------------------------------------
+
+    def test_flext_alert_builds_alert_with_explicit_title(self) -> None:
+        """``flext_alert`` keeps the explicit title, message and severity."""
+        result = FlextObservability().flext_alert(
+            title="Alert: monitoring",
+            message="Critical error detected",
+            severity="critical",
+        )
+        tm.that(result.success, eq=True)
+        alert = result.value
+        tm.that(alert.title, eq="Alert: monitoring")
+        tm.that(alert.message, eq="Critical error detected")
+        tm.that(alert.severity, eq="critical")
+
+    # -- trace -------------------------------------------------------------
+
+    def test_flext_trace_returns_named_trace_with_id(self) -> None:
+        """A trace request succeeds with the operation name and a non-empty id."""
+        result = FlextObservability().flext_trace("user_authentication")
+        tm.that(result.success, eq=True)
+        trace = result.value
+        tm.that(trace.name, eq="user_authentication")
+        tm.that(trace.trace_id, ne="")
+
+    def test_flext_trace_preserves_explicit_trace_id(self) -> None:
+        """An explicit trace_id is preserved on the produced trace."""
+        result = FlextObservability().flext_trace("api_request", trace_id="trace-123")
+        tm.that(result.success, eq=True)
+        trace = result.value
         tm.that(trace.name, eq="api_request")
         tm.that(trace.trace_id, eq="trace-123")
 
-    def test_global_factory_real_functionality(self) -> None:
-        """Test global factory with real functionality."""
-        clear_global_factory()
-        global_factory()
-        global_factory()
-        clear_global_factory()
-        global_factory()
+    def test_flext_trace_empty_name_fails_with_message(self) -> None:
+        """An empty trace name is rejected as a failure result."""
+        result = FlextObservability().flext_trace("")
+        tm.that(result.failure, eq=True)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="must be non-empty string")
 
-    def test_factory_error_handling_real(self) -> None:
-        """Test factory error handling with real scenarios."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        test_cases = [
-            ("create_metric", ("", 10.0), "must be non-empty string"),
-            ("create_log_entry", ("",), "Log message cannot be empty"),
-            ("create_trace", ("", "service"), "must be non-empty string"),
-            ("create_health_check", ("",), "Component name cannot be empty"),
-        ]
-        for method_name, args, expected_error in test_cases:
-            method = getattr(factory, method_name)
-            result = method(*args)
-            tm.that(result.failure, eq=True)
-            tm.that(result.error, none=False)
-            tm.that(result.error, has=expected_error)
+    # -- health ------------------------------------------------------------
 
-    def test_factory_integration_with_services_real(self) -> None:
-        """Test factory integration with real service workflows."""
-        factory = FlextObservability.FlextObservabilityMasterFactory()
-        metric = factory.create_metric("request_count", 100, "counter")
-        log = factory.create_log_entry("Request processed", "info")
-        alert = factory.create_alert("High request count", "monitoring", "medium")
-        trace = factory.create_trace("process_request", "api_service")
-        health = factory.create_health_check("api_service", "healthy")
-        for result in (metric, log, alert, trace, health):
-            tm.that(result.success, eq=True)
-        timestamp_fields = ("timestamp", "created_at", "start_time")
-        for result in (metric, log, alert, trace, health):
-            entity = result.value if hasattr(result, "unwrap") else result
-            has_timestamp = any(hasattr(entity, f) for f in timestamp_fields)
-            tm.that(has_timestamp, eq=True)
-            timestamp_attr = None
-            for field in timestamp_fields:
-                timestamp_attr = getattr(entity, field, None)
-                if timestamp_attr is not None:
-                    break
-            if timestamp_attr:
-                if hasattr(timestamp_attr, "root"):
-                    tm.that(timestamp_attr.root, is_=datetime)
-                else:
-                    tm.that(timestamp_attr, is_=datetime)
+    def test_flext_health_check_returns_component_status(self) -> None:
+        """A health check request succeeds with the component and status."""
+        result = FlextObservability().flext_health_check(
+            "database", c.Observability.HealthStatus.HEALTHY
+        )
+        tm.that(result.success, eq=True)
+        health = result.value
+        tm.that(health.component, eq="database")
+        tm.that(health.status, eq="healthy")
+
+    def test_flext_health_check_empty_component_fails_with_message(self) -> None:
+        """An empty component name is rejected as a failure result."""
+        result = FlextObservability().flext_health_check("")
+        tm.that(result.failure, eq=True)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="Component name cannot be empty")
+
+    # -- cross-entity invariants -------------------------------------------
+
+    def test_created_metric_exposes_datetime_creation_timestamp(self) -> None:
+        """A successfully created metric exposes a datetime ``created_at``."""
+        result: p.Result[FlextObservability.Metric] = FlextObservability().flext_metric(
+            "request_count", 100.0, "counter"
+        )
+        tm.that(result.success, eq=True)
+        created_at = result.value.model_dump()["created_at"]
+        tm.that(created_at, is_=datetime)
+
+    def test_invalid_metric_input_returns_failure_with_expected_message(self) -> None:
+        """An invalid metric request surfaces a descriptive failure result."""
+        result: p.Result[FlextObservability.Metric] = FlextObservability().flext_metric(
+            "", 10.0
+        )
+        tm.that(result.failure, eq=True)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="must be non-empty string")

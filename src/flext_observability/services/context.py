@@ -16,9 +16,7 @@ from __future__ import annotations
 from contextvars import ContextVar
 from uuid import uuid4
 
-from flext_cli import u as cli_u
-from flext_core import u
-from flext_observability import c, m, p, r, t
+from flext_observability import c, m, p, r, t, u
 
 
 class FlextObservabilityContext:
@@ -133,23 +131,28 @@ class FlextObservabilityContext:
 
         """
         try:
-            normalized_headers = {
-                header_key.lower(): str(header_value)
-                for header_key, header_value in headers.items()
-            }
-            correlation_id = normalized_headers.get("x-correlation-id") or str(uuid4())
-            FlextObservabilityContext.update_correlation_id(correlation_id)
-            if trace_id := normalized_headers.get("x-trace-id"):
-                FlextObservabilityContext.update_trace_id(trace_id)
-            if span_id := normalized_headers.get("x-span-id"):
-                FlextObservabilityContext.update_span_id(span_id)
+            FlextObservabilityContext._apply_headers(headers)
             return r[bool].ok(value=True)
         except c.EXC_MAPPING_TYPE as e:
             FlextObservabilityContext.logger.warning(
-                f"Failed to extract context from headers: {e}",
+                f"Failed to extract context from headers: {e}"
             )
             FlextObservabilityContext.update_correlation_id()
             return r[bool].ok(value=True)
+
+    @staticmethod
+    def _apply_headers(headers: m.Dict | t.ScalarMapping) -> None:
+        """Apply normalized trace headers to the context variables."""
+        normalized_headers = {
+            header_key.lower(): str(header_value)
+            for header_key, header_value in headers.items()
+        }
+        correlation_id = normalized_headers.get("x-correlation-id") or str(uuid4())
+        FlextObservabilityContext.update_correlation_id(correlation_id)
+        if trace_id := normalized_headers.get("x-trace-id"):
+            FlextObservabilityContext.update_trace_id(trace_id)
+        if span_id := normalized_headers.get("x-span-id"):
+            FlextObservabilityContext.update_span_id(span_id)
 
     @staticmethod
     def resolve_baggage(
@@ -214,7 +217,7 @@ class FlextObservabilityContext:
             "correlation_id": FlextObservabilityContext.correlation_id(),
             "trace_id": FlextObservabilityContext.trace_id(),
             "span_id": FlextObservabilityContext.span_id(),
-            "baggage": cli_u.Cli.json_dumps(baggage_payload).unwrap(),
+            "baggage": u.Cli.json_dumps(baggage_payload).unwrap(),
         }
         return m.Dict(payload)
 
@@ -272,19 +275,21 @@ class FlextObservabilityContext:
 
         """
         try:
-            try:
-                m.Observability.BaggageKeyModel.model_validate(obj={"key": key})
-            except c.ValidationError:
-                return r[bool].fail("Baggage key must be non-empty string")
-            current_baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
-            updated_baggage = m.Dict({
-                **dict(current_baggage.root),
-                key: value,
-            })
-            FlextObservabilityContext._baggage.set(updated_baggage)
-            return r[bool].ok(value=True)
+            return FlextObservabilityContext._update_baggage_value(key, value)
         except c.EXC_MAPPING_TYPE as e:
             return r[bool].fail_op("Baggage set", e)
+
+    @staticmethod
+    def _update_baggage_value(key: str, value: t.JsonValue) -> p.Result[bool]:
+        """Validate and store one baggage value."""
+        try:
+            m.Observability.BaggageKeyModel.model_validate(obj={"key": key})
+        except c.ValidationError:
+            return r[bool].fail("Baggage key must be non-empty string")
+        current_baggage = FlextObservabilityContext._baggage.get() or m.Dict({})
+        updated_baggage = m.Dict({**dict(current_baggage.root), key: value})
+        FlextObservabilityContext._baggage.set(updated_baggage)
+        return r[bool].ok(value=True)
 
     @staticmethod
     def update_correlation_id(correlation_id: str | None = None) -> str:
@@ -368,7 +373,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        headers: dict[str, t.JsonPayload] = {}
+        headers: t.MutableMappingKV[str, t.JsonPayload] = {}
         correlation_id = FlextObservabilityContext.correlation_id()
         if correlation_id:
             headers["X-Correlation-ID"] = correlation_id
@@ -378,7 +383,7 @@ class FlextObservabilityContext:
         span_id = FlextObservabilityContext.span_id()
         if span_id:
             headers["X-Span-ID"] = span_id
-        return m.Dict(headers)
+        return m.Dict(dict(headers))
 
 
 __all__: list[str] = ["FlextObservabilityContext"]

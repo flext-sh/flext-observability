@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import ClassVar
 
 from flext_core import FlextContainer
-from flext_observability import FlextObservabilitySettings, c, m, p, r, t, u
+from flext_observability import c, m, p, r, t, u
 
 
 class FlextObservabilityServices:
@@ -31,12 +31,6 @@ class FlextObservabilityServices:
         super().__init__()
         self._container = self._container_type.shared()
         self.logger = u.fetch_logger(__name__)
-        self.config = FlextObservabilitySettings.fetch_global()
-
-    @property
-    def settings(self) -> FlextObservabilitySettings:
-        """Access observability settings."""
-        return self.config
 
     @property
     def container(self) -> p.Container:
@@ -49,7 +43,7 @@ class FlextObservabilityServices:
         return None
 
     def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
-        """Generic alert creation - not implemented in base service."""
+        """Create a generic alert - not implemented in base service."""
         requested_keys: t.JsonValueList = list(kwargs)
         self.logger.debug(
             "create_alert not implemented in generic service",
@@ -58,7 +52,7 @@ class FlextObservabilityServices:
         return r[m.Dict].fail("Alert creation not implemented in generic service")
 
     def metrics_summary(self) -> p.Result[m.Dict]:
-        """Generic metrics summary - not implemented in base service."""
+        """Summarize generic metrics - not implemented in base service."""
         return r[m.Dict].fail("Metrics summary not implemented in generic service")
 
     def status(self) -> p.Result[m.Dict]:

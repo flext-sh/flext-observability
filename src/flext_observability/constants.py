@@ -12,7 +12,7 @@ from __future__ import annotations
 from enum import StrEnum, unique
 from typing import ClassVar, Final
 
-from flext_core import c
+from flext_cli import c
 
 
 class FlextObservabilityConstants(c):
@@ -43,6 +43,19 @@ class FlextObservabilityConstants(c):
         DEFAULT_METRICS_ENABLED: Final[bool] = True
         DEFAULT_TRACES_ENABLED: Final[bool] = True
         DEFAULT_ALERTS_ENABLED: Final[bool] = True
+        HTTP_ERROR_STATUS_THRESHOLD: ClassVar[int] = 400
+        METRIC_VALID_UNITS: ClassVar[frozenset[str]] = frozenset({
+            "count",
+            "percent",
+            "bytes",
+            "seconds",
+            "milliseconds",
+            "requests",
+            "errors",
+            "connections",
+            "memory",
+            "cpu",
+        })
 
         @unique
         class MetricType(StrEnum):

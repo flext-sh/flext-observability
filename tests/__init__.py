@@ -1,30 +1,13 @@
-# AUTO-GENERATED FILE — Regenerate with: make gen
-"""Tests package."""
+# AUTO-GENERATED FILE — canonical lazy tests facade. Regenerate with: make gen
+"""Test package facade exposing the project test aliases lazily."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import (
-    build_lazy_import_map,
-    install_lazy_exports,
-    merge_lazy_imports,
-)
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_tests import (
-        d as d,
-        e as e,
-        h as h,
-        r as r,
-        td as td,
-        tf as tf,
-        tk as tk,
-        tm as tm,
-        tv as tv,
-        x as x,
-    )
-
     from tests.base import (
         TestsFlextObservabilityServiceBase as TestsFlextObservabilityServiceBase,
         s as s,
@@ -39,106 +22,24 @@ if TYPE_CHECKING:
     )
     from tests.protocols import (
         TestsFlextObservabilityProtocols as TestsFlextObservabilityProtocols,
-        p as p,
-    )
-    from tests.settings import (
-        TestsFlextObservabilitySettings as TestsFlextObservabilitySettings,
+        p,
     )
     from tests.typings import (
         TestsFlextObservabilityTypes as TestsFlextObservabilityTypes,
         t as t,
     )
-    from tests.unit.test_constants import (
-        TestsFlextObservabilityConstantsUnit as TestsFlextObservabilityConstantsUnit,
-    )
-    from tests.unit.test_factory import (
-        TestsFlextObservabilityFactory as TestsFlextObservabilityFactory,
-    )
-    from tests.unit.test_init import (
-        TestsFlextObservabilityInit as TestsFlextObservabilityInit,
-    )
     from tests.utilities import (
         TestsFlextObservabilityUtilities as TestsFlextObservabilityUtilities,
-        u as u,
+        u,
     )
-_LAZY_IMPORTS = merge_lazy_imports(
-    (
-        ".integration",
-        ".unit",
-    ),
-    build_lazy_import_map(
-        {
-            ".base": (
-                "TestsFlextObservabilityServiceBase",
-                "s",
-            ),
-            ".conftest": ("conftest",),
-            ".constants": (
-                "TestsFlextObservabilityConstants",
-                "c",
-            ),
-            ".integration": ("integration",),
-            ".models": (
-                "TestsFlextObservabilityModels",
-                "m",
-            ),
-            ".protocols": (
-                "TestsFlextObservabilityProtocols",
-                "p",
-            ),
-            ".settings": ("TestsFlextObservabilitySettings",),
-            ".typings": (
-                "TestsFlextObservabilityTypes",
-                "t",
-            ),
-            ".unit": ("unit",),
-            ".unit.test_constants": ("TestsFlextObservabilityConstantsUnit",),
-            ".unit.test_factory": ("TestsFlextObservabilityFactory",),
-            ".unit.test_init": ("TestsFlextObservabilityInit",),
-            ".utilities": (
-                "TestsFlextObservabilityUtilities",
-                "u",
-            ),
-            "flext_tests": (
-                "d",
-                "e",
-                "h",
-                "r",
-                "td",
-                "tf",
-                "tk",
-                "tm",
-                "tv",
-                "x",
-            ),
-        },
-    ),
-    exclude_names=(
-        "cleanup_submodule_namespace",
-        "install_lazy_exports",
-        "lazy_getattr",
-        "logger",
-        "merge_lazy_imports",
-        "output",
-        "output_reporting",
-        "pytest_addoption",
-        "pytest_collect_file",
-        "pytest_collection_modifyitems",
-        "pytest_configure",
-        "pytest_runtest_setup",
-        "pytest_runtest_teardown",
-        "pytest_sessionfinish",
-        "pytest_sessionstart",
-        "pytest_terminal_summary",
-        "pytest_warning_recorded",
-    ),
-    module_name=__name__,
-)
 
+_LAZY_IMPORTS = build_lazy_import_map({
+    ".constants": ("TestsFlextObservabilityConstants", "c"),
+    ".typings": ("TestsFlextObservabilityTypes", "t"),
+    ".protocols": ("TestsFlextObservabilityProtocols", "p"),
+    ".models": ("TestsFlextObservabilityModels", "m"),
+    ".utilities": ("TestsFlextObservabilityUtilities", "u"),
+    ".base": ("TestsFlextObservabilityServiceBase", "s"),
+})
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    publish_all=False,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

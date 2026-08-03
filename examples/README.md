@@ -55,7 +55,9 @@ Advanced demonstration of SOLID principles applied to observability:
 
 ### Basic Observability Integration
 
-```python notest
+```python
+from __future__ import annotations
+
 # Example from 01_functional.py
 from flext_observability import flext_create_metric, flext_create_trace
 
@@ -83,28 +85,13 @@ def create_business_metrics():
 
 ### Service Layer Integration
 
-```python notest
+```python
+from __future__ import annotations
+
 # Example service integration pattern
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 
 
 class UserService:
@@ -134,7 +121,9 @@ class UserService:
 
 ### Monitoring Decorator Patterns
 
-```python notest
+```python
+from __future__ import annotations
+
 # Automatic function monitoring
 from flext_observability import flext_monitor_function
 
@@ -179,7 +168,9 @@ def process_payment(amount: float, currency: str) -> p.Result[m.Dict]:
 
 ### Health Monitoring Patterns
 
-```python notest
+```python
+from __future__ import annotations
+
 # Health check integration example
 from flext_observability import flext_create_health_check, FlextHealthService
 
@@ -221,7 +212,9 @@ def monitor_database_health() -> p.Result[m.Dict]:
 
 ### Distributed Tracing Patterns
 
-```python notest
+```python
+from __future__ import annotations
+
 # Parent-child trace correlation
 from flext_observability import flext_create_trace
 
@@ -269,17 +262,16 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
         return child_trace_result
 
     # Validation logic here
-    return r[bool].ok({
-        "status": "valid",
-        "trace_id": child_trace_result.data.id,
-    })
+    return r[bool].ok({"status": "valid", "trace_id": child_trace_result.data.id})
 ```
 
 ## FLEXT Ecosystem Integration Examples
 
 ### Singer Tap Integration
 
-```python notest
+```python
+from __future__ import annotations
+
 # Example Singer tap with observability
 from flext_observability import flext_monitor_function, flext_create_metric
 
@@ -314,7 +306,9 @@ class FlextTapOracle:
 
 ### FastAPI Service Integration
 
-```python notest
+```python
+from __future__ import annotations
+
 # Example FastAPI service with observability
 from flext_observability import flext_monitor_function, flext_create_metric
 
