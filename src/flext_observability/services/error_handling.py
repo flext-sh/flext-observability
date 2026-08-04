@@ -115,7 +115,9 @@ class FlextObservabilityErrorHandling:
                 int - Error count
 
             """
-            return self._error_counts.get(fingerprint, 0)
+            # Why: mro-4p0t — empty dict literal widens .get() to Any for mypy.
+            count: int = self._error_counts.get(fingerprint, 0)
+            return count
 
         def resolve_escalated_severity(
             self, error: m.Observability.ErrorEvent
