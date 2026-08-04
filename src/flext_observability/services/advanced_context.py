@@ -106,7 +106,9 @@ class FlextObservabilityAdvancedContext:
                 str - Baggage value or None
 
             """
-            return self._baggage.get(key)
+            # Why: mro-4p0t — empty dict literal widens .get() to Any for mypy.
+            value: str | None = self._baggage.get(key)
+            return value
 
         def resolve_metadata(self, key: str) -> t.Scalar | None:
             """Resolve request-local metadata.

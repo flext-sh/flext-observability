@@ -1,41 +1,35 @@
 # FLEXT Observability - Architecture Overview
 
 <!-- TOC START -->
-- [FLEXT Observability - Architecture Overview](#flext-observability---architecture-overview)
-  - [Table of Contents](#table-of-contents)
-  - [🏗️ Architectural Principles](#️-architectural-principles)
-    - [Clean Architecture Implementation](#clean-architecture-implementation)
-    - [Domain-Driven Design Structure](#domain-driven-design-structure)
-  - [📁 Project Structure](#-project-structure)
-    - [Source Code Organization](#source-code-organization)
-    - [Layer Responsibilities](#layer-responsibilities)
-      - [**Domain Layer** (`entities.py`, `validation.py`, `constants.py`)](#domain-layer-entitiespy-validationpy-constantspy)
-      - [**Application Services Layer** (`services.py`, `obs_platform.py`)](#application-services-layer-servicespy-obs_platformpy)
-      - [**Interface Adapters Layer** (`flext_simple.py`, `flext_monitor.py`, `factory.py`)](#interface-adapters-layer-flext_simplepy-flext_monitorpy-factorypy)
-  - [🔄 Data Flow Architecture](#-data-flow-architecture)
-    - [Request Processing Flow](#request-processing-flow)
-    - [Error Handling Flow](#error-handling-flow)
-  - [🔗 Integration Architecture](#-integration-architecture)
-    - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
-      - [**Foundation Integration**](#foundation-integration)
-      - [**Cross-Service Observability**](#cross-service-observability)
-    - [Dependency Management](#dependency-management)
-  - [🎯 Design Patterns](#-design-patterns)
-    - [Factory Pattern Implementation](#factory-pattern-implementation)
-    - [Service Layer Pattern](#service-layer-pattern)
-    - [Repository Pattern (Future Implementation)](#repository-pattern-future-implementation)
-  - [🚀 Scalability Architecture](#-scalability-architecture)
-    - [Current Implementation Characteristics](#current-implementation-characteristics)
-    - [Future Scalability Patterns](#future-scalability-patterns)
-  - [📊 Performance Considerations](#-performance-considerations)
-    - [Current Performance Profile](#current-performance-profile)
-    - [Optimization Strategies](#optimization-strategies)
-  - [🔐 Security Architecture](#-security-architecture)
-    - [Current Security Measures](#current-security-measures)
-    - [Security Patterns](#security-patterns)
-  - [🔄 Extension Points](#-extension-points)
-    - [Planned Extension Mechanisms](#planned-extension-mechanisms)
-    - [Integration Hooks](#integration-hooks)
+- [Table of Contents](#table-of-contents)
+- [🏗️ Architectural Principles](#architectural-principles)
+  - [Clean Architecture Implementation](#clean-architecture-implementation)
+  - [Domain-Driven Design Structure](#domain-driven-design-structure)
+- [📁 Project Structure](#project-structure)
+  - [Source Code Organization](#source-code-organization)
+  - [Layer Responsibilities](#layer-responsibilities)
+- [🔄 Data Flow Architecture](#data-flow-architecture)
+  - [Request Processing Flow](#request-processing-flow)
+  - [Error Handling Flow](#error-handling-flow)
+- [🔗 Integration Architecture](#integration-architecture)
+  - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
+  - [Dependency Management](#dependency-management)
+- [🎯 Design Patterns](#design-patterns)
+  - [Factory Pattern Implementation](#factory-pattern-implementation)
+  - [Service Layer Pattern](#service-layer-pattern)
+  - [Repository Pattern (Future Implementation)](#repository-pattern-future-implementation)
+- [🚀 Scalability Architecture](#scalability-architecture)
+  - [Current Implementation Characteristics](#current-implementation-characteristics)
+  - [Future Scalability Patterns](#future-scalability-patterns)
+- [📊 Performance Considerations](#performance-considerations)
+  - [Current Performance Profile](#current-performance-profile)
+  - [Optimization Strategies](#optimization-strategies)
+- [🔐 Security Architecture](#security-architecture)
+  - [Current Security Measures](#current-security-measures)
+  - [Security Patterns](#security-patterns)
+- [🔄 Extension Points](#extension-points)
+  - [Planned Extension Mechanisms](#planned-extension-mechanisms)
+  - [Integration Hooks](#integration-hooks)
 <!-- TOC END -->
 
 ## Table of Contents
@@ -240,8 +234,6 @@ FLEXT Observability integrates with the ecosystem through standardized patterns:
 from __future__ import annotations
 
 # All services use flext-core patterns
-from flext_cli import u
-from flext_core import FlextSettings
 from flext_observability import FlextMetricsService
 
 container = FlextContainer()
@@ -254,9 +246,7 @@ if result.success:
     return result.value
 else:
     # Error path - no exceptions
-    return result.error
-```
-
+    return result.error```
 #### **Cross-Service Observability**
 
 ```python
@@ -269,9 +259,7 @@ from flext_observability import flext_monitor_function
 @flext_monitor_function("flext_api_endpoint")
 def process_api_request(request_data):
     """Automatic metrics, tracing, and logging."""
-    return {"status": "processed"}
-```
-
+    return {"status": "processed"}```
 ### Dependency Management
 
 FLEXT Observability maintains minimal external dependencies:
@@ -304,9 +292,7 @@ class FlextObservabilityMasterFactory:
         # Domain validation
         # Entity creation
         # r wrapping
-        return r[bool].ok(metric)
-```
-
+        return r[bool].ok(metric)```
 ### Service Layer Pattern
 
 ```python
@@ -325,9 +311,7 @@ class FlextMetricsService:
         # Business validation
         # Storage operations
         # Event publication
-        return r[bool].ok(metric)
-```
-
+        return r[bool].ok(metric)```
 ### Repository Pattern (Future Implementation)
 
 ```python
@@ -343,9 +327,7 @@ class FlextMetricsRepository(Protocol):
 
     def query_metrics(self, criteria: MetricsCriteria) -> p.Result[List[FlextMetric]]:
         """Query metrics with filtering."""
-        ...
-```
-
+        ...```
 ## 🚀 Scalability Architecture
 
 ### Current Implementation Characteristics
@@ -420,9 +402,7 @@ class FlextObservabilityPlugin(Protocol):
 
     def on_trace_started(self, trace: FlextTrace) -> p.Result[bool]:
         """Hook called when traces are started."""
-        ...
-```
-
+        ...```
 ______________________________________________________________________
 
 **Next Steps**: Review the [Architecture Overview](README.md) for detailed patterns and ecosystem integration details.

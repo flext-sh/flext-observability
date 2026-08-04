@@ -1,39 +1,31 @@
 # Implementation Status - FLEXT Observability v0.9.0
 
 <!-- TOC START -->
-- [Implementation Status - FLEXT Observability v0.9.0](#implementation-status---flext-observability-v090)
-  - [Table of Contents](#table-of-contents)
-  - [📊 Overall Project Status](#-overall-project-status)
-    - [**Architecture Completion**: 100% ✅](#architecture-completion-100-)
-    - [**Implementation Completion**: 100% ✅](#implementation-completion-100-)
-    - [**Quality Validation**: 0% ❌ (BLOCKED)](#quality-validation-0--blocked)
-  - [🔧 Current Implementation Details](#-current-implementation-details)
-    - [**Core Architecture** ✅](#core-architecture-)
-      - [Domain Layer (Entities \& Business Logic)](#domain-layer-entities--business-logic)
-      - [Application Layer (Services \& Use Cases)](#application-layer-services--use-cases)
-      - [Interface Layer (APIs \& External Integration)](#interface-layer-apis--external-integration)
-    - [**Test Suite** ✅ (READY BUT BLOCKED)](#test-suite--ready-but-blocked)
-      - [Test Coverage \& Quality](#test-coverage--quality)
-      - [Test Organization](#test-organization)
-    - [**Quality Gates** ❌ (BLOCKED)](#quality-gates--blocked)
-      - [**Import Compatibility Issue**](#import-compatibility-issue)
-      - [**Test Execution Status**](#test-execution-status)
-  - [🚧 Critical Path Resolution](#-critical-path-resolution)
-    - [**Phase 1: Fix Import Compatibility** (CRITICAL - BLOCKING)](#phase-1-fix-import-compatibility-critical---blocking)
-    - [**Phase 2: Quality Validation** (AFTER IMPORT FIX)](#phase-2-quality-validation-after-import-fix)
-    - [**Phase 3: Production Readiness** (AFTER QUALITY VALIDATION)](#phase-3-production-readiness-after-quality-validation)
-  - [📈 Progress Metrics](#-progress-metrics)
-    - [**Quantitative Metrics**](#quantitative-metrics)
-    - [**Qualitative Metrics**](#qualitative-metrics)
-  - [🎯 Next Steps Priority Order](#-next-steps-priority-order)
-    - [**IMMEDIATE (Critical Path)**](#immediate-critical-path)
-    - [**SHORT TERM (Post-Import Fix)**](#short-term-post-import-fix)
-    - [**MEDIUM TERM (v1.0.0 Release)**](#medium-term-v100-release)
-  - [🔍 Implementation Notes](#-implementation-notes)
-    - [**Architecture Strengths**](#architecture-strengths)
-    - [**Implementation Decisions**](#implementation-decisions)
-    - [**Current Blockers**](#current-blockers)
-  - [📋 Status Summary](#-status-summary)
+- [Table of Contents](#table-of-contents)
+- [📊 Overall Project Status](#overall-project-status)
+  - [**Architecture Completion**: 100% ✅](#architecture-completion-100)
+  - [**Implementation Completion**: 100% ✅](#implementation-completion-100)
+  - [**Quality Validation**: 0% ❌ (BLOCKED)](#quality-validation-0-blocked)
+- [🔧 Current Implementation Details](#current-implementation-details)
+  - [**Core Architecture** ✅](#core-architecture)
+  - [**Test Suite** ✅ (READY BUT BLOCKED)](#test-suite-ready-but-blocked)
+  - [**Quality Gates** ❌ (BLOCKED)](#quality-gates-blocked)
+- [🚧 Critical Path Resolution](#critical-path-resolution)
+  - [**Phase 1: Fix Import Compatibility** (CRITICAL - BLOCKING)](#phase-1-fix-import-compatibility-critical-blocking)
+  - [**Phase 2: Quality Validation** (AFTER IMPORT FIX)](#phase-2-quality-validation-after-import-fix)
+  - [**Phase 3: Production Readiness** (AFTER QUALITY VALIDATION)](#phase-3-production-readiness-after-quality-validation)
+- [📈 Progress Metrics](#progress-metrics)
+  - [**Quantitative Metrics**](#quantitative-metrics)
+  - [**Qualitative Metrics**](#qualitative-metrics)
+- [🎯 Next Steps Priority Order](#next-steps-priority-order)
+  - [**IMMEDIATE (Critical Path)**](#immediate-critical-path)
+  - [**SHORT TERM (Post-Import Fix)**](#short-term-post-import-fix)
+  - [**MEDIUM TERM (v1.0.0 Release)**](#medium-term-v100-release)
+- [🔍 Implementation Notes](#implementation-notes)
+  - [**Architecture Strengths**](#architecture-strengths)
+  - [**Implementation Decisions**](#implementation-decisions)
+  - [**Current Blockers**](#current-blockers)
+- [📋 Status Summary](#status-summary)
 <!-- TOC END -->
 
 ## Table of Contents
@@ -158,14 +150,8 @@ ______________________________________________________________________
 from __future__ import annotations
 
 # CURRENT: BROKEN - T not exported from flext-core
-from flext_cli import u
-from flext_core import FlextSettings, T  # ImportError
 
-# SHOULD BE: Fixed in flext-core __init__.py
-from flext_cli import u
-from flext_core import FlextSettings
-```
-
+# SHOULD BE: Fixed in flext-core __init__.py```
 #### **Test Execution Status**
 
 - **Collection Errors**: 33 files fail to import due to T export issue
@@ -184,7 +170,8 @@ but `T` is not exported in flext-core's `__init__.py`.
 **Solution Required**:
 
 1. **flext-core fix**: Export `T` in flext-core `__init__.py` OR
-1. **flext-observability fix**: Change import to `from flext_core import FlextBus from flext_core import FlextSettings from flext_core import FlextConstants from flext_core import FlextContainer from flext_core import FlextContext from flext_core import d from flext_core import FlextDispatcher from flext_core import e from flext_core import h from flext_core import FlextLogger from flext_core import x from flext_core import FlextModels from flext_core import FlextProcessors from flext_core import p from flext_core import FlextRegistry from flext_core import r from flext_core import u from flext_core import s from flext_core import t from flext_core import u`
+1. **flext-observability fix**: Change import to use `from flext_core import t` and
+   reference `t.*` aliases instead of importing `T` directly from the package root.
 
 **Impact**: Unblocks all testing, type checking, and quality validation.
 
