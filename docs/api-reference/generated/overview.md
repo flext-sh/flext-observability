@@ -17,11 +17,19 @@
 - Project class: `platform`
 - Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`,
   `tracing`, `typed`
-- Main facades: _none_
-- Alias exports: _none_
-- Public symbol exports: _none_
+- Main facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
+  `FlextObservabilityConfig`, `FlextObservabilityConstants`,
+  `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
+  `FlextObservabilityErrorHandling`, `FlextObservabilityHealth` (+12 more)
+- Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
+- Public symbol exports: `FlextObservability`,
+  `FlextObservabilityAdvancedContext`, `FlextObservabilityConfig`,
+  `FlextObservabilityConstants`, `FlextObservabilityContext`,
+  `FlextObservabilityCustomMetrics`, `FlextObservabilityErrorHandling`,
+  `FlextObservabilityHealth`, `FlextObservabilityHTTP`,
+  `FlextObservabilityHTTPClient` (+13 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `0`
+- Generated module pages: `18`
 
 ## Next Pages
 
