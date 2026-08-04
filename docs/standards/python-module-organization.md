@@ -1,54 +1,50 @@
 # Python Module Organization & Semantic Patterns
 
 <!-- TOC START -->
-- [Python Module Organization \& Semantic Patterns](#python-module-organization--semantic-patterns)
-  - [Table of Contents](#table-of-contents)
-  - [🏗️ **Module Architecture Overview**](#️-module-architecture-overview)
-    - [**Core Design Principles**](#core-design-principles)
-  - [📁 **Module Structure \& Responsibilities**](#-module-structure--responsibilities)
-    - [**Foundation Layer**](#foundation-layer)
-    - [**Domain Entity Layer**](#domain-entity-layer)
-    - [**Application Services Layer**](#application-services-layer)
-    - [**Factory \& Creation Layer**](#factory--creation-layer)
-    - [**Interface Adapters Layer**](#interface-adapters-layer)
-    - [**Infrastructure \& Utilities Layer**](#infrastructure--utilities-layer)
-  - [🎯 **Semantic Naming Conventions**](#-semantic-naming-conventions)
-    - [**Public API Naming (FlextXxx)**](#public-api-naming-flextxxx)
-    - [**Module-Level Naming**](#module-level-naming)
-    - [**Function Naming Patterns**](#function-naming-patterns)
-  - [📦 **Import Patterns \& Best Practices**](#-import-patterns--best-practices)
-    - [**Recommended Import Styles**](#recommended-import-styles)
-      - [**1. Primary Pattern (Recommended for Ecosystem)**](#1-primary-pattern-recommended-for-ecosystem)
-      - [**2. Service Integration Pattern (For FLEXT Services)**](#2-service-integration-pattern-for-flext-services)
-      - [**3. Infrastructure Integration Pattern (For Infrastructure Services)**](#3-infrastructure-integration-pattern-for-infrastructure-services)
-    - [**Anti-Patterns (Forbidden)**](#anti-patterns-forbidden)
-  - [🏛️ **Architectural Patterns**](#️-architectural-patterns)
-    - [**Layer Separation**](#layer-separation)
-    - [**Dependency Direction**](#dependency-direction)
-    - [**Cross-Cutting Observability Concerns**](#cross-cutting-observability-concerns)
-  - [🔄 **Observability-Specific Patterns**](#-observability-specific-patterns)
-    - [**Metric Creation Patterns**](#metric-creation-patterns)
-    - [**Distributed Tracing Patterns**](#distributed-tracing-patterns)
-    - [**Health Monitoring Patterns**](#health-monitoring-patterns)
-    - [**Alert Management Patterns**](#alert-management-patterns)
-  - [🧪 **Testing Patterns**](#-testing-patterns)
-    - [**Test Organization**](#test-organization)
-    - [**r Testing Patterns for Observability**](#r-testing-patterns-for-observability)
-    - [**Observability Entity Testing Patterns**](#observability-entity-testing-patterns)
-    - [**Service Testing Patterns**](#service-testing-patterns)
-    - [**Monitoring Decorator Testing Patterns**](#monitoring-decorator-testing-patterns)
-  - [📏 **Code Quality Standards**](#-code-quality-standards)
-    - [**Type Annotation Requirements**](#type-annotation-requirements)
-    - [**Error Handling Standards**](#error-handling-standards)
-    - [**Documentation Standards**](#documentation-standards)
-  - [🌐 **Ecosystem Integration Guidelines**](#-ecosystem-integration-guidelines)
-    - [**Cross-Project Observability Standards**](#cross-project-observability-standards)
-    - [**Configuration Integration Across Services**](#configuration-integration-across-services)
-    - [**Monitoring Integration Patterns**](#monitoring-integration-patterns)
-  - [📋 **Checklist for New Observability Modules**](#-checklist-for-new-observability-modules)
-    - [**Module Creation Checklist**](#module-creation-checklist)
-    - [**Observability Quality Gate Checklist**](#observability-quality-gate-checklist)
-    - [**Observability-Specific Standards**](#observability-specific-standards)
+- [Table of Contents](#table-of-contents)
+- [🏗️ **Module Architecture Overview**](#module-architecture-overview)
+  - [**Core Design Principles**](#core-design-principles)
+- [📁 **Module Structure & Responsibilities**](#module-structure-responsibilities)
+  - [**Foundation Layer**](#foundation-layer)
+  - [**Domain Entity Layer**](#domain-entity-layer)
+  - [**Application Services Layer**](#application-services-layer)
+  - [**Factory & Creation Layer**](#factory-creation-layer)
+  - [**Interface Adapters Layer**](#interface-adapters-layer)
+  - [**Infrastructure & Utilities Layer**](#infrastructure-utilities-layer)
+- [🎯 **Semantic Naming Conventions**](#semantic-naming-conventions)
+  - [**Public API Naming (FlextXxx)**](#public-api-naming-flextxxx)
+  - [**Module-Level Naming**](#module-level-naming)
+  - [**Function Naming Patterns**](#function-naming-patterns)
+- [📦 **Import Patterns & Best Practices**](#import-patterns-best-practices)
+  - [**Recommended Import Styles**](#recommended-import-styles)
+  - [**Anti-Patterns (Forbidden)**](#anti-patterns-forbidden)
+- [🏛️ **Architectural Patterns**](#architectural-patterns)
+  - [**Layer Separation**](#layer-separation)
+  - [**Dependency Direction**](#dependency-direction)
+  - [**Cross-Cutting Observability Concerns**](#cross-cutting-observability-concerns)
+- [🔄 **Observability-Specific Patterns**](#observability-specific-patterns)
+  - [**Metric Creation Patterns**](#metric-creation-patterns)
+  - [**Distributed Tracing Patterns**](#distributed-tracing-patterns)
+  - [**Health Monitoring Patterns**](#health-monitoring-patterns)
+  - [**Alert Management Patterns**](#alert-management-patterns)
+- [🧪 **Testing Patterns**](#testing-patterns)
+  - [**Test Organization**](#test-organization)
+  - [**r Testing Patterns for Observability**](#r-testing-patterns-for-observability)
+  - [**Observability Entity Testing Patterns**](#observability-entity-testing-patterns)
+  - [**Service Testing Patterns**](#service-testing-patterns)
+  - [**Monitoring Decorator Testing Patterns**](#monitoring-decorator-testing-patterns)
+- [📏 **Code Quality Standards**](#code-quality-standards)
+  - [**Type Annotation Requirements**](#type-annotation-requirements)
+  - [**Error Handling Standards**](#error-handling-standards)
+  - [**Documentation Standards**](#documentation-standards)
+- [🌐 **Ecosystem Integration Guidelines**](#ecosystem-integration-guidelines)
+  - [**Cross-Project Observability Standards**](#cross-project-observability-standards)
+  - [**Configuration Integration Across Services**](#configuration-integration-across-services)
+  - [**Monitoring Integration Patterns**](#monitoring-integration-patterns)
+- [📋 **Checklist for New Observability Modules**](#checklist-for-new-observability-modules)
+  - [**Module Creation Checklist**](#module-creation-checklist)
+  - [**Observability Quality Gate Checklist**](#observability-quality-gate-checklist)
+  - [**Observability-Specific Standards**](#observability-specific-standards)
 <!-- TOC END -->
 
 ## Table of Contents
@@ -67,12 +63,12 @@
   - **Factory & Creation Layer**
 - Entity creation and factory patterns
   - **Interface Adapters Layer**
-- External interface adaptation
-- Decorator automatically:
-- - Creates execution time metrics
-- - Creates trace spans with operation context
-- - Handles success/failure tracking
-- - Logs structured entries with correlation IDs
+    - External interface adaptation
+    - Decorator automatically:
+      - Creates execution time metrics
+      - Creates trace spans with operation context
+      - Handles success/failure tracking
+      - Logs structured entries with correlation IDs
   - **Infrastructure & Utilities Layer**
 - Supporting infrastructure
   - 🎯 **Semantic Naming Conventions**
@@ -184,9 +180,7 @@ src/flext_observability/
 ├── __init__.py              # 🎯 Public API gateway - observability exports
 ├── constants.py             # 🎯 Observability constants and defaults
 ├── exceptions.py            # 🎯 Observability-specific exceptions
-└── validation.py            # 🎯 Domain validation utilities
-```
-
+└── validation.py            # 🎯 Domain validation utilities```
 **Responsibility**: Establish the foundational observability contracts that all other modules depend on.
 
 **Import Pattern**:
@@ -194,19 +188,14 @@ src/flext_observability/
 ```python
 from __future__ import annotations
 
-# All ecosystem projects start with observability patterns here
-from flext_observability import FlextMetric, FlextTrace, flext_create_metric
-```
-
+# All ecosystem projects start with observability patterns here```
 ### **Domain Entity Layer**
 
 ```python
 from __future__ import annotations
 
 # Core observability domain models
-├── entities.py              # 🏛️ FlextMetric, FlextTrace, FlextAlert entities
-```
-
+├── entities.py              # 🏛️ FlextMetric, FlextTrace, FlextAlert entities```
 **Responsibility**: Provide rich observability domain models with business rules validation.
 
 **Entity Architecture**:
@@ -234,9 +223,7 @@ class FlextMetric(FlextModels.Entity):
             float(self.value)
         except (ValueError, TypeError):
             return r[bool].fail("Invalid metric value")
-        return r[bool].| ok(value=True)
-```
-
+        return r[bool].| ok(value=True)```
 ### **Application Services Layer**
 
 ```python
@@ -245,9 +232,7 @@ from __future__ import annotations
 # Observability business logic services
 ├── services.py              # 🚀 FlextMetricsService, FlextTracingService
 ├── obs_platform.py          # 🚀 FlextObservabilityPlatformV2 orchestration
-└── health.py                # 🚀 Health check coordination services
-```
-
+└── health.py                # 🚀 Health check coordination services```
 **Responsibility**: Provide observability business logic coordinating entities with external systems.
 
 **Service Pattern**:
@@ -255,8 +240,6 @@ from __future__ import annotations
 ```python
 from __future__ import annotations
 
-from flext_cli import u
-from flext_core import FlextSettings
 from flext_observability import FlextMetricsService
 
 
@@ -279,18 +262,14 @@ class FlextMetricsService:
     def export_prometheus_format(self) -> p.Result[str]:
         """Export metrics in Prometheus format."""
         # Business logic for Prometheus export
-        return r[bool].ok(prometheus_output)
-```
-
+        return r[bool].ok(prometheus_output)```
 ### **Factory & Creation Layer**
 
 ```python
 from __future__ import annotations
 
 # Entity creation and factory patterns
-├── factory.py               # 🏭 FlextObservabilityMasterFactory
-```
-
+├── factory.py               # 🏭 FlextObservabilityMasterFactory```
 **Responsibility**: Provide consistent observability entity creation with validation.
 
 **Factory Pattern**:
@@ -319,7 +298,7 @@ class FlextObservabilityMasterFactory:
 
             return r[bool].ok(metric)
         except Exception as e:
-            return r[bool].fail(f"Metric creation failed: {str(e)}")
+            return r[bool].fail(f"Metric creation failed: {e!s}")
 
     def create_trace(
         self, operation_name: str, service_name: str
@@ -333,9 +312,7 @@ class FlextObservabilityMasterFactory:
             )
             return r[bool].ok(trace)
         except Exception as e:
-            return r[bool].fail(f"Trace creation failed: {str(e)}")
-```
-
+            return r[bool].fail(f"Trace creation failed: {e!s}")```
 ### **Interface Adapters Layer**
 
 ```python
@@ -344,9 +321,7 @@ from __future__ import annotations
 # External interface adaptation
 ├── flext_simple.py          # 🎛️ Simple API functions (flext_create_*)
 ├── flext_monitor.py         # 🎛️ Monitoring decorators (@flext_monitor_function)
-└── flext_structured.py      # 🎛️ Structured logging adapters
-```
-
+└── flext_structured.py      # 🎛️ Structured logging adapters```
 **Responsibility**: Provide easy-to-use interfaces adapting complex services for common use cases.
 
 **Simple API Pattern**:
@@ -368,9 +343,7 @@ def flext_create_metric(
 def flext_create_trace(operation_name: str, service_name: str) -> p.Result[FlextTrace]:
     """Simple API for trace creation."""
     factory = global_factory()
-    return factory.create_trace(operation_name, service_name)
-```
-
+    return factory.create_trace(operation_name, service_name)```
 **Monitoring Decorator Pattern**:
 
 ```python
@@ -390,9 +363,7 @@ def process_user_data(user_data: dict) -> t.JsonMapping:
 # - Creates execution time metrics
 # - Creates trace spans with operation context
 # - Handles success/failure tracking
-# - Logs structured entries with correlation IDs
-```
-
+# - Logs structured entries with correlation IDs```
 ### **Infrastructure & Utilities Layer**
 
 ```python
@@ -401,9 +372,7 @@ from __future__ import annotations
 # Supporting infrastructure
 ├── repos.py                 # 🗄️ Repository patterns (in-memory implementations)
 ├── metrics.py               # 🗄️ Metrics collection utilities
-└── flext_metrics.py         # 🗄️ Advanced metrics collector patterns
-```
-
+└── flext_metrics.py         # 🗄️ Advanced metrics collector patterns```
 **Responsibility**: Provide infrastructure support and utility functions for observability operations.
 
 **Repository Pattern**:
@@ -435,9 +404,7 @@ class FlextObservabilityRepository:
             metric for metric in self._metrics.values()
             if metric.name == name
         ]
-        return r[bool].ok(matching_metrics)
-```
-
+        return r[bool].ok(matching_metrics)```
 ______________________________________________________________________
 
 ## 🎯 **Semantic Naming Conventions**
@@ -470,9 +437,7 @@ FlextObservabilityMonitor  # Advanced monitoring coordination
 
 # Utility patterns
 FlextStructuredLogger  # Structured logging with correlation IDs
-FlextMetricsCollector  # Advanced metrics collection patterns
-```
-
+FlextMetricsCollector  # Advanced metrics collection patterns```
 **Rationale**: Clear namespace separation prevents conflicts with application domain entities across 33 projects.
 
 ### **Module-Level Naming**
@@ -487,9 +452,7 @@ factory.py  # Contains FlextObservabilityMasterFactory
 flext_simple.py  # Contains flext_create_* simple API functions
 flext_monitor.py  # Contains @flext_monitor_function decorators
 flext_structured.py  # Contains structured logging with correlation IDs
-obs_platform.py  # Contains FlextObservabilityPlatformV2 orchestration
-```
-
+obs_platform.py  # Contains FlextObservabilityPlatformV2 orchestration```
 **Pattern**: One primary observability concern per module with related utilities.
 
 ### **Function Naming Patterns**
@@ -511,9 +474,7 @@ def update_correlation_id(correlation_id: str) -> None
 
 # Factory access functions
 def global_factory() -> FlextObservabilityMasterFactory
-def clear_global_factory() -> None
-```
-
+def clear_global_factory() -> None```
 **Pattern**: Consistent prefixing for easy discoverability and namespace protection.
 
 ______________________________________________________________________
@@ -530,9 +491,7 @@ from __future__ import annotations
 # Import from main package - gets essential observability tools
 from flext_observability import (
     flext_create_metric,
-    flext_create_trace,
     flext_monitor_function,
-    FlextMetricsService,
 )
 
 
@@ -543,9 +502,7 @@ def process_order(order_data: dict) -> p.Result[m.Dict]:
     flext_create_metric("orders_processed", 1, "count")
 
     # Business logic here
-    return r[bool].ok({"status": "processed"})
-```
-
+    return r[bool].ok({"status": "processed"})```
 #### **2. Service Integration Pattern (For FLEXT Services)**
 
 ```python
@@ -557,8 +514,6 @@ from flext_observability import (
     FlextTracingService,
     FlextObservabilityMasterFactory,
 )
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 class UserAPIService:
@@ -579,9 +534,7 @@ class UserAPIService:
         )
 
         # Process with observability
-        return self._process_user_request(request, trace_result.value)
-```
-
+        return self._process_user_request(request, trace_result.value)```
 #### **3. Infrastructure Integration Pattern (For Infrastructure Services)**
 
 ```python
@@ -627,11 +580,9 @@ class DatabaseConnectionService:
             health_result = flext_create_health_check(
                 name="postgresql_connection",
                 status="unhealthy",
-                message=f"Connection failed: {str(e)}",
+                message=f"Connection failed: {e!s}",
             )
-            return r[bool].fail(f"Database health check failed: {str(e)}")
-```
-
+            return r[bool].fail(f"Database health check failed: {e!s}")```
 ### **Anti-Patterns (Forbidden)**
 
 ```python
@@ -641,7 +592,6 @@ from __future__ import annotations
 from flext_observability import *
 
 # ❌ Don't import internal implementations
-from flext_observability import _internal_validation_function
 
 # ❌ Don't bypass simple API without reason
 from flext_observability import FlextObservabilityMasterFactory
@@ -657,9 +607,7 @@ class MyCustomMetric:  # Use FlextMetric instead
 
 # ❌ Don't ignore r error handling
 result = flext_create_metric("test", 1.0)
-metric = result.value  # Should check result.success first
-```
-
+metric = result.value  # Should check result.success first```
 ______________________________________________________________________
 
 ## 🏛️ **Architectural Patterns**
@@ -685,9 +633,7 @@ from __future__ import annotations
 ├─────────────────────────────────────┤
 │         Foundation Layer            │  # constants.py, exceptions.py
 │   (Constants, Base Patterns)        │  # validation.py (Base validation)
-└─────────────────────────────────────┘
-```
-
+└─────────────────────────────────────┘```
 ### **Dependency Direction**
 
 ```python
@@ -696,9 +642,7 @@ from __future__ import annotations
 # Dependencies flow inward (Clean Architecture)
 Interface Adapters  →  Application Services  →  Domain Layer
         ↓                      ↓                   ↓
-Infrastructure Layer  →  Foundation Layer  →  flext-core
-```
-
+Infrastructure Layer  →  Foundation Layer  →  flext-core```
 **Rule**: Higher layers can depend on lower layers and flext-core, never the reverse.
 
 ### **Cross-Cutting Observability Concerns**
@@ -721,9 +665,7 @@ def process_payment(payment_data: dict) -> p.Result[m.Dict]:
     # - Structured logging with correlation ID
     # - Error capture and categorization
 
-    return r[bool].ok({"status": "processed", "correlation_id": correlation_id})
-```
-
+    return r[bool].ok({"status": "processed", "correlation_id": correlation_id})```
 ______________________________________________________________________
 
 ## 🔄 **Observability-Specific Patterns**
@@ -777,9 +719,7 @@ def create_validated_metric(name: str, value: float) -> p.Result[bool]:
         )
         return r[bool].fail(f"Metric creation failed: {metric_result.error}")
 
-    return r[bool].| ok(value=True)
-```
-
+    return r[bool].| ok(value=True)```
 ### **Distributed Tracing Patterns**
 
 ```python
@@ -789,7 +729,6 @@ from __future__ import annotations
 # Parent-child trace correlation
 def process_order_with_tracing(order_data: dict) -> p.Result[m.Dict]:
     """Process order with distributed tracing."""
-
     # Create parent trace
     parent_trace_result = flext_create_trace("process_order", "order-service")
     if parent_trace_result.failure:
@@ -826,9 +765,7 @@ def validate_order_with_trace(
         return child_trace_result
 
     # Validation logic with trace context
-    return r[bool].ok({"status": "valid", "trace_id": child_trace_result.value.id})
-```
-
+    return r[bool].ok({"status": "valid", "trace_id": child_trace_result.value.id})```
 ### **Health Monitoring Patterns**
 
 ```python
@@ -838,7 +775,6 @@ from __future__ import annotations
 # Comprehensive health monitoring
 def monitor_service_health() -> p.Result[m.Dict]:
     """Comprehensive service health monitoring."""
-
     health_checks = []
 
     # Database health
@@ -902,11 +838,9 @@ def check_database_health() -> p.Result[FlextHealthCheck]:
         return flext_create_health_check(
             name="postgresql_database",
             status="unhealthy",
-            message=f"Database connection failed: {str(e)}",
+            message=f"Database connection failed: {e!s}",
             details={"error": str(e), "retry_count": "3"},
-        )
-```
-
+        )```
 ### **Alert Management Patterns**
 
 ```python
@@ -983,9 +917,7 @@ def escalate_alert_if_needed(alert: FlextAlert, duration_minutes: int) -> p.Resu
 
         return escalated_alert_result.map(lambda _: None)
 
-    return r[bool].| ok(value=True)
-```
-
+    return r[bool].| ok(value=True)```
 ______________________________________________________________________
 
 ## 🧪 **Testing Patterns**
@@ -1009,15 +941,12 @@ tests/
 ├── e2e/                           # End-to-end tests
 │   └── test_observability_workflows.py # Complete observability workflows
 ├── conftest.py                    # Test configuration and fixtures
-└── test_complete_coverage.py      # Comprehensive coverage validation
-```
-
+└── test_complete_coverage.py      # Comprehensive coverage validation```
 ### **r Testing Patterns for Observability**
 
 ```python
 from __future__ import annotations
 
-import pytest
 from flext_observability import flext_create_metric, flext_create_trace
 
 
@@ -1075,9 +1004,7 @@ def test_observability_failure_propagation():
     result = create_invalid_observability()
 
     assert result.failure
-    assert "Invalid metric name" in result.error
-```
-
+    assert "Invalid metric name" in result.error```
 ### **Observability Entity Testing Patterns**
 
 ```python
@@ -1160,17 +1087,13 @@ class TestFlextTrace:
 
         assert child_trace.parent_trace_id == parent_trace.id
         assert child_trace.operation_name == "database_query"
-        assert child_trace.service_name == "user-service"
-```
-
+        assert child_trace.service_name == "user-service"```
 ### **Service Testing Patterns**
 
 ```python
 from __future__ import annotations
 
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 @pytest.fixture
@@ -1248,9 +1171,7 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
 
     # Verify memory management kicked in
     total_metrics = len(metrics_service._metrics_store)
-    assert total_metrics <= 1000  # Should have cleaned up to stay within limits
-```
-
+    assert total_metrics <= 1000  # Should have cleaned up to stay within limits```
 ### **Monitoring Decorator Testing Patterns**
 
 ```python
@@ -1292,9 +1213,7 @@ def test_function_monitoring_with_exception():
         failing_function()
 
     # In a real implementation, verify that error metrics were created
-    # and failure traces were recorded
-```
-
+    # and failure traces were recorded```
 ______________________________________________________________________
 
 ## 📏 **Code Quality Standards**
@@ -1344,9 +1263,7 @@ class ObservabilityCollector(typing.Protocol):
 
 # ❌ Missing type annotations
 def create_metric(name, value, unit):  # Missing types
-    return flext_create_metric(name, value, unit)
-```
-
+    return flext_create_metric(name, value, unit)```
 ### **Error Handling Standards**
 
 ```python
@@ -1356,7 +1273,6 @@ from __future__ import annotations
 # ✅ Always use r for observability error handling
 def create_comprehensive_observability(operation: str) -> p.Result[m.Dict]:
     """Create comprehensive observability data with error handling."""
-
     # Chain observability operations with proper error handling
     metric_result = flext_create_metric(f"{operation}_requests", 1, "count")
     if metric_result.failure:
@@ -1396,9 +1312,7 @@ def create_metric_bad(name: str, value: float) -> FlextMetric:
     """Bad example - raises exceptions."""
     if not name:
         raise ValueError("Name is required")  # Breaks railway pattern
-    return FlextMetric(name=name, value=value)
-```
-
+    return FlextMetric(name=name, value=value)```
 ### **Documentation Standards**
 
 ```python
@@ -1408,8 +1322,7 @@ from __future__ import annotations
 def create_business_observability_dashboard(
     service_name: str, metrics_config: m.Dict, trace_config: m.Dict
 ) -> p.Result[m.Dict]:
-    """
-    Create comprehensive business observability dashboard.
+    """Create comprehensive business observability dashboard.
 
     This function implements the complete observability setup for a business
     service including metrics collection, distributed tracing, and health
@@ -1454,6 +1367,7 @@ def create_business_observability_dashboard(
         - Integrates with FlextTracingService for distributed tracing
         - Coordinates with FlextHealthService for health monitoring
         - Built on flext-core r patterns for error handling
+
     """
     try:
         # Create service-specific observability components
@@ -1496,10 +1410,8 @@ def create_business_observability_dashboard(
 
     except Exception as e:
         return r[bool].fail(
-            f"Unexpected error creating observability dashboard: {str(e)}"
-        )
-```
-
+            f"Unexpected error creating observability dashboard: {e!s}"
+        )```
 ______________________________________________________________________
 
 ## 🌐 **Ecosystem Integration Guidelines**
@@ -1510,8 +1422,6 @@ ______________________________________________________________________
 from __future__ import annotations
 
 # ✅ Standard observability imports across ecosystem
-from flext_cli import u
-from flext_core import FlextSettings
 from flext_observability import (
     flext_create_metric,
     flext_create_trace,
@@ -1531,7 +1441,6 @@ class FlextUserService:
     @flext_monitor_function("user_creation")
     def create_user(self, user_data: dict) -> p.Result[m.Dict]:
         """Create user with automatic observability."""
-
         # Business metrics
         flext_create_metric(
             "users_created", 1, "count", tags={"service": "user-service"}
@@ -1555,7 +1464,6 @@ class FlextUserService:
 # ✅ Cross-service observability correlation
 def sync_user_between_services(user_id: str) -> p.Result[m.Dict]:
     """Sync user data between services with trace correlation."""
-
     # Create correlation trace
     correlation_trace = flext_create_trace("user_sync", "integration-service")
     if correlation_trace.failure:
@@ -1591,16 +1499,13 @@ class UserMetric:  # Use FlextMetric instead
 
 
 class OracleTrace:  # Use FlextTrace instead
-    pass
-```
-
+    pass```
 ### **Configuration Integration Across Services**
 
 ```python
 from __future__ import annotations
 
 # ✅ Extend observability configuration patterns
-from flext_cli import u
 from flext_core import FlextSettings
 
 
@@ -1638,9 +1543,7 @@ class UserService:
             self.metrics_service = FlextMetricsService(container)
 
         if settings.observability.tracing_enabled:
-            self.tracing_service = FlextTracingService(container)
-```
-
+            self.tracing_service = FlextTracingService(container)```
 ### **Monitoring Integration Patterns**
 
 ```python
@@ -1688,9 +1591,7 @@ class FlextLdapService:
     def search_users(self, search_filter: str) -> p.Result[Sequence[m.Dict]]:
         """LDAP search with monitoring."""
         # LDAP-specific observability patterns
-        return self._execute_ldap_search(search_filter)
-```
-
+        return self._execute_ldap_search(search_filter)```
 ______________________________________________________________________
 
 ## 📋 **Checklist for New Observability Modules**

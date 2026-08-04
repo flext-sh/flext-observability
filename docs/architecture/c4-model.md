@@ -1,42 +1,27 @@
 # FLEXT Observability - C4 Model Architecture
 
 <!-- TOC START -->
-- [FLEXT Observability - C4 Model Architecture](#flext-observability---c4-model-architecture)
-  - [Table of Contents](#table-of-contents)
-  - [📋 C4 Model Overview](#-c4-model-overview)
-  - [🌍 Level 1: System Context](#-level-1-system-context)
-    - [System Purpose](#system-purpose)
-    - [Context Diagram](#context-diagram)
-    - [External Interfaces](#external-interfaces)
-      - [Primary Users](#primary-users)
-      - [External Systems](#external-systems)
-  - [🏗️ Level 2: Container Architecture](#️-level-2-container-architecture)
-    - [Container Diagram](#container-diagram)
-    - [Container Descriptions](#container-descriptions)
-      - [**Simple API Container**](#simple-api-container)
-      - [**Monitoring Decorators Container**](#monitoring-decorators-container)
-      - [**Core Application Services Container**](#core-application-services-container)
-      - [**Domain Layer Container**](#domain-layer-container)
-      - [**Infrastructure Layer Container**](#infrastructure-layer-container)
-  - [🔧 Level 3: Component Architecture](#-level-3-component-architecture)
-    - [Component Diagram](#component-diagram)
-    - [Key Components](#key-components)
-      - [**Metrics Service Components**](#metrics-service-components)
-      - [**Tracing Service Components**](#tracing-service-components)
-      - [**Alerting Service Components**](#alerting-service-components)
-      - [**Domain Entities**](#domain-entities)
-  - [💻 Level 4: Code Architecture](#-level-4-code-architecture)
-    - [Code Package Structure](#code-package-structure)
-    - [Key Classes and Relationships](#key-classes-and-relationships)
-      - [**Domain Layer Classes**](#domain-layer-classes)
-      - [**Service Layer Classes**](#service-layer-classes)
-      - [**Factory Classes**](#factory-classes)
-  - [🔄 Dynamic Behavior](#-dynamic-behavior)
-    - [Observability Data Flow](#observability-data-flow)
-    - [Error Handling Flow](#error-handling-flow)
-  - [🏛️ Architectural Decisions](#️-architectural-decisions)
-    - [ADRs Referenced](#adrs-referenced)
-    - [Key Architectural Principles](#key-architectural-principles)
+- [Table of Contents](#table-of-contents)
+- [📋 C4 Model Overview](#c4-model-overview)
+- [🌍 Level 1: System Context](#level-1-system-context)
+  - [System Purpose](#system-purpose)
+  - [Context Diagram](#context-diagram)
+  - [External Interfaces](#external-interfaces)
+- [🏗️ Level 2: Container Architecture](#level-2-container-architecture)
+  - [Container Diagram](#container-diagram)
+  - [Container Descriptions](#container-descriptions)
+- [🔧 Level 3: Component Architecture](#level-3-component-architecture)
+  - [Component Diagram](#component-diagram)
+  - [Key Components](#key-components)
+- [💻 Level 4: Code Architecture](#level-4-code-architecture)
+  - [Code Package Structure](#code-package-structure)
+  - [Key Classes and Relationships](#key-classes-and-relationships)
+- [🔄 Dynamic Behavior](#dynamic-behavior)
+  - [Observability Data Flow](#observability-data-flow)
+  - [Error Handling Flow](#error-handling-flow)
+- [🏛️ Architectural Decisions](#architectural-decisions)
+  - [ADRs Referenced](#adrs-referenced)
+  - [Key Architectural Principles](#key-architectural-principles)
 <!-- TOC END -->
 
 ## Table of Contents
@@ -410,9 +395,7 @@ class FlextAlert(FlextModels.Entity):
     name: str
     severity: AlertLevel
     message: str
-    condition: AlertCondition
-```
-
+    condition: AlertCondition```
 #### **Service Layer Classes**
 
 ```python
@@ -435,9 +418,7 @@ class FlextObservabilityServices(u):
     @classmethod
     def evaluate_alert(cls, alert: FlextAlert) -> p.Result[bool]:
         """Evaluate alert conditions."""
-        ...
-```
-
+        ...```
 #### **Factory Classes**
 
 ```python
@@ -455,9 +436,7 @@ class FlextObservabilityMasterFactory:
 
     def create_trace(self, operation: str, context: dict) -> p.Result[FlextTrace]:
         """Create validated trace entity."""
-        ...
-```
-
+        ...```
 ______________________________________________________________________
 
 ## 🔄 Dynamic Behavior

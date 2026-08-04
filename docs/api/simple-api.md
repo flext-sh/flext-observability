@@ -100,9 +100,7 @@ def flext_create_metric(
     unit: str = "",
     tags: t.StringDict | None = None,
     metric_type: str = "gauge"
-) -> p.Result[FlextMetric]
-```
-
+) -> p.Result[FlextMetric]```
 #### Parameters
 
 - **`name`** (str, required): Metric identifier following naming conventions
@@ -144,9 +142,7 @@ result = flext_create_metric(
     value=Decimal("1234.56"),
     unit="USD",
     tags={"account_type": "premium"},
-)
-```
-
+)```
 #### Error Scenarios
 
 ```python
@@ -160,9 +156,7 @@ assert "Invalid metric name" in result.error
 # Invalid value type
 result = flext_create_metric("test", "not_a_number")
 assert not result.success
-assert "Invalid metric value" in result.error
-```
-
+assert "Invalid metric value" in result.error```
 ______________________________________________________________________
 
 ### `flext_create_trace()`
@@ -177,9 +171,7 @@ def flext_create_trace(
     service_name: str,
     context: t.StringDict | None = None,
     parent_trace_id: str | None = None
-) -> p.Result[FlextTrace]
-```
-
+) -> p.Result[FlextTrace]```
 #### Parameters
 
 - **`operation_name`** (str, required): Name of the operation being traced
@@ -222,9 +214,7 @@ if parent_result.success:
         operation_name="database_query",
         service_name="user-api",
         parent_trace_id=parent_result.value.id,
-    )
-```
-
+    )```
 ______________________________________________________________________
 
 ### `flext_create_alert()`
@@ -239,9 +229,7 @@ def flext_create_alert(
     severity: str,
     message: str,
     details: t.StringDict | None = None
-) -> p.Result[FlextAlert]
-```
-
+) -> p.Result[FlextAlert]```
 #### Parameters
 
 - **`name`** (str, required): Alert identifier/name
@@ -286,9 +274,7 @@ result = flext_create_alert(
     severity="error",
     message="Payment processing taking longer than expected",
     details={"queue_size": "1500", "avg_processing_time": "45s", "threshold": "30s"},
-)
-```
-
+)```
 ______________________________________________________________________
 
 ### `flext_create_health_check()`
@@ -303,9 +289,7 @@ def flext_create_health_check(
     status: str,
     message: str = "",
     details: t.StringDict | None = None
-) -> p.Result[FlextHealthCheck]
-```
-
+) -> p.Result[FlextHealthCheck]```
 #### Parameters
 
 - **`name`** (str, required): Health check identifier
@@ -349,9 +333,7 @@ result = flext_create_health_check(
     status="degraded",
     message="Redis cache showing increased latency",
     details={"avg_latency": "150ms", "threshold": "50ms", "hit_rate": "85%"},
-)
-```
-
+)```
 ______________________________________________________________________
 
 ### `flext_create_log_entry()`
@@ -366,9 +348,7 @@ def flext_create_log_entry(
     message: str,
     context: t.StringDict | None = None,
     correlation_id: str | None = None
-) -> p.Result[FlextLogEntry]
-```
-
+) -> p.Result[FlextLogEntry]```
 #### Parameters
 
 - **`level`** (str, required): Log level ("debug", "info", "warning", "error", "critical")
@@ -411,9 +391,7 @@ result = flext_create_log_entry(
         "error": "INSUFFICIENT_FUNDS",
     },
     correlation_id="req_789xyz",
-)
-```
-
+)```
 ______________________________________________________________________
 
 ## 🔄 Common Usage Patterns
@@ -428,7 +406,6 @@ from flext_observability import flext_create_metric, flext_create_trace
 
 def process_business_operation(data: dict) -> p.Result[m.Dict]:
     """Example of chaining observability operations."""
-
     # Create metric - handle potential failure
     metric_result = flext_create_metric("operations_started", 1, "count")
     if metric_result.failure:
@@ -446,9 +423,7 @@ def process_business_operation(data: dict) -> p.Result[m.Dict]:
     success_metric = flext_create_metric("operations_completed", 1, "count")
     # Note: In production, you might want to handle this error too
 
-    return r[bool].ok(result_data)
-```
-
+    return r[bool].ok(result_data)```
 ### Pattern 2: Batch Observability Creation
 
 ```python
@@ -457,7 +432,6 @@ from __future__ import annotations
 
 def create_system_metrics() -> t.SequenceOf[r[FlextMetric]]:
     """Create multiple metrics with error handling."""
-
     metrics_to_create = [
         ("cpu_usage", 75.2, "percent"),
         ("memory_usage", 1024, "MB"),
@@ -473,9 +447,7 @@ def create_system_metrics() -> t.SequenceOf[r[FlextMetric]]:
         if result.failure:
             print(f"⚠️  Failed to create {name}: {result.error}")
 
-    return results
-```
-
+    return results```
 ### Pattern 3: Observability Context Propagation
 
 ```python
@@ -484,7 +456,6 @@ from __future__ import annotations
 
 def handle_user_request(user_id: str, operation: str) -> p.Result[m.Dict]:
     """Example of propagating context through observability."""
-
     # Create base context
     context = {"user_id": user_id, "operation": operation}
 
@@ -514,9 +485,7 @@ def handle_user_request(user_id: str, operation: str) -> p.Result[m.Dict]:
         correlation_id=trace_id,
     )
 
-    return r[bool].ok({"trace_id": trace_id, "status": "success", "context": context})
-```
-
+    return r[bool].ok({"trace_id": trace_id, "status": "success", "context": context})```
 ## 🚨 Error Reference
 
 ### Common Validation Errors
@@ -540,9 +509,7 @@ flext_create_trace(None, "service")  # None not allowed for required params
 
 # ✅ Correct usage
 flext_create_metric("cpu_usage", 75.5, "percent")
-flext_create_trace("operation", "service")
-```
-
+flext_create_trace("operation", "service")```
 ## 🔗 Related APIs
 
 - **[Factory API](factory-api.md)**: Advanced entity creation patterns
