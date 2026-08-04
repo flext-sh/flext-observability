@@ -176,20 +176,20 @@ class FlextObservabilityMonitor:
             )
         )
 
-    def flext_initialize_observability(self) -> p.Result[None]:
+    def flext_initialize_observability(self) -> p.Result[bool]:
         """Initialize all observability services with real functionality and settings integration."""
         if self._initialized:
-            return r[None].ok(None)
+            return r[bool].ok(True)
         try:
             return self._initialize_observability_services()
         except c.EXC_BASIC_TYPE as e:
-            return r[None].fail_op("initialize observability", e)
+            return r[bool].fail_op("initialize observability", e)
 
-    def _initialize_observability_services(self) -> p.Result[None]:
+    def _initialize_observability_services(self) -> p.Result[bool]:
         """Initialize observability service dependencies."""
         service_result = self._create_observability_service()
         if service_result.failure:
-            return r[None].fail_op(
+            return r[bool].fail_op(
                 "initialize observability",
                 service_result.error or "Service creation failed",
             )
@@ -198,7 +198,7 @@ class FlextObservabilityMonitor:
         self._health_service = self._observability_service
         self._initialized = True
         self.logger.info("Observability monitor initialized successfully")
-        return r[None].ok(None)
+        return r[bool].ok(True)
 
     @staticmethod
     def _create_observability_service() -> p.Result[
@@ -227,27 +227,27 @@ class FlextObservabilityMonitor:
         name: str,
         value: float,
         metric_type: str = c.Observability.MetricType.GAUGE,
-    ) -> p.Result[None]:
+    ) -> p.Result[bool]:
         """Record metric through the monitoring system with settings validation."""
         try:
             return self._record_metric_entry(name, value, metric_type)
         except c.EXC_BASIC_TYPE as e:
-            return r[None].fail_op("record metric", e)
+            return r[bool].fail_op("record metric", e)
 
     def _record_metric_entry(
         self, name: str, value: float, metric_type: str
-    ) -> p.Result[None]:
+    ) -> p.Result[bool]:
         """Build and record one monitoring metric entry."""
         if not settings.Observability.metrics_enabled:
             self.logger.debug("Metrics recording disabled in configuration")
-            return r[None].ok(None)
+            return r[bool].ok(True)
         metric_result = self._build_metric_entry(name, value, metric_type)
         if metric_result.failure:
-            return r[None].fail_op(
+            return r[bool].fail_op(
                 "record metric", metric_result.error or "Failed to create metric"
             )
         self.logger.debug("Recorded metric: %s=%s (%s)", name, value, metric_type)
-        return r[None].ok(None)
+        return r[bool].ok(True)
 
     @staticmethod
     def _build_metric_entry(
@@ -267,30 +267,30 @@ class FlextObservabilityMonitor:
         except c.EXC_MAPPING_TYPE as e:
             return r[m.Observability.MetricEntry].fail_op("build metric entry", e)
 
-    def flext_start_monitoring(self) -> p.Result[None]:
+    def flext_start_monitoring(self) -> p.Result[bool]:
         """Start real observability monitoring with service coordination."""
         if not self._initialized:
-            return r[None].fail_op("start monitoring", "Monitor not initialized")
+            return r[bool].fail_op("start monitoring", "Monitor not initialized")
         if self._running:
-            return r[None].ok(None)
+            return r[bool].ok(True)
         try:
             self.logger.info("Starting real observability monitoring")
             self._running = True
             self._monitor_start_time = time.time()
-            return r[None].ok(None)
+            return r[bool].ok(True)
         except c.EXC_BASIC_TYPE as e:
-            return r[None].fail_op("start monitoring", e)
+            return r[bool].fail_op("start monitoring", e)
 
-    def flext_stop_monitoring(self) -> p.Result[None]:
+    def flext_stop_monitoring(self) -> p.Result[bool]:
         """Stop observability monitoring with graceful service shutdown."""
         if not self._running:
-            return r[None].ok(None)
+            return r[bool].ok(True)
         try:
             self.logger.info("Stopping observability monitoring")
             self._running = False
-            return r[None].ok(None)
+            return r[bool].ok(True)
         except c.EXC_BASIC_TYPE as e:
-            return r[None].fail_op("stop monitoring", e)
+            return r[bool].fail_op("stop monitoring", e)
 
     @property
     def observability_service(self) -> p.Observability.ObservabilityService | None:
