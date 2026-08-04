@@ -39,7 +39,8 @@ class FlextObservabilitySettings(FlextSettings):
             ),
         ]
         environment: Annotated[
-            str, m.Field(default="development", description="Deployment environment name")
+            str,
+            m.Field(default="development", description="Deployment environment name"),
         ]
         metrics_enabled: Annotated[
             bool, m.Field(default=True, description="Enable metrics collection")
