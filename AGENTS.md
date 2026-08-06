@@ -34,6 +34,8 @@ src/flext_observability/
 
 - Metric type/ID/labels are normalized by private helpers **before** model creation — construct through the facade, not the models directly.
 - Structured logging flows through the `flext-core` logger factory; never call `structlog.get_logger` directly.
+- Config/settings canonical pattern: ADR-012.
+- Codemod governance (ast-grep + make mod): ADR-014.
 
 ## Commands
 
