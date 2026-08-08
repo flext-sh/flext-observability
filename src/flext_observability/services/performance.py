@@ -111,18 +111,20 @@ class FlextObservabilityPerformance:
                 cpu: float = FlextObservabilityPerformance._process.cpu_percent(
                     interval=0.01
                 )
-                return cpu
             except c.EXC_MAPPING_TYPE:
                 return 0.0
+            else:
+                return cpu
 
         def _memory_usage(self) -> float:
             """Get current memory usage in MB."""
             try:
                 memory_info = FlextObservabilityPerformance._process.memory_info()
                 rss_bytes: int = memory_info.rss
-                return float(rss_bytes) / 1024 / 1024
             except c.EXC_MAPPING_TYPE:
                 return 0.0
+            else:
+                return float(rss_bytes) / 1024 / 1024
 
     @staticmethod
     def fetch_system_resources() -> t.MappingKV[str, float]:

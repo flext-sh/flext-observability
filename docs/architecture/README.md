@@ -262,18 +262,14 @@ def process_api_request(request_data):
     return {"status": "processed"}```
 ### Dependency Management
 
-FLEXT Observability maintains minimal external dependencies:
-
-```
+FLEXT Observability maintains minimal external dependencies:```
 flext-observability
 ├── flext-core (foundation patterns)
 ├── pydantic (domain validation)
 ├── psutil (system health checks)
 ├── opentelemetry-api (future tracing)
 ├── prometheus-client (future metrics export)
-└── structlog (structured logging)
-```
-
+└── structlog (structured logging)```
 ## 🎯 Design Patterns
 
 ### Factory Pattern Implementation

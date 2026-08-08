@@ -65,13 +65,14 @@ class FlextObservabilityMonitor:
                 FlextObservabilityMonitor.MonitoringHelpers.record_success_metrics(
                     monitor, actual_metric_name, execution_time
                 )
-                return result
             except c.EXC_MAPPING_TYPE as e:
                 execution_time = time.time() - start_time
                 FlextObservabilityMonitor.MonitoringHelpers.record_error_metrics(
                     monitor, actual_metric_name, execution_time, function_name, e
                 )
                 raise
+            else:
+                return result
 
         @staticmethod
         def record_error_metrics(

@@ -183,9 +183,7 @@ but `T` is not exported in flext-core's `__init__.py`.
 make val    # Complete quality pipeline
 make test        # 100% coverage validation
 make type-check  # Pyrefly strict mode
-make lint        # Ruff compliance
-```
-
+make lint        # Ruff compliance```
 **Expected Results**:
 
 - ✅ 481/481 tests passing
@@ -290,8 +288,6 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-**FLEXT-Observability v0.9.0** - Comprehensive observability foundation with complete architecture and extensive test suite,
-
-```
+**FLEXT-Observability v0.9.0** - Comprehensive observability foundation with complete architecture and extensive test suite,```
  currently blocked by import compatibility issues.
 ```

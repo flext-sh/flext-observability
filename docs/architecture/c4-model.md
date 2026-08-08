@@ -17,7 +17,7 @@
   - [Code Package Structure](#code-package-structure)
   - [Key Classes and Relationships](#key-classes-and-relationships)
 - [🔄 Dynamic Behavior](#dynamic-behavior)
-  - [Observability Data Flow](#observability-data-flow)
+  - [Observability Data Flow```](#observability-data-flow)
   - [Error Handling Flow](#error-handling-flow)
 - [🏛️ Architectural Decisions](#architectural-decisions)
   - [ADRs Referenced](#adrs-referenced)
@@ -441,9 +441,7 @@ ______________________________________________________________________
 
 ## 🔄 Dynamic Behavior
 
-### Observability Data Flow
-
-```
+### Observability Data Flow```
 User Request
      ↓
 Simple API / Decorators
@@ -454,9 +452,7 @@ Application Service Processing
      ↓ (Storage)
 Infrastructure Layer Persistence
      ↓ (Export)
-External Monitoring Systems
-```
-
+External Monitoring Systems```
 ### Error Handling Flow
 
 ```
