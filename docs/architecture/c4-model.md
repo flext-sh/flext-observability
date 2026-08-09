@@ -17,7 +17,7 @@
   - [Code Package Structure](#code-package-structure)
   - [Key Classes and Relationships](#key-classes-and-relationships)
 - [🔄 Dynamic Behavior](#dynamic-behavior)
-  - [Observability Data Flow```](#observability-data-flow)
+  - [Observability Data Flow](#observability-data-flow)
   - [Error Handling Flow](#error-handling-flow)
 - [🏛️ Architectural Decisions](#architectural-decisions)
   - [ADRs Referenced](#adrs-referenced)
@@ -395,7 +395,9 @@ class FlextAlert(FlextModels.Entity):
     name: str
     severity: AlertLevel
     message: str
-    condition: AlertCondition```
+    condition: AlertCondition
+```
+
 #### **Service Layer Classes**
 
 ```python
@@ -408,17 +410,16 @@ class FlextObservabilityServices(u):
     @classmethod
     def record_counter(cls, name: str, value: float = 1.0) -> p.Result[bool]:
         """Record counter metric with thread safety."""
-        ...
 
     @classmethod
     def create_trace(cls, operation: str) -> p.Result[FlextTrace]:
         """Create new distributed trace."""
-        ...
 
     @classmethod
     def evaluate_alert(cls, alert: FlextAlert) -> p.Result[bool]:
         """Evaluate alert conditions."""
-        ...```
+```
+
 #### **Factory Classes**
 
 ```python
@@ -432,16 +433,17 @@ class FlextObservabilityMasterFactory:
         self, name: str, value: float, unit: str
     ) -> p.Result[FlextMetric]:
         """Create validated metric entity."""
-        ...
 
     def create_trace(self, operation: str, context: dict) -> p.Result[FlextTrace]:
         """Create validated trace entity."""
-        ...```
+```
+
 ______________________________________________________________________
 
 ## 🔄 Dynamic Behavior
 
-### Observability Data Flow```
+### Observability Data Flow
+```
 User Request
      ↓
 Simple API / Decorators
@@ -452,7 +454,9 @@ Application Service Processing
      ↓ (Storage)
 Infrastructure Layer Persistence
      ↓ (Export)
-External Monitoring Systems```
+External Monitoring Systems
+```
+
 ### Error Handling Flow
 
 ```
