@@ -395,7 +395,9 @@ class FlextAlert(FlextModels.Entity):
     name: str
     severity: AlertLevel
     message: str
-    condition: AlertCondition```
+    condition: AlertCondition
+```
+
 #### **Service Layer Classes**
 
 ```python
@@ -408,17 +410,16 @@ class FlextObservabilityServices(u):
     @classmethod
     def record_counter(cls, name: str, value: float = 1.0) -> p.Result[bool]:
         """Record counter metric with thread safety."""
-        ...
 
     @classmethod
     def create_trace(cls, operation: str) -> p.Result[FlextTrace]:
         """Create new distributed trace."""
-        ...
 
     @classmethod
     def evaluate_alert(cls, alert: FlextAlert) -> p.Result[bool]:
         """Evaluate alert conditions."""
-        ...```
+```
+
 #### **Factory Classes**
 
 ```python
@@ -432,17 +433,16 @@ class FlextObservabilityMasterFactory:
         self, name: str, value: float, unit: str
     ) -> p.Result[FlextMetric]:
         """Create validated metric entity."""
-        ...
 
     def create_trace(self, operation: str, context: dict) -> p.Result[FlextTrace]:
         """Create validated trace entity."""
-        ...```
+```
+
 ______________________________________________________________________
 
 ## 🔄 Dynamic Behavior
 
 ### Observability Data Flow
-
 ```
 User Request
      ↓

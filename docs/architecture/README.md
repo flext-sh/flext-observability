@@ -246,7 +246,9 @@ if result.success:
     return result.value
 else:
     # Error path - no exceptions
-    return result.error```
+    return result.error
+```
+
 #### **Cross-Service Observability**
 
 ```python
@@ -259,11 +261,12 @@ from flext_observability import flext_monitor_function
 @flext_monitor_function("flext_api_endpoint")
 def process_api_request(request_data):
     """Automatic metrics, tracing, and logging."""
-    return {"status": "processed"}```
+    return {"status": "processed"}
+```
+
 ### Dependency Management
 
 FLEXT Observability maintains minimal external dependencies:
-
 ```
 flext-observability
 ├── flext-core (foundation patterns)
@@ -292,7 +295,9 @@ class FlextObservabilityMasterFactory:
         # Domain validation
         # Entity creation
         # r wrapping
-        return r[bool].ok(metric)```
+        return r[bool].ok(metric)
+```
+
 ### Service Layer Pattern
 
 ```python
@@ -311,7 +316,9 @@ class FlextMetricsService:
         # Business validation
         # Storage operations
         # Event publication
-        return r[bool].ok(metric)```
+        return r[bool].ok(metric)
+```
+
 ### Repository Pattern (Future Implementation)
 
 ```python
@@ -323,11 +330,11 @@ class FlextMetricsRepository(Protocol):
 
     def store_metric(self, metric: FlextMetric) -> p.Result[bool]:
         """Store metric with persistence abstraction."""
-        ...
 
     def query_metrics(self, criteria: MetricsCriteria) -> p.Result[List[FlextMetric]]:
         """Query metrics with filtering."""
-        ...```
+```
+
 ## 🚀 Scalability Architecture
 
 ### Current Implementation Characteristics
@@ -398,13 +405,13 @@ class FlextObservabilityPlugin(Protocol):
 
     def on_metric_created(self, metric: FlextMetric) -> p.Result[bool]:
         """Hook called when metrics are created."""
-        ...
 
     def on_trace_started(self, trace: FlextTrace) -> p.Result[bool]:
         """Hook called when traces are started."""
-        ...```
+```
+
 ______________________________________________________________________
 
 **Next Steps**: Review the [Architecture Overview](README.md) for detailed patterns and ecosystem integration details.
 
-- [FLEXT Ecosystem Architecture](../../../docs/architecture/)
+- [FLEXT Ecosystem Architecture](https://github.com/flext-sh/flext/tree/0.12.0-dev/docs/architecture)
