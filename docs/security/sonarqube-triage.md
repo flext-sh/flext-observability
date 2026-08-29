@@ -164,7 +164,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 ### 8 · 🟡 MAJOR · BUG · `python:S2201`
 **Local**: `examples/02_solid_observability_demo.py:124` · **Effort**: 5min
 
-> The return value of "__getitem__" must be used.
+> The return value of `"__getitem__"` must be used.
 
 ```python
       120                  "warning": "[WARN]",
