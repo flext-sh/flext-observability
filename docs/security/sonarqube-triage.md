@@ -45,7 +45,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       103          name: str, value: float, unit: str, kwargs: t.MappingKV[str, t.JsonPayload]
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 2 · 🟠 CRITICAL · CODE_SMELL · `python:S1192`
 **Local**: `src/flext_observability/api.py:244` · **Effort**: 6min
@@ -64,7 +64,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       248                      "create health check", f"Invalid health status: {status}"
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 3 · 🟠 CRITICAL · CODE_SMELL · `python:S3776`
 **Local**: `src/flext_observability/services/http_client_instrumentation.py:101` · **Effort**: 26min
@@ -83,7 +83,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       105  
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 4 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8264`
 **Local**: `.github/workflows/docs.yml:18` · **Effort**: 5min
@@ -102,7 +102,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        22  concurrency:
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 5 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8233`
 **Local**: `.github/workflows/docs.yml:19` · **Effort**: 5min
@@ -121,7 +121,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        23    group: pages
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 6 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8233`
 **Local**: `.github/workflows/docs.yml:20` · **Effort**: 5min
@@ -140,7 +140,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        24    cancel-in-progress: false
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 7 · 🟡 MAJOR · BUG · `python:S2201`
 **Local**: `examples/01_functional.py:109` · **Effort**: 5min
@@ -159,7 +159,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       113      """Demonstrate repeated facade usage without factory indirection."""
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 8 · 🟡 MAJOR · BUG · `python:S2201`
 **Local**: `examples/02_solid_observability_demo.py:124` · **Effort**: 5min
@@ -178,7 +178,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       128      """Demonstrate automatic function monitoring."""
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 9 · 🟡 MAJOR · VULNERABILITY · `text:S8565`
 **Local**: `pyproject.toml:-` · **Effort**: 5min
@@ -186,7 +186,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 > Dependency versions are not predictable if the lock file (uv.lock, poetry.lock, pdm.lock or pylock.toml) is missing.
 
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 10 · ⚪ MINOR · CODE_SMELL · `python:S7504`
 **Local**: `conftest.py:20` · **Effort**: 5min
@@ -205,7 +205,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        24                  sys.modules.pop(module_name, None)
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 11 · ⚪ MINOR · CODE_SMELL · `python:S7498`
 **Local**: `src/flext_observability/services/custom_metrics.py:70` · **Effort**: 5min
@@ -224,7 +224,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        74              """Clear metrics from registry.
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 12 · ⚪ MINOR · CODE_SMELL · `python:S7498`
 **Local**: `src/flext_observability/services/custom_metrics.py:71` · **Effort**: 5min
@@ -243,7 +243,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        75  
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 13 · ⚪ MINOR · CODE_SMELL · `python:S1940`
 **Local**: `src/flext_observability/services/error_handling.py:269` · **Effort**: 2min
@@ -262,5 +262,4 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       273          ) -> p.Result[TResult]:
 ```
 
-**Decisão**: 
-
+**Decisão**: pendente
