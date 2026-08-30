@@ -20,14 +20,14 @@
 - Main facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
   `FlextObservabilityConfig`, `FlextObservabilityConstants`,
   `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
-  `FlextObservabilityErrorHandling`, `FlextObservabilityHealth` (+12 more)
+  `FlextObservabilityErrorHandling`, `FlextObservabilityHTTP` (+12 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextObservability`,
   `FlextObservabilityAdvancedContext`, `FlextObservabilityConfig`,
   `FlextObservabilityConstants`, `FlextObservabilityContext`,
   `FlextObservabilityCustomMetrics`, `FlextObservabilityErrorHandling`,
-  `FlextObservabilityHealth`, `FlextObservabilityHTTP`,
-  `FlextObservabilityHTTPClient` (+13 more)
+  `FlextObservabilityHTTP`, `FlextObservabilityHTTPClient`,
+  `FlextObservabilityHealth` (+13 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `1`
 
