@@ -29,7 +29,7 @@
   `FlextObservabilityHealth`, `FlextObservabilityHTTP`,
   `FlextObservabilityHTTPClient` (+13 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `18`
+- Generated module pages: `1`
 
 ## Next Pages
 
