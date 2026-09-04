@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flext_core import FlextObservabilityUtilities
+from flext_observability import FlextObservabilityUtilities
 
 class ExamplesFlextObservabilityUtilities(FlextObservabilityUtilities):
     """Utility functions for flextobservability."""
