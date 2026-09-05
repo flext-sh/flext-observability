@@ -289,7 +289,4 @@ class FlextObservability(
         except c.EXC_BASIC_TYPE as e:
             return r[FlextObservability.LogEntry].fail_op("create log entry", e)
 
-
-observability = FlextObservability
-
-__all__: list[str] = ["FlextObservability", "observability"]
+__all__: list[str] = ["FlextObservability", ]
