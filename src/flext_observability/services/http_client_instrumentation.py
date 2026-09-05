@@ -61,23 +61,42 @@ class FlextObservabilityHTTPClient:
 
     @staticmethod
     def _matches_httpx_async_client(
-        obj: t.RegisterableService | p.Observability.HttpClient.HTTPXAsyncClient,
+        obj: t.RegisterableService
+        | p.Observability.HttpClient.HTTPXAsyncClient
+        | p.Observability.HttpClient.HTTPXClient,
     ) -> TypeIs[p.Observability.HttpClient.HTTPXAsyncClient]:
         """Type guard to check if t.JsonValue is an async httpx client."""
-        return hasattr(obj, "request") and hasattr(obj, "_send")
+        # Why: `getattr(..., default) is not None` instead of `hasattr`.
+        # mypy's hasattr-narrowing builds a type map per union member of
+        # `t.RegisterableService` (a wide recursive service-value union) and
+        # crashed (INTERNAL ERROR) walking it. `getattr` with a sentinel
+        # default is not subject to that narrowing pass and is behaviorally
+        # equivalent for this duck-typing check.
+        missing = object()
+        return (
+            getattr(obj, "request", missing) is not missing
+            and getattr(obj, "_send", missing) is not missing
+        )
 
     @staticmethod
     def _matches_httpx_client(
-        obj: t.RegisterableService | p.Observability.HttpClient.HTTPXClient,
+        obj: t.RegisterableService
+        | p.Observability.HttpClient.HTTPXAsyncClient
+        | p.Observability.HttpClient.HTTPXClient,
     ) -> TypeIs[p.Observability.HttpClient.HTTPXClient]:
         """Type guard to check if t.JsonValue is an httpx client."""
-        return hasattr(obj, "request") and hasattr(obj, "_send") is False
+        missing = object()
+        return (
+            getattr(obj, "request", missing) is not missing
+            and getattr(obj, "_send", missing) is missing
+        )
 
     @staticmethod
     def _matches_aiohttp_session(
         obj: t.RegisterableService | p.Observability.HttpClient.AIOHTTPSession,
     ) -> TypeIs[p.Observability.HttpClient.AIOHTTPSession]:
-        return hasattr(obj, "request")
+        missing = object()
+        return getattr(obj, "request", missing) is not missing
 
     @staticmethod
     def _validated_headers(
@@ -99,9 +118,18 @@ class FlextObservabilityHTTPClient:
 
         @staticmethod
         def _apply_httpx_instrumentation(
-            client: t.RegisterableService,
+            client: t.RegisterableService
+            | p.Observability.HttpClient.HTTPXAsyncClient
+            | p.Observability.HttpClient.HTTPXClient,
         ) -> p.Result[bool]:
             """Apply httpx instrumentation to a validated client.
+
+            Why the wider parameter type: with only `t.RegisterableService` (a
+            DI-service union structurally disjoint from the httpx client
+            protocols), mypy proves the TypeIs guards below can never succeed
+            and marks everything past them unreachable — correct for the
+            narrower static type, but wrong for the real httpx client objects
+            this is called with.
 
             Args:
                 client: httpx.Client or httpx.AsyncClient instance
@@ -383,9 +411,12 @@ class FlextObservabilityHTTPClient:
 
         @staticmethod
         def _apply_aiohttp_instrumentation(
-            session: t.RegisterableService,
+            session: t.RegisterableService | p.Observability.HttpClient.AIOHTTPSession,
         ) -> p.Result[bool]:
             """Apply aiohttp instrumentation to a validated session.
+
+            Why the wider parameter type: see
+            ``HTTPX._apply_httpx_instrumentation`` for the full rationale.
 
             Args:
                 session: aiohttp.ClientSession instance

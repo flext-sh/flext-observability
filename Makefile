@@ -1248,7 +1248,6 @@ _builtin_clean_generated:
 # the receipt attests (INDEX=Y adds the package index).
 _builtin_release_plan: _builtin_require_environment
 	@$(PROJECT_FLEXT_INFRA) release run --workspace "$(PROJECT_ROOT)" --phase plan $(if $(strip $(PR_TITLE)),--pr-title "$(PR_TITLE)")
-
 _builtin_release_version: _builtin_require_environment
 	$(call _require_apply)
 	@$(PROJECT_FLEXT_INFRA) release run --workspace "$(PROJECT_ROOT)" --phase version --apply

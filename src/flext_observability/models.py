@@ -20,6 +20,12 @@ from uuid import uuid4
 from flext_cli import m, u
 from flext_observability import c, t
 
+# Why: typed module constants give pyrefly a concrete container type for the
+# empty-mapping defaults below (bare `MappingProxyType({})` infers `Any`).
+_EMPTY_DOMAIN_LABELS: t.Observability.DomainLabels = MappingProxyType({})
+_EMPTY_STR_MAPPING: t.StrMapping = MappingProxyType({})
+_EMPTY_CONFIG_MAPPING: t.ConfigurationMapping = MappingProxyType({})
+
 
 class FlextObservabilityModels(m):
     """Generic observability models with Pydantic patterns.
@@ -73,7 +79,7 @@ class FlextObservabilityModels(m):
             labels: Annotated[
                 t.Observability.DomainLabels,
                 u.Field(
-                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
+                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
                     description="Metric labels for categorization",
                 ),
             ]
@@ -92,7 +98,7 @@ class FlextObservabilityModels(m):
             attributes: Annotated[
                 t.Observability.DomainLabels,
                 u.Field(
-                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
+                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
                     description="Trace attributes",
                 ),
             ]
@@ -109,7 +115,7 @@ class FlextObservabilityModels(m):
             labels: Annotated[
                 t.Observability.DomainLabels,
                 u.Field(
-                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
+                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
                     description="Alert labels for categorization",
                 ),
             ]
@@ -124,7 +130,7 @@ class FlextObservabilityModels(m):
             details: Annotated[
                 t.Observability.DomainLabels,
                 u.Field(
-                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
+                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
                     description="Health check details",
                 ),
             ]
@@ -142,7 +148,7 @@ class FlextObservabilityModels(m):
             context: Annotated[
                 t.Observability.DomainLabels,
                 u.Field(
-                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
+                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
                     description="Log context metadata",
                 ),
             ]
@@ -161,7 +167,7 @@ class FlextObservabilityModels(m):
             headers: Annotated[
                 t.StrMapping,
                 u.Field(
-                    default_factory=lambda: MappingProxyType[str, str]({}),
+                    default_factory=lambda: _EMPTY_STR_MAPPING,
                     description="HTTP header key-value pairs",
                 ),
             ]
@@ -178,14 +184,14 @@ class FlextObservabilityModels(m):
             baggage: Annotated[
                 t.StrMapping,
                 u.Field(
-                    default_factory=lambda: MappingProxyType[str, str]({}),
+                    default_factory=lambda: _EMPTY_STR_MAPPING,
                     description="Propagated baggage key-value pairs",
                 ),
             ]
             metadata: Annotated[
                 t.ConfigurationMapping,
                 u.Field(
-                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
+                    default_factory=lambda: _EMPTY_CONFIG_MAPPING,
                     description="Additional context metadata",
                 ),
             ]
@@ -221,7 +227,7 @@ class FlextObservabilityModels(m):
             labels: Annotated[
                 t.StrMapping,
                 u.Field(
-                    default_factory=lambda: MappingProxyType[str, str]({}),
+                    default_factory=lambda: _EMPTY_STR_MAPPING,
                     description="Metric labels for categorization",
                 ),
             ]

@@ -67,30 +67,27 @@ class FlextObservabilityHTTP:
     def _matches_flask_app(
         obj: t.RegisterableService | p.Observability.Http.FlaskApp,
     ) -> TypeIs[p.Observability.Http.FlaskApp]:
-        """Type guard to check if object is a Flask app.
-
-        Uses `getattr(..., None) is not None` rather than `hasattr()`: mypy's
-        `hasattr()` type-narrowing walks member access across the full
-        `t.RegisterableService` union (a very wide recursive type), which
-        blows past its formatter's recursion budget when it reports a
-        missing-attribute diagnostic (INTERNAL ERROR / MemoryError). The
-        runtime behavior is identical to `hasattr()`.
-        """
+        """Type guard to check if object is a Flask app."""
+        # Why: `getattr(..., default) is not None` instead of `hasattr`.
+        # mypy's hasattr-narrowing builds a type map per union member of
+        # `t.RegisterableService` (a wide recursive service-value union) and
+        # crashed (INTERNAL ERROR) walking it, whether the check stood alone
+        # or was split out of a boolean "and". `getattr` with a sentinel
+        # default is not subject to that narrowing pass and is behaviorally
+        # equivalent for this duck-typing check.
+        missing = object()
         return (
-            getattr(obj, "before_request", None) is not None
-            and getattr(obj, "after_request", None) is not None
+            getattr(obj, "before_request", missing) is not missing
+            and getattr(obj, "after_request", missing) is not missing
         )
 
     @staticmethod
     def _matches_fastapi_app(
         obj: t.RegisterableService | p.Observability.Http.FastAPIApp,
     ) -> TypeIs[p.Observability.Http.FastAPIApp]:
-        """Type guard to check if object is a FastAPI app.
-
-        See `_matches_flask_app` for why `getattr(..., None) is not None` is
-        used instead of `hasattr()`.
-        """
-        return getattr(obj, "add_middleware", None) is not None
+        """Type guard to check if object is a FastAPI app."""
+        missing = object()
+        return getattr(obj, "add_middleware", missing) is not missing
 
     class Flask:
         """Flask WSGI middleware for automatic HTTP instrumentation."""
@@ -258,8 +255,16 @@ class FlextObservabilityHTTP:
                 return r[bool].fail_op("Flask instrumentation setup", e)
 
         @classmethod
-        def _setup_instrumentation(cls, app: t.RegisterableService) -> p.Result[bool]:
+        def _setup_instrumentation(
+            cls, app: t.RegisterableService | p.Observability.Http.FlaskApp
+        ) -> p.Result[bool]:
             """Register Flask instrumentation hooks."""
+            # Why: include FlaskApp explicitly in the parameter type. With
+            # only `t.RegisterableService` (a DI-service union structurally
+            # disjoint from FlaskApp's protocol), mypy proves the TypeIs
+            # narrowing below can never succeed and marks everything past
+            # the guard unreachable — correct for the narrower static type,
+            # but wrong for the real Flask app objects this is called with.
             if not FlextObservabilityHTTP._matches_flask_app(app):
                 return r[bool].fail("Invalid Flask app - missing request hooks")
             before_request_hook: p.Observability.Http.FlaskHook = app.before_request
@@ -320,8 +325,13 @@ class FlextObservabilityHTTP:
                 return r[bool].fail_op("FastAPI instrumentation setup", e)
 
         @classmethod
-        def _setup_instrumentation(cls, app: t.RegisterableService) -> p.Result[bool]:
+        def _setup_instrumentation(
+            cls, app: t.RegisterableService | p.Observability.Http.FastAPIApp
+        ) -> p.Result[bool]:
             """Register FastAPI instrumentation middleware."""
+            # Why: include FastAPIApp explicitly (see Flask._setup_instrumentation
+            # for the full rationale — otherwise mypy proves the TypeIs guard
+            # below unreachable against the narrower `t.RegisterableService`).
             if not FlextObservabilityHTTP._matches_fastapi_app(app):
                 return r[bool].fail(
                     "Invalid FastAPI app - missing add_middleware method"
