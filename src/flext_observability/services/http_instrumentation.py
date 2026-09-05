@@ -67,15 +67,30 @@ class FlextObservabilityHTTP:
     def _matches_flask_app(
         obj: t.RegisterableService | p.Observability.Http.FlaskApp,
     ) -> TypeIs[p.Observability.Http.FlaskApp]:
-        """Type guard to check if object is a Flask app."""
-        return hasattr(obj, "before_request") and hasattr(obj, "after_request")
+        """Type guard to check if object is a Flask app.
+
+        Uses `getattr(..., None) is not None` rather than `hasattr()`: mypy's
+        `hasattr()` type-narrowing walks member access across the full
+        `t.RegisterableService` union (a very wide recursive type), which
+        blows past its formatter's recursion budget when it reports a
+        missing-attribute diagnostic (INTERNAL ERROR / MemoryError). The
+        runtime behavior is identical to `hasattr()`.
+        """
+        return (
+            getattr(obj, "before_request", None) is not None
+            and getattr(obj, "after_request", None) is not None
+        )
 
     @staticmethod
     def _matches_fastapi_app(
         obj: t.RegisterableService | p.Observability.Http.FastAPIApp,
     ) -> TypeIs[p.Observability.Http.FastAPIApp]:
-        """Type guard to check if object is a FastAPI app."""
-        return hasattr(obj, "add_middleware")
+        """Type guard to check if object is a FastAPI app.
+
+        See `_matches_flask_app` for why `getattr(..., None) is not None` is
+        used instead of `hasattr()`.
+        """
+        return getattr(obj, "add_middleware", None) is not None
 
     class Flask:
         """Flask WSGI middleware for automatic HTTP instrumentation."""

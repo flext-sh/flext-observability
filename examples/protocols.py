@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flext_core import FlextObservabilityProtocols
+from flext_observability import FlextObservabilityProtocols
 
 class ExamplesFlextObservabilityProtocols(FlextObservabilityProtocols):
     """Protocol definitions for flextobservability."""
