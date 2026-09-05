@@ -3,14 +3,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from types import MappingProxyType
+from typing import TYPE_CHECKING
 
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_core import (
+    from flext_observability import (
+        FlextObservabilityConstants,
+        FlextObservabilityConstants as c,
         d,
         e,
         h,
@@ -21,10 +22,6 @@ if TYPE_CHECKING:
         t,
         u,
         x,
-    )
-    from flext_observability import (
-        FlextObservabilityConstants,
-        FlextObservabilityConstants as c,
     )
 
     from .constants import ExamplesFlextObservabilityConstants
@@ -60,7 +57,9 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("ExamplesFlextObservabilityProtocols",),
             ".typings": ("ExamplesFlextObservabilityTypes",),
             ".utilities": ("ExamplesFlextObservabilityUtilities",),
-            "flext_core": (
+            "flext_observability": (
+                "FlextObservabilityConstants",
+                "c",
                 "d",
                 "e",
                 "h",
@@ -71,10 +70,6 @@ _LAZY_IMPORTS = MappingProxyType(
                 "t",
                 "u",
                 "x",
-            ),
-            "flext_observability": (
-                "FlextObservabilityConstants",
-                "c",
             ),
         }),
         alias_groups=MappingProxyType({}),
