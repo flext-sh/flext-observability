@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from flext_observability import FlextObservabilityProtocols
 
+
 class ExamplesFlextObservabilityProtocols(FlextObservabilityProtocols):
     """Protocol definitions for flextobservability."""
 
