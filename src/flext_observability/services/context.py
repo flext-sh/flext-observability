@@ -213,13 +213,19 @@ class FlextObservabilityContext:
             key: value if isinstance(value, str | int | float | bool) else str(value)
             for key, value in baggage_snapshot.root.items()
         }
-        payload: t.JsonDict = {
+        # Why: construct the mapping literal directly as the constructor
+        # argument (not through an intermediate `t.JsonDict`-typed variable)
+        # so mypy checks each value against `m.Dict`'s wider root type via
+        # bidirectional inference instead of joining to a narrower dict type
+        # first and rejecting it on invariance (mypy crashed on the deeply
+        # nested union check when the narrower binding was type-checked
+        # standalone).
+        return m.Dict({
             "correlation_id": FlextObservabilityContext.correlation_id(),
             "trace_id": FlextObservabilityContext.trace_id(),
             "span_id": FlextObservabilityContext.span_id(),
             "baggage": u.Cli.json_dumps(baggage_payload).unwrap(),
-        }
-        return m.Dict(payload)
+        })
 
     @staticmethod
     def correlation_id() -> str:
