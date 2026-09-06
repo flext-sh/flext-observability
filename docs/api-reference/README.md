@@ -28,6 +28,6 @@ This section is generated from public exports and real docstrings.
 - Primary facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
   `FlextObservabilityConfig`, `FlextObservabilityConstants`,
   `FlextObservabilityContext`, `FlextObservabilityCustomMetrics` (+14 more)
-- Generated module pages: `18`
+- Generated module pages: `19`
 
 Back to [project docs](../index.md).
