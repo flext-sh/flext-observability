@@ -1,4 +1,4 @@
 version: 1
-workspace: flext-observability
-database: flext-observability
-issue_prefix: flext-observability
+workspace: flext
+database: flext
+issue_prefix: flext

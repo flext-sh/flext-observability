@@ -226,7 +226,7 @@ class FlextObservabilityPerformance:
             getattr(FlextObservabilityPerformance.logger, level)(message)
             return r[bool].ok(value=True)
         except c.EXC_MAPPING_TYPE as e:
-            return r[bool].fail(f"Failed to log metrics: {e}")
+            return r[bool].fail(f"Failed to log metrics: {e}", exception=e)
 
     @staticmethod
     def start_monitoring(operation: str) -> FlextObservabilityPerformance.Monitor:

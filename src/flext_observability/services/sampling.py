@@ -137,10 +137,7 @@ class FlextObservabilitySampling:
             """
             validated_rate_result = self._validate_rate(rate)
             if validated_rate_result.failure:
-                return r[bool].fail(
-                    validated_rate_result.error
-                    or f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
-                )
+                return r[bool].from_failure(validated_rate_result)
             validated_rate = validated_rate_result.map_or(None)
             if validated_rate is None:
                 return r[bool].fail(
@@ -173,10 +170,7 @@ class FlextObservabilitySampling:
             """Validate and update one named rate override."""
             validated_rate_result = self._validate_rate(rate)
             if validated_rate_result.failure:
-                return r[bool].fail(
-                    validated_rate_result.error
-                    or f"Invalid sampling rate: {rate}. Must be between 0.0 and 1.0"
-                )
+                return r[bool].from_failure(validated_rate_result)
             validated_rate = validated_rate_result.map_or(None)
             if validated_rate is None:
                 return r[bool].fail(
