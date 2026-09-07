@@ -27,7 +27,7 @@
   `FlextObservabilityConstants`, `FlextObservabilityContext`,
   `FlextObservabilityCustomMetrics`, `FlextObservabilityErrorHandling`,
   `FlextObservabilityHTTP`, `FlextObservabilityHTTPClient`,
-  `FlextObservabilityHealth` (+13 more)
+  `FlextObservabilityHealth` (+14 more)
 - Exported module shortcuts: `services`
 - Generated module pages: `19`
 
