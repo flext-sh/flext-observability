@@ -17,6 +17,7 @@ from uuid import uuid4
 
 from flext_core import FlextContainer
 from flext_observability import c, m, p, r, t, u
+from flext_observability._settings import FlextObservabilitySettings
 from flext_observability.services.advanced_context import (
     FlextObservabilityAdvancedContext,
 )
@@ -33,7 +34,6 @@ from flext_observability.services.monitoring import FlextObservabilityMonitor
 from flext_observability.services.performance import FlextObservabilityPerformance
 from flext_observability.services.sampling import FlextObservabilitySampling
 from flext_observability.services.services import FlextObservabilityServices
-from flext_observability._settings import FlextObservabilitySettings
 
 
 class FlextObservability(
