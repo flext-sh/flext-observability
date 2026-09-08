@@ -20,9 +20,6 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from enum import StrEnum, unique
-    from typing import ClassVar, Final
-
     from flext_cli import d, e, h, r, s, x
 
     from . import services as services
@@ -47,8 +44,6 @@ if TYPE_CHECKING:
     from .typings import FlextObservabilityTypes, FlextObservabilityTypes as t
     from .utilities import FlextObservabilityUtilities, FlextObservabilityUtilities as u
 __all__: tuple[str, ...] = (
-    "ClassVar",
-    "Final",
     "FlextObservability",
     "FlextObservabilityAdvancedContext",
     "FlextObservabilityConfig",
@@ -69,7 +64,6 @@ __all__: tuple[str, ...] = (
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
-    "StrEnum",
     "__author__",
     "__author_email__",
     "__description__",
@@ -93,7 +87,6 @@ __all__: tuple[str, ...] = (
     "settings",
     "t",
     "u",
-    "unique",
     "x",
 )
 
@@ -124,9 +117,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.services": ("FlextObservabilityServices",),
             ".typings": ("FlextObservabilityTypes", "t"),
             ".utilities": ("FlextObservabilityUtilities", "u"),
-            "enum": ("StrEnum", "unique"),
             "flext_cli": ("d", "e", "h", "r", "s", "x"),
-            "typing": ("ClassVar", "Final"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
