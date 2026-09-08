@@ -22,7 +22,7 @@ from .__version__ import (
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, s, x
 
-    from . import services as services
+    from . import services
     from ._config import FlextObservabilityConfig, config
     from ._settings import FlextObservabilitySettings, settings
     from .api import FlextObservability, observability

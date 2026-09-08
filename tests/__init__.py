@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from flext_observability import FlextObservabilityConstants
     from flext_tests import FlextTestsConstants, d, e, h, r, td, tf, tk, tm, tv, x
 
-    from . import integration as integration, unit as unit
+    from . import integration, unit
     from .base import (
         TestsFlextObservabilityServiceBase,
         TestsFlextObservabilityServiceBase as s,
