@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from flext_observability import FlextObservabilityConstants
 from flext_tests import FlextTestsConstants
+
+from flext_observability import FlextObservabilityConstants
 
 
 class TestsFlextObservabilityConstants(

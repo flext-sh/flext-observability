@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_core import FlextContainer
 from flext_observability import (
@@ -15,7 +16,6 @@ from flext_observability import (
     __version__ as pkg_version,
     __version_info__ as pkg_version_info,
 )
-from flext_tests import tm
 from tests import c
 
 __all__ = ["TestsFlextObservabilityInit"]

@@ -10,6 +10,7 @@ from collections.abc import Awaitable, Callable
 from typing import Protocol, runtime_checkable
 
 from flext_cli import m, p
+
 from flext_observability import t
 
 

@@ -11,6 +11,7 @@ private attributes or internal collaborator calls.
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_observability import FlextObservability, c, m
 from flext_observability.services.advanced_context import (
@@ -21,7 +22,6 @@ from flext_observability.services.custom_metrics import FlextObservabilityCustom
 from flext_observability.services.error_handling import FlextObservabilityErrorHandling
 from flext_observability.services.performance import FlextObservabilityPerformance
 from flext_observability.services.sampling import FlextObservabilitySampling
-from flext_tests import tm
 
 MetricType = c.Observability.MetricType
 ErrorSeverity = c.Observability.ErrorSeverity

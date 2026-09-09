@@ -12,6 +12,7 @@ from __future__ import annotations
 import time
 
 from flext_cli import cli
+
 from flext_observability import FlextObservability, c, t
 
 flext_alert = FlextObservability.flext_alert
