@@ -3,14 +3,14 @@
 
 # flext-observability - Configuration
 
+> Project profile: `flext-observability`
+
 <!-- TOC START -->
 - [Ownership order](#ownership-order)
 - [Documentation configuration](#documentation-configuration)
 - [Apply and validate](#apply-and-validate)
 - [Related guides](#related-guides)
 <!-- TOC END -->
-
-> Project profile: `flext-observability`
 
 Configuration has one writable authority. Prefer typed `config/*.yaml` and
 settings; use `pyproject.toml` only for package and tool metadata that it owns.
