@@ -18,6 +18,7 @@ from typing import Annotated, Self
 from uuid import uuid4
 
 from flext_cli import m, u
+
 from flext_observability import c, t
 
 # Why: typed module constants give pyrefly a concrete container type for the

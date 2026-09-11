@@ -511,10 +511,7 @@ ______________________________________________________________________
 from __future__ import annotations
 
 # Import from main package - gets essential observability tools
-from flext_observability import (
-    flext_create_metric,
-    flext_monitor_function,
-)
+from flext_observability import flext_create_metric, flext_monitor_function
 
 
 # Use patterns directly in business logic
@@ -1466,9 +1463,7 @@ def create_business_observability_dashboard(
         return r[bool].ok(dashboard_config)
 
     except Exception as e:
-        return r[bool].fail(
-            f"Unexpected error creating observability dashboard: {e!s}"
-        )
+        return r[bool].fail(f"Unexpected error creating observability dashboard: {e!s}")
 ```
 
 ______________________________________________________________________

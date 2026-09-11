@@ -33,7 +33,8 @@ from flext_observability.services.monitoring import FlextObservabilityMonitor
 from flext_observability.services.performance import FlextObservabilityPerformance
 from flext_observability.services.sampling import FlextObservabilitySampling
 from flext_observability.services.services import FlextObservabilityServices
-from flext_observability._settings import FlextObservabilitySettings
+
+from ._settings import FlextObservabilitySettings
 
 
 class FlextObservability(
@@ -290,6 +291,6 @@ class FlextObservability(
             return r[FlextObservability.LogEntry].fail_op("create log entry", e)
 
 
-observability = FlextObservability
+observability: FlextObservability = FlextObservability()
 
 __all__: list[str] = ["FlextObservability", "observability"]

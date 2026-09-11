@@ -7,7 +7,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
 - Package: `flext_observability`
-- Version: `0.12.0rc0`
+- Version: `0.12.0`
 - Description: FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry
 - Doc summary: Flext Observability package.
 - Classifiers: `Development Status :: 3 - Alpha`, `Intended Audience ::

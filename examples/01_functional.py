@@ -12,6 +12,7 @@ from __future__ import annotations
 import time
 
 from flext_cli import cli
+
 from flext_observability import FlextObservability, c, t
 
 flext_alert = FlextObservability.flext_alert
@@ -66,12 +67,11 @@ def demonstrate_validation() -> None:
     metric_result = flext_metric("valid_metric", 100.0, "count")
     if metric_result.success:
         _emit(f"Created metric: {metric_result.value}")
-    try:
-        invalid_metric_result = flext_metric("invalid_metric", -10.0, "count")
-        if invalid_metric_result.success:
-            _emit(f"Created invalid metric: {invalid_metric_result.value}")
-    except Exception as e:
-        _emit(f"Validation error (expected): {e}")
+    invalid_metric_result = flext_metric("invalid_metric", -10.0, "count")
+    if invalid_metric_result.success:
+        _emit(f"Created invalid metric: {invalid_metric_result.value}")
+    else:
+        _emit(f"Validation error (expected): {invalid_metric_result.error}")
 
 
 def demonstrate_health_monitoring() -> None:
