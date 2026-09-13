@@ -14,7 +14,7 @@
   Developers`, `Operating System :: OS Independent`, `Programming Language ::
   Python :: 3 :: Only`, `Programming Language :: Python :: 3.13`, `Topic ::
   Software Development :: Libraries :: Python Modules` (+2 more)
-- Project class: `domain`
+- Project class: `platform`
 - Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`,
   `tracing`, `typed`
 - Main facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
