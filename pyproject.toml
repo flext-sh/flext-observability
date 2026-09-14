@@ -571,7 +571,6 @@ environments = ["sys_platform == 'linux'", "sys_platform == 'darwin'"]
 
 [tool.flext.docs]
 package_name = "flext_observability"
-project_class = "platform"
 
 
 [tool.flext.project.budget.boundary]
@@ -610,6 +609,11 @@ memory-mb = 2048
 tokens = 1000000
 
 [tool.flext.project.budget.format]
+time-seconds = 600
+memory-mb = 2048
+tokens = 1000000
+
+[tool.flext.project.budget.index-declarations]
 time-seconds = 600
 memory-mb = 2048
 tokens = 1000000
