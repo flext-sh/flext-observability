@@ -6,8 +6,8 @@ SPDX-License-Identifier: MIT
 These tests assert observable public behavior only: the ``r[T]`` outcome of the
 facade's fallible creation methods, the public model fields of the produced
 entities, and the error messages returned on invalid input. No private
-attributes, no internal-collaborator spying, no monkeypatching of the unit
-under test.
+attributes, no internal-collaborator spying, no environment manipulation of
+the unit under test.
 
 The ``FlextObservabilityMasterFactory`` class was retired; the canonical
 creation surface is now the ``FlextObservability`` facade itself
