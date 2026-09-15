@@ -20,6 +20,9 @@ class TestsFlextObservabilityServiceBase(tests_s):
     def _runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
         return m.RuntimeBootstrapOptions(settings_type=TestsFlextObservabilitySettings)
 
+    class TestsFlextObservability:
+        """Canonical namespace for test service base."""
+
 
 s = TestsFlextObservabilityServiceBase
 

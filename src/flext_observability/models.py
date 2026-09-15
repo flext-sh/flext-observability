@@ -17,18 +17,12 @@ from types import MappingProxyType
 from typing import Annotated, Self
 from uuid import uuid4
 
-from flext_cli import m, u
+from flext_cli import m as _m
 
-from flext_observability import c, t
-
-# Why: typed module constants give pyrefly a concrete container type for the
-# empty-mapping defaults below (bare `MappingProxyType({})` infers `Any`).
-_EMPTY_DOMAIN_LABELS: t.Observability.DomainLabels = MappingProxyType({})
-_EMPTY_STR_MAPPING: t.StrMapping = MappingProxyType({})
-_EMPTY_CONFIG_MAPPING: t.ConfigurationMapping = MappingProxyType({})
+from ._models import FlextObservabilityModelsBase
 
 
-class FlextObservabilityModels(m):
+class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
     """Generic observability models with Pydantic patterns.
 
     Single class providing generic base models using composition and delegation.
@@ -40,29 +34,29 @@ class FlextObservabilityModels(m):
 
         """Metrics domain models."""
 
-        class MetricEntry(m.Entity):
+        class MetricEntry(_m.Entity):
             """Metric entry model."""
 
             metric_id: Annotated[
                 str,
-                u.Field(
+                _m.Field(
                     default_factory=lambda: str(uuid4()),
                     description="Unique metric entry identifier",
                 ),
             ]
-            name: Annotated[t.NonEmptyStr, u.Field(description="Metric name")]
-            value: Annotated[t.Numeric, u.Field(description="Metric value")]
-            unit: Annotated[t.NonEmptyStr, u.Field(description="Measurement unit")]
-            source: Annotated[str, u.Field(description="Metric data source")] = (
+            name: Annotated[_m.NonEmptyStr, _m.Field(description="Metric name")]
+            value: Annotated[_m.Numeric, _m.Field(description="Metric value")]
+            unit: Annotated[_m.NonEmptyStr, _m.Field(description="Measurement unit")]
+            source: Annotated[str, _m.Field(description="Metric data source")] = (
                 "unknown"
             )
 
-        class _EntityWithId(m.Entity):
+        class _EntityWithId(_m.Entity):
             """Base for domain entities with auto-generated unique ID."""
 
             id: Annotated[
                 str,
-                u.Field(
+                _m.Field(
                     default_factory=lambda: str(uuid4()),
                     description="Unique entity identifier",
                 ),
@@ -73,33 +67,35 @@ class FlextObservabilityModels(m):
         class Metric(_EntityWithId):
             """Observability metric entity."""
 
-            name: Annotated[t.NonEmptyStr, u.Field(description="Metric name")]
-            value: Annotated[t.PositiveFloat, u.Field(description="Metric value")]
-            unit: Annotated[t.NonEmptyStr, u.Field(description="Measurement unit")]
-            metric_type: Annotated[t.NonEmptyStr, u.Field(description="Type of metric")]
+            name: Annotated[_m.NonEmptyStr, _m.Field(description="Metric name")]
+            value: Annotated[_m.PositiveFloat, _m.Field(description="Metric value")]
+            unit: Annotated[_m.NonEmptyStr, _m.Field(description="Measurement unit")]
+            metric_type: Annotated[
+                _m.NonEmptyStr, _m.Field(description="Type of metric")
+            ]
             labels: Annotated[
-                t.Observability.DomainLabels,
-                u.Field(
-                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
+                _m.ScalarMapping,
+                _m.Field(
+                    default_factory=lambda: MappingProxyType({}),
                     description="Metric labels for categorization",
                 ),
             ]
 
-        class Trace(m.Entity):
+        class Trace(_m.Entity):
             """Distributed trace entity."""
 
             trace_id: Annotated[
                 str,
-                u.Field(
+                _m.Field(
                     default_factory=lambda: str(uuid4()),
                     description="Unique trace identifier",
                 ),
             ]
-            name: Annotated[t.NonEmptyStr, u.Field(description="Trace name")]
+            name: Annotated[_m.NonEmptyStr, _m.Field(description="Trace name")]
             attributes: Annotated[
-                t.Observability.DomainLabels,
-                u.Field(
-                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
+                _m.ScalarMapping,
+                _m.Field(
+                    default_factory=lambda: MappingProxyType({}),
                     description="Trace attributes",
                 ),
             ]
@@ -107,16 +103,16 @@ class FlextObservabilityModels(m):
         class Alert(_EntityWithId):
             """Observability alert entity."""
 
-            title: Annotated[t.NonEmptyStr, u.Field(description="Alert title")]
-            message: Annotated[t.NonEmptyStr, u.Field(description="Alert message")]
+            title: Annotated[_m.NonEmptyStr, _m.Field(description="Alert title")]
+            message: Annotated[_m.NonEmptyStr, _m.Field(description="Alert message")]
             severity: Annotated[
-                t.NonEmptyStr, u.Field(description="Alert severity level")
+                _m.NonEmptyStr, _m.Field(description="Alert severity level")
             ]
-            source: Annotated[t.NonEmptyStr, u.Field(description="Alert source")]
+            source: Annotated[_m.NonEmptyStr, _m.Field(description="Alert source")]
             labels: Annotated[
-                t.Observability.DomainLabels,
-                u.Field(
-                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
+                _m.ScalarMapping,
+                _m.Field(
+                    default_factory=lambda: MappingProxyType({}),
                     description="Alert labels for categorization",
                 ),
             ]
@@ -125,13 +121,15 @@ class FlextObservabilityModels(m):
             """Health check entity."""
 
             component: Annotated[
-                t.NonEmptyStr, u.Field(description="Component being checked")
+                _m.NonEmptyStr, _m.Field(description="Component being checked")
             ]
-            status: Annotated[t.NonEmptyStr, u.Field(description="Health check status")]
+            status: Annotated[
+                _m.NonEmptyStr, _m.Field(description="Health check status")
+            ]
             details: Annotated[
-                t.Observability.DomainLabels,
-                u.Field(
-                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
+                _m.ScalarMapping,
+                _m.Field(
+                    default_factory=lambda: MappingProxyType({}),
                     description="Health check details",
                 ),
             ]
@@ -139,131 +137,132 @@ class FlextObservabilityModels(m):
         class LogEntry(_EntityWithId):
             """Structured log entry entity."""
 
-            message: Annotated[t.NonEmptyStr, u.Field(description="Log message")]
-            level: Annotated[t.NonEmptyStr, u.Field(description="Log level")]
-            component: Annotated[t.NonEmptyStr, u.Field(description="Source component")]
+            message: Annotated[_m.NonEmptyStr, _m.Field(description="Log message")]
+            level: Annotated[_m.NonEmptyStr, _m.Field(description="Log level")]
+            component: Annotated[
+                _m.NonEmptyStr, _m.Field(description="Source component")
+            ]
             timestamp: Annotated[
                 datetime,
-                u.Field(default_factory=u.now, description="Log entry timestamp"),
+                _m.Field(default_factory=_m.now, description="Log entry timestamp"),
             ]
             context: Annotated[
-                t.Observability.DomainLabels,
-                u.Field(
-                    default_factory=lambda: _EMPTY_DOMAIN_LABELS,
+                _m.ScalarMapping,
+                _m.Field(
+                    default_factory=lambda: MappingProxyType({}),
                     description="Log context metadata",
                 ),
             ]
 
-        class StartTimePayload(m.Value):
+        class StartTimePayload(_m.Value):
             """Payload for validating HTTP request start time."""
 
             value: Annotated[
                 float,
-                u.Field(ge=0, description="Request start time in seconds since epoch"),
+                _m.Field(ge=0, description="Request start time in seconds since epoch"),
             ]
 
-        class HeadersPayload(m.Value):
+        class HeadersPayload(_m.Value):
             """Payload for validating HTTP client headers."""
 
             headers: Annotated[
-                t.StrMapping,
-                u.Field(
-                    default_factory=lambda: _EMPTY_STR_MAPPING,
+                _m.StrMapping,
+                _m.Field(
+                    default_factory=lambda: MappingProxyType({}),
                     description="HTTP header key-value pairs",
                 ),
             ]
 
         # --- Moved from advanced_context.py ---
-        class ContextSnapshot(m.Value):
+        class ContextSnapshot(_m.Value):
             """Snapshot of observability context for restoration in async operations."""
 
             correlation_id: Annotated[
-                str, u.Field(description="Correlation identifier")
+                str, _m.Field(description="Correlation identifier")
             ] = ""
-            trace_id: Annotated[str, u.Field(description="Trace identifier")] = ""
-            span_id: Annotated[str, u.Field(description="Span identifier")] = ""
+            trace_id: Annotated[str, _m.Field(description="Trace identifier")] = ""
+            span_id: Annotated[str, _m.Field(description="Span identifier")] = ""
             baggage: Annotated[
-                t.StrMapping,
-                u.Field(
-                    default_factory=lambda: _EMPTY_STR_MAPPING,
+                _m.StrMapping,
+                _m.Field(
+                    default_factory=lambda: MappingProxyType({}),
                     description="Propagated baggage key-value pairs",
                 ),
             ]
             metadata: Annotated[
-                t.ConfigurationMapping,
-                u.Field(
-                    default_factory=lambda: _EMPTY_CONFIG_MAPPING,
+                _m.ConfigurationMapping,
+                _m.Field(
+                    default_factory=lambda: MappingProxyType({}),
                     description="Additional context metadata",
                 ),
             ]
 
         # --- Moved from context.py ---
-        class BaggageKeyModel(m.Value):
+        class BaggageKeyModel(_m.Value):
             """Validation model for baggage keys."""
 
-            key: Annotated[t.NonEmptyStr, u.Field(description="Baggage key name")]
+            key: Annotated[_m.NonEmptyStr, _m.Field(description="Baggage key name")]
 
         # --- Moved from custom_metrics.py ---
-        class MetricTypeInput(m.Value):
+        class MetricTypeInput(_m.Value):
             """Validation model for metric type input."""
 
             metric_type: Annotated[
-                c.Observability.MetricType,
-                u.Field(description="Type of metric to create"),
+                _m.MetricType, _m.Field(description="Type of metric to create")
             ]
 
-        class CustomMetricDefinition(m.Value):
+        class CustomMetricDefinition(_m.Value):
             """Definition of a custom business metric with type and metadata."""
 
-            name: Annotated[t.NonEmptyStr, u.Field(description="Custom metric name")]
+            name: Annotated[_m.NonEmptyStr, _m.Field(description="Custom metric name")]
             metric_type: Annotated[
-                c.Observability.MetricType, u.Field(description="Type of metric")
+                _m.MetricType, _m.Field(description="Type of metric")
             ]
             description: Annotated[
-                t.NonEmptyStr, u.Field(description="Human-readable metric description")
+                _m.NonEmptyStr,
+                _m.Field(description="Human-readable metric description"),
             ]
             unit: Annotated[
-                str, u.Field(min_length=1, description="Measurement unit")
+                str, _m.Field(min_length=1, description="Measurement unit")
             ] = "1"
             labels: Annotated[
-                t.StrMapping,
-                u.Field(
-                    default_factory=lambda: _EMPTY_STR_MAPPING,
+                _m.StrMapping,
+                _m.Field(
+                    default_factory=lambda: MappingProxyType({}),
                     description="Metric labels for categorization",
                 ),
             ]
 
         # --- Moved from error_handling.py ---
-        class CooldownInput(m.Value):
+        class CooldownInput(_m.Value):
             """Validation model for cooldown seconds input."""
 
             seconds: Annotated[
-                t.PositiveFloat, u.Field(description="Cooldown duration in seconds")
+                _m.PositiveFloat, _m.Field(description="Cooldown duration in seconds")
             ]
 
-        class ThresholdInput(m.Value):
+        class ThresholdInput(_m.Value):
             """Validation model for threshold input."""
 
             threshold: Annotated[
-                t.PositiveInt, u.Field(description="Error count threshold")
+                _m.PositiveInt, _m.Field(description="Error count threshold")
             ]
 
-        class ErrorEvent(m.Value):
+        class ErrorEvent(_m.Value):
             """Error event with fingerprinting for deduplication and alerting."""
 
             error_type: Annotated[
-                t.NonEmptyStr, u.Field(description="Error classification type")
+                _m.NonEmptyStr, _m.Field(description="Error classification type")
             ]
-            message: Annotated[t.NonEmptyStr, u.Field(description="Error message")]
+            message: Annotated[_m.NonEmptyStr, _m.Field(description="Error message")]
             severity: Annotated[
-                c.Observability.ErrorSeverity,
-                u.Field(description="Error severity level"),
-            ] = c.Observability.ErrorSeverity.ERROR
+                _m.ErrorSeverity, _m.Field(description="Error severity level")
+            ] = _m.ErrorSeverity.ERROR
             fingerprint: Annotated[
-                str, u.Field(description="SHA256 deduplication fingerprint")
+                str, _m.Field(description="SHA256 deduplication fingerprint")
             ] = ""
             correlation_id: Annotated[
-                str, u.Field(description="Correlation identifier")
+                str, _m.Field(description="Correlation identifier")
             ] = ""
 
             def calculate_fingerprint(self) -> Self:
@@ -284,53 +283,53 @@ class FlextObservabilityModels(m):
         # --- Moved from health.py ---
 
         # --- Moved from logging_integration.py ---
-        class LogContext(m.Value):
+        class LogContext(_m.Value):
             """Trace context for enriching log entries with correlation and span IDs."""
 
             correlation_id: Annotated[
-                str | None, u.Field(description="Correlation identifier")
+                str | None, _m.Field(description="Correlation identifier")
             ] = None
-            trace_id: Annotated[str | None, u.Field(description="Trace identifier")] = (
-                None
-            )
-            span_id: Annotated[str | None, u.Field(description="Span identifier")] = (
+            trace_id: Annotated[
+                str | None, _m.Field(description="Trace identifier")
+            ] = None
+            span_id: Annotated[str | None, _m.Field(description="Span identifier")] = (
                 None
             )
             baggage: Annotated[
-                str | None, u.Field(description="Serialized baggage string")
+                str | None, _m.Field(description="Serialized baggage string")
             ] = None
-            extra: Annotated[m.Dict, u.Field(description="Additional context data")] = (
-                u.Field(default_factory=lambda: m.Dict({}))
-            )
+            extra: Annotated[
+                _m.Dict, _m.Field(description="Additional context data")
+            ] = _m.Field(default_factory=lambda: _m.Dict({}))
 
         # --- Moved from performance.py ---
-        class PerformanceMetrics(m.Value):
+        class PerformanceMetrics(_m.Value):
             """Metrics for tracking performance of observability operations."""
 
             operation: Annotated[
-                t.NonEmptyStr, u.Field(description="Operation name being measured")
+                _m.NonEmptyStr, _m.Field(description="Operation name being measured")
             ]
             start_time: Annotated[
                 float,
-                u.Field(description="Operation start time in seconds since epoch"),
-            ] = u.Field(default_factory=time.time)
+                _m.Field(description="Operation start time in seconds since epoch"),
+            ] = _m.Field(default_factory=time.time)
             end_time: Annotated[
-                float, u.Field(description="Operation end time in seconds since epoch")
+                float, _m.Field(description="Operation end time in seconds since epoch")
             ] = 0.0
             duration_ms: Annotated[
-                float, u.Field(description="Operation duration in milliseconds")
+                float, _m.Field(description="Operation duration in milliseconds")
             ] = 0.0
             memory_used_mb: Annotated[
-                float, u.Field(description="Memory used in megabytes")
+                float, _m.Field(description="Memory used in megabytes")
             ] = 0.0
             cpu_percent: Annotated[
-                float, u.Field(description="CPU usage percentage")
+                float, _m.Field(description="CPU usage percentage")
             ] = 0.0
             success: Annotated[
-                bool, u.Field(description="Whether the operation succeeded")
+                bool, _m.Field(description="Whether the operation succeeded")
             ] = True
             error_message: Annotated[
-                str, u.Field(description="Error message if operation failed")
+                str, _m.Field(description="Error message if operation failed")
             ] = ""
 
             def calculate_duration(self) -> Self:

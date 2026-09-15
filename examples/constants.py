@@ -1,12 +1,22 @@
-"""Constants for flextobservability."""
+"""Public examples constants facade for flext-observability."""
 
 from __future__ import annotations
 
-from flext_observability import FlextObservabilityConstants
+from typing import TYPE_CHECKING
+
+from flext_core import c as _c
+
+if TYPE_CHECKING:
+    from examples.typings import t
 
 
-class ExamplesFlextObservabilityConstants(FlextObservabilityConstants):
-    """Constants for flextobservability."""
+class ExamplesFlextObservabilityConstants(_c):
+    """Public examples constants facade — inherits canonical c."""
+
+    class ExamplesFlextObservability:
+        """Canonical namespace for example constants."""
 
 
-__all__: list[str] = ["ExamplesFlextObservabilityConstants"]
+c = ExamplesFlextObservabilityConstants
+
+__all__: t.MutableSequenceOf[str] = ["ExamplesFlextObservabilityConstants", "c"]

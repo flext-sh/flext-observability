@@ -2,19 +2,16 @@
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsConstants
+from flext_tests import c as tests_c
 
-from flext_observability import FlextObservabilityConstants
+from flext_observability import c as obs_c
 
 
-class TestsFlextObservabilityConstants(
-    FlextTestsConstants, FlextObservabilityConstants
-):
-    class Observability(FlextObservabilityConstants.Observability):
-        """Observability domain test constants."""
+class TestsFlextObservabilityConstants(tests_c):
+    """Test constants for flext-observability."""
 
-        class Tests:
-            """Observability test fixture constants."""
+    class TestsFlextObservability(tests_c.Tests, obs_c.Observability):
+        """Canonical namespace for test constants."""
 
 
 c = TestsFlextObservabilityConstants

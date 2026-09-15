@@ -6,15 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsUtilities
+from flext_tests import u as tests_u
 
-from flext_observability import FlextObservabilityUtilities
+from flext_observability import u as obs_u
 
 
-class TestsFlextObservabilityUtilities(
-    FlextTestsUtilities, FlextObservabilityUtilities
-):
+class TestsFlextObservabilityUtilities(tests_u):
     """Test utilities for flext-observability."""
+
+    class TestsFlextObservability(tests_u.Tests, obs_u.Observability):
+        """Canonical namespace for test utilities."""
 
 
 u = TestsFlextObservabilityUtilities

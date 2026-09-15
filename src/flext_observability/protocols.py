@@ -9,12 +9,12 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import Protocol, runtime_checkable
 
-from flext_cli import m, p
+from flext_cli import m as _m, p as _p
 
-from flext_observability import t
+from ._protocols import FlextObservabilityProtocolsBase
 
 
-class FlextObservabilityProtocols(p):
+class FlextObservabilityProtocols(_p, FlextObservabilityProtocolsBase):
     """Unified observability protocols following FLEXT domain extension pattern.
 
     Extends p to inherit all foundation protocols (Result, Service, etc.)
@@ -48,11 +48,11 @@ class FlextObservabilityProtocols(p):
         class ObservabilityService(Protocol):
             """Protocol for observability services providing alerts and metrics."""
 
-            def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
+            def create_alert(self, **kwargs: _m.Scalar) -> _p.Result[_m.Dict]:
                 """Create an alert with given parameters."""
                 ...
 
-            def metrics_summary(self) -> p.Result[m.Dict]:
+            def metrics_summary(self) -> _p.Result[_m.Dict]:
                 """Get summary of collected metrics."""
                 ...
 
@@ -111,7 +111,7 @@ class FlextObservabilityProtocols(p):
             class Request(Protocol):
                 """Protocol for HTTP request objects used by middleware."""
 
-                headers: m.Dict
+                headers: _m.Dict
                 method: str
                 url: FlextObservabilityProtocols.Observability.Http.RequestURL
                 client: (
@@ -123,7 +123,7 @@ class FlextObservabilityProtocols(p):
                 """Protocol for HTTP response objects used by middleware."""
 
                 status_code: int
-                headers: m.Dict
+                headers: _m.Dict
 
         class HttpClient:
             """Protocols for httpx and aiohttp HTTP client instrumentation."""

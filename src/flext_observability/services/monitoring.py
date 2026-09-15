@@ -360,8 +360,4 @@ class FlextObservabilityMonitor:
             return decorator
 
 
-flext_monitor_function = FlextObservabilityMonitor.flext_monitor_function
-"""Module-level alias for FlextObservabilityMonitor.flext_monitor_function."""
-
-
-__all__: t.StrSequence = ("FlextObservabilityMonitor", "flext_monitor_function")
+__all__: t.StrSequence = ("FlextObservabilityMonitor",)

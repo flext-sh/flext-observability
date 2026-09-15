@@ -1,12 +1,22 @@
-"""Utility functions for flextobservability."""
+"""Public examples utilities facade for flext-observability."""
 
 from __future__ import annotations
 
-from flext_observability import FlextObservabilityUtilities
+from typing import TYPE_CHECKING
+
+from flext_core import u as _u
+
+if TYPE_CHECKING:
+    from examples.typings import t
 
 
-class ExamplesFlextObservabilityUtilities(FlextObservabilityUtilities):
-    """Utility functions for flextobservability."""
+class ExamplesFlextObservabilityUtilities(_u):
+    """Public examples utilities facade — inherits canonical u."""
+
+    class ExamplesFlextObservability:
+        """Canonical namespace for example utilities."""
 
 
-__all__: list[str] = ["ExamplesFlextObservabilityUtilities"]
+u = ExamplesFlextObservabilityUtilities
+
+__all__: t.MutableSequenceOf[str] = ["ExamplesFlextObservabilityUtilities", "u"]

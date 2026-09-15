@@ -33,8 +33,8 @@ from flext_observability import c, m, p, r, t, u
 from flext_observability.services.context import FlextObservabilityContext
 from flext_observability.services.logging_integration import FlextObservabilityLogging
 
-g = flask.g if hasattr(flask, "g") else None
-request = flask.request if hasattr(flask, "request") else None
+_g = flask.g if hasattr(flask, "g") else None
+_request = flask.request if hasattr(flask, "request") else None
 
 
 class FlextObservabilityHTTP:
@@ -113,19 +113,19 @@ class FlextObservabilityHTTP:
         @classmethod
         def _before_request_payload(cls) -> tuple[str, str, t.StrMapping]:
             """Prepare Flask before-request context and log payload."""
-            headers_dict: t.StrMapping = dict(request.headers) if request else {}
-            if request:
+            headers_dict: t.StrMapping = dict(_request.headers) if _request else {}
+            if _request:
                 FlextObservabilityContext.from_headers(headers_dict)
             correlation_id = FlextObservabilityContext.correlation_id()
-            if g:
-                g.flext_start_time = time.time()
-                g.flext_correlation_id = correlation_id
-            request_method = request.method if request else "UNKNOWN"
-            request_path = request.path if request else "UNKNOWN"
-            request_remote = request.remote_addr if request else "unknown"
+            if _g:
+                _g.flext_start_time = time.time()
+                _g.flext_correlation_id = correlation_id
+            request_method = _request.method if _request else "UNKNOWN"
+            request_path = _request.path if _request else "UNKNOWN"
+            request_remote = _request.remote_addr if _request else "unknown"
             user_agent = (
-                request.user_agent.string
-                if request and request.user_agent
+                _request.user_agent.string
+                if _request and _request.user_agent
                 else "unknown"
             )
             return (
@@ -159,8 +159,8 @@ class FlextObservabilityHTTP:
                 response.status_code if hasattr(response, "status_code") else 200
             )
             is_error = status_code >= c.Observability.HTTP_ERROR_STATUS_THRESHOLD
-            request_method = request.method if request else "UNKNOWN"
-            request_path = request.path if request else "UNKNOWN"
+            request_method = _request.method if _request else "UNKNOWN"
+            request_path = _request.path if _request else "UNKNOWN"
             duration_ms = cls._duration_ms()
             FlextObservabilityLogging.log_with_context(
                 FlextObservabilityHTTP.logger,
@@ -180,8 +180,8 @@ class FlextObservabilityHTTP:
         def _duration_ms(cls) -> float:
             """Resolve Flask request duration from the stored start time."""
             start_time = (
-                g.flext_start_time
-                if g is not None and hasattr(g, "flext_start_time")
+                _g.flext_start_time
+                if _g is not None and hasattr(_g, "flext_start_time")
                 else None
             )
             try:
@@ -201,8 +201,8 @@ class FlextObservabilityHTTP:
                     c.Observability.ErrorSeverity.ERROR.value,
                     f"HTTP request error: {error!s}",
                     extra={
-                        "http_method": request.method if request else "UNKNOWN",
-                        "http_path": request.path if request else "UNKNOWN",
+                        "http_method": _request.method if _request else "UNKNOWN",
+                        "http_path": _request.path if _request else "UNKNOWN",
                         "error_type": type(error).__name__,
                         "error_message": str(error),
                     },

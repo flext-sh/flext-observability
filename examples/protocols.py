@@ -1,12 +1,22 @@
-"""Protocol definitions for flextobservability."""
+"""Public examples protocols facade for flext-observability."""
 
 from __future__ import annotations
 
-from flext_observability import FlextObservabilityProtocols
+from typing import TYPE_CHECKING
+
+from flext_core import p as _p
+
+if TYPE_CHECKING:
+    from examples.typings import t
 
 
-class ExamplesFlextObservabilityProtocols(FlextObservabilityProtocols):
-    """Protocol definitions for flextobservability."""
+class ExamplesFlextObservabilityProtocols(_p):
+    """Public examples protocols facade — inherits canonical p."""
+
+    class ExamplesFlextObservability:
+        """Canonical namespace for example protocols."""
 
 
-__all__: list[str] = ["ExamplesFlextObservabilityProtocols"]
+p = ExamplesFlextObservabilityProtocols
+
+__all__: t.MutableSequenceOf[str] = ["ExamplesFlextObservabilityProtocols", "p"]
