@@ -18,18 +18,19 @@
 - Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`,
   `tracing`, `typed`
 - Main facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
-  `FlextObservabilityConfig`, `FlextObservabilityConstants`,
-  `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
-  `FlextObservabilityErrorHandling`, `FlextObservabilityHTTP` (+12 more)
+  `FlextObservabilityCli`, `FlextObservabilityConfig`,
+  `FlextObservabilityConstants`, `FlextObservabilityContext`,
+  `FlextObservabilityCustomMetrics`, `FlextObservabilityErrorHandling` (+14
+  more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextObservability`,
-  `FlextObservabilityAdvancedContext`, `FlextObservabilityConfig`,
-  `FlextObservabilityConstants`, `FlextObservabilityContext`,
-  `FlextObservabilityCustomMetrics`, `FlextObservabilityErrorHandling`,
-  `FlextObservabilityHTTP`, `FlextObservabilityHTTPClient`,
-  `FlextObservabilityHealth` (+14 more)
+  `FlextObservabilityAdvancedContext`, `FlextObservabilityCli`,
+  `FlextObservabilityConfig`, `FlextObservabilityConstants`,
+  `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
+  `FlextObservabilityErrorHandling`, `FlextObservabilityHTTP`,
+  `FlextObservabilityHTTPClient` (+15 more)
 - Exported module shortcuts: `services`
-- Generated module pages: `19`
+- Generated module pages: `21`
 
 ## Next Pages
 
