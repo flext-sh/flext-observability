@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from .http_client_instrumentation import FlextObservabilityHTTPClient
     from .http_instrumentation import FlextObservabilityHTTP
     from .logging_integration import FlextObservabilityLogging
-    from .monitoring import FlextObservabilityMonitor, flext_monitor_function
+    from .monitoring import FlextObservabilityMonitor
     from .performance import FlextObservabilityPerformance
     from .sampling import FlextObservabilitySampling
     from .services import FlextObservabilityServices
@@ -34,7 +34,6 @@ __all__: tuple[str, ...] = (
     "FlextObservabilityPerformance",
     "FlextObservabilitySampling",
     "FlextObservabilityServices",
-    "flext_monitor_function",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
@@ -48,7 +47,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".http_client_instrumentation": ("FlextObservabilityHTTPClient",),
             ".http_instrumentation": ("FlextObservabilityHTTP",),
             ".logging_integration": ("FlextObservabilityLogging",),
-            ".monitoring": ("FlextObservabilityMonitor", "flext_monitor_function"),
+            ".monitoring": ("FlextObservabilityMonitor",),
             ".performance": ("FlextObservabilityPerformance",),
             ".sampling": ("FlextObservabilitySampling",),
             ".services": ("FlextObservabilityServices",),

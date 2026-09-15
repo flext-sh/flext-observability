@@ -19,7 +19,10 @@ from uuid import uuid4
 
 from flext_cli import m as _m
 
+from flext_core import t
+
 from ._models import FlextObservabilityModelsBase
+from .constants import FlextObservabilityConstants as _c
 
 
 class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
@@ -44,9 +47,9 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
                     description="Unique metric entry identifier",
                 ),
             ]
-            name: Annotated[_m.NonEmptyStr, _m.Field(description="Metric name")]
-            value: Annotated[_m.Numeric, _m.Field(description="Metric value")]
-            unit: Annotated[_m.NonEmptyStr, _m.Field(description="Measurement unit")]
+            name: Annotated[t.NonEmptyStr, _m.Field(description="Metric name")]
+            value: Annotated[t.Numeric, _m.Field(description="Metric value")]
+            unit: Annotated[t.NonEmptyStr, _m.Field(description="Measurement unit")]
             source: Annotated[str, _m.Field(description="Metric data source")] = (
                 "unknown"
             )
@@ -67,14 +70,14 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
         class Metric(_EntityWithId):
             """Observability metric entity."""
 
-            name: Annotated[_m.NonEmptyStr, _m.Field(description="Metric name")]
-            value: Annotated[_m.PositiveFloat, _m.Field(description="Metric value")]
-            unit: Annotated[_m.NonEmptyStr, _m.Field(description="Measurement unit")]
+            name: Annotated[t.NonEmptyStr, _m.Field(description="Metric name")]
+            value: Annotated[t.PositiveFloat, _m.Field(description="Metric value")]
+            unit: Annotated[t.NonEmptyStr, _m.Field(description="Measurement unit")]
             metric_type: Annotated[
-                _m.NonEmptyStr, _m.Field(description="Type of metric")
+                t.NonEmptyStr, _m.Field(description="Type of metric")
             ]
             labels: Annotated[
-                _m.ScalarMapping,
+                t.ScalarMapping,
                 _m.Field(
                     default_factory=lambda: MappingProxyType({}),
                     description="Metric labels for categorization",
@@ -91,9 +94,9 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
                     description="Unique trace identifier",
                 ),
             ]
-            name: Annotated[_m.NonEmptyStr, _m.Field(description="Trace name")]
+            name: Annotated[t.NonEmptyStr, _m.Field(description="Trace name")]
             attributes: Annotated[
-                _m.ScalarMapping,
+                t.ScalarMapping,
                 _m.Field(
                     default_factory=lambda: MappingProxyType({}),
                     description="Trace attributes",
@@ -103,14 +106,14 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
         class Alert(_EntityWithId):
             """Observability alert entity."""
 
-            title: Annotated[_m.NonEmptyStr, _m.Field(description="Alert title")]
-            message: Annotated[_m.NonEmptyStr, _m.Field(description="Alert message")]
+            title: Annotated[t.NonEmptyStr, _m.Field(description="Alert title")]
+            message: Annotated[t.NonEmptyStr, _m.Field(description="Alert message")]
             severity: Annotated[
-                _m.NonEmptyStr, _m.Field(description="Alert severity level")
+                t.NonEmptyStr, _m.Field(description="Alert severity level")
             ]
-            source: Annotated[_m.NonEmptyStr, _m.Field(description="Alert source")]
+            source: Annotated[t.NonEmptyStr, _m.Field(description="Alert source")]
             labels: Annotated[
-                _m.ScalarMapping,
+                t.ScalarMapping,
                 _m.Field(
                     default_factory=lambda: MappingProxyType({}),
                     description="Alert labels for categorization",
@@ -121,13 +124,13 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             """Health check entity."""
 
             component: Annotated[
-                _m.NonEmptyStr, _m.Field(description="Component being checked")
+                t.NonEmptyStr, _m.Field(description="Component being checked")
             ]
             status: Annotated[
-                _m.NonEmptyStr, _m.Field(description="Health check status")
+                t.NonEmptyStr, _m.Field(description="Health check status")
             ]
             details: Annotated[
-                _m.ScalarMapping,
+                t.ScalarMapping,
                 _m.Field(
                     default_factory=lambda: MappingProxyType({}),
                     description="Health check details",
@@ -137,17 +140,19 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
         class LogEntry(_EntityWithId):
             """Structured log entry entity."""
 
-            message: Annotated[_m.NonEmptyStr, _m.Field(description="Log message")]
-            level: Annotated[_m.NonEmptyStr, _m.Field(description="Log level")]
+            message: Annotated[t.NonEmptyStr, _m.Field(description="Log message")]
+            level: Annotated[t.NonEmptyStr, _m.Field(description="Log level")]
             component: Annotated[
-                _m.NonEmptyStr, _m.Field(description="Source component")
+                t.NonEmptyStr, _m.Field(description="Source component")
             ]
             timestamp: Annotated[
                 datetime,
-                _m.Field(default_factory=_m.now, description="Log entry timestamp"),
+                _m.Field(
+                    default_factory=datetime.now, description="Log entry timestamp"
+                ),
             ]
             context: Annotated[
-                _m.ScalarMapping,
+                t.ScalarMapping,
                 _m.Field(
                     default_factory=lambda: MappingProxyType({}),
                     description="Log context metadata",
@@ -166,7 +171,7 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             """Payload for validating HTTP client headers."""
 
             headers: Annotated[
-                _m.StrMapping,
+                t.StrMapping,
                 _m.Field(
                     default_factory=lambda: MappingProxyType({}),
                     description="HTTP header key-value pairs",
@@ -183,14 +188,14 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             trace_id: Annotated[str, _m.Field(description="Trace identifier")] = ""
             span_id: Annotated[str, _m.Field(description="Span identifier")] = ""
             baggage: Annotated[
-                _m.StrMapping,
+                t.StrMapping,
                 _m.Field(
                     default_factory=lambda: MappingProxyType({}),
                     description="Propagated baggage key-value pairs",
                 ),
             ]
             metadata: Annotated[
-                _m.ConfigurationMapping,
+                t.ConfigurationMapping,
                 _m.Field(
                     default_factory=lambda: MappingProxyType({}),
                     description="Additional context metadata",
@@ -201,32 +206,32 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
         class BaggageKeyModel(_m.Value):
             """Validation model for baggage keys."""
 
-            key: Annotated[_m.NonEmptyStr, _m.Field(description="Baggage key name")]
+            key: Annotated[t.NonEmptyStr, _m.Field(description="Baggage key name")]
 
         # --- Moved from custom_metrics.py ---
         class MetricTypeInput(_m.Value):
             """Validation model for metric type input."""
 
             metric_type: Annotated[
-                _m.MetricType, _m.Field(description="Type of metric to create")
+                _c.Observability.MetricType,
+                _m.Field(description="Type of metric to create"),
             ]
 
         class CustomMetricDefinition(_m.Value):
             """Definition of a custom business metric with type and metadata."""
 
-            name: Annotated[_m.NonEmptyStr, _m.Field(description="Custom metric name")]
+            name: Annotated[t.NonEmptyStr, _m.Field(description="Custom metric name")]
             metric_type: Annotated[
-                _m.MetricType, _m.Field(description="Type of metric")
+                _c.Observability.MetricType, _m.Field(description="Type of metric")
             ]
             description: Annotated[
-                _m.NonEmptyStr,
-                _m.Field(description="Human-readable metric description"),
+                t.NonEmptyStr, _m.Field(description="Human-readable metric description")
             ]
             unit: Annotated[
                 str, _m.Field(min_length=1, description="Measurement unit")
             ] = "1"
             labels: Annotated[
-                _m.StrMapping,
+                t.StrMapping,
                 _m.Field(
                     default_factory=lambda: MappingProxyType({}),
                     description="Metric labels for categorization",
@@ -238,26 +243,27 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             """Validation model for cooldown seconds input."""
 
             seconds: Annotated[
-                _m.PositiveFloat, _m.Field(description="Cooldown duration in seconds")
+                t.PositiveFloat, _m.Field(description="Cooldown duration in seconds")
             ]
 
         class ThresholdInput(_m.Value):
             """Validation model for threshold input."""
 
             threshold: Annotated[
-                _m.PositiveInt, _m.Field(description="Error count threshold")
+                t.PositiveInt, _m.Field(description="Error count threshold")
             ]
 
         class ErrorEvent(_m.Value):
             """Error event with fingerprinting for deduplication and alerting."""
 
             error_type: Annotated[
-                _m.NonEmptyStr, _m.Field(description="Error classification type")
+                t.NonEmptyStr, _m.Field(description="Error classification type")
             ]
-            message: Annotated[_m.NonEmptyStr, _m.Field(description="Error message")]
+            message: Annotated[t.NonEmptyStr, _m.Field(description="Error message")]
             severity: Annotated[
-                _m.ErrorSeverity, _m.Field(description="Error severity level")
-            ] = _m.ErrorSeverity.ERROR
+                _c.Observability.ErrorSeverity,
+                _m.Field(description="Error severity level"),
+            ] = _c.Observability.ErrorSeverity.ERROR
             fingerprint: Annotated[
                 str, _m.Field(description="SHA256 deduplication fingerprint")
             ] = ""
@@ -307,7 +313,7 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             """Metrics for tracking performance of observability operations."""
 
             operation: Annotated[
-                _m.NonEmptyStr, _m.Field(description="Operation name being measured")
+                t.NonEmptyStr, _m.Field(description="Operation name being measured")
             ]
             start_time: Annotated[
                 float,

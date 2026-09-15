@@ -3,4 +3,6 @@
 
 from __future__ import annotations
 
-__all__: tuple[str, ...] = ()
+from .base import FlextObservabilityTypingsBase
+
+__all__: tuple[str, ...] = ("FlextObservabilityTypingsBase",)

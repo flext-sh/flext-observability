@@ -19,7 +19,7 @@ class FlextObservabilityTypes(_t, FlextObservabilityTypingsBase):
         """Observability domain namespace (flat members per AGENTS.md §149)."""
 
         type DomainLabels = _t.ScalarMapping
-        type HealthMetricsDict = _m.JsonMapping
+        type HealthMetricsDict = _t.JsonMapping
 
 
 t = FlextObservabilityTypes

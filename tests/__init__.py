@@ -9,9 +9,9 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_tests import FlextTestsConstants, d, e, h, r, td, tf, tk, tm, tv, x
+    from flext_tests import c as tests_c, d, e, h, r, td, tf, tk, tm, tv, x
 
-    from flext_observability import FlextObservabilityConstants
+    from flext_observability import c as obs_c
 
     from . import integration, unit
     from .base import (
@@ -37,8 +37,6 @@ if TYPE_CHECKING:
         TestsFlextObservabilityUtilities as u,
     )
 __all__: tuple[str, ...] = (
-    "FlextObservabilityConstants",
-    "FlextTestsConstants",
     "TestsFlextObservabilityConstants",
     "TestsFlextObservabilityModels",
     "TestsFlextObservabilityProtocols",
@@ -52,11 +50,13 @@ __all__: tuple[str, ...] = (
     "h",
     "integration",
     "m",
+    "obs_c",
     "p",
     "r",
     "s",
     "t",
     "td",
+    "tests_c",
     "tf",
     "tk",
     "tm",
@@ -78,22 +78,12 @@ _LAZY_IMPORTS = MappingProxyType(
             ".typings": ("TestsFlextObservabilityTypes", "t"),
             ".unit": ("unit",),
             ".utilities": ("TestsFlextObservabilityUtilities", "u"),
-            "flext_observability": ("FlextObservabilityConstants",),
-            "flext_tests": (
-                "FlextTestsConstants",
-                "d",
-                "e",
-                "h",
-                "r",
-                "td",
-                "tf",
-                "tk",
-                "tm",
-                "tv",
-                "x",
-            ),
+            "flext_tests": ("d", "e", "h", "r", "td", "tf", "tk", "tm", "tv", "x"),
         }),
-        alias_groups=MappingProxyType({}),
+        alias_groups=MappingProxyType({
+            "flext_observability": (("obs_c", "c"),),
+            "flext_tests": (("tests_c", "c"),),
+        }),
         sort_keys=False,
     )
 )
