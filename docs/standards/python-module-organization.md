@@ -2,49 +2,49 @@
 
 <!-- TOC START -->
 - [Table of Contents](#table-of-contents)
-- [🏗️ **Module Architecture Overview**](#module-architecture-overview)
-  - [**Core Design Principles**](#core-design-principles)
-- [📁 **Module Structure & Responsibilities**](#module-structure-responsibilities)
-  - [**Foundation Layer**](#foundation-layer)
-  - [**Domain Entity Layer**](#domain-entity-layer)
-  - [**Application Services Layer**](#application-services-layer)
-  - [**Factory & Creation Layer**](#factory-creation-layer)
-  - [**Interface Adapters Layer**](#interface-adapters-layer)
-  - [**Infrastructure & Utilities Layer**](#infrastructure-utilities-layer)
-- [🎯 **Semantic Naming Conventions**](#semantic-naming-conventions)
-  - [**Public API Naming (FlextXxx)**](#public-api-naming-flextxxx)
-  - [**Module-Level Naming**](#module-level-naming)
-  - [**Function Naming Patterns**](#function-naming-patterns)
-- [📦 **Import Patterns & Best Practices**](#import-patterns-best-practices)
-  - [**Recommended Import Styles**](#recommended-import-styles)
-  - [**Anti-Patterns (Forbidden)**](#anti-patterns-forbidden)
-- [🏛️ **Architectural Patterns**](#architectural-patterns)
-  - [**Layer Separation**](#layer-separation)
-  - [**Dependency Direction**](#dependency-direction)
-  - [**Cross-Cutting Observability Concerns**](#cross-cutting-observability-concerns)
-- [🔄 **Observability-Specific Patterns**](#observability-specific-patterns)
-  - [**Metric Creation Patterns**](#metric-creation-patterns)
-  - [**Distributed Tracing Patterns**](#distributed-tracing-patterns)
-  - [**Health Monitoring Patterns**](#health-monitoring-patterns)
-  - [**Alert Management Patterns**](#alert-management-patterns)
-- [🧪 **Testing Patterns**](#testing-patterns)
-  - [**Test Organization**](#test-organization)
-  - [**r Testing Patterns for Observability**](#r-testing-patterns-for-observability)
-  - [**Observability Entity Testing Patterns**](#observability-entity-testing-patterns)
-  - [**Service Testing Patterns**](#service-testing-patterns)
-  - [**Monitoring Decorator Testing Patterns**](#monitoring-decorator-testing-patterns)
-- [📏 **Code Quality Standards**](#code-quality-standards)
-  - [**Type Annotation Requirements**](#type-annotation-requirements)
-  - [**Error Handling Standards**](#error-handling-standards)
-  - [**Documentation Standards**](#documentation-standards)
-- [🌐 **Ecosystem Integration Guidelines**](#ecosystem-integration-guidelines)
-  - [**Cross-Project Observability Standards**](#cross-project-observability-standards)
-  - [**Configuration Integration Across Services**](#configuration-integration-across-services)
-  - [**Monitoring Integration Patterns**](#monitoring-integration-patterns)
-- [📋 **Checklist for New Observability Modules**](#checklist-for-new-observability-modules)
-  - [**Module Creation Checklist**](#module-creation-checklist)
-  - [**Observability Quality Gate Checklist**](#observability-quality-gate-checklist)
-  - [**Observability-Specific Standards**](#observability-specific-standards)
+- [🏗️ Module Architecture Overview](#module-architecture-overview)
+  - [Core Design Principles](#core-design-principles)
+- [📁 Module Structure & Responsibilities](#module-structure-responsibilities)
+  - [Foundation Layer](#foundation-layer)
+  - [Domain Entity Layer](#domain-entity-layer)
+  - [Application Services Layer](#application-services-layer)
+  - [Factory & Creation Layer](#factory-creation-layer)
+  - [Interface Adapters Layer](#interface-adapters-layer)
+  - [Infrastructure & Utilities Layer](#infrastructure-utilities-layer)
+- [🎯 Semantic Naming Conventions](#semantic-naming-conventions)
+  - [Public API Naming (FlextXxx)](#public-api-naming-flextxxx)
+  - [Module-Level Naming](#module-level-naming)
+  - [Function Naming Patterns](#function-naming-patterns)
+- [📦 Import Patterns & Best Practices](#import-patterns-best-practices)
+  - [Recommended Import Styles](#recommended-import-styles)
+  - [Anti-Patterns (Forbidden)](#anti-patterns-forbidden)
+- [🏛️ Architectural Patterns](#architectural-patterns)
+  - [Layer Separation](#layer-separation)
+  - [Dependency Direction](#dependency-direction)
+  - [Cross-Cutting Observability Concerns](#cross-cutting-observability-concerns)
+- [🔄 Observability-Specific Patterns](#observability-specific-patterns)
+  - [Metric Creation Patterns](#metric-creation-patterns)
+  - [Distributed Tracing Patterns](#distributed-tracing-patterns)
+  - [Health Monitoring Patterns](#health-monitoring-patterns)
+  - [Alert Management Patterns](#alert-management-patterns)
+- [🧪 Testing Patterns](#testing-patterns)
+  - [Test Organization](#test-organization)
+  - [r Testing Patterns for Observability](#r-testing-patterns-for-observability)
+  - [Observability Entity Testing Patterns](#observability-entity-testing-patterns)
+  - [Service Testing Patterns](#service-testing-patterns)
+  - [Monitoring Decorator Testing Patterns](#monitoring-decorator-testing-patterns)
+- [📏 Code Quality Standards](#code-quality-standards)
+  - [Type Annotation Requirements](#type-annotation-requirements)
+  - [Error Handling Standards](#error-handling-standards)
+  - [Documentation Standards](#documentation-standards)
+- [🌐 Ecosystem Integration Guidelines](#ecosystem-integration-guidelines)
+  - [Cross-Project Observability Standards](#cross-project-observability-standards)
+  - [Configuration Integration Across Services](#configuration-integration-across-services)
+  - [Monitoring Integration Patterns](#monitoring-integration-patterns)
+- [📋 Checklist for New Observability Modules](#checklist-for-new-observability-modules)
+  - [Module Creation Checklist](#module-creation-checklist)
+  - [Observability Quality Gate Checklist](#observability-quality-gate-checklist)
+  - [Observability-Specific Standards](#observability-specific-standards)
 <!-- TOC END -->
 
 ## Table of Contents
@@ -532,8 +532,8 @@ from __future__ import annotations
 # Import services for advanced integration
 from flext_observability import (
     FlextMetricsService,
-    FlextTracingService,
     FlextObservabilityMasterFactory,
+    FlextTracingService,
 )
 
 
@@ -557,7 +557,6 @@ class UserAPIService:
         # Process with observability
         return self._process_user_request(request, trace_result.value)
 ```
-
 #### **3. Infrastructure Integration Pattern (For Infrastructure Services)**
 
 ```python
@@ -617,7 +616,6 @@ from __future__ import annotations
 from flext_observability import *
 
 # ❌ Don't import internal implementations
-
 # ❌ Don't bypass simple API without reason
 from flext_observability import FlextObservabilityMasterFactory
 
@@ -634,7 +632,6 @@ class MyCustomMetric:  # Use FlextMetric instead
 result = flext_create_metric("test", 1.0)
 metric = result.value  # Should check result.success first
 ```
-
 ______________________________________________________________________
 
 ## 🏛️ **Architectural Patterns**
@@ -681,7 +678,7 @@ Infrastructure Layer  →  Foundation Layer  →  flext-core
 from __future__ import annotations
 
 # Handled via decorators and context management
-from flext_observability import flext_monitor_function, correlation_id
+from flext_observability import correlation_id, flext_monitor_function
 
 
 @flext_monitor_function("critical_business_operation")
@@ -697,7 +694,6 @@ def process_payment(payment_data: dict) -> p.Result[m.Dict]:
 
     return r[bool].ok({"status": "processed", "correlation_id": correlation_id})
 ```
-
 ______________________________________________________________________
 
 ## 🔄 **Observability-Specific Patterns**
@@ -1054,8 +1050,9 @@ def test_observability_failure_propagation():
 ```python
 from __future__ import annotations
 
-from flext_observability import FlextMetric, FlextTrace
 from decimal import Decimal
+
+from flext_observability import FlextMetric, FlextTrace
 
 
 class TestFlextMetric:
@@ -1133,7 +1130,6 @@ class TestFlextTrace:
         assert child_trace.operation_name == "database_query"
         assert child_trace.service_name == "user-service"
 ```
-
 ### **Service Testing Patterns**
 
 ```python
@@ -1225,8 +1221,9 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
 ```python
 from __future__ import annotations
 
-from flext_observability import flext_monitor_function
 import time
+
+from flext_observability import flext_monitor_function
 
 
 def test_function_monitoring_decorator():
@@ -1263,7 +1260,6 @@ def test_function_monitoring_with_exception():
     # In a real implementation, verify that error metrics were created
     # and failure traces were recorded
 ```
-
 ______________________________________________________________________
 
 ## 📏 **Code Quality Standards**
@@ -1285,8 +1281,8 @@ def create_business_metric(
 
 
 # ✅ Generic type usage for observability utilities
-from collections.abc import Callable
 import typing
+from collections.abc import Callable
 
 
 def map_observability_result[T, U](
@@ -1315,7 +1311,6 @@ class ObservabilityCollector(typing.Protocol):
 def create_metric(name, value, unit):  # Missing types
     return flext_create_metric(name, value, unit)
 ```
-
 ### **Error Handling Standards**
 
 ```python
@@ -1477,10 +1472,10 @@ from __future__ import annotations
 
 # ✅ Standard observability imports across ecosystem
 from flext_observability import (
+    FlextMetricsService,
     flext_create_metric,
     flext_create_trace,
     flext_monitor_function,
-    FlextMetricsService,
 )
 
 
@@ -1555,7 +1550,6 @@ class UserMetric:  # Use FlextMetric instead
 class OracleTrace:  # Use FlextTrace instead
     pass
 ```
-
 ### **Configuration Integration Across Services**
 
 ```python
@@ -1671,11 +1665,9 @@ ______________________________________________________________________
 
 ### **Observability Quality Gate Checklist**
 
-- [ ] **Linting**: `make lint` passes (Ruff with all rules)
-- [ ] **Type Check**: `make type-check` passes (strict MyPy with observability types)
+- [ ] **Static gates**: `make check` passes
 - [ ] **Tests**: `make test` passes (95% coverage for observability components)
-- [ ] **Security**: `make security` passes (Bandit + pip-audit)
-- [ ] **Format**: `make format` passes (consistent formatting)
+- [ ] **Format**: `make fmt` reaches a fixed point
 - [ ] **Integration**: Works with existing FLEXT ecosystem observability
 - [ ] **Documentation**: Updated observability documentation
 - [ ] **Examples**: Added working observability examples
