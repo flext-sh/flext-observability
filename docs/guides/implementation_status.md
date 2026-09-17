@@ -182,7 +182,7 @@ but `T` is not exported in flext-core's `__init__.py`.
 **Once imports fixed, execute**:
 
 ```bash
-make val    # Complete quality pipeline
+make check    # Complete quality pipeline
 make test        # 100% coverage validation
 make type-check  # Pyrefly strict mode
 make lint        # Ruff compliance
