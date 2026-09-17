@@ -184,13 +184,10 @@ class FlextObservabilityHTTP:
                 if _g is not None and hasattr(_g, "flext_start_time")
                 else None
             )
-            try:
-                validated_start = m.Observability.StartTimePayload.model_validate(
-                    obj={"value": start_time}
-                ).value
-                return (time.time() - validated_start) * 1000
-            except c.ValidationError:
-                return 0.0
+            validated_start = m.Observability.StartTimePayload.model_validate(
+                obj={"value": start_time}
+            ).value
+            return (time.time() - validated_start) * 1000
 
         @staticmethod
         def _error_handler(error: Exception) -> tuple[m.Dict, int]:

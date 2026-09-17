@@ -102,14 +102,11 @@ class FlextObservabilityHTTPClient:
     def _validated_headers(
         payload: t.Scalar | t.JsonValue | None,
     ) -> t.MutableStrMapping:
-        try:
-            return dict(
-                m.Observability.HeadersPayload.model_validate(
-                    obj={"headers": payload}
-                ).headers
-            )
-        except c.ValidationError:
-            return {}
+        return dict(
+            m.Observability.HeadersPayload.model_validate(
+                obj={"headers": payload}
+            ).headers
+        )
 
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
