@@ -103,6 +103,6 @@ All source code passes:
 - **95% test coverage** minimum
 - **Documentation standards** compliance
 
-______________________________________________________________________
+---
 
 **Next Steps**: Explore the [flext_observability/](flext_observability/) package for detailed module documentation and implementation patterns.

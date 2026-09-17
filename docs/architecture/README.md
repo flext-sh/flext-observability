@@ -1,6 +1,7 @@
 # FLEXT Observability - Architecture Overview
 
 <!-- TOC START -->
+
 - [Table of Contents](#table-of-contents)
 - [🏗️ Architectural Principles](#architectural-principles)
   - [Clean Architecture Implementation](#clean-architecture-implementation)
@@ -30,7 +31,7 @@
 - [🔄 Extension Points](#extension-points)
   - [Planned Extension Mechanisms](#planned-extension-mechanisms)
   - [Integration Hooks](#integration-hooks)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 ## Table of Contents
 
@@ -267,6 +268,7 @@ def process_api_request(request_data):
 ### Dependency Management
 
 FLEXT Observability maintains minimal external dependencies:
+
 ```
 flext-observability
 ├── flext-core (foundation patterns)
@@ -410,7 +412,7 @@ class FlextObservabilityPlugin(Protocol):
         """Hook called when traces are started."""
 ```
 
-______________________________________________________________________
+---
 
 **Next Steps**: Review the [Architecture Overview](README.md) for detailed patterns and ecosystem integration details.
 

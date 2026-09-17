@@ -1,6 +1,7 @@
 # Simple API Reference
 
 <!-- TOC START -->
+
 - [Table of Contents](#table-of-contents)
 - [📋 API Overview](#api-overview)
 - [🔍 Core Functions](#core-functions)
@@ -163,7 +164,7 @@ assert not result.success
 assert "Invalid metric value" in result.error
 ```
 
-______________________________________________________________________
+---
 
 ### `flext_create_trace()`
 
@@ -225,7 +226,7 @@ if parent_result.success:
     )
 ```
 
-______________________________________________________________________
+---
 
 ### `flext_create_alert()`
 
@@ -289,7 +290,7 @@ result = flext_create_alert(
 )
 ```
 
-______________________________________________________________________
+---
 
 ### `flext_create_health_check()`
 
@@ -352,7 +353,7 @@ result = flext_create_health_check(
 )
 ```
 
-______________________________________________________________________
+---
 
 ### `flext_create_log_entry()`
 
@@ -414,7 +415,7 @@ result = flext_create_log_entry(
 )
 ```
 
-______________________________________________________________________
+---
 
 ## 🔄 Common Usage Patterns
 
@@ -546,7 +547,7 @@ flext_create_trace("operation", "service")
 - **[Service API](service-api.md)**: Full service layer capabilities
 - **[Monitoring API](monitoring-api.md)**: Automatic instrumentation decorators
 
-______________________________________________________________________
+---
 
 **Next Steps**: For more advanced usage patterns,
 see the [Factory API Reference](factory-api.md) or explore the [Getting Started guide](../guides/getting-started.md).

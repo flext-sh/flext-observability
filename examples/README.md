@@ -402,6 +402,6 @@ make type-check examples/
 1. **Ecosystem Integration**: FLEXT-specific integration patterns
 1. **Enterprise Patterns**: Production-ready observability implementations
 
-______________________________________________________________________
+---
 
 **All examples are production-ready patterns that can be adapted for real-world FLEXT ecosystem integration scenarios.**

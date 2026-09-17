@@ -1,6 +1,7 @@
 # FLEXT Observability - C4 Model Architecture
 
 <!-- TOC START -->
+
 - [Table of Contents](#table-of-contents)
 - [📋 C4 Model Overview](#c4-model-overview)
 - [🌍 Level 1: System Context](#level-1-system-context)
@@ -22,7 +23,7 @@
 - [🏛️ Architectural Decisions](#architectural-decisions)
   - [ADRs Referenced](#adrs-referenced)
   - [Key Architectural Principles](#key-architectural-principles)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 ## Table of Contents
 
@@ -78,7 +79,7 @@ The C4 Model provides four levels of architectural abstraction:
 1. **Component** (Level 3): Major building blocks
 1. **Code** (Level 4): Implementation details
 
-______________________________________________________________________
+---
 
 ## 🌍 Level 1: System Context
 
@@ -145,7 +146,7 @@ providing consistent observability patterns across 33+ projects.
 - **Jaeger**: Distributed tracing backend
 - **OpenTelemetry**: Telemetry data collection standard
 
-______________________________________________________________________
+---
 
 ## 🏗️ Level 2: Container Architecture
 
@@ -247,7 +248,7 @@ ______________________________________________________________________
 - **Interfaces**: Prometheus client, OpenTelemetry SDK, Storage adapters
 - **Characteristics**: Pluggable implementations, abstraction layers
 
-______________________________________________________________________
+---
 
 ## 🔧 Level 3: Component Architecture
 
@@ -328,7 +329,7 @@ ______________________________________________________________________
 - **FlextAlert**: Alert definition with severity and routing
 - **FlextHealthCheck**: Health status with dependency tracking
 
-______________________________________________________________________
+---
 
 ## 💻 Level 4: Code Architecture
 
@@ -438,11 +439,12 @@ class FlextObservabilityMasterFactory:
         """Create validated trace entity."""
 ```
 
-______________________________________________________________________
+---
 
 ## 🔄 Dynamic Behavior
 
 ### Observability Data Flow
+
 ```
 User Request
      ↓
@@ -473,7 +475,7 @@ Structured Error Logging
 External System Notification
 ```
 
-______________________________________________________________________
+---
 
 ## 🏛️ Architectural Decisions
 
@@ -496,7 +498,7 @@ ______________________________________________________________________
 1. **Thread Safety**: All shared state protected with appropriate locking
 1. **Pluggable Architecture**: External system integrations through abstraction layers
 
-______________________________________________________________________
+---
 
 **C4 Model Views**: This documentation provides comprehensive architectural views at all four C4 levels,
 showing how FLEXT Observability serves as the foundation for enterprise observability across the entire FLEXT ecosystem.
