@@ -18,6 +18,7 @@
   - [Common Validation Errors](#common-validation-errors)
   - [Type Safety Errors](#type-safety-errors)
 - [🔗 Related APIs](#related-apis)
+
 <!-- TOC END -->
 
 ## Table of Contents

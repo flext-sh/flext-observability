@@ -27,6 +27,7 @@
   - [**Implementation Decisions**](#implementation-decisions)
   - [**Current Blockers**](#current-blockers)
 - [📋 Status Summary](#status-summary)
+
 <!-- TOC END -->
 
 ## Table of Contents
