@@ -79,7 +79,7 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             labels: Annotated[
                 t.ScalarMapping,
                 _m.Field(
-                    default_factory=lambda: MappingProxyType({}),
+                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                     description="Metric labels for categorization",
                 ),
             ]
@@ -98,7 +98,7 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             attributes: Annotated[
                 t.ScalarMapping,
                 _m.Field(
-                    default_factory=lambda: MappingProxyType({}),
+                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                     description="Trace attributes",
                 ),
             ]
@@ -115,7 +115,7 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             labels: Annotated[
                 t.ScalarMapping,
                 _m.Field(
-                    default_factory=lambda: MappingProxyType({}),
+                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                     description="Alert labels for categorization",
                 ),
             ]
@@ -132,7 +132,7 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             details: Annotated[
                 t.ScalarMapping,
                 _m.Field(
-                    default_factory=lambda: MappingProxyType({}),
+                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                     description="Health check details",
                 ),
             ]
@@ -154,7 +154,7 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             context: Annotated[
                 t.ScalarMapping,
                 _m.Field(
-                    default_factory=lambda: MappingProxyType({}),
+                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                     description="Log context metadata",
                 ),
             ]
@@ -173,7 +173,7 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             headers: Annotated[
                 t.StrMapping,
                 _m.Field(
-                    default_factory=lambda: MappingProxyType({}),
+                    default_factory=lambda: MappingProxyType[str, str]({}),
                     description="HTTP header key-value pairs",
                 ),
             ]
@@ -190,14 +190,14 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             baggage: Annotated[
                 t.StrMapping,
                 _m.Field(
-                    default_factory=lambda: MappingProxyType({}),
+                    default_factory=lambda: MappingProxyType[str, str]({}),
                     description="Propagated baggage key-value pairs",
                 ),
             ]
             metadata: Annotated[
                 t.ConfigurationMapping,
                 _m.Field(
-                    default_factory=lambda: MappingProxyType({}),
+                    default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                     description="Additional context metadata",
                 ),
             ]
@@ -233,7 +233,7 @@ class FlextObservabilityModels(_m, FlextObservabilityModelsBase):
             labels: Annotated[
                 t.StrMapping,
                 _m.Field(
-                    default_factory=lambda: MappingProxyType({}),
+                    default_factory=lambda: MappingProxyType[str, str]({}),
                     description="Metric labels for categorization",
                 ),
             ]

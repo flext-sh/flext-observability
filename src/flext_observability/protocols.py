@@ -11,6 +11,8 @@ from typing import Protocol, runtime_checkable
 
 from flext_cli import m as _m, p as _p
 
+from flext_core import t as _t
+
 from ._protocols import FlextObservabilityProtocolsBase
 
 
@@ -48,7 +50,7 @@ class FlextObservabilityProtocols(_p, FlextObservabilityProtocolsBase):
         class ObservabilityService(Protocol):
             """Protocol for observability services providing alerts and metrics."""
 
-            def create_alert(self, **kwargs: _m.Scalar) -> _p.Result[_m.Dict]:
+            def create_alert(self, **kwargs: _t.Scalar) -> _p.Result[_m.Dict]:
                 """Create an alert with given parameters."""
                 ...
 

@@ -2,12 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from flext_core import t as _t
-
-if TYPE_CHECKING:
-    from examples.typings import t
 
 
 class ExamplesFlextObservabilityTypes(_t):
