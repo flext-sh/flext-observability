@@ -554,8 +554,8 @@ from __future__ import annotations
 # Import services for advanced integration
 from flext_observability import (
     FlextMetricsService,
-    FlextTracingService,
     FlextObservabilityMasterFactory,
+    FlextTracingService,
 )
 
 
@@ -578,7 +578,7 @@ class UserAPIService:
 
         # Process with observability
         return self._process_user_request(request, trace_result.value)
-```
+
 
 #### **3. Infrastructure Integration Pattern (For Infrastructure Services)**
 
@@ -639,7 +639,6 @@ from __future__ import annotations
 from flext_observability import *
 
 # ❌ Don't import internal implementations
-
 # ❌ Don't bypass simple API without reason
 from flext_observability import FlextObservabilityMasterFactory
 
@@ -655,7 +654,7 @@ class MyCustomMetric:  # Use FlextMetric instead
 # ❌ Don't ignore r error handling
 result = flext_create_metric("test", 1.0)
 metric = result.value  # Should check result.success first
-```
+
 
 ---
 
@@ -704,7 +703,7 @@ Infrastructure Layer  →  Foundation Layer  →  flext-core
 from __future__ import annotations
 
 # Handled via decorators and context management
-from flext_observability import flext_monitor_function, correlation_id
+from flext_observability import correlation_id, flext_monitor_function
 
 
 @flext_monitor_function("critical_business_operation")
@@ -719,7 +718,7 @@ def process_payment(payment_data: dict) -> p.Result[m.Dict]:
     # - Error capture and categorization
 
     return r[bool].ok({"status": "processed", "correlation_id": correlation_id})
-```
+
 
 ---
 
@@ -1077,8 +1076,9 @@ def test_observability_failure_propagation():
 ```python
 from __future__ import annotations
 
-from flext_observability import FlextMetric, FlextTrace
 from decimal import Decimal
+
+from flext_observability import FlextMetric, FlextTrace
 
 
 class TestFlextMetric:
@@ -1155,7 +1155,7 @@ class TestFlextTrace:
         assert child_trace.parent_trace_id == parent_trace.id
         assert child_trace.operation_name == "database_query"
         assert child_trace.service_name == "user-service"
-```
+
 
 ### **Service Testing Patterns**
 
@@ -1248,8 +1248,9 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
 ```python
 from __future__ import annotations
 
-from flext_observability import flext_monitor_function
 import time
+
+from flext_observability import flext_monitor_function
 
 
 def test_function_monitoring_decorator():
@@ -1285,7 +1286,7 @@ def test_function_monitoring_with_exception():
 
     # In a real implementation, verify that error metrics were created
     # and failure traces were recorded
-```
+
 
 ---
 
@@ -1308,8 +1309,8 @@ def create_business_metric(
 
 
 # ✅ Generic type usage for observability utilities
-from collections.abc import Callable
 import typing
+from collections.abc import Callable
 
 
 def map_observability_result[T, U](
@@ -1337,7 +1338,7 @@ class ObservabilityCollector(typing.Protocol):
 # ❌ Missing type annotations
 def create_metric(name, value, unit):  # Missing types
     return flext_create_metric(name, value, unit)
-```
+
 
 ### **Error Handling Standards**
 
@@ -1500,10 +1501,10 @@ from __future__ import annotations
 
 # ✅ Standard observability imports across ecosystem
 from flext_observability import (
+    FlextMetricsService,
     flext_create_metric,
     flext_create_trace,
     flext_monitor_function,
-    FlextMetricsService,
 )
 
 
@@ -1577,7 +1578,7 @@ class UserMetric:  # Use FlextMetric instead
 
 class OracleTrace:  # Use FlextTrace instead
     pass
-```
+
 
 ### **Configuration Integration Across Services**
 

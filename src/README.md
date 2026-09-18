@@ -84,7 +84,6 @@ from __future__ import annotations
 
 from flext_observability import FlextObservability, flext_monitor_function, t
 
-
 # Create observability data
 metric_result = FlextObservability.flext_metric("api_requests", 42, "count")
 trace_result = FlextObservability.flext_trace("user_login", {"service": "auth-service"})
@@ -97,7 +96,7 @@ def process_order(order_data: dict) -> t.JsonMapping:
 
 
 _ = metric_result, trace_result, process_order
-```
+
 
 ## Quality Assurance
 

@@ -79,7 +79,7 @@ FLEXT ecosystem. This document outlines the architectural decisions,
 
 ```
  layer responsibilities,
- and integration patterns that enable consistent monitoring across the entire data integration platform.
+ and integration patterns that enable consistent monitoring across the entire data i ...
 ```
 
 ## 🏗️ Architectural Principles

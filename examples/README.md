@@ -65,7 +65,7 @@ Advanced demonstration of SOLID principles applied to observability:
 from __future__ import annotations
 
 # Example from 01_functional.py
-from flext_observability import flext_create_metric, flext_create_trace
+from flext_observability import flext_create_metric
 
 
 def create_business_metrics():
@@ -87,7 +87,7 @@ def create_business_metrics():
     )
 
     return response_time, user_count
-```
+
 
 ### Service Layer Integration
 
@@ -96,8 +96,6 @@ from __future__ import annotations
 
 # Example service integration pattern
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
-from flext_cli import u
-from flext_core import FlextSettings
 
 
 class UserService:
@@ -123,7 +121,7 @@ class UserService:
 
         # Business logic here
         return r[bool].ok({"user_id": "user123", "status": "created"})
-```
+
 
 ### Monitoring Decorator Patterns
 
@@ -178,7 +176,7 @@ def process_payment(amount: float, currency: str) -> p.Result[m.Dict]:
 from __future__ import annotations
 
 # Health check integration example
-from flext_observability import flext_create_health_check, FlextHealthService
+from flext_observability import flext_create_health_check
 
 
 def monitor_database_health() -> p.Result[m.Dict]:
@@ -214,7 +212,7 @@ def monitor_database_health() -> p.Result[m.Dict]:
             message=f"Database connection failed: {str(e)}",
         )
         return error_health
-```
+
 
 ### Distributed Tracing Patterns
 
@@ -279,7 +277,7 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
 from __future__ import annotations
 
 # Example Singer tap with observability
-from flext_observability import flext_monitor_function, flext_create_metric
+from flext_observability import flext_create_metric, flext_monitor_function
 
 
 class FlextTapOracle:
@@ -308,7 +306,7 @@ class FlextTapOracle:
         )
 
         return records
-```
+
 
 ### FastAPI Service Integration
 
@@ -316,7 +314,7 @@ class FlextTapOracle:
 from __future__ import annotations
 
 # Example FastAPI service with observability
-from flext_observability import flext_monitor_function, flext_create_metric
+from flext_observability import flext_create_metric, flext_monitor_function
 
 
 class FlextAPIService:
@@ -347,7 +345,7 @@ class FlextAPIService:
         )
 
         return result
-```
+
 
 ## Running Examples
 

@@ -131,7 +131,7 @@ Base patterns and cross-cutting concerns:
 ```python
 from __future__ import annotations
 
-from flext_observability import FlextMetric, FlextTrace
+from flext_observability import FlextMetric
 
 # Create metric with validation
 metric = FlextMetric(
@@ -144,7 +144,7 @@ metric = FlextMetric(
 validation = metric.validate_business_rules()
 if validation.success:
     print(f"Valid metric: {metric.name}")
-```
+
 
 ### Service Layer Usage
 
@@ -152,8 +152,6 @@ if validation.success:
 from __future__ import annotations
 
 from flext_observability import FlextMetricsService
-from flext_cli import u
-from flext_core import FlextSettings
 
 container = FlextContainer()
 metrics_service = FlextMetricsService(container)
@@ -161,7 +159,7 @@ metrics_service = FlextMetricsService(container)
 result = metrics_service.record_metric(metric)
 if result.success:
     print(f"Recorded: {result.data.name}")
-```
+
 
 ### Factory Pattern Usage
 
