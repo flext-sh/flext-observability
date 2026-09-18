@@ -3,7 +3,8 @@
 <!-- TOC START -->
 
 - [Module Organization](#module-organization)
-  - \[[flext_observability/](flext_observability/) - Core Package\](#flextobservabilityflextobservability-core-package)
+  - \[[flext_observability/](flext_observability/) - Core
+    Package\](#flextobservabilityflextobservability-core-package)
 - [Architecture Overview](#architecture-overview)
 - [Key Design Principles](#key-design-principles)
 - [Integration Points](#integration-points)
@@ -13,9 +14,13 @@
 
 <!-- TOC END -->
 
-**Foundation library source code implementing observability patterns for the FLEXT ecosystem.**
+**Foundation library source code implementing observability patterns for the FLEXT
+ecosystem.**
 
-This directory contains the complete implementation of FLEXT Observability, organized following Clean Architecture and Domain-Driven Design principles. All modules implement observability patterns with type safety, domain validation, and railway-oriented programming error handling.
+This directory contains the complete implementation of FLEXT Observability, organized
+following Clean Architecture and Domain-Driven Design principles. All modules implement
+observability patterns with type safety, domain validation, and railway-oriented
+programming error handling.
 
 ## Module Organization
 
@@ -50,7 +55,8 @@ src/flext_observability/
 
 ## Key Design Principles
 
-1. **Clean Architecture**: Clear separation between domain, application, and infrastructure layers
+1. **Clean Architecture**: Clear separation between domain, application, and
+   infrastructure layers
 1. **Domain-Driven Design**: Rich domain models with business logic encapsulation
 1. **Railway-Oriented Programming**: p.Result[T] patterns throughout
 1. **Type Safety**: MyPy strict mode adoption; aiming for complete annotations
@@ -105,4 +111,5 @@ All source code passes:
 
 ---
 
-**Next Steps**: Explore the [flext_observability/](flext_observability/) package for detailed module documentation and implementation patterns.
+**Next Steps**: Explore the [flext_observability/](flext_observability/) package for
+detailed module documentation and implementation patterns.

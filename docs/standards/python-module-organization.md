@@ -88,8 +88,10 @@
     - **Recommended Import Styles**
       - **1. Primary Pattern (Recommended for Ecosystem)**
 - Import from main package - gets essential observability tools
-- Use patterns directly in business logic - **2. Service Integration Pattern (For FLEXT Services)**
-- Import services for advanced integration - **3. Infrastructure Integration Pattern (For Infrastructure Services)**
+- Use patterns directly in business logic - **2. Service Integration Pattern (For FLEXT
+  Services)**
+- Import services for advanced integration - **3. Infrastructure Integration Pattern
+  (For Infrastructure Services)**
 - Import for infrastructure monitoring
   - **Anti-Patterns (Forbidden)**
 - ❌ Don't import everything
@@ -149,22 +151,25 @@
     - **Observability Quality Gate Checklist**
     - **Observability-Specific Standards**
 
-**FLEXT Observability Module Architecture & Standards for Ecosystem Observability Patterns**
+**FLEXT Observability Module Architecture & Standards for Ecosystem Observability
+Patterns**
 
 ---
 
 ## 🏗️ **Module Architecture Overview**
 
-FLEXT Observability implements a **layered observability module architecture** that supports Clean Architecture,
-Domain-Driven Design, and railway-oriented programming specifically for monitoring, metrics,
-and telemetry concerns. This structure serves as the observability foundation for all 33 projects in the FLEXT ecosystem.
+FLEXT Observability implements a **layered observability module architecture** that
+supports Clean Architecture, Domain-Driven Design, and railway-oriented programming
+specifically for monitoring, metrics, and telemetry concerns. This structure serves as
+the observability foundation for all 33 projects in the FLEXT ecosystem.
 
 ### **Core Design Principles**
 
 1. **Observability-First**: Every pattern designed for monitoring and telemetry
 1. **Explicit Dependencies**: Clear import paths with minimal coupling to flext-core
 1. **Type-Safe Observability**: Comprehensive type hints for all observability entities
-1. **Railway-Oriented Telemetry**: p.Result[T] threading through all observability operations
+1. **Railway-Oriented Telemetry**: p.Result[T] threading through all observability
+   operations
 1. **Ecosystem Consistency**: Observability patterns work identically across 33 projects
 
 ---
@@ -184,7 +189,8 @@ src/flext_observability/
 └── validation.py            # 🎯 Domain validation utilities
 ```
 
-**Responsibility**: Establish the foundational observability contracts that all other modules depend on.
+**Responsibility**: Establish the foundational observability contracts that all other
+modules depend on.
 
 **Import Pattern**:
 
@@ -203,7 +209,8 @@ from __future__ import annotations
 ├── entities.py              # 🏛️ FlextMetric, FlextTrace, FlextAlert entities
 ```
 
-**Responsibility**: Provide rich observability domain models with business rules validation.
+**Responsibility**: Provide rich observability domain models with business rules
+validation.
 
 **Entity Architecture**:
 
@@ -244,7 +251,8 @@ from __future__ import annotations
 └── health.py                # 🚀 Health check coordination services
 ```
 
-**Responsibility**: Provide observability business logic coordinating entities with external systems.
+**Responsibility**: Provide observability business logic coordinating entities with
+external systems.
 
 **Service Pattern**:
 
@@ -341,7 +349,8 @@ from __future__ import annotations
 └── flext_structured.py      # 🎛️ Structured logging adapters
 ```
 
-**Responsibility**: Provide easy-to-use interfaces adapting complex services for common use cases.
+**Responsibility**: Provide easy-to-use interfaces adapting complex services for common
+use cases.
 
 **Simple API Pattern**:
 
@@ -398,7 +407,8 @@ from __future__ import annotations
 └── flext_metrics.py         # 🗄️ Advanced metrics collector patterns
 ```
 
-**Responsibility**: Provide infrastructure support and utility functions for observability operations.
+**Responsibility**: Provide infrastructure support and utility functions for
+observability operations.
 
 **Repository Pattern**:
 
@@ -467,7 +477,8 @@ FlextStructuredLogger  # Structured logging with correlation IDs
 FlextMetricsCollector  # Advanced metrics collection patterns
 ```
 
-**Rationale**: Clear namespace separation prevents conflicts with application domain entities across 33 projects.
+**Rationale**: Clear namespace separation prevents conflicts with application domain
+entities across 33 projects.
 
 ### **Module-Level Naming**
 
@@ -1673,7 +1684,8 @@ class FlextLdapService:
 - [ ] **Naming**: Uses `flext_` prefix and clear observability-focused name
 - [ ] **Location**: Placed in appropriate observability architectural layer
 - [ ] **Imports**: Only imports from flext-core and same/lower observability layers
-- [ ] **Types**: Complete type annotations with MyPy compliance for observability entities
+- [ ] **Types**: Complete type annotations with MyPy compliance for observability
+      entities
 - [ ] **Error Handling**: Uses r for all observability error conditions
 - [ ] **Documentation**: Comprehensive docstrings with observability examples
 - [ ] **Tests**: 95% coverage with observability-specific test patterns
@@ -1695,17 +1707,19 @@ class FlextLdapService:
 ### **Observability-Specific Standards**
 
 - [ ] **r Integration**: All observability operations return r[T]
-- [ ] **Entity Validation**: All observability entities implement `validate_business_rules()`
+- [ ] **Entity Validation**: All observability entities implement
+      `validate_business_rules()`
 - [ ] **Factory Support**: Entities can be created via FlextObservabilityMasterFactory
 - [ ] **Simple API**: Core functionality available via `flext_create_*` functions
 - [ ] **Monitoring Support**: Functions can be decorated with `@flext_monitor_function`
 - [ ] **Service Integration**: Services use FlextContainer dependency injection
 - [ ] **Correlation IDs**: Tracing supports correlation ID propagation
-- [ ] **Ecosystem Consistency**: Patterns match other FLEXT observability implementations
+- [ ] **Ecosystem Consistency**: Patterns match other FLEXT observability
+      implementations
 
 ---
 
-**Last Updated**: August 3, 2025
-**Target Audience**: FLEXT ecosystem developers implementing observability
-**Scope**: Python module organization for observability across 33-project ecosystem
-**Version**: 0.12.0-dev → 0.9.9 observability development guidelines
+**Last Updated**: August 3, 2025 **Target Audience**: FLEXT ecosystem developers
+implementing observability **Scope**: Python module organization for observability
+across 33-project ecosystem **Version**: 0.12.0-dev → 0.9.9 observability development
+guidelines

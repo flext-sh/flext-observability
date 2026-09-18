@@ -66,9 +66,9 @@
 
 **C4 Model Documentation for Enterprise Observability Foundation**
 
-Based on the C4 Model by Simon Brown,
-this documentation provides multiple architectural views of the FLEXT Observability system,
-showing how it fits into the broader FLEXT ecosystem and its internal structure.
+Based on the C4 Model by Simon Brown, this documentation provides multiple architectural
+views of the FLEXT Observability system, showing how it fits into the broader FLEXT
+ecosystem and its internal structure.
 
 ## 📋 C4 Model Overview
 
@@ -85,8 +85,8 @@ The C4 Model provides four levels of architectural abstraction:
 
 ### System Purpose
 
-FLEXT Observability is the enterprise monitoring and metrics foundation library for the entire FLEXT ecosystem,
-providing consistent observability patterns across 33+ projects.
+FLEXT Observability is the enterprise monitoring and metrics foundation library for the
+entire FLEXT ecosystem, providing consistent observability patterns across 33+ projects.
 
 ### Context Diagram
 
@@ -134,7 +134,8 @@ providing consistent observability patterns across 33+ projects.
 
 #### Primary Users
 
-- **Enterprise Application Developers**: Use FLEXT Observability for consistent monitoring
+- **Enterprise Application Developers**: Use FLEXT Observability for consistent
+  monitoring
 - **DevOps Teams**: Configure and maintain observability infrastructure
 - **Monitoring Teams**: Access metrics, traces, and alerts through dashboards
 - **Data Teams**: Analyze observability data for insights
@@ -217,7 +218,8 @@ providing consistent observability patterns across 33+ projects.
 
 - **Technology**: Python Functions
 - **Purpose**: Easy-to-use factory functions for quick integration
-- **Interfaces**: `flext_create_metric()`, `flext_create_trace()`, `flext_create_alert()`
+- **Interfaces**: `flext_create_metric()`, `flext_create_trace()`,
+  `flext_create_alert()`
 - **Users**: Application developers needing simple observability integration
 
 #### **Monitoring Decorators Container**
@@ -490,7 +492,8 @@ External System Notification
 ### Key Architectural Principles
 
 1. **Railway Pattern**: All operations return `r[T]` for composable error handling
-1. **Clean Architecture**: Strict layer separation (Domain → Application → Infrastructure)
+1. **Clean Architecture**: Strict layer separation (Domain → Application →
+   Infrastructure)
 1. **Domain-Driven Design**: Rich domain entities with business logic validation
 1. **Type Safety**: Complete Python 3.13+ type annotations throughout
 1. **Unified API**: Single service class with flattened method structure
@@ -500,5 +503,6 @@ External System Notification
 
 ---
 
-**C4 Model Views**: This documentation provides comprehensive architectural views at all four C4 levels,
-showing how FLEXT Observability serves as the foundation for enterprise observability across the entire FLEXT ecosystem.
+**C4 Model Views**: This documentation provides comprehensive architectural views at all
+four C4 levels, showing how FLEXT Observability serves as the foundation for enterprise
+observability across the entire FLEXT ecosystem.

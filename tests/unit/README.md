@@ -85,9 +85,12 @@ pytest tests/unit/test_entities_unit.py -v
 
 ## Current Status
 
-**Status**: Directory created, tests to be organized from main test directory · 1.0.0 Release Preparation
-**Next Steps**: Move isolated unit tests from root test directory to maintain proper separation
+**Status**: Directory created, tests to be organized from main test directory · 1.0.0
+Release Preparation **Next Steps**: Move isolated unit tests from root test directory to
+maintain proper separation
 
 ---
 
-**Note**: This directory is currently empty as unit tests are located in the root tests directory. As part of test organization improvements, relevant unit tests will be moved here to maintain proper separation of test types.
+**Note**: This directory is currently empty as unit tests are located in the root tests
+directory. As part of test organization improvements, relevant unit tests will be moved
+here to maintain proper separation of test types.

@@ -6,7 +6,8 @@
   - [Test Structure](#test-structure)
   - [Test Categories](#test-categories)
 - [Test Configuration](#test-configuration)
-  - \[[conftest.py](conftest.py) - Test Configuration\](#conftestpyconftestpy-test-configuration)
+  - \[[conftest.py](conftest.py) - Test
+    Configuration\](#conftestpyconftestpy-test-configuration)
   - [Test Fixtures Available](#test-fixtures-available)
 - [Testing Patterns](#testing-patterns)
   - [Railway-Oriented Testing](#railway-oriented-testing)
@@ -31,9 +32,12 @@
 
 <!-- TOC END -->
 
-**Comprehensive test suite ensuring 95%+ coverage and enterprise-grade quality for FLEXT Observability.**
+**Comprehensive test suite ensuring 95%+ coverage and enterprise-grade quality for FLEXT
+Observability.**
 
-This test suite implements comprehensive testing strategies including unit tests, integration tests, end-to-end tests, and specialized coverage tests. All tests follow FLEXT ecosystem standards with railway-oriented programming patterns and r validation.
+This test suite implements comprehensive testing strategies including unit tests,
+integration tests, end-to-end tests, and specialized coverage tests. All tests follow
+FLEXT ecosystem standards with railway-oriented programming patterns and r validation.
 
 ## Test Organization
 
@@ -203,11 +207,11 @@ def test_monitoring_decorator_functionality():
 
 ```bash
 # Complete test suite with coverage
-make test                    # 95% coverage requirement
-make coverage-html          # Generate HTML coverage report
+make test          # 95% coverage requirement
+make coverage-html # Generate HTML coverage report
 
 # Quick test execution
-make test-fast              # Tests without coverage reporting
+make test-fast # Tests without coverage reporting
 ```
 
 ### Run Specific Test Categories
@@ -235,7 +239,7 @@ pytest tests/ --cov=src --cov-report=term-missing
 pytest tests/ --cov=src --cov-report=html
 
 # Coverage validation
-make coverage-html          # HTML report in htmlcov/
+make coverage-html # HTML report in htmlcov/
 ```
 
 ## Test Quality Standards
@@ -296,7 +300,8 @@ All tests must:
 
 1. **test_surgical_coverage.py**: One failing test requiring correlation ID fix
 1. **Empty Directories**: unit/, integration/, e2e/ directories are currently empty
-1. **Test Organization**: Tests currently in root directory instead of organized subdirectories
+1. **Test Organization**: Tests currently in root directory instead of organized
+   subdirectories
 
 ### Improvement Opportunities
 
@@ -307,4 +312,5 @@ All tests must:
 
 ---
 
-**For detailed test implementation patterns, see individual test files with comprehensive test scenarios and validation logic.**
+**For detailed test implementation patterns, see individual test files with
+comprehensive test scenarios and validation logic.**

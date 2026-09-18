@@ -32,7 +32,8 @@
       - [Examples](#examples)
 - [Basic metric](#basic-metric)
 - [Business metric with tags](#business-metric-with-tags)
-- [High-precision financial metric](#high-precision-financial-metric) - [Error Scenarios](#error-scenarios)
+- [High-precision financial metric](#high-precision-financial-metric) -
+  [Error Scenarios](#error-scenarios)
 - [Invalid metric name](#invalid-metric-name)
 - [Invalid value type](#invalid-value-type)
   - [`flext_create_trace()`](#flext_create_trace)
@@ -76,7 +77,9 @@
 
 **Quick-Start Functions for FLEXT Observability Integration**
 
-The Simple API provides the fastest way to integrate observability into FLEXT ecosystem projects. These functions offer a streamlined interface for creating observability entities with automatic validation and r error handling.
+The Simple API provides the fastest way to integrate observability into FLEXT ecosystem
+projects. These functions offer a streamlined interface for creating observability
+entities with automatic validation and r error handling.
 
 ## 📋 API Overview
 
@@ -115,7 +118,8 @@ def flext_create_metric(
 
 #### Returns
 
-`r[FlextMetric]` - Success contains FlextMetric entity, failure contains validation error.
+`r[FlextMetric]` - Success contains FlextMetric entity, failure contains validation
+error.
 
 #### Examples
 
@@ -247,7 +251,8 @@ def flext_create_alert(
 #### Parameters
 
 - **`name`** (str, required): Alert identifier/name
-- **`severity`** (str, required): Alert severity ("info", "warning", "error", "critical")
+- **`severity`** (str, required): Alert severity ("info", "warning", "error",
+  "critical")
 - **`message`** (str, required): Human-readable alert description
 - **`details`** (t.StringDict, optional): Additional alert context
 
@@ -317,7 +322,8 @@ def flext_create_health_check(
 
 #### Returns
 
-`r[FlextHealthCheck]` - Success contains FlextHealthCheck entity, failure contains validation error.
+`r[FlextHealthCheck]` - Success contains FlextHealthCheck entity, failure contains
+validation error.
 
 #### Examples
 
@@ -373,14 +379,16 @@ def flext_create_log_entry(
 
 #### Parameters
 
-- **`level`** (str, required): Log level ("debug", "info", "warning", "error", "critical")
+- **`level`** (str, required): Log level ("debug", "info", "warning", "error",
+  "critical")
 - **`message`** (str, required): Log message content
 - **`context`** (t.StringDict, optional): Additional context information
 - **`correlation_id`** (str, optional): Request correlation ID for distributed tracing
 
 #### Returns
 
-`r[FlextLogEntry]` - Success contains FlextLogEntry entity, failure contains validation error.
+`r[FlextLogEntry]` - Success contains FlextLogEntry entity, failure contains validation
+error.
 
 #### Examples
 
@@ -550,5 +558,6 @@ flext_create_trace("operation", "service")
 
 ---
 
-**Next Steps**: For more advanced usage patterns,
-see the [Factory API Reference](factory-api.md) or explore the [Getting Started guide](../guides/getting-started.md).
+**Next Steps**: For more advanced usage patterns, see the
+[Factory API Reference](factory-api.md) or explore the
+[Getting Started guide](../guides/getting-started.md).

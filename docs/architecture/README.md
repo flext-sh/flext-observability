@@ -73,8 +73,9 @@
 
 **Clean Architecture and Domain-Driven Design Patterns for Ecosystem Observability**
 
-FLEXT Observability implements Clean Architecture with Domain-Driven Design (DDD) patterns,
-serving as the foundational observability library for all 33 projects in the FLEXT ecosystem. This document outlines the architectural decisions,
+FLEXT Observability implements Clean Architecture with Domain-Driven Design (DDD)
+patterns, serving as the foundational observability library for all 33 projects in the
+FLEXT ecosystem. This document outlines the architectural decisions,
 
 ```
  layer responsibilities,
@@ -85,7 +86,8 @@ serving as the foundational observability library for all 33 projects in the FLE
 
 ### Clean Architecture Implementation
 
-FLEXT Observability follows Uncle Bob's Clean Architecture with distinct, decoupled layers:
+FLEXT Observability follows Uncle Bob's Clean Architecture with distinct, decoupled
+layers:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -110,7 +112,8 @@ FLEXT Observability follows Uncle Bob's Clean Architecture with distinct, decoup
 
 The observability domain is organized around core business concepts:
 
-- **Entities**: Core business objects with identity and lifecycle (FlextMetric, FlextTrace)
+- **Entities**: Core business objects with identity and lifecycle (FlextMetric,
+  FlextTrace)
 - **Value Objects**: Immutable data structures (timestamps, measurements, metadata)
 - **Services**: Business logic that doesn't naturally fit in entities
 - **Factories**: Consistent creation patterns with domain validation
@@ -414,6 +417,7 @@ class FlextObservabilityPlugin(Protocol):
 
 ---
 
-**Next Steps**: Review the [Architecture Overview](README.md) for detailed patterns and ecosystem integration details.
+**Next Steps**: Review the [Architecture Overview](README.md) for detailed patterns and
+ecosystem integration details.
 
 - [FLEXT Ecosystem Architecture](https://github.com/flext-sh/flext/tree/0.12.0-dev/docs/architecture)

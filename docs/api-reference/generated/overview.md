@@ -12,22 +12,20 @@
 - Version: `0.12.0`
 - Description: FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry
 - Doc summary: Flext Observability package.
-- Classifiers: `Development Status :: 3 - Alpha`, `Intended Audience ::
-Developers`, `Operating System :: OS Independent`, `Programming Language ::
-Python :: 3 :: Only`, `Programming Language :: Python :: 3.13`, `Topic ::
-Software Development :: Libraries :: Python Modules` (+2 more)
+- Classifiers: `Development Status :: 3 - Alpha`, `Intended Audience :: Developers`,
+  `Operating System :: OS Independent`, `Programming Language :: Python :: 3 :: Only`,
+  `Programming Language :: Python :: 3.13`,
+  `Topic :: Software Development :: Libraries :: Python Modules` (+2 more)
 - Project class: `domain`
-- Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`,
-  `tracing`, `typed`
+- Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`, `tracing`,
+  `typed`
 - Main facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
-  `FlextObservabilityCli`, `FlextObservabilityConfig`,
-  `FlextObservabilityConstants`, `FlextObservabilityContext`,
-  `FlextObservabilityCustomMetrics`, `FlextObservabilityErrorHandling` (+14
-  more)
+  `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,
+  `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
+  `FlextObservabilityErrorHandling` (+14 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextObservability`,
-  `FlextObservabilityAdvancedContext`, `FlextObservabilityCli`,
-  `FlextObservabilityConfig`, `FlextObservabilityConstants`,
+- Public symbol exports: `FlextObservability`, `FlextObservabilityAdvancedContext`,
+  `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,
   `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
   `FlextObservabilityErrorHandling`, `FlextObservabilityHTTP`,
   `FlextObservabilityHTTPClient` (+15 more)
