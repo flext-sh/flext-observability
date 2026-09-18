@@ -96,9 +96,8 @@ def process_order(order_data: dict) -> t.JsonMapping:
 
 
 _ = metric_result, trace_result, process_order
-
-
 ```
+
 ## Quality Assurance
 
 All source code passes:

@@ -548,7 +548,7 @@ def process_order(order_data: dict) -> p.Result[m.Dict]:
 
 #### **2. Service Integration Pattern (For FLEXT Services)**
 
-```python
+````python
 from __future__ import annotations
 
 # Import services for advanced integration
@@ -628,11 +628,11 @@ class DatabaseConnectionService:
                 message=f"Connection failed: {e!s}",
             )
             return r[bool].fail(f"Database health check failed: {e!s}")
-```
+````
 
 ### **Anti-Patterns (Forbidden)**
 
-```python
+````python
 from __future__ import annotations
 
 # ❌ Don't import everything
@@ -682,7 +682,7 @@ from __future__ import annotations
 │         Foundation Layer            │  # constants.py, exceptions.py
 │   (Constants, Base Patterns)        │  # validation.py (Base validation)
 └─────────────────────────────────────┘
-```
+````
 
 ### **Dependency Direction**
 
@@ -699,7 +699,7 @@ Infrastructure Layer  →  Foundation Layer  →  flext-core
 
 ### **Cross-Cutting Observability Concerns**
 
-```python
+````python
 from __future__ import annotations
 
 # Handled via decorators and context management
@@ -774,7 +774,7 @@ def create_validated_metric(name: str, value: float) -> p.Result[bool]:
         return r[bool].fail(f"Metric creation failed: {metric_result.error}")
 
     return r[bool].| ok(value=True)
-```
+````
 
 ### **Distributed Tracing Patterns**
 
@@ -1073,7 +1073,7 @@ def test_observability_failure_propagation():
 
 ### **Observability Entity Testing Patterns**
 
-```python
+````python
 from __future__ import annotations
 
 from decimal import Decimal
@@ -1241,11 +1241,11 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
     # Verify memory management kicked in
     total_metrics = len(metrics_service._metrics_store)
     assert total_metrics <= 1000  # Should have cleaned up to stay within limits
-```
+````
 
 ### **Monitoring Decorator Testing Patterns**
 
-```python
+````python
 from __future__ import annotations
 
 import time
@@ -1389,7 +1389,7 @@ def create_metric_bad(name: str, value: float) -> FlextMetric:
     if not name:
         raise ValueError("Name is required")  # Breaks railway pattern
     return FlextMetric(name=name, value=value)
-```
+````
 
 ### **Documentation Standards**
 
@@ -1496,7 +1496,7 @@ def create_business_observability_dashboard(
 
 ### **Cross-Project Observability Standards**
 
-```python
+````python
 from __future__ import annotations
 
 # ✅ Standard observability imports across ecosystem
@@ -1624,7 +1624,7 @@ class UserService:
 
         if settings.observability.tracing_enabled:
             self.tracing_service = FlextTracingService(container)
-```
+````
 
 ### **Monitoring Integration Patterns**
 
