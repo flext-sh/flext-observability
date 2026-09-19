@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from flext_cli import u as _u
 
-from flext_core import r as _r
+from flext_core import p as _p, r as _r
 
 from ._utilities import FlextObservabilityUtilitiesBase
 
@@ -30,7 +30,7 @@ class FlextObservabilityUtilities(_u, FlextObservabilityUtilitiesBase):
             """Performance tracking helpers."""
 
             @staticmethod
-            def calculate_duration(start_ns: int, end_ns: int) -> _r[float]:
+            def calculate_duration(start_ns: int, end_ns: int) -> _p.Result[float]:
                 """Calculate duration in seconds from nanosecond timestamps."""
                 if end_ns < start_ns:
                     return _r[float].fail("end_ns must be >= start_ns")

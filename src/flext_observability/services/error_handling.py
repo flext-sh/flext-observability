@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable, MutableMapping
+from typing import ClassVar
 
 from flext_observability import c, m, p, r, t, u
 from flext_observability.services.context import FlextObservabilityContext
@@ -54,7 +55,7 @@ class FlextObservabilityErrorHandling:
     """
 
     logger = u.fetch_logger(__name__)
-    _handler_instance: FlextObservabilityErrorHandling.Handler | None = None
+    _handler_instance: ClassVar[FlextObservabilityErrorHandling.Handler | None] = None
 
     @staticmethod
     def _extract_validation_message(error: c.ValidationError) -> str:

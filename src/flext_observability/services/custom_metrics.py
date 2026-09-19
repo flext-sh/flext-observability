@@ -19,6 +19,7 @@ Key Features:
 from __future__ import annotations
 
 from collections.abc import MutableMapping
+from typing import ClassVar
 
 from flext_observability import c, e, m, p, r, t, u
 
@@ -57,7 +58,7 @@ class FlextObservabilityCustomMetrics:
     """
 
     logger = u.fetch_logger(__name__)
-    _registry_instance: FlextObservabilityCustomMetrics.Registry | None = None
+    _registry_instance: ClassVar[FlextObservabilityCustomMetrics.Registry | None] = None
 
     class Registry:
         """Metric registry for managing custom metrics."""

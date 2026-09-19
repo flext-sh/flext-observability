@@ -107,24 +107,12 @@ class FlextObservabilityPerformance:
 
         def _cpu_percent(self) -> float:
             """Get current CPU usage percent."""
-            try:
-                cpu: float = FlextObservabilityPerformance._process.cpu_percent(
-                    interval=0.01
-                )
-            except c.EXC_MAPPING_TYPE:
-                return 0.0
-            else:
-                return cpu
+            return FlextObservabilityPerformance._process.cpu_percent(interval=0.01)
 
         def _memory_usage(self) -> float:
             """Get current memory usage in MB."""
-            try:
-                memory_info = FlextObservabilityPerformance._process.memory_info()
-                rss_bytes: int = memory_info.rss
-            except c.EXC_MAPPING_TYPE:
-                return 0.0
-            else:
-                return float(rss_bytes) / 1024 / 1024
+            memory_info = FlextObservabilityPerformance._process.memory_info()
+            return float(memory_info.rss) / 1024 / 1024
 
     @staticmethod
     def fetch_system_resources() -> t.MappingKV[str, float]:
@@ -165,8 +153,6 @@ class FlextObservabilityPerformance:
             - Context operations: < 1ms overhead acceptable
 
         """
-        if not metrics.success:
-            return False
         acceptable_latencies: t.MappingKV[str, float] = {
             "http_": 50.0,
             "database_": 100.0,
@@ -179,8 +165,7 @@ class FlextObservabilityPerformance:
             if metrics.operation.lower().startswith(prefix):
                 threshold = latency
                 break
-        within_threshold: bool = metrics.duration_ms < threshold
-        return within_threshold
+        return metrics.success and metrics.duration_ms < threshold
 
     @staticmethod
     def _build_performance_log(

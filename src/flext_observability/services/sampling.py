@@ -60,7 +60,7 @@ class FlextObservabilitySampling:
     """
 
     logger = u.fetch_logger(__name__)
-    _sampler_instance: FlextObservabilitySampling.Sampler | None = None
+    _sampler_instance: ClassVar[FlextObservabilitySampling.Sampler | None] = None
 
     class Sampler:
         """Sampling decision engine."""

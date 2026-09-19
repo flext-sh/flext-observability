@@ -18,6 +18,8 @@ Key Features:
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from flext_observability import c, e, m, p, r, t, u
 
 
@@ -48,7 +50,7 @@ class FlextObservabilityAdvancedContext:
     """
 
     logger = u.fetch_logger(__name__)
-    _context_instance: FlextObservabilityAdvancedContext.Context | None = None
+    _context_instance: ClassVar[FlextObservabilityAdvancedContext.Context | None] = None
 
     class Context:
         """Request-local context for storing metadata."""
