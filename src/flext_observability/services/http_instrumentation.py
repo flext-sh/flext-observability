@@ -195,8 +195,8 @@ class FlextObservabilityHTTP:
                     c.Observability.ErrorSeverity.ERROR.value,
                     f"HTTP request error: {error!s}",
                     extra={
-                        "http_method": _request.method if _request else "UNKNOWN",
-                        "http_path": _request.path if _request else "UNKNOWN",
+                        "http_method": flask.request.method,
+                        "http_path": flask.request.path,
                         "error_type": type(error).__name__,
                         "error_message": str(error),
                     },
