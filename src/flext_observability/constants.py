@@ -29,14 +29,15 @@ class FlextObservabilityConstants(_c, FlextObservabilityConstantsBase):
     ```
     """
 
-    class Observability:
+    class Observability(FlextObservabilityConstantsBase.Observability):
         """Observability domain constants namespace.
 
         All observability-specific constants are organized here for better namespace
         organization and to enable composition with other domain constants.
+        DEFAULT_SERVICE_NAME is owned by ``flext_observability._constants``
+        and re-exported through this facade subclass.
         """
 
-        DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
         DEFAULT_LOG_LEVEL: Final[str] = "INFO"
         DEFAULT_METRIC_UNIT: Final[str] = "1"
         DEFAULT_SETTINGS_SERVICE_NAME: Final[str] = "flext-observability"
