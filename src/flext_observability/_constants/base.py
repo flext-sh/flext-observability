@@ -6,13 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Final
-
 
 class FlextObservabilityConstantsBase:
     """Base constants for flext-observability."""
 
-    class Observability:
-        """Observability domain constants owned by ``_constants``."""
 
-        DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
+__all__: list[str] = ["FlextObservabilityConstantsBase"]

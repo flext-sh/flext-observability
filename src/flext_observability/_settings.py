@@ -16,8 +16,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated
 
-from pydantic_settings import SettingsConfigDict
-
 from flext_core import FlextSettings
 from flext_observability import m
 
@@ -25,7 +23,7 @@ from flext_observability import m
 class FlextObservabilitySettings(FlextSettings):
     """Observability settings; all project fields under ``settings.Observability.*``."""
 
-    model_config = SettingsConfigDict(
+    model_config = m.SettingsConfigDict(
         env_prefix="FLEXT_OBSERVABILITY_", env_nested_delimiter="__", extra="ignore"
     )
 
