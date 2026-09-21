@@ -38,7 +38,6 @@ class FlextObservabilityConstants(_c, FlextObservabilityConstantsBase):
         and re-exported through this facade subclass.
         """
 
-        DEFAULT_LOG_LEVEL: Final[str] = "INFO"
         DEFAULT_METRIC_UNIT: Final[str] = "1"
         DEFAULT_SETTINGS_SERVICE_NAME: Final[str] = "flext-observability"
         DEFAULT_ENVIRONMENT: Final[str] = "development"

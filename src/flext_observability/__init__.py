@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
 
     from . import services
+    from .__version__ import FlextObservabilityVersion
     from ._config import FlextObservabilityConfig, config
     from ._settings import FlextObservabilitySettings, settings
     from .api import FlextObservability, observability
@@ -68,6 +69,7 @@ __all__: tuple[str, ...] = (
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
+    "FlextObservabilityVersion",
     "__author__",
     "__author_email__",
     "__description__",
@@ -96,6 +98,7 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
+            ".__version__": ("FlextObservabilityVersion",),
             "._config": ("FlextObservabilityConfig", "config"),
             "._settings": ("FlextObservabilitySettings", "settings"),
             ".api": ("FlextObservability", "observability"),

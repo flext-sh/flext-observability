@@ -16,3 +16,4 @@ class FlextObservabilityConstantsBase:
         """Observability domain constants owned by ``_constants``."""
 
         DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
+        DEFAULT_LOG_LEVEL: Final[str] = "INFO"
