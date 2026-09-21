@@ -12,8 +12,7 @@ if TYPE_CHECKING:
     from .base import FlextObservabilityModelsBase
     from .domains import FlextObservabilityModelsDomains
 __all__: tuple[str, ...] = (
-    "FlextObservabilityModelsBase",
-    "FlextObservabilityModelsDomains",
+    "FlextObservabilityModelsBase", "FlextObservabilityModelsDomains",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
