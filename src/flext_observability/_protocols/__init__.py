@@ -10,11 +10,18 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from .base import FlextObservabilityProtocolsBase
-__all__: tuple[str, ...] = ("FlextObservabilityProtocolsBase",)
+    from .domains import FlextObservabilityProtocolsDomains
+__all__: tuple[str, ...] = (
+    "FlextObservabilityProtocolsBase",
+    "FlextObservabilityProtocolsDomains",
+)
 
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
-        MappingProxyType({".base": ("FlextObservabilityProtocolsBase",)}),
+        MappingProxyType({
+            ".base": ("FlextObservabilityProtocolsBase",),
+            ".domains": ("FlextObservabilityProtocolsDomains",),
+        }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
     )

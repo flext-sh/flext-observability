@@ -9,44 +9,23 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import u as _u
+from flext_cli import u
 
-from flext_core import p as _p, r as _r
+from ._utilities.base import FlextObservabilityUtilitiesBase
+from ._utilities.domains import FlextObservabilityUtilitiesDomains
 
-from ._utilities import FlextObservabilityUtilitiesBase
 
-
-class FlextObservabilityUtilities(_u, FlextObservabilityUtilitiesBase):
+class FlextObservabilityUtilities(u, FlextObservabilityUtilitiesBase):
     """Centralized utilities for FLEXT Observability.
 
     Inherits CLI FLEXT utilities, providing additional namespace classes
     for observability domain operations.
     """
 
-    class Observability:
+    class Observability(
+        FlextObservabilityUtilitiesBase, FlextObservabilityUtilitiesDomains
+    ):
         """Observability-specific project utilities."""
-
-        class Performance:
-            """Performance tracking helpers."""
-
-            @staticmethod
-            def calculate_duration(start_ns: int, end_ns: int) -> _p.Result[float]:
-                """Calculate duration in seconds from nanosecond timestamps."""
-                if end_ns < start_ns:
-                    return _r[float].fail("end_ns must be >= start_ns")
-                return _r[float].ok((end_ns - start_ns) / 1000000000)
-
-        class Sampling:
-            """Sampling strategy helpers."""
-
-            @staticmethod
-            def should_sample(rate: float, request_id: int) -> bool:
-                """Determine if a request should be sampled based on rate."""
-                if rate <= 0.0:
-                    return False
-                if rate >= 1.0:
-                    return True
-                return request_id % 100 < int(rate * 100)
 
 
 u = FlextObservabilityUtilities
