@@ -34,11 +34,11 @@ class FlextObservabilityConstants(_c, FlextObservabilityConstantsBase):
 
         All observability-specific constants are organized here for better namespace
         organization and to enable composition with other domain constants.
-        DEFAULT_SERVICE_NAME is owned by ``flext_observability._constants``
-        and re-exported through this facade subclass.
+        DEFAULT_SERVICE_NAME and DEFAULT_METRIC_UNIT are owned by
+        ``flext_observability._constants`` and re-exported through this facade
+        subclass.
         """
 
-        DEFAULT_METRIC_UNIT: Final[str] = "1"
         DEFAULT_SETTINGS_SERVICE_NAME: Final[str] = "flext-observability"
         DEFAULT_ENVIRONMENT: Final[str] = "development"
         DEFAULT_FLUSH_INTERVAL: Final[int] = 30
