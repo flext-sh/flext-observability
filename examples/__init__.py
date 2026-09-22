@@ -10,7 +10,6 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_cli import cli
-    from pydantic_core import from_json, to_json, to_jsonable_python
 
     from flext_core import (
         config,
@@ -26,7 +25,7 @@ if TYPE_CHECKING:
         settings,
         x,
     )
-    from flext_observability import observability
+    from flext_observability import main, observability
 
     from .constants import (
         ExamplesFlextObservabilityConstants,
@@ -60,11 +59,11 @@ __all__: tuple[str, ...] = (
     "core",
     "d",
     "e",
-    "from_json",
     "h",
     "lazy",
     "lazy_attribute",
     "m",
+    "main",
     "normalize_lazy_imports",
     "observability",
     "p",
@@ -72,8 +71,6 @@ __all__: tuple[str, ...] = (
     "s",
     "settings",
     "t",
-    "to_json",
-    "to_jsonable_python",
     "u",
     "x",
 )
@@ -101,8 +98,7 @@ _LAZY_IMPORTS = MappingProxyType(
                 "settings",
                 "x",
             ),
-            "flext_observability": ("observability",),
-            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
+            "flext_observability": ("main", "observability"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
