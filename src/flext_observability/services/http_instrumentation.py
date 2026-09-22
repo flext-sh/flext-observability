@@ -179,8 +179,6 @@ class FlextObservabilityHTTP:
                 if hasattr(flask.g, "flext_start_time")
                 else None
             )
-            if start_time is None:
-                return 0.0
             validated_start = m.Observability.StartTimePayload.model_validate(
                 obj={"value": start_time}
             ).value
