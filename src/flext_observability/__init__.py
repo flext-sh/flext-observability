@@ -20,19 +20,9 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import (
-        cli,
-        core,
-        d,
-        e,
-        from_json,
-        h,
-        lazy_attribute,
-        r,
-        to_json,
-        to_jsonable_python,
-        x,
-    )
+    from flext_cli import cli
+
+    from flext_core import core, d, e, h, lazy_attribute, r, x
 
     from . import services
     from ._config import FlextObservabilityConfig, config
@@ -57,6 +47,8 @@ if TYPE_CHECKING:
     from .services.services import FlextObservabilityServices
     from .typings import FlextObservabilityTypes, t
     from .utilities import FlextObservabilityUtilities, u
+
+
 __all__: tuple[str, ...] = (
     "FlextObservability",
     "FlextObservabilityAdvancedContext",
@@ -94,7 +86,6 @@ __all__: tuple[str, ...] = (
     "core",
     "d",
     "e",
-    "from_json",
     "h",
     "lazy_attribute",
     "m",
@@ -106,8 +97,6 @@ __all__: tuple[str, ...] = (
     "services",
     "settings",
     "t",
-    "to_json",
-    "to_jsonable_python",
     "u",
     "x",
 )
@@ -138,19 +127,8 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.services": ("FlextObservabilityServices",),
             ".typings": ("FlextObservabilityTypes", "t"),
             ".utilities": ("FlextObservabilityUtilities", "u"),
-            "flext_cli": (
-                "cli",
-                "core",
-                "d",
-                "e",
-                "from_json",
-                "h",
-                "lazy_attribute",
-                "r",
-                "to_json",
-                "to_jsonable_python",
-                "x",
-            ),
+            "flext_cli": ("cli",),
+            "flext_core": ("core", "d", "e", "h", "lazy_attribute", "r", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
