@@ -58,7 +58,7 @@ verification).
 - Public extensions exposed by this project: `FlextObservability`,
   `FlextObservabilityAdvancedContext`, `FlextObservabilityCli`,
   `FlextObservabilityConfig`, `FlextObservabilityConstants`, `FlextObservabilityContext`
-  (+17 more).
+  (+16 more).
 - Library abstraction boundaries: see AGENTS.md §2.7.
 
 ## Quality Gates

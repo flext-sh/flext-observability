@@ -23,7 +23,8 @@
 - [🏛️ Architectural Decisions](#architectural-decisions)
   - [ADRs Referenced](#adrs-referenced)
   - [Key Architectural Principles](#key-architectural-principles)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 ## Table of Contents
 

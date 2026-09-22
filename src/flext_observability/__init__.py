@@ -20,17 +20,26 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import cli
-    from pydantic_core import from_json, to_json, to_jsonable_python
-
-    from flext_core import core, d, e, h, lazy_attribute, r, x
+    from flext_cli import (
+        cli,
+        core,
+        d,
+        e,
+        from_json,
+        h,
+        lazy_attribute,
+        r,
+        to_json,
+        to_jsonable_python,
+        x,
+    )
 
     from . import services
     from ._config import FlextObservabilityConfig, config
     from ._settings import FlextObservabilitySettings, settings
     from .api import FlextObservability, observability
     from .base import FlextObservabilityServiceBase, s
-    from .cli import FlextObservabilityCli
+    from .cli import FlextObservabilityCli, main
     from .constants import FlextObservabilityConstants, FlextObservabilityConstants as c
     from .models import FlextObservabilityModels, m
     from .protocols import FlextObservabilityProtocols, p
@@ -89,6 +98,7 @@ __all__: tuple[str, ...] = (
     "h",
     "lazy_attribute",
     "m",
+    "main",
     "observability",
     "p",
     "r",
@@ -109,7 +119,7 @@ _LAZY_IMPORTS = MappingProxyType(
             "._settings": ("FlextObservabilitySettings", "settings"),
             ".api": ("FlextObservability", "observability"),
             ".base": ("FlextObservabilityServiceBase", "s"),
-            ".cli": ("FlextObservabilityCli",),
+            ".cli": ("FlextObservabilityCli", "main"),
             ".constants": ("FlextObservabilityConstants", "c"),
             ".models": ("FlextObservabilityModels", "m"),
             ".protocols": ("FlextObservabilityProtocols", "p"),
@@ -128,9 +138,19 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.services": ("FlextObservabilityServices",),
             ".typings": ("FlextObservabilityTypes", "t"),
             ".utilities": ("FlextObservabilityUtilities", "u"),
-            "flext_cli": ("cli",),
-            "flext_core": ("core", "d", "e", "h", "lazy_attribute", "r", "x"),
-            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
+            "flext_cli": (
+                "cli",
+                "core",
+                "d",
+                "e",
+                "from_json",
+                "h",
+                "lazy_attribute",
+                "r",
+                "to_json",
+                "to_jsonable_python",
+                "x",
+            ),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

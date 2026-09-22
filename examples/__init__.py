@@ -9,8 +9,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_cli import cli
-    from pydantic_core import from_json, to_json, to_jsonable_python
+    from flext_cli import cli, from_json, to_json, to_jsonable_python
 
     from flext_core import (
         config,
@@ -18,15 +17,14 @@ if TYPE_CHECKING:
         d,
         e,
         h,
-        lazy,
         lazy_attribute,
-        normalize_lazy_imports,
         r,
         s,
+        services,
         settings,
         x,
     )
-    from flext_observability import observability
+    from flext_observability import main, observability
 
     from .constants import (
         ExamplesFlextObservabilityConstants,
@@ -62,14 +60,14 @@ __all__: tuple[str, ...] = (
     "e",
     "from_json",
     "h",
-    "lazy",
     "lazy_attribute",
     "m",
-    "normalize_lazy_imports",
+    "main",
     "observability",
     "p",
     "r",
     "s",
+    "services",
     "settings",
     "t",
     "to_json",
@@ -86,23 +84,21 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("ExamplesFlextObservabilityProtocols", "p"),
             ".typings": ("ExamplesFlextObservabilityTypes", "t"),
             ".utilities": ("ExamplesFlextObservabilityUtilities", "u"),
-            "flext_cli": ("cli",),
+            "flext_cli": ("cli", "from_json", "to_json", "to_jsonable_python"),
             "flext_core": (
                 "config",
                 "core",
                 "d",
                 "e",
                 "h",
-                "lazy",
                 "lazy_attribute",
-                "normalize_lazy_imports",
                 "r",
                 "s",
+                "services",
                 "settings",
                 "x",
             ),
-            "flext_observability": ("observability",),
-            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
+            "flext_observability": ("main", "observability"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
