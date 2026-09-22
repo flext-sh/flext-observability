@@ -17,3 +17,4 @@ class FlextObservabilityConstantsBase:
 
         DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
         DEFAULT_LOG_LEVEL: Final[str] = "INFO"
+        DEFAULT_METRIC_UNIT: Final[str] = "1"

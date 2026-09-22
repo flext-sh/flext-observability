@@ -34,7 +34,9 @@ class FlextObservabilityConfig(FlextSettings, FlextCliConfig):
 
     Observability: Annotated[
         _ObservabilityNamespace,
-        m.Field(description="Open namespace exposing ``config/*.yaml`` under ``Observability``."),
+        m.Field(
+            description="Open namespace exposing ``config/*.yaml`` under ``Observability``."
+        ),
     ] = _ObservabilityNamespace()
 
 
