@@ -865,13 +865,11 @@ def monitor_service_health() -> p.Result[m.Dict]:
         tags={"service": "order-service"},
     )
 
-    return r[bool].ok(
-        {
-            "overall_status": overall_status,
-            "checks": health_checks,
-            "health_score": health_metric.data if health_metric.success else None,
-        }
-    )
+    return r[bool].ok({
+        "overall_status": overall_status,
+        "checks": health_checks,
+        "health_score": health_metric.data if health_metric.success else None,
+    })
 
 
 def check_database_health() -> p.Result[FlextHealthCheck]:
