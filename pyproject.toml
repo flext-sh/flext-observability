@@ -162,11 +162,8 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/flext_observability"]
 
-[tool.hatch.build.targets.wheel.force-include]
-config = "flext_observability/config"
-
 [tool.hatch.build.targets.sdist]
-only-include = ["src/flext_observability", "config"]
+only-include = ["src/flext_observability"]
 
 [tool.mypy]
 disable_error_code = [
