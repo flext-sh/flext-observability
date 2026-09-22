@@ -46,7 +46,7 @@
   - [Module Creation Checklist](#module-creation-checklist)
   - [Observability Quality Gate Checklist](#observability-quality-gate-checklist)
   - [Observability-Specific Standards](#observability-specific-standards)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 ## Table of Contents
 
