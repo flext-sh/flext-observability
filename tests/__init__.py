@@ -9,9 +9,25 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_tests import c as tests_c, d, e, h, r, td, tf, tk, tm, tv, x
+    from flext_cli import cli, main
+    from flext_tests import (
+        active_rules,
+        api,
+        config,
+        discover_repository_root,
+        install_local_packages,
+        load_infra_report,
+        settings,
+        split_csv,
+        td,
+        tf,
+        tk,
+        tm,
+        tv,
+    )
 
-    from flext_observability import c as obs_c
+    from flext_core import core, d, e, h, lazy_attribute, r, x
+    from flext_observability import observability
 
     from . import integration, unit
     from .base import (
@@ -44,19 +60,30 @@ __all__: tuple[str, ...] = (
     "TestsFlextObservabilitySettings",
     "TestsFlextObservabilityTypes",
     "TestsFlextObservabilityUtilities",
+    "active_rules",
+    "api",
     "c",
+    "cli",
+    "config",
+    "core",
     "d",
+    "discover_repository_root",
     "e",
     "h",
+    "install_local_packages",
     "integration",
+    "lazy_attribute",
+    "load_infra_report",
     "m",
-    "obs_c",
+    "main",
+    "observability",
     "p",
     "r",
     "s",
+    "settings",
+    "split_csv",
     "t",
     "td",
-    "tests_c",
     "tf",
     "tk",
     "tm",
@@ -78,12 +105,26 @@ _LAZY_IMPORTS = MappingProxyType(
             ".typings": ("TestsFlextObservabilityTypes", "t"),
             ".unit": ("unit",),
             ".utilities": ("TestsFlextObservabilityUtilities", "u"),
-            "flext_tests": ("d", "e", "h", "r", "td", "tf", "tk", "tm", "tv", "x"),
+            "flext_cli": ("cli", "main"),
+            "flext_core": ("core", "d", "e", "h", "lazy_attribute", "r", "x"),
+            "flext_observability": ("observability",),
+            "flext_tests": (
+                "active_rules",
+                "api",
+                "config",
+                "discover_repository_root",
+                "install_local_packages",
+                "load_infra_report",
+                "settings",
+                "split_csv",
+                "td",
+                "tf",
+                "tk",
+                "tm",
+                "tv",
+            ),
         }),
-        alias_groups=MappingProxyType({
-            "flext_observability": (("obs_c", "c"),),
-            "flext_tests": (("tests_c", "c"),),
-        }),
+        alias_groups=MappingProxyType({}),
         sort_keys=False,
     )
 )

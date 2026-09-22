@@ -20,18 +20,19 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_core import d, e, h, r, x
+    from flext_cli import cli, main
+
+    from flext_core import core, d, e, h, lazy_attribute, r, x
 
     from . import services
-    from .__version__ import FlextObservabilityVersion
     from ._config import FlextObservabilityConfig, config
     from ._settings import FlextObservabilitySettings, settings
     from .api import FlextObservability, observability
-    from .base import FlextObservabilityServiceBase, FlextObservabilityServiceBase as s
+    from .base import FlextObservabilityServiceBase, s
     from .cli import FlextObservabilityCli
     from .constants import FlextObservabilityConstants, FlextObservabilityConstants as c
-    from .models import FlextObservabilityModels, FlextObservabilityModels as m
-    from .protocols import FlextObservabilityProtocols, FlextObservabilityProtocols as p
+    from .models import FlextObservabilityModels, m
+    from .protocols import FlextObservabilityProtocols, p
     from .services.advanced_context import FlextObservabilityAdvancedContext
     from .services.context import FlextObservabilityContext
     from .services.custom_metrics import FlextObservabilityCustomMetrics
@@ -44,8 +45,8 @@ if TYPE_CHECKING:
     from .services.performance import FlextObservabilityPerformance
     from .services.sampling import FlextObservabilitySampling
     from .services.services import FlextObservabilityServices
-    from .typings import FlextObservabilityTypes, FlextObservabilityTypes as t
-    from .utilities import FlextObservabilityUtilities, FlextObservabilityUtilities as u
+    from .typings import FlextObservabilityTypes, t
+    from .utilities import FlextObservabilityUtilities, u
 __all__: tuple[str, ...] = (
     "FlextObservability",
     "FlextObservabilityAdvancedContext",
@@ -69,7 +70,6 @@ __all__: tuple[str, ...] = (
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
-    "FlextObservabilityVersion",
     "__author__",
     "__author_email__",
     "__description__",
@@ -79,11 +79,15 @@ __all__: tuple[str, ...] = (
     "__version__",
     "__version_info__",
     "c",
+    "cli",
     "config",
+    "core",
     "d",
     "e",
     "h",
+    "lazy_attribute",
     "m",
+    "main",
     "observability",
     "p",
     "r",
@@ -98,7 +102,6 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".__version__": ("FlextObservabilityVersion",),
             "._config": ("FlextObservabilityConfig", "config"),
             "._settings": ("FlextObservabilitySettings", "settings"),
             ".api": ("FlextObservability", "observability"),
@@ -122,7 +125,8 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.services": ("FlextObservabilityServices",),
             ".typings": ("FlextObservabilityTypes", "t"),
             ".utilities": ("FlextObservabilityUtilities", "u"),
-            "flext_core": ("d", "e", "h", "r", "x"),
+            "flext_cli": ("cli", "main"),
+            "flext_core": ("core", "d", "e", "h", "lazy_attribute", "r", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
