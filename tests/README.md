@@ -74,7 +74,7 @@ tests/
 
 #### Monitoring and Integration Tests
 
-- **test_flext_monitor_complete.py**: Monitoring decorator functionality
+- runtime_bootstrap_options
 - **test_health.py**: Health check system validation
 - **test_metrics.py**: Metrics collection and validation
 
@@ -86,7 +86,7 @@ tests/
 
 - **test_complete_coverage.py**: Comprehensive coverage validation
 - **test_surgical_coverage.py**: Surgical coverage for specific edge cases
-- **test_true_100_coverage.py**: Maximum coverage testing
+- runtime_bootstrap_options
 
 ## Test Configuration
 
@@ -282,10 +282,10 @@ All tests must:
 
 ### Test Naming Conventions
 
-- `__test_<component>_<scenario>_<expected_outcome>**`
-- **test_metric_creation_success()** - Clear intent
-- **test_service_integration_failure()** - Specific scenario
-- **test_domain_validation_invalid_input()** - Detailed context
+- runtime_bootstrap_options
+- runtime_bootstrap_options
+- runtime_bootstrap_options
+- runtime_bootstrap_options
 
 ## Current Status
 
