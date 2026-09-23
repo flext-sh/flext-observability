@@ -22,7 +22,7 @@
 - Main facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
   `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,
   `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
-  `FlextObservabilityErrorHandling` (+15 more)
+  `FlextObservabilityErrorHandling` (+14 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextObservability`, `FlextObservabilityAdvancedContext`,
   `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,

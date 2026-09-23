@@ -73,8 +73,8 @@ External interfaces and API adaptations:
 - **flext_create_metric()**: Easy metric creation
 - **flext_create_trace()**: Simple trace creation
 - **flext_create_alert()**: Alert creation interface
-- **flext_create_health_check()**: Health check creation
-- **flext_create_log_entry()**: Log entry creation
+- runtime_bootstrap_options
+- runtime_bootstrap_options
 
 #### [flext_monitor.py](flext_monitor.py) - Monitoring Decorators
 
@@ -112,7 +112,7 @@ Base patterns and cross-cutting concerns:
 
 #### [validation.py](validation.py) - Domain Validation
 
-- **create_observability_result_error()**: Standardized error creation
+- runtime_bootstrap_options
 - Domain validation utilities and patterns
 
 #### [constants.py](constants.py) - Domain Constants

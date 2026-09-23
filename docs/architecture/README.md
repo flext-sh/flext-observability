@@ -31,7 +31,8 @@
 - [🔄 Extension Points](#extension-points)
   - [Planned Extension Mechanisms](#planned-extension-mechanisms)
   - [Integration Hooks](#integration-hooks)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 ## Table of Contents
 
