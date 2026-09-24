@@ -9,22 +9,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_cli import cli
-
-    from flext_core import (
-        config,
-        core,
-        d,
-        e,
-        h,
-        lazy_attribute,
-        r,
-        s,
-        services,
-        settings,
-        x,
-    )
-    from flext_observability import main, observability
+    from flext_core import d, e, h, r, s, x
 
     from .constants import (
         ExamplesFlextObservabilityConstants,
@@ -55,21 +40,13 @@ __all__: tuple[str, ...] = (
     "ExamplesFlextObservabilityTypes",
     "ExamplesFlextObservabilityUtilities",
     "c",
-    "cli",
-    "config",
-    "core",
     "d",
     "e",
     "h",
-    "lazy_attribute",
     "m",
-    "main",
-    "observability",
     "p",
     "r",
     "s",
-    "services",
-    "settings",
     "t",
     "u",
     "x",
@@ -83,21 +60,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("ExamplesFlextObservabilityProtocols", "p"),
             ".typings": ("ExamplesFlextObservabilityTypes", "t"),
             ".utilities": ("ExamplesFlextObservabilityUtilities", "u"),
-            "flext_cli": ("cli",),
-            "flext_core": (
-                "config",
-                "core",
-                "d",
-                "e",
-                "h",
-                "lazy_attribute",
-                "r",
-                "s",
-                "services",
-                "settings",
-                "x",
-            ),
-            "flext_observability": ("main", "observability"),
+            "flext_core": ("d", "e", "h", "r", "s", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
