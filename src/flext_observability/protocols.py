@@ -6,13 +6,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import p
+from flext_cli import FlextCliProtocols
 
 from ._protocols.base import FlextObservabilityProtocolsBase
 from ._protocols.domains import FlextObservabilityProtocolsDomains
 
 
-class FlextObservabilityProtocols(p, FlextObservabilityProtocolsBase):
+class FlextObservabilityProtocols(FlextCliProtocols, FlextObservabilityProtocolsBase):
     """Unified observability protocols following FLEXT domain extension pattern.
 
     Extends p to inherit all foundation protocols (Result, Service, etc.)

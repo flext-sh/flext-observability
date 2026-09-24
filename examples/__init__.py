@@ -9,27 +9,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-<<<<<<< HEAD
-    from flext_cli import cli
-
-    from flext_core import (
-        config,
-        core,
-        d,
-        e,
-        h,
-        lazy,
-        lazy_attribute,
-        normalize_lazy_imports,
-        r,
-        s,
-        settings,
-        x,
-    )
-    from flext_observability import main, observability
-=======
     from flext_core import d, e, h, r, s, x
->>>>>>> recovery/rope-automation-20260921
 
     from .constants import (
         ExamplesFlextObservabilityConstants,
@@ -63,23 +43,10 @@ __all__: tuple[str, ...] = (
     "d",
     "e",
     "h",
-<<<<<<< HEAD
-    "lazy",
-    "lazy_attribute",
-    "m",
-    "main",
-    "normalize_lazy_imports",
-    "observability",
-    "p",
-    "r",
-    "s",
-    "settings",
-=======
     "m",
     "p",
     "r",
     "s",
->>>>>>> recovery/rope-automation-20260921
     "t",
     "u",
     "x",
@@ -93,26 +60,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("ExamplesFlextObservabilityProtocols", "p"),
             ".typings": ("ExamplesFlextObservabilityTypes", "t"),
             ".utilities": ("ExamplesFlextObservabilityUtilities", "u"),
-<<<<<<< HEAD
-            "flext_cli": ("cli",),
-            "flext_core": (
-                "config",
-                "core",
-                "d",
-                "e",
-                "h",
-                "lazy",
-                "lazy_attribute",
-                "normalize_lazy_imports",
-                "r",
-                "s",
-                "settings",
-                "x",
-            ),
-            "flext_observability": ("main", "observability"),
-=======
             "flext_core": ("d", "e", "h", "r", "s", "x"),
->>>>>>> recovery/rope-automation-20260921
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

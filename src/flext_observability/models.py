@@ -10,13 +10,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import m
+from flext_cli import FlextCliModels
 
 from ._models.base import FlextObservabilityModelsBase
 from ._models.domains import FlextObservabilityModelsDomains
 
 
-class FlextObservabilityModels(m, FlextObservabilityModelsBase):
+class FlextObservabilityModels(FlextCliModels, FlextObservabilityModelsBase):
     """Generic observability models with Pydantic patterns.
 
     Single class providing generic base models using composition and delegation.

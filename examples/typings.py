@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from flext_core import t as _t
+from flext_core import FlextTypes
 
 
-class ExamplesFlextObservabilityTypes(_t):
+class ExamplesFlextObservabilityTypes(FlextTypes):
     """Public examples typings facade — inherits canonical t."""
 
     class ExamplesFlextObservability:

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core import u as _u
+from flext_core import FlextUtilities
 
 if TYPE_CHECKING:
     from examples.typings import t
 
 
-class ExamplesFlextObservabilityUtilities(_u):
+class ExamplesFlextObservabilityUtilities(FlextUtilities):
     """Public examples utilities facade — inherits canonical u."""
 
     class ExamplesFlextObservability:
