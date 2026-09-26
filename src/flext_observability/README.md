@@ -128,7 +128,7 @@ Base patterns and cross-cutting concerns:
 
 ### Basic Entity Creation
 
-````python
+```python
 from __future__ import annotations
 
 from flext_observability import FlextMetric
@@ -144,7 +144,7 @@ metric = FlextMetric(
 validation = metric.validate_business_rules()
 if validation.success:
     print(f"Valid metric: {metric.name}")
-
+```
 
 ### Service Layer Usage
 
@@ -159,7 +159,7 @@ metrics_service = FlextMetricsService(container)
 result = metrics_service.record_metric(metric)
 if result.success:
     print(f"Recorded: {result.data.name}")
-
+```
 
 ### Factory Pattern Usage
 
@@ -174,7 +174,7 @@ metric_result = factory.create_metric("cpu_usage", 75.2, "percent")
 if metric_result.success:
     metric = metric_result.data
     print(f"Created metric: {metric.name}")
-````
+```
 
 ### Simple API Usage
 
