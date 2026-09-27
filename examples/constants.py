@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core import c as _c
+from flext_core import FlextConstants
 
 if TYPE_CHECKING:
     from examples.typings import t
 
 
-class ExamplesFlextObservabilityConstants(_c):
+class ExamplesFlextObservabilityConstants(FlextConstants):
     """Public examples constants facade — inherits canonical c."""
 
     class ExamplesFlextObservability:

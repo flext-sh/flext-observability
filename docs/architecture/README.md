@@ -241,15 +241,14 @@ from __future__ import annotations
 # All services use flext-core patterns
 from flext_observability import FlextMetricsService
 
-container = FlextContainer()
-service = FlextMetricsService(container)
 
-# Railway-oriented programming throughout
-result = service.record_metric(metric)
-if result.success:
-    # Success path
-    return result.value
-else:
+def record_metric_example(container, metric):
+    """Railway-oriented programming throughout."""
+    service = FlextMetricsService(container)
+    result = service.record_metric(metric)
+    if result.success:
+        # Success path
+        return result.value
     # Error path - no exceptions
     return result.error
 ```

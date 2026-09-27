@@ -29,8 +29,8 @@ if TYPE_CHECKING:
     from .base import FlextObservabilityServiceBase, s
     from .cli import FlextObservabilityCli, main
     from .constants import FlextObservabilityConstants, FlextObservabilityConstants as c
-    from .models import FlextObservabilityModels, m
-    from .protocols import FlextObservabilityProtocols, p
+    from .models import FlextObservabilityModels, FlextObservabilityModels as m
+    from .protocols import FlextObservabilityProtocols, FlextObservabilityProtocols as p
     from .services.advanced_context import FlextObservabilityAdvancedContext
     from .services.context import FlextObservabilityContext
     from .services.custom_metrics import FlextObservabilityCustomMetrics
@@ -43,8 +43,8 @@ if TYPE_CHECKING:
     from .services.performance import FlextObservabilityPerformance
     from .services.sampling import FlextObservabilitySampling
     from .services.services import FlextObservabilityServices
-    from .typings import FlextObservabilityTypes, t
-    from .utilities import FlextObservabilityUtilities, u
+    from .typings import FlextObservabilityTypes, FlextObservabilityTypes as t
+    from .utilities import FlextObservabilityUtilities, FlextObservabilityUtilities as u
 
 
 __all__: tuple[str, ...] = (
