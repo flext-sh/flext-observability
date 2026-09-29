@@ -80,10 +80,10 @@
     - **Recommended Import Styles**
       - **1. Primary Pattern (Recommended for Ecosystem)**
 - Import from main package - gets essential observability tools
-- Use patterns directly in business logic - **2. Service Integration Pattern (For FLEXT
-  Services)**
-- Import services for advanced integration - **3. Infrastructure Integration Pattern
-  (For Infrastructure Services)**
+- Use patterns directly in business logic -
+  **2. Service Integration Pattern (For FLEXT Services)**
+- Import services for advanced integration -
+  **3. Infrastructure Integration Pattern (For Infrastructure Services)**
 - Import for infrastructure monitoring
   - **Anti-Patterns (Forbidden)**
 - ❌ Don't import everything

@@ -89,7 +89,9 @@ class FlextObservabilityFunctionalExamples:
 
     def demonstrate_alerting_scenario(self) -> None:
         """Demonstrate alerting in different scenarios."""
-        alert_scenarios: t.SequenceOf[tuple[c.Observability.AlertLevel, str, str]] = [
+        alert_scenarios: t.SequenceOf[
+            t.Triple[c.Observability.AlertLevel, str, str]
+        ] = [
             (c.Observability.AlertLevel.INFO, "System started successfully", "system"),
             (
                 c.Observability.AlertLevel.WARNING,
