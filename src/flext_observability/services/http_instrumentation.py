@@ -108,7 +108,7 @@ class FlextObservabilityHTTP:
                 )
 
         @classmethod
-        def _before_request_payload(cls) -> tuple[str, str, t.StrMapping]:
+        def _before_request_payload(cls) -> t.Triple[str, str, t.StrMapping]:
             """Prepare Flask before-request context and log payload."""
             headers_dict: t.StrMapping = dict(flask.request.headers)
             FlextObservabilityContext.from_headers(headers_dict)
@@ -185,7 +185,7 @@ class FlextObservabilityHTTP:
             return (time.time() - validated_start) * 1000
 
         @staticmethod
-        def _error_handler(error: Exception) -> tuple[m.Dict, int]:
+        def _error_handler(error: Exception) -> t.Pair[m.Dict, int]:
             """Handle exceptions with logging and alerting."""
             try:
                 FlextObservabilityLogging.log_with_context(
