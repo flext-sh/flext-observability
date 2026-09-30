@@ -19,8 +19,12 @@
 - [📦 Import Patterns & Best Practices](#import-patterns-best-practices)
   - [Recommended Import Styles](#recommended-import-styles)
   - [Anti-Patterns (Forbidden)](#anti-patterns-forbidden)
+- [🏛️ Architectural Patterns](#architectural-patterns)
+  - [Layer Separation](#layer-separation)
   - [Dependency Direction](#dependency-direction)
   - [Cross-Cutting Observability Concerns](#cross-cutting-observability-concerns)
+- [🔄 Observability-Specific Patterns](#observability-specific-patterns)
+  - [Metric Creation Patterns](#metric-creation-patterns)
   - [Distributed Tracing Patterns](#distributed-tracing-patterns)
   - [Health Monitoring Patterns](#health-monitoring-patterns)
   - [Alert Management Patterns](#alert-management-patterns)
@@ -28,10 +32,15 @@
   - [Test Organization](#test-organization)
   - [r Testing Patterns for Observability](#r-testing-patterns-for-observability)
   - [Observability Entity Testing Patterns](#observability-entity-testing-patterns)
+  - [Service Testing Patterns](#service-testing-patterns)
   - [Monitoring Decorator Testing Patterns](#monitoring-decorator-testing-patterns)
+- [📏 Code Quality Standards](#code-quality-standards)
+  - [Type Annotation Requirements](#type-annotation-requirements)
+  - [Error Handling Standards](#error-handling-standards)
   - [Documentation Standards](#documentation-standards)
 - [🌐 Ecosystem Integration Guidelines](#ecosystem-integration-guidelines)
   - [Cross-Project Observability Standards](#cross-project-observability-standards)
+  - [Configuration Integration Across Services](#configuration-integration-across-services)
   - [Monitoring Integration Patterns](#monitoring-integration-patterns)
 - [📋 Checklist for New Observability Modules](#checklist-for-new-observability-modules)
   - [Module Creation Checklist](#module-creation-checklist)
@@ -205,9 +214,7 @@ validation.
 ```python
 from __future__ import annotations
 
-from flext_cli import u
-from flext_core import FlextSettings
-from flext_observability import FlextMetric, FlextTrace
+from flext_observability import FlextMetric
 
 
 class FlextMetric(FlextModels.Entity):
@@ -720,7 +727,6 @@ from __future__ import annotations
 # Basic metric creation
 def create_business_metrics(operation: str, duration: float, success: bool) -> None:
     """Create comprehensive business metrics."""
-
     # Performance metric
     duration_result = flext_create_metric(
         name=f"{operation}_duration",
@@ -901,7 +907,6 @@ def create_business_alert(
     metric_name: str, current_value: float, threshold: float
 ) -> p.Result[bool]:
     """Create business rule alert based on metric thresholds."""
-
     if current_value <= threshold:
         return r[bool].ok(value=True)  # No alert needed
 
@@ -948,7 +953,6 @@ def escalate_alert_if_needed(
     alert: FlextAlert, duration_minutes: int
 ) -> p.Result[bool]:
     """Escalate alert based on duration and severity."""
-
     escalation_thresholds = {
         "warning": 60,  # 1 hour
         "error": 30,  # 30 minutes
