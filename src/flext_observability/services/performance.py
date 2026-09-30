@@ -170,7 +170,7 @@ class FlextObservabilityPerformance:
     @staticmethod
     def _build_performance_log(
         metrics: m.Observability.PerformanceMetrics,
-    ) -> tuple[str, str]:
+    ) -> t.Pair[str, str]:
         """Build log level and message for performance metrics.
 
         Args:
