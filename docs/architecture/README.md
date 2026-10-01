@@ -263,7 +263,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("flext_api_endpoint")
-def process_api_request(request_data):
+def process_api_request(_request_data):
     """Automatic metrics, tracing, and logging."""
     return {"status": "processed"}
 ```
@@ -313,6 +313,7 @@ class FlextMetricsService:
     """Application service for metrics operations."""
 
     def __init__(self, container: FlextContainer) -> None:
+        """Inject the DI container for the metrics operations."""
         self._container = container
         # Dependency injection setup
 
@@ -328,6 +329,8 @@ class FlextMetricsService:
 
 ```python
 from __future__ import annotations
+
+from typing import Protocol
 
 
 class FlextMetricsRepository(Protocol):
@@ -402,6 +405,8 @@ class FlextMetricsRepository(Protocol):
 
 ```python
 from __future__ import annotations
+
+from typing import Protocol
 
 
 # Future extension point example
