@@ -193,7 +193,7 @@ modules depend on.
 
 **Import Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 # All ecosystem projects start with observability patterns here
@@ -491,6 +491,8 @@ obs_platform.py  # Contains FlextObservabilityPlatformV2 orchestration
 ```python
 from __future__ import annotations
 
+from flext_core import p
+
 
 # Simple API functions use flext_create_ prefix
 def flext_create_metric(
@@ -630,7 +632,7 @@ class DatabaseConnectionService:
 
 ### **Anti-Patterns (Forbidden)**
 
-```python
+```text
 from __future__ import annotations
 
 # ❌ Don't import everything
@@ -723,6 +725,8 @@ def process_payment(payment_data: dict) -> p.Result[m.Dict]:
 ```python
 from __future__ import annotations
 
+from flext_core import p, r
+
 
 # Basic metric creation
 def create_business_metrics(operation: str, duration: float, success: bool) -> None:
@@ -776,6 +780,8 @@ def create_validated_metric(name: str, value: float) -> p.Result[bool]:
 ```python
 from __future__ import annotations
 
+from flext_core import m, p, r
+
 
 # Parent-child trace correlation
 def process_order_with_tracing(order_data: dict) -> p.Result[m.Dict]:
@@ -823,6 +829,8 @@ def validate_order_with_trace(
 
 ```python
 from __future__ import annotations
+
+from flext_core import m, p, r
 
 
 # Comprehensive health monitoring
@@ -900,6 +908,8 @@ def check_database_health() -> p.Result[FlextHealthCheck]:
 
 ```python
 from __future__ import annotations
+
+from flext_core import p, r
 
 
 # Business rule-based alerting
@@ -1294,6 +1304,10 @@ def test_function_monitoring_with_exception():
 ```python
 from __future__ import annotations
 
+from decimal import Decimal
+
+from flext_core import p, r, t
+
 
 # ✅ Complete type annotations for observability functions
 def create_business_metric(
@@ -1341,6 +1355,8 @@ def create_metric(name, value, unit):  # Missing types
 
 ```python
 from __future__ import annotations
+
+from flext_core import m, p, r
 
 
 # ✅ Always use r for observability error handling
@@ -1392,6 +1408,8 @@ def create_metric_bad(name: str, value: float) -> FlextMetric:
 
 ```python
 from __future__ import annotations
+
+from flext_core import m, p, r
 
 
 def create_business_observability_dashboard(
