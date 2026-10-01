@@ -292,5 +292,6 @@ class FlextObservability(
 
 
 observability: FlextObservability = FlextObservability()
+"""Module-level MRO facade singleton for the observability namespace."""
 
 __all__: list[str] = ["FlextObservability", "observability"]
