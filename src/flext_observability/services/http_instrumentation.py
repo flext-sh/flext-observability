@@ -17,6 +17,9 @@ Key Features:
 - Latency metrics collection
 - Error tracking and alerting
 - Async-safe with FastAPI
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -64,7 +67,11 @@ class FlextObservabilityHTTP:
     def _matches_flask_app(
         obj: t.RegisterableService | p.Observability.Http.FlaskApp,
     ) -> TypeIs[p.Observability.Http.FlaskApp]:
-        """Type guard to check if object is a Flask app."""
+        """Type guard to check if object is a Flask app.
+
+        Returns:
+            The resulting ``TypeIs[p.Observability.Http.FlaskApp]``.
+        """
         # Why: `getattr(..., default) is not None` instead of `hasattr`.
         # mypy's hasattr-narrowing builds a type map per union member of
         # `t.RegisterableService` (a wide recursive service-value union) and
@@ -82,7 +89,11 @@ class FlextObservabilityHTTP:
     def _matches_fastapi_app(
         obj: t.RegisterableService | p.Observability.Http.FastAPIApp,
     ) -> TypeIs[p.Observability.Http.FastAPIApp]:
-        """Type guard to check if object is a FastAPI app."""
+        """Type guard to check if object is a FastAPI app.
+
+        Returns:
+            The resulting ``TypeIs[p.Observability.Http.FastAPIApp]``.
+        """
         missing = object()
         return getattr(obj, "add_middleware", missing) is not missing
 
@@ -104,12 +115,16 @@ class FlextObservabilityHTTP:
                 )
             except c.EXC_MAPPING_TYPE as e:
                 FlextObservabilityHTTP.logger.warning(
-                    f"Error in before_request hook: {e}"
+                    f"Error in before_request hook: {e}",
                 )
 
         @classmethod
         def _before_request_payload(cls) -> t.Triple[str, str, t.StrMapping]:
-            """Prepare Flask before-request context and log payload."""
+            """Prepare Flask before-request context and log payload.
+
+            Returns:
+                The resulting ``t.Triple[str, str, t.StrMapping]``.
+            """
             headers_dict: t.StrMapping = dict(flask.request.headers)
             FlextObservabilityContext.from_headers(headers_dict)
             correlation_id = FlextObservabilityContext.correlation_id()
@@ -136,14 +151,19 @@ class FlextObservabilityHTTP:
 
         @classmethod
         def _after_request_hook(
-            cls, response: p.Observability.Http.Response
+            cls,
+            response: p.Observability.Http.Response,
         ) -> p.Observability.Http.Response:
-            """Record metrics and complete span after request processing."""
+            """Record metrics and complete span after request processing.
+
+            Returns:
+                The resulting ``p.Observability.Http.Response``.
+            """
             try:
                 cls._log_after_request(response)
             except c.EXC_MAPPING_TYPE as e:
                 FlextObservabilityHTTP.logger.warning(
-                    f"Error in after_request hook: {e}"
+                    f"Error in after_request hook: {e}",
                 )
             return response
 
@@ -173,20 +193,28 @@ class FlextObservabilityHTTP:
 
         @classmethod
         def _duration_ms(cls) -> float:
-            """Resolve Flask request duration from the stored start time."""
+            """Resolve Flask request duration from the stored start time.
+
+            Returns:
+                The resulting ``float``.
+            """
             start_time = (
                 flask.g.flext_start_time
                 if hasattr(flask.g, "flext_start_time")
                 else None
             )
             validated_start = m.Observability.StartTimePayload.model_validate(
-                obj={"value": start_time}
+                obj={"value": start_time},
             ).value
             return (time.time() - validated_start) * 1000
 
         @staticmethod
         def _error_handler(error: Exception) -> t.Pair[m.Dict, int]:
-            """Handle exceptions with logging and alerting."""
+            """Handle exceptions with logging and alerting.
+
+            Returns:
+                The resulting ``t.Pair[m.Dict, int]``.
+            """
             try:
                 FlextObservabilityLogging.log_with_context(
                     FlextObservabilityHTTP.logger,
@@ -201,7 +229,7 @@ class FlextObservabilityHTTP:
                 )
             except c.EXC_MAPPING_TYPE as log_error:
                 FlextObservabilityHTTP.logger.error(
-                    f"Error in error handler: {log_error}"
+                    f"Error in error handler: {log_error}",
                 )
             return (m.Dict({"error": str(error)}), 500)
 
@@ -248,9 +276,14 @@ class FlextObservabilityHTTP:
 
         @classmethod
         def _setup_instrumentation(
-            cls, app: t.RegisterableService | p.Observability.Http.FlaskApp
+            cls,
+            app: t.RegisterableService | p.Observability.Http.FlaskApp,
         ) -> p.Result[bool]:
-            """Register Flask instrumentation hooks."""
+            """Register Flask instrumentation hooks.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             # Why: include FlaskApp explicitly in the parameter type. With
             # only `t.RegisterableService` (a DI-service union structurally
             # disjoint from FlaskApp's protocol), mypy proves the TypeIs
@@ -266,7 +299,7 @@ class FlextObservabilityHTTP:
             after_request_hook(cls._after_request_hook)
             errorhandler(Exception)(cls._error_handler)
             FlextObservabilityHTTP.logger.debug(
-                "Flask HTTP instrumentation setup complete"
+                "Flask HTTP instrumentation setup complete",
             )
             return r[bool].ok(value=True)
 
@@ -318,15 +351,20 @@ class FlextObservabilityHTTP:
 
         @classmethod
         def _setup_instrumentation(
-            cls, app: t.RegisterableService | p.Observability.Http.FastAPIApp
+            cls,
+            app: t.RegisterableService | p.Observability.Http.FastAPIApp,
         ) -> p.Result[bool]:
-            """Register FastAPI instrumentation middleware."""
+            """Register FastAPI instrumentation middleware.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             # Why: include FastAPIApp explicitly (see Flask._setup_instrumentation
             # for the full rationale — otherwise mypy proves the TypeIs guard
             # below unreachable against the narrower `t.RegisterableService`).
             if not FlextObservabilityHTTP._matches_fastapi_app(app):
                 return r[bool].fail(
-                    "Invalid FastAPI app - missing add_middleware method"
+                    "Invalid FastAPI app - missing add_middleware method",
                 )
             typed_app: p.Observability.Http.FastAPIApp = app
 
@@ -338,9 +376,18 @@ class FlextObservabilityHTTP:
 
                 @override
                 async def dispatch(
-                    self, request: Request, call_next: RequestResponseEndpoint
+                    self,
+                    request: Request,
+                    call_next: RequestResponseEndpoint,
                 ) -> Response:
-                    """Process HTTP request with instrumentation."""
+                    """Process HTTP request with instrumentation.
+
+                    Returns:
+                        The resulting ``Response``.
+
+                    Raises:
+                        EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+                    """
                     try:
                         return await cls._dispatch_request(request, call_next)
                     except c.EXC_MAPPING_TYPE as e:
@@ -350,15 +397,24 @@ class FlextObservabilityHTTP:
             add_middleware = typed_app.add_middleware
             add_middleware(FlextObservabilityMiddleware)
             FlextObservabilityHTTP.logger.debug(
-                "FastAPI HTTP instrumentation setup complete"
+                "FastAPI HTTP instrumentation setup complete",
             )
             return r[bool].ok(value=True)
 
         @classmethod
         async def _dispatch_request(
-            cls, request: Request, call_next: RequestResponseEndpoint
+            cls,
+            request: Request,
+            call_next: RequestResponseEndpoint,
         ) -> Response:
-            """Process one FastAPI request with logging and correlation context."""
+            """Process one FastAPI request with logging and correlation context.
+
+            Returns:
+                The resulting ``Response``.
+
+            Raises:
+                EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+            """
             headers_dict: t.MutableStrMapping = dict(request.headers.items())
             FlextObservabilityContext.from_headers(headers_dict)
             correlation_id = FlextObservabilityContext.correlation_id()
@@ -370,7 +426,10 @@ class FlextObservabilityHTTP:
             )
             try:
                 return await cls._dispatch_response(
-                    request, call_next, correlation_id, start_time
+                    request,
+                    call_next,
+                    correlation_id,
+                    start_time,
                 )
             except c.EXC_MAPPING_TYPE as e:
                 await cls._log_dispatch_error(request, e)
@@ -378,7 +437,11 @@ class FlextObservabilityHTTP:
 
         @classmethod
         def _request_log_extra(cls, request: Request) -> t.MutableScalarMapping:
-            """Build FastAPI request log metadata."""
+            """Build FastAPI request log metadata.
+
+            Returns:
+                The resulting ``t.MutableScalarMapping``.
+            """
             return {
                 "http_method": request.method,
                 "http_path": request.url.path,
@@ -394,7 +457,11 @@ class FlextObservabilityHTTP:
             correlation_id: str,
             start_time: float,
         ) -> Response:
-            """Call the FastAPI route and emit response metadata."""
+            """Call the FastAPI route and emit response metadata.
+
+            Returns:
+                The resulting ``Response``.
+            """
             response = await call_next(request)
             duration_ms = (time.time() - start_time) * 1000
             status_code = (
@@ -432,7 +499,9 @@ class FlextObservabilityHTTP:
 
     @staticmethod
     async def _async_log_with_context(
-        message: str, level: str, extra: t.ConfigurationMapping | None = None
+        message: str,
+        level: str,
+        extra: t.ConfigurationMapping | None = None,
     ) -> None:
         """Async wrapper for logging with context (for FastAPI).
 
@@ -440,11 +509,14 @@ class FlextObservabilityHTTP:
         """
         try:
             FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTP.logger, level, message, extra=extra
+                FlextObservabilityHTTP.logger,
+                level,
+                message,
+                extra=extra,
             )
         except c.EXC_MAPPING_TYPE as e:
             FlextObservabilityHTTP.logger.warning(
-                f"Error logging in async context: {e}"
+                f"Error logging in async context: {e}",
             )
 
 

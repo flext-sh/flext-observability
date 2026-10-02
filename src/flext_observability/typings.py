@@ -9,15 +9,16 @@ from __future__ import annotations
 
 from flext_cli import FlextCliTypes
 
-from ._typings.base import FlextObservabilityTypingsBase
-from ._typings.domains import FlextObservabilityTypingsDomains
+from flext_observability._typings.base import FlextObservabilityTypingsBase
+from flext_observability._typings.domains import FlextObservabilityTypingsDomains
 
 
 class FlextObservabilityTypes(FlextCliTypes, FlextObservabilityTypingsBase):
     """Observability-specific type definitions extending t via MRO."""
 
     class Observability(
-        FlextObservabilityTypingsBase, FlextObservabilityTypingsDomains
+        FlextObservabilityTypingsBase,
+        FlextObservabilityTypingsDomains,
     ):
         """Observability domain namespace (flat members per AGENTS.md §149)."""
 

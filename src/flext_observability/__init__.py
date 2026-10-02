@@ -1,51 +1,65 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Flext Observability package."""
+"""Flext Observability package.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+from flext_core import build_lazy_import_map, install_lazy_exports
 
-from .__version__ import (
-    __author__ as __author__,
-    __author_email__ as __author_email__,
-    __description__ as __description__,
-    __license__ as __license__,
-    __title__ as __title__,
-    __url__ as __url__,
-    __version__ as __version__,
-    __version_info__ as __version_info__,
+
+from flext_observability.__version__ import (
+    __author__,
+    __author_email__,
+    __description__,
+    __license__,
+    __title__,
+    __url__,
+    __version__,
+    __version_info__,
 )
 
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
 
-    from . import services
-    from ._config import FlextObservabilityConfig, config
-    from ._settings import FlextObservabilitySettings, settings
-    from .api import FlextObservability, observability
-    from .base import FlextObservabilityServiceBase, s
-    from .cli import FlextObservabilityCli, main
-    from .constants import FlextObservabilityConstants, FlextObservabilityConstants as c
-    from .models import FlextObservabilityModels, FlextObservabilityModels as m
-    from .protocols import FlextObservabilityProtocols, FlextObservabilityProtocols as p
-    from .services.advanced_context import FlextObservabilityAdvancedContext
-    from .services.context import FlextObservabilityContext
-    from .services.custom_metrics import FlextObservabilityCustomMetrics
-    from .services.error_handling import FlextObservabilityErrorHandling
-    from .services.health import FlextObservabilityHealth
-    from .services.http_client_instrumentation import FlextObservabilityHTTPClient
-    from .services.http_instrumentation import FlextObservabilityHTTP
-    from .services.logging_integration import FlextObservabilityLogging
-    from .services.monitoring import FlextObservabilityMonitor
-    from .services.performance import FlextObservabilityPerformance
-    from .services.sampling import FlextObservabilitySampling
-    from .services.services import FlextObservabilityServices
-    from .typings import FlextObservabilityTypes, FlextObservabilityTypes as t
-    from .utilities import FlextObservabilityUtilities, FlextObservabilityUtilities as u
-
+    from flext_observability import services
+    from flext_observability._config import FlextObservabilityConfig, config
+    from flext_observability._settings import FlextObservabilitySettings, settings
+    from flext_observability.api import FlextObservability, observability
+    from flext_observability.base import FlextObservabilityServiceBase, s
+    from flext_observability.cli import FlextObservabilityCli, main
+    from flext_observability.constants import FlextObservabilityConstants, c
+    from flext_observability.models import FlextObservabilityModels, m
+    from flext_observability.protocols import FlextObservabilityProtocols, p
+    from flext_observability.services.advanced_context import (
+        FlextObservabilityAdvancedContext,
+    )
+    from flext_observability.services.context import FlextObservabilityContext
+    from flext_observability.services.custom_metrics import (
+        FlextObservabilityCustomMetrics,
+    )
+    from flext_observability.services.error_handling import (
+        FlextObservabilityErrorHandling,
+    )
+    from flext_observability.services.health import FlextObservabilityHealth
+    from flext_observability.services.http_client_instrumentation import (
+        FlextObservabilityHTTPClient,
+    )
+    from flext_observability.services.http_instrumentation import FlextObservabilityHTTP
+    from flext_observability.services.logging_integration import (
+        FlextObservabilityLogging,
+    )
+    from flext_observability.services.monitoring import FlextObservabilityMonitor
+    from flext_observability.services.performance import FlextObservabilityPerformance
+    from flext_observability.services.sampling import FlextObservabilitySampling
+    from flext_observability.services.services import FlextObservabilityServices
+    from flext_observability.typings import FlextObservabilityTypes, t
+    from flext_observability.utilities import FlextObservabilityUtilities, u
 
 __all__: tuple[str, ...] = (
     "FlextObservability",
@@ -126,7 +140,7 @@ _LAZY_IMPORTS = MappingProxyType(
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
-    )
+    ),
 )
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

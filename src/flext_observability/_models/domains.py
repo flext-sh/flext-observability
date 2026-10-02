@@ -1,4 +1,8 @@
-"""Observability domain models owned by the private models family."""
+"""Observability domain models owned by the private models family.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -103,7 +107,8 @@ class FlextObservabilityModelsDomains:
         """Health check entity."""
 
         component: Annotated[
-            t.NonEmptyStr, m.Field(description="Component being checked")
+            t.NonEmptyStr,
+            m.Field(description="Component being checked"),
         ]
         status: Annotated[t.NonEmptyStr, m.Field(description="Health check status")]
         details: Annotated[
@@ -156,7 +161,8 @@ class FlextObservabilityModelsDomains:
         """Snapshot of observability context for restoration in async operations."""
 
         correlation_id: Annotated[
-            str, m.Field(description="Correlation identifier")
+            str,
+            m.Field(description="Correlation identifier"),
         ] = ""
         trace_id: Annotated[str, m.Field(description="Trace identifier")] = ""
         span_id: Annotated[str, m.Field(description="Span identifier")] = ""
@@ -186,7 +192,8 @@ class FlextObservabilityModelsDomains:
         """Validation model for metric type input."""
 
         metric_type: Annotated[
-            c.Observability.MetricType, m.Field(description="Type of metric to create")
+            c.Observability.MetricType,
+            m.Field(description="Type of metric to create"),
         ]
 
     class CustomMetricDefinition(m.Value):
@@ -194,10 +201,12 @@ class FlextObservabilityModelsDomains:
 
         name: Annotated[t.NonEmptyStr, m.Field(description="Custom metric name")]
         metric_type: Annotated[
-            c.Observability.MetricType, m.Field(description="Type of metric")
+            c.Observability.MetricType,
+            m.Field(description="Type of metric"),
         ]
         description: Annotated[
-            t.NonEmptyStr, m.Field(description="Human-readable metric description")
+            t.NonEmptyStr,
+            m.Field(description="Human-readable metric description"),
         ]
         unit: Annotated[str, m.Field(min_length=1, description="Measurement unit")] = (
             "1"
@@ -215,31 +224,37 @@ class FlextObservabilityModelsDomains:
         """Validation model for cooldown seconds input."""
 
         seconds: Annotated[
-            t.PositiveFloat, m.Field(description="Cooldown duration in seconds")
+            t.PositiveFloat,
+            m.Field(description="Cooldown duration in seconds"),
         ]
 
     class ThresholdInput(m.Value):
         """Validation model for threshold input."""
 
         threshold: Annotated[
-            t.PositiveInt, m.Field(description="Error count threshold")
+            t.PositiveInt,
+            m.Field(description="Error count threshold"),
         ]
 
     class ErrorEvent(m.Value):
         """Error event with fingerprinting for deduplication and alerting."""
 
         error_type: Annotated[
-            t.NonEmptyStr, m.Field(description="Error classification type")
+            t.NonEmptyStr,
+            m.Field(description="Error classification type"),
         ]
         message: Annotated[t.NonEmptyStr, m.Field(description="Error message")]
         severity: Annotated[
-            c.Observability.ErrorSeverity, m.Field(description="Error severity level")
+            c.Observability.ErrorSeverity,
+            m.Field(description="Error severity level"),
         ] = c.Observability.ErrorSeverity.ERROR
         fingerprint: Annotated[
-            str, m.Field(description="SHA256 deduplication fingerprint")
+            str,
+            m.Field(description="SHA256 deduplication fingerprint"),
         ] = ""
         correlation_id: Annotated[
-            str, m.Field(description="Correlation identifier")
+            str,
+            m.Field(description="Correlation identifier"),
         ] = ""
 
         def calculate_fingerprint(self) -> Self:
@@ -252,9 +267,9 @@ class FlextObservabilityModelsDomains:
             return self.model_copy(
                 update={
                     "fingerprint": sha256(
-                        f"{self.error_type}:{self.message}".encode()
-                    ).hexdigest()
-                }
+                        f"{self.error_type}:{self.message}".encode(),
+                    ).hexdigest(),
+                },
             )
 
     # --- Moved from health.py ---
@@ -264,12 +279,14 @@ class FlextObservabilityModelsDomains:
         """Trace context for enriching log entries with correlation and span IDs."""
 
         correlation_id: Annotated[
-            str | None, m.Field(description="Correlation identifier")
+            str | None,
+            m.Field(description="Correlation identifier"),
         ] = None
         trace_id: Annotated[str | None, m.Field(description="Trace identifier")] = None
         span_id: Annotated[str | None, m.Field(description="Span identifier")] = None
         baggage: Annotated[
-            str | None, m.Field(description="Serialized baggage string")
+            str | None,
+            m.Field(description="Serialized baggage string"),
         ] = None
         extra: Annotated[m.Dict, m.Field(description="Additional context data")] = (
             m.Field(default_factory=lambda: m.Dict({}))
@@ -280,26 +297,33 @@ class FlextObservabilityModelsDomains:
         """Metrics for tracking performance of observability operations."""
 
         operation: Annotated[
-            t.NonEmptyStr, m.Field(description="Operation name being measured")
+            t.NonEmptyStr,
+            m.Field(description="Operation name being measured"),
         ]
         start_time: Annotated[
-            float, m.Field(description="Operation start time in seconds since epoch")
+            float,
+            m.Field(description="Operation start time in seconds since epoch"),
         ] = m.Field(default_factory=time.time)
         end_time: Annotated[
-            float, m.Field(description="Operation end time in seconds since epoch")
+            float,
+            m.Field(description="Operation end time in seconds since epoch"),
         ] = 0.0
         duration_ms: Annotated[
-            float, m.Field(description="Operation duration in milliseconds")
+            float,
+            m.Field(description="Operation duration in milliseconds"),
         ] = 0.0
         memory_used_mb: Annotated[
-            float, m.Field(description="Memory used in megabytes")
+            float,
+            m.Field(description="Memory used in megabytes"),
         ] = 0.0
         cpu_percent: Annotated[float, m.Field(description="CPU usage percentage")] = 0.0
         success: Annotated[
-            bool, m.Field(description="Whether the operation succeeded")
+            bool,
+            m.Field(description="Whether the operation succeeded"),
         ] = True
         error_message: Annotated[
-            str, m.Field(description="Error message if operation failed")
+            str,
+            m.Field(description="Error message if operation failed"),
         ] = ""
 
         def calculate_duration(self) -> Self:
@@ -314,7 +338,7 @@ class FlextObservabilityModelsDomains:
                 end_time = time.time()
             duration_ms = max(0.0, (end_time - self.start_time) * 1000.0)
             return self.model_copy(
-                update={"end_time": end_time, "duration_ms": duration_ms}
+                update={"end_time": end_time, "duration_ms": duration_ms},
             )
 
 

@@ -370,12 +370,14 @@ src/flext_observability/
 
 #### **Domain Layer Classes**
 
-```python
+```text
 from __future__ import annotations
+
+from flext_observability import m, p, u
 
 
 # Core Domain Entities
-class FlextMetric(FlextModels.Entity):
+class FlextMetric(m.Ldif.Entity):
     """Immutable metric entity with domain validation."""
 
     name: str
@@ -404,7 +406,7 @@ class FlextAlert(FlextModels.Entity):
 
 #### **Service Layer Classes**
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -426,7 +428,7 @@ class FlextObservabilityServices(u):
 
 #### **Factory Classes**
 
-```python
+```text
 from __future__ import annotations
 
 

@@ -1,13 +1,18 @@
-"""Observability domain protocols owned by the private protocols family."""
+"""Observability domain protocols owned by the private protocols family.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import m, p
 
-from flext_core import t
+if TYPE_CHECKING:
+    from flext_core import t
 
 
 class FlextObservabilityProtocolsDomains:
@@ -45,7 +50,8 @@ class FlextObservabilityProtocolsDomains:
             """Protocol for Flask error handler decorator."""
 
             def __call__(
-                self, error_type: type[Exception]
+                self,
+                error_type: type[Exception],
             ) -> FlextObservabilityProtocolsDomains.Http.FlaskHook:
                 """Return a hook for the given error type."""
                 ...

@@ -1,4 +1,8 @@
-"""Observability domain type aliases owned by the private typings family."""
+"""Observability domain type aliases owned by the private typings family.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 

@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from flext_cli import FlextCliUtilities
 
-from ._utilities.base import FlextObservabilityUtilitiesBase
-from ._utilities.domains import FlextObservabilityUtilitiesDomains
+from flext_observability._utilities.base import FlextObservabilityUtilitiesBase
+from flext_observability._utilities.domains import FlextObservabilityUtilitiesDomains
 
 
 class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilitiesBase):
@@ -23,7 +23,8 @@ class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilities
     """
 
     class Observability(
-        FlextObservabilityUtilitiesBase, FlextObservabilityUtilitiesDomains
+        FlextObservabilityUtilitiesBase,
+        FlextObservabilityUtilitiesDomains,
     ):
         """Observability-specific project utilities."""
 

@@ -8,6 +8,9 @@ FLEXT Pattern:
 - Metrics collection for observability operations
 - Memory and CPU tracking
 - Latency monitoring for instrumentation
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -85,7 +88,7 @@ class FlextObservabilityPerformance:
                     "end_time": end_time,
                     "memory_used_mb": memory_used_mb,
                     "cpu_percent": cpu_percent,
-                }
+                },
             )
             self.metrics = self.metrics.calculate_duration()
             return self.metrics
@@ -98,7 +101,7 @@ class FlextObservabilityPerformance:
 
             """
             self.metrics = self.metrics.model_copy(
-                update={"success": False, "error_message": error_message}
+                update={"success": False, "error_message": error_message},
             )
 
         def mark_success(self) -> None:
@@ -106,11 +109,19 @@ class FlextObservabilityPerformance:
             self.metrics = self.metrics.model_copy(update={"success": True})
 
         def _cpu_percent(self) -> float:
-            """Get current CPU usage percent."""
+            """Get current CPU usage percent.
+
+            Returns:
+                The resulting ``float``.
+            """
             return FlextObservabilityPerformance._process.cpu_percent(interval=0.01)
 
         def _memory_usage(self) -> float:
-            """Get current memory usage in MB."""
+            """Get current memory usage in MB.
+
+            Returns:
+                The resulting ``float``.
+            """
             memory_info = FlextObservabilityPerformance._process.memory_info()
             return float(memory_info.rss) / 1024 / 1024
 
@@ -129,10 +140,11 @@ class FlextObservabilityPerformance:
             memory_info = FlextObservabilityPerformance._process.memory_info()
             rss_bytes: int = memory_info.rss
             memory_mb: float = float(rss_bytes) / 1024 / 1024
+            process = FlextObservabilityPerformance._process
             return {
                 "memory_mb": memory_mb,
-                "memory_percent": FlextObservabilityPerformance._process.memory_percent(),
-                "cpu_percent": FlextObservabilityPerformance._process.cpu_percent(),
+                "memory_percent": process.memory_percent(),
+                "cpu_percent": process.cpu_percent(),
             }
         except c.EXC_MAPPING_TYPE:
             return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
@@ -186,7 +198,11 @@ class FlextObservabilityPerformance:
             if metrics.success
             else c.Observability.ErrorSeverity.WARNING.value
         )
-        message = f"{status} {metrics.operation}: duration={metrics.duration_ms:.2f}ms, memory={metrics.memory_used_mb:.2f}MB, cpu={metrics.cpu_percent:.1f}%"
+        message = (
+            f"{status} {metrics.operation}: duration={metrics.duration_ms:.2f}ms,"
+            f" memory={metrics.memory_used_mb:.2f}MB,"
+            f" cpu={metrics.cpu_percent:.1f}%"
+        )
         if metrics.error_message:
             message += f", error={metrics.error_message}"
         return level, message
@@ -206,7 +222,7 @@ class FlextObservabilityPerformance:
         """
         try:
             level, message = FlextObservabilityPerformance._build_performance_log(
-                metrics
+                metrics,
             )
             getattr(FlextObservabilityPerformance.logger, level)(message)
             return r[bool].ok(value=True)
