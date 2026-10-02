@@ -24,6 +24,7 @@ from flext_observability.__version__ import (
 
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
+
     from flext_observability import services
     from flext_observability._config import FlextObservabilityConfig, config
     from flext_observability._settings import FlextObservabilitySettings, settings
