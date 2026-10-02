@@ -370,7 +370,7 @@ src/flext_observability/
 
 #### **Domain Layer Classes**
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -404,7 +404,7 @@ class FlextAlert(FlextModels.Entity):
 
 #### **Service Layer Classes**
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -426,7 +426,7 @@ class FlextObservabilityServices(u):
 
 #### **Factory Classes**
 
-```python
+```text
 from __future__ import annotations
 
 
