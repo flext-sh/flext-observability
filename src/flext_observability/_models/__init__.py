@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from flext_observability._models.base import FlextObservabilityModelsBase
     from flext_observability._models.domains import FlextObservabilityModelsDomains
 
-
 __all__: tuple[str, ...] = (
     "FlextObservabilityModelsBase",
     "FlextObservabilityModelsDomains",

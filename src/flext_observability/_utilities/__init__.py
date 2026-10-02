@@ -18,7 +18,6 @@ if TYPE_CHECKING:
         FlextObservabilityUtilitiesDomains,
     )
 
-
 __all__: tuple[str, ...] = (
     "FlextObservabilityUtilitiesBase",
     "FlextObservabilityUtilitiesDomains",

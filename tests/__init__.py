@@ -24,7 +24,6 @@ if TYPE_CHECKING:
     from tests.typings import TestsFlextObservabilityTypes, t
     from tests.utilities import TestsFlextObservabilityUtilities, u
 
-
 __all__: tuple[str, ...] = (
     "TestsFlextObservabilityConstants",
     "TestsFlextObservabilityModels",

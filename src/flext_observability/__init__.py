@@ -61,7 +61,6 @@ if TYPE_CHECKING:
     from flext_observability.typings import FlextObservabilityTypes, t
     from flext_observability.utilities import FlextObservabilityUtilities, u
 
-
 __all__: tuple[str, ...] = (
     "FlextObservability",
     "FlextObservabilityAdvancedContext",
