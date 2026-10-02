@@ -14,7 +14,6 @@ from flext_core import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_tests import api, d, e, h, r, td, tf, tk, tm, x
-
     from tests import integration, unit
     from tests.base import TestsFlextObservabilityServiceBase, s
     from tests.constants import TestsFlextObservabilityConstants, c
@@ -23,6 +22,7 @@ if TYPE_CHECKING:
     from tests.settings import TestsFlextObservabilitySettings
     from tests.typings import TestsFlextObservabilityTypes, t
     from tests.utilities import TestsFlextObservabilityUtilities, u
+
 
 __all__: tuple[str, ...] = (
     "TestsFlextObservabilityConstants",

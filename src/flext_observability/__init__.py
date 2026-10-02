@@ -11,8 +11,6 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING
 
 from flext_core import build_lazy_import_map, install_lazy_exports
-
-
 from flext_observability.__version__ import (
     __author__,
     __author_email__,
@@ -26,7 +24,6 @@ from flext_observability.__version__ import (
 
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
-
     from flext_observability import services
     from flext_observability._config import FlextObservabilityConfig, config
     from flext_observability._settings import FlextObservabilitySettings, settings
@@ -60,6 +57,7 @@ if TYPE_CHECKING:
     from flext_observability.services.services import FlextObservabilityServices
     from flext_observability.typings import FlextObservabilityTypes, t
     from flext_observability.utilities import FlextObservabilityUtilities, u
+
 
 __all__: tuple[str, ...] = (
     "FlextObservability",

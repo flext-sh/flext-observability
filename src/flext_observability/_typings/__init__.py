@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from flext_observability._typings.base import FlextObservabilityTypingsBase
     from flext_observability._typings.domains import FlextObservabilityTypingsDomains
 
+
 __all__: tuple[str, ...] = (
     "FlextObservabilityTypingsBase",
     "FlextObservabilityTypingsDomains",
