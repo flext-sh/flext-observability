@@ -26,6 +26,8 @@ import random
 from collections.abc import MutableMapping
 from typing import Annotated, ClassVar
 
+from pydantic import TypeAdapter
+
 from flext_observability import c, m, p, r, u
 from flext_observability.services.context import FlextObservabilityContext
 
@@ -70,7 +72,7 @@ class FlextObservabilitySampling:
 
         RATE_ADAPTER: ClassVar[
             m.TypeAdapter[Annotated[float, m.Field(ge=0.0, le=1.0)]]
-        ] = u.type_adapter(Annotated[float, m.Field(ge=0.0, le=1.0)])
+        ] = TypeAdapter(Annotated[float, m.Field(ge=0.0, le=1.0)])
 
         def __init__(self) -> None:
             """Initialize sampler with default settings."""
