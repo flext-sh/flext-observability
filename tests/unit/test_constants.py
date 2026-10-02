@@ -45,7 +45,9 @@ class TestsFlextObservabilityConstantsUnit:
         ],
     )
     def test_strenum_members_carry_stable_string_values(
-        self, member: str, expected: str
+        self,
+        member: str,
+        expected: str,
     ) -> None:
         """Each StrEnum member is usable as its documented string value."""
         tm.that(member, eq=expected)
@@ -72,7 +74,9 @@ class TestsFlextObservabilityConstantsUnit:
         ],
     )
     def test_flat_alias_stays_consistent_with_its_enum_source(
-        self, alias: str, source: str
+        self,
+        alias: str,
+        source: str,
     ) -> None:
         """Flat string aliases must equal the value of the enum they derive from."""
         tm.that(alias, eq=source)
@@ -125,6 +129,3 @@ class TestsFlextObservabilityConstantsUnit:
         tm.that(_Obs.DEFAULT_SERVICE_NAME, eq="flext-service")
         tm.that(_Obs.DEFAULT_ENVIRONMENT, eq="development")
         tm.that(_Obs.DEFAULT_SETTINGS_SERVICE_NAME, eq="flext-observability")
-
-
-__all__: list[str] = ["TestsFlextObservabilityConstantsUnit"]

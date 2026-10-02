@@ -9,6 +9,9 @@ FLEXT Pattern:
 - Nested subclasses for correlation and baggage management
 - Async-safe using Python's contextvars module
 - Integration with trace context propagation (W3C Trace Context)
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -135,7 +138,7 @@ class FlextObservabilityContext:
             return r[bool].ok(value=True)
         except c.EXC_MAPPING_TYPE as e:
             FlextObservabilityContext.logger.warning(
-                f"Failed to extract context from headers: {e}"
+                f"Failed to extract context from headers: {e}",
             )
             FlextObservabilityContext.update_correlation_id()
             return r[bool].ok(value=True)
@@ -287,7 +290,11 @@ class FlextObservabilityContext:
 
     @staticmethod
     def _update_baggage_value(key: str, value: t.JsonValue) -> p.Result[bool]:
-        """Validate and store one baggage value."""
+        """Validate and store one baggage value.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         try:
             m.Observability.BaggageKeyModel.model_validate(obj={"key": key})
         except c.ValidationError:
@@ -327,7 +334,11 @@ class FlextObservabilityContext:
 
     @staticmethod
     def update_span_id(span_id: str | None = None) -> str:
-        """Update current span ID."""
+        """Update current span ID.
+
+        Returns:
+            The resulting ``str``.
+        """
         if span_id is None:
             span_id = str(uuid4())
         FlextObservabilityContext._span_id.set(span_id)

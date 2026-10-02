@@ -24,7 +24,9 @@ class FlextObservabilitySettings(FlextSettings):
     """Observability settings; all project fields under ``settings.Observability.*``."""
 
     model_config = m.SettingsConfigDict(
-        env_prefix="FLEXT_OBSERVABILITY_", env_nested_delimiter="__", extra="ignore"
+        env_prefix="FLEXT_OBSERVABILITY_",
+        env_nested_delimiter="__",
+        extra="ignore",
     )
 
     class _Observability(m.BaseModel):
@@ -42,13 +44,16 @@ class FlextObservabilitySettings(FlextSettings):
             m.Field(default="development", description="Deployment environment name"),
         ]
         metrics_enabled: Annotated[
-            bool, m.Field(default=True, description="Enable metrics collection")
+            bool,
+            m.Field(default=True, description="Enable metrics collection"),
         ]
         traces_enabled: Annotated[
-            bool, m.Field(default=True, description="Enable distributed tracing")
+            bool,
+            m.Field(default=True, description="Enable distributed tracing"),
         ]
         alerts_enabled: Annotated[
-            bool, m.Field(default=True, description="Enable alert notifications")
+            bool,
+            m.Field(default=True, description="Enable alert notifications"),
         ]
         flush_interval_seconds: Annotated[
             int,
@@ -70,6 +75,7 @@ class FlextObservabilitySettings(FlextSettings):
 
 
 settings: FlextObservabilitySettings = FlextObservabilitySettings.fetch_global()
-"""Pre-instantiated project settings singleton — ``from flext_observability import settings``."""
+"""Pre-instantiated project settings singleton —
+``from flext_observability import settings``."""
 
 __all__: list[str] = ["FlextObservabilitySettings", "settings"]

@@ -30,7 +30,7 @@
   `FlextObservabilityErrorHandling`, `FlextObservabilityHTTP`,
   `FlextObservabilityHTTPClient` (+16 more)
 - Exported module shortcuts: `services`
-- Generated module pages: `21`
+- Generated module pages: `8`
 
 ## Next Pages
 

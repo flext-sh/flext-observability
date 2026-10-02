@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from flext_cli import FlextCliModels
 
-from ._models.base import FlextObservabilityModelsBase
-from ._models.domains import FlextObservabilityModelsDomains
+from flext_observability._models.base import FlextObservabilityModelsBase
+from flext_observability._models.domains import FlextObservabilityModelsDomains
 
 
 class FlextObservabilityModels(FlextCliModels, FlextObservabilityModelsBase):

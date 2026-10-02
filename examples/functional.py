@@ -1,10 +1,10 @@
 """Comprehensive functional examples for flext-observability.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-
 This file demonstrates real-world usage patterns and functional scenarios
 for the flext-observability module, showcasing 100% functional integration.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -38,7 +38,8 @@ class FlextObservabilityFunctionalExamples:
             severity=c.Observability.AlertLevel.WARNING,
         )
         self._observability.flext_health_check(
-            "database", c.Observability.HealthStatus.HEALTHY
+            "database",
+            c.Observability.HealthStatus.HEALTHY,
         )
         self._observability.flext_log_entry(
             "User authentication successful",
@@ -50,11 +51,16 @@ class FlextObservabilityFunctionalExamples:
         """Demonstrate direct facade usage for advanced flows."""
         self._observability.flext_metric("response_time", 45.2, "milliseconds")
         self._observability.flext_trace(
-            "payment_processing", {"service": "payment-service"}
+            "payment_processing",
+            {"service": "payment-service"},
         )
 
     def monitored_function(self, data: str) -> str:
-        """Demonstrate automatic monitoring."""
+        """Demonstrate automatic monitoring.
+
+        Returns:
+            The resulting ``str``.
+        """
         time.sleep(0.1)
         return f"Processed: {data}"
 
@@ -68,7 +74,9 @@ class FlextObservabilityFunctionalExamples:
         if metric_result.success:
             self._emit(f"Created metric: {metric_result.value}")
         invalid_metric_result = self._observability.flext_metric(
-            "invalid_metric", -10.0, "count"
+            "invalid_metric",
+            -10.0,
+            "count",
         )
         if invalid_metric_result.success:
             self._emit(f"Created invalid metric: {invalid_metric_result.value}")
@@ -111,7 +119,10 @@ class FlextObservabilityFunctionalExamples:
         ]
         for level, message, service in alert_scenarios:
             alert_result = self._observability.flext_alert(
-                source=service, title=message, message=message, severity=level
+                source=service,
+                title=message,
+                message=message,
+                severity=level,
             )
             if alert_result.success:
                 icons = {

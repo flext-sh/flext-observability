@@ -1,8 +1,5 @@
 """Behavioral tests for the FlextObservability facade creation contract.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 These tests assert observable public behavior only: the ``r[T]`` outcome of the
 facade's fallible creation methods, the public model fields of the produced
 entities, and the error messages returned on invalid input. No private
@@ -13,6 +10,9 @@ The ``FlextObservabilityMasterFactory`` class was retired; the canonical
 creation surface is now the ``FlextObservability`` facade itself
 (``flext_metric`` / ``flext_alert`` / ``flext_log_entry`` / ``flext_trace`` /
 ``flext_health_check``), constructed with an optional container.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -23,8 +23,6 @@ from flext_tests import tm
 
 from flext_core import FlextContainer
 from flext_observability import FlextObservability, c, p
-
-__all__ = ["TestsFlextObservabilityFactory"]
 
 
 class TestsFlextObservabilityFactory:
@@ -139,7 +137,8 @@ class TestsFlextObservabilityFactory:
     def test_flext_health_check_returns_component_status(self) -> None:
         """A health check request succeeds with the component and status."""
         result = FlextObservability().flext_health_check(
-            "database", c.Observability.HealthStatus.HEALTHY
+            "database",
+            c.Observability.HealthStatus.HEALTHY,
         )
         tm.that(result.success, eq=True)
         health = result.value
@@ -158,7 +157,9 @@ class TestsFlextObservabilityFactory:
     def test_created_metric_exposes_datetime_creation_timestamp(self) -> None:
         """A successfully created metric exposes a datetime ``created_at``."""
         result: p.Result[FlextObservability.Metric] = FlextObservability().flext_metric(
-            "request_count", 100.0, "counter"
+            "request_count",
+            100.0,
+            "counter",
         )
         tm.that(result.success, eq=True)
         created_at = result.value.model_dump()["created_at"]
@@ -167,7 +168,8 @@ class TestsFlextObservabilityFactory:
     def test_invalid_metric_input_returns_failure_with_expected_message(self) -> None:
         """An invalid metric request surfaces a descriptive failure result."""
         result: p.Result[FlextObservability.Metric] = FlextObservability().flext_metric(
-            "", 10.0
+            "",
+            10.0,
         )
         tm.that(result.failure, eq=True)
         tm.that(result.error, none=False)

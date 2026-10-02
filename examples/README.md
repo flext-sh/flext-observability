@@ -3,9 +3,9 @@
 <!-- TOC START -->
 
 - [Example Files](#example-files)
-  - \[[01_functional.py](01_functional.py) - Core
+  - \[[functional.py](functional.py) - Core
     Functionality\](#01functionalpy01functionalpy-core-functionality)
-  - \[[02_solid_observability_demo.py](02_solid_observability_demo.py) - SOLID
+  - \[[solid_observability_demo.py](solid_observability_demo.py) - SOLID
     Principles\](#02solidobservabilitydemopy02solidobservabilitydemopy-solid-principles)
 - [Usage Patterns Demonstrated](#usage-patterns-demonstrated)
   - [Basic Observability Integration](#basic-observability-integration)
@@ -36,7 +36,7 @@ the FLEXT ecosystem.
 
 ## Example Files
 
-### [01_functional.py](01_functional.py) - Core Functionality
+### [functional.py](functional.py) - Core Functionality
 
 Comprehensive demonstration of core observability functionality including:
 
@@ -47,7 +47,7 @@ Comprehensive demonstration of core observability functionality including:
 - **Error Handling**: Railway-oriented programming with r
 - **Real-world Scenarios**: Business logic with observability integration
 
-### [02_solid_observability_demo.py](02_solid_observability_demo.py) - SOLID Principles
+### [solid_observability_demo.py](solid_observability_demo.py) - SOLID Principles
 
 Advanced demonstration of SOLID principles applied to observability:
 
@@ -64,7 +64,7 @@ Advanced demonstration of SOLID principles applied to observability:
 ```python
 from __future__ import annotations
 
-# Example from 01_functional.py
+# Example from functional.py
 from flext_observability import flext_create_metric
 
 
@@ -354,14 +354,14 @@ class FlextAPIService:
 ```bash
 # Run functional examples
 cd examples/
-python 01_functional.py
+python functional.py
 
 # Run SOLID principles demo
-python 02_solid_observability_demo.py
+python solid_observability_demo.py
 
 # Run with different scenarios
-python 01_functional.py --scenario=metrics
-python 01_functional.py --scenario=tracing
+python functional.py --scenario=metrics
+python functional.py --scenario=tracing
 ```
 
 ### Integration Testing

@@ -1,9 +1,10 @@
 """FLEXT Observability Health Domain Models.
 
 Provides focused health monitoring models following the namespace class pattern.
-Contains health check entities, configurations, and factory methods for health operations.
+Contains health check entities, configurations, and factory methods for health
+operations.
 
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 

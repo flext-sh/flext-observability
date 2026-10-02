@@ -30,12 +30,20 @@ class FlextObservabilitySolidDemo:
         cli.print(message)
 
     def database_query(self, query: str) -> t.JsonMapping:
-        """Simulate a database operation with monitoring."""
+        """Simulate a database operation with monitoring.
+
+        Returns:
+            The resulting ``t.JsonMapping``.
+        """
         time.sleep(0.05)
         return {"query": query, "rows": 42, "execution_time": 0.05}
 
     def process_api_request(self, endpoint: str) -> t.JsonMapping:
-        """Simulate API request processing with monitoring."""
+        """Simulate API request processing with monitoring.
+
+        Returns:
+            The resulting ``t.JsonMapping``.
+        """
         time.sleep(0.1)
         return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
 
@@ -50,7 +58,8 @@ class FlextObservabilitySolidDemo:
             severity=c.Observability.AlertLevel.WARNING,
         )
         health_result = self._observability.flext_health_check(
-            "database", c.Observability.HealthStatus.HEALTHY
+            "database",
+            c.Observability.HealthStatus.HEALTHY,
         )
         self._observability.flext_metric("custom_metric", 100.0, "units")
         results = [metric_result, trace_result, alert_result, health_result]
@@ -110,7 +119,10 @@ class FlextObservabilitySolidDemo:
         ]
         for level, message, service in alerts:
             result = self._observability.flext_alert(
-                source=service, title=message, message=message, severity=level
+                source=service,
+                title=message,
+                message=message,
+                severity=level,
             )
             if result.success:
                 icons = {
@@ -148,7 +160,8 @@ class FlextObservabilitySolidDemo:
         if alert_res.success:
             self._emit(f"Validation successful for {type(alert_res.value).__name__}")
         health_res = self._observability.flext_health_check(
-            "service", c.Observability.HealthStatus.HEALTHY
+            "service",
+            c.Observability.HealthStatus.HEALTHY,
         )
         if health_res.success:
             self._emit(f"Validation successful for {type(health_res.value).__name__}")

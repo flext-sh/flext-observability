@@ -2,6 +2,9 @@
 
 Provides typed access to the registered ``observability`` settings namespace while
 preserving flext-core service runtime behavior.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -9,12 +12,11 @@ from __future__ import annotations
 from abc import ABC
 
 from flext_core import s
-
-from . import FlextObservabilitySettings, m, p, t
+from flext_observability import FlextObservabilitySettings, m, p, t
 
 
 class FlextObservabilityServiceBase[
-    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload]
+    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload],
 ](s[TDomainResult], ABC):
     """Base class for flext-observability services with typed API settings access."""
 
@@ -26,7 +28,7 @@ class FlextObservabilityServiceBase[
         settings_overrides: t.ScalarMapping | None = None,
         initial_context: p.Context | None = None,
     ) -> None:
-        """Bootstrap observability services with one concrete runtime settings contract."""
+        """Bootstrap observability services with one concrete settings contract."""
         super().__init__(
             settings_type=settings_type or FlextObservabilitySettings,
             runtime_settings=runtime_settings,

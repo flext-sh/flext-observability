@@ -18,8 +18,6 @@ from flext_observability import (
 )
 from tests import c
 
-__all__ = ["TestsFlextObservabilityInit"]
-
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check
 flext_metric = FlextObservability.flext_metric
@@ -36,8 +34,9 @@ class TestsFlextObservabilityInit:
 
     def test_version_info_is_tuple_with_at_least_three_parts(self) -> None:
         """__version_info__ exposes at least major/minor/patch."""
+        minimum_semver_parts = 3
         tm.that(pkg_version_info, is_=tuple)
-        tm.that(len(pkg_version_info) >= 3, eq=True)
+        tm.that(len(pkg_version_info) >= minimum_semver_parts, eq=True)
 
     def test_core_reexports_are_usable(self) -> None:
         """flext-core primitives are re-exported and usable through the package."""
@@ -53,7 +52,10 @@ class TestsFlextObservabilityInit:
         ],
     )
     def test_flext_metric_returns_metric_with_provided_state(
-        self, name: str, value: float, unit: str
+        self,
+        name: str,
+        value: float,
+        unit: str,
     ) -> None:
         """flext_metric succeeds and exposes the supplied fields on the entity."""
         result = flext_metric(name, value, unit)
@@ -114,7 +116,8 @@ class TestsFlextObservabilityInit:
         ],
     )
     def test_flext_health_check_records_component_and_status(
-        self, status: c.Observability.HealthStatus
+        self,
+        status: c.Observability.HealthStatus,
     ) -> None:
         """flext_health_check echoes the component and status on the entity."""
         result = flext_health_check("flext-observability", status)

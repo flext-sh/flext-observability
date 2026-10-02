@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from flext_cli import FlextCliConstants
 
-from ._constants import (
+from flext_observability._constants import (
     FlextObservabilityConstantsBase,
     FlextObservabilityConstantsDomains,
 )
