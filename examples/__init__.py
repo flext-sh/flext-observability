@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from examples.utilities import ExamplesFlextObservabilityUtilities, u
     from flext_core import d, e, h, r, s, x
 
+
 __all__: tuple[str, ...] = (
     "ExamplesFlextObservabilityConstants",
     "ExamplesFlextObservabilityModels",
