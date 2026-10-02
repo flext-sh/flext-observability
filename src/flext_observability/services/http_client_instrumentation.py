@@ -127,7 +127,7 @@ class FlextObservabilityHTTPClient:
         instrumented_clients: ClassVar[set[int]] = set()
 
         @staticmethod
-        def _context_headers(kwargs: t.ConfigurationMapping) -> t.ConfigurationMapping:
+        def context_headers(kwargs: t.ConfigurationMapping) -> t.ConfigurationMapping:
             """Build request headers with the current correlation/trace ids.
 
             Returns:
@@ -149,7 +149,7 @@ class FlextObservabilityHTTPClient:
             return headers
 
         @staticmethod
-        def _http_log_extra(
+        def http_log_extra(
             method: str,
             url: str,
             *,
@@ -171,7 +171,7 @@ class FlextObservabilityHTTPClient:
             }
 
         @classmethod
-        def _log_http_request(
+        def log_http_request(
             cls,
             method: str,
             url: str,
@@ -183,11 +183,11 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient.logger,
                 c.Observability.ErrorSeverity.DEBUG.value,
                 f"HTTP client request: {method} {url}",
-                extra=cls._http_log_extra(method, url, is_async=is_async),
+                extra=cls.http_log_extra(method, url, is_async=is_async),
             )
 
         @classmethod
-        def _log_http_error(
+        def log_http_error(
             cls,
             method: str,
             url: str,
@@ -201,7 +201,7 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient.logger,
                 c.Observability.ErrorSeverity.ERROR.value,
                 f"HTTP client error: {method} {url}",
-                extra=cls._http_log_extra(
+                extra=cls.http_log_extra(
                     method,
                     url,
                     is_async=is_async,
@@ -212,7 +212,7 @@ class FlextObservabilityHTTPClient:
             )
 
         @classmethod
-        def _log_http_response(
+        def log_http_response(
             cls,
             method: str,
             url: str,
@@ -226,7 +226,7 @@ class FlextObservabilityHTTPClient:
                 FlextObservabilityHTTPClient.logger,
                 c.Observability.ErrorSeverity.DEBUG.value,
                 f"HTTP client response: {method} {url} -> {status_code}",
-                extra=cls._http_log_extra(
+                extra=cls.http_log_extra(
                     method,
                     url,
                     is_async=is_async,
@@ -284,9 +284,10 @@ class FlextObservabilityHTTPClient:
                         TypeError: If the async request returned a non-awaitable.
                         EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
                     """
+                    helpers = FlextObservabilityHTTPClient.HTTPX
                     start_time = time.time()
-                    headers = _context_headers(kwargs)
-                    _log_http_request(method, url, is_async=True)
+                    headers = helpers.context_headers(kwargs)
+                    helpers.log_http_request(method, url, is_async=True)
                     call_kwargs: t.ConfigurationMapping = {
                         k: v for k, v in kwargs.items() if k != "headers"
                     }
@@ -305,7 +306,7 @@ class FlextObservabilityHTTPClient:
                             raise TypeError(msg)
                         response = await response_candidate
                     except c.EXC_MAPPING_TYPE as e:
-                        _log_http_error(
+                        helpers.log_http_error(
                             method,
                             url,
                             is_async=True,
@@ -313,7 +314,7 @@ class FlextObservabilityHTTPClient:
                             error=e,
                         )
                         raise
-                    _log_http_response(
+                    helpers.log_http_response(
                         method,
                         url,
                         is_async=True,
@@ -346,9 +347,10 @@ class FlextObservabilityHTTPClient:
                         TypeError: If Sync httpx request returned an awaitable response.
                         EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
                     """
+                    helpers = FlextObservabilityHTTPClient.HTTPX
                     start_time = time.time()
-                    headers = _context_headers(kwargs)
-                    _log_http_request(method, url, is_async=False)
+                    headers = helpers.context_headers(kwargs)
+                    helpers.log_http_request(method, url, is_async=False)
                     call_kwargs: t.ConfigurationMapping = {
                         k: v for k, v in kwargs.items() if k != "headers"
                     }
@@ -365,7 +367,7 @@ class FlextObservabilityHTTPClient:
                             raise TypeError(msg)
                         response = response_candidate
                     except c.EXC_MAPPING_TYPE as e:
-                        _log_http_error(
+                        helpers.log_http_error(
                             method,
                             url,
                             is_async=False,
@@ -373,7 +375,7 @@ class FlextObservabilityHTTPClient:
                             error=e,
                         )
                         raise
-                    _log_http_response(
+                    helpers.log_http_response(
                         method,
                         url,
                         is_async=False,
