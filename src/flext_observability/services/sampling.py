@@ -26,8 +26,6 @@ import random
 from collections.abc import MutableMapping
 from typing import Annotated, ClassVar
 
-from pydantic import TypeAdapter
-
 from flext_observability import c, m, p, r, u
 from flext_observability.services.context import FlextObservabilityContext
 
