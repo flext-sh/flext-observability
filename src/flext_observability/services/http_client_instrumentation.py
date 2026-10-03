@@ -236,6 +236,132 @@ class FlextObservabilityHTTPClient:
             )
 
         @staticmethod
+        def _instrument_httpx_async(
+            typed_async_client: p.Observability.HttpClient.HTTPXAsyncClient,
+        ) -> None:
+            """Wrap the async client request method with tracing."""
+            original_request = typed_async_client.request
+
+            async def traced_async_request(
+                method: str,
+                url: str,
+                *args: t.Scalar,
+                **kwargs: t.Scalar,
+            ) -> p.Observability.HttpClient.HTTPXResponse:
+                """Trace one async httpx request with context propagation.
+
+                Returns:
+                    The resulting ``p.Observability.HttpClient.HTTPXResponse``.
+
+                Raises:
+                    TypeError: If the async request returned a non-awaitable.
+                    EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+                """
+                helpers = FlextObservabilityHTTPClient.HTTPX
+                start_time = time.time()
+                headers = helpers.context_headers(kwargs)
+                helpers.log_http_request(method, url, is_async=True)
+                call_kwargs: t.ConfigurationMapping = {
+                    k: v for k, v in kwargs.items() if k != "headers"
+                }
+                try:
+                    response_candidate = original_request(
+                        method,
+                        url,
+                        *args,
+                        headers=headers,
+                        **call_kwargs,
+                    )
+                    if not isinstance(response_candidate, Awaitable):
+                        msg = "Async httpx request returned a non-awaitable response"
+                        raise TypeError(msg)
+                    response = await response_candidate
+                except c.EXC_MAPPING_TYPE as e:
+                    helpers.log_http_error(
+                        method,
+                        url,
+                        is_async=True,
+                        duration_ms=(time.time() - start_time) * 1000,
+                        error=e,
+                    )
+                    raise
+                helpers.log_http_response(
+                    method,
+                    url,
+                    is_async=True,
+                    duration_ms=(time.time() - start_time) * 1000,
+                    status_code=response.status_code,
+                )
+                return response
+
+            typed_async_client.request = traced_async_request
+
+        @staticmethod
+        def _instrument_httpx_sync(
+            typed_sync_client: p.Observability.HttpClient.HTTPXClient,
+        ) -> None:
+            """Wrap the sync client request method with tracing."""
+            original_sync_request: Callable[
+                ...,
+                p.Observability.HttpClient.HTTPXResponse
+                | Awaitable[p.Observability.HttpClient.HTTPXResponse],
+            ] = typed_sync_client.request
+
+            def traced_request(
+                method: str,
+                url: str,
+                *args: t.Scalar,
+                **kwargs: t.Scalar,
+            ) -> p.Observability.HttpClient.HTTPXResponse:
+                """Traced request wrapper for sync httpx.
+
+                Returns:
+                    The resulting ``p.Observability.HttpClient.HTTPXResponse``.
+
+                Raises:
+                    TypeError: If Sync httpx request returned an awaitable response.
+                    EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+                """
+                helpers = FlextObservabilityHTTPClient.HTTPX
+                start_time = time.time()
+                headers = helpers.context_headers(kwargs)
+                helpers.log_http_request(method, url, is_async=False)
+                call_kwargs: t.ConfigurationMapping = {
+                    k: v for k, v in kwargs.items() if k != "headers"
+                }
+                try:
+                    response_candidate = original_sync_request(
+                        method,
+                        url,
+                        *args,
+                        headers=headers,
+                        **call_kwargs,
+                    )
+                    if isinstance(response_candidate, Awaitable):
+                        msg = "Sync httpx request returned an awaitable response"
+                        raise TypeError(msg)
+                    response = response_candidate
+                except c.EXC_MAPPING_TYPE as e:
+                    helpers.log_http_error(
+                        method,
+                        url,
+                        is_async=False,
+                        duration_ms=(time.time() - start_time) * 1000,
+                        error=e,
+                    )
+                    raise
+                helpers.log_http_response(
+                    method,
+                    url,
+                    is_async=False,
+                    duration_ms=(time.time() - start_time) * 1000,
+                    status_code=response.status_code,
+                )
+                return response
+
+            typed_sync_client.request = traced_request
+
+        @staticmethod
         def _apply_httpx_instrumentation(
             client: t.RegisterableService
             | p.Observability.HttpClient.HTTPXAsyncClient
@@ -267,124 +393,10 @@ class FlextObservabilityHTTPClient:
                 return r[bool].ok(value=True)
             if FlextObservabilityHTTPClient._matches_httpx_async_client(client):
                 typed_async_client: p.Observability.HttpClient.HTTPXAsyncClient = client
-                original_request = typed_async_client.request
-
-                async def traced_async_request(
-                    method: str,
-                    url: str,
-                    *args: t.Scalar,
-                    **kwargs: t.Scalar,
-                ) -> p.Observability.HttpClient.HTTPXResponse:
-                    """Trace one async httpx request with context propagation.
-
-                    Returns:
-                        The resulting ``p.Observability.HttpClient.HTTPXResponse``.
-
-                    Raises:
-                        TypeError: If the async request returned a non-awaitable.
-                        EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
-                    """
-                    helpers = FlextObservabilityHTTPClient.HTTPX
-                    start_time = time.time()
-                    headers = helpers.context_headers(kwargs)
-                    helpers.log_http_request(method, url, is_async=True)
-                    call_kwargs: t.ConfigurationMapping = {
-                        k: v for k, v in kwargs.items() if k != "headers"
-                    }
-                    try:
-                        response_candidate = original_request(
-                            method,
-                            url,
-                            *args,
-                            headers=headers,
-                            **call_kwargs,
-                        )
-                        if not isinstance(response_candidate, Awaitable):
-                            msg = (
-                                "Async httpx request returned a non-awaitable response"
-                            )
-                            raise TypeError(msg)
-                        response = await response_candidate
-                    except c.EXC_MAPPING_TYPE as e:
-                        helpers.log_http_error(
-                            method,
-                            url,
-                            is_async=True,
-                            duration_ms=(time.time() - start_time) * 1000,
-                            error=e,
-                        )
-                        raise
-                    helpers.log_http_response(
-                        method,
-                        url,
-                        is_async=True,
-                        duration_ms=(time.time() - start_time) * 1000,
-                        status_code=response.status_code,
-                    )
-                    return response
-
-                typed_async_client.request = traced_async_request
+                FlextObservabilityHTTPClient._instrument_httpx_async(typed_async_client)
             elif FlextObservabilityHTTPClient._matches_httpx_client(client):
                 typed_sync_client: p.Observability.HttpClient.HTTPXClient = client
-                original_sync_request: Callable[
-                    ...,
-                    p.Observability.HttpClient.HTTPXResponse
-                    | Awaitable[p.Observability.HttpClient.HTTPXResponse],
-                ] = typed_sync_client.request
-
-                def traced_request(
-                    method: str,
-                    url: str,
-                    *args: t.Scalar,
-                    **kwargs: t.Scalar,
-                ) -> p.Observability.HttpClient.HTTPXResponse:
-                    """Traced request wrapper for sync httpx.
-
-                    Returns:
-                        The resulting ``p.Observability.HttpClient.HTTPXResponse``.
-
-                    Raises:
-                        TypeError: If Sync httpx request returned an awaitable response.
-                        EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
-                    """
-                    helpers = FlextObservabilityHTTPClient.HTTPX
-                    start_time = time.time()
-                    headers = helpers.context_headers(kwargs)
-                    helpers.log_http_request(method, url, is_async=False)
-                    call_kwargs: t.ConfigurationMapping = {
-                        k: v for k, v in kwargs.items() if k != "headers"
-                    }
-                    try:
-                        response_candidate = original_sync_request(
-                            method,
-                            url,
-                            *args,
-                            headers=headers,
-                            **call_kwargs,
-                        )
-                        if isinstance(response_candidate, Awaitable):
-                            msg = "Sync httpx request returned an awaitable response"
-                            raise TypeError(msg)
-                        response = response_candidate
-                    except c.EXC_MAPPING_TYPE as e:
-                        helpers.log_http_error(
-                            method,
-                            url,
-                            is_async=False,
-                            duration_ms=(time.time() - start_time) * 1000,
-                            error=e,
-                        )
-                        raise
-                    helpers.log_http_response(
-                        method,
-                        url,
-                        is_async=False,
-                        duration_ms=(time.time() - start_time) * 1000,
-                        status_code=response.status_code,
-                    )
-                    return response
-
-                typed_sync_client.request = traced_request
+                FlextObservabilityHTTPClient._instrument_httpx_sync(typed_sync_client)
             else:
                 return r[bool].fail("Invalid httpx client - unsupported client type")
             FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client_id)

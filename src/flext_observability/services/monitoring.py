@@ -154,8 +154,7 @@ class FlextObservabilityMonitor:
 
     @override
     def __init__(self, container: p.Container | None = None) -> None:
-        """Initialize monitor with real orchestration and shared configuration.
-        """
+        """Initialize monitor with real orchestration and shared configuration."""
         self._container = container or self._container_type.shared()
         self.logger = u.fetch_logger(self.__class__.__name__)
         self._initialized = False
