@@ -25,11 +25,13 @@ class FlextObservabilitySolidDemo:
         """Initialize demo facade."""
         self._observability = FlextObservability
 
-    def _emit(self, message: str) -> None:
+    @staticmethod
+    def _emit(message: str) -> None:
         """Emit example output through the canonical CLI facade."""
         cli.print(message)
 
-    def database_query(self, query: str) -> t.JsonMapping:
+    @staticmethod
+    def database_query(query: str) -> t.JsonMapping:
         """Simulate a database operation with monitoring.
 
         Returns:
@@ -38,7 +40,8 @@ class FlextObservabilitySolidDemo:
         time.sleep(0.05)
         return {"query": query, "rows": 42, "execution_time": 0.05}
 
-    def process_api_request(self, endpoint: str) -> t.JsonMapping:
+    @staticmethod
+    def process_api_request(endpoint: str) -> t.JsonMapping:
         """Simulate API request processing with monitoring.
 
         Returns:

@@ -108,7 +108,8 @@ class FlextObservabilityPerformance:
             """Mark operation as successful."""
             self.metrics = self.metrics.model_copy(update={"success": True})
 
-        def _cpu_percent(self) -> float:
+        @staticmethod
+        def _cpu_percent() -> float:
             """Get current CPU usage percent.
 
             Returns:
@@ -116,7 +117,8 @@ class FlextObservabilityPerformance:
             """
             return FlextObservabilityPerformance._process.cpu_percent(interval=0.01)
 
-        def _memory_usage(self) -> float:
+        @staticmethod
+        def _memory_usage() -> float:
             """Get current memory usage in MB.
 
             Returns:
