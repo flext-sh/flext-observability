@@ -57,7 +57,8 @@ class FlextObservabilityServices:
         )
         return r[m.Dict].fail("Alert creation not implemented in generic service")
 
-    def metrics_summary(self) -> p.Result[m.Dict]:
+    @staticmethod
+    def metrics_summary() -> p.Result[m.Dict]:
         """Summarize generic metrics - not implemented in base service.
 
         Returns:
@@ -65,7 +66,8 @@ class FlextObservabilityServices:
         """
         return r[m.Dict].fail("Metrics summary not implemented in generic service")
 
-    def status(self) -> p.Result[m.Dict]:
+    @staticmethod
+    def status() -> p.Result[m.Dict]:
         """Resolve generic service status through FLEXT patterns.
 
         Returns:
@@ -88,7 +90,8 @@ class FlextObservabilityServices:
         except c.EXC_MAPPING_TYPE as e:
             return r[m.Dict].fail_op("Status check", e)
 
-    def process_entry(self, entry_data: m.Dict) -> p.Result[m.Dict]:
+    @staticmethod
+    def process_entry(entry_data: m.Dict) -> p.Result[m.Dict]:
         """Process generic observability entry through FLEXT patterns.
 
         Returns:
