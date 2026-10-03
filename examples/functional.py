@@ -23,7 +23,8 @@ class FlextObservabilityFunctionalExamples:
         """Initialize example facade."""
         self._observability = FlextObservability
 
-    def _emit(self, message: str) -> None:
+    @staticmethod
+    def _emit(message: str) -> None:
         """Emit example output through the canonical CLI facade."""
         cli.print(message)
 
@@ -55,7 +56,8 @@ class FlextObservabilityFunctionalExamples:
             {"service": "payment-service"},
         )
 
-    def monitored_function(self, data: str) -> str:
+    @staticmethod
+    def monitored_function(data: str) -> str:
         """Demonstrate automatic monitoring.
 
         Returns:

@@ -280,8 +280,8 @@ class FlextObservabilityErrorHandling:
             count = self._error_counts.get(error.fingerprint, 0)
             return not count < self._escalation_threshold
 
+        @staticmethod
         def _run_with_result[TResult](
-            self,
             operation: Callable[[], TResult],
             *,
             error_prefix: str,
