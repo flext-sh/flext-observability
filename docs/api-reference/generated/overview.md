@@ -10,10 +10,26 @@
 
 - Version: `0.12.0`
 - Description: FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry
-- Governed projects: `0`
-- Project classes: _none_
-
-Generated from workspace discovery, `pyproject.toml`, public exports, and docstrings.
+- Doc summary: Flext Observability package.
+- Classifiers: Development Status :: 3 - Alpha, Intended Audience :: Developers,
+  Operating System :: OS Independent, Programming Language :: Python :: 3 :: Only,
+  Programming Language :: Python :: 3.13, Topic :: Software Development :: Libraries ::
+  Python Modules, Topic :: System :: Monitoring, Typing :: Typed
+- Project class: `domain`
+- Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`, `tracing`,
+  `typed`
+- Main facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
+  `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,
+  `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
+  `FlextObservabilityErrorHandling` (+14 more)
+- Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
+- Public symbol exports: `FlextObservability`, `FlextObservabilityAdvancedContext`,
+  `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,
+  `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
+  `FlextObservabilityErrorHandling`, `FlextObservabilityHTTP`,
+  `FlextObservabilityHTTPClient` (+16 more)
+- Exported module shortcuts: `services`
+- Generated module pages: `8`
 
 ## Next Pages
 

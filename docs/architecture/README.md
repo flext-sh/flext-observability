@@ -235,7 +235,7 @@ FLEXT Observability integrates with the ecosystem through standardized patterns:
 
 #### **Foundation Integration**
 
-```python
+```text
 from __future__ import annotations
 
 # All services use flext-core patterns
@@ -255,7 +255,7 @@ def record_metric_example(container, metric):
 
 #### **Cross-Service Observability**
 
-```python
+```text
 from __future__ import annotations
 
 # Consistent monitoring across all FLEXT projects
@@ -263,7 +263,7 @@ from flext_observability import flext_monitor_function
 
 
 @flext_monitor_function("flext_api_endpoint")
-def process_api_request(request_data):
+def process_api_request(_request_data):
     """Automatic metrics, tracing, and logging."""
     return {"status": "processed"}
 ```
@@ -286,7 +286,7 @@ flext-observability
 
 ### Factory Pattern Implementation
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -305,7 +305,7 @@ class FlextObservabilityMasterFactory:
 
 ### Service Layer Pattern
 
-```python
+```text
 from __future__ import annotations
 
 
@@ -313,6 +313,7 @@ class FlextMetricsService:
     """Application service for metrics operations."""
 
     def __init__(self, container: FlextContainer) -> None:
+        """Inject the DI container for the metrics operations."""
         self._container = container
         # Dependency injection setup
 
@@ -326,8 +327,10 @@ class FlextMetricsService:
 
 ### Repository Pattern (Future Implementation)
 
-```python
+```text
 from __future__ import annotations
+
+from typing import Protocol
 
 
 class FlextMetricsRepository(Protocol):
@@ -400,8 +403,10 @@ class FlextMetricsRepository(Protocol):
 
 ### Integration Hooks
 
-```python
+```text
 from __future__ import annotations
+
+from typing import Protocol
 
 
 # Future extension point example

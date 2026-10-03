@@ -14,6 +14,9 @@ Key Features:
 - Rich metadata propagation
 - Context snapshots for debugging
 - Automatic cleanup
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -125,7 +128,8 @@ class FlextObservabilityAdvancedContext:
             return self._metadata.get(key)
 
         def merge(
-            self, other: FlextObservabilityAdvancedContext.Context
+            self,
+            other: FlextObservabilityAdvancedContext.Context,
         ) -> p.Result[bool]:
             """Merge another context into this one.
 
@@ -162,7 +166,7 @@ class FlextObservabilityAdvancedContext:
                 self._metadata = dict(snapshot.metadata)
                 self._baggage = dict(snapshot.baggage)
                 FlextObservabilityAdvancedContext.logger.debug(
-                    "Context restored from snapshot"
+                    "Context restored from snapshot",
                 )
                 return r[bool].ok(value=True)
             except c.EXC_MAPPING_TYPE as exc:
@@ -215,7 +219,10 @@ class FlextObservabilityAdvancedContext:
                 )
 
         def snapshot(
-            self, correlation_id: str = "", trace_id: str = "", span_id: str = ""
+            self,
+            correlation_id: str = "",
+            trace_id: str = "",
+            span_id: str = "",
         ) -> m.Observability.ContextSnapshot:
             """Create snapshot of current context.
 

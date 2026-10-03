@@ -19,8 +19,12 @@
 - [📦 Import Patterns & Best Practices](#import-patterns-best-practices)
   - [Recommended Import Styles](#recommended-import-styles)
   - [Anti-Patterns (Forbidden)](#anti-patterns-forbidden)
+- [🏛️ Architectural Patterns](#architectural-patterns)
+  - [Layer Separation](#layer-separation)
   - [Dependency Direction](#dependency-direction)
   - [Cross-Cutting Observability Concerns](#cross-cutting-observability-concerns)
+- [🔄 Observability-Specific Patterns](#observability-specific-patterns)
+  - [Metric Creation Patterns](#metric-creation-patterns)
   - [Distributed Tracing Patterns](#distributed-tracing-patterns)
   - [Health Monitoring Patterns](#health-monitoring-patterns)
   - [Alert Management Patterns](#alert-management-patterns)
@@ -28,10 +32,15 @@
   - [Test Organization](#test-organization)
   - [r Testing Patterns for Observability](#r-testing-patterns-for-observability)
   - [Observability Entity Testing Patterns](#observability-entity-testing-patterns)
+  - [Service Testing Patterns](#service-testing-patterns)
   - [Monitoring Decorator Testing Patterns](#monitoring-decorator-testing-patterns)
+- [📏 Code Quality Standards](#code-quality-standards)
+  - [Type Annotation Requirements](#type-annotation-requirements)
+  - [Error Handling Standards](#error-handling-standards)
   - [Documentation Standards](#documentation-standards)
 - [🌐 Ecosystem Integration Guidelines](#ecosystem-integration-guidelines)
   - [Cross-Project Observability Standards](#cross-project-observability-standards)
+  - [Configuration Integration Across Services](#configuration-integration-across-services)
   - [Monitoring Integration Patterns](#monitoring-integration-patterns)
 - [📋 Checklist for New Observability Modules](#checklist-for-new-observability-modules)
   - [Module Creation Checklist](#module-creation-checklist)
@@ -80,10 +89,10 @@
     - **Recommended Import Styles**
       - **1. Primary Pattern (Recommended for Ecosystem)**
 - Import from main package - gets essential observability tools
-- Use patterns directly in business logic - **2. Service Integration Pattern (For FLEXT
-  Services)**
-- Import services for advanced integration - **3. Infrastructure Integration Pattern
-  (For Infrastructure Services)**
+- Use patterns directly in business logic -
+  **2. Service Integration Pattern (For FLEXT Services)**
+- Import services for advanced integration -
+  **3. Infrastructure Integration Pattern (For Infrastructure Services)**
 - Import for infrastructure monitoring
   - **Anti-Patterns (Forbidden)**
 - ❌ Don't import everything
@@ -184,7 +193,7 @@ modules depend on.
 
 **Import Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 # All ecosystem projects start with observability patterns here
@@ -202,12 +211,10 @@ validation.
 
 **Entity Architecture**:
 
-```python
+```text
 from __future__ import annotations
 
-from flext_cli import u
-from flext_core import FlextSettings
-from flext_observability import FlextMetric, FlextTrace
+from flext_observability import FlextMetric
 
 
 class FlextMetric(FlextModels.Entity):
@@ -244,7 +251,7 @@ external systems.
 
 **Service Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_observability import FlextMetricsService
@@ -283,7 +290,7 @@ class FlextMetricsService:
 
 **Factory Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_observability import FlextObservabilityMasterFactory
@@ -338,7 +345,7 @@ use cases.
 
 **Simple API Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_observability import flext_create_metric, flext_create_trace
@@ -360,7 +367,7 @@ def flext_create_trace(operation_name: str, service_name: str) -> p.Result[Flext
 
 **Monitoring Decorator Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_observability import flext_monitor_function
@@ -394,7 +401,7 @@ observability operations.
 
 **Repository Pattern**:
 
-```python
+```text
 from __future__ import annotations
 
 from flext_observability import FlextObservabilityRepository
@@ -432,7 +439,7 @@ class FlextObservabilityRepository:
 
 All public observability exports use the `Flext` prefix for namespace separation:
 
-```python
+```text
 from __future__ import annotations
 
 # Observability entities
@@ -464,7 +471,7 @@ entities across 33 projects.
 
 ### **Module-Level Naming**
 
-```python
+```text
 from __future__ import annotations
 
 # Module names focus on observability concerns
@@ -481,8 +488,10 @@ obs_platform.py  # Contains FlextObservabilityPlatformV2 orchestration
 
 ### **Function Naming Patterns**
 
-```python
+```text
 from __future__ import annotations
+
+from flext_core import p
 
 
 # Simple API functions use flext_create_ prefix
@@ -520,7 +529,7 @@ def clear_global_factory() -> None: ...
 
 #### **1. Primary Pattern (Recommended for Ecosystem)**
 
-```python
+```text
 from __future__ import annotations
 
 # Import from main package - gets essential observability tools
@@ -539,7 +548,7 @@ def process_order(order_data: dict) -> p.Result[m.Dict]:
 
 #### **2. Service Integration Pattern (For FLEXT Services)**
 
-```python
+```text
 from __future__ import annotations
 
 # Import services for advanced integration
@@ -573,7 +582,7 @@ class UserAPIService:
 
 #### **3. Infrastructure Integration Pattern (For Infrastructure Services)**
 
-```python
+```text
 from __future__ import annotations
 
 # Import for infrastructure monitoring
@@ -623,7 +632,7 @@ class DatabaseConnectionService:
 
 ### **Anti-Patterns (Forbidden)**
 
-```python
+```text
 from __future__ import annotations
 
 # ❌ Don't import everything
@@ -686,7 +695,7 @@ Infrastructure Layer  →  Foundation Layer  →  flext-core
 
 ### **Cross-Cutting Observability Concerns**
 
-```python
+```text
 from __future__ import annotations
 
 # Handled via decorators and context management
@@ -713,14 +722,15 @@ def process_payment(payment_data: dict) -> p.Result[m.Dict]:
 
 ### **Metric Creation Patterns**
 
-```python
+```text
 from __future__ import annotations
+
+from flext_core import p, r
 
 
 # Basic metric creation
 def create_business_metrics(operation: str, duration: float, success: bool) -> None:
     """Create comprehensive business metrics."""
-
     # Performance metric
     duration_result = flext_create_metric(
         name=f"{operation}_duration",
@@ -767,8 +777,10 @@ def create_validated_metric(name: str, value: float) -> p.Result[bool]:
 
 ### **Distributed Tracing Patterns**
 
-```python
+```text
 from __future__ import annotations
+
+from flext_core import m, p, r
 
 
 # Parent-child trace correlation
@@ -815,8 +827,10 @@ def validate_order_with_trace(
 
 ### **Health Monitoring Patterns**
 
-```python
+```text
 from __future__ import annotations
+
+from flext_core import m, p, r
 
 
 # Comprehensive health monitoring
@@ -892,8 +906,10 @@ def check_database_health() -> p.Result[FlextHealthCheck]:
 
 ### **Alert Management Patterns**
 
-```python
+```text
 from __future__ import annotations
+
+from flext_core import p, r
 
 
 # Business rule-based alerting
@@ -901,7 +917,6 @@ def create_business_alert(
     metric_name: str, current_value: float, threshold: float
 ) -> p.Result[bool]:
     """Create business rule alert based on metric thresholds."""
-
     if current_value <= threshold:
         return r[bool].ok(value=True)  # No alert needed
 
@@ -948,7 +963,6 @@ def escalate_alert_if_needed(
     alert: FlextAlert, duration_minutes: int
 ) -> p.Result[bool]:
     """Escalate alert based on duration and severity."""
-
     escalation_thresholds = {
         "warning": 60,  # 1 hour
         "error": 30,  # 30 minutes
@@ -1001,7 +1015,7 @@ tests/
 
 ### **r Testing Patterns for Observability**
 
-```python
+```text
 from __future__ import annotations
 
 from flext_observability import flext_create_metric, flext_create_trace
@@ -1066,7 +1080,7 @@ def test_observability_failure_propagation():
 
 ### **Observability Entity Testing Patterns**
 
-```python
+```text
 from __future__ import annotations
 
 from decimal import Decimal
@@ -1152,7 +1166,7 @@ class TestFlextTrace:
 
 ### **Service Testing Patterns**
 
-```python
+```text
 from __future__ import annotations
 
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
@@ -1238,7 +1252,7 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
 
 ### **Monitoring Decorator Testing Patterns**
 
-```python
+```text
 from __future__ import annotations
 
 import time
@@ -1287,8 +1301,12 @@ def test_function_monitoring_with_exception():
 
 ### **Type Annotation Requirements**
 
-```python
+```text
 from __future__ import annotations
+
+from decimal import Decimal
+
+from flext_core import p, r, t
 
 
 # ✅ Complete type annotations for observability functions
@@ -1335,8 +1353,10 @@ def create_metric(name, value, unit):  # Missing types
 
 ### **Error Handling Standards**
 
-```python
+```text
 from __future__ import annotations
+
+from flext_core import m, p, r
 
 
 # ✅ Always use r for observability error handling
@@ -1386,8 +1406,10 @@ def create_metric_bad(name: str, value: float) -> FlextMetric:
 
 ### **Documentation Standards**
 
-```python
+```text
 from __future__ import annotations
+
+from flext_core import m, p, r
 
 
 def create_business_observability_dashboard(
@@ -1489,7 +1511,7 @@ def create_business_observability_dashboard(
 
 ### **Cross-Project Observability Standards**
 
-```python
+```text
 from __future__ import annotations
 
 # ✅ Standard observability imports across ecosystem
@@ -1575,7 +1597,7 @@ class OracleTrace:  # Use FlextTrace instead
 
 ### **Configuration Integration Across Services**
 
-```python
+```text
 from __future__ import annotations
 
 # ✅ Extend observability configuration patterns
@@ -1621,7 +1643,7 @@ class UserService:
 
 ### **Monitoring Integration Patterns**
 
-```python
+```text
 from __future__ import annotations
 
 # ✅ Consistent monitoring across ecosystem services

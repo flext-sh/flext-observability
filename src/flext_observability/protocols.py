@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from flext_cli import FlextCliProtocols
 
-from ._protocols.base import FlextObservabilityProtocolsBase
-from ._protocols.domains import FlextObservabilityProtocolsDomains
+from flext_observability._protocols.base import FlextObservabilityProtocolsBase
+from flext_observability._protocols.domains import FlextObservabilityProtocolsDomains
 
 
 class FlextObservabilityProtocols(FlextCliProtocols, FlextObservabilityProtocolsBase):
@@ -36,7 +36,8 @@ class FlextObservabilityProtocols(FlextCliProtocols, FlextObservabilityProtocols
     """
 
     class Observability(
-        FlextObservabilityProtocolsBase, FlextObservabilityProtocolsDomains
+        FlextObservabilityProtocolsBase,
+        FlextObservabilityProtocolsDomains,
     ):
         """Observability domain-specific protocols.
 

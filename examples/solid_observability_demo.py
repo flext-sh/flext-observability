@@ -25,17 +25,28 @@ class FlextObservabilitySolidDemo:
         """Initialize demo facade."""
         self._observability = FlextObservability
 
-    def _emit(self, message: str) -> None:
+    @staticmethod
+    def _emit(message: str) -> None:
         """Emit example output through the canonical CLI facade."""
         cli.print(message)
 
-    def database_query(self, query: str) -> t.JsonMapping:
-        """Simulate a database operation with monitoring."""
+    @staticmethod
+    def database_query(query: str) -> t.JsonMapping:
+        """Simulate a database operation with monitoring.
+
+        Returns:
+            The resulting ``t.JsonMapping``.
+        """
         time.sleep(0.05)
         return {"query": query, "rows": 42, "execution_time": 0.05}
 
-    def process_api_request(self, endpoint: str) -> t.JsonMapping:
-        """Simulate API request processing with monitoring."""
+    @staticmethod
+    def process_api_request(endpoint: str) -> t.JsonMapping:
+        """Simulate API request processing with monitoring.
+
+        Returns:
+            The resulting ``t.JsonMapping``.
+        """
         time.sleep(0.1)
         return {"endpoint": endpoint, "status": "success", "response_time": 0.1}
 
@@ -50,7 +61,8 @@ class FlextObservabilitySolidDemo:
             severity=c.Observability.AlertLevel.WARNING,
         )
         health_result = self._observability.flext_health_check(
-            "database", c.Observability.HealthStatus.HEALTHY
+            "database",
+            c.Observability.HealthStatus.HEALTHY,
         )
         self._observability.flext_metric("custom_metric", 100.0, "units")
         results = [metric_result, trace_result, alert_result, health_result]
@@ -83,7 +95,7 @@ class FlextObservabilitySolidDemo:
 
     def demonstrate_health_monitoring(self) -> None:
         """Demonstrate comprehensive health monitoring."""
-        services_health: t.SequenceOf[tuple[str, c.Observability.HealthStatus]] = [
+        services_health: t.SequenceOf[t.Pair[str, c.Observability.HealthStatus]] = [
             ("database", c.Observability.HealthStatus.HEALTHY),
             ("cache", c.Observability.HealthStatus.HEALTHY),
             ("message_queue", c.Observability.HealthStatus.DEGRADED),
@@ -94,7 +106,7 @@ class FlextObservabilitySolidDemo:
 
     def demonstrate_alerting_system(self) -> None:
         """Demonstrate comprehensive alerting."""
-        alerts: t.SequenceOf[tuple[c.Observability.AlertLevel, str, str]] = [
+        alerts: t.SequenceOf[t.Triple[c.Observability.AlertLevel, str, str]] = [
             (c.Observability.AlertLevel.INFO, "System maintenance scheduled", "system"),
             (
                 c.Observability.AlertLevel.WARNING,
@@ -110,7 +122,10 @@ class FlextObservabilitySolidDemo:
         ]
         for level, message, service in alerts:
             result = self._observability.flext_alert(
-                source=service, title=message, message=message, severity=level
+                source=service,
+                title=message,
+                message=message,
+                severity=level,
             )
             if result.success:
                 icons = {
@@ -148,7 +163,8 @@ class FlextObservabilitySolidDemo:
         if alert_res.success:
             self._emit(f"Validation successful for {type(alert_res.value).__name__}")
         health_res = self._observability.flext_health_check(
-            "service", c.Observability.HealthStatus.HEALTHY
+            "service",
+            c.Observability.HealthStatus.HEALTHY,
         )
         if health_res.success:
             self._emit(f"Validation successful for {type(health_res.value).__name__}")

@@ -1,6 +1,7 @@
 """Generic FLEXT Observability Services.
 
-Minimal, generic services following SOLID principles with complete delegation to FLEXT core.
+Minimal, generic services following SOLID principles with complete delegation
+to FLEXT core.
 Single unified class for all observability operations.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -20,7 +21,8 @@ class FlextObservabilityServices:
     """Generic observability services delegating to FLEXT core patterns.
 
     Single unified class providing generic observability operations through
-    complete delegation to FlextContainer, `u.fetch_logger(...)` / `p.Logger`, and r patterns.
+    complete delegation to FlextContainer, `u.fetch_logger(...)` / `p.Logger`,
+    and r patterns.
     No domain-specific logic - pure generic foundation.
     """
 
@@ -43,7 +45,11 @@ class FlextObservabilityServices:
         return None
 
     def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
-        """Create a generic alert - not implemented in base service."""
+        """Create a generic alert - not implemented in base service.
+
+        Returns:
+            The resulting ``p.Result[m.Dict]``.
+        """
         requested_keys: t.JsonValueList = list(kwargs)
         self.logger.debug(
             "create_alert not implemented in generic service",
@@ -51,12 +57,22 @@ class FlextObservabilityServices:
         )
         return r[m.Dict].fail("Alert creation not implemented in generic service")
 
-    def metrics_summary(self) -> p.Result[m.Dict]:
-        """Summarize generic metrics - not implemented in base service."""
+    @staticmethod
+    def metrics_summary() -> p.Result[m.Dict]:
+        """Summarize generic metrics - not implemented in base service.
+
+        Returns:
+            The resulting ``p.Result[m.Dict]``.
+        """
         return r[m.Dict].fail("Metrics summary not implemented in generic service")
 
-    def status(self) -> p.Result[m.Dict]:
-        """Resolve generic service status through FLEXT patterns."""
+    @staticmethod
+    def status() -> p.Result[m.Dict]:
+        """Resolve generic service status through FLEXT patterns.
+
+        Returns:
+            The resulting ``p.Result[m.Dict]``.
+        """
         try:
             status = {
                 "service": "flext_observability",
@@ -74,8 +90,13 @@ class FlextObservabilityServices:
         except c.EXC_MAPPING_TYPE as e:
             return r[m.Dict].fail_op("Status check", e)
 
-    def process_entry(self, entry_data: m.Dict) -> p.Result[m.Dict]:
-        """Process generic observability entry through FLEXT patterns."""
+    @staticmethod
+    def process_entry(entry_data: m.Dict) -> p.Result[m.Dict]:
+        """Process generic observability entry through FLEXT patterns.
+
+        Returns:
+            The resulting ``p.Result[m.Dict]``.
+        """
         try:
             if not entry_data:
                 return r[m.Dict].fail("Entry data required")

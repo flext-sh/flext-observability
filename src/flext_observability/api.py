@@ -12,7 +12,7 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping
 from datetime import datetime
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 from uuid import uuid4
 
 from flext_core import FlextContainer
@@ -34,7 +34,8 @@ from flext_observability.services.performance import FlextObservabilityPerforman
 from flext_observability.services.sampling import FlextObservabilitySampling
 from flext_observability.services.services import FlextObservabilityServices
 
-from ._settings import FlextObservabilitySettings
+if TYPE_CHECKING:
+    from flext_observability._settings import FlextObservabilitySettings
 
 
 class FlextObservability(
@@ -82,7 +83,11 @@ class FlextObservability(
     # _flext_metric_type below.
     @staticmethod
     def _metric_type_for_name(name: str) -> c.Observability.MetricType:
-        """Resolve metric type from a metric name suffix."""
+        """Resolve metric type from a metric name suffix.
+
+        Returns:
+            The resulting ``c.Observability.MetricType``.
+        """
         if name.endswith(("_total", "_count")):
             return c.Observability.MetricType.COUNTER
         if name.endswith(("_duration", "_seconds")):
@@ -91,9 +96,16 @@ class FlextObservability(
 
     @staticmethod
     def flext_metric(
-        name: str, value: float, unit: str = "count", **kwargs: t.JsonPayload
+        name: str,
+        value: float,
+        unit: str = "count",
+        **kwargs: t.JsonPayload,
     ) -> p.Result[FlextObservability.Metric]:
-        """Create a metric entity directly."""
+        """Create a metric entity directly.
+
+        Returns:
+            The resulting ``p.Result[FlextObservability.Metric]``.
+        """
         try:
             return FlextObservability._flext_metric_entity(name, value, unit, kwargs)
         except (c.ValidationError, ValueError, TypeError, AttributeError) as e:
@@ -101,16 +113,25 @@ class FlextObservability(
 
     @staticmethod
     def _flext_metric_entity(
-        name: str, value: float, unit: str, kwargs: t.MappingKV[str, t.JsonPayload]
+        name: str,
+        value: float,
+        unit: str,
+        kwargs: t.MappingKV[str, t.JsonPayload],
     ) -> p.Result[FlextObservability.Metric]:
-        """Create a metric entity from validated direct-factory inputs."""
+        """Create a metric entity from validated direct-factory inputs.
+
+        Returns:
+            The resulting ``p.Result[FlextObservability.Metric]``.
+        """
         if not name:
             return r[FlextObservability.Metric].fail_op(
-                "create metric", "Metric name must be non-empty string"
+                "create metric",
+                "Metric name must be non-empty string",
             )
         if math.isnan(value):
             return r[FlextObservability.Metric].fail_op(
-                "create metric", "Metric value must be a valid number"
+                "create metric",
+                "Metric value must be a valid number",
             )
         metric_type_raw = kwargs.get("metric_type")
         metric_id_raw = kwargs.get("metric_id")
@@ -127,7 +148,11 @@ class FlextObservability(
 
     @staticmethod
     def _flext_metric_id(metric_id_raw: t.JsonPayload | None) -> str:
-        """Resolve a direct-factory metric id."""
+        """Resolve a direct-factory metric id.
+
+        Returns:
+            The resulting ``str``.
+        """
         if metric_id_raw is None:
             return str(uuid4())
         metric_id: str = t.str_adapter().validate_python(metric_id_raw)
@@ -135,12 +160,17 @@ class FlextObservability(
 
     @staticmethod
     def _flext_metric_type(
-        name: str, metric_type_raw: t.JsonPayload | None
+        name: str,
+        metric_type_raw: t.JsonPayload | None,
     ) -> c.Observability.MetricType:
-        """Resolve a direct-factory metric type."""
+        """Resolve a direct-factory metric type.
+
+        Returns:
+            The resulting ``c.Observability.MetricType``.
+        """
         if metric_type_raw is not None:
             return m.Observability.MetricTypeInput.model_validate({
-                "metric_type": metric_type_raw
+                "metric_type": metric_type_raw,
             }).metric_type
         return FlextObservability._metric_type_for_name(name)
 
@@ -148,7 +178,11 @@ class FlextObservability(
     def _flext_metric_labels(
         kwargs: t.MappingKV[str, t.JsonPayload],
     ) -> t.MutableScalarMapping:
-        """Merge tags and labels into the metric labels payload."""
+        """Merge tags and labels into the metric labels payload.
+
+        Returns:
+            The resulting ``t.MutableScalarMapping``.
+        """
         all_labels_data: t.MutableScalarMapping = {}
         for source_key in ("tags", "labels"):
             source = kwargs.get(source_key)
@@ -165,11 +199,16 @@ class FlextObservability(
         attributes: t.ScalarMapping | None = None,
         trace_id: str | None = None,
     ) -> p.Result[FlextObservability.Trace]:
-        """Create a trace entity directly."""
+        """Create a trace entity directly.
+
+        Returns:
+            The resulting ``p.Result[FlextObservability.Trace]``.
+        """
         try:
             if not name:
                 return r[FlextObservability.Trace].fail_op(
-                    "create trace", "Trace name must be non-empty string"
+                    "create trace",
+                    "Trace name must be non-empty string",
                 )
             resolved_attrs: t.MutableScalarMapping = (
                 dict(attributes) if attributes is not None else {}
@@ -186,18 +225,26 @@ class FlextObservability(
 
     @staticmethod
     def flext_alert(**kwargs: t.JsonValue) -> p.Result[FlextObservability.Alert]:
-        """Create an alert entity directly."""
+        """Create an alert entity directly.
+
+        Returns:
+            The resulting ``p.Result[FlextObservability.Alert]``.
+        """
         try:
             payload = FlextObservability._alert_payload(kwargs)
             return r[FlextObservability.Alert].ok(
-                FlextObservability.Alert.model_validate(payload)
+                FlextObservability.Alert.model_validate(payload),
             )
         except (c.ValidationError, ValueError, TypeError, AttributeError) as e:
             return r[FlextObservability.Alert].fail_op("create alert", e)
 
     @staticmethod
     def _alert_payload(kwargs: t.MappingKV[str, t.JsonValue]) -> t.MutableJsonMapping:
-        """Normalize alert factory kwargs into the canonical model payload."""
+        """Normalize alert factory kwargs into the canonical model payload.
+
+        Returns:
+            The resulting ``t.MutableJsonMapping``.
+        """
         payload: t.MutableJsonMapping = dict(kwargs)
         _ = payload.pop("status", c.Observability.AlertStatus.FIRING)
         payload.setdefault("title", "")
@@ -220,7 +267,11 @@ class FlextObservability(
 
     @staticmethod
     def _alert_labels(payload: t.MappingKV[str, t.JsonValue]) -> t.JsonDict:
-        """Normalize alert labels into JSON primitives."""
+        """Normalize alert labels into JSON primitives.
+
+        Returns:
+            The resulting ``t.JsonDict``.
+        """
         raw_labels = payload.get("labels")
         resolved_labels: t.JsonDict = {}
         if u.mapping(raw_labels):
@@ -237,16 +288,22 @@ class FlextObservability(
         health_check_id: str | None = None,
         details: t.ScalarMapping | None = None,
     ) -> p.Result[FlextObservability.HealthCheck]:
-        """Create a health check entity directly."""
+        """Create a health check entity directly.
+
+        Returns:
+            The resulting ``p.Result[FlextObservability.HealthCheck]``.
+        """
         _ = health_check_id
         try:
             if not component:
                 return r[FlextObservability.HealthCheck].fail_op(
-                    "create health check", "Component name cannot be empty"
+                    "create health check",
+                    "Component name cannot be empty",
                 )
             if status not in c.Observability.HealthStatus:
                 return r[FlextObservability.HealthCheck].fail_op(
-                    "create health check", f"Invalid health status: {status}"
+                    "create health check",
+                    f"Invalid health status: {status}",
                 )
             resolved_details: t.MutableScalarMapping = (
                 dict(details) if details is not None else {}
@@ -270,11 +327,16 @@ class FlextObservability(
         timestamp: datetime | None = None,
         context: t.ScalarMapping | None = None,
     ) -> p.Result[FlextObservability.LogEntry]:
-        """Create a log entry entity directly."""
+        """Create a log entry entity directly.
+
+        Returns:
+            The resulting ``p.Result[FlextObservability.LogEntry]``.
+        """
         try:
             if not message:
                 return r[FlextObservability.LogEntry].fail_op(
-                    "create log entry", "Log message cannot be empty"
+                    "create log entry",
+                    "Log message cannot be empty",
                 )
             resolved_context = t.scalar_mapping_adapter().validate_python(context or {})
             entry = FlextObservability.LogEntry(
@@ -292,5 +354,6 @@ class FlextObservability(
 
 
 observability: FlextObservability = FlextObservability()
+"""Module-level MRO facade singleton for the observability namespace."""
 
 __all__: list[str] = ["FlextObservability", "observability"]

@@ -1,36 +1,24 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Examples package."""
+"""Examples package.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+from flext_core import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
+    from examples.constants import ExamplesFlextObservabilityConstants, c
+    from examples.models import ExamplesFlextObservabilityModels, m
+    from examples.protocols import ExamplesFlextObservabilityProtocols, p
+    from examples.typings import ExamplesFlextObservabilityTypes, t
+    from examples.utilities import ExamplesFlextObservabilityUtilities, u
     from flext_core import d, e, h, r, s, x
-
-    from .constants import (
-        ExamplesFlextObservabilityConstants,
-        ExamplesFlextObservabilityConstants as c,
-    )
-    from .models import (
-        ExamplesFlextObservabilityModels,
-        ExamplesFlextObservabilityModels as m,
-    )
-    from .protocols import (
-        ExamplesFlextObservabilityProtocols,
-        ExamplesFlextObservabilityProtocols as p,
-    )
-    from .typings import (
-        ExamplesFlextObservabilityTypes,
-        ExamplesFlextObservabilityTypes as t,
-    )
-    from .utilities import (
-        ExamplesFlextObservabilityUtilities,
-        ExamplesFlextObservabilityUtilities as u,
-    )
 
 
 __all__: tuple[str, ...] = (
@@ -64,7 +52,7 @@ _LAZY_IMPORTS = MappingProxyType(
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
-    )
+    ),
 )
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

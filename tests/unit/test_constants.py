@@ -18,10 +18,12 @@ _Obs = c.Observability
 class TestsFlextObservabilityConstantsUnit:
     """Public-contract behavior of the observability constants facade."""
 
-    def test_facade_extends_flext_core_constants(self) -> None:
+    @staticmethod
+    def test_facade_extends_flext_core_constants() -> None:
         """The facade must inherit the flext-core constants contract via MRO."""
         tm.that(c in c.__mro__, eq=True)
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("member", "expected"),
         [
@@ -45,11 +47,13 @@ class TestsFlextObservabilityConstantsUnit:
         ],
     )
     def test_strenum_members_carry_stable_string_values(
-        self, member: str, expected: str
+        member: str,
+        expected: str,
     ) -> None:
         """Each StrEnum member is usable as its documented string value."""
         tm.that(member, eq=expected)
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("alias", "source"),
         [
@@ -72,11 +76,13 @@ class TestsFlextObservabilityConstantsUnit:
         ],
     )
     def test_flat_alias_stays_consistent_with_its_enum_source(
-        self, alias: str, source: str
+        alias: str,
+        source: str,
     ) -> None:
         """Flat string aliases must equal the value of the enum they derive from."""
         tm.that(alias, eq=source)
 
+    @staticmethod
     @pytest.mark.parametrize(
         "unit",
         [
@@ -86,11 +92,12 @@ class TestsFlextObservabilityConstantsUnit:
             _Obs.METRIC_UNIT_SECONDS,
         ],
     )
-    def test_metric_unit_alias_is_a_recognized_valid_unit(self, unit: str) -> None:
+    def test_metric_unit_alias_is_a_recognized_valid_unit(unit: str) -> None:
         """Every exposed metric-unit alias belongs to the valid-units set."""
         tm.that(_Obs.METRIC_VALID_UNITS, has=unit)
 
-    def test_strenum_values_are_unique_per_enum(self) -> None:
+    @staticmethod
+    def test_strenum_values_are_unique_per_enum() -> None:
         """The @unique contract holds: no duplicate values within an enum."""
         for enum_cls in (
             _Obs.MetricType,
@@ -102,6 +109,7 @@ class TestsFlextObservabilityConstantsUnit:
             values = [member.value for member in enum_cls]
             tm.that(len(set(values)), eq=len(values))
 
+    @staticmethod
     @pytest.mark.parametrize(
         "length",
         [
@@ -111,20 +119,19 @@ class TestsFlextObservabilityConstantsUnit:
             _Obs.MAX_LOG_MESSAGE_LENGTH,
         ],
     )
-    def test_validation_length_limits_are_positive(self, length: int) -> None:
+    def test_validation_length_limits_are_positive(length: int) -> None:
         """All maximum-length limits are strictly positive bounds."""
         tm.that(length, gt=0)
 
-    def test_message_limits_are_wider_than_name_limits(self) -> None:
+    @staticmethod
+    def test_message_limits_are_wider_than_name_limits() -> None:
         """Free-text message limits must exceed the stricter name limits."""
         tm.that(_Obs.MAX_ALERT_MESSAGE_LENGTH, gt=_Obs.MAX_METRIC_NAME_LENGTH)
         tm.that(_Obs.MAX_LOG_MESSAGE_LENGTH, gt=_Obs.MAX_TRACE_NAME_LENGTH)
 
-    def test_service_defaults_expose_documented_values(self) -> None:
+    @staticmethod
+    def test_service_defaults_expose_documented_values() -> None:
         """Default service identity constants match their published contract."""
         tm.that(_Obs.DEFAULT_SERVICE_NAME, eq="flext-service")
         tm.that(_Obs.DEFAULT_ENVIRONMENT, eq="development")
         tm.that(_Obs.DEFAULT_SETTINGS_SERVICE_NAME, eq="flext-observability")
-
-
-__all__: list[str] = ["TestsFlextObservabilityConstantsUnit"]
