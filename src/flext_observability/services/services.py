@@ -1,6 +1,7 @@
 """Generic FLEXT Observability Services.
 
-Minimal, generic services following SOLID principles with complete delegation to FLEXT core.
+Minimal, generic services following SOLID principles with complete delegation
+to FLEXT core.
 Single unified class for all observability operations.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -20,7 +21,8 @@ class FlextObservabilityServices:
     """Generic observability services delegating to FLEXT core patterns.
 
     Single unified class providing generic observability operations through
-    complete delegation to FlextContainer, `u.fetch_logger(...)` / `p.Logger`, and r patterns.
+    complete delegation to FlextContainer, `u.fetch_logger(...)` / `p.Logger`,
+    and r patterns.
     No domain-specific logic - pure generic foundation.
     """
 
@@ -38,25 +40,39 @@ class FlextObservabilityServices:
         return self._container
 
     @property
-    def health_service(self) -> p.Dict | None:
+    def health_service(self) -> m.Dict | None:
         """Generic health service - not implemented in base service."""
         return None
 
-    def create_alert(self, **kwargs: t.Scalar) -> p.Result[p.Dict]:
-        """Create a generic alert - not implemented in base service."""
+    def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
+        """Create a generic alert - not implemented in base service.
+
+        Returns:
+            The resulting ``p.Result[m.Dict]``.
+        """
         requested_keys: t.JsonValueList = list(kwargs)
         self.logger.debug(
             "create_alert not implemented in generic service",
             requested_keys=requested_keys,
         )
-        return r[p.Dict].fail("Alert creation not implemented in generic service")
+        return r[m.Dict].fail("Alert creation not implemented in generic service")
 
-    def metrics_summary(self) -> p.Result[p.Dict]:
-        """Summarize generic metrics - not implemented in base service."""
-        return r[p.Dict].fail("Metrics summary not implemented in generic service")
+    @staticmethod
+    def metrics_summary() -> p.Result[m.Dict]:
+        """Summarize generic metrics - not implemented in base service.
 
-    def status(self) -> p.Result[p.Dict]:
-        """Resolve generic service status through FLEXT patterns."""
+        Returns:
+            The resulting ``p.Result[m.Dict]``.
+        """
+        return r[m.Dict].fail("Metrics summary not implemented in generic service")
+
+    @staticmethod
+    def status() -> p.Result[m.Dict]:
+        """Resolve generic service status through FLEXT patterns.
+
+        Returns:
+            The resulting ``p.Result[m.Dict]``.
+        """
         try:
             status = {
                 "service": "flext_observability",
@@ -70,21 +86,26 @@ class FlextObservabilityServices:
                 "timestamp": status["timestamp"],
                 "version": status["version"],
             })
-            return r[p.Dict].ok(status_result)
+            return r[m.Dict].ok(status_result)
         except c.EXC_MAPPING_TYPE as e:
-            return r[p.Dict].fail_op("Status check", e)
+            return r[m.Dict].fail_op("Status check", e)
 
-    def process_entry(self, entry_data: p.Dict) -> p.Result[p.Dict]:
-        """Process generic observability entry through FLEXT patterns."""
+    @staticmethod
+    def process_entry(entry_data: m.Dict) -> p.Result[m.Dict]:
+        """Process generic observability entry through FLEXT patterns.
+
+        Returns:
+            The resulting ``p.Result[m.Dict]``.
+        """
         try:
             if not entry_data:
-                return r[p.Dict].fail("Entry data required")
+                return r[m.Dict].fail("Entry data required")
             processed = entry_data.model_copy(deep=True)
             processed["processed_at"] = "now"
             processed["processor"] = "flext_observability"
-            return r[p.Dict].ok(processed)
+            return r[m.Dict].ok(processed)
         except c.EXC_MAPPING_TYPE as e:
-            return r[p.Dict].fail_op("Entry processing", e)
+            return r[m.Dict].fail_op("Entry processing", e)
 
 
 __all__: list[str] = ["FlextObservabilityServices"]

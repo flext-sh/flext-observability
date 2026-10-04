@@ -22,9 +22,12 @@
 
 <!-- TOC END -->
 
-**Core observability implementation providing monitoring, metrics, tracing, and health check capabilities for the FLEXT ecosystem.**
+**Core observability implementation providing monitoring, metrics, tracing, and health
+check capabilities for the FLEXT ecosystem.**
 
-This package implements Clean Architecture and Domain-Driven Design patterns specifically for observability concerns, delivering monitoring solutions that integrate seamlessly across all 33 FLEXT ecosystem projects.
+This package implements Clean Architecture and Domain-Driven Design patterns
+specifically for observability concerns, delivering monitoring solutions that integrate
+seamlessly across all 33 FLEXT ecosystem projects.
 
 ## Package Architecture
 
@@ -70,8 +73,8 @@ External interfaces and API adaptations:
 - **flext_create_metric()**: Easy metric creation
 - **flext_create_trace()**: Simple trace creation
 - **flext_create_alert()**: Alert creation interface
-- **flext_create_health_check()**: Health check creation
-- **flext_create_log_entry()**: Log entry creation
+- runtime_bootstrap_options
+- runtime_bootstrap_options
 
 #### [flext_monitor.py](flext_monitor.py) - Monitoring Decorators
 
@@ -109,7 +112,7 @@ Base patterns and cross-cutting concerns:
 
 #### [validation.py](validation.py) - Domain Validation
 
-- **create_observability_result_error()**: Standardized error creation
+- runtime_bootstrap_options
 - Domain validation utilities and patterns
 
 #### [constants.py](constants.py) - Domain Constants
@@ -125,8 +128,10 @@ Base patterns and cross-cutting concerns:
 
 ### Basic Entity Creation
 
-```python notest
-from flext_observability import FlextMetric, FlextTrace
+```python
+from __future__ import annotations
+
+from flext_observability import FlextMetric
 
 # Create metric with validation
 metric = FlextMetric(
@@ -143,27 +148,10 @@ if validation.success:
 
 ### Service Layer Usage
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import FlextMetricsService
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import p, t
-from flext_core import u
 
 container = FlextContainer()
 metrics_service = FlextMetricsService(container)
@@ -175,7 +163,9 @@ if result.success:
 
 ### Factory Pattern Usage
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import FlextObservabilityMasterFactory
 
 factory = FlextObservabilityMasterFactory()
@@ -188,7 +178,9 @@ if metric_result.success:
 
 ### Simple API Usage
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import flext_create_metric, flext_create_trace
 
 # Quick metric creation
@@ -200,7 +192,9 @@ trace_result = flext_create_trace("user_login", "auth-service")
 
 ### Monitoring Decorator Usage
 
-```python notest
+```python
+from __future__ import annotations
+
 from flext_observability import flext_monitor_function
 
 
@@ -223,10 +217,13 @@ All modules follow FLEXT ecosystem standards:
 
 ### Cross-Service Observability
 
-```python notest
+```python
+from __future__ import annotations
+
+
 # Consistent observability across services
 @flext_monitor_function("api_endpoint")
-def handle_user_request(request: dict) -> p.Result[p.Dict]:
+def handle_user_request(request: dict) -> p.Result[m.Dict]:
     # Automatic metrics, tracing, and logging
     return r[bool].ok({"status": "processed"})
 ```
@@ -249,6 +246,7 @@ All modules in this package maintain:
 1. **Type Safety**: Complete type annotations required
 1. **Test Coverage**: 95% minimum coverage for all new code
 
-______________________________________________________________________
+---
 
-**For detailed module documentation, see individual module files with comprehensive docstrings and usage examples.**
+**For detailed module documentation, see individual module files with comprehensive
+docstrings and usage examples.**

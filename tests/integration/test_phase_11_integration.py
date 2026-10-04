@@ -6,6 +6,9 @@ advanced request context snapshots, error recording/escalation, custom metric
 registration, and performance acceptability. Assertions target observable
 return values (``r[T]`` outcomes, model fields, enum decisions) only -- never
 private attributes or internal collaborator calls.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -13,7 +16,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_observability import FlextObservability, c, m, p
+from flext_observability import FlextObservability, c, m
 from flext_observability.services.advanced_context import (
     FlextObservabilityAdvancedContext,
 )
@@ -28,42 +31,61 @@ ErrorSeverity = c.Observability.ErrorSeverity
 SamplingDecision = c.Observability.SamplingDecision
 
 
-class TestsFlextObservabilityPhase11Integration:
-    """Behavioral contract tests across observability services."""
+def _fresh_factory() -> FlextObservability:
+    """Return a fresh master factory instance."""
+    return FlextObservability()
 
+
+def _deterministic_sampler() -> FlextObservabilitySampling.Sampler:
+    """Return the global sampler with a deterministic default rate."""
+    instance = FlextObservabilitySampling.active_sampler()
+    instance.update_default_rate(1.0)
+    return instance
+
+
+def _cleared_advanced_context() -> FlextObservabilityAdvancedContext.Context:
+    """Return the global advanced context, cleared for isolation."""
+    ctx = FlextObservabilityAdvancedContext.active_context()
+    ctx.clear()
+    return ctx
+
+
+def _cleared_error_handler() -> FlextObservabilityErrorHandling.Handler:
+    """Return the global error handler with counts cleared."""
+    handler = FlextObservabilityErrorHandling.active_handler()
+    handler.clear_error_counts()
+    return handler
+
+
+def _registry() -> FlextObservabilityCustomMetrics.Registry:
+    """Return the global custom-metric registry."""
+    return FlextObservabilityCustomMetrics.active_registry()
+
+
+class TestsFlextObservabilityPhase11Sampling:
+    """Metric-creation, sampling, and context behavioral contracts."""
+
+    @staticmethod
     @pytest.fixture
-    def factory(self) -> FlextObservability:
+    def factory() -> FlextObservability:
         """Return a fresh master factory instance."""
-        return FlextObservability()
+        return _fresh_factory()
 
+    @staticmethod
     @pytest.fixture
-    def sampler(self) -> FlextObservabilitySampling.Sampler:
+    def sampler() -> FlextObservabilitySampling.Sampler:
         """Return the global sampler with a deterministic default rate."""
-        instance = FlextObservabilitySampling.active_sampler()
-        instance.update_default_rate(1.0)
-        return instance
+        return _deterministic_sampler()
 
+    @staticmethod
     @pytest.fixture
-    def advanced_context(self) -> FlextObservabilityAdvancedContext.Context:
+    def advanced_context() -> FlextObservabilityAdvancedContext.Context:
         """Return the global advanced context, cleared for isolation."""
-        ctx = FlextObservabilityAdvancedContext.active_context()
-        ctx.clear()
-        return ctx
-
-    @pytest.fixture
-    def error_handler(self) -> FlextObservabilityErrorHandling.Handler:
-        """Return the global error handler with counts cleared."""
-        handler = FlextObservabilityErrorHandling.active_handler()
-        handler.clear_error_counts()
-        return handler
-
-    @pytest.fixture
-    def registry(self) -> FlextObservabilityCustomMetrics.Registry:
-        """Return the global custom-metric registry."""
-        return FlextObservabilityCustomMetrics.active_registry()
+        return _cleared_advanced_context()
 
     # -- metric creation -------------------------------------------------
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("name", "value", "unit"),
         [
@@ -73,7 +95,10 @@ class TestsFlextObservabilityPhase11Integration:
         ],
     )
     def test_create_metric_returns_metric_with_requested_fields(
-        self, factory: FlextObservability, name: str, value: float, unit: str
+        factory: FlextObservability,
+        name: str,
+        value: float,
+        unit: str,
     ) -> None:
         """create_metric succeeds and echoes the requested name/value/unit."""
         result = factory.flext_metric(name, value, unit)
@@ -84,8 +109,9 @@ class TestsFlextObservabilityPhase11Integration:
         tm.that(metric.value, eq=pytest.approx(value))
         tm.that(metric.unit, eq=unit)
 
+    @staticmethod
     def test_create_metric_preserves_tags_as_labels(
-        self, factory: FlextObservability
+        factory: FlextObservability,
     ) -> None:
         """Tags supplied to create_metric surface as labels on the model."""
         result = factory.flext_metric(
@@ -101,8 +127,9 @@ class TestsFlextObservabilityPhase11Integration:
 
     # -- sampling --------------------------------------------------------
 
+    @staticmethod
     def test_sampler_always_samples_at_full_rate(
-        self, sampler: FlextObservabilitySampling.Sampler
+        sampler: FlextObservabilitySampling.Sampler,
     ) -> None:
         """A default rate of 1.0 forces a positive sampling decision."""
         sampler.update_default_rate(1.0)
@@ -113,8 +140,9 @@ class TestsFlextObservabilityPhase11Integration:
             eq=(SamplingDecision.SAMPLED),
         )
 
+    @staticmethod
     def test_sampler_never_samples_at_zero_rate(
-        self, sampler: FlextObservabilitySampling.Sampler
+        sampler: FlextObservabilitySampling.Sampler,
     ) -> None:
         """A default rate of 0.0 suppresses sampling entirely."""
         tm.ok(sampler.update_default_rate(0.0))
@@ -125,8 +153,9 @@ class TestsFlextObservabilityPhase11Integration:
             eq=(SamplingDecision.NOT_SAMPLED),
         )
 
+    @staticmethod
     def test_operation_rate_overrides_default_rate(
-        self, sampler: FlextObservabilitySampling.Sampler
+        sampler: FlextObservabilitySampling.Sampler,
     ) -> None:
         """Per-operation rate takes priority over the default rate."""
         tm.ok(sampler.update_default_rate(0.0))
@@ -135,17 +164,20 @@ class TestsFlextObservabilityPhase11Integration:
         tm.that(sampler.current_rate(operation="critical_op"), eq=pytest.approx(1.0))
         tm.that(sampler.should_sample("critical_op", "api"), eq=True)
 
+    @staticmethod
     def test_update_environment_sets_known_production_rate(
-        self, sampler: FlextObservabilitySampling.Sampler
+        sampler: FlextObservabilitySampling.Sampler,
     ) -> None:
         """A valid environment resolves to its documented default rate."""
         tm.ok(sampler.update_environment("production"))
 
         tm.that(sampler.current_rate(), eq=pytest.approx(0.1))
 
+    @staticmethod
     @pytest.mark.parametrize("bad_environment", ["prod", "", "qa"])
     def test_update_environment_rejects_unknown_environment(
-        self, sampler: FlextObservabilitySampling.Sampler, bad_environment: str
+        sampler: FlextObservabilitySampling.Sampler,
+        bad_environment: str,
     ) -> None:
         """Unknown environments fail with an explanatory error."""
         result = sampler.update_environment(bad_environment)
@@ -155,9 +187,11 @@ class TestsFlextObservabilityPhase11Integration:
             result.error or ""
         )
 
+    @staticmethod
     @pytest.mark.parametrize("bad_rate", [-0.1, 1.5, 42.0])
     def test_update_default_rate_rejects_out_of_range(
-        self, sampler: FlextObservabilitySampling.Sampler, bad_rate: float
+        sampler: FlextObservabilitySampling.Sampler,
+        bad_rate: float,
     ) -> None:
         """Sampling rates outside [0, 1] are rejected as failures."""
         result = sampler.update_default_rate(bad_rate)
@@ -167,14 +201,16 @@ class TestsFlextObservabilityPhase11Integration:
 
     # -- correlation / trace context -------------------------------------
 
-    def test_update_correlation_id_is_readable_back(self) -> None:
+    @staticmethod
+    def test_update_correlation_id_is_readable_back() -> None:
         """The correlation id written is the id subsequently reported."""
         returned = FlextObservabilityContext.update_correlation_id("req-abc")
 
         tm.that(returned, eq="req-abc")
         tm.that(FlextObservabilityContext.correlation_id(), eq="req-abc")
 
-    def test_update_trace_id_is_readable_back(self) -> None:
+    @staticmethod
+    def test_update_trace_id_is_readable_back() -> None:
         """The trace id written is the id subsequently reported."""
         FlextObservabilityContext.update_trace_id("trace-xyz")
 
@@ -182,8 +218,9 @@ class TestsFlextObservabilityPhase11Integration:
 
     # -- advanced context snapshot / restore -----------------------------
 
+    @staticmethod
     def test_metadata_and_baggage_resolve_after_update(
-        self, advanced_context: FlextObservabilityAdvancedContext.Context
+        advanced_context: FlextObservabilityAdvancedContext.Context,
     ) -> None:
         """Stored metadata and baggage are resolvable by key."""
         tm.ok(advanced_context.update_metadata("user_id", "user-123"))
@@ -192,8 +229,9 @@ class TestsFlextObservabilityPhase11Integration:
         tm.that(advanced_context.resolve_metadata("user_id"), eq="user-123")
         tm.that(advanced_context.resolve_baggage("org_id"), eq="org-456")
 
+    @staticmethod
     def test_snapshot_captures_ids_metadata_and_baggage(
-        self, advanced_context: FlextObservabilityAdvancedContext.Context
+        advanced_context: FlextObservabilityAdvancedContext.Context,
     ) -> None:
         """A snapshot carries the supplied ids plus current metadata/baggage."""
         advanced_context.update_metadata("user_id", "user-123")
@@ -210,8 +248,9 @@ class TestsFlextObservabilityPhase11Integration:
         tm.that(snapshot.baggage["user_name"], eq="alice")
         tm.that(snapshot.model_dump_json(), has="correlation_id")
 
+    @staticmethod
     def test_clear_then_restore_round_trips_context(
-        self, advanced_context: FlextObservabilityAdvancedContext.Context
+        advanced_context: FlextObservabilityAdvancedContext.Context,
     ) -> None:
         """Clear empties the context; restore from a snapshot repopulates it."""
         advanced_context.update_metadata("user_id", "user-123")
@@ -223,10 +262,45 @@ class TestsFlextObservabilityPhase11Integration:
         tm.ok(advanced_context.restore(snapshot))
         tm.that(advanced_context.resolve_metadata("user_id"), eq="user-123")
 
+
+class TestsFlextObservabilityPhase11ErrorsMetrics:
+    """Error handling, metric registry, performance, and end-to-end contracts."""
+
+    @staticmethod
+    @pytest.fixture
+    def factory() -> FlextObservability:
+        """Return a fresh master factory instance."""
+        return _fresh_factory()
+
+    @staticmethod
+    @pytest.fixture
+    def sampler() -> FlextObservabilitySampling.Sampler:
+        """Return the global sampler with a deterministic default rate."""
+        return _deterministic_sampler()
+
+    @staticmethod
+    @pytest.fixture
+    def advanced_context() -> FlextObservabilityAdvancedContext.Context:
+        """Return the global advanced context, cleared for isolation."""
+        return _cleared_advanced_context()
+
+    @staticmethod
+    @pytest.fixture
+    def error_handler() -> FlextObservabilityErrorHandling.Handler:
+        """Return the global error handler with counts cleared."""
+        return _cleared_error_handler()
+
+    @staticmethod
+    @pytest.fixture
+    def registry() -> FlextObservabilityCustomMetrics.Registry:
+        """Return the global custom-metric registry."""
+        return _registry()
+
     # -- error handling / escalation -------------------------------------
 
+    @staticmethod
     def test_record_error_returns_event_with_fingerprint(
-        self, error_handler: FlextObservabilityErrorHandling.Handler
+        error_handler: FlextObservabilityErrorHandling.Handler,
     ) -> None:
         """Recording an error succeeds and assigns a fingerprint."""
         error = m.Observability.ErrorEvent(
@@ -240,13 +314,14 @@ class TestsFlextObservabilityPhase11Integration:
         tm.ok(result)
         assert result.value.fingerprint
 
+    @staticmethod
     def test_repeated_errors_increment_count_and_escalate_severity(
-        self, error_handler: FlextObservabilityErrorHandling.Handler
+        error_handler: FlextObservabilityErrorHandling.Handler,
     ) -> None:
         """Repeated identical errors raise the count and escalate severity."""
         tm.ok(error_handler.update_escalation_threshold(2))
 
-        def make_error() -> p.Observability.ErrorEvent:
+        def make_error() -> m.Observability.ErrorEvent:
             return m.Observability.ErrorEvent(
                 error_type="TransientError",
                 message="temporary failure",
@@ -272,9 +347,11 @@ class TestsFlextObservabilityPhase11Integration:
             == ErrorSeverity.WARNING
         )
 
+    @staticmethod
     @pytest.mark.parametrize("bad_threshold", [0, -1])
     def test_update_escalation_threshold_rejects_non_positive(
-        self, error_handler: FlextObservabilityErrorHandling.Handler, bad_threshold: int
+        error_handler: FlextObservabilityErrorHandling.Handler,
+        bad_threshold: int,
     ) -> None:
         """Escalation threshold must be positive; otherwise it fails."""
         result = error_handler.update_escalation_threshold(bad_threshold)
@@ -284,11 +361,12 @@ class TestsFlextObservabilityPhase11Integration:
 
     # -- custom metric registry ------------------------------------------
 
+    @staticmethod
     @pytest.mark.parametrize(
-        "metric_type", [MetricType.COUNTER, MetricType.GAUGE, MetricType.HISTOGRAM]
+        "metric_type",
+        [MetricType.COUNTER, MetricType.GAUGE, MetricType.HISTOGRAM],
     )
     def test_register_metric_returns_failure_result_not_exception(
-        self,
         registry: FlextObservabilityCustomMetrics.Registry,
         metric_type: c.Observability.MetricType,
     ) -> None:
@@ -310,25 +388,29 @@ class TestsFlextObservabilityPhase11Integration:
         tm.fail(result)
         tm.that((result.error or "").lower(), has="metric type")
 
+    @staticmethod
     def test_resolve_metric_returns_none_for_unregistered_name(
-        self, registry: FlextObservabilityCustomMetrics.Registry
+        registry: FlextObservabilityCustomMetrics.Registry,
     ) -> None:
         """Resolving an unknown metric yields None rather than raising."""
         tm.that(
-            registry.resolve_metric("never_registered", namespace="phase11"), none=True
+            registry.resolve_metric("never_registered", namespace="phase11"),
+            none=True,
         )
 
+    @staticmethod
     def test_resolve_metrics_by_type_never_reports_unknown_metric(
-        self, registry: FlextObservabilityCustomMetrics.Registry
+        registry: FlextObservabilityCustomMetrics.Registry,
     ) -> None:
         """The type filter returns a mapping that omits unregistered names."""
         counters = registry.resolve_metrics_by_type(MetricType.COUNTER)
 
-        assert not any("never_registered" in str(key) for key in counters)
+        assert not any("never_registered" in key for key in counters)
 
     # -- performance acceptability ---------------------------------------
 
-    def test_successful_fast_operation_is_acceptable(self) -> None:
+    @staticmethod
+    def test_successful_fast_operation_is_acceptable() -> None:
         """A successful, quick operation is judged performance-acceptable."""
         monitor = FlextObservabilityPerformance.start_monitoring("workflow_probe")
         monitor.mark_success()
@@ -337,7 +419,8 @@ class TestsFlextObservabilityPhase11Integration:
         tm.that(metrics.success, eq=True)
         assert FlextObservabilityPerformance.performance_acceptable(metrics)
 
-    def test_failed_operation_is_not_acceptable(self) -> None:
+    @staticmethod
+    def test_failed_operation_is_not_acceptable() -> None:
         """An operation marked as errored is never performance-acceptable."""
         monitor = FlextObservabilityPerformance.start_monitoring("workflow_probe")
         monitor.mark_error("boom")
@@ -348,8 +431,8 @@ class TestsFlextObservabilityPhase11Integration:
 
     # -- cross-service end-to-end ----------------------------------------
 
+    @staticmethod
     def test_end_to_end_workflow_produces_consistent_outcomes(
-        self,
         factory: FlextObservability,
         sampler: FlextObservabilitySampling.Sampler,
         advanced_context: FlextObservabilityAdvancedContext.Context,
@@ -364,7 +447,7 @@ class TestsFlextObservabilityPhase11Integration:
 
         advanced_context.update_metadata("workflow_type", "integration_test")
         snapshot = advanced_context.snapshot(
-            correlation_id=FlextObservabilityContext.correlation_id()
+            correlation_id=FlextObservabilityContext.correlation_id(),
         )
         tm.that(snapshot.correlation_id, eq="e2e-001")
 
@@ -375,6 +458,3 @@ class TestsFlextObservabilityPhase11Integration:
         )
         tm.ok(error_handler.record_error(error))
         tm.ok(factory.flext_metric("workflow.completed", 1.0, "counter"))
-
-
-__all__: list[str] = ["TestsFlextObservabilityPhase11Integration"]

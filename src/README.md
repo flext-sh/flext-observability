@@ -3,7 +3,8 @@
 <!-- TOC START -->
 
 - [Module Organization](#module-organization)
-  - \[[flext_observability/](flext_observability/) - Core Package\](#flextobservabilityflextobservability-core-package)
+  - \[[flext_observability/](flext_observability/) - Core
+    Package\](#flextobservabilityflextobservability-core-package)
 - [Architecture Overview](#architecture-overview)
 - [Key Design Principles](#key-design-principles)
 - [Integration Points](#integration-points)
@@ -13,9 +14,13 @@
 
 <!-- TOC END -->
 
-**Foundation library source code implementing observability patterns for the FLEXT ecosystem.**
+**Foundation library source code implementing observability patterns for the FLEXT
+ecosystem.**
 
-This directory contains the complete implementation of FLEXT Observability, organized following Clean Architecture and Domain-Driven Design principles. All modules implement observability patterns with type safety, domain validation, and railway-oriented programming error handling.
+This directory contains the complete implementation of FLEXT Observability, organized
+following Clean Architecture and Domain-Driven Design principles. All modules implement
+observability patterns with type safety, domain validation, and railway-oriented
+programming error handling.
 
 ## Module Organization
 
@@ -50,7 +55,8 @@ src/flext_observability/
 
 ## Key Design Principles
 
-1. **Clean Architecture**: Clear separation between domain, application, and infrastructure layers
+1. **Clean Architecture**: Clear separation between domain, application, and
+   infrastructure layers
 1. **Domain-Driven Design**: Rich domain models with business logic encapsulation
 1. **Railway-Oriented Programming**: p.Result[T] patterns throughout
 1. **Type Safety**: MyPy strict mode adoption; aiming for complete annotations
@@ -73,24 +79,23 @@ src/flext_observability/
 
 ## Usage Patterns
 
-```python notest
-# Import core observability functionality
-from flext_observability import (
-    flext_create_metric,
-    flext_create_trace,
-    flext_monitor_function,
-    FlextMetricsService,
-)
+```python
+from __future__ import annotations
+
+from flext_observability import FlextObservability, flext_monitor_function, t
 
 # Create observability data
-metric_result = flext_create_metric("api_requests", 42, "count")
-trace_result = flext_create_trace("user_login", "auth-service")
+metric_result = FlextObservability.flext_metric("api_requests", 42, "count")
+trace_result = FlextObservability.flext_trace("user_login", {"service": "auth-service"})
 
 
 # Use monitoring decorators
 @flext_monitor_function("business_operation")
 def process_order(order_data: dict) -> t.JsonMapping:
     return {"status": "processed"}
+
+
+_ = metric_result, trace_result, process_order
 ```
 
 ## Quality Assurance
@@ -103,6 +108,7 @@ All source code passes:
 - **95% test coverage** minimum
 - **Documentation standards** compliance
 
-______________________________________________________________________
+---
 
-**Next Steps**: Explore the [flext_observability/](flext_observability/) package for detailed module documentation and implementation patterns.
+**Next Steps**: Explore the [flext_observability/](flext_observability/) package for
+detailed module documentation and implementation patterns.

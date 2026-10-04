@@ -7,17 +7,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import t
+from flext_cli import FlextCliTypes
+
+from flext_observability._typings.base import FlextObservabilityTypingsBase
+from flext_observability._typings.domains import FlextObservabilityTypingsDomains
 
 
-class FlextObservabilityTypes(t):
+class FlextObservabilityTypes(FlextCliTypes, FlextObservabilityTypingsBase):
     """Observability-specific type definitions extending t via MRO."""
 
-    class Observability:
+    class Observability(
+        FlextObservabilityTypingsBase,
+        FlextObservabilityTypingsDomains,
+    ):
         """Observability domain namespace (flat members per AGENTS.md §149)."""
-
-        type DomainLabels = t.ScalarMapping
-        type HealthMetricsDict = t.JsonMapping
 
 
 t = FlextObservabilityTypes

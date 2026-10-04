@@ -1,49 +1,75 @@
-# AUTO-GENERATED FILE — canonical lazy tests facade. Regenerate with: make gen
-"""Test package facade exposing the project test aliases lazily."""
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Tests package.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
+from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+from flext_core import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from tests.base import (
-        TestsFlextObservabilityServiceBase as TestsFlextObservabilityServiceBase,
-        s as s,
-    )
-    from tests.constants import (
-        TestsFlextObservabilityConstants as TestsFlextObservabilityConstants,
-        c as c,
-    )
-    from tests.models import (
-        TestsFlextObservabilityModels as TestsFlextObservabilityModels,
-        m as m,
-    )
-    from tests.protocols import (
-        TestsFlextObservabilityProtocols as TestsFlextObservabilityProtocols,
-        p,
-    )
-    from tests.settings import (
-        TestsFlextObservabilitySettings as TestsFlextObservabilitySettings,
-    )
-    from tests.typings import (
-        TestsFlextObservabilityTypes as TestsFlextObservabilityTypes,
-        t as t,
-    )
-    from tests.utilities import (
-        TestsFlextObservabilityUtilities as TestsFlextObservabilityUtilities,
-        u,
-    )
+    from flext_tests import api, d, e, h, r, td, tf, tk, tm, x
 
-_LAZY_IMPORTS = build_lazy_import_map({
-    ".constants": ("TestsFlextObservabilityConstants", "c"),
-    ".settings": ("TestsFlextObservabilitySettings",),
-    ".typings": ("TestsFlextObservabilityTypes", "t"),
-    ".protocols": ("TestsFlextObservabilityProtocols", "p"),
-    ".models": ("TestsFlextObservabilityModels", "m"),
-    ".utilities": ("TestsFlextObservabilityUtilities", "u"),
-    ".base": ("TestsFlextObservabilityServiceBase", "s"),
-})
+    from tests import integration, unit
+    from tests.base import TestsFlextObservabilityServiceBase, s
+    from tests.constants import TestsFlextObservabilityConstants, c
+    from tests.models import TestsFlextObservabilityModels, m
+    from tests.protocols import TestsFlextObservabilityProtocols, p
+    from tests.settings import TestsFlextObservabilitySettings
+    from tests.typings import TestsFlextObservabilityTypes, t
+    from tests.utilities import TestsFlextObservabilityUtilities, u
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
+
+__all__: tuple[str, ...] = (
+    "TestsFlextObservabilityConstants",
+    "TestsFlextObservabilityModels",
+    "TestsFlextObservabilityProtocols",
+    "TestsFlextObservabilityServiceBase",
+    "TestsFlextObservabilitySettings",
+    "TestsFlextObservabilityTypes",
+    "TestsFlextObservabilityUtilities",
+    "api",
+    "c",
+    "d",
+    "e",
+    "h",
+    "integration",
+    "m",
+    "p",
+    "r",
+    "s",
+    "t",
+    "td",
+    "tf",
+    "tk",
+    "tm",
+    "u",
+    "unit",
+    "x",
+)
+
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            ".base": ("TestsFlextObservabilityServiceBase", "s"),
+            ".constants": ("TestsFlextObservabilityConstants", "c"),
+            ".integration": ("integration",),
+            ".models": ("TestsFlextObservabilityModels", "m"),
+            ".protocols": ("TestsFlextObservabilityProtocols", "p"),
+            ".settings": ("TestsFlextObservabilitySettings",),
+            ".typings": ("TestsFlextObservabilityTypes", "t"),
+            ".unit": ("unit",),
+            ".utilities": ("TestsFlextObservabilityUtilities", "u"),
+            "flext_tests": ("api", "d", "e", "h", "r", "td", "tf", "tk", "tm", "x"),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    ),
+)
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

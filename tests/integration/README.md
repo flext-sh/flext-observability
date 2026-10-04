@@ -18,7 +18,8 @@
 
 <!-- TOC END -->
 
-**Integration tests for FLEXT Observability component interactions and external system integration.**
+**Integration tests for FLEXT Observability component interactions and external system
+integration.**
 
 ## Purpose
 
@@ -73,25 +74,8 @@ def test_metrics_service_with_factory_integration():
 ```text
 def test_flext_core_container_integration():
     """Test integration with flext-core dependency injection."""
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import p, t
-from flext_core import u
 
     container = FlextContainer()
     # Test that observability services integrate properly
@@ -145,9 +129,12 @@ pytest tests/integration/ -m integration -v
 
 ## Current Status
 
-**Status**: Directory created, tests to be organized from main test directory · 1.0.0 Release Preparation
-**Next Steps**: Move integration-focused tests from root test directory and create new integration tests for component interactions
+**Status**: Directory created, tests to be organized from main test directory · 1.0.0
+Release Preparation **Next Steps**: Move integration-focused tests from root test
+directory and create new integration tests for component interactions
 
-______________________________________________________________________
+---
 
-**Note**: This directory is currently empty as integration tests are mixed with unit tests in the root tests directory. As part of test organization improvements, relevant integration tests will be moved here to maintain proper separation of concerns.
+**Note**: This directory is currently empty as integration tests are mixed with unit
+tests in the root tests directory. As part of test organization improvements, relevant
+integration tests will be moved here to maintain proper separation of concerns.

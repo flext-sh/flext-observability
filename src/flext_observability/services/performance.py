@@ -8,6 +8,9 @@ FLEXT Pattern:
 - Metrics collection for observability operations
 - Memory and CPU tracking
 - Latency monitoring for instrumentation
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -52,7 +55,7 @@ class FlextObservabilityPerformance:
     class Monitor:
         """Individual operation performance monitor."""
 
-        metrics: p.Observability.PerformanceMetrics
+        metrics: m.Observability.PerformanceMetrics
         _initial_memory: float
         _initial_cpu: float
 
@@ -67,7 +70,7 @@ class FlextObservabilityPerformance:
             self._initial_memory = self._memory_usage()
             self._initial_cpu = self._cpu_percent()
 
-        def finish(self) -> p.Observability.PerformanceMetrics:
+        def finish(self) -> m.Observability.PerformanceMetrics:
             """Finish monitoring and return metrics.
 
             Returns:
@@ -85,7 +88,7 @@ class FlextObservabilityPerformance:
                     "end_time": end_time,
                     "memory_used_mb": memory_used_mb,
                     "cpu_percent": cpu_percent,
-                }
+                },
             )
             self.metrics = self.metrics.calculate_duration()
             return self.metrics
@@ -98,31 +101,31 @@ class FlextObservabilityPerformance:
 
             """
             self.metrics = self.metrics.model_copy(
-                update={"success": False, "error_message": error_message}
+                update={"success": False, "error_message": error_message},
             )
 
         def mark_success(self) -> None:
             """Mark operation as successful."""
             self.metrics = self.metrics.model_copy(update={"success": True})
 
-        def _cpu_percent(self) -> float:
-            """Get current CPU usage percent."""
-            try:
-                cpu: float = FlextObservabilityPerformance._process.cpu_percent(
-                    interval=0.01
-                )
-                return cpu
-            except c.EXC_MAPPING_TYPE:
-                return 0.0
+        @staticmethod
+        def _cpu_percent() -> float:
+            """Get current CPU usage percent.
 
-        def _memory_usage(self) -> float:
-            """Get current memory usage in MB."""
-            try:
-                memory_info = FlextObservabilityPerformance._process.memory_info()
-                rss_bytes: int = memory_info.rss
-                return float(rss_bytes) / 1024 / 1024
-            except c.EXC_MAPPING_TYPE:
-                return 0.0
+            Returns:
+                The resulting ``float``.
+            """
+            return FlextObservabilityPerformance._process.cpu_percent(interval=0.01)
+
+        @staticmethod
+        def _memory_usage() -> float:
+            """Get current memory usage in MB.
+
+            Returns:
+                The resulting ``float``.
+            """
+            memory_info = FlextObservabilityPerformance._process.memory_info()
+            return float(memory_info.rss) / 1024 / 1024
 
     @staticmethod
     def fetch_system_resources() -> t.MappingKV[str, float]:
@@ -139,16 +142,17 @@ class FlextObservabilityPerformance:
             memory_info = FlextObservabilityPerformance._process.memory_info()
             rss_bytes: int = memory_info.rss
             memory_mb: float = float(rss_bytes) / 1024 / 1024
+            process = FlextObservabilityPerformance._process
             return {
                 "memory_mb": memory_mb,
-                "memory_percent": FlextObservabilityPerformance._process.memory_percent(),
-                "cpu_percent": FlextObservabilityPerformance._process.cpu_percent(),
+                "memory_percent": process.memory_percent(),
+                "cpu_percent": process.cpu_percent(),
             }
         except c.EXC_MAPPING_TYPE:
             return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
 
     @staticmethod
-    def performance_acceptable(metrics: p.Observability.PerformanceMetrics) -> bool:
+    def performance_acceptable(metrics: m.Observability.PerformanceMetrics) -> bool:
         """Check whether operation performance is acceptable.
 
         Args:
@@ -163,8 +167,6 @@ class FlextObservabilityPerformance:
             - Context operations: < 1ms overhead acceptable
 
         """
-        if not metrics.success:
-            return False
         acceptable_latencies: t.MappingKV[str, float] = {
             "http_": 50.0,
             "database_": 100.0,
@@ -177,13 +179,12 @@ class FlextObservabilityPerformance:
             if metrics.operation.lower().startswith(prefix):
                 threshold = latency
                 break
-        within_threshold: bool = metrics.duration_ms < threshold
-        return within_threshold
+        return metrics.success and metrics.duration_ms < threshold
 
     @staticmethod
     def _build_performance_log(
-        metrics: p.Observability.PerformanceMetrics,
-    ) -> tuple[str, str]:
+        metrics: m.Observability.PerformanceMetrics,
+    ) -> t.Pair[str, str]:
         """Build log level and message for performance metrics.
 
         Args:
@@ -199,14 +200,18 @@ class FlextObservabilityPerformance:
             if metrics.success
             else c.Observability.ErrorSeverity.WARNING.value
         )
-        message = f"{status} {metrics.operation}: duration={metrics.duration_ms:.2f}ms, memory={metrics.memory_used_mb:.2f}MB, cpu={metrics.cpu_percent:.1f}%"
+        message = (
+            f"{status} {metrics.operation}: duration={metrics.duration_ms:.2f}ms,"
+            f" memory={metrics.memory_used_mb:.2f}MB,"
+            f" cpu={metrics.cpu_percent:.1f}%"
+        )
         if metrics.error_message:
             message += f", error={metrics.error_message}"
         return level, message
 
     @staticmethod
     def log_performance_metrics(
-        metrics: p.Observability.PerformanceMetrics,
+        metrics: m.Observability.PerformanceMetrics,
     ) -> p.Result[bool]:
         """Log performance metrics for operation.
 
@@ -219,12 +224,12 @@ class FlextObservabilityPerformance:
         """
         try:
             level, message = FlextObservabilityPerformance._build_performance_log(
-                metrics
+                metrics,
             )
             getattr(FlextObservabilityPerformance.logger, level)(message)
             return r[bool].ok(value=True)
         except c.EXC_MAPPING_TYPE as e:
-            return r[bool].fail(f"Failed to log metrics: {e}")
+            return r[bool].fail(f"Failed to log metrics: {e}", exception=e)
 
     @staticmethod
     def start_monitoring(operation: str) -> FlextObservabilityPerformance.Monitor:

@@ -6,16 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsTypes
+from flext_tests import FlextTestsTypes, t as tests_t
 
-from flext_observability import t
+from flext_observability import t as obs_t
 
 
-class TestsFlextObservabilityTypes(FlextTestsTypes, t):
+class TestsFlextObservabilityTypes(FlextTestsTypes):
     """Test type aliases for flext-observability."""
 
-    class Tests(FlextTestsTypes.Tests):
-        """Test-specific types."""
+    class TestsFlextObservability(tests_t.Tests, obs_t.Observability):
+        """Canonical namespace for test type aliases."""
 
 
 t = TestsFlextObservabilityTypes

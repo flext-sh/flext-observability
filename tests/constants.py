@@ -1,15 +1,24 @@
-"""Test constants for flext-observability."""
+"""Test constants for flext-observability.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsConstants
+from flext_tests import FlextTestsConstants, c as tests_c
 
-from flext_observability import c
+from flext_observability import c as obs_c
 
 
-class TestsFlextObservabilityConstants(FlextTestsConstants, c):
-    class Tests(FlextTestsConstants.Tests):
-        """Test-specific constants."""
+class TestsFlextObservabilityConstants(FlextTestsConstants):
+    """Test constants for flext-observability."""
+
+    class Observability(obs_c.Observability):
+        """Re-exported observability constants namespace."""
+
+    class TestsFlextObservability(tests_c.Tests, obs_c.Observability):
+        """Canonical namespace for test constants."""
 
 
 c = TestsFlextObservabilityConstants

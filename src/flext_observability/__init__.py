@@ -1,11 +1,16 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Flext Observability package."""
+"""Flext Observability package.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
+from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+from flext_core import build_lazy_import_map, install_lazy_exports
 from flext_observability.__version__ import (
     __author__,
     __author_email__,
@@ -18,146 +23,47 @@ from flext_observability.__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import d, e, h, r, s, x
+    from flext_cli import d, e, h, r, x
 
-    from ._config import FlextObservabilityConfig, config
-    from ._settings import FlextObservabilitySettings, settings
-    from .api import FlextObservability, observability
-    from .constants import FlextObservabilityConstants, FlextObservabilityConstants as c
-    from .models import FlextObservabilityModels, FlextObservabilityModels as m
-    from .protocols import FlextObservabilityProtocols, FlextObservabilityProtocols as p
-    from .services.advanced_context import FlextObservabilityAdvancedContext
-    from .services.context import FlextObservabilityContext
-    from .services.custom_metrics import FlextObservabilityCustomMetrics
-    from .services.error_handling import FlextObservabilityErrorHandling
-    from .services.health import FlextObservabilityHealth
-    from .services.http_client_instrumentation import FlextObservabilityHTTPClient
-    from .services.http_instrumentation import FlextObservabilityHTTP
-    from .services.logging_integration import FlextObservabilityLogging
-    from .services.monitoring import FlextObservabilityMonitor
-    from .services.performance import FlextObservabilityPerformance
-    from .services.sampling import FlextObservabilitySampling
-    from .services.services import FlextObservabilityServices
-    from .typings import FlextObservabilityTypes, FlextObservabilityTypes as t
-    from .utilities import FlextObservabilityUtilities, FlextObservabilityUtilities as u
-
-    _ = (
-        c,
-        FlextObservabilityConstants,
-        t,
-        FlextObservabilityTypes,
-        p,
-        FlextObservabilityProtocols,
-        m,
-        FlextObservabilityModels,
-        u,
-        FlextObservabilityUtilities,
-        d,
-        e,
-        h,
-        r,
-        s,
-        x,
-        FlextObservabilitySettings,
-        settings,
-        FlextObservability,
-        observability,
+    from flext_observability import services
+    from flext_observability._config import FlextObservabilityConfig, config
+    from flext_observability._settings import FlextObservabilitySettings, settings
+    from flext_observability.api import FlextObservability, observability
+    from flext_observability.base import FlextObservabilityServiceBase, s
+    from flext_observability.cli import FlextObservabilityCli, main
+    from flext_observability.constants import FlextObservabilityConstants, c
+    from flext_observability.models import FlextObservabilityModels, m
+    from flext_observability.protocols import FlextObservabilityProtocols, p
+    from flext_observability.services.advanced_context import (
         FlextObservabilityAdvancedContext,
-        FlextObservabilityContext,
-        FlextObservabilityCustomMetrics,
-        FlextObservabilityErrorHandling,
-        FlextObservabilityHealth,
-        FlextObservabilityHTTP,
-        FlextObservabilityHTTPClient,
-        FlextObservabilityLogging,
-        FlextObservabilityMonitor,
-        FlextObservabilityPerformance,
-        FlextObservabilitySampling,
-        FlextObservabilityServices,
     )
+    from flext_observability.services.context import FlextObservabilityContext
+    from flext_observability.services.custom_metrics import (
+        FlextObservabilityCustomMetrics,
+    )
+    from flext_observability.services.error_handling import (
+        FlextObservabilityErrorHandling,
+    )
+    from flext_observability.services.health import FlextObservabilityHealth
+    from flext_observability.services.http_client_instrumentation import (
+        FlextObservabilityHTTPClient,
+    )
+    from flext_observability.services.http_instrumentation import FlextObservabilityHTTP
+    from flext_observability.services.logging_integration import (
+        FlextObservabilityLogging,
+    )
+    from flext_observability.services.monitoring import FlextObservabilityMonitor
+    from flext_observability.services.performance import FlextObservabilityPerformance
+    from flext_observability.services.sampling import FlextObservabilitySampling
+    from flext_observability.services.services import FlextObservabilityServices
+    from flext_observability.typings import FlextObservabilityTypes, t
+    from flext_observability.utilities import FlextObservabilityUtilities, u
 
-
-_LAZY_MODULES: dict[str, tuple[str, ...]] = {
-    "._config": ("FlextObservabilityConfig", "config"),
-    "._settings": ("FlextObservabilitySettings", "settings"),
-    ".api": ("FlextObservability", "observability"),
-    ".constants": ("FlextObservabilityConstants", "c"),
-    ".models": ("FlextObservabilityModels", "m"),
-    ".protocols": ("FlextObservabilityProtocols", "p"),
-    ".services.advanced_context": ("FlextObservabilityAdvancedContext",),
-    ".services.context": ("FlextObservabilityContext",),
-    ".services.custom_metrics": ("FlextObservabilityCustomMetrics",),
-    ".services.error_handling": ("FlextObservabilityErrorHandling",),
-    ".services.health": ("FlextObservabilityHealth",),
-    ".services.http_client_instrumentation": ("FlextObservabilityHTTPClient",),
-    ".services.http_instrumentation": ("FlextObservabilityHTTP",),
-    ".services.logging_integration": ("FlextObservabilityLogging",),
-    ".services.monitoring": ("FlextObservabilityMonitor",),
-    ".services.performance": ("FlextObservabilityPerformance",),
-    ".services.sampling": ("FlextObservabilitySampling",),
-    ".services.services": ("FlextObservabilityServices",),
-    ".typings": ("FlextObservabilityTypes", "t"),
-    ".utilities": ("FlextObservabilityUtilities", "u"),
-    "flext_cli": ("d", "e", "h", "r", "s", "x"),
-}
-
-
-_LAZY_ALIAS_GROUPS: dict[str, tuple[tuple[str, str], ...]] = {}
-
-
-_LAZY_IMPORTS = build_lazy_import_map(
-    _LAZY_MODULES, alias_groups=_LAZY_ALIAS_GROUPS, sort_keys=False
-)
-
-_DIRECT_IMPORTS: tuple[str, ...] = (
-    "FlextObservability",
-    "FlextObservabilityAdvancedContext",
-    "FlextObservabilityConfig",
-    "FlextObservabilityConstants",
-    "FlextObservabilityContext",
-    "FlextObservabilityCustomMetrics",
-    "FlextObservabilityErrorHandling",
-    "FlextObservabilityHealth",
-    "FlextObservabilityHTTP",
-    "FlextObservabilityHTTPClient",
-    "FlextObservabilityLogging",
-    "FlextObservabilityModels",
-    "FlextObservabilityMonitor",
-    "FlextObservabilityPerformance",
-    "FlextObservabilityProtocols",
-    "FlextObservabilitySampling",
-    "FlextObservabilityServices",
-    "FlextObservabilitySettings",
-    "FlextObservabilityTypes",
-    "FlextObservabilityUtilities",
-    "__author__",
-    "__author_email__",
-    "__description__",
-    "__license__",
-    "__title__",
-    "__url__",
-    "__version__",
-    "__version_info__",
-    "build_lazy_import_map",
-    "c",
-    "d",
-    "e",
-    "h",
-    "install_lazy_exports",
-    "m",
-    "observability",
-    "p",
-    "r",
-    "s",
-    "settings",
-    "t",
-    "u",
-    "x",
-)
 
 __all__: tuple[str, ...] = (
     "FlextObservability",
     "FlextObservabilityAdvancedContext",
+    "FlextObservabilityCli",
     "FlextObservabilityConfig",
     "FlextObservabilityConstants",
     "FlextObservabilityContext",
@@ -172,6 +78,7 @@ __all__: tuple[str, ...] = (
     "FlextObservabilityPerformance",
     "FlextObservabilityProtocols",
     "FlextObservabilitySampling",
+    "FlextObservabilityServiceBase",
     "FlextObservabilityServices",
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
@@ -190,15 +97,49 @@ __all__: tuple[str, ...] = (
     "e",
     "h",
     "m",
+    "main",
     "observability",
     "p",
     "r",
     "s",
+    "services",
     "settings",
     "t",
     "u",
     "x",
 )
 
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            "._config": ("FlextObservabilityConfig", "config"),
+            "._settings": ("FlextObservabilitySettings", "settings"),
+            ".api": ("FlextObservability", "observability"),
+            ".base": ("FlextObservabilityServiceBase", "s"),
+            ".cli": ("FlextObservabilityCli", "main"),
+            ".constants": ("FlextObservabilityConstants", "c"),
+            ".models": ("FlextObservabilityModels", "m"),
+            ".protocols": ("FlextObservabilityProtocols", "p"),
+            ".services": ("services",),
+            ".services.advanced_context": ("FlextObservabilityAdvancedContext",),
+            ".services.context": ("FlextObservabilityContext",),
+            ".services.custom_metrics": ("FlextObservabilityCustomMetrics",),
+            ".services.error_handling": ("FlextObservabilityErrorHandling",),
+            ".services.health": ("FlextObservabilityHealth",),
+            ".services.http_client_instrumentation": ("FlextObservabilityHTTPClient",),
+            ".services.http_instrumentation": ("FlextObservabilityHTTP",),
+            ".services.logging_integration": ("FlextObservabilityLogging",),
+            ".services.monitoring": ("FlextObservabilityMonitor",),
+            ".services.performance": ("FlextObservabilityPerformance",),
+            ".services.sampling": ("FlextObservabilitySampling",),
+            ".services.services": ("FlextObservabilityServices",),
+            ".typings": ("FlextObservabilityTypes", "t"),
+            ".utilities": ("FlextObservabilityUtilities", "u"),
+            "flext_cli": ("d", "e", "h", "r", "x"),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    ),
+)
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

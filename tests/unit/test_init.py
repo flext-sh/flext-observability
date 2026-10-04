@@ -27,21 +27,26 @@ flext_trace = FlextObservability.flext_trace
 class TestsFlextObservabilityInit:
     """Public contract of the observability factory API and package exports."""
 
-    def test_version_is_non_empty_string(self) -> None:
+    @staticmethod
+    def test_version_is_non_empty_string() -> None:
         """__version__ is a non-empty version string."""
         tm.that(pkg_version, is_=str)
         tm.that(bool(pkg_version), eq=True)
 
-    def test_version_info_is_tuple_with_at_least_three_parts(self) -> None:
+    @staticmethod
+    def test_version_info_is_tuple_with_at_least_three_parts() -> None:
         """__version_info__ exposes at least major/minor/patch."""
+        minimum_semver_parts = 3
         tm.that(pkg_version_info, is_=tuple)
-        tm.that(len(pkg_version_info) >= 3, eq=True)
+        tm.that(len(pkg_version_info) >= minimum_semver_parts, eq=True)
 
-    def test_core_reexports_are_usable(self) -> None:
+    @staticmethod
+    def test_core_reexports_are_usable() -> None:
         """flext-core primitives are re-exported and usable through the package."""
         tm.that(callable(FlextContainer), eq=True)
         tm.that(c, none=False)
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("name", "value", "unit"),
         [
@@ -51,7 +56,9 @@ class TestsFlextObservabilityInit:
         ],
     )
     def test_flext_metric_returns_metric_with_provided_state(
-        self, name: str, value: float, unit: str
+        name: str,
+        value: float,
+        unit: str,
     ) -> None:
         """flext_metric succeeds and exposes the supplied fields on the entity."""
         result = flext_metric(name, value, unit)
@@ -62,15 +69,17 @@ class TestsFlextObservabilityInit:
         tm.that(metric.value, eq=value)
         tm.that(metric.unit, eq=unit)
 
+    @staticmethod
     @pytest.mark.parametrize(("name", "value"), [("", 1.0), ("valid", float("nan"))])
-    def test_flext_metric_fails_on_invalid_input(self, name: str, value: float) -> None:
+    def test_flext_metric_fails_on_invalid_input(name: str, value: float) -> None:
         """flext_metric reports failure with an error for invalid inputs."""
         result = flext_metric(name, value)
 
         tm.that(result.success, eq=False)
         tm.that(bool(result.error), eq=True)
 
-    def test_flext_trace_generates_trace_id_when_absent(self) -> None:
+    @staticmethod
+    def test_flext_trace_generates_trace_id_when_absent() -> None:
         """flext_trace succeeds and synthesizes a non-empty trace id."""
         result = flext_trace("checkout")
 
@@ -79,21 +88,24 @@ class TestsFlextObservabilityInit:
         tm.that(trace.name, eq="checkout")
         tm.that(bool(trace.trace_id), eq=True)
 
-    def test_flext_trace_preserves_explicit_trace_id(self) -> None:
+    @staticmethod
+    def test_flext_trace_preserves_explicit_trace_id() -> None:
         """A caller-supplied trace id is retained on the entity."""
         result = flext_trace("checkout", trace_id="trace-123")
 
         tm.that(result.success, eq=True)
         tm.that(result.value.trace_id, eq="trace-123")
 
-    def test_flext_trace_fails_on_empty_name(self) -> None:
+    @staticmethod
+    def test_flext_trace_fails_on_empty_name() -> None:
         """flext_trace rejects an empty name with a failure result."""
         result = flext_trace("")
 
         tm.that(result.success, eq=False)
         tm.that(bool(result.error), eq=True)
 
-    def test_flext_alert_applies_defaults_and_provided_fields(self) -> None:
+    @staticmethod
+    def test_flext_alert_applies_defaults_and_provided_fields() -> None:
         """flext_alert builds an alert with supplied title/message and defaults."""
         result = flext_alert(title="Disk full", message="Root volume at 95%")
 
@@ -103,6 +115,7 @@ class TestsFlextObservabilityInit:
         tm.that(alert.message, eq="Root volume at 95%")
         tm.that(bool(alert.severity), eq=True)
 
+    @staticmethod
     @pytest.mark.parametrize(
         "status",
         [
@@ -112,7 +125,7 @@ class TestsFlextObservabilityInit:
         ],
     )
     def test_flext_health_check_records_component_and_status(
-        self, status: c.Observability.HealthStatus
+        status: c.Observability.HealthStatus,
     ) -> None:
         """flext_health_check echoes the component and status on the entity."""
         result = flext_health_check("flext-observability", status)
@@ -122,19 +135,18 @@ class TestsFlextObservabilityInit:
         tm.that(health.component, eq="flext-observability")
         tm.that(health.status, eq=status.value)
 
-    def test_flext_health_check_fails_on_empty_component(self) -> None:
+    @staticmethod
+    def test_flext_health_check_fails_on_empty_component() -> None:
         """flext_health_check rejects an empty component name."""
         result = flext_health_check("")
 
         tm.that(result.success, eq=False)
         tm.that(bool(result.error), eq=True)
 
-    def test_active_registry_is_a_stable_singleton(self) -> None:
+    @staticmethod
+    def test_active_registry_is_a_stable_singleton() -> None:
         """active_registry returns the same cached instance across calls."""
         first = FlextObservability.active_registry()
         second = FlextObservability.active_registry()
 
         tm.that(first is second, eq=True)
-
-
-__all__ = ["TestsFlextObservabilityInit"]

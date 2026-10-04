@@ -1,6 +1,6 @@
 """Observability monitoring and orchestration services.
 
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -12,7 +12,8 @@ from typing import ClassVar, override
 from uuid import uuid4
 
 from flext_core import FlextContainer
-from flext_observability import FlextObservabilityServices, c, m, p, r, settings, t, u
+from flext_observability import c, m, p, r, settings, t, u
+from flext_observability.services.services import FlextObservabilityServices
 
 
 class FlextObservabilityMonitor:
@@ -40,37 +41,57 @@ class FlextObservabilityMonitor:
             *args: t.Scalar,
             **kwargs: t.Scalar,
         ) -> t.Scalar:
-            """Call function with flexible arguments."""
+            """Call function with flexible arguments.
+
+            Returns:
+                The resulting ``t.Scalar``.
+            """
             return func(*args, **kwargs)
 
         @staticmethod
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
-            args: tuple[t.Scalar, ...],
-            kwargs: t.ConfigurationMapping | p.Dict,
+            args: t.VariadicTuple[t.Scalar],
+            kwargs: t.ConfigurationMapping | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> t.Scalar:
-            """Execute function with monitoring."""
+            """Execute function with monitoring.
+
+            Returns:
+                The resulting ``t.Scalar``.
+
+            Raises:
+                EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+            """
             function_name = getattr(func, "__name__", "unknown_function")
             actual_metric_name = metric_name or f"function_execution_{function_name}"
             start_time = time.time()
             try:
                 kwargs_dict = kwargs if isinstance(kwargs, dict) else {}
                 result = FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
-                    func, *args, **kwargs_dict
+                    func,
+                    *args,
+                    **kwargs_dict,
                 )
                 execution_time = time.time() - start_time
                 FlextObservabilityMonitor.MonitoringHelpers.record_success_metrics(
-                    monitor, actual_metric_name, execution_time
+                    monitor,
+                    actual_metric_name,
+                    execution_time,
                 )
-                return result
             except c.EXC_MAPPING_TYPE as e:
                 execution_time = time.time() - start_time
                 FlextObservabilityMonitor.MonitoringHelpers.record_error_metrics(
-                    monitor, actual_metric_name, execution_time, function_name, e
+                    monitor,
+                    actual_metric_name,
+                    execution_time,
+                    function_name,
+                    e,
                 )
                 raise
+            else:
+                return result
 
         @staticmethod
         def record_error_metrics(
@@ -82,7 +103,9 @@ class FlextObservabilityMonitor:
         ) -> None:
             """Record metrics and alerts for function execution errors."""
             monitor.flext_record_metric(
-                f"{metric_name}_error_total", 1, c.Observability.MetricType.COUNTER
+                f"{metric_name}_error_total",
+                1,
+                c.Observability.MetricType.COUNTER,
             )
             monitor.flext_record_metric(
                 f"{metric_name}_error_duration_seconds",
@@ -94,22 +117,27 @@ class FlextObservabilityMonitor:
                 try:
                     alert_result = observability_service.create_alert(
                         title=f"Function execution error: {function_name}",
-                        message=f"Function {function_name} failed with {type(error).__name__}",
+                        message=(
+                            f"Function {function_name} failed with"
+                            f" {type(error).__name__}"
+                        ),
                         severity="high",
                         source="monitoring",
                     )
                     if alert_result.failure:
                         FlextObservabilityMonitor.logger.warning(
-                            f"Alert creation failed: {alert_result.error}"
+                            f"Alert creation failed: {alert_result.error}",
                         )
                 except c.EXC_BASIC_TYPE as e:
                     FlextObservabilityMonitor.logger.warning(
-                        f"Alert creation failed: {e}"
+                        f"Alert creation failed: {e}",
                     )
 
         @staticmethod
         def record_success_metrics(
-            monitor: FlextObservabilityMonitor, metric_name: str, execution_time: float
+            monitor: FlextObservabilityMonitor,
+            metric_name: str,
+            execution_time: float,
         ) -> None:
             """Record metrics for successful function execution."""
             monitor.flext_record_metric(
@@ -118,13 +146,15 @@ class FlextObservabilityMonitor:
                 c.Observability.MetricType.HISTOGRAM,
             )
             monitor.flext_record_metric(
-                f"{metric_name}_success_total", 1, c.Observability.MetricType.COUNTER
+                f"{metric_name}_success_total",
+                1,
+                c.Observability.MetricType.COUNTER,
             )
             monitor.increment_functions_monitored()
 
     @override
     def __init__(self, container: p.Container | None = None) -> None:
-        """Initialize monitor with real service orchestration and shared configuration."""
+        """Initialize monitor with real orchestration and shared configuration."""
         self._container = container or self._container_type.shared()
         self.logger = u.fetch_logger(self.__class__.__name__)
         self._initialized = False
@@ -136,11 +166,16 @@ class FlextObservabilityMonitor:
         self._functions_monitored = 0
 
     def flext_health_status(self) -> p.Result[t.Observability.HealthMetricsDict]:
-        """Resolve complete health status with real metrics."""
+        """Resolve complete health status with real metrics.
+
+        Returns:
+            The resulting ``p.Result[t.Observability.HealthMetricsDict]``.
+        """
         try:
             if not self._observability_service:
                 return r[t.Observability.HealthMetricsDict].fail_op(
-                    "resolve health status", "Observability service not available"
+                    "resolve health status",
+                    "Observability service not available",
                 )
             health_data: t.MutableJsonMapping = {
                 "status": c.Observability.HealthStatus.HEALTHY
@@ -157,38 +192,53 @@ class FlextObservabilityMonitor:
             return r[t.Observability.HealthMetricsDict].ok(health_data)
         except c.EXC_BASIC_TYPE as e:
             return r[t.Observability.HealthMetricsDict].fail_op(
-                "resolve health status", e
+                "resolve health status",
+                e,
             )
 
-    def flext_metrics_summary(self) -> p.Result[p.Dict]:
-        """Resolve complete metrics summary."""
+    def flext_metrics_summary(self) -> p.Result[m.Dict]:
+        """Resolve complete metrics summary.
+
+        Returns:
+            The resulting ``p.Result[m.Dict]``.
+        """
         if not self._metrics_service:
-            return r[p.Dict].fail_op(
-                "resolve metrics summary", "Metrics service not available"
+            return r[m.Dict].fail_op(
+                "resolve metrics summary",
+                "Metrics service not available",
             )
         result = self._metrics_service.metrics_summary()
         return (
-            r[p.Dict].ok(result.value)
+            r[m.Dict].ok(result.value)
             if result.success
-            else r[p.Dict].fail_op(
-                "resolve metrics summary", result.error or "Metrics summary failed"
+            else r[m.Dict].fail_op(
+                "resolve metrics summary",
+                result.error or "Metrics summary failed",
             )
         )
 
-    def flext_initialize_observability(self) -> p.Result[None]:
-        """Initialize all observability services with real functionality and settings integration."""
+    def flext_initialize_observability(self) -> p.Result[bool]:
+        """Initialize every observability service with settings integration.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         if self._initialized:
-            return r[None].ok(None)
+            return r[bool].ok(value=True)
         try:
             return self._initialize_observability_services()
         except c.EXC_BASIC_TYPE as e:
-            return r[None].fail_op("initialize observability", e)
+            return r[bool].fail_op("initialize observability", e)
 
-    def _initialize_observability_services(self) -> p.Result[None]:
-        """Initialize observability service dependencies."""
+    def _initialize_observability_services(self) -> p.Result[bool]:
+        """Initialize observability service dependencies.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         service_result = self._create_observability_service()
         if service_result.failure:
-            return r[None].fail_op(
+            return r[bool].fail_op(
                 "initialize observability",
                 service_result.error or "Service creation failed",
             )
@@ -197,20 +247,25 @@ class FlextObservabilityMonitor:
         self._health_service = self._observability_service
         self._initialized = True
         self.logger.info("Observability monitor initialized successfully")
-        return r[None].ok(None)
+        return r[bool].ok(value=True)
 
     @staticmethod
     def _create_observability_service() -> p.Result[
         p.Observability.ObservabilityService
     ]:
-        """Create the concrete observability service facade."""
+        """Create the concrete observability service facade.
+
+        Returns:
+            The resulting ``p.Result[p.Observability.ObservabilityService]``.
+        """
         try:
             return r[p.Observability.ObservabilityService].ok(
-                FlextObservabilityServices()
+                FlextObservabilityServices(),
             )
         except c.EXC_MAPPING_TYPE as e:
             return r[p.Observability.ObservabilityService].fail_op(
-                "create observability service", e
+                "create observability service",
+                e,
             )
 
     def flext_initialized(self) -> bool:
@@ -226,70 +281,96 @@ class FlextObservabilityMonitor:
         name: str,
         value: float,
         metric_type: str = c.Observability.MetricType.GAUGE,
-    ) -> p.Result[None]:
-        """Record metric through the monitoring system with settings validation."""
+    ) -> p.Result[bool]:
+        """Record metric through the monitoring system with settings validation.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         try:
             return self._record_metric_entry(name, value, metric_type)
         except c.EXC_BASIC_TYPE as e:
-            return r[None].fail_op("record metric", e)
+            return r[bool].fail_op("record metric", e)
 
     def _record_metric_entry(
-        self, name: str, value: float, metric_type: str
-    ) -> p.Result[None]:
-        """Build and record one monitoring metric entry."""
+        self,
+        name: str,
+        value: float,
+        metric_type: str,
+    ) -> p.Result[bool]:
+        """Build and record one monitoring metric entry.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         if not settings.Observability.metrics_enabled:
             self.logger.debug("Metrics recording disabled in configuration")
-            return r[None].ok(None)
+            return r[bool].ok(value=True)
         metric_result = self._build_metric_entry(name, value, metric_type)
         if metric_result.failure:
-            return r[None].fail_op(
-                "record metric", metric_result.error or "Failed to create metric"
+            return r[bool].fail_op(
+                "record metric",
+                metric_result.error or "Failed to create metric",
             )
         self.logger.debug("Recorded metric: %s=%s (%s)", name, value, metric_type)
-        return r[None].ok(None)
+        return r[bool].ok(value=True)
 
     @staticmethod
     def _build_metric_entry(
-        name: str, value: float, metric_type: str
-    ) -> p.Result[p.Observability.MetricEntry]:
-        """Build a monitoring metric entry."""
+        name: str,
+        value: float,
+        metric_type: str,
+    ) -> p.Result[m.Observability.MetricEntry]:
+        """Build a monitoring metric entry.
+
+        Returns:
+            The resulting ``p.Result[m.Observability.MetricEntry]``.
+        """
         try:
-            return r[p.Observability.MetricEntry].ok(
+            return r[m.Observability.MetricEntry].ok(
                 m.Observability.MetricEntry(
                     metric_id=str(uuid4()),
                     name=name,
                     value=value,
                     unit=metric_type,
                     source="monitoring_system",
-                )
+                ),
             )
         except c.EXC_MAPPING_TYPE as e:
-            return r[p.Observability.MetricEntry].fail_op("build metric entry", e)
+            return r[m.Observability.MetricEntry].fail_op("build metric entry", e)
 
-    def flext_start_monitoring(self) -> p.Result[None]:
-        """Start real observability monitoring with service coordination."""
+    def flext_start_monitoring(self) -> p.Result[bool]:
+        """Start real observability monitoring with service coordination.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         if not self._initialized:
-            return r[None].fail_op("start monitoring", "Monitor not initialized")
+            return r[bool].fail_op("start monitoring", "Monitor not initialized")
         if self._running:
-            return r[None].ok(None)
+            return r[bool].ok(value=True)
         try:
             self.logger.info("Starting real observability monitoring")
             self._running = True
             self._monitor_start_time = time.time()
-            return r[None].ok(None)
+            return r[bool].ok(value=True)
         except c.EXC_BASIC_TYPE as e:
-            return r[None].fail_op("start monitoring", e)
+            return r[bool].fail_op("start monitoring", e)
 
-    def flext_stop_monitoring(self) -> p.Result[None]:
-        """Stop observability monitoring with graceful service shutdown."""
+    def flext_stop_monitoring(self) -> p.Result[bool]:
+        """Stop observability monitoring with graceful service shutdown.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         if not self._running:
-            return r[None].ok(None)
+            return r[bool].ok(value=True)
         try:
             self.logger.info("Stopping observability monitoring")
             self._running = False
-            return r[None].ok(None)
+            return r[bool].ok(value=True)
         except c.EXC_BASIC_TYPE as e:
-            return r[None].fail_op("stop monitoring", e)
+            return r[bool].fail_op("stop monitoring", e)
 
     @property
     def observability_service(self) -> p.Observability.ObservabilityService | None:
@@ -302,14 +383,21 @@ class FlextObservabilityMonitor:
 
     @staticmethod
     def flext_monitor_function(
-        monitor: FlextObservabilityMonitor | None = None, metric_name: str | None = None
+        monitor: FlextObservabilityMonitor | None = None,
+        metric_name: str | None = None,
     ) -> Callable[
         [FlextObservabilityMonitor.object_callable],
         FlextObservabilityMonitor.object_callable,
     ]:
-        """Create function monitoring decorator with metrics collection."""
+        """Create function monitoring decorator with metrics collection.
+
+        Returns:
+            The resulting ``Callable[[FlextObservabilityMonitor.object_callable],
+                FlextObservabilityMonitor.object_callable]``.
+        """
         return FlextObservabilityMonitor.MonitoringDecorators.flext_monitor_function(
-            monitor=monitor, metric_name=metric_name
+            monitor=monitor,
+            metric_name=metric_name,
         )
 
     class MonitoringDecorators:
@@ -325,7 +413,12 @@ class FlextObservabilityMonitor:
         ]:
             """Create function monitoring decorator with metrics collection.
 
-            Simplified decorator that records function execution metrics using flext-observability.
+            Simplified decorator that records function execution metrics using
+            flext-observability.
+
+            Returns:
+                The resulting ``Callable[[FlextObservabilityMonitor.object_callable],
+                    FlextObservabilityMonitor.object_callable]``.
             """
 
             def decorator(
@@ -337,16 +430,26 @@ class FlextObservabilityMonitor:
                     if not active_monitor.flext_initialized():
                         init_result = active_monitor.flext_initialize_observability()
                         if init_result.failure:
-                            return FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
-                                func, *args, **kwargs
+                            helpers = FlextObservabilityMonitor.MonitoringHelpers
+                            return helpers.call_any_function(
+                                func,
+                                *args,
+                                **kwargs,
                             )
                     if active_monitor.flext_monitoring_active():
-                        return FlextObservabilityMonitor.MonitoringHelpers.execute_monitored_function(
-                            func, args, kwargs, active_monitor, metric_name
+                        helpers = FlextObservabilityMonitor.MonitoringHelpers
+                        return helpers.execute_monitored_function(
+                            func,
+                            args,
+                            kwargs,
+                            active_monitor,
+                            metric_name,
                         )
                     return (
                         FlextObservabilityMonitor.MonitoringHelpers.call_any_function(
-                            func, *args, **kwargs
+                            func,
+                            *args,
+                            **kwargs,
                         )
                     )
 
@@ -358,8 +461,4 @@ class FlextObservabilityMonitor:
             return decorator
 
 
-flext_monitor_function = FlextObservabilityMonitor.flext_monitor_function
-"""Module-level alias for FlextObservabilityMonitor.flext_monitor_function."""
-
-
-__all__: t.StrSequence = ("FlextObservabilityMonitor", "flext_monitor_function")
+__all__: t.StrSequence = ("FlextObservabilityMonitor",)

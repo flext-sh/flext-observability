@@ -9,6 +9,9 @@ FLEXT Pattern:
 - Nested subclasses for correlation and baggage management
 - Async-safe using Python's contextvars module
 - Integration with trace context propagation (W3C Trace Context)
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -213,13 +216,19 @@ class FlextObservabilityContext:
             key: value if isinstance(value, str | int | float | bool) else str(value)
             for key, value in baggage_snapshot.root.items()
         }
-        payload: t.JsonDict = {
+        # Why: construct the mapping literal directly as the constructor
+        # argument (not through an intermediate `t.JsonDict`-typed variable)
+        # so mypy checks each value against `m.Dict`'s wider root type via
+        # bidirectional inference instead of joining to a narrower dict type
+        # first and rejecting it on invariance (mypy crashed on the deeply
+        # nested union check when the narrower binding was type-checked
+        # standalone).
+        return m.Dict({
             "correlation_id": FlextObservabilityContext.correlation_id(),
             "trace_id": FlextObservabilityContext.trace_id(),
             "span_id": FlextObservabilityContext.span_id(),
             "baggage": u.Cli.json_dumps(baggage_payload).unwrap(),
-        }
-        return m.Dict(payload)
+        })
 
     @staticmethod
     def correlation_id() -> str:
@@ -281,7 +290,11 @@ class FlextObservabilityContext:
 
     @staticmethod
     def _update_baggage_value(key: str, value: t.JsonValue) -> p.Result[bool]:
-        """Validate and store one baggage value."""
+        """Validate and store one baggage value.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         try:
             m.Observability.BaggageKeyModel.model_validate(obj={"key": key})
         except c.ValidationError:
@@ -321,7 +334,11 @@ class FlextObservabilityContext:
 
     @staticmethod
     def update_span_id(span_id: str | None = None) -> str:
-        """Update current span ID."""
+        """Update current span ID.
+
+        Returns:
+            The resulting ``str``.
+        """
         if span_id is None:
             span_id = str(uuid4())
         FlextObservabilityContext._span_id.set(span_id)

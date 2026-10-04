@@ -15,11 +15,15 @@ Key Features:
 - Correlation ID propagation across services
 - Trace ID and span ID inclusion
 - Compatible with flext-core logging patterns
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from flext_observability import FlextObservabilityContext, c, m, p, r, t, u
+from flext_observability import c, m, p, r, t, u
+from flext_observability.services.context import FlextObservabilityContext
 
 
 class FlextObservabilityLogging:
@@ -301,7 +305,8 @@ class FlextObservabilityLogging:
                 extra={"user_id": "user-123", "ip_address": "192.168.1.1"},
                 include_baggage=True,
             )
-            # Log includes: correlation_id=..., trace_id=..., user_id=..., ip_address=...
+            # Log includes: correlation_id=..., trace_id=..., user_id=...,
+            # ip_address=...
             ```
 
         """

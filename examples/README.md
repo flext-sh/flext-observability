@@ -3,8 +3,10 @@
 <!-- TOC START -->
 
 - [Example Files](#example-files)
-  - \[[01_functional.py](01_functional.py) - Core Functionality\](#01functionalpy01functionalpy-core-functionality)
-  - \[[02_solid_observability_demo.py](02_solid_observability_demo.py) - SOLID Principles\](#02solidobservabilitydemopy02solidobservabilitydemopy-solid-principles)
+  - \[[functional.py](functional.py) - Core
+    Functionality\](#01functionalpy01functionalpy-core-functionality)
+  - \[[solid_observability_demo.py](solid_observability_demo.py) - SOLID
+    Principles\](#02solidobservabilitydemopy02solidobservabilitydemopy-solid-principles)
 - [Usage Patterns Demonstrated](#usage-patterns-demonstrated)
   - [Basic Observability Integration](#basic-observability-integration)
   - [Service Layer Integration](#service-layer-integration)
@@ -24,13 +26,17 @@
 
 <!-- TOC END -->
 
-**Comprehensive examples demonstrating observability patterns and integration within the FLEXT ecosystem.**
+**Comprehensive examples demonstrating observability patterns and integration within the
+FLEXT ecosystem.**
 
-This directory contains practical examples showing how to integrate FLEXT Observability into real-world scenarios, from basic usage to advanced enterprise patterns. All examples are functional, tested, and demonstrate best practices for observability across the FLEXT ecosystem.
+This directory contains practical examples showing how to integrate FLEXT Observability
+into real-world scenarios, from basic usage to advanced enterprise patterns. All
+examples are functional, tested, and demonstrate best practices for observability across
+the FLEXT ecosystem.
 
 ## Example Files
 
-### [01_functional.py](01_functional.py) - Core Functionality
+### [functional.py](functional.py) - Core Functionality
 
 Comprehensive demonstration of core observability functionality including:
 
@@ -41,7 +47,7 @@ Comprehensive demonstration of core observability functionality including:
 - **Error Handling**: Railway-oriented programming with r
 - **Real-world Scenarios**: Business logic with observability integration
 
-### [02_solid_observability_demo.py](02_solid_observability_demo.py) - SOLID Principles
+### [solid_observability_demo.py](solid_observability_demo.py) - SOLID Principles
 
 Advanced demonstration of SOLID principles applied to observability:
 
@@ -55,9 +61,11 @@ Advanced demonstration of SOLID principles applied to observability:
 
 ### Basic Observability Integration
 
-```python notest
-# Example from 01_functional.py
-from flext_observability import flext_create_metric, flext_create_trace
+```python
+from __future__ import annotations
+
+# Example from functional.py
+from flext_observability import flext_create_metric
 
 
 def create_business_metrics():
@@ -83,28 +91,11 @@ def create_business_metrics():
 
 ### Service Layer Integration
 
-```python notest
+```python
+from __future__ import annotations
+
 # Example service integration pattern
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import p, t
-from flext_core import u
 
 
 class UserService:
@@ -115,7 +106,7 @@ class UserService:
         self.metrics = FlextMetricsService(container)
         self.factory = FlextObservabilityMasterFactory()
 
-    def create_user(self, user_data: dict) -> p.Result[p.Dict]:
+    def create_user(self, user_data: dict) -> p.Result[m.Dict]:
         """Create user with comprehensive observability."""
         # Create business metrics
         metric_result = self.factory.create_metric(
@@ -134,7 +125,9 @@ class UserService:
 
 ### Monitoring Decorator Patterns
 
-```python notest
+```python
+from __future__ import annotations
+
 # Automatic function monitoring
 from flext_observability import flext_monitor_function
 
@@ -161,7 +154,7 @@ def process_order(order_data: dict) -> t.JsonMapping:
 
 # Advanced monitoring with context
 @flext_monitor_function("payment_processing")
-def process_payment(amount: float, currency: str) -> p.Result[p.Dict]:
+def process_payment(amount: float, currency: str) -> p.Result[m.Dict]:
     """Process payment with error handling and monitoring."""
     if amount <= 0:
         return r[bool].fail("Invalid payment amount")
@@ -179,12 +172,14 @@ def process_payment(amount: float, currency: str) -> p.Result[p.Dict]:
 
 ### Health Monitoring Patterns
 
-```python notest
+```python
+from __future__ import annotations
+
 # Health check integration example
-from flext_observability import flext_create_health_check, FlextHealthService
+from flext_observability import flext_create_health_check
 
 
-def monitor_database_health() -> p.Result[p.Dict]:
+def monitor_database_health() -> p.Result[m.Dict]:
     """Monitor database connectivity and performance."""
     try:
         # Test database connection
@@ -221,12 +216,14 @@ def monitor_database_health() -> p.Result[p.Dict]:
 
 ### Distributed Tracing Patterns
 
-```python notest
+```python
+from __future__ import annotations
+
 # Parent-child trace correlation
 from flext_observability import flext_create_trace
 
 
-def process_user_workflow(user_id: str) -> p.Result[p.Dict]:
+def process_user_workflow(user_id: str) -> p.Result[m.Dict]:
     """Process user workflow with distributed tracing."""
 
     # Create parent trace
@@ -257,7 +254,7 @@ def process_user_workflow(user_id: str) -> p.Result[p.Dict]:
     })
 
 
-def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[p.Dict]:
+def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
     """Validate user with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="user_validation",
@@ -276,16 +273,18 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[p.Dict]:
 
 ### Singer Tap Integration
 
-```python notest
+```python
+from __future__ import annotations
+
 # Example Singer tap with observability
-from flext_observability import flext_monitor_function, flext_create_metric
+from flext_observability import flext_create_metric, flext_monitor_function
 
 
 class FlextTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> t.SequenceOf[p.Dict]:
+    def extract_records(self, table_name: str) -> t.SequenceOf[m.Dict]:
         """Extract records with automatic monitoring."""
 
         # Extract data (business logic)
@@ -311,16 +310,18 @@ class FlextTapOracle:
 
 ### FastAPI Service Integration
 
-```python notest
+```python
+from __future__ import annotations
+
 # Example FastAPI service with observability
-from flext_observability import flext_monitor_function, flext_create_metric
+from flext_observability import flext_create_metric, flext_monitor_function
 
 
 class FlextAPIService:
     """Example FastAPI service with observability."""
 
     @flext_monitor_function("api_endpoint")
-    def handle_user_request(self, request_data: dict) -> p.Result[p.Dict]:
+    def handle_user_request(self, request_data: dict) -> p.Result[m.Dict]:
         """Handle API request with comprehensive observability."""
 
         # Request metrics
@@ -353,14 +354,14 @@ class FlextAPIService:
 ```bash
 # Run functional examples
 cd examples/
-python 01_functional.py
+python functional.py
 
 # Run SOLID principles demo
-python 02_solid_observability_demo.py
+python solid_observability_demo.py
 
 # Run with different scenarios
-python 01_functional.py --scenario=metrics
-python 01_functional.py --scenario=tracing
+python functional.py --scenario=metrics
+python functional.py --scenario=tracing
 ```
 
 ### Integration Testing
@@ -405,6 +406,7 @@ make type-check examples/
 1. **Ecosystem Integration**: FLEXT-specific integration patterns
 1. **Enterprise Patterns**: Production-ready observability implementations
 
-______________________________________________________________________
+---
 
-**All examples are production-ready patterns that can be adapted for real-world FLEXT ecosystem integration scenarios.**
+**All examples are production-ready patterns that can be adapted for real-world FLEXT
+ecosystem integration scenarios.**

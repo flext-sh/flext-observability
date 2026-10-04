@@ -1,6 +1,14 @@
-<!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
-
 # flext-observability API Reference
+
+<!-- TOC START -->
+
+- [Source of Truth](#source-of-truth)
+- [Generated Pages](#generated-pages)
+- [Surface Summary](#surface-summary)
+
+<!-- TOC END -->
+
+<!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
 This section is generated from public exports and real docstrings.
 
@@ -19,7 +27,9 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextObservability`, `FlextObservabilityAdvancedContext`, `FlextObservabilityConstants`, `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`, `FlextObservabilityErrorHandling` (+13 more)
-- Generated module pages: `18`
+- Primary facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
+  `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,
+  `FlextObservabilityContext` (+16 more)
+- Generated module pages: `8`
 
-- [Back to project docs](../index.md)
+Back to [project docs](../index.md).
