@@ -190,3 +190,6 @@ class TestsFlextObservabilityFactory:
         tm.that(result.failure, eq=True)
         tm.that(result.error, none=False)
         tm.that(result.error, has="must be non-empty string")
+
+
+__all__ = ["TestsFlextObservabilityFactory"]
