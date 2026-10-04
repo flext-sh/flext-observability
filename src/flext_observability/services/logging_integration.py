@@ -81,7 +81,8 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def _build_enriched_context(
-        *, include_baggage: bool = False
+        *,
+        include_baggage: bool = False,
     ) -> p.Observability.LogContext:
         """Build trace context payload for log enrichment.
 
@@ -110,7 +111,8 @@ class FlextObservabilityLogging:
 
     @staticmethod
     def enrich_log_context(
-        *, include_baggage: bool = False
+        *,
+        include_baggage: bool = False,
     ) -> p.Result[p.Observability.LogContext]:
         """Get trace context for log enrichment.
 
@@ -142,7 +144,7 @@ class FlextObservabilityLogging:
         """
         try:
             context_payload = FlextObservabilityLogging._build_enriched_context(
-                include_baggage=include_baggage
+                include_baggage=include_baggage,
             )
             return r[p.Observability.LogContext].ok(context_payload)
         except c.EXC_MAPPING_TYPE as e:
@@ -251,12 +253,12 @@ class FlextObservabilityLogging:
 
         """
         context_result = FlextObservabilityLogging.enrich_log_context(
-            include_baggage=include_baggage
+            include_baggage=include_baggage,
         )
         if context_result.failure:
             return r[bool].fail(f"Failed to get trace context: {context_result.error}")
         log_context: t.MutableJsonMapping = context_result.value.model_dump(
-            exclude_none=True
+            exclude_none=True,
         )
         extra_context: t.JsonValue = log_context.pop("extra", {})
         if isinstance(extra_context, dict):
@@ -266,7 +268,7 @@ class FlextObservabilityLogging:
             validated_extra = m.Dict.model_validate(extra).root
             for extra_key, extra_value in validated_extra.items():
                 log_context[extra_key] = t.json_value_adapter().validate_python(
-                    extra_value
+                    extra_value,
                 )
         getattr(logger, level)(message, extra=log_context)
         return r[bool].ok(value=True)
@@ -315,7 +317,11 @@ class FlextObservabilityLogging:
             if validation.failure:
                 return validation
             return FlextObservabilityLogging._emit_log(
-                logger, level, message, extra, include_baggage=include_baggage
+                logger,
+                level,
+                message,
+                extra,
+                include_baggage=include_baggage,
             )
         except c.EXC_MAPPING_TYPE as e:
             return r[bool].fail_op("Logging with context", e)
@@ -356,7 +362,7 @@ class FlextObservabilityLogging:
                     span_id=str(context.get("span_id"))
                     if context.get("span_id") is not None
                     else None,
-                )
+                ),
             )
         except c.EXC_MAPPING_TYPE as e:
             return r[p.Observability.LogContext].fail_op("Context validation", e)

@@ -10,7 +10,7 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core import build_lazy_import_map, install_lazy_exports
+from flext_core import install_lazy_exports
 from flext_observability.__version__ import (
     __author__,
     __author_email__,
@@ -109,37 +109,48 @@ __all__: tuple[str, ...] = (
     "x",
 )
 
-_LAZY_IMPORTS = MappingProxyType(
-    build_lazy_import_map(
-        MappingProxyType({
-            "._config": ("FlextObservabilityConfig", "config"),
-            "._settings": ("FlextObservabilitySettings", "settings"),
-            ".api": ("FlextObservability", "observability"),
-            ".base": ("FlextObservabilityServiceBase", "s"),
-            ".cli": ("FlextObservabilityCli", "main"),
-            ".constants": ("FlextObservabilityConstants", "c"),
-            ".models": ("FlextObservabilityModels", "m"),
-            ".protocols": ("FlextObservabilityProtocols", "p"),
-            ".services": ("services",),
-            ".services.advanced_context": ("FlextObservabilityAdvancedContext",),
-            ".services.context": ("FlextObservabilityContext",),
-            ".services.custom_metrics": ("FlextObservabilityCustomMetrics",),
-            ".services.error_handling": ("FlextObservabilityErrorHandling",),
-            ".services.health": ("FlextObservabilityHealth",),
-            ".services.http_client_instrumentation": ("FlextObservabilityHTTPClient",),
-            ".services.http_instrumentation": ("FlextObservabilityHTTP",),
-            ".services.logging_integration": ("FlextObservabilityLogging",),
-            ".services.monitoring": ("FlextObservabilityMonitor",),
-            ".services.performance": ("FlextObservabilityPerformance",),
-            ".services.sampling": ("FlextObservabilitySampling",),
-            ".services.services": ("FlextObservabilityServices",),
-            ".typings": ("FlextObservabilityTypes", "t"),
-            ".utilities": ("FlextObservabilityUtilities", "u"),
-            "flext_cli": ("d", "e", "h", "r", "x"),
-        }),
-        alias_groups=MappingProxyType({}),
-        sort_keys=False,
-    ),
+install_lazy_exports(
+    __name__,
+    globals(),
+    MappingProxyType({
+        "FlextObservability": ".api",
+        "FlextObservabilityAdvancedContext": ".services.advanced_context",
+        "FlextObservabilityCli": ".cli",
+        "FlextObservabilityConfig": "._config",
+        "FlextObservabilityConstants": ".constants",
+        "FlextObservabilityContext": ".services.context",
+        "FlextObservabilityCustomMetrics": ".services.custom_metrics",
+        "FlextObservabilityErrorHandling": ".services.error_handling",
+        "FlextObservabilityHTTP": ".services.http_instrumentation",
+        "FlextObservabilityHTTPClient": ".services.http_client_instrumentation",
+        "FlextObservabilityHealth": ".services.health",
+        "FlextObservabilityLogging": ".services.logging_integration",
+        "FlextObservabilityModels": ".models",
+        "FlextObservabilityMonitor": ".services.monitoring",
+        "FlextObservabilityPerformance": ".services.performance",
+        "FlextObservabilityProtocols": ".protocols",
+        "FlextObservabilitySampling": ".services.sampling",
+        "FlextObservabilityServiceBase": ".base",
+        "FlextObservabilityServices": ".services.services",
+        "FlextObservabilitySettings": "._settings",
+        "FlextObservabilityTypes": ".typings",
+        "FlextObservabilityUtilities": ".utilities",
+        "c": ".constants",
+        "config": "._config",
+        "d": "flext_cli",
+        "e": "flext_cli",
+        "h": "flext_cli",
+        "m": ".models",
+        "main": ".cli",
+        "observability": ".api",
+        "p": ".protocols",
+        "r": "flext_cli",
+        "s": ".base",
+        "services": ".services",
+        "settings": "._settings",
+        "t": ".typings",
+        "u": ".utilities",
+        "x": "flext_cli",
+    }),
+    public_exports=__all__,
 )
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
