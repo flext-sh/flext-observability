@@ -8,14 +8,19 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from types import MappingProxyType
+from typing import TYPE_CHECKING
 
 from flext_core import build_lazy_import_map, install_lazy_exports
 
-__all__: tuple[str, ...] = ()
+if TYPE_CHECKING:
+    from tests.unit.test_factory import TestsFlextObservabilityFactory
+
+
+__all__: tuple[str, ...] = ("TestsFlextObservabilityFactory",)
 
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
-        MappingProxyType({}),
+        MappingProxyType({".test_factory": ("TestsFlextObservabilityFactory",)}),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
     ),

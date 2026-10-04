@@ -8,6 +8,7 @@
 
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
+- Package: `flext_observability`
 - Version: `0.12.0`
 - Description: FLEXT Observability - Enterprise Monitoring, Metrics & Telemetry
 - Doc summary: Flext Observability package.
@@ -33,5 +34,5 @@
 
 ## Next Pages
 
-- [Workspace Module Pages](projects/index.md)
-- [Project Catalog](../../projects/generated/catalog.md)
+- [Public API](public-api.md)
+- [Module Index](modules/index.md)
