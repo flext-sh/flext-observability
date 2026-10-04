@@ -63,7 +63,7 @@ class FlextObservabilityAdvancedContext:
             self._metadata: t.MutableScalarMapping = {}
             self._baggage: t.MutableStrMapping = {}
             self._request_id: str = ""
-            self._parent_context: m.Observability.ContextSnapshot | None = None
+            self._parent_context: p.Observability.ContextSnapshot | None = None
 
         def clear(self) -> p.Result[bool]:
             """Clear all request-local context.
@@ -128,8 +128,7 @@ class FlextObservabilityAdvancedContext:
             return self._metadata.get(key)
 
         def merge(
-            self,
-            other: FlextObservabilityAdvancedContext.Context,
+            self, other: FlextObservabilityAdvancedContext.Context
         ) -> p.Result[bool]:
             """Merge another context into this one.
 
@@ -148,7 +147,7 @@ class FlextObservabilityAdvancedContext:
             except c.EXC_MAPPING_TYPE as exc:
                 return e.fail_operation("merge context", exc, result_type=r[bool])
 
-        def restore(self, snapshot: m.Observability.ContextSnapshot) -> p.Result[bool]:
+        def restore(self, snapshot: p.Observability.ContextSnapshot) -> p.Result[bool]:
             """Restore context from snapshot.
 
             Args:
@@ -166,7 +165,7 @@ class FlextObservabilityAdvancedContext:
                 self._metadata = dict(snapshot.metadata)
                 self._baggage = dict(snapshot.baggage)
                 FlextObservabilityAdvancedContext.logger.debug(
-                    "Context restored from snapshot",
+                    "Context restored from snapshot"
                 )
                 return r[bool].ok(value=True)
             except c.EXC_MAPPING_TYPE as exc:
@@ -219,11 +218,8 @@ class FlextObservabilityAdvancedContext:
                 )
 
         def snapshot(
-            self,
-            correlation_id: str = "",
-            trace_id: str = "",
-            span_id: str = "",
-        ) -> m.Observability.ContextSnapshot:
+            self, correlation_id: str = "", trace_id: str = "", span_id: str = ""
+        ) -> p.Observability.ContextSnapshot:
             """Create snapshot of current context.
 
             Args:
