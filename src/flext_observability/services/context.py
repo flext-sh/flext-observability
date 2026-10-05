@@ -138,7 +138,7 @@ class FlextObservabilityContext:
             return r[bool].ok(value=True)
         except c.EXC_MAPPING_TYPE as e:
             FlextObservabilityContext.logger.warning(
-                f"Failed to extract context from headers: {e}"
+                f"Failed to extract context from headers: {e}",
             )
             FlextObservabilityContext.update_correlation_id()
             return r[bool].ok(value=True)
