@@ -3,8 +3,9 @@
 All service methods come from mixins via MRO. Only factory methods,
 model aliases, and Constants are defined locally.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations

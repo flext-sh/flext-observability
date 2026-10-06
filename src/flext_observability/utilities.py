@@ -3,8 +3,9 @@
 Unified utilities facade inheriting core FLEXT utilities.
 Provides namespace classes for performance and sampling operations.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
