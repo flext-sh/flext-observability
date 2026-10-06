@@ -73,17 +73,9 @@ class FlextObservabilityHTTPClient:
         Returns:
             The resulting ``TypeIs[p.Observability.HttpClient.HTTPXAsyncClient]``.
         """
-        # Why: `getattr(..., default) is not None` instead of `hasattr`.
-        # mypy's hasattr-narrowing builds a type map per union member of
-        # `t.RegisterableService` (a wide recursive service-value union) and
-        # crashed (INTERNAL ERROR) walking it. `getattr` with a sentinel
-        # default is not subject to that narrowing pass and is behaviorally
-        # equivalent for this duck-typing check.
-        missing = object()
-        return (
-            getattr(obj, "request", missing) is not missing
-            and getattr(obj, "_send", missing) is not missing
-        )
+        # Runtime check goes through the owning protocol surface, which
+        # declares both ``request`` and ``_send``; no private-name probing.
+        return isinstance(obj, p.Observability.HttpClient.HTTPXAsyncClient)
 
     @staticmethod
     def _matches_httpx_client(
@@ -96,11 +88,13 @@ class FlextObservabilityHTTPClient:
         Returns:
             The resulting ``TypeIs[p.Observability.HttpClient.HTTPXClient]``.
         """
-        missing = object()
-        return (
-            getattr(obj, "request", missing) is not missing
-            and getattr(obj, "_send", missing) is missing
-        )
+        # Sync httpx clients structurally satisfy the async protocol too, so
+        # exclude the async surface explicitly; checks stay on the declared
+        # protocol, never on private-name probing.
+        return not isinstance(
+            obj,
+            p.Observability.HttpClient.HTTPXAsyncClient,
+        ) and isinstance(obj, p.Observability.HttpClient.HTTPXClient)
 
     @staticmethod
     def _matches_aiohttp_session(
@@ -236,7 +230,7 @@ class FlextObservabilityHTTPClient:
             )
 
         @staticmethod
-        def _instrument_httpx_async(
+        def instrument_httpx_async(
             typed_async_client: p.Observability.HttpClient.HTTPXAsyncClient,
         ) -> None:
             """Wrap the async client request method with tracing."""
@@ -297,7 +291,7 @@ class FlextObservabilityHTTPClient:
             typed_async_client.request = traced_async_request
 
         @staticmethod
-        def _instrument_httpx_sync(
+        def instrument_httpx_sync(
             typed_sync_client: p.Observability.HttpClient.HTTPXClient,
         ) -> None:
             """Wrap the sync client request method with tracing."""
@@ -383,20 +377,19 @@ class FlextObservabilityHTTPClient:
                 r[bool] - Ok if setup successful
 
             """
-            if (
-                hasattr(client, "request") is False
-                and hasattr(client, "_send") is False
-            ):
-                return r[bool].fail("Invalid httpx client - missing request method")
             client_id = id(client)
             if client_id in FlextObservabilityHTTPClient.HTTPX.instrumented_clients:
                 return r[bool].ok(value=True)
             if FlextObservabilityHTTPClient._matches_httpx_async_client(client):
                 typed_async_client: p.Observability.HttpClient.HTTPXAsyncClient = client
-                FlextObservabilityHTTPClient._instrument_httpx_async(typed_async_client)
+                FlextObservabilityHTTPClient.HTTPX.instrument_httpx_async(
+                    typed_async_client,
+                )
             elif FlextObservabilityHTTPClient._matches_httpx_client(client):
                 typed_sync_client: p.Observability.HttpClient.HTTPXClient = client
-                FlextObservabilityHTTPClient._instrument_httpx_sync(typed_sync_client)
+                FlextObservabilityHTTPClient.HTTPX.instrument_httpx_sync(
+                    typed_sync_client,
+                )
             else:
                 return r[bool].fail("Invalid httpx client - unsupported client type")
             FlextObservabilityHTTPClient.HTTPX.instrumented_clients.add(client_id)
