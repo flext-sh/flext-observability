@@ -13,15 +13,11 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_cli import FlextCliConfig, m
+from flext_cli import FlextCliConfig
 
+import flext_observability._models._observability_namespace
 from flext_core import FlextSettings
-
-
-class _ObservabilityNamespace(m.BaseModel):
-    """Open, frozen namespace exposing every ``config/*.yaml`` domain model-less."""
-
-    model_config = m.ConfigDict(extra="allow", frozen=True)
+from flext_observability import m
 
 
 class FlextObservabilityConfig(FlextSettings, FlextCliConfig):
@@ -34,13 +30,13 @@ class FlextObservabilityConfig(FlextSettings, FlextCliConfig):
     """
 
     Observability: Annotated[
-        _ObservabilityNamespace,
+        flext_observability._models._observability_namespace._ObservabilityNamespace,
         m.Field(
             description=(
                 "Open namespace exposing ``config/*.yaml`` under ``Observability``."
             ),
         ),
-    ] = _ObservabilityNamespace()
+    ] = flext_observability._models._observability_namespace._ObservabilityNamespace()
 
 
 config: FlextObservabilityConfig = FlextObservabilityConfig.fetch_global()
