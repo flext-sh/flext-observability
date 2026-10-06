@@ -11,13 +11,13 @@ from __future__ import annotations
 
 from abc import ABC
 
-from flext_core import s
+from flext_core import FlextService
 from flext_observability import FlextObservabilitySettings, m, p, t
 
 
 class FlextObservabilityServiceBase[
     TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload],
-](s[TDomainResult], ABC):
+](FlextService[TDomainResult], ABC):
     """Base class for flext-observability services with typed API settings access."""
 
     def __init__(

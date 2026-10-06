@@ -23,12 +23,9 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable, MutableMapping
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
 from flext_observability import c, m, p, r, t, u
-
-if TYPE_CHECKING:
-    PydanticValidationError = m.ValidationError
 from flext_observability.services.context import FlextObservabilityContext
 
 
@@ -64,7 +61,7 @@ class FlextObservabilityErrorHandling:
     _handler_instance: ClassVar[FlextObservabilityErrorHandling.Handler | None] = None
 
     @staticmethod
-    def _extract_validation_message(error: PydanticValidationError) -> str:
+    def _extract_validation_message(error: m.ValidationError) -> str:
         errors = error.errors()
         if not errors:
             return str(error)

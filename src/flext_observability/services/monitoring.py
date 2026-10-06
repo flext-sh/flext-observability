@@ -334,6 +334,7 @@ class FlextObservabilityMonitor:
                     value=value,
                     unit=metric_type,
                     source="monitoring_system",
+                    domain_events=[],
                 ),
             )
         except c.EXC_MAPPING_TYPE as e:
