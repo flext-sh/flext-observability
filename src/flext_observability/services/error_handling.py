@@ -61,7 +61,7 @@ class FlextObservabilityErrorHandling:
     _handler_instance: ClassVar[FlextObservabilityErrorHandling.Handler | None] = None
 
     @staticmethod
-    def _extract_validation_message(error: c.ValidationError) -> str:
+    def _extract_validation_message(error: m.ValidationError) -> str:
         errors = error.errors()
         if not errors:
             return str(error)
