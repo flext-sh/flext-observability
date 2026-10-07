@@ -13,6 +13,9 @@ from typing import TYPE_CHECKING
 from flext_core import install_lazy_exports
 
 if TYPE_CHECKING:
+    from flext_observability._models._observability_namespace import (
+        FlextObservabilityNamespace,
+    )
     from flext_observability._models.base import FlextObservabilityModelsBase
     from flext_observability._models.domains import FlextObservabilityModelsDomains
 
@@ -20,6 +23,7 @@ if TYPE_CHECKING:
 __all__: tuple[str, ...] = (
     "FlextObservabilityModelsBase",
     "FlextObservabilityModelsDomains",
+    "FlextObservabilityNamespace",
 )
 
 install_lazy_exports(
@@ -28,6 +32,7 @@ install_lazy_exports(
     MappingProxyType({
         "FlextObservabilityModelsBase": ".base",
         "FlextObservabilityModelsDomains": ".domains",
+        "FlextObservabilityNamespace": "._observability_namespace",
     }),
     public_exports=__all__,
 )
