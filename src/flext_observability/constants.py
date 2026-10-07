@@ -2,7 +2,7 @@
 
 Includes metric types, alert levels, trace statuses, and configuration defaults.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
 """
@@ -17,7 +17,7 @@ from flext_observability._constants import (
 )
 
 
-class FlextObservabilityConstants(FlextCliConstants, FlextObservabilityConstantsBase):
+class FlextObservabilityConstants(FlextCliConstants):
     """Observability-specific constants extending flext-core patterns.
 
     Usage:

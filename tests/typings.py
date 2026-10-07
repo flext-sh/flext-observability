@@ -1,21 +1,24 @@
-"""Test type aliases for flext-observability.
+"""Test types for flext-observability.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsTypes, t as tests_t
+from flext_tests import FlextTestsTypes
 
-from flext_observability import t as obs_t
+from flext_observability import FlextObservabilityTypes
 
 
-class TestsFlextObservabilityTypes(FlextTestsTypes):
-    """Test type aliases for flext-observability."""
+class TestsFlextObservabilityTypes(FlextTestsTypes, FlextObservabilityTypes):
+    """Test types for flext-observability."""
 
-    class TestsFlextObservability(tests_t.Tests, obs_t.Observability):
-        """Canonical namespace for test type aliases."""
+    class TestsFlextObservability(
+        FlextTestsTypes.Tests,
+        FlextObservabilityTypes.Observability,
+    ):
+        """Canonical namespace for test types."""
 
 
 t = TestsFlextObservabilityTypes

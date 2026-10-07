@@ -1,6 +1,6 @@
 """Behavioral tests for the flext-observability public API surface.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
 """
@@ -11,11 +11,7 @@ import pytest
 from flext_tests import tm
 
 from flext_core import FlextContainer
-from flext_observability import (
-    FlextObservability,
-    __version__ as pkg_version,
-    __version_info__ as pkg_version_info,
-)
+from flext_observability import FlextObservability, __version__, __version_info__
 from tests import c
 
 flext_alert = FlextObservability.flext_alert
@@ -30,15 +26,15 @@ class TestsFlextObservabilityInit:
     @staticmethod
     def test_version_is_non_empty_string() -> None:
         """__version__ is a non-empty version string."""
-        tm.that(pkg_version, is_=str)
-        tm.that(bool(pkg_version), eq=True)
+        tm.that(__version__, is_=str)
+        tm.that(bool(__version__), eq=True)
 
     @staticmethod
     def test_version_info_is_tuple_with_at_least_three_parts() -> None:
         """__version_info__ exposes at least major/minor/patch."""
         minimum_semver_parts = 3
-        tm.that(pkg_version_info, is_=tuple)
-        tm.that(len(pkg_version_info) >= minimum_semver_parts, eq=True)
+        tm.that(__version_info__, is_=tuple)
+        tm.that(len(__version_info__) >= minimum_semver_parts, eq=True)
 
     @staticmethod
     def test_core_reexports_are_usable() -> None:

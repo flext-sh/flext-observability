@@ -4,7 +4,7 @@ This example demonstrates the real functionality implemented in flext-observabil
 following SOLID principles with metrics, tracing, health monitoring,
 and function monitoring capabilities.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
 """

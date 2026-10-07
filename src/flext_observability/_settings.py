@@ -8,8 +8,9 @@ so each is settable via ``.env`` / env vars / params
 (``FLEXT_OBSERVABILITY_OBSERVABILITY__SERVICE_NAME`` …). Defaults are inlined
 from ``flext_observability.constants`` (SSOT).
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations

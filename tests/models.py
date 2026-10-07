@@ -1,20 +1,23 @@
 """Test models for flext-observability.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsModels, m as tests_m
+from flext_tests import FlextTestsModels
 
-from flext_observability import m as obs_m
+from flext_observability import FlextObservabilityModels
 
 
-class TestsFlextObservabilityModels(FlextTestsModels):
+class TestsFlextObservabilityModels(FlextTestsModels, FlextObservabilityModels):
     """Test models for flext-observability."""
 
-    class TestsFlextObservability(tests_m.Tests, obs_m.Observability):
+    class TestsFlextObservability(
+        FlextTestsModels.Tests,
+        FlextObservabilityModels.Observability,
+    ):
         """Canonical namespace for test models."""
 
 

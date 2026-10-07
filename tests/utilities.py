@@ -1,20 +1,26 @@
 """Test utilities for flext-observability.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsUtilities, u as tests_u
+from flext_tests import FlextTestsUtilities
 
-from flext_observability import u as obs_u
+from flext_observability import FlextObservabilityUtilities
 
 
-class TestsFlextObservabilityUtilities(FlextTestsUtilities):
+class TestsFlextObservabilityUtilities(
+    FlextTestsUtilities,
+    FlextObservabilityUtilities,
+):
     """Test utilities for flext-observability."""
 
-    class TestsFlextObservability(tests_u.Tests, obs_u.Observability):
+    class TestsFlextObservability(
+        FlextTestsUtilities.Tests,
+        FlextObservabilityUtilities.Observability,
+    ):
         """Canonical namespace for test utilities."""
 
 

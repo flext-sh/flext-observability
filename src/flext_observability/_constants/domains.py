@@ -11,11 +11,12 @@ from typing import ClassVar, Final
 
 
 class FlextObservabilityConstantsDomains:
-    """Observability domain constants namespace."""
+    """Observability domain constants namespace.
 
-    DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
-    DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-    DEFAULT_METRIC_UNIT: Final[str] = "1"
+    Base defaults live in ``_constants.base``; this module adds domain
+    constants without redeclaring the base surface.
+    """
+
     DEFAULT_SETTINGS_SERVICE_NAME: Final[str] = "flext-observability"
     DEFAULT_ENVIRONMENT: Final[str] = "development"
     DEFAULT_FLUSH_INTERVAL: Final[int] = 30
