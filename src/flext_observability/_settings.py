@@ -36,35 +36,29 @@ class FlextObservabilitySettings(FlextSettings):
         service_name: Annotated[
             str,
             m.Field(
-                default="flext-observability",
                 description="Observability service name identifier",
             ),
-        ]
+        ] = "flext-observability"
         environment: Annotated[
-            str,
-            m.Field(default="development", description="Deployment environment name"),
-        ]
+            str, m.Field(description="Deployment environment name")
+        ] = "development"
         metrics_enabled: Annotated[
-            bool,
-            m.Field(default=True, description="Enable metrics collection"),
-        ]
+            bool, m.Field(description="Enable metrics collection")
+        ] = True
         traces_enabled: Annotated[
-            bool,
-            m.Field(default=True, description="Enable distributed tracing"),
-        ]
+            bool, m.Field(description="Enable distributed tracing")
+        ] = True
         alerts_enabled: Annotated[
-            bool,
-            m.Field(default=True, description="Enable alert notifications"),
-        ]
+            bool, m.Field(description="Enable alert notifications")
+        ] = True
         flush_interval_seconds: Annotated[
             int,
             m.Field(
-                default=30,
                 ge=1,
                 le=300,
                 description="Interval in seconds between metric flushes",
             ),
-        ]
+        ] = 30
 
     if TYPE_CHECKING:
         Observability: _Observability

@@ -32,10 +32,9 @@ class FlextObservabilityModelsDomains:
         metric_id: Annotated[
             str,
             m.Field(
-                default_factory=lambda: str(uuid4()),
                 description="Unique metric entry identifier",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: str(uuid4()))
         name: Annotated[t.NonEmptyStr, m.Field(description="Metric name")]
         value: Annotated[t.Numeric, m.Field(description="Metric value")]
         unit: Annotated[t.NonEmptyStr, m.Field(description="Measurement unit")]
@@ -47,10 +46,9 @@ class FlextObservabilityModelsDomains:
         id: Annotated[
             str,
             m.Field(
-                default_factory=lambda: str(uuid4()),
                 description="Unique entity identifier",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: str(uuid4()))
 
     # --- Domain entity models (moved from _core.py FlextObservability) ---
 
@@ -64,10 +62,9 @@ class FlextObservabilityModelsDomains:
         labels: Annotated[
             t.ScalarMapping,
             m.Field(
-                default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                 description="Metric labels for categorization",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
 
     class Trace(m.Entity):
         """Distributed trace entity."""
@@ -75,18 +72,16 @@ class FlextObservabilityModelsDomains:
         trace_id: Annotated[
             str,
             m.Field(
-                default_factory=lambda: str(uuid4()),
                 description="Unique trace identifier",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: str(uuid4()))
         name: Annotated[t.NonEmptyStr, m.Field(description="Trace name")]
         attributes: Annotated[
             t.ScalarMapping,
             m.Field(
-                default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                 description="Trace attributes",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
 
     class Alert(_EntityWithId):
         """Observability alert entity."""
@@ -98,10 +93,9 @@ class FlextObservabilityModelsDomains:
         labels: Annotated[
             t.ScalarMapping,
             m.Field(
-                default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                 description="Alert labels for categorization",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
 
     class HealthCheck(_EntityWithId):
         """Health check entity."""
@@ -114,10 +108,9 @@ class FlextObservabilityModelsDomains:
         details: Annotated[
             t.ScalarMapping,
             m.Field(
-                default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                 description="Health check details",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
 
     class LogEntry(_EntityWithId):
         """Structured log entry entity."""
@@ -125,17 +118,15 @@ class FlextObservabilityModelsDomains:
         message: Annotated[t.NonEmptyStr, m.Field(description="Log message")]
         level: Annotated[t.NonEmptyStr, m.Field(description="Log level")]
         component: Annotated[t.NonEmptyStr, m.Field(description="Source component")]
-        timestamp: Annotated[
-            datetime,
-            m.Field(default_factory=datetime.now, description="Log entry timestamp"),
-        ]
+        timestamp: Annotated[datetime, m.Field(description="Log entry timestamp")] = (
+            m.Field(default_factory=datetime.now)
+        )
         context: Annotated[
             t.ScalarMapping,
             m.Field(
-                default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                 description="Log context metadata",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
 
     class StartTimePayload(m.Value):
         """Payload for validating HTTP request start time."""
@@ -151,10 +142,9 @@ class FlextObservabilityModelsDomains:
         headers: Annotated[
             t.StrMapping,
             m.Field(
-                default_factory=lambda: MappingProxyType[str, str]({}),
                 description="HTTP header key-value pairs",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, str]({}))
 
     # --- Moved from advanced_context.py ---
     class ContextSnapshot(m.Value):
@@ -169,17 +159,15 @@ class FlextObservabilityModelsDomains:
         baggage: Annotated[
             t.StrMapping,
             m.Field(
-                default_factory=lambda: MappingProxyType[str, str]({}),
                 description="Propagated baggage key-value pairs",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         metadata: Annotated[
             t.ConfigurationMapping,
             m.Field(
-                default_factory=lambda: MappingProxyType[str, t.Scalar]({}),
                 description="Additional context metadata",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
 
     # --- Moved from context.py ---
     class BaggageKeyModel(m.Value):
@@ -214,10 +202,9 @@ class FlextObservabilityModelsDomains:
         labels: Annotated[
             t.StrMapping,
             m.Field(
-                default_factory=lambda: MappingProxyType[str, str]({}),
                 description="Metric labels for categorization",
             ),
-        ]
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, str]({}))
 
     # --- Moved from error_handling.py ---
     class CooldownInput(m.Value):
