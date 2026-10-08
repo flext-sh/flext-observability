@@ -115,8 +115,9 @@ class FlextObservabilityHTTPClient:
             ).headers,
         )
 
-    @staticmethod
+    @classmethod
     def _bind_traced_request(
+        cls,
         client: p.Observability.HttpClient.HTTPXAsyncClient
         | p.Observability.HttpClient.HTTPXClient,
         traced: Callable[
