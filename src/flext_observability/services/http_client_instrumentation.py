@@ -32,19 +32,6 @@ from flext_observability.services.context import FlextObservabilityContext
 from flext_observability.services.logging_integration import FlextObservabilityLogging
 
 
-def _bind_traced_request(
-    client: p.Observability.HttpClient.HTTPXAsyncClient
-    | p.Observability.HttpClient.HTTPXClient,
-    traced: Callable[
-        ...,
-        p.Observability.HttpClient.HTTPXResponse
-        | Awaitable[p.Observability.HttpClient.HTTPXResponse],
-    ],
-) -> None:
-    """Rebind one httpx client's ``request`` attribute to its traced wrapper."""
-    client.request = traced
-
-
 class FlextObservabilityHTTPClient:
     """HTTP client auto-instrumentation for service-to-service communication.
 
@@ -127,6 +114,20 @@ class FlextObservabilityHTTPClient:
                 obj={"headers": payload},
             ).headers,
         )
+
+    @classmethod
+    def _bind_traced_request(
+        cls,
+        client: p.Observability.HttpClient.HTTPXAsyncClient
+        | p.Observability.HttpClient.HTTPXClient,
+        traced: Callable[
+            ...,
+            p.Observability.HttpClient.HTTPXResponse
+            | Awaitable[p.Observability.HttpClient.HTTPXResponse],
+        ],
+    ) -> None:
+        """Rebind one httpx client's ``request`` attribute to its traced wrapper."""
+        client.request = traced
 
     class HTTPX:
         """httpx client instrumentation for automatic request tracing."""
@@ -301,7 +302,10 @@ class FlextObservabilityHTTPClient:
                 )
                 return response
 
-            _bind_traced_request(typed_async_client, traced_async_request)
+            FlextObservabilityHTTPClient._bind_traced_request(
+                typed_async_client,
+                traced_async_request,
+            )
 
         @staticmethod
         def instrument_httpx_sync(
@@ -366,7 +370,10 @@ class FlextObservabilityHTTPClient:
                 )
                 return response
 
-            _bind_traced_request(typed_sync_client, traced_request)
+            FlextObservabilityHTTPClient._bind_traced_request(
+                typed_sync_client,
+                traced_request,
+            )
 
         @staticmethod
         def _apply_httpx_instrumentation(
