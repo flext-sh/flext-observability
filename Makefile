@@ -86,6 +86,22 @@ GITHUB_AUTH_CI := local
 else ifeq ($(strip $(CI)),)
 GITHUB_AUTH_CI := unset
 endif
+GITHUB_AUTH_SOURCE := $(if $(strip $(GITHUB_TOKEN)),GITHUB_TOKEN,$(if $(strip $(GH_TOKEN)),GH_TOKEN,$(if $(strip $(MISE_GITHUB_TOKEN)),MISE_GITHUB_TOKEN,none)))
+GITHUB_AUTH_STATUS := not-selected
+override GITHUB_AUTH_COMMAND := not-selected
+override GITHUB_AUTH_COMMAND_STATUS := not-selected
+GITHUB_AUTH_HOST_SOURCE := $(if $(strip $(GH_HOST)),GH_HOST,native-default)
+GITHUB_AUTH_CONFIG_OVERRIDE := $(if $(strip $(GH_CONFIG_DIR)),yes,no)
+GITHUB_AUTH_XDG_OVERRIDE := $(if $(strip $(XDG_CONFIG_HOME)),yes,no)
+GITHUB_AUTH_SESSION_BUS := $(if $(strip $(DBUS_SESSION_BUS_ADDRESS)),yes,no)
+GITHUB_AUTH_CI := other
+ifeq ($(strip $(CI)),Y)
+GITHUB_AUTH_CI := ci
+else ifeq ($(strip $(CI)),N)
+GITHUB_AUTH_CI := local
+else ifeq ($(strip $(CI)),)
+GITHUB_AUTH_CI := unset
+endif
 GITHUB_TOKEN := $(firstword $(GITHUB_TOKEN) $(GH_TOKEN) $(MISE_GITHUB_TOKEN))
 ifeq ($(GITHUB_TOKEN),)
 ifneq ($(filter local unset,$(GITHUB_AUTH_CI)),)
