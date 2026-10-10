@@ -189,7 +189,7 @@ class FlextObservability(
             source = kwargs.get(source_key)
             if isinstance(source, Mapping):
                 all_labels_data.update({
-                    key: t.scalar_adapter().validate_python(value)
+                    key: u.scalar_adapter().validate_python(value)
                     for key, value in source.items()
                 })
         return all_labels_data
