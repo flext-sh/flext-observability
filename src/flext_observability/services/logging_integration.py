@@ -267,7 +267,7 @@ class FlextObservabilityLogging:
         if extra:
             validated_extra = m.Dict.model_validate(extra).root
             for extra_key, extra_value in validated_extra.items():
-                log_context[extra_key] = t.json_value_adapter().validate_python(
+                log_context[extra_key] = u.json_value_adapter().validate_python(
                     extra_value,
                 )
         getattr(logger, level)(message, extra=log_context)

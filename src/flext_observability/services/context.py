@@ -185,7 +185,7 @@ class FlextObservabilityContext:
         value = baggage.root.get(key)
         if value is None:
             return None
-        validated_value: t.JsonValue = t.json_value_adapter().validate_python(value)
+        validated_value: t.JsonValue = u.json_value_adapter().validate_python(value)
         return validated_value
 
     @staticmethod
