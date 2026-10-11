@@ -6,11 +6,13 @@ SPDX-License-Identifier: MIT
 """
 
 # Copyright (c) 2025 FLEXT Team. All rights reserved.
-"""AI Hub governance hook projection: cursor subagentstart."""
 from __future__ import annotations
 
 import json
 import sys
+
+"""AI Hub governance hook projection: cursor subagentstart."""
+
 
 payload = json.load(sys.stdin)
 if not isinstance(payload, dict):
