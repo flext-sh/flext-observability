@@ -13,23 +13,16 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_observability._constants.base import FlextObservabilityConstantsBase
     from flext_observability._constants.domains import (
         FlextObservabilityConstantsDomains,
     )
 
 
-__all__: tuple[str, ...] = (
-    "FlextObservabilityConstantsBase",
-    "FlextObservabilityConstantsDomains",
-)
+__all__: tuple[str, ...] = ("FlextObservabilityConstantsDomains",)
 
 install_lazy_exports(
     __name__,
     globals(),
-    MappingProxyType({
-        "FlextObservabilityConstantsBase": ".base",
-        "FlextObservabilityConstantsDomains": ".domains",
-    }),
+    MappingProxyType({"FlextObservabilityConstantsDomains": ".domains"}),
     public_exports=__all__,
 )
