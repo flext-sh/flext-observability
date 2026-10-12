@@ -13,7 +13,7 @@ from uuid import uuid4
 
 from flext_core import FlextContainer
 from flext_observability import c, m, p, r, settings, t, u
-from flext_observability.services.services import FlextObservabilityServices
+from flext_observability.services.service import FlextObservabilityServices
 
 
 class FlextObservabilityMonitor:

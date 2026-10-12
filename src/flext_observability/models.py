@@ -23,7 +23,7 @@ class FlextObservabilityModels(FlextCliModels, FlextObservabilityModelsBase):
     Zero domain-specific logic - pure generic foundation with minimal code.
     """
 
-    class Observability(FlextObservabilityModelsDomains, FlextObservabilityModelsBase):
+    class Observability(FlextObservabilityModelsBase, FlextObservabilityModelsDomains):
         """Observability domain models namespace."""
 
 

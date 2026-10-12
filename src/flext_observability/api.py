@@ -13,7 +13,7 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping
 from datetime import datetime
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Self
 from uuid import uuid4
 
 from flext_core import FlextContainer
@@ -33,7 +33,7 @@ from flext_observability.services.logging_integration import FlextObservabilityL
 from flext_observability.services.monitoring import FlextObservabilityMonitor
 from flext_observability.services.performance import FlextObservabilityPerformance
 from flext_observability.services.sampling import FlextObservabilitySampling
-from flext_observability.services.services import FlextObservabilityServices
+from flext_observability.services.service import FlextObservabilityServices
 
 if TYPE_CHECKING:
     from flext_observability._settings import FlextObservabilitySettings
@@ -63,6 +63,16 @@ class FlextObservability(
     _container: p.Container
     _container_type: ClassVar[p.ContainerType] = FlextContainer
     logger: p.Logger = u.fetch_logger(__name__)
+
+    @classmethod
+    def fetch_global(cls) -> Self:
+        """Return the shared observability facade instance.
+
+        Returns:
+            The shared facade instance.
+
+        """
+        return cls()
 
     class Metric(m.Observability.Metric):
         """Observability metric entity."""

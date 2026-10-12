@@ -457,6 +457,7 @@ notice-rgx = "Copyright \\(c\\) \\d{4} \\S[^\\n]*\\. All rights reserved\\."
 [tool.ruff.lint.flake8-type-checking]
 runtime-evaluated-base-classes = [
   "flext_cli.FlextCliConfig",
+  "flext_cli.m.BaseModel",
   "flext_cli.m.Entity",
   "flext_cli.m.Value",
   "flext_core.FlextService",
@@ -464,7 +465,6 @@ runtime-evaluated-base-classes = [
   "flext_core.m.BaseModel",
   "flext_observability.FlextObservabilitySettings",
   "flext_observability._models.domains._EntityWithId",
-  "flext_observability.m.BaseModel",
   "flext_observability.m.Observability.Alert",
   "flext_observability.m.Observability.HealthCheck",
   "flext_observability.m.Observability.LogEntry",
