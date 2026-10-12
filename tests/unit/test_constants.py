@@ -18,11 +18,6 @@ class TestsFlextObservabilityConstantsUnit:
     """Public-contract behavior of the observability constants facade."""
 
     @staticmethod
-    def test_facade_extends_flext_core_constants() -> None:
-        """The facade must inherit the flext-core constants contract via MRO."""
-        tm.that(c in c.__mro__, eq=True)
-
-    @staticmethod
     @pytest.mark.parametrize(
         ("member", "expected"),
         [
