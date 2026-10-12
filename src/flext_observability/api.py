@@ -354,7 +354,7 @@ class FlextObservability(
             return r[FlextObservability.LogEntry].fail_op("create log entry", e)
 
 
-observability: FlextObservability = FlextObservability()
+observability: FlextObservability = FlextObservability.fetch_global()
 """Module-level MRO facade singleton for the observability namespace."""
 
 __all__: list[str] = ["FlextObservability", "observability"]

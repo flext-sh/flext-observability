@@ -145,7 +145,7 @@ class FlextObservabilityHTTP:
                     "http_method": request_method,
                     "http_path": request_path,
                     "http_client_ip": request_remote or "",
-                    "http_user_agent": str(user_agent),
+                    "http_user_agent": user_agent,
                 },
             )
 
