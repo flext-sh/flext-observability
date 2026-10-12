@@ -461,6 +461,7 @@ runtime-evaluated-base-classes = [
   "flext_cli.m.Value",
   "flext_core.FlextService",
   "flext_core.FlextSettings",
+  "flext_core.m.BaseModel",
   "flext_observability.FlextObservabilitySettings",
   "flext_observability._models.domains._EntityWithId",
   "flext_observability.m.BaseModel",
