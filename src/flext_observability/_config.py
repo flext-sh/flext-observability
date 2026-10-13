@@ -30,13 +30,13 @@ class FlextObservabilityConfig(FlextSettings, FlextCliConfig):
     """
 
     Observability: Annotated[
-        FlextObservabilityModelsBase.ConfigNamespace,
+        FlextObservabilityModelsBase.ObservabilityConfigNamespace,
         m.Field(
             description=(
                 "Open namespace exposing ``config/*.yaml`` under ``Observability``."
             ),
         ),
-    ] = FlextObservabilityModelsBase.ConfigNamespace()
+    ] = FlextObservabilityModelsBase.ObservabilityConfigNamespace()
 
 
 config: FlextObservabilityConfig = FlextObservabilityConfig.fetch_global()
