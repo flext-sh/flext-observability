@@ -364,6 +364,7 @@ addopts = [
   "--strict-markers",
   "--markdown-docs",
   "--durations=10",
+  "--flext-enforce-strict",
   "--timeout=10",
 ]
 flext_slow_timeout_seconds = "30"
@@ -437,6 +438,7 @@ ignore = [
   "typing-only-first-party-import",
   "typing-only-standard-library-import",
   "typing-only-third-party-import",
+  "unsorted-imports",
 ]
 select = ["ALL"]
 unfixable = [
@@ -457,7 +459,6 @@ notice-rgx = "Copyright \\(c\\) \\d{4} \\S[^\\n]*\\. All rights reserved\\."
 [tool.ruff.lint.flake8-type-checking]
 runtime-evaluated-base-classes = [
   "flext_cli.FlextCliConfig",
-  "flext_cli.m.BaseModel",
   "flext_cli.m.Entity",
   "flext_cli.m.Value",
   "flext_core.FlextService",
