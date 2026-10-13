@@ -73,7 +73,7 @@ class FlextObservabilityCustomMetrics:
                 m.Observability.CustomMetricDefinition,
             ] = {}
             self._metric_instances: t.MutableScalarMapping = dict[str, t.Scalar]()
-            self._namespaces: t.MutableStrMapping = t.StrDict()
+            self._namespaces: t.MutableStrMapping = dict[str, str]()
 
         def clear_metrics(self, namespace: str | None = None) -> p.Result[bool]:
             """Clear metrics from registry.
