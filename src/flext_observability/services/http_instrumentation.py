@@ -380,10 +380,14 @@ class FlextObservabilityHTTP:
                     request: Request,
                     call_next: RequestResponseEndpoint,
                 ) -> Response:
-                    """Process HTTP request with instrumentation.
+                    """Process an HTTP request with instrumentation.
+
+                    Args:
+                        request: Incoming ASGI request.
+                        call_next: Next middleware or route handler.
 
                     Returns:
-                        The resulting ``Response``.
+                        HTTP response produced downstream.
 
                     Raises:
                         EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.

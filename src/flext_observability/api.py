@@ -94,10 +94,13 @@ class FlextObservability(
     # _flext_metric_type below.
     @staticmethod
     def _metric_type_for_name(name: str) -> c.Observability.MetricType:
-        """Resolve metric type from a metric name suffix.
+        """Resolve the metric type from a metric name suffix.
+
+        Args:
+            name: Metric name to inspect.
 
         Returns:
-            The resulting ``c.Observability.MetricType``.
+            Resolved metric type.
         """
         if name.endswith(("_total", "_count")):
             return c.Observability.MetricType.COUNTER
@@ -114,8 +117,15 @@ class FlextObservability(
     ) -> p.Result[FlextObservability.Metric]:
         """Create a metric entity directly.
 
+        Args:
+            name: Metric name; suffix drives the default metric type.
+            value: Metric value.
+            unit: Metric unit.
+            **kwargs: Optional ``metric_type``, ``metric_id``, ``tags``,
+                and ``labels`` payload.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.Metric]``.
+            Metric entity or error result.
         """
         try:
             return FlextObservability._flext_metric_entity(name, value, unit, kwargs)
@@ -212,8 +222,13 @@ class FlextObservability(
     ) -> p.Result[FlextObservability.Trace]:
         """Create a trace entity directly.
 
+        Args:
+            name: Trace name; must be non-empty.
+            attributes: Optional scalar attribute mapping.
+            trace_id: Optional explicit trace ID; defaults to a generated UUID.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.Trace]``.
+            Trace entity or error result.
         """
         try:
             if not name:
@@ -238,8 +253,12 @@ class FlextObservability(
     def flext_alert(**kwargs: t.JsonValue) -> p.Result[FlextObservability.Alert]:
         """Create an alert entity directly.
 
+        Args:
+            **kwargs: Alert fields; defaults applied for status, severity,
+                source, and labels when omitted.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.Alert]``.
+            Alert entity or error result.
         """
         try:
             payload = FlextObservability._alert_payload(kwargs)
@@ -301,8 +320,14 @@ class FlextObservability(
     ) -> p.Result[FlextObservability.HealthCheck]:
         """Create a health check entity directly.
 
+        Args:
+            component: Component name; must be non-empty.
+            status: Health status; must be a valid ``HealthStatus`` value.
+            health_check_id: Optional explicit health check ID.
+            details: Optional scalar detail mapping.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.HealthCheck]``.
+            Health check entity or error result.
         """
         _ = health_check_id
         try:
@@ -340,8 +365,15 @@ class FlextObservability(
     ) -> p.Result[FlextObservability.LogEntry]:
         """Create a log entry entity directly.
 
+        Args:
+            message: Log message; must be non-empty.
+            level: Error severity level.
+            component: Originating component name.
+            timestamp: Optional explicit timestamp; defaults to now.
+            context: Optional scalar context mapping.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.LogEntry]``.
+            Log entry entity or error result.
         """
         try:
             if not message:

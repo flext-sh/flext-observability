@@ -41,10 +41,15 @@ class FlextObservabilityMonitor:
             *args: t.Scalar,
             **kwargs: t.Scalar,
         ) -> t.Scalar:
-            """Call function with flexible arguments.
+            """Call a function with flexible positional and keyword arguments.
+
+            Args:
+                func: Callable to invoke.
+                *args: Positional arguments for the callable.
+                **kwargs: Keyword arguments for the callable.
 
             Returns:
-                The resulting ``t.Scalar``.
+                Result returned by the callable.
             """
             return func(*args, **kwargs)
 
@@ -56,10 +61,18 @@ class FlextObservabilityMonitor:
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
         ) -> t.Scalar:
-            """Execute function with monitoring.
+            """Execute a function while recording success or error metrics.
+
+            Args:
+                func: Callable to execute.
+                args: Positional arguments for the callable.
+                kwargs: Keyword arguments for the callable.
+                monitor: Monitor that records the execution metrics.
+                metric_name: Metric name; defaults to a name derived from the
+                    callable.
 
             Returns:
-                The resulting ``t.Scalar``.
+                Result returned by the callable.
 
             Raises:
                 EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
@@ -101,7 +114,15 @@ class FlextObservabilityMonitor:
             function_name: str,
             error: Exception,
         ) -> None:
-            """Record metrics and alerts for function execution errors."""
+            """Record metrics and alerts for a function execution error.
+
+            Args:
+                monitor: Monitor that records the metrics.
+                metric_name: Base metric name for the failed execution.
+                execution_time: Elapsed execution time in seconds.
+                function_name: Name of the failed function.
+                error: Exception raised by the function.
+            """
             monitor.flext_record_metric(
                 f"{metric_name}_error_total",
                 1,
@@ -139,7 +160,13 @@ class FlextObservabilityMonitor:
             metric_name: str,
             execution_time: float,
         ) -> None:
-            """Record metrics for successful function execution."""
+            """Record metrics for a successful function execution.
+
+            Args:
+                monitor: Monitor that records the metrics.
+                metric_name: Base metric name for the execution.
+                execution_time: Elapsed execution time in seconds.
+            """
             monitor.flext_record_metric(
                 f"{metric_name}_duration_seconds",
                 execution_time,
@@ -282,10 +309,15 @@ class FlextObservabilityMonitor:
         value: float,
         metric_type: str = c.Observability.MetricType.GAUGE,
     ) -> p.Result[bool]:
-        """Record metric through the monitoring system with settings validation.
+        """Record a metric through the monitoring system with settings validation.
+
+        Args:
+            name: Metric name.
+            value: Metric value.
+            metric_type: Metric type; defaults to gauge.
 
         Returns:
-            The resulting ``p.Result[bool]``.
+            ``True`` when the metric was recorded, or error result.
         """
         try:
             return self._record_metric_entry(name, value, metric_type)
@@ -390,11 +422,17 @@ class FlextObservabilityMonitor:
         [FlextObservabilityMonitor.object_callable],
         FlextObservabilityMonitor.object_callable,
     ]:
-        """Create function monitoring decorator with metrics collection.
+        """Create a function monitoring decorator with metrics collection.
+
+        Args:
+            monitor: Monitor used to record metrics; defaults to the
+                shared monitor.
+            metric_name: Metric name; defaults to a name derived from the
+                decorated function.
 
         Returns:
-            The resulting ``Callable[[FlextObservabilityMonitor.object_callable],
-                FlextObservabilityMonitor.object_callable]``.
+            Decorator that records execution metrics for the wrapped
+            callable.
         """
         return FlextObservabilityMonitor.MonitoringDecorators.flext_monitor_function(
             monitor=monitor,
@@ -412,14 +450,20 @@ class FlextObservabilityMonitor:
             [FlextObservabilityMonitor.object_callable],
             FlextObservabilityMonitor.object_callable,
         ]:
-            """Create function monitoring decorator with metrics collection.
+            """Create a function monitoring decorator with metrics collection.
 
             Simplified decorator that records function execution metrics using
             flext-observability.
 
+            Args:
+                monitor: Monitor used to record metrics; defaults to a new
+                    monitor instance.
+                metric_name: Metric name; defaults to a name derived from the
+                    decorated function.
+
             Returns:
-                The resulting ``Callable[[FlextObservabilityMonitor.object_callable],
-                    FlextObservabilityMonitor.object_callable]``.
+                Decorator that records execution metrics for the wrapped
+                callable.
             """
 
             def decorator(
