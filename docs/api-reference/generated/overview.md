@@ -19,16 +19,16 @@
 - Project class: `domain`
 - Keywords: `enterprise`, `flext`, `logging`, `metrics`, `monitoring`, `tracing`,
   `typed`
-- Main facades: `FlextObservability`, `FlextObservabilityAdvancedContext`,
-  `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,
-  `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
-  `FlextObservabilityErrorHandling` (+14 more)
+- Main facades: `FlextObservability`, `FlextObservabilityCli`,
+  `FlextObservabilityConfig`, `FlextObservabilityConstants`, `FlextObservabilityModels`,
+  `FlextObservabilityProtocols`, `FlextObservabilityServiceBase`,
+  `FlextObservabilitySettings` (+3 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextObservability`, `FlextObservabilityAdvancedContext`,
-  `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,
-  `FlextObservabilityContext`, `FlextObservabilityCustomMetrics`,
-  `FlextObservabilityErrorHandling`, `FlextObservabilityHTTP`,
-  `FlextObservabilityHTTPClient` (+16 more)
+- Public symbol exports: `FlextObservability`, `FlextObservabilityCli`,
+  `FlextObservabilityConfig`, `FlextObservabilityConstants`, `FlextObservabilityModels`,
+  `FlextObservabilityProtocols`, `FlextObservabilityServiceBase`,
+  `FlextObservabilitySettings`, `FlextObservabilityTypes`, `FlextObservabilityUtilities`
+  (+5 more)
 - Exported module shortcuts: `services`
 - Generated module pages: `8`
 

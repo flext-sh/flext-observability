@@ -161,6 +161,7 @@ class FlextObservabilitySampling:
 
             Returns:
                 The resulting ``p.Result[float]``.
+
             """
             try:
                 validated_rate = self.RATE_ADAPTER.validate_python(rate)
@@ -182,6 +183,7 @@ class FlextObservabilitySampling:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             validated_rate_result = self._validate_rate(rate)
             if validated_rate_result.failure:

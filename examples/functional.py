@@ -62,6 +62,7 @@ class FlextObservabilityFunctionalExamples:
 
         Returns:
             The resulting ``str``.
+
         """
         time.sleep(0.1)
         return f"Processed: {data}"

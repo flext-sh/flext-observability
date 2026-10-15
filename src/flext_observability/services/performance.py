@@ -114,6 +114,7 @@ class FlextObservabilityPerformance:
 
             Returns:
                 The resulting ``float``.
+
             """
             return FlextObservabilityPerformance._process.cpu_percent(interval=0.01)
 
@@ -123,6 +124,7 @@ class FlextObservabilityPerformance:
 
             Returns:
                 The resulting ``float``.
+
             """
             memory_info = FlextObservabilityPerformance._process.memory_info()
             return float(memory_info.rss) / 1024 / 1024

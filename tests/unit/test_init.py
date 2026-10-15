@@ -8,11 +8,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
-
 from flext_core import FlextContainer
+
 from flext_observability import FlextObservability, __version__, __version_info__
-from tests import c
+from tests import c, tm
 
 flext_alert = FlextObservability.flext_alert
 flext_health_check = FlextObservability.flext_health_check

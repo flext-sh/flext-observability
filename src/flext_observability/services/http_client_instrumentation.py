@@ -72,6 +72,7 @@ class FlextObservabilityHTTPClient:
 
         Returns:
             The resulting ``TypeIs[p.Observability.HttpClient.HTTPXAsyncClient]``.
+
         """
         # Runtime check goes through the owning protocol surface, which
         # declares both ``request`` and ``_send``; no private-name probing.
@@ -87,6 +88,7 @@ class FlextObservabilityHTTPClient:
 
         Returns:
             The resulting ``TypeIs[p.Observability.HttpClient.HTTPXClient]``.
+
         """
         # Sync httpx clients structurally satisfy the async protocol too, so
         # exclude the async surface explicitly; checks stay on the declared
@@ -166,8 +168,14 @@ class FlextObservabilityHTTPClient:
         ) -> t.ConfigurationMapping:
             """Build the shared httpx log payload for one request event.
 
+            Args:
+                method: HTTP method of the request.
+                url: Request URL.
+                is_async: Whether the call originated from the async client.
+                **extra: Additional payload fields merged into the result.
+
             Returns:
-                The resulting ``t.ConfigurationMapping``.
+                Structured log payload for the request event.
 
             """
             return {
@@ -186,7 +194,14 @@ class FlextObservabilityHTTPClient:
             *,
             is_async: bool,
         ) -> None:
-            """Log the outgoing httpx request at debug severity."""
+            """Log the outgoing httpx request at debug severity.
+
+            Args:
+                method: HTTP method of the request.
+                url: Request URL.
+                is_async: Whether the call originated from the async client.
+
+            """
             _ = FlextObservabilityLogging.log_with_context(
                 FlextObservabilityHTTPClient.logger,
                 c.Observability.ErrorSeverity.DEBUG.value,
@@ -204,7 +219,16 @@ class FlextObservabilityHTTPClient:
             duration_ms: float,
             error: BaseException,
         ) -> None:
-            """Log a failed httpx request at error severity."""
+            """Log a failed httpx request at error severity.
+
+            Args:
+                method: HTTP method of the request.
+                url: Request URL.
+                is_async: Whether the call originated from the async client.
+                duration_ms: Elapsed time until the failure, in milliseconds.
+                error: Exception raised by the request.
+
+            """
             _ = FlextObservabilityLogging.log_with_context(
                 FlextObservabilityHTTPClient.logger,
                 c.Observability.ErrorSeverity.ERROR.value,
@@ -229,7 +253,16 @@ class FlextObservabilityHTTPClient:
             duration_ms: float,
             status_code: int,
         ) -> None:
-            """Log a completed httpx response at debug severity."""
+            """Log a completed httpx response at debug severity.
+
+            Args:
+                method: HTTP method of the request.
+                url: Request URL.
+                is_async: Whether the call originated from the async client.
+                duration_ms: Elapsed request time in milliseconds.
+                status_code: HTTP status code of the response.
+
+            """
             _ = FlextObservabilityLogging.log_with_context(
                 FlextObservabilityHTTPClient.logger,
                 c.Observability.ErrorSeverity.DEBUG.value,
@@ -258,12 +291,19 @@ class FlextObservabilityHTTPClient:
             ) -> p.Observability.HttpClient.HTTPXResponse:
                 """Trace one async httpx request with context propagation.
 
+                Args:
+                    method: HTTP method of the request.
+                    url: Request URL.
+                    *args: Positional arguments forwarded to the client.
+                    **kwargs: Keyword arguments forwarded to the client.
+
                 Returns:
-                    The resulting ``p.Observability.HttpClient.HTTPXResponse``.
+                    HTTP response returned by the client.
 
                 Raises:
                     TypeError: If the async request returned a non-awaitable.
                     EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+
                 """
                 helpers = FlextObservabilityHTTPClient.HTTPX
                 start_time = time.time()
@@ -326,12 +366,19 @@ class FlextObservabilityHTTPClient:
             ) -> p.Observability.HttpClient.HTTPXResponse:
                 """Traced request wrapper for sync httpx.
 
+                Args:
+                    method: HTTP method of the request.
+                    url: Request URL.
+                    *args: Positional arguments forwarded to the client.
+                    **kwargs: Keyword arguments forwarded to the client.
+
                 Returns:
-                    The resulting ``p.Observability.HttpClient.HTTPXResponse``.
+                    HTTP response returned by the client.
 
                 Raises:
-                    TypeError: If Sync httpx request returned an awaitable response.
+                    TypeError: If the sync request returned an awaitable response.
                     EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+
                 """
                 helpers = FlextObservabilityHTTPClient.HTTPX
                 start_time = time.time()
@@ -549,11 +596,18 @@ class FlextObservabilityHTTPClient:
             ) -> p.Observability.HttpClient.AIOHTTPResponse:
                 """Traced request wrapper for aiohttp.
 
+                Args:
+                    method: HTTP method of the request.
+                    url: Request URL.
+                    *args: Positional arguments forwarded to the session.
+                    **kwargs: Keyword arguments forwarded to the session.
+
                 Returns:
-                    The resulting ``p.Observability.HttpClient.AIOHTTPResponse``.
+                    HTTP response returned by the session.
 
                 Raises:
                     EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+
                 """
                 start_time = time.time()
                 correlation_id = FlextObservabilityContext.correlation_id()

@@ -11,10 +11,8 @@ from __future__ import annotations
 
 from flext_cli import FlextCliConstants
 
-from flext_observability._constants import (
-    FlextObservabilityConstantsBase,
-    FlextObservabilityConstantsDomains,
-)
+from flext_observability._constants import FlextObservabilityConstantsDomains
+from flext_observability._constants.base import FlextObservabilityConstantsBase
 
 
 class FlextObservabilityConstants(FlextCliConstants):

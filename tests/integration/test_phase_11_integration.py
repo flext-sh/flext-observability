@@ -14,7 +14,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_observability import FlextObservability, c, m
 from flext_observability.services.advanced_context import (
@@ -25,6 +24,7 @@ from flext_observability.services.custom_metrics import FlextObservabilityCustom
 from flext_observability.services.error_handling import FlextObservabilityErrorHandling
 from flext_observability.services.performance import FlextObservabilityPerformance
 from flext_observability.services.sampling import FlextObservabilitySampling
+from tests import tm
 
 MetricType = c.Observability.MetricType
 ErrorSeverity = c.Observability.ErrorSeverity
@@ -62,8 +62,8 @@ def _registry() -> FlextObservabilityCustomMetrics.Registry:
     return FlextObservabilityCustomMetrics.active_registry()
 
 
-class TestsFlextObservabilityPhase11Sampling:
-    """Metric-creation, sampling, and context behavioral contracts."""
+class TestsFlextObservabilityPhase11Base:
+    """Shared observability fixtures for the phase-11 contracts."""
 
     @staticmethod
     @pytest.fixture
@@ -82,6 +82,10 @@ class TestsFlextObservabilityPhase11Sampling:
     def advanced_context() -> FlextObservabilityAdvancedContext.Context:
         """Return the global advanced context, cleared for isolation."""
         return _cleared_advanced_context()
+
+
+class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base):
+    """Metric-creation, sampling, and context behavioral contracts."""
 
     # -- metric creation -------------------------------------------------
 
@@ -263,26 +267,8 @@ class TestsFlextObservabilityPhase11Sampling:
         tm.that(advanced_context.resolve_metadata("user_id"), eq="user-123")
 
 
-class TestsFlextObservabilityPhase11ErrorsMetrics:
+class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11Base):
     """Error handling, metric registry, performance, and end-to-end contracts."""
-
-    @staticmethod
-    @pytest.fixture
-    def factory() -> FlextObservability:
-        """Return a fresh master factory instance."""
-        return _fresh_factory()
-
-    @staticmethod
-    @pytest.fixture
-    def sampler() -> FlextObservabilitySampling.Sampler:
-        """Return the global sampler with a deterministic default rate."""
-        return _deterministic_sampler()
-
-    @staticmethod
-    @pytest.fixture
-    def advanced_context() -> FlextObservabilityAdvancedContext.Context:
-        """Return the global advanced context, cleared for isolation."""
-        return _cleared_advanced_context()
 
     @staticmethod
     @pytest.fixture
