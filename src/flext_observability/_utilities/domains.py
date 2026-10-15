@@ -21,6 +21,7 @@ class FlextObservabilityUtilitiesDomains:
 
             Returns:
                 The resulting ``p.Result[float]``.
+
             """
             if end_ns < start_ns:
                 return r[float].fail("end_ns must be >= start_ns")
@@ -35,6 +36,7 @@ class FlextObservabilityUtilitiesDomains:
 
             Returns:
                 The resulting ``bool``.
+
             """
             if rate <= 0.0:
                 return False

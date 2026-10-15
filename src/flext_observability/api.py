@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING, ClassVar, Self
 from uuid import uuid4
 
 from flext_core import FlextContainer
+
 from flext_observability import c, m, p, r, t, u
 from flext_observability.services.advanced_context import (
     FlextObservabilityAdvancedContext,
@@ -101,6 +102,7 @@ class FlextObservability(
 
         Returns:
             Resolved metric type.
+
         """
         if name.endswith(("_total", "_count")):
             return c.Observability.MetricType.COUNTER
@@ -126,6 +128,7 @@ class FlextObservability(
 
         Returns:
             Metric entity or error result.
+
         """
         try:
             return FlextObservability._flext_metric_entity(name, value, unit, kwargs)
@@ -143,6 +146,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``p.Result[FlextObservability.Metric]``.
+
         """
         if not name:
             return r[FlextObservability.Metric].fail_op(
@@ -173,6 +177,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``str``.
+
         """
         if metric_id_raw is None:
             return str(uuid4())
@@ -188,6 +193,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``c.Observability.MetricType``.
+
         """
         if metric_type_raw is not None:
             return m.Observability.MetricTypeInput.model_validate({
@@ -203,6 +209,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``t.MutableScalarMapping``.
+
         """
         all_labels_data: t.MutableScalarMapping = {}
         for source_key in ("tags", "labels"):
@@ -229,6 +236,7 @@ class FlextObservability(
 
         Returns:
             Trace entity or error result.
+
         """
         try:
             if not name:
@@ -259,6 +267,7 @@ class FlextObservability(
 
         Returns:
             Alert entity or error result.
+
         """
         try:
             payload = FlextObservability._alert_payload(kwargs)
@@ -274,6 +283,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``t.MutableJsonMapping``.
+
         """
         payload: t.MutableJsonMapping = dict(kwargs)
         _ = payload.pop("status", c.Observability.AlertStatus.FIRING)
@@ -301,6 +311,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``t.JsonDict``.
+
         """
         raw_labels = payload.get("labels")
         resolved_labels: t.JsonDict = {}
@@ -328,6 +339,7 @@ class FlextObservability(
 
         Returns:
             Health check entity or error result.
+
         """
         _ = health_check_id
         try:
@@ -374,6 +386,7 @@ class FlextObservability(
 
         Returns:
             Log entry entity or error result.
+
         """
         try:
             if not message:

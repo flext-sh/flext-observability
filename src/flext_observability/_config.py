@@ -15,8 +15,8 @@ from __future__ import annotations
 from typing import Annotated
 
 from flext_cli import FlextCliConfig, m
-
 from flext_core import FlextSettings
+
 from flext_observability._models.base import FlextObservabilityModelsBase
 
 

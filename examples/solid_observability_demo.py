@@ -36,6 +36,7 @@ class FlextObservabilitySolidDemo:
 
         Returns:
             The resulting ``t.JsonMapping``.
+
         """
         time.sleep(0.05)
         return {"query": query, "rows": 42, "execution_time": 0.05}
@@ -46,6 +47,7 @@ class FlextObservabilitySolidDemo:
 
         Returns:
             The resulting ``t.JsonMapping``.
+
         """
         time.sleep(0.1)
         return {"endpoint": endpoint, "status": "success", "response_time": 0.1}

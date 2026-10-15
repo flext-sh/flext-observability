@@ -294,6 +294,7 @@ class FlextObservabilityContext:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         try:
             m.Observability.BaggageKeyModel.model_validate(obj={"key": key})
@@ -338,6 +339,7 @@ class FlextObservabilityContext:
 
         Returns:
             The resulting ``str``.
+
         """
         if span_id is None:
             span_id = str(uuid4())

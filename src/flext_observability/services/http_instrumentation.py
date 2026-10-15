@@ -71,6 +71,7 @@ class FlextObservabilityHTTP:
 
         Returns:
             The resulting ``TypeIs[p.Observability.Http.FlaskApp]``.
+
         """
         # Why: `getattr(..., default) is not None` instead of `hasattr`.
         # mypy's hasattr-narrowing builds a type map per union member of
@@ -93,6 +94,7 @@ class FlextObservabilityHTTP:
 
         Returns:
             The resulting ``TypeIs[p.Observability.Http.FastAPIApp]``.
+
         """
         missing = object()
         return getattr(obj, "add_middleware", missing) is not missing
@@ -124,6 +126,7 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``t.Triple[str, str, t.StrMapping]``.
+
             """
             headers_dict: t.StrMapping = dict(flask.request.headers)
             FlextObservabilityContext.from_headers(headers_dict)
@@ -158,6 +161,7 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``p.Observability.Http.Response``.
+
             """
             try:
                 cls._log_after_request(response)
@@ -197,6 +201,7 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``float``.
+
             """
             start_time = (
                 flask.g.flext_start_time
@@ -214,6 +219,7 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``t.Pair[m.Dict, int]``.
+
             """
             try:
                 FlextObservabilityLogging.log_with_context(
@@ -283,6 +289,7 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             # Why: include FlaskApp explicitly in the parameter type. With
             # only `t.RegisterableService` (a DI-service union structurally
@@ -358,6 +365,7 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             # Why: include FastAPIApp explicitly (see Flask._setup_instrumentation
             # for the full rationale — otherwise mypy proves the TypeIs guard
@@ -391,6 +399,7 @@ class FlextObservabilityHTTP:
 
                     Raises:
                         EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+
                     """
                     try:
                         return await cls._dispatch_request(request, call_next)
@@ -418,6 +427,7 @@ class FlextObservabilityHTTP:
 
             Raises:
                 EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+
             """
             headers_dict: t.MutableStrMapping = dict(request.headers.items())
             FlextObservabilityContext.from_headers(headers_dict)
@@ -445,6 +455,7 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``t.MutableScalarMapping``.
+
             """
             return {
                 "http_method": request.method,
@@ -465,6 +476,7 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``Response``.
+
             """
             response = await call_next(request)
             duration_ms = (time.time() - start_time) * 1000

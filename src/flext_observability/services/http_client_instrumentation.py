@@ -72,6 +72,7 @@ class FlextObservabilityHTTPClient:
 
         Returns:
             The resulting ``TypeIs[p.Observability.HttpClient.HTTPXAsyncClient]``.
+
         """
         # Runtime check goes through the owning protocol surface, which
         # declares both ``request`` and ``_send``; no private-name probing.
@@ -87,6 +88,7 @@ class FlextObservabilityHTTPClient:
 
         Returns:
             The resulting ``TypeIs[p.Observability.HttpClient.HTTPXClient]``.
+
         """
         # Sync httpx clients structurally satisfy the async protocol too, so
         # exclude the async surface explicitly; checks stay on the declared
@@ -174,6 +176,7 @@ class FlextObservabilityHTTPClient:
 
             Returns:
                 Structured log payload for the request event.
+
             """
             return {
                 "http_method": method,
@@ -197,6 +200,7 @@ class FlextObservabilityHTTPClient:
                 method: HTTP method of the request.
                 url: Request URL.
                 is_async: Whether the call originated from the async client.
+
             """
             _ = FlextObservabilityLogging.log_with_context(
                 FlextObservabilityHTTPClient.logger,
@@ -223,6 +227,7 @@ class FlextObservabilityHTTPClient:
                 is_async: Whether the call originated from the async client.
                 duration_ms: Elapsed time until the failure, in milliseconds.
                 error: Exception raised by the request.
+
             """
             _ = FlextObservabilityLogging.log_with_context(
                 FlextObservabilityHTTPClient.logger,
@@ -256,6 +261,7 @@ class FlextObservabilityHTTPClient:
                 is_async: Whether the call originated from the async client.
                 duration_ms: Elapsed request time in milliseconds.
                 status_code: HTTP status code of the response.
+
             """
             _ = FlextObservabilityLogging.log_with_context(
                 FlextObservabilityHTTPClient.logger,
@@ -297,6 +303,7 @@ class FlextObservabilityHTTPClient:
                 Raises:
                     TypeError: If the async request returned a non-awaitable.
                     EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+
                 """
                 helpers = FlextObservabilityHTTPClient.HTTPX
                 start_time = time.time()
@@ -371,6 +378,7 @@ class FlextObservabilityHTTPClient:
                 Raises:
                     TypeError: If the sync request returned an awaitable response.
                     EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+
                 """
                 helpers = FlextObservabilityHTTPClient.HTTPX
                 start_time = time.time()
@@ -599,6 +607,7 @@ class FlextObservabilityHTTPClient:
 
                 Raises:
                     EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+
                 """
                 start_time = time.time()
                 correlation_id = FlextObservabilityContext.correlation_id()

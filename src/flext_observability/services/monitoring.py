@@ -12,6 +12,7 @@ from typing import ClassVar, override
 from uuid import uuid4
 
 from flext_core import FlextContainer
+
 from flext_observability import c, m, p, r, settings, t, u
 from flext_observability.services.service import FlextObservabilityServices
 
@@ -50,6 +51,7 @@ class FlextObservabilityMonitor:
 
             Returns:
                 Result returned by the callable.
+
             """
             return func(*args, **kwargs)
 
@@ -76,6 +78,7 @@ class FlextObservabilityMonitor:
 
             Raises:
                 EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
+
             """
             function_name = getattr(func, "__name__", "unknown_function")
             actual_metric_name = metric_name or f"function_execution_{function_name}"
@@ -122,6 +125,7 @@ class FlextObservabilityMonitor:
                 execution_time: Elapsed execution time in seconds.
                 function_name: Name of the failed function.
                 error: Exception raised by the function.
+
             """
             monitor.flext_record_metric(
                 f"{metric_name}_error_total",
@@ -166,6 +170,7 @@ class FlextObservabilityMonitor:
                 monitor: Monitor that records the metrics.
                 metric_name: Base metric name for the execution.
                 execution_time: Elapsed execution time in seconds.
+
             """
             monitor.flext_record_metric(
                 f"{metric_name}_duration_seconds",
@@ -197,6 +202,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             The resulting ``p.Result[t.Observability.HealthMetricsDict]``.
+
         """
         try:
             if not self._observability_service:
@@ -228,6 +234,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             The resulting ``p.Result[m.Dict]``.
+
         """
         if not self._metrics_service:
             return r[m.Dict].fail_op(
@@ -249,6 +256,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         if self._initialized:
             return r[bool].ok(value=True)
@@ -262,6 +270,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         service_result = self._create_observability_service()
         if service_result.failure:
@@ -284,6 +293,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             The resulting ``p.Result[p.Observability.ObservabilityService]``.
+
         """
         try:
             return r[p.Observability.ObservabilityService].ok(
@@ -318,6 +328,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             ``True`` when the metric was recorded, or error result.
+
         """
         try:
             return self._record_metric_entry(name, value, metric_type)
@@ -334,6 +345,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         if not settings.Observability.metrics_enabled:
             self.logger.debug("Metrics recording disabled in configuration")
@@ -357,6 +369,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             The resulting ``p.Result[m.Observability.MetricEntry]``.
+
         """
         try:
             return r[m.Observability.MetricEntry].ok(
@@ -377,6 +390,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         if not self._initialized:
             return r[bool].fail_op("start monitoring", "Monitor not initialized")
@@ -395,6 +409,7 @@ class FlextObservabilityMonitor:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         if not self._running:
             return r[bool].ok(value=True)
@@ -433,6 +448,7 @@ class FlextObservabilityMonitor:
         Returns:
             Decorator that records execution metrics for the wrapped
             callable.
+
         """
         return FlextObservabilityMonitor.MonitoringDecorators.flext_monitor_function(
             monitor=monitor,
@@ -464,6 +480,7 @@ class FlextObservabilityMonitor:
             Returns:
                 Decorator that records execution metrics for the wrapped
                 callable.
+
             """
 
             def decorator(

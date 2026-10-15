@@ -95,6 +95,7 @@ class FlextObservabilityCustomMetrics:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             if namespace:
                 keys_to_remove = [
@@ -254,6 +255,7 @@ class FlextObservabilityCustomMetrics:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             validation_result = self._validate_metric_definition_input(
                 name,
@@ -297,6 +299,7 @@ class FlextObservabilityCustomMetrics:
 
             Returns:
                 The resulting ``p.Result[c.Observability.MetricType]``.
+
             """
             if not name or not name.strip():
                 return e.fail_validation(

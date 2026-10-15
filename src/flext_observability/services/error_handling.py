@@ -81,6 +81,7 @@ class FlextObservabilityErrorHandling:
 
             Returns:
                 ``True`` when counts were cleared successfully.
+
             """
 
             def operation() -> bool:
@@ -105,6 +106,7 @@ class FlextObservabilityErrorHandling:
 
             Returns:
                 Recorded error count.
+
             """
             # Why: mro-4p0t — empty dict literal widens .get() to Any for mypy.
             count: int = self._error_counts.get(fingerprint, 0)
@@ -121,6 +123,7 @@ class FlextObservabilityErrorHandling:
 
             Returns:
                 Escalated severity for the error.
+
             """
             if not error.fingerprint:
                 error = error.calculate_fingerprint()
@@ -138,6 +141,7 @@ class FlextObservabilityErrorHandling:
 
             Args:
                 error: Error the alert was sent for.
+
             """
             if not error.fingerprint:
                 error = error.calculate_fingerprint()
@@ -159,6 +163,7 @@ class FlextObservabilityErrorHandling:
                 - Calculates fingerprint
                 - Updates error counts
                 - Sets correlation ID if available
+
             """
 
             def operation() -> m.Observability.ErrorEvent:
@@ -196,6 +201,7 @@ class FlextObservabilityErrorHandling:
 
             Returns:
                 ``True`` when the cooldown was applied.
+
             """
             try:
                 validated_seconds = m.Observability.CooldownInput.model_validate(
@@ -219,6 +225,7 @@ class FlextObservabilityErrorHandling:
 
             Returns:
                 ``True`` when the threshold was applied.
+
             """
             try:
                 validated_threshold = m.Observability.ThresholdInput.model_validate(
@@ -247,6 +254,7 @@ class FlextObservabilityErrorHandling:
                 - Checks cooldown period (don't spam same error)
                 - Considers error count (escalate repeated errors)
                 - Respects severity level
+
             """
             if not error.fingerprint:
                 error = error.calculate_fingerprint()
@@ -276,6 +284,7 @@ class FlextObservabilityErrorHandling:
 
         Returns:
             Shared error handler.
+
         """
         if FlextObservabilityErrorHandling._handler_instance is None:
             FlextObservabilityErrorHandling._handler_instance = (
@@ -294,6 +303,7 @@ class FlextObservabilityErrorHandling:
 
         Returns:
             Updated error with fingerprint.
+
         """
         handler = FlextObservabilityErrorHandling.active_handler()
         return handler.record_error(error)
@@ -307,6 +317,7 @@ class FlextObservabilityErrorHandling:
 
         Returns:
             ``True`` when an alert should be sent.
+
         """
         handler = FlextObservabilityErrorHandling.active_handler()
         return handler.should_alert_for_error(error)
