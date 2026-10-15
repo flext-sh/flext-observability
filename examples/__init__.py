@@ -13,12 +13,13 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
+    from flext_core import d, e, h, r, s, x
+
     from examples.constants import ExamplesFlextObservabilityConstants, c
     from examples.models import ExamplesFlextObservabilityModels, m
     from examples.protocols import ExamplesFlextObservabilityProtocols, p
     from examples.typings import ExamplesFlextObservabilityTypes, t
     from examples.utilities import ExamplesFlextObservabilityUtilities, u
-    from flext_core import d, e, h, r, s, x
 
 
 __all__: tuple[str, ...] = (
