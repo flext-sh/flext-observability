@@ -13,10 +13,11 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping
 from datetime import datetime
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Self
 from uuid import uuid4
 
 from flext_core import FlextContainer
+
 from flext_observability import c, m, p, r, t, u
 from flext_observability.services.advanced_context import (
     FlextObservabilityAdvancedContext,
@@ -33,7 +34,7 @@ from flext_observability.services.logging_integration import FlextObservabilityL
 from flext_observability.services.monitoring import FlextObservabilityMonitor
 from flext_observability.services.performance import FlextObservabilityPerformance
 from flext_observability.services.sampling import FlextObservabilitySampling
-from flext_observability.services.services import FlextObservabilityServices
+from flext_observability.services.service import FlextObservabilityServices
 
 if TYPE_CHECKING:
     from flext_observability._settings import FlextObservabilitySettings
@@ -64,6 +65,16 @@ class FlextObservability(
     _container_type: ClassVar[p.ContainerType] = FlextContainer
     logger: p.Logger = u.fetch_logger(__name__)
 
+    @classmethod
+    def fetch_global(cls) -> Self:
+        """Return the shared observability facade instance.
+
+        Returns:
+            The shared facade instance.
+
+        """
+        return cls()
+
     class Metric(m.Observability.Metric):
         """Observability metric entity."""
 
@@ -84,10 +95,14 @@ class FlextObservability(
     # _flext_metric_type below.
     @staticmethod
     def _metric_type_for_name(name: str) -> c.Observability.MetricType:
-        """Resolve metric type from a metric name suffix.
+        """Resolve the metric type from a metric name suffix.
+
+        Args:
+            name: Metric name to inspect.
 
         Returns:
-            The resulting ``c.Observability.MetricType``.
+            Resolved metric type.
+
         """
         if name.endswith(("_total", "_count")):
             return c.Observability.MetricType.COUNTER
@@ -104,8 +119,16 @@ class FlextObservability(
     ) -> p.Result[FlextObservability.Metric]:
         """Create a metric entity directly.
 
+        Args:
+            name: Metric name; suffix drives the default metric type.
+            value: Metric value.
+            unit: Metric unit.
+            **kwargs: Optional ``metric_type``, ``metric_id``, ``tags``,
+                and ``labels`` payload.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.Metric]``.
+            Metric entity or error result.
+
         """
         try:
             return FlextObservability._flext_metric_entity(name, value, unit, kwargs)
@@ -123,6 +146,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``p.Result[FlextObservability.Metric]``.
+
         """
         if not name:
             return r[FlextObservability.Metric].fail_op(
@@ -153,6 +177,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``str``.
+
         """
         if metric_id_raw is None:
             return str(uuid4())
@@ -168,6 +193,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``c.Observability.MetricType``.
+
         """
         if metric_type_raw is not None:
             return m.Observability.MetricTypeInput.model_validate({
@@ -183,6 +209,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``t.MutableScalarMapping``.
+
         """
         all_labels_data: t.MutableScalarMapping = {}
         for source_key in ("tags", "labels"):
@@ -202,8 +229,14 @@ class FlextObservability(
     ) -> p.Result[FlextObservability.Trace]:
         """Create a trace entity directly.
 
+        Args:
+            name: Trace name; must be non-empty.
+            attributes: Optional scalar attribute mapping.
+            trace_id: Optional explicit trace ID; defaults to a generated UUID.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.Trace]``.
+            Trace entity or error result.
+
         """
         try:
             if not name:
@@ -228,8 +261,13 @@ class FlextObservability(
     def flext_alert(**kwargs: t.JsonValue) -> p.Result[FlextObservability.Alert]:
         """Create an alert entity directly.
 
+        Args:
+            **kwargs: Alert fields; defaults applied for status, severity,
+                source, and labels when omitted.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.Alert]``.
+            Alert entity or error result.
+
         """
         try:
             payload = FlextObservability._alert_payload(kwargs)
@@ -245,6 +283,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``t.MutableJsonMapping``.
+
         """
         payload: t.MutableJsonMapping = dict(kwargs)
         _ = payload.pop("status", c.Observability.AlertStatus.FIRING)
@@ -272,6 +311,7 @@ class FlextObservability(
 
         Returns:
             The resulting ``t.JsonDict``.
+
         """
         raw_labels = payload.get("labels")
         resolved_labels: t.JsonDict = {}
@@ -291,8 +331,15 @@ class FlextObservability(
     ) -> p.Result[FlextObservability.HealthCheck]:
         """Create a health check entity directly.
 
+        Args:
+            component: Component name; must be non-empty.
+            status: Health status; must be a valid ``HealthStatus`` value.
+            health_check_id: Optional explicit health check ID.
+            details: Optional scalar detail mapping.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.HealthCheck]``.
+            Health check entity or error result.
+
         """
         _ = health_check_id
         try:
@@ -330,8 +377,16 @@ class FlextObservability(
     ) -> p.Result[FlextObservability.LogEntry]:
         """Create a log entry entity directly.
 
+        Args:
+            message: Log message; must be non-empty.
+            level: Error severity level.
+            component: Originating component name.
+            timestamp: Optional explicit timestamp; defaults to now.
+            context: Optional scalar context mapping.
+
         Returns:
-            The resulting ``p.Result[FlextObservability.LogEntry]``.
+            Log entry entity or error result.
+
         """
         try:
             if not message:
@@ -354,7 +409,7 @@ class FlextObservability(
             return r[FlextObservability.LogEntry].fail_op("create log entry", e)
 
 
-observability: FlextObservability = FlextObservability()
+observability: FlextObservability = FlextObservability.fetch_global()
 """Module-level MRO facade singleton for the observability namespace."""
 
 __all__: list[str] = ["FlextObservability", "observability"]

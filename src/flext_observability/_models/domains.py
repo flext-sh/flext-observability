@@ -14,8 +14,8 @@ from typing import Annotated, Self
 from uuid import uuid4
 
 from flext_cli import m
-
 from flext_core import t
+
 from flext_observability import c
 
 

@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import ClassVar
 
 from flext_core import FlextContainer
+
 from flext_observability import c, m, p, r, t, u
 
 
@@ -49,6 +50,7 @@ class FlextObservabilityServices:
 
         Returns:
             The resulting ``p.Result[m.Dict]``.
+
         """
         requested_keys: t.JsonValueList = list(kwargs)
         self.logger.debug(
@@ -63,6 +65,7 @@ class FlextObservabilityServices:
 
         Returns:
             The resulting ``p.Result[m.Dict]``.
+
         """
         return r[m.Dict].fail("Metrics summary not implemented in generic service")
 
@@ -72,6 +75,7 @@ class FlextObservabilityServices:
 
         Returns:
             The resulting ``p.Result[m.Dict]``.
+
         """
         try:
             status = {
@@ -96,6 +100,7 @@ class FlextObservabilityServices:
 
         Returns:
             The resulting ``p.Result[m.Dict]``.
+
         """
         try:
             if not entry_data:

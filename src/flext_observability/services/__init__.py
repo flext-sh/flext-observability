@@ -10,7 +10,7 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core import install_lazy_exports
+from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_observability.services.advanced_context import (
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from flext_observability.services.monitoring import FlextObservabilityMonitor
     from flext_observability.services.performance import FlextObservabilityPerformance
     from flext_observability.services.sampling import FlextObservabilitySampling
-    from flext_observability.services.services import FlextObservabilityServices
+    from flext_observability.services.service import FlextObservabilityServices
 
 
 __all__: tuple[str, ...] = (
@@ -67,7 +67,7 @@ install_lazy_exports(
         "FlextObservabilityMonitor": ".monitoring",
         "FlextObservabilityPerformance": ".performance",
         "FlextObservabilitySampling": ".sampling",
-        "FlextObservabilityServices": ".services",
+        "FlextObservabilityServices": ".service",
     }),
     public_exports=__all__,
 )
