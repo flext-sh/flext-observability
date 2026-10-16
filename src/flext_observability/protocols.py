@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Observability protocols for FLEXT ecosystem.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -9,8 +10,10 @@ from __future__ import annotations
 
 from flext_cli import FlextCliProtocols
 
-from flext_observability._protocols.base import FlextObservabilityProtocolsBase
-from flext_observability._protocols.domains import FlextObservabilityProtocolsDomains
+from flext_observability._protocols import (
+    FlextObservabilityProtocolsBase,
+    FlextObservabilityProtocolsDomains,
+)
 
 
 class FlextObservabilityProtocols(FlextCliProtocols, FlextObservabilityProtocolsBase):

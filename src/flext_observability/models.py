@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Generic FLEXT Observability Models.
 
  Pydantic models with minimal code using composition and delegation.
@@ -12,8 +13,10 @@ from __future__ import annotations
 
 from flext_cli import FlextCliModels
 
-from flext_observability._models.base import FlextObservabilityModelsBase
-from flext_observability._models.domains import FlextObservabilityModelsDomains
+from flext_observability._models import (
+    FlextObservabilityModelsBase,
+    FlextObservabilityModelsDomains,
+)
 
 
 class FlextObservabilityModels(FlextCliModels, FlextObservabilityModelsBase):
