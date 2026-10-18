@@ -34,7 +34,6 @@ from starlette.responses import Response
 
 from flext_observability import c, m, p, r, t, u
 from flext_observability.services.context import FlextObservabilityContext
-from flext_observability.services.logging_integration import FlextObservabilityLogging
 
 
 class FlextObservabilityHTTP:
@@ -104,21 +103,12 @@ class FlextObservabilityHTTP:
 
         @classmethod
         def _before_request_hook(cls) -> None:
-            """Extract context and create span before request processing."""
-            try:
-                request_method, request_path, extra_before = (
-                    cls._before_request_payload()
-                )
-                FlextObservabilityLogging.log_with_context(
-                    FlextObservabilityHTTP.logger,
-                    c.Observability.ErrorSeverity.DEBUG.value,
-                    f"HTTP {request_method} {request_path}",
-                    extra=extra_before,
-                )
-            except c.EXC_MAPPING_TYPE as e:
-                FlextObservabilityHTTP.logger.warning(
-                    f"Error in before_request hook: {e}",
-                )
+            """Extract request context and emit through the selected Core hooks."""
+            request_method, request_path, extra_before = cls._before_request_payload()
+            FlextObservabilityHTTP.logger.debug(
+                f"HTTP {request_method} {request_path}",
+                **extra_before,
+            )
 
         @classmethod
         def _before_request_payload(cls) -> t.Triple[str, str, t.StrMapping]:
@@ -163,12 +153,7 @@ class FlextObservabilityHTTP:
                 The resulting ``p.Observability.Http.Response``.
 
             """
-            try:
-                cls._log_after_request(response)
-            except c.EXC_MAPPING_TYPE as e:
-                FlextObservabilityHTTP.logger.warning(
-                    f"Error in after_request hook: {e}",
-                )
+            cls._log_after_request(response)
             return response
 
         @classmethod
@@ -181,18 +166,13 @@ class FlextObservabilityHTTP:
             request_method = flask.request.method
             request_path = flask.request.path
             duration_ms = cls._duration_ms()
-            FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTP.logger,
-                c.Observability.ErrorSeverity.INFO.value
-                if not is_error
-                else c.Observability.ErrorSeverity.WARNING.value,
+            FlextObservabilityHTTP.logger.log(
+                c.LogLevel.INFO if not is_error else c.LogLevel.WARNING,
                 f"HTTP {request_method} {request_path} -> {status_code}",
-                extra={
-                    "http_method": request_method,
-                    "http_path": request_path,
-                    "http_status": status_code,
-                    "http_duration_ms": duration_ms,
-                },
+                http_method=request_method,
+                http_path=request_path,
+                http_status=status_code,
+                http_duration_ms=duration_ms,
             )
 
         @classmethod
@@ -221,22 +201,12 @@ class FlextObservabilityHTTP:
                 The resulting ``t.Pair[m.Dict, int]``.
 
             """
-            try:
-                FlextObservabilityLogging.log_with_context(
-                    FlextObservabilityHTTP.logger,
-                    c.Observability.ErrorSeverity.ERROR.value,
-                    f"HTTP request error: {error!s}",
-                    extra={
-                        "http_method": flask.request.method,
-                        "http_path": flask.request.path,
-                        "error_type": type(error).__name__,
-                        "error_message": str(error),
-                    },
-                )
-            except c.EXC_MAPPING_TYPE as log_error:
-                FlextObservabilityHTTP.logger.error(
-                    f"Error in error handler: {log_error}",
-                )
+            FlextObservabilityHTTP.logger.exception(
+                "HTTP request error",
+                exception=error,
+                http_method=flask.request.method,
+                http_path=flask.request.path,
+            )
             return (m.Dict({"error": str(error)}), 500)
 
         @classmethod
@@ -401,11 +371,7 @@ class FlextObservabilityHTTP:
                         EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
 
                     """
-                    try:
-                        return await cls._dispatch_request(request, call_next)
-                    except c.EXC_MAPPING_TYPE as e:
-                        FlextObservabilityHTTP.logger.warning(f"Middleware error: {e}")
-                        raise
+                    return await cls._dispatch_request(request, call_next)
 
             add_middleware = typed_app.add_middleware
             add_middleware(FlextObservabilityMiddleware)
@@ -433,21 +399,16 @@ class FlextObservabilityHTTP:
             FlextObservabilityContext.from_headers(headers_dict)
             correlation_id = FlextObservabilityContext.correlation_id()
             start_time = time.time()
-            await FlextObservabilityHTTP._async_log_with_context(
+            FlextObservabilityHTTP.logger.debug(
                 f"HTTP {request.method} {request.url.path}",
-                c.Observability.ErrorSeverity.DEBUG.value,
-                cls._request_log_extra(request),
+                **cls._request_log_extra(request),
             )
-            try:
-                return await cls._dispatch_response(
-                    request,
-                    call_next,
-                    correlation_id,
-                    start_time,
-                )
-            except c.EXC_MAPPING_TYPE as e:
-                await cls._log_dispatch_error(request, e)
-                raise
+            return await cls._dispatch_response(
+                request,
+                call_next,
+                correlation_id,
+                start_time,
+            )
 
         @classmethod
         def _request_log_extra(cls, request: Request) -> t.MutableScalarMapping:
@@ -478,62 +439,31 @@ class FlextObservabilityHTTP:
                 The resulting ``Response``.
 
             """
-            response = await call_next(request)
+            try:
+                response = await call_next(request)
+            except c.EXC_MAPPING_TYPE as error:
+                FlextObservabilityHTTP.logger.exception(
+                    "HTTP request error",
+                    exception=error,
+                    http_method=request.method,
+                    http_path=request.url.path,
+                )
+                raise
             duration_ms = (time.time() - start_time) * 1000
             status_code = (
                 response.status_code if hasattr(response, "status_code") else 200
             )
             is_error = status_code >= c.Observability.HTTP_ERROR_STATUS_THRESHOLD
-            await FlextObservabilityHTTP._async_log_with_context(
+            FlextObservabilityHTTP.logger.log(
+                c.LogLevel.INFO if not is_error else c.LogLevel.WARNING,
                 f"HTTP {request.method} {request.url.path} -> {status_code}",
-                c.Observability.ErrorSeverity.INFO.value
-                if not is_error
-                else c.Observability.ErrorSeverity.WARNING.value,
-                {
-                    "http_method": request.method,
-                    "http_path": request.url.path,
-                    "http_status": status_code,
-                    "http_duration_ms": duration_ms,
-                },
+                http_method=request.method,
+                http_path=request.url.path,
+                http_status=status_code,
+                http_duration_ms=duration_ms,
             )
             response.headers["X-Correlation-ID"] = correlation_id
             return response
-
-        @classmethod
-        async def _log_dispatch_error(cls, request: Request, error: Exception) -> None:
-            """Emit FastAPI request error metadata."""
-            await FlextObservabilityHTTP._async_log_with_context(
-                f"HTTP request error: {error!s}",
-                c.Observability.ErrorSeverity.ERROR.value,
-                {
-                    "http_method": request.method,
-                    "http_path": request.url.path,
-                    "error_type": type(error).__name__,
-                    "error_message": str(error),
-                },
-            )
-
-    @staticmethod
-    async def _async_log_with_context(
-        message: str,
-        level: str,
-        extra: t.ConfigurationMapping | None = None,
-    ) -> None:
-        """Async wrapper for logging with context (for FastAPI).
-
-        Allows async operations in FastAPI middleware to log with context.
-        """
-        try:
-            FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTP.logger,
-                level,
-                message,
-                extra=extra,
-            )
-        except c.EXC_MAPPING_TYPE as e:
-            FlextObservabilityHTTP.logger.warning(
-                f"Error logging in async context: {e}",
-            )
 
 
 __all__: list[str] = ["FlextObservabilityHTTP"]

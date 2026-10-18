@@ -16,9 +16,7 @@ from flext_core import FlextService
 from flext_observability import FlextObservabilitySettings, m, p, t
 
 
-class FlextObservabilityServiceBase[
-    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload],
-](FlextService[TDomainResult], ABC):
+class FlextObservabilityServiceBase[TDomainResult](FlextService[TDomainResult], ABC):
     """Base class for flext-observability services with typed API settings access."""
 
     def __init__(
@@ -38,7 +36,7 @@ class FlextObservabilityServiceBase[
         )
 
     @classmethod
-    def runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
+    def runtime_bootstrap_options(cls) -> p.RuntimeBootstrapOptions:
         """Return runtime bootstrap options for observability services."""
         return m.RuntimeBootstrapOptions(settings_type=FlextObservabilitySettings)
 

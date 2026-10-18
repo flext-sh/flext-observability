@@ -6,11 +6,103 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import p, r
+from flext_cli import r, u
+
+from flext_observability import c, m, p, t
 
 
 class FlextObservabilityUtilitiesDomains:
     """Observability-specific project utilities."""
+
+    class ContextStage:
+        """Read injected live context at Core's native processor boundary."""
+
+        def __init__(self, context: p.Observability.LoggingContext) -> None:
+            """Retain the actual context provider, never a context snapshot."""
+            self._context = context
+
+        def __call__(
+            self,
+            logger: p.OutputLogger,
+            method_name: str,
+            event_dict: t.LoggingEvent,
+        ) -> t.LoggingEvent:
+            """Supply only existing operation identifiers before sanitization."""
+            _ = logger, method_name
+            for key, value in (
+                ("correlation_id", self._context.correlation_id()),
+                ("trace_id", self._context.trace_id()),
+                ("span_id", self._context.span_id()),
+            ):
+                if value:
+                    event_dict[key] = value
+                else:
+                    event_dict.pop(key, None)
+            return event_dict
+
+    class ErrorObserver:
+        """Adapt sanitized Core records to an injected domain recording service."""
+
+        def __init__(self, recorder: p.Observability.ErrorRecorder) -> None:
+            """Retain the actual recording port, not a second error engine."""
+            self._recorder = recorder
+
+        def __call__(self, event: p.LoggingRecord) -> None:
+            """Record actual exceptions; use Core's canonical failure terminal."""
+            if event.exception is None:
+                return
+            error = m.Observability.ErrorEvent(
+                error_type=type(event.exception).__name__,
+                message=u.str_adapter().validate_python(
+                    event.context["exception_message"],
+                ),
+                severity=c.Observability.ErrorSeverity(event.level),
+                correlation_id=u.str_adapter().validate_python(
+                    event.context.get("correlation_id", ""),
+                ),
+            )
+            self._recorder.record_error(error).unwrap()
+
+    @staticmethod
+    def compose_logging(
+        options: p.StructlogOptions,
+        *,
+        context_stage: p.LoggingStage,
+        capture: p.LoggingObserver,
+        errors: p.LoggingObserver,
+        enabled: bool = True,
+    ) -> p.StructlogOptions:
+        """Compose supplied providers without configuring the process runtime.
+
+        The caller owns provider identities and configuration lifecycle. Removing
+        this binding preserves all unrelated stages, observers and destinations.
+        """
+        if not isinstance(context_stage, p.LoggingStage):
+            msg = "Observability logging requires a native context stage"
+            raise TypeError(msg)
+        if not isinstance(capture, p.LoggingObserver) or not isinstance(
+            errors,
+            p.LoggingObserver,
+        ):
+            msg = "Observability logging requires capture and error observers"
+            raise TypeError(msg)
+        stages = tuple(
+            stage for stage in options.processing_stages if stage is not context_stage
+        )
+        observers = tuple(
+            observer
+            for observer in options.observers
+            if observer is not capture and observer is not errors
+        )
+        if enabled:
+            stages += (context_stage,)
+            observers += (capture,)
+            if errors is not capture:
+                observers += (errors,)
+        return m.StructlogOptions.model_validate(
+            options,
+            from_attributes=True,
+        ).model_copy(update={"processing_stages": stages, "observers": observers})
 
     class Performance:
         """Performance tracking helpers."""

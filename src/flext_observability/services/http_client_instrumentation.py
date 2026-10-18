@@ -29,7 +29,6 @@ from typing import ClassVar, TypeIs
 
 from flext_observability import c, m, p, r, t, u
 from flext_observability.services.context import FlextObservabilityContext
-from flext_observability.services.logging_integration import FlextObservabilityLogging
 
 
 class FlextObservabilityHTTPClient:
@@ -193,7 +192,7 @@ class FlextObservabilityHTTPClient:
             url: str,
             *,
             is_async: bool,
-        ) -> None:
+        ) -> t.LogResult:
             """Log the outgoing httpx request at debug severity.
 
             Args:
@@ -202,11 +201,9 @@ class FlextObservabilityHTTPClient:
                 is_async: Whether the call originated from the async client.
 
             """
-            _ = FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTPClient.logger,
-                c.Observability.ErrorSeverity.DEBUG.value,
+            return FlextObservabilityHTTPClient.logger.debug(
                 f"HTTP client request: {method} {url}",
-                extra=cls.http_log_extra(method, url, is_async=is_async),
+                **cls.http_log_extra(method, url, is_async=is_async),
             )
 
         @classmethod
@@ -218,7 +215,7 @@ class FlextObservabilityHTTPClient:
             is_async: bool,
             duration_ms: float,
             error: BaseException,
-        ) -> None:
+        ) -> t.LogResult:
             """Log a failed httpx request at error severity.
 
             Args:
@@ -229,17 +226,14 @@ class FlextObservabilityHTTPClient:
                 error: Exception raised by the request.
 
             """
-            _ = FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTPClient.logger,
-                c.Observability.ErrorSeverity.ERROR.value,
+            return FlextObservabilityHTTPClient.logger.exception(
                 f"HTTP client error: {method} {url}",
-                extra=cls.http_log_extra(
+                exception=error,
+                **cls.http_log_extra(
                     method,
                     url,
                     is_async=is_async,
                     http_duration_ms=duration_ms,
-                    error_type=type(error).__name__,
-                    error_message=str(error),
                 ),
             )
 
@@ -252,7 +246,7 @@ class FlextObservabilityHTTPClient:
             is_async: bool,
             duration_ms: float,
             status_code: int,
-        ) -> None:
+        ) -> t.LogResult:
             """Log a completed httpx response at debug severity.
 
             Args:
@@ -263,11 +257,9 @@ class FlextObservabilityHTTPClient:
                 status_code: HTTP status code of the response.
 
             """
-            _ = FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTPClient.logger,
-                c.Observability.ErrorSeverity.DEBUG.value,
+            return FlextObservabilityHTTPClient.logger.debug(
                 f"HTTP client response: {method} {url} -> {status_code}",
-                extra=cls.http_log_extra(
+                **cls.http_log_extra(
                     method,
                     url,
                     is_async=is_async,
@@ -622,16 +614,12 @@ class FlextObservabilityHTTPClient:
                     headers["X-Trace-ID"] = trace_id
                 if span_id:
                     headers["X-Span-ID"] = span_id
-                _ = FlextObservabilityLogging.log_with_context(
-                    FlextObservabilityHTTPClient.logger,
-                    c.Observability.ErrorSeverity.DEBUG.value,
+                FlextObservabilityHTTPClient.logger.debug(
                     f"HTTP client request: {method} {url}",
-                    extra={
-                        "http_method": method,
-                        "http_url": url,
-                        "client": "aiohttp",
-                        "async": True,
-                    },
+                    http_method=method,
+                    http_url=url,
+                    client="aiohttp",
+                    **{"async": True},
                 )
                 async_call_kwargs: t.ConfigurationMapping = {
                     k: v for k, v in kwargs.items() if k != "headers"
@@ -646,35 +634,26 @@ class FlextObservabilityHTTPClient:
                     )
                 except c.EXC_MAPPING_TYPE as e:
                     duration_ms = (time.time() - start_time) * 1000
-                    _ = FlextObservabilityLogging.log_with_context(
-                        FlextObservabilityHTTPClient.logger,
-                        c.Observability.ErrorSeverity.ERROR.value,
+                    FlextObservabilityHTTPClient.logger.exception(
                         f"HTTP client error: {method} {url}",
-                        extra={
-                            "http_method": method,
-                            "http_url": url,
-                            "http_duration_ms": duration_ms,
-                            "error_type": type(e).__name__,
-                            "error_message": str(e),
-                            "client": "aiohttp",
-                            "async": True,
-                        },
+                        exception=e,
+                        http_method=method,
+                        http_url=url,
+                        http_duration_ms=duration_ms,
+                        client="aiohttp",
+                        **{"async": True},
                     )
                     raise
                 duration_ms = (time.time() - start_time) * 1000
                 status = response.status
-                _ = FlextObservabilityLogging.log_with_context(
-                    FlextObservabilityHTTPClient.logger,
-                    c.Observability.ErrorSeverity.DEBUG.value,
+                FlextObservabilityHTTPClient.logger.debug(
                     f"HTTP client response: {method} {url} -> {status}",
-                    extra={
-                        "http_method": method,
-                        "http_url": url,
-                        "http_status": status,
-                        "http_duration_ms": duration_ms,
-                        "client": "aiohttp",
-                        "async": True,
-                    },
+                    http_method=method,
+                    http_url=url,
+                    http_status=status,
+                    http_duration_ms=duration_ms,
+                    client="aiohttp",
+                    **{"async": True},
                 )
                 return response
 

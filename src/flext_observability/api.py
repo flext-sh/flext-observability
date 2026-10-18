@@ -75,6 +75,47 @@ class FlextObservability(
         """
         return cls()
 
+    @staticmethod
+    def compose_logging(
+        options: m.StructlogOptions,
+        *,
+        context_stage: p.LoggingStage,
+        capture: p.LoggingObserver,
+        errors: p.LoggingObserver,
+        enabled: bool = True,
+    ) -> m.StructlogOptions:
+        """Compose supplied providers without configuring the process runtime.
+
+        Reuse the same provider objects to install or remove this binding
+        idempotently. The application retains the base options and calls Core
+        configuration at its own lifecycle boundary. A capture consumer and an
+        error observer are required; entity factories are not delivery ports.
+        """
+        if not isinstance(context_stage, p.LoggingStage):
+            msg = "Observability logging requires a native context stage"
+            raise TypeError(msg)
+        if not isinstance(capture, p.LoggingObserver) or not isinstance(
+            errors, p.LoggingObserver
+        ):
+            msg = "Observability logging requires capture and error observers"
+            raise TypeError(msg)
+        stages = tuple(
+            stage for stage in options.processing_stages if stage is not context_stage
+        )
+        observers = tuple(
+            observer
+            for observer in options.observers
+            if observer is not capture and observer is not errors
+        )
+        if enabled:
+            stages += (context_stage,)
+            observers += (capture,)
+            if errors is not capture:
+                observers += (errors,)
+        return options.model_copy(
+            update={"processing_stages": stages, "observers": observers},
+        )
+
     class Metric(m.Observability.Metric):
         """Observability metric entity."""
 
