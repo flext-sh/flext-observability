@@ -226,11 +226,21 @@ class FlextObservabilityModelsDomains:
     class ErrorHandlingState(m.ArbitraryTypesModel):
         """Mutable aggregation state consumed by the error recording service."""
 
-        error_counts: t.MutableIntMapping = m.Field(default_factory=dict)
-        last_alert_time: t.MutableMappingKV[str, float] = m.Field(default_factory=dict)
-        alert_cooldown_sec: float = 60.0
-        escalation_threshold: int = 5
-        deduplication_window_sec: int = 300
+        error_counts: t.MutableIntMapping = m.Field(
+            default_factory=dict, description="Recorded counts by error fingerprint"
+        )
+        last_alert_time: t.MutableMappingKV[str, float] = m.Field(
+            default_factory=dict, description="Last alert timestamp by error fingerprint"
+        )
+        alert_cooldown_sec: float = m.Field(
+            default=60.0, description="Minimum interval between repeated error alerts"
+        )
+        escalation_threshold: int = m.Field(
+            default=5, description="Recorded error count required for escalation"
+        )
+        deduplication_window_sec: int = m.Field(
+            default=300, description="Window for deduplicating recorded error events"
+        )
 
     class ErrorEvent(m.Value):
         """Error event with fingerprinting for deduplication and alerting."""

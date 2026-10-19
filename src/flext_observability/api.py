@@ -321,7 +321,6 @@ class FlextObservability(
         FlextObservability._apply_alert_id(payload)
         payload.setdefault("severity", c.Observability.AlertLevel.WARNING)
         payload.setdefault("source", "system")
-        payload["labels"] = FlextObservability._alert_labels(payload)
         payload.setdefault("domain_events", [])
         return payload
 
@@ -333,23 +332,6 @@ class FlextObservability(
         alert_id_raw = payload.pop("alert_id")
         if "id" not in payload:
             payload.setdefault("id", u.str_adapter().validate_python(alert_id_raw))
-
-    @staticmethod
-    def _alert_labels(payload: t.MappingKV[str, t.JsonValue]) -> t.JsonDict:
-        """Normalize alert labels into JSON primitives.
-
-        Returns:
-            The resulting ``t.JsonDict``.
-
-        """
-        raw_labels = payload.get("labels")
-        resolved_labels: t.JsonDict = {}
-        if isinstance(raw_labels, Mapping):
-            resolved_labels = {
-                key: value if value is None or u.primitive(value) else str(value)
-                for key, value in raw_labels.items()
-            }
-        return resolved_labels
 
     @staticmethod
     def flext_health_check(
