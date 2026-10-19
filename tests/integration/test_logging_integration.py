@@ -88,7 +88,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
             eq="after removal",
         )
         tm.that(disabled.processing_stages[0] is application_stage, eq=True)
-        tm.that(disabled.handlers is base.handlers, eq=True)
+        tm.that(disabled.handlers == base.handlers, eq=True)
         tm.that(disabled.cache_logger_on_first_use, eq=base.cache_logger_on_first_use)
         tm.that(disabled.async_logging, eq=base.async_logging)
 

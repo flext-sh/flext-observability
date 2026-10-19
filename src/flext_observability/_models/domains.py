@@ -230,7 +230,8 @@ class FlextObservabilityModelsDomains:
             default_factory=dict, description="Recorded counts by error fingerprint"
         )
         last_alert_time: t.MutableMappingKV[str, float] = m.Field(
-            default_factory=dict, description="Last alert timestamp by error fingerprint"
+            default_factory=dict,
+            description="Last alert timestamp by error fingerprint",
         )
         alert_cooldown_sec: float = m.Field(
             default=60.0, description="Minimum interval between repeated error alerts"
