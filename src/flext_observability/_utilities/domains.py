@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from flext_cli import r, u
 
-from flext_observability import c, m, p, t
+from flext_observability import c, m, p
 
 
 class FlextObservabilityUtilitiesDomains:
@@ -25,9 +25,14 @@ class FlextObservabilityUtilitiesDomains:
             self,
             logger: p.OutputLogger,
             method_name: str,
-            event_dict: t.LoggingEvent,
-        ) -> t.LoggingEvent:
-            """Supply only existing operation identifiers before sanitization."""
+            event_dict: p.LoggingEvent,
+        ) -> p.LoggingEvent:
+            """Supply only existing operation identifiers before sanitization.
+
+            Returns:
+                The event updated with the provider's current identifiers.
+
+            """
             _ = logger, method_name
             for key, value in (
                 ("correlation_id", self._context.correlation_id()),
@@ -76,6 +81,13 @@ class FlextObservabilityUtilitiesDomains:
 
         The caller owns provider identities and configuration lifecycle. Removing
         this binding preserves all unrelated stages, observers and destinations.
+
+        Returns:
+            Copied options with the supplied providers attached or removed.
+
+        Raises:
+            TypeError: A supplied stage or observer violates its protocol.
+
         """
         if not isinstance(context_stage, p.LoggingStage):
             msg = "Observability logging requires a native context stage"

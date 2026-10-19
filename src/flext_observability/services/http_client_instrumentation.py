@@ -63,7 +63,7 @@ class FlextObservabilityHTTPClient:
 
     @staticmethod
     def _matches_httpx_async_client(
-        obj: t.RegisterableService
+        obj: p.RegisterableService
         | p.Observability.HttpClient.HTTPXAsyncClient
         | p.Observability.HttpClient.HTTPXClient,
     ) -> TypeIs[p.Observability.HttpClient.HTTPXAsyncClient]:
@@ -79,7 +79,7 @@ class FlextObservabilityHTTPClient:
 
     @staticmethod
     def _matches_httpx_client(
-        obj: t.RegisterableService
+        obj: p.RegisterableService
         | p.Observability.HttpClient.HTTPXAsyncClient
         | p.Observability.HttpClient.HTTPXClient,
     ) -> TypeIs[p.Observability.HttpClient.HTTPXClient]:
@@ -99,7 +99,7 @@ class FlextObservabilityHTTPClient:
 
     @staticmethod
     def _matches_aiohttp_session(
-        obj: t.RegisterableService | p.Observability.HttpClient.AIOHTTPSession,
+        obj: p.RegisterableService | p.Observability.HttpClient.AIOHTTPSession,
     ) -> TypeIs[p.Observability.HttpClient.AIOHTTPSession]:
         missing = object()
         return getattr(obj, "request", missing) is not missing
@@ -192,13 +192,16 @@ class FlextObservabilityHTTPClient:
             url: str,
             *,
             is_async: bool,
-        ) -> t.LogResult:
+        ) -> p.LogResult:
             """Log the outgoing httpx request at debug severity.
 
             Args:
                 method: HTTP method of the request.
                 url: Request URL.
                 is_async: Whether the call originated from the async client.
+
+            Returns:
+                The logger's request delivery result.
 
             """
             return FlextObservabilityHTTPClient.logger.debug(
@@ -215,7 +218,7 @@ class FlextObservabilityHTTPClient:
             is_async: bool,
             duration_ms: float,
             error: BaseException,
-        ) -> t.LogResult:
+        ) -> p.LogResult:
             """Log a failed httpx request at error severity.
 
             Args:
@@ -224,6 +227,9 @@ class FlextObservabilityHTTPClient:
                 is_async: Whether the call originated from the async client.
                 duration_ms: Elapsed time until the failure, in milliseconds.
                 error: Exception raised by the request.
+
+            Returns:
+                The logger's exception delivery result.
 
             """
             return FlextObservabilityHTTPClient.logger.exception(
@@ -246,7 +252,7 @@ class FlextObservabilityHTTPClient:
             is_async: bool,
             duration_ms: float,
             status_code: int,
-        ) -> t.LogResult:
+        ) -> p.LogResult:
             """Log a completed httpx response at debug severity.
 
             Args:
@@ -255,6 +261,9 @@ class FlextObservabilityHTTPClient:
                 is_async: Whether the call originated from the async client.
                 duration_ms: Elapsed request time in milliseconds.
                 status_code: HTTP status code of the response.
+
+            Returns:
+                The logger's response delivery result.
 
             """
             return FlextObservabilityHTTPClient.logger.debug(
@@ -416,13 +425,13 @@ class FlextObservabilityHTTPClient:
 
         @staticmethod
         def _apply_httpx_instrumentation(
-            client: t.RegisterableService
+            client: p.RegisterableService
             | p.Observability.HttpClient.HTTPXAsyncClient
             | p.Observability.HttpClient.HTTPXClient,
         ) -> p.Result[bool]:
             """Apply httpx instrumentation to a validated client.
 
-            Why the wider parameter type: with only `t.RegisterableService` (a
+            Why the wider parameter type: with only `p.RegisterableService` (a
             DI-service union structurally disjoint from the httpx client
             protocols), mypy proves the TypeIs guards below can never succeed
             and marks everything past them unreachable — correct for the
@@ -458,7 +467,7 @@ class FlextObservabilityHTTPClient:
             return r[bool].ok(value=True)
 
         @classmethod
-        def setup_instrumentation(cls, client: t.RegisterableService) -> p.Result[bool]:
+        def setup_instrumentation(cls, client: p.RegisterableService) -> p.Result[bool]:
             """Set up httpx client request instrumentation.
 
             Wraps httpx client methods to automatically trace all HTTP requests
@@ -514,7 +523,7 @@ class FlextObservabilityHTTPClient:
         @classmethod
         def setup_instrumentation(
             cls,
-            session: t.RegisterableService,
+            session: p.RegisterableService,
         ) -> p.Result[bool]:
             """Set up aiohttp client session instrumentation.
 
@@ -556,7 +565,7 @@ class FlextObservabilityHTTPClient:
 
         @staticmethod
         def _apply_aiohttp_instrumentation(
-            session: t.RegisterableService | p.Observability.HttpClient.AIOHTTPSession,
+            session: p.RegisterableService | p.Observability.HttpClient.AIOHTTPSession,
         ) -> p.Result[bool]:
             """Apply aiohttp instrumentation to a validated session.
 

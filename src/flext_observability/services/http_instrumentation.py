@@ -64,7 +64,7 @@ class FlextObservabilityHTTP:
 
     @staticmethod
     def _matches_flask_app(
-        obj: t.RegisterableService | p.Observability.Http.FlaskApp,
+        obj: p.RegisterableService | p.Observability.Http.FlaskApp,
     ) -> TypeIs[p.Observability.Http.FlaskApp]:
         """Type guard to check if object is a Flask app.
 
@@ -74,7 +74,7 @@ class FlextObservabilityHTTP:
         """
         # Why: `getattr(..., default) is not None` instead of `hasattr`.
         # mypy's hasattr-narrowing builds a type map per union member of
-        # `t.RegisterableService` (a wide recursive service-value union) and
+        # `p.RegisterableService` (a wide recursive service-value union) and
         # crashed (INTERNAL ERROR) walking it, whether the check stood alone
         # or was split out of a boolean "and". `getattr` with a sentinel
         # default is not subject to that narrowing pass and is behaviorally
@@ -87,7 +87,7 @@ class FlextObservabilityHTTP:
 
     @staticmethod
     def _matches_fastapi_app(
-        obj: t.RegisterableService | p.Observability.Http.FastAPIApp,
+        obj: p.RegisterableService | p.Observability.Http.FastAPIApp,
     ) -> TypeIs[p.Observability.Http.FastAPIApp]:
         """Type guard to check if object is a FastAPI app.
 
@@ -210,7 +210,7 @@ class FlextObservabilityHTTP:
             return (m.Dict({"error": str(error)}), 500)
 
         @classmethod
-        def setup_instrumentation(cls, app: t.RegisterableService) -> p.Result[bool]:
+        def setup_instrumentation(cls, app: p.RegisterableService) -> p.Result[bool]:
             """Set up Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -253,7 +253,7 @@ class FlextObservabilityHTTP:
         @classmethod
         def _setup_instrumentation(
             cls,
-            app: t.RegisterableService | p.Observability.Http.FlaskApp,
+            app: p.RegisterableService | p.Observability.Http.FlaskApp,
         ) -> p.Result[bool]:
             """Register Flask instrumentation hooks.
 
@@ -262,7 +262,7 @@ class FlextObservabilityHTTP:
 
             """
             # Why: include FlaskApp explicitly in the parameter type. With
-            # only `t.RegisterableService` (a DI-service union structurally
+            # only `p.RegisterableService` (a DI-service union structurally
             # disjoint from FlaskApp's protocol), mypy proves the TypeIs
             # narrowing below can never succeed and marks everything past
             # the guard unreachable — correct for the narrower static type,
@@ -284,7 +284,7 @@ class FlextObservabilityHTTP:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @classmethod
-        def setup_instrumentation(cls, app: t.RegisterableService) -> p.Result[bool]:
+        def setup_instrumentation(cls, app: p.RegisterableService) -> p.Result[bool]:
             """Set up FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,
@@ -329,7 +329,7 @@ class FlextObservabilityHTTP:
         @classmethod
         def _setup_instrumentation(
             cls,
-            app: t.RegisterableService | p.Observability.Http.FastAPIApp,
+            app: p.RegisterableService | p.Observability.Http.FastAPIApp,
         ) -> p.Result[bool]:
             """Register FastAPI instrumentation middleware.
 
@@ -339,7 +339,7 @@ class FlextObservabilityHTTP:
             """
             # Why: include FastAPIApp explicitly (see Flask._setup_instrumentation
             # for the full rationale — otherwise mypy proves the TypeIs guard
-            # below unreachable against the narrower `t.RegisterableService`).
+            # below unreachable against the narrower `p.RegisterableService`).
             if not FlextObservabilityHTTP._matches_fastapi_app(app):
                 return r[bool].fail(
                     "Invalid FastAPI app - missing add_middleware method",
@@ -367,9 +367,6 @@ class FlextObservabilityHTTP:
                     Returns:
                         HTTP response produced downstream.
 
-                    Raises:
-                        EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
-
                     """
                     return await cls._dispatch_request(request, call_next)
 
@@ -390,9 +387,6 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``Response``.
-
-            Raises:
-                EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
 
             """
             headers_dict: t.MutableStrMapping = dict(request.headers.items())
@@ -437,6 +431,9 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``Response``.
+
+            Raises:
+                EXC_MAPPING_TYPE: A downstream request failure is logged and reraised.
 
             """
             try:

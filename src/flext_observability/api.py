@@ -77,43 +77,31 @@ class FlextObservability(
 
     @staticmethod
     def compose_logging(
-        options: m.StructlogOptions,
+        options: p.StructlogOptions,
         *,
         context_stage: p.LoggingStage,
         capture: p.LoggingObserver,
         errors: p.LoggingObserver,
         enabled: bool = True,
-    ) -> m.StructlogOptions:
+    ) -> p.StructlogOptions:
         """Compose supplied providers without configuring the process runtime.
 
         Reuse the same provider objects to install or remove this binding
         idempotently. The application retains the base options and calls Core
         configuration at its own lifecycle boundary. A capture consumer and an
         error observer are required; entity factories are not delivery ports.
+        The utility rejects providers that violate their protocols with TypeError.
+
+        Returns:
+            Copied options with the supplied providers attached or removed.
+
         """
-        if not isinstance(context_stage, p.LoggingStage):
-            msg = "Observability logging requires a native context stage"
-            raise TypeError(msg)
-        if not isinstance(capture, p.LoggingObserver) or not isinstance(
-            errors, p.LoggingObserver
-        ):
-            msg = "Observability logging requires capture and error observers"
-            raise TypeError(msg)
-        stages = tuple(
-            stage for stage in options.processing_stages if stage is not context_stage
-        )
-        observers = tuple(
-            observer
-            for observer in options.observers
-            if observer is not capture and observer is not errors
-        )
-        if enabled:
-            stages += (context_stage,)
-            observers += (capture,)
-            if errors is not capture:
-                observers += (errors,)
-        return options.model_copy(
-            update={"processing_stages": stages, "observers": observers},
+        return u.Observability.compose_logging(
+            options,
+            context_stage=context_stage,
+            capture=capture,
+            errors=errors,
+            enabled=enabled,
         )
 
     class Metric(m.Observability.Metric):
@@ -222,7 +210,7 @@ class FlextObservability(
         """
         if metric_id_raw is None:
             return str(uuid4())
-        metric_id: str = t.str_adapter().validate_python(metric_id_raw)
+        metric_id: str = u.str_adapter().validate_python(metric_id_raw)
         return metric_id
 
     @staticmethod
@@ -344,7 +332,7 @@ class FlextObservability(
             return
         alert_id_raw = payload.pop("alert_id")
         if "id" not in payload:
-            payload.setdefault("id", t.str_adapter().validate_python(alert_id_raw))
+            payload.setdefault("id", u.str_adapter().validate_python(alert_id_raw))
 
     @staticmethod
     def _alert_labels(payload: t.MappingKV[str, t.JsonValue]) -> t.JsonDict:
@@ -356,7 +344,7 @@ class FlextObservability(
         """
         raw_labels = payload.get("labels")
         resolved_labels: t.JsonDict = {}
-        if u.mapping(raw_labels):
+        if isinstance(raw_labels, Mapping):
             resolved_labels = {
                 key: value if value is None or u.primitive(value) else str(value)
                 for key, value in raw_labels.items()
@@ -435,7 +423,7 @@ class FlextObservability(
                     "create log entry",
                     "Log message cannot be empty",
                 )
-            resolved_context = t.scalar_mapping_adapter().validate_python(context or {})
+            resolved_context = u.scalar_mapping_adapter().validate_python(context or {})
             entry = FlextObservability.LogEntry(
                 id=str(uuid4()),
                 message=message,

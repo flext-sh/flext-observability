@@ -181,7 +181,9 @@ class FlextObservabilityErrorHandling:
                 if "correlation_id" not in observed.model_fields_set:
                     current_error = current_error.model_copy(
                         update={
-                            "correlation_id": FlextObservabilityContext.correlation_id(),
+                            "correlation_id": (
+                                FlextObservabilityContext.correlation_id()
+                            ),
                         },
                     )
                 self._state.error_counts[current_error.fingerprint] = (

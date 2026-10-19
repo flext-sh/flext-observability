@@ -33,8 +33,8 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         def application_stage(
             logger: p.OutputLogger,
             method_name: str,
-            event: t.LoggingEvent,
-        ) -> t.LoggingEvent:
+            event: p.LoggingEvent,
+        ) -> p.LoggingEvent:
             _ = logger, method_name
             event["application_event"] = event["event"]
             return event
@@ -169,11 +169,11 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         capture = self.Capture()
         handler = FlextObservability.Handler()
         errors = u.Observability.ErrorObserver(handler)
-        secret = "private-capture-value"
+        redacted_value = "private-capture-value"
         base = m.StructlogOptions.model_validate(
             logging_runtime,
             from_attributes=True,
-        ).model_copy(update={"redacted_values": (secret,)})
+        ).model_copy(update={"redacted_values": (redacted_value,)})
         options = FlextObservability.compose_logging(
             base,
             context_stage=FlextObservability.ContextStage(),
@@ -182,7 +182,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         )
         u.configure_structlog(settings=options)
         FlextObservability.update_correlation_id("captured-operation")
-        original = OSError(f"storage rejected {secret}")
+        original = OSError(f"storage rejected {redacted_value}")
         tm.ok(
             u.failure("storage failure", exception=original, payload={"values": [1, 2]})
         )
@@ -190,7 +190,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         tm.that(record.exception is original, eq=True)
         tm.that(record.context["correlation_id"], eq="captured-operation")
         tm.that(record.context["payload"], eq={"values": [1, 2]})
-        tm.that(capture.stream.getvalue(), lacks=secret)
+        tm.that(capture.stream.getvalue(), lacks=redacted_value)
         serialized = m.LoggingRecord.model_validate(
             record, from_attributes=True
         ).model_dump()
@@ -242,12 +242,14 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         capture.stream.close()
         original = OSError("business operation failed")
         if business_failure:
-            with pytest.raises(OSError) as business_caught:
+            with pytest.raises(
+                OSError, match="business operation failed"
+            ) as business_caught:
                 u.failure("failed operation", exception=original)
             tm.that(business_caught.value is original, eq=True)
             tm.that(original.__context__ is capture.failure, eq=True)
         else:
-            with pytest.raises(ValueError) as capture_caught:
+            with pytest.raises(ValueError, match="closed file") as capture_caught:
                 u.warning("selected capture is closed")
             tm.that(capture_caught.value is capture.failure, eq=True)
         tm.that(capture.failure, none=False)

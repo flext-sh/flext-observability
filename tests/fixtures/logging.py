@@ -21,12 +21,18 @@ class TestsObservabilityLoggingFixtures:
         """An application receiver that writes the typed event as JSON."""
 
         def __init__(self) -> None:
+            """Initialize an empty receiver with its own writable stream."""
             self.records: list[p.LoggingRecord] = []
             self.stream = io.StringIO()
             self.failure: BaseException | None = None
 
         def __call__(self, event: p.LoggingRecord) -> None:
-            """Deliver to the selected stream, retaining native write failure."""
+            """Deliver to the selected stream, retaining native write failure.
+
+            Raises:
+                ValueError: The selected stream is closed or otherwise unwritable.
+
+            """
             serialized = m.LoggingRecord.model_validate(
                 event,
                 from_attributes=True,
@@ -40,7 +46,12 @@ class TestsObservabilityLoggingFixtures:
 
     @pytest.fixture
     def logging_streams(self) -> t.IteratorOf[t.LoggingStreams]:
-        """Keep real output streams alive until the composition is restored."""
+        """Keep real output streams alive until the composition is restored.
+
+        Yields:
+            The structured and console streams owned by this fixture.
+
+        """
         with io.StringIO() as structured, io.StringIO() as console:
             yield structured, console
 
@@ -49,7 +60,12 @@ class TestsObservabilityLoggingFixtures:
         self,
         logging_streams: t.LoggingStreams,
     ) -> t.IteratorOf[p.StructlogOptions]:
-        """Restore the captured provider/options/context, never fixed defaults."""
+        """Restore the captured provider/options/context, never fixed defaults.
+
+        Yields:
+            The options installed for the duration of the test.
+
+        """
         original_settings = u.logging_settings()
         original_options = u.logging_options()
         original_context = (

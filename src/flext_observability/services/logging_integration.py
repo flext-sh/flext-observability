@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_observability import p, t
+from flext_observability import p
 from flext_observability.services.context import FlextObservabilityContext
 
 
@@ -24,9 +24,14 @@ class FlextObservabilityLogging:
             self,
             logger: p.OutputLogger,
             method_name: str,
-            event_dict: t.LoggingEvent,
-        ) -> t.LoggingEvent:
-            """Enrich before Core sanitizes and captures the event."""
+            event_dict: p.LoggingEvent,
+        ) -> p.LoggingEvent:
+            """Enrich before Core sanitizes and captures the event.
+
+            Returns:
+                The event updated with current task-local identifiers.
+
+            """
             _ = logger, method_name
             for key, value in (
                 ("correlation_id", FlextObservabilityContext.correlation_id()),
