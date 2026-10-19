@@ -85,19 +85,7 @@ class FlextObservabilityUtilitiesDomains:
         Returns:
             Copied options with the supplied providers attached or removed.
 
-        Raises:
-            TypeError: A supplied stage or observer violates its protocol.
-
         """
-        if not isinstance(context_stage, p.LoggingStage):
-            msg = "Observability logging requires a native context stage"
-            raise TypeError(msg)
-        if not isinstance(capture, p.LoggingObserver) or not isinstance(
-            errors,
-            p.LoggingObserver,
-        ):
-            msg = "Observability logging requires capture and error observers"
-            raise TypeError(msg)
         stages = tuple(
             stage for stage in options.processing_stages if stage is not context_stage
         )

@@ -33,11 +33,11 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         def application_stage(
             logger: p.OutputLogger,
             method_name: str,
-            event: p.LoggingEvent,
+            event_dict: p.LoggingEvent,
         ) -> p.LoggingEvent:
             _ = logger, method_name
-            event["application_event"] = event["event"]
-            return event
+            event_dict["application_event"] = event_dict["event"]
+            return event_dict
 
         base = m.StructlogOptions(
             handlers=logging_runtime.handlers,
@@ -88,7 +88,8 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
             eq="after removal",
         )
         tm.that(disabled.processing_stages[0] is application_stage, eq=True)
-        tm.that(disabled.handlers == base.handlers, eq=True)
+        for actual, original in zip(disabled.handlers, base.handlers, strict=True):
+            tm.that(actual is original, eq=True)
         tm.that(disabled.cache_logger_on_first_use, eq=base.cache_logger_on_first_use)
         tm.that(disabled.async_logging, eq=base.async_logging)
 
