@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_observability import FlextObservability, c, m
+from flext_observability import FlextObservability, c, m, p
 from flext_observability.services.advanced_context import (
     FlextObservabilityAdvancedContext,
 )
@@ -50,7 +50,7 @@ def _cleared_advanced_context() -> FlextObservabilityAdvancedContext.Context:
     return ctx
 
 
-def _cleared_error_handler() -> FlextObservabilityErrorHandling.Handler:
+def _cleared_error_handler() -> p.Observability.ErrorHandler:
     """Return the global error handler with counts cleared."""
     handler = FlextObservabilityErrorHandling.active_handler()
     handler.clear_error_counts()
@@ -272,7 +272,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
 
     @staticmethod
     @pytest.fixture
-    def error_handler() -> FlextObservabilityErrorHandling.Handler:
+    def error_handler() -> p.Observability.ErrorHandler:
         """Return the global error handler with counts cleared."""
         return _cleared_error_handler()
 
@@ -286,7 +286,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
 
     @staticmethod
     def test_record_error_returns_event_with_fingerprint(
-        error_handler: FlextObservabilityErrorHandling.Handler,
+        error_handler: p.Observability.ErrorHandler,
     ) -> None:
         """Recording an error succeeds and assigns a fingerprint."""
         error = m.Observability.ErrorEvent(
@@ -302,7 +302,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
 
     @staticmethod
     def test_repeated_errors_increment_count_and_escalate_severity(
-        error_handler: FlextObservabilityErrorHandling.Handler,
+        error_handler: p.Observability.ErrorHandler,
     ) -> None:
         """Repeated identical errors raise the count and escalate severity."""
         tm.ok(error_handler.update_escalation_threshold(2))
@@ -336,7 +336,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
     @staticmethod
     @pytest.mark.parametrize("bad_threshold", [0, -1])
     def test_update_escalation_threshold_rejects_non_positive(
-        error_handler: FlextObservabilityErrorHandling.Handler,
+        error_handler: p.Observability.ErrorHandler,
         bad_threshold: int,
     ) -> None:
         """Escalation threshold must be positive; otherwise it fails."""
@@ -422,7 +422,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         factory: FlextObservability,
         sampler: FlextObservabilitySampling.Sampler,
         advanced_context: FlextObservabilityAdvancedContext.Context,
-        error_handler: FlextObservabilityErrorHandling.Handler,
+        error_handler: p.Observability.ErrorHandler,
     ) -> None:
         """A full workflow yields successful, self-consistent public results."""
         FlextObservabilityContext.update_correlation_id("e2e-001")
