@@ -1145,7 +1145,7 @@ class TestFlextTrace:
         tm.that(trace.service_name, eq="payment-service")
         tm.that(trace.context["user_id"], eq="123")
         tm.that(trace.context["amount"], eq="100.00")
-        assert trace.start_time is not None
+        tm.not_none(trace.start_time)
 
     def test_trace_parent_child_relationship(self):
         """Test parent-child trace relationships."""
