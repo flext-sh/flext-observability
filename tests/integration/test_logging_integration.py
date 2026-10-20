@@ -87,9 +87,9 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
             unrelated.records[-1].context["application_event"],
             eq="after removal",
         )
-        tm.that(disabled.processing_stages[0] is application_stage, eq=True)
+        tm.ok(disabled.processing_stages[0] is application_stage)
         for actual, original in zip(disabled.handlers, base.handlers, strict=True):
-            tm.that(actual is original, eq=True)
+            tm.ok(actual is original)
         tm.that(disabled.cache_logger_on_first_use, eq=base.cache_logger_on_first_use)
         tm.that(disabled.async_logging, eq=base.async_logging)
 
@@ -110,7 +110,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         FlextObservability.clear_span_id()
         tm.ok(u.log("without correlation"))
         for key in ("correlation_id", "trace_id", "span_id"):
-            tm.that(key in capture.records[-1].context, eq=False)
+            tm.fail(key in capture.records[-1].context)
         tm.that(FlextObservability.correlation_id(), eq="")
         tm.that(FlextObservability.trace_id(), eq="")
         tm.that(FlextObservability.span_id(), eq="")
@@ -190,7 +190,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
             u.failure("storage failure", exception=original, payload={"values": [1, 2]})
         )
         record = capture.records[-1]
-        tm.that(record.exception is original, eq=True)
+        tm.ok(record.exception is original)
         tm.that(record.context["correlation_id"], eq="captured-operation")
         tm.that(record.context["payload"], eq={"values": [1, 2]})
         tm.that(capture.stream.getvalue(), lacks=redacted_value)
@@ -199,7 +199,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         serialized = u.Cli.JSON_MAPPING_ADAPTER.validate_json(
             structured.getvalue().splitlines()[-1]
         )
-        tm.that("exception" in serialized, eq=False)
+        tm.fail("exception" in serialized)
         error = m.Observability.ErrorEvent(
             error_type=type(original).__name__,
             message=u.str_adapter().validate_python(
@@ -251,12 +251,12 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
                 OSError, match="business operation failed"
             ) as business_caught:
                 u.failure("failed operation", exception=original)
-            tm.that(business_caught.value is original, eq=True)
-            tm.that(original.__context__ is capture.failure, eq=True)
+            tm.ok(business_caught.value is original)
+            tm.ok(original.__context__ is capture.failure)
         else:
             with pytest.raises(ValueError, match="closed file") as capture_caught:
                 u.warning("selected capture is closed")
-            tm.that(capture_caught.value is capture.failure, eq=True)
+            tm.ok(capture_caught.value is capture.failure)
         tm.that(capture.failure, none=False)
         tm.that(capture.records, eq=[])
 
@@ -281,5 +281,5 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
             error=original,
         )
         tm.ok(result)
-        tm.that(capture.records[-1].exception is original, eq=True)
+        tm.ok(capture.records[-1].exception is original)
         tm.that(capture.records[-1].context["http_method"], eq="GET")

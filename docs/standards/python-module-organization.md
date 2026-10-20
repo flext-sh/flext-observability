@@ -1036,7 +1036,7 @@ def test_metric_creation_failure():
     """Test metric creation validation failure."""
     result = flext_create_metric("", 42.0, "count")  # Empty name
 
-    assert result.failure
+    tm.fail(result)
     assert result.value is None
     assert "Invalid metric name" in result.error
 
@@ -1074,7 +1074,7 @@ def test_observability_failure_propagation():
 
     result = create_invalid_observability()
 
-    assert result.failure
+    tm.fail(result)
     assert "Invalid metric name" in result.error
 ```
 
@@ -1114,7 +1114,7 @@ class TestFlextMetric:
 
         validation_result = metric.validate_business_rules()
 
-        assert validation_result.failure
+        tm.fail(validation_result)
         assert "Invalid metric name" in validation_result.error
 
     def test_metric_decimal_value_support(self):

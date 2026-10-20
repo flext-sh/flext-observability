@@ -138,7 +138,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         """A default rate of 1.0 forces a positive sampling decision."""
         sampler.update_default_rate(1.0)
 
-        tm.that(sampler.should_sample("http_request", "api"), eq=True)
+        tm.ok(sampler.should_sample("http_request", "api"))
         tm.that(
             sampler.sampling_decision("http_request", "api"),
             eq=(SamplingDecision.SAMPLED),
@@ -151,7 +151,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         """A default rate of 0.0 suppresses sampling entirely."""
         tm.ok(sampler.update_default_rate(0.0))
 
-        tm.that(sampler.should_sample("http_request", "api"), eq=False)
+        tm.fail(sampler.should_sample("http_request", "api"))
         tm.that(
             sampler.sampling_decision("http_request", "api"),
             eq=(SamplingDecision.NOT_SAMPLED),
@@ -166,7 +166,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         tm.ok(sampler.update_operation_rate("critical_op", 1.0))
 
         tm.that(sampler.current_rate(operation="critical_op"), eq=pytest.approx(1.0))
-        tm.that(sampler.should_sample("critical_op", "api"), eq=True)
+        tm.ok(sampler.should_sample("critical_op", "api"))
 
     @staticmethod
     def test_update_environment_sets_known_production_rate(
@@ -402,7 +402,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         monitor.mark_success()
         metrics = monitor.finish()
 
-        tm.that(metrics.success, eq=True)
+        tm.ok(metrics.success)
         assert FlextObservabilityPerformance.performance_acceptable(metrics)
 
     @staticmethod
@@ -412,7 +412,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         monitor.mark_error("boom")
         metrics = monitor.finish()
 
-        tm.that(metrics.success, eq=False)
+        tm.fail(metrics.success)
         assert not FlextObservabilityPerformance.performance_acceptable(metrics)
 
     # -- cross-service end-to-end ----------------------------------------
@@ -427,7 +427,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         """A full workflow yields successful, self-consistent public results."""
         FlextObservabilityContext.update_correlation_id("e2e-001")
         tm.ok(sampler.update_operation_rate("e2e_workflow", 1.0))
-        tm.that(sampler.should_sample("e2e_workflow", "svc"), eq=True)
+        tm.ok(sampler.should_sample("e2e_workflow", "svc"))
 
         tm.ok(factory.flext_metric("workflow.started", 1.0, "counter"))
 
