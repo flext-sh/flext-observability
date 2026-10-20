@@ -134,7 +134,7 @@ def test_factory_service_monitor_integration():
     # 4. Validate end-to-end data flow
     assert metric_result.success
     assert record_result.success
-    assert function_result == "monitored_result"
+    tm.that(function_result, eq="monitored_result")
 ```
 
 ## Test Environment Setup
@@ -220,7 +220,7 @@ def test_performance_under_load(benchmark):
         return factory.create_metric("perf_test", 1.0, "count")
 
     result = benchmark(create_observability_data)
-    assert result.success
+    tm.ok(result.success)
 ```
 
 ## Current Status

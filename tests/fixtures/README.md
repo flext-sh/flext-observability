@@ -121,15 +121,15 @@ class MetricsTestDataFactory:
 def test_metric_processing(sample_metric, mock_metrics_service):
     """Test using shared fixtures."""
     result = mock_metrics_service.record_metric(sample_metric)
-    assert result.success
-    assert result.data.name == "test_metric"
+    tm.ok(result.success)
+    tm.that(result.data.name, eq="test_metric")
 
 
 def test_with_factory_data():
     """Test using factory-created data."""
     metric = MetricsTestDataFactory.create_api_metric(value=5.0)
-    assert metric.value == 5.0
-    assert metric.name == "api_requests"
+    tm.that(metric.value, eq=5.0)
+    tm.that(metric.name, eq="api_requests")
 ```
 
 ### Fixture Composition

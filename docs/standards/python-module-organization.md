@@ -1025,10 +1025,10 @@ def test_metric_creation_success():
     """Test successful metric creation."""
     result = flext_create_metric("api_requests", 42.0, "count")
 
-    assert result.success
-    assert result.value.name == "api_requests"
-    assert result.value.value == 42.0
-    assert result.value.unit == "count"
+    tm.ok(result.success)
+    tm.that(result.value.name, eq="api_requests")
+    tm.that(result.value.value, eq=42.0)
+    tm.that(result.value.unit, eq="count")
     assert result.error is None
 
 
@@ -1053,11 +1053,11 @@ def test_observability_chaining():
 
     result = create_observability_data("user_login")
 
-    assert result.success
+    tm.ok(result.success)
     assert "metric" in result.value
     assert "trace" in result.value
-    assert result.value["metric"].name == "user_login_requests"
-    assert result.value["trace"].operation_name == "user_login"
+    tm.that(result.value["metric"].name, eq="user_login_requests")
+    tm.that(result.value["trace"].operation_name, eq="user_login")
 
 
 def test_observability_failure_propagation():
@@ -1103,10 +1103,10 @@ class TestFlextMetric:
         validation_result = metric.validate_business_rules()
 
         assert validation_result.success
-        assert metric.name == "response_time"
-        assert metric.value == 150.5
-        assert metric.unit == "milliseconds"
-        assert metric.tags["service"] == "api"
+        tm.that(metric.name, eq="response_time")
+        tm.that(metric.value, eq=150.5)
+        tm.that(metric.unit, eq="milliseconds")
+        tm.that(metric.tags["service"], eq="api")
 
     def test_metric_validation_invalid_name(self):
         """Test metric validation with invalid name."""
@@ -1126,7 +1126,7 @@ class TestFlextMetric:
         validation_result = metric.validate_business_rules()
 
         assert validation_result.success
-        assert metric.value == Decimal("1234.56")
+        tm.that(metric.value, eq=Decimal("1234.56"))
         assert isinstance(metric.value, Decimal)
 
 
@@ -1141,10 +1141,10 @@ class TestFlextTrace:
             context={"user_id": "123", "amount": "100.00"},
         )
 
-        assert trace.operation_name == "process_payment"
-        assert trace.service_name == "payment-service"
-        assert trace.context["user_id"] == "123"
-        assert trace.context["amount"] == "100.00"
+        tm.that(trace.operation_name, eq="process_payment")
+        tm.that(trace.service_name, eq="payment-service")
+        tm.that(trace.context["user_id"], eq="123")
+        tm.that(trace.context["amount"], eq="100.00")
         assert trace.start_time is not None
 
     def test_trace_parent_child_relationship(self):
@@ -1159,9 +1159,9 @@ class TestFlextTrace:
             parent_trace_id=parent_trace.id,
         )
 
-        assert child_trace.parent_trace_id == parent_trace.id
-        assert child_trace.operation_name == "database_query"
-        assert child_trace.service_name == "user-service"
+        tm.that(child_trace.parent_trace_id, eq=parent_trace.id)
+        tm.that(child_trace.operation_name, eq="database_query")
+        tm.that(child_trace.service_name, eq="user-service")
 ```
 
 ### **Service Testing Patterns**
@@ -1200,8 +1200,8 @@ def test_metrics_service_record_metric(metrics_service, observability_factory):
     record_result = metrics_service.record_metric(metric_result.value)
 
     assert record_result.success
-    assert record_result.value.name == "test_metric"
-    assert record_result.value.value == 100.0
+    tm.that(record_result.value.name, eq="test_metric")
+    tm.that(record_result.value.value, eq=100.0)
 
 
 def test_metrics_service_prometheus_export(metrics_service, observability_factory):
@@ -1273,7 +1273,7 @@ def test_function_monitoring_decorator():
     result = monitored_function(5, 3)
 
     # Verify function result
-    assert result == 8
+    tm.that(result, eq=8)
 
     # Verify monitoring data was created (in a real implementation,
     # you would check the metrics service or factory for created metrics)
