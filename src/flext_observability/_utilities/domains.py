@@ -85,6 +85,9 @@ class FlextObservabilityUtilitiesDomains:
         Returns:
             Copied options with the supplied providers attached or removed.
 
+        Raises:
+            TypeError: A supplied stage or observer violates its protocol.
+
         """
         stages = tuple(
             stage for stage in options.processing_stages if stage is not context_stage
