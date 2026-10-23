@@ -39,7 +39,7 @@ class FlextObservabilitySolidDemo:
 
         """
         time.sleep(0.05)
-        return {"query": query, "rows": 42, "execution_time": 0.05}
+        return {c.HandlerMode.QUERY: query, "rows": 42, "execution_time": 0.05}
 
     @staticmethod
     def process_api_request(endpoint: str) -> t.JsonMapping:

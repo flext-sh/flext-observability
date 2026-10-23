@@ -35,7 +35,7 @@ class FlextObservabilityUtilitiesDomains:
             """
             _ = logger, method_name
             for key, value in (
-                ("correlation_id", self._context.correlation_id()),
+                (c.ContextKey.CORRELATION_ID, self._context.correlation_id()),
                 ("trace_id", self._context.trace_id()),
                 ("span_id", self._context.span_id()),
             ):
@@ -63,7 +63,7 @@ class FlextObservabilityUtilitiesDomains:
                 ),
                 severity=c.Observability.ErrorSeverity(event.level),
                 correlation_id=u.str_adapter().validate_python(
-                    event.context.get("correlation_id", ""),
+                    event.context.get(c.ContextKey.CORRELATION_ID, ""),
                 ),
             )
             self._recorder.record_error(error).unwrap()

@@ -346,7 +346,7 @@ class FlextObservabilityModelsDomains:
                 end_time = time.time()
             duration_ms = max(0.0, (end_time - self.start_time) * 1000.0)
             return self.model_copy(
-                update={"end_time": end_time, "duration_ms": duration_ms},
+                update={c.MetadataKey.END_TIME: end_time, "duration_ms": duration_ms},
             )
 
 

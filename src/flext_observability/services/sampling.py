@@ -245,7 +245,7 @@ class FlextObservabilitySampling:
             """
             return self._update_named_rate(
                 self._operation_overrides,
-                scope_name="operation",
+                scope_name=c.ContextScope.OPERATION,
                 scope_value=operation,
                 rate=rate,
             )

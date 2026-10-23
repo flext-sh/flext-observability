@@ -102,7 +102,7 @@ class FlextObservabilityHTTPClient:
         obj: p.RegisterableService | p.Observability.HttpClient.AIOHTTPSession,
     ) -> TypeIs[p.Observability.HttpClient.AIOHTTPSession]:
         missing = object()
-        return getattr(obj, "request", missing) is not missing
+        return getattr(obj, c.ContextScope.REQUEST, missing) is not missing
 
     @staticmethod
     def _validated_headers(

@@ -382,7 +382,7 @@ class FlextObservability(
     def flext_log_entry(
         message: str,
         level: c.Observability.ErrorSeverity = c.Observability.ErrorSeverity.INFO,
-        component: str = "application",
+        component: str = c.ContextScope.APPLICATION,
         timestamp: datetime | None = None,
         context: t.ScalarMapping | None = None,
     ) -> p.Result[FlextObservability.LogEntry]:

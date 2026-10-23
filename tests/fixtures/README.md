@@ -147,7 +147,7 @@ def configured_observability_platform(mock_container):
 ### Shared Configuration
 
 ```text
-@pytest.fixture(scope="session")
+@pytest.fixture(scope=c.ContextScope.SESSION)
 def test_config():
     """Shared test configuration."""
     return {

@@ -377,7 +377,7 @@ from flext_observability import flext_monitor_function
 def process_user_data(user_data: dict) -> t.JsonMapping:
     """Function automatically monitored for execution time and errors."""
     # Business logic here
-    return {"status": "processed", "user": user_data}
+    return {"status": "processed", c.ContextScope.USER: user_data}
 
 
 # Decorator automatically:
@@ -713,7 +713,7 @@ def process_payment(payment_data: dict) -> p.Result[m.Dict]:
     # - Structured logging with correlation ID
     # - Error capture and categorization
 
-    return r[bool].ok({"status": "processed", "correlation_id": correlation_id})
+    return r[bool].ok({"status": "processed", c.ContextKey.CORRELATION_ID: correlation_id})
 ```
 
 ---
@@ -736,7 +736,7 @@ def create_business_metrics(operation: str, duration: float, success: bool) -> N
         name=f"{operation}_duration",
         value=duration,
         unit="seconds",
-        tags={"operation": operation, "service": "payment-service"},
+        tags={c.ContextScope.OPERATION: operation, "service": "payment-service"},
     )
 
     # Success/failure metric
@@ -744,7 +744,7 @@ def create_business_metrics(operation: str, duration: float, success: bool) -> N
         name=f"{operation}_status",
         value=1,
         unit="count",
-        tags={"operation": operation, "status": "success" if success else "failure"},
+        tags={c.ContextScope.OPERATION: operation, "status": "success" if success else "failure"},
         metric_type="counter",
     )
 
@@ -1066,7 +1066,7 @@ def test_observability_failure_propagation():
     def create_invalid_observability() -> p.Result[m.Dict]:
         return flext_create_metric("", 1, "count").flat_map(  # Invalid metric name
             lambda metric: flext_create_trace(
-                "operation", "service"
+                c.ContextScope.OPERATION, "service"
             ).map(  # Should not execute
                 lambda trace: {"metric": metric, "trace": trace}
             )
@@ -1138,12 +1138,12 @@ class TestFlextTrace:
         trace = FlextTrace(
             operation_name="process_payment",
             service_name="payment-service",
-            context={"user_id": "123", "amount": "100.00"},
+            context={c.ContextKey.USER_ID: "123", "amount": "100.00"},
         )
 
         tm.that(trace.operation_name, eq="process_payment")
         tm.that(trace.service_name, eq="payment-service")
-        tm.that(trace.context["user_id"], eq="123")
+        tm.that(trace.context[c.ContextKey.USER_ID], eq="123")
         tm.that(trace.context["amount"], eq="100.00")
         tm.not_none(trace.start_time)
 
@@ -1374,7 +1374,7 @@ def create_comprehensive_observability(operation: str) -> p.Result[m.Dict]:
     return r[bool].ok({
         "metric": metric_result.value,
         "trace": trace_result.value,
-        "correlation_id": trace_result.value.id,
+        c.ContextKey.CORRELATION_ID: trace_result.value.id,
     })
 
 
@@ -1465,7 +1465,7 @@ def create_business_observability_dashboard(
     try:
         # Create service-specific observability components
         dashboard_config = {
-            "service_name": service_name,
+            c.ContextKey.SERVICE_NAME: service_name,
             "metrics": [],
             "traces": [],
             "health_checks": [],
@@ -1576,12 +1576,12 @@ def sync_user_between_services(user_id: str) -> p.Result[m.Dict]:
 
     # Success metrics
     flext_create_metric(
-        "user_sync_completed", 1, "count", tags={"correlation_id": trace_id}
+        "user_sync_completed", 1, "count", tags={c.ContextKey.CORRELATION_ID: trace_id}
     )
 
     return r[bool].ok({
-        "user_id": user_id,
-        "correlation_id": trace_id,
+        c.ContextKey.USER_ID: user_id,
+        c.ContextKey.CORRELATION_ID: trace_id,
         "status": "synchronized",
     })
 

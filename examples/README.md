@@ -120,7 +120,7 @@ class UserService:
             self.metrics.record_metric(metric_result.data)
 
         # Business logic here
-        return r[bool].ok({"user_id": "user123", "status": "created"})
+        return r[bool].ok({c.ContextKey.USER_ID: "user123", "status": "created"})
 ```
 
 ### Monitoring Decorator Patterns
@@ -230,7 +230,7 @@ def process_user_workflow(user_id: str) -> p.Result[m.Dict]:
     parent_trace_result = flext_create_trace(
         operation_name="user_workflow",
         service_name="workflow-service",
-        context={"user_id": user_id},
+        context={c.ContextKey.USER_ID: user_id},
     )
 
     if parent_trace_result.is_failure:
@@ -248,7 +248,7 @@ def process_user_workflow(user_id: str) -> p.Result[m.Dict]:
         return processing_result
 
     return r[bool].ok({
-        "user_id": user_id,
+        c.ContextKey.USER_ID: user_id,
         "trace_id": parent_trace.id,
         "status": "completed",
     })
@@ -259,7 +259,7 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
     child_trace_result = flext_create_trace(
         operation_name="user_validation",
         service_name="validation-service",
-        context={"user_id": user_id, "parent_trace_id": parent_trace_id},
+        context={c.ContextKey.USER_ID: user_id, "parent_trace_id": parent_trace_id},
     )
 
     if child_trace_result.is_failure:

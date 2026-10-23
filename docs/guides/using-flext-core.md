@@ -115,7 +115,8 @@ logger.info("user.created", user_id=42)
 ```text
 from typing import override
 
-from tests import p, r, s, tm
+from tests import c, r
+from tests import c, p, r, s, tm
 
 class GreetingService(s[str]):
     @override

@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_observability import p
+from flext_observability import c, p
 from flext_observability.services.context import FlextObservabilityContext
 
 
@@ -34,7 +34,10 @@ class FlextObservabilityLogging:
             """
             _ = logger, method_name
             for key, value in (
-                ("correlation_id", FlextObservabilityContext.correlation_id()),
+                (
+                    c.ContextKey.CORRELATION_ID,
+                    FlextObservabilityContext.correlation_id(),
+                ),
                 ("trace_id", FlextObservabilityContext.trace_id()),
                 ("span_id", FlextObservabilityContext.span_id()),
             ):

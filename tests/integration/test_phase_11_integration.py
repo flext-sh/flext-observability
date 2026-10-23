@@ -17,7 +17,7 @@ import operator
 
 import pytest
 
-from flext_observability import FlextObservability, c, m, p
+from flext_observability import FlextObservability, m, p
 from flext_observability.services.advanced_context import (
     FlextObservabilityAdvancedContext,
 )
@@ -26,7 +26,7 @@ from flext_observability.services.custom_metrics import FlextObservabilityCustom
 from flext_observability.services.error_handling import FlextObservabilityErrorHandling
 from flext_observability.services.performance import FlextObservabilityPerformance
 from flext_observability.services.sampling import FlextObservabilitySampling
-from tests import tm
+from tests import c, tm
 
 MetricType = c.Observability.MetricType
 ErrorSeverity = c.Observability.ErrorSeverity
@@ -230,10 +230,10 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         advanced_context: FlextObservabilityAdvancedContext.Context,
     ) -> None:
         """Stored metadata and baggage are resolvable by key."""
-        tm.ok(advanced_context.update_metadata("user_id", "user-123"))
+        tm.ok(advanced_context.update_metadata(c.ContextKey.USER_ID, "user-123"))
         tm.ok(advanced_context.update_baggage("org_id", "org-456"))
 
-        tm.that(advanced_context.resolve_metadata("user_id"), eq="user-123")
+        tm.that(advanced_context.resolve_metadata(c.ContextKey.USER_ID), eq="user-123")
         tm.that(advanced_context.resolve_baggage("org_id"), eq="org-456")
 
     @staticmethod
@@ -241,7 +241,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         advanced_context: FlextObservabilityAdvancedContext.Context,
     ) -> None:
         """A snapshot carries the supplied ids plus current metadata/baggage."""
-        advanced_context.update_metadata("user_id", "user-123")
+        advanced_context.update_metadata(c.ContextKey.USER_ID, "user-123")
         advanced_context.update_baggage("user_name", "alice")
 
         snapshot = advanced_context.snapshot(
@@ -251,23 +251,23 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         )
 
         tm.that(snapshot.correlation_id, eq="async-001")
-        tm.that(snapshot.metadata["user_id"], eq="user-123")
+        tm.that(snapshot.metadata[c.ContextKey.USER_ID], eq="user-123")
         tm.that(snapshot.baggage["user_name"], eq="alice")
-        tm.that(snapshot.model_dump_json(), has="correlation_id")
+        tm.that(snapshot.model_dump_json(), has=c.ContextKey.CORRELATION_ID)
 
     @staticmethod
     def test_clear_then_restore_round_trips_context(
         advanced_context: FlextObservabilityAdvancedContext.Context,
     ) -> None:
         """Clear empties the context; restore from a snapshot repopulates it."""
-        advanced_context.update_metadata("user_id", "user-123")
+        advanced_context.update_metadata(c.ContextKey.USER_ID, "user-123")
         snapshot = advanced_context.snapshot(correlation_id="c-1")
 
         tm.ok(advanced_context.clear())
         tm.that(advanced_context.metadata, where=operator.not_)
 
         tm.ok(advanced_context.restore(snapshot))
-        tm.that(advanced_context.resolve_metadata("user_id"), eq="user-123")
+        tm.that(advanced_context.resolve_metadata(c.ContextKey.USER_ID), eq="user-123")
 
 
 class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11Base):

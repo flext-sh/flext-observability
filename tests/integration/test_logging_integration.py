@@ -10,8 +10,8 @@ import asyncio
 
 import pytest
 
-from flext_observability import FlextObservability, c, m, p, u
-from tests import t, tm
+from flext_observability import FlextObservability, m, p, u
+from tests import c, t, tm
 from tests.fixtures.logging import TestsObservabilityLoggingFixtures
 
 
@@ -62,7 +62,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
             tm.ok(logger.warning(correlation))
         tm.that(len(capture.records), eq=2)
         tm.that(
-            [record.context["correlation_id"] for record in capture.records],
+            [record.context[c.ContextKey.CORRELATION_ID] for record in capture.records],
             eq=["first-operation", "second-operation"],
         )
         structured, console = logging_streams
@@ -109,7 +109,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         FlextObservability.clear_trace_id()
         FlextObservability.clear_span_id()
         tm.ok(u.log("without correlation"))
-        for key in ("correlation_id", "trace_id", "span_id"):
+        for key in (c.ContextKey.CORRELATION_ID, "trace_id", "span_id"):
             tm.fail(key in capture.records[-1].context)
         tm.that(FlextObservability.correlation_id(), eq="")
         tm.that(FlextObservability.trace_id(), eq="")
@@ -152,7 +152,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         asyncio.run(exercise())
         tm.that(len(capture.records), eq=2)
         for record in capture.records:
-            tm.that(record.context["correlation_id"], eq=record.message)
+            tm.that(record.context[c.ContextKey.CORRELATION_ID], eq=record.message)
             tm.that(record.context["trace_id"], eq=f"trace-{record.message}")
             tm.that(record.context["span_id"], eq=f"span-{record.message}")
             tm.that(
@@ -191,7 +191,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         )
         record = capture.records[-1]
         tm.ok(record.exception is original)
-        tm.that(record.context["correlation_id"], eq="captured-operation")
+        tm.that(record.context[c.ContextKey.CORRELATION_ID], eq="captured-operation")
         tm.that(record.context["payload"], eq={"values": [1, 2]})
         tm.that(capture.stream.getvalue(), lacks=redacted_value)
         structured, _ = logging_streams
