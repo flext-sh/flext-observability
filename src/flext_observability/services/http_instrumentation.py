@@ -367,9 +367,6 @@ class FlextObservabilityHTTP:
                     Returns:
                         HTTP response produced downstream.
 
-                    Raises:
-                        EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
-
                     """
                     return await cls._dispatch_request(request, call_next)
 
@@ -390,9 +387,6 @@ class FlextObservabilityHTTP:
 
             Returns:
                 The resulting ``Response``.
-
-            Raises:
-                EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
 
             """
             headers_dict: t.MutableStrMapping = dict(request.headers.items())

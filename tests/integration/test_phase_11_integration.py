@@ -13,6 +13,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import operator
+
 import pytest
 
 from flext_observability import FlextObservability, c, m, p
@@ -187,8 +189,9 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         result = sampler.update_environment(bad_environment)
 
         tm.fail(result)
-        assert bad_environment in (result.error or "") or "environment" in (
-            result.error or ""
+        tm.that(
+            result.error or "",
+            where=lambda value: bad_environment in value or "environment" in value,
         )
 
     @staticmethod
@@ -201,7 +204,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         result = sampler.update_default_rate(bad_rate)
 
         tm.fail(result)
-        assert result.error
+        tm.that(result.error, truth=True)
 
     # -- correlation / trace context -------------------------------------
 
@@ -261,7 +264,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         snapshot = advanced_context.snapshot(correlation_id="c-1")
 
         tm.ok(advanced_context.clear())
-        assert not advanced_context.metadata
+        tm.that(advanced_context.metadata, where=operator.not_)
 
         tm.ok(advanced_context.restore(snapshot))
         tm.that(advanced_context.resolve_metadata("user_id"), eq="user-123")
@@ -298,7 +301,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         result = error_handler.record_error(error)
 
         tm.ok(result)
-        assert result.value.fingerprint
+        tm.that(result.value.fingerprint, truth=True)
 
     @staticmethod
     def test_repeated_errors_increment_count_and_escalate_severity(
@@ -318,9 +321,9 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         first_result = error_handler.record_error(first)
         tm.ok(first_result)
         first_recorded = first_result.value
-        assert (
-            error_handler.resolve_escalated_severity(first_recorded)
-            == ErrorSeverity.INFO
+        tm.that(
+            error_handler.resolve_escalated_severity(first_recorded),
+            eq=ErrorSeverity.INFO,
         )
 
         second = make_error()
@@ -328,9 +331,9 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         tm.ok(second_result)
         second_recorded = second_result.value
         tm.that(error_handler.resolve_error_count(second_recorded.fingerprint), eq=2)
-        assert (
-            error_handler.resolve_escalated_severity(second_recorded)
-            == ErrorSeverity.WARNING
+        tm.that(
+            error_handler.resolve_escalated_severity(second_recorded),
+            eq=ErrorSeverity.WARNING,
         )
 
     @staticmethod
@@ -343,7 +346,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         result = error_handler.update_escalation_threshold(bad_threshold)
 
         tm.fail(result)
-        assert result.error
+        tm.that(result.error, truth=True)
 
     # -- custom metric registry ------------------------------------------
 
@@ -391,7 +394,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         """The type filter returns a mapping that omits unregistered names."""
         counters = registry.resolve_metrics_by_type(MetricType.COUNTER)
 
-        assert not any("never_registered" in key for key in counters)
+        tm.that(not any("never_registered" in key for key in counters), truth=True)
 
     # -- performance acceptability ---------------------------------------
 
@@ -403,7 +406,10 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         metrics = monitor.finish()
 
         tm.ok(metrics.success)
-        assert FlextObservabilityPerformance.performance_acceptable(metrics)
+        tm.that(
+            FlextObservabilityPerformance.performance_acceptable(metrics),
+            truth=True,
+        )
 
     @staticmethod
     def test_failed_operation_is_not_acceptable() -> None:
@@ -413,7 +419,10 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         metrics = monitor.finish()
 
         tm.fail(metrics.success)
-        assert not FlextObservabilityPerformance.performance_acceptable(metrics)
+        tm.that(
+            not FlextObservabilityPerformance.performance_acceptable(metrics),
+            truth=True,
+        )
 
     # -- cross-service end-to-end ----------------------------------------
 

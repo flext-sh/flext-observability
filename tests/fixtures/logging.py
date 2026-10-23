@@ -41,7 +41,8 @@ class TestsObservabilityLoggingFixtures:
             self.records.append(event)
 
     @pytest.fixture
-    def logging_streams(self) -> t.IteratorOf[t.LoggingStreams]:
+    @staticmethod
+    def logging_streams() -> t.IteratorOf[t.LoggingStreams]:
         """Keep real output streams alive until the composition is restored.
 
         Yields:
@@ -52,8 +53,8 @@ class TestsObservabilityLoggingFixtures:
             yield structured, console
 
     @pytest.fixture
+    @staticmethod
     def logging_runtime(
-        self,
         logging_streams: t.LoggingStreams,
     ) -> t.IteratorOf[p.StructlogOptions]:
         """Restore the captured provider/options/context, never fixed defaults.

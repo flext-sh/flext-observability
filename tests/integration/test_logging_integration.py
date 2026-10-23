@@ -214,8 +214,8 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         tm.that(handler.resolve_error_count(error.fingerprint), eq=before)
 
     @pytest.mark.parametrize("correlation", ["", "captured-operation"])
+    @staticmethod
     def test_error_handler_preserves_explicit_snapshot_after_context_changes(
-        self,
         logging_runtime: p.StructlogOptions,
         correlation: str,
     ) -> None:
