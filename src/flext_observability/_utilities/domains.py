@@ -85,19 +85,7 @@ class FlextObservabilityUtilitiesDomains:
         Returns:
             Copied options with the supplied providers attached or removed.
 
-        Raises:
-            TypeError: A supplied stage or observer violates its protocol.
-
         """
-        if not isinstance(context_stage, p.LoggingStage):
-            msg = "Observability logging requires a native context stage"
-            raise TypeError(msg)
-        if not isinstance(capture, p.LoggingObserver) or not isinstance(
-            errors,
-            p.LoggingObserver,
-        ):
-            msg = "Observability logging requires capture and error observers"
-            raise TypeError(msg)
         stages = tuple(
             stage for stage in options.processing_stages if stage is not context_stage
         )
@@ -111,10 +99,19 @@ class FlextObservabilityUtilitiesDomains:
             observers += (capture,)
             if errors is not capture:
                 observers += (errors,)
-        return m.StructlogOptions.model_validate(
-            options,
-            from_attributes=True,
-        ).model_copy(update={"processing_stages": stages, "observers": observers})
+        return m.StructlogOptions(
+            log_level=options.log_level,
+            console_renderer=options.console_renderer,
+            processing_stages=stages,
+            observers=observers,
+            handlers=options.handlers,
+            redacted_keys=options.redacted_keys,
+            redacted_values=options.redacted_values,
+            wrapper_class_factory=options.wrapper_class_factory,
+            logger_factory=options.logger_factory,
+            cache_logger_on_first_use=options.cache_logger_on_first_use,
+            async_logging=options.async_logging,
+        )
 
     class Performance:
         """Performance tracking helpers."""
