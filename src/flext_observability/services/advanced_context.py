@@ -38,7 +38,7 @@ class FlextObservabilityAdvancedContext:
         ctx = FlextObservabilityAdvancedContext.active_context()
 
         # Store request-local data
-        ctx.update_metadata("user_id", "user-123")
+        ctx.update_metadata(c.ContextKey.USER_ID, "user-123")
         ctx.update_metadata("api_key", "secret-key")
 
         # Get context snapshot

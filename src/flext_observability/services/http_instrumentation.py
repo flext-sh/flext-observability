@@ -34,7 +34,6 @@ from starlette.responses import Response
 
 from flext_observability import c, m, p, r, t, u
 from flext_observability.services.context import FlextObservabilityContext
-from flext_observability.services.logging_integration import FlextObservabilityLogging
 
 
 class FlextObservabilityHTTP:
@@ -65,7 +64,7 @@ class FlextObservabilityHTTP:
 
     @staticmethod
     def _matches_flask_app(
-        obj: t.RegisterableService | p.Observability.Http.FlaskApp,
+        obj: p.RegisterableService | p.Observability.Http.FlaskApp,
     ) -> TypeIs[p.Observability.Http.FlaskApp]:
         """Type guard to check if object is a Flask app.
 
@@ -75,7 +74,7 @@ class FlextObservabilityHTTP:
         """
         # Why: `getattr(..., default) is not None` instead of `hasattr`.
         # mypy's hasattr-narrowing builds a type map per union member of
-        # `t.RegisterableService` (a wide recursive service-value union) and
+        # `p.RegisterableService` (a wide recursive service-value union) and
         # crashed (INTERNAL ERROR) walking it, whether the check stood alone
         # or was split out of a boolean "and". `getattr` with a sentinel
         # default is not subject to that narrowing pass and is behaviorally
@@ -88,7 +87,7 @@ class FlextObservabilityHTTP:
 
     @staticmethod
     def _matches_fastapi_app(
-        obj: t.RegisterableService | p.Observability.Http.FastAPIApp,
+        obj: p.RegisterableService | p.Observability.Http.FastAPIApp,
     ) -> TypeIs[p.Observability.Http.FastAPIApp]:
         """Type guard to check if object is a FastAPI app.
 
@@ -104,21 +103,12 @@ class FlextObservabilityHTTP:
 
         @classmethod
         def _before_request_hook(cls) -> None:
-            """Extract context and create span before request processing."""
-            try:
-                request_method, request_path, extra_before = (
-                    cls._before_request_payload()
-                )
-                FlextObservabilityLogging.log_with_context(
-                    FlextObservabilityHTTP.logger,
-                    c.Observability.ErrorSeverity.DEBUG.value,
-                    f"HTTP {request_method} {request_path}",
-                    extra=extra_before,
-                )
-            except c.EXC_MAPPING_TYPE as e:
-                FlextObservabilityHTTP.logger.warning(
-                    f"Error in before_request hook: {e}",
-                )
+            """Extract request context and emit through the selected Core hooks."""
+            request_method, request_path, extra_before = cls._before_request_payload()
+            FlextObservabilityHTTP.logger.debug(
+                f"HTTP {request_method} {request_path}",
+                **extra_before,
+            )
 
         @classmethod
         def _before_request_payload(cls) -> t.Triple[str, str, t.StrMapping]:
@@ -163,12 +153,7 @@ class FlextObservabilityHTTP:
                 The resulting ``p.Observability.Http.Response``.
 
             """
-            try:
-                cls._log_after_request(response)
-            except c.EXC_MAPPING_TYPE as e:
-                FlextObservabilityHTTP.logger.warning(
-                    f"Error in after_request hook: {e}",
-                )
+            cls._log_after_request(response)
             return response
 
         @classmethod
@@ -181,18 +166,13 @@ class FlextObservabilityHTTP:
             request_method = flask.request.method
             request_path = flask.request.path
             duration_ms = cls._duration_ms()
-            FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTP.logger,
-                c.Observability.ErrorSeverity.INFO.value
-                if not is_error
-                else c.Observability.ErrorSeverity.WARNING.value,
+            FlextObservabilityHTTP.logger.log(
+                c.LogLevel.INFO if not is_error else c.LogLevel.WARNING,
                 f"HTTP {request_method} {request_path} -> {status_code}",
-                extra={
-                    "http_method": request_method,
-                    "http_path": request_path,
-                    "http_status": status_code,
-                    "http_duration_ms": duration_ms,
-                },
+                http_method=request_method,
+                http_path=request_path,
+                http_status=status_code,
+                http_duration_ms=duration_ms,
             )
 
         @classmethod
@@ -221,26 +201,16 @@ class FlextObservabilityHTTP:
                 The resulting ``t.Pair[m.Dict, int]``.
 
             """
-            try:
-                FlextObservabilityLogging.log_with_context(
-                    FlextObservabilityHTTP.logger,
-                    c.Observability.ErrorSeverity.ERROR.value,
-                    f"HTTP request error: {error!s}",
-                    extra={
-                        "http_method": flask.request.method,
-                        "http_path": flask.request.path,
-                        "error_type": type(error).__name__,
-                        "error_message": str(error),
-                    },
-                )
-            except c.EXC_MAPPING_TYPE as log_error:
-                FlextObservabilityHTTP.logger.error(
-                    f"Error in error handler: {log_error}",
-                )
+            FlextObservabilityHTTP.logger.exception(
+                "HTTP request error",
+                exception=error,
+                http_method=flask.request.method,
+                http_path=flask.request.path,
+            )
             return (m.Dict({"error": str(error)}), 500)
 
         @classmethod
-        def setup_instrumentation(cls, app: t.RegisterableService) -> p.Result[bool]:
+        def setup_instrumentation(cls, app: p.RegisterableService) -> p.Result[bool]:
             """Set up Flask application HTTP instrumentation.
 
             Adds Flask middleware for automatic HTTP request tracing, metrics,
@@ -283,7 +253,7 @@ class FlextObservabilityHTTP:
         @classmethod
         def _setup_instrumentation(
             cls,
-            app: t.RegisterableService | p.Observability.Http.FlaskApp,
+            app: p.RegisterableService | p.Observability.Http.FlaskApp,
         ) -> p.Result[bool]:
             """Register Flask instrumentation hooks.
 
@@ -292,7 +262,7 @@ class FlextObservabilityHTTP:
 
             """
             # Why: include FlaskApp explicitly in the parameter type. With
-            # only `t.RegisterableService` (a DI-service union structurally
+            # only `p.RegisterableService` (a DI-service union structurally
             # disjoint from FlaskApp's protocol), mypy proves the TypeIs
             # narrowing below can never succeed and marks everything past
             # the guard unreachable — correct for the narrower static type,
@@ -314,7 +284,7 @@ class FlextObservabilityHTTP:
         """FastAPI ASGI middleware for automatic HTTP instrumentation."""
 
         @classmethod
-        def setup_instrumentation(cls, app: t.RegisterableService) -> p.Result[bool]:
+        def setup_instrumentation(cls, app: p.RegisterableService) -> p.Result[bool]:
             """Set up FastAPI application HTTP instrumentation.
 
             Adds FastAPI middleware for automatic HTTP request tracing, metrics,
@@ -359,7 +329,7 @@ class FlextObservabilityHTTP:
         @classmethod
         def _setup_instrumentation(
             cls,
-            app: t.RegisterableService | p.Observability.Http.FastAPIApp,
+            app: p.RegisterableService | p.Observability.Http.FastAPIApp,
         ) -> p.Result[bool]:
             """Register FastAPI instrumentation middleware.
 
@@ -369,7 +339,7 @@ class FlextObservabilityHTTP:
             """
             # Why: include FastAPIApp explicitly (see Flask._setup_instrumentation
             # for the full rationale — otherwise mypy proves the TypeIs guard
-            # below unreachable against the narrower `t.RegisterableService`).
+            # below unreachable against the narrower `p.RegisterableService`).
             if not FlextObservabilityHTTP._matches_fastapi_app(app):
                 return r[bool].fail(
                     "Invalid FastAPI app - missing add_middleware method",
@@ -397,15 +367,8 @@ class FlextObservabilityHTTP:
                     Returns:
                         HTTP response produced downstream.
 
-                    Raises:
-                        EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
-
                     """
-                    try:
-                        return await cls._dispatch_request(request, call_next)
-                    except c.EXC_MAPPING_TYPE as e:
-                        FlextObservabilityHTTP.logger.warning(f"Middleware error: {e}")
-                        raise
+                    return await cls._dispatch_request(request, call_next)
 
             add_middleware = typed_app.add_middleware
             add_middleware(FlextObservabilityMiddleware)
@@ -425,29 +388,21 @@ class FlextObservabilityHTTP:
             Returns:
                 The resulting ``Response``.
 
-            Raises:
-                EXC_MAPPING_TYPE: If a ``c.EXC_MAPPING_TYPE`` is caught.
-
             """
             headers_dict: t.MutableStrMapping = dict(request.headers.items())
             FlextObservabilityContext.from_headers(headers_dict)
             correlation_id = FlextObservabilityContext.correlation_id()
             start_time = time.time()
-            await FlextObservabilityHTTP._async_log_with_context(
+            FlextObservabilityHTTP.logger.debug(
                 f"HTTP {request.method} {request.url.path}",
-                c.Observability.ErrorSeverity.DEBUG.value,
-                cls._request_log_extra(request),
+                **cls._request_log_extra(request),
             )
-            try:
-                return await cls._dispatch_response(
-                    request,
-                    call_next,
-                    correlation_id,
-                    start_time,
-                )
-            except c.EXC_MAPPING_TYPE as e:
-                await cls._log_dispatch_error(request, e)
-                raise
+            return await cls._dispatch_response(
+                request,
+                call_next,
+                correlation_id,
+                start_time,
+            )
 
         @classmethod
         def _request_log_extra(cls, request: Request) -> t.MutableScalarMapping:
@@ -477,63 +432,35 @@ class FlextObservabilityHTTP:
             Returns:
                 The resulting ``Response``.
 
+            Raises:
+                EXC_MAPPING_TYPE: A downstream request failure is logged and reraised.
+
             """
-            response = await call_next(request)
+            try:
+                response = await call_next(request)
+            except c.EXC_MAPPING_TYPE as error:
+                FlextObservabilityHTTP.logger.exception(
+                    "HTTP request error",
+                    exception=error,
+                    http_method=request.method,
+                    http_path=request.url.path,
+                )
+                raise
             duration_ms = (time.time() - start_time) * 1000
             status_code = (
                 response.status_code if hasattr(response, "status_code") else 200
             )
             is_error = status_code >= c.Observability.HTTP_ERROR_STATUS_THRESHOLD
-            await FlextObservabilityHTTP._async_log_with_context(
+            FlextObservabilityHTTP.logger.log(
+                c.LogLevel.INFO if not is_error else c.LogLevel.WARNING,
                 f"HTTP {request.method} {request.url.path} -> {status_code}",
-                c.Observability.ErrorSeverity.INFO.value
-                if not is_error
-                else c.Observability.ErrorSeverity.WARNING.value,
-                {
-                    "http_method": request.method,
-                    "http_path": request.url.path,
-                    "http_status": status_code,
-                    "http_duration_ms": duration_ms,
-                },
+                http_method=request.method,
+                http_path=request.url.path,
+                http_status=status_code,
+                http_duration_ms=duration_ms,
             )
             response.headers["X-Correlation-ID"] = correlation_id
             return response
-
-        @classmethod
-        async def _log_dispatch_error(cls, request: Request, error: Exception) -> None:
-            """Emit FastAPI request error metadata."""
-            await FlextObservabilityHTTP._async_log_with_context(
-                f"HTTP request error: {error!s}",
-                c.Observability.ErrorSeverity.ERROR.value,
-                {
-                    "http_method": request.method,
-                    "http_path": request.url.path,
-                    "error_type": type(error).__name__,
-                    "error_message": str(error),
-                },
-            )
-
-    @staticmethod
-    async def _async_log_with_context(
-        message: str,
-        level: str,
-        extra: t.ConfigurationMapping | None = None,
-    ) -> None:
-        """Async wrapper for logging with context (for FastAPI).
-
-        Allows async operations in FastAPI middleware to log with context.
-        """
-        try:
-            FlextObservabilityLogging.log_with_context(
-                FlextObservabilityHTTP.logger,
-                level,
-                message,
-                extra=extra,
-            )
-        except c.EXC_MAPPING_TYPE as e:
-            FlextObservabilityHTTP.logger.warning(
-                f"Error logging in async context: {e}",
-            )
 
 
 __all__: list[str] = ["FlextObservabilityHTTP"]

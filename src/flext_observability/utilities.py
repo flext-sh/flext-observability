@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Observability Utilities - Centralized domain utilities.
 
 Unified utilities facade inheriting core FLEXT utilities.
@@ -12,8 +13,10 @@ from __future__ import annotations
 
 from flext_cli import FlextCliUtilities
 
-from flext_observability._utilities.base import FlextObservabilityUtilitiesBase
-from flext_observability._utilities.domains import FlextObservabilityUtilitiesDomains
+from flext_observability._utilities import (
+    FlextObservabilityUtilitiesBase,
+    FlextObservabilityUtilitiesDomains,
+)
 
 
 class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilitiesBase):
@@ -24,8 +27,8 @@ class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilities
     """
 
     class Observability(
-        FlextObservabilityUtilitiesDomains,
         FlextObservabilityUtilitiesBase,
+        FlextObservabilityUtilitiesDomains,
     ):
         """Observability-specific project utilities."""
 

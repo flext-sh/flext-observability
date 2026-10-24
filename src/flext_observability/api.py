@@ -75,6 +75,35 @@ class FlextObservability(
         """
         return cls()
 
+    @staticmethod
+    def compose_logging(
+        options: p.StructlogOptions,
+        *,
+        context_stage: p.LoggingStage,
+        capture: p.LoggingObserver,
+        errors: p.LoggingObserver,
+        enabled: bool = True,
+    ) -> p.StructlogOptions:
+        """Compose supplied providers without configuring the process runtime.
+
+        Reuse the same provider objects to install or remove this binding
+        idempotently. The application retains the base options and calls Core
+        configuration at its own lifecycle boundary. A capture consumer and an
+        error observer are required; entity factories are not delivery ports.
+        The utility rejects providers that violate their protocols with TypeError.
+
+        Returns:
+            Copied options with the supplied providers attached or removed.
+
+        """
+        return u.Observability.compose_logging(
+            options,
+            context_stage=context_stage,
+            capture=capture,
+            errors=errors,
+            enabled=enabled,
+        )
+
     class Metric(m.Observability.Metric):
         """Observability metric entity."""
 
@@ -114,7 +143,7 @@ class FlextObservability(
     def flext_metric(
         name: str,
         value: float,
-        unit: str = "count",
+        unit: str = c.Aggregation.COUNT,
         **kwargs: t.JsonPayload,
     ) -> p.Result[FlextObservability.Metric]:
         """Create a metric entity directly.
@@ -181,7 +210,7 @@ class FlextObservability(
         """
         if metric_id_raw is None:
             return str(uuid4())
-        metric_id: str = t.str_adapter().validate_python(metric_id_raw)
+        metric_id: str = u.str_adapter().validate_python(metric_id_raw)
         return metric_id
 
     @staticmethod
@@ -292,7 +321,6 @@ class FlextObservability(
         FlextObservability._apply_alert_id(payload)
         payload.setdefault("severity", c.Observability.AlertLevel.WARNING)
         payload.setdefault("source", "system")
-        payload["labels"] = FlextObservability._alert_labels(payload)
         payload.setdefault("domain_events", [])
         return payload
 
@@ -303,24 +331,7 @@ class FlextObservability(
             return
         alert_id_raw = payload.pop("alert_id")
         if "id" not in payload:
-            payload.setdefault("id", t.str_adapter().validate_python(alert_id_raw))
-
-    @staticmethod
-    def _alert_labels(payload: t.MappingKV[str, t.JsonValue]) -> t.JsonDict:
-        """Normalize alert labels into JSON primitives.
-
-        Returns:
-            The resulting ``t.JsonDict``.
-
-        """
-        raw_labels = payload.get("labels")
-        resolved_labels: t.JsonDict = {}
-        if u.mapping(raw_labels):
-            resolved_labels = {
-                key: value if value is None or u.primitive(value) else str(value)
-                for key, value in raw_labels.items()
-            }
-        return resolved_labels
+            payload.setdefault("id", u.str_adapter().validate_python(alert_id_raw))
 
     @staticmethod
     def flext_health_check(
@@ -371,7 +382,7 @@ class FlextObservability(
     def flext_log_entry(
         message: str,
         level: c.Observability.ErrorSeverity = c.Observability.ErrorSeverity.INFO,
-        component: str = "application",
+        component: str = c.ContextScope.APPLICATION,
         timestamp: datetime | None = None,
         context: t.ScalarMapping | None = None,
     ) -> p.Result[FlextObservability.LogEntry]:
@@ -394,7 +405,7 @@ class FlextObservability(
                     "create log entry",
                     "Log message cannot be empty",
                 )
-            resolved_context = t.scalar_mapping_adapter().validate_python(context or {})
+            resolved_context = u.scalar_mapping_adapter().validate_python(context or {})
             entry = FlextObservability.LogEntry(
                 id=str(uuid4()),
                 message=message,

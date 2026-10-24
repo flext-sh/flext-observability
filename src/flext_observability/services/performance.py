@@ -85,7 +85,7 @@ class FlextObservabilityPerformance:
             cpu_percent = self._cpu_percent()
             self.metrics = self.metrics.model_copy(
                 update={
-                    "end_time": end_time,
+                    c.MetadataKey.END_TIME: end_time,
                     "memory_used_mb": memory_used_mb,
                     "cpu_percent": cpu_percent,
                 },

@@ -197,7 +197,7 @@ class FlextObservabilityModelsDomains:
             m.Field(description="Human-readable metric description"),
         ]
         unit: Annotated[str, m.Field(min_length=1, description="Measurement unit")] = (
-            "1"
+            c.ParserBooleanToken.ONE
         )
         labels: Annotated[
             t.StrMapping,
@@ -222,6 +222,27 @@ class FlextObservabilityModelsDomains:
             t.PositiveInt,
             m.Field(description="Error count threshold"),
         ]
+
+    class ErrorHandlingState(m.ArbitraryTypesModel):
+        """Mutable aggregation state consumed by the error recording service."""
+
+        error_counts: t.MutableIntMapping = m.Field(
+            default_factory=dict[str, int],
+            description="Observed error counts indexed by fingerprint.",
+        )
+        last_alert_time: t.MutableMappingKV[str, float] = m.Field(
+            default_factory=dict[str, float],
+            description="Last alert timestamp indexed by fingerprint.",
+        )
+        alert_cooldown_sec: float = m.Field(
+            default=60.0, description="Minimum seconds between repeated alerts."
+        )
+        escalation_threshold: int = m.Field(
+            default=5, description="Error count required to escalate an alert."
+        )
+        deduplication_window_sec: int = m.Field(
+            default=300, description="Seconds retained for error deduplication."
+        )
 
     class ErrorEvent(m.Value):
         """Error event with fingerprinting for deduplication and alerting."""
@@ -325,7 +346,7 @@ class FlextObservabilityModelsDomains:
                 end_time = time.time()
             duration_ms = max(0.0, (end_time - self.start_time) * 1000.0)
             return self.model_copy(
-                update={"end_time": end_time, "duration_ms": duration_ms},
+                update={c.MetadataKey.END_TIME: end_time, "duration_ms": duration_ms},
             )
 
 

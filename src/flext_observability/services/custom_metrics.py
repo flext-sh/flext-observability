@@ -43,9 +43,9 @@ class FlextObservabilityCustomMetrics:
         # Register business metric
         metrics.register_metric(
             name="user_logins",
-            metric_type="counter",
+            metric_type=c.MetricType.COUNTER,
             description="Number of user logins",
-            unit="1",
+            unit=c.ParserBooleanToken.ONE,
         )
 
         # Use metric
@@ -209,7 +209,7 @@ class FlextObservabilityCustomMetrics:
             name: str,
             metric_type: str | c.Observability.MetricType,
             description: str,
-            unit: str = "1",
+            unit: str = c.ParserBooleanToken.ONE,
             namespace: str = "default",
         ) -> p.Result[bool]:
             """Register a custom metric.
@@ -218,7 +218,7 @@ class FlextObservabilityCustomMetrics:
                 name: Metric name (e.g., "user_logins")
                 metric_type: Type of metric (counter, gauge, histogram)
                 description: Metric description for documentation
-                unit: Metric unit (default "1")
+                unit: Metric unit (default c.ParserBooleanToken.ONE)
                 namespace: Namespace for metric organization
 
             Returns:
@@ -411,7 +411,7 @@ class FlextObservabilityCustomMetrics:
         name: str,
         metric_type: str | c.Observability.MetricType,
         description: str,
-        unit: str = "1",
+        unit: str = c.ParserBooleanToken.ONE,
         namespace: str = "default",
     ) -> p.Result[bool]:
         """Register a metric.
@@ -420,7 +420,7 @@ class FlextObservabilityCustomMetrics:
             name: Metric name
             metric_type: Metric type (counter, gauge, histogram)
             description: Metric description
-            unit: Metric unit (default "1")
+            unit: Metric unit (default c.ParserBooleanToken.ONE)
             namespace: Namespace (default "default")
 
         Returns:

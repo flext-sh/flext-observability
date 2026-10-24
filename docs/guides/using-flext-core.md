@@ -66,7 +66,7 @@ def safe_divide(a: float, b: float) -> p.Result[float]:
 
 assert safe_divide(10, 2).success
 assert isclose(safe_divide(10, 2).value, 5.0)
-assert safe_divide(10, 0).failure
+tm.fail(safe_divide(10, 0))
 ```
 
 ## Settings
@@ -97,8 +97,8 @@ container = FlextContainer()
 container.bind("service", "ready")
 resolved: p.Result[str] = container.resolve("service", type_cls=str)
 
-assert resolved.success
-assert resolved.value == "ready"
+tm.ok(resolved.success)
+tm.that(resolved.value, eq="ready")
 ```
 
 ## Logging
@@ -115,8 +115,8 @@ logger.info("user.created", user_id=42)
 ```text
 from typing import override
 
-from flext_core import p, r, s
-
+from tests import c, r
+from tests import c, p, r, s, tm
 
 class GreetingService(s[str]):
     @override
@@ -126,8 +126,8 @@ class GreetingService(s[str]):
 
 runtime = GreetingService.fetch_global()
 result = runtime.execute()
-assert result.success
-assert result.value == "Hello!"
+tm.ok(result.success)
+tm.that(result.value, eq="Hello!")
 ```
 
 ## Good practices
