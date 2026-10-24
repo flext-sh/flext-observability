@@ -18,7 +18,7 @@ class TestsObservabilityLoggingFixtures:
     """Provide actual streams and retain the caller's logging composition."""
 
     class Capture:
-        """An application receiver that writes the typed event as JSON."""
+        """An application receiver that writes the source event message."""
 
         def __init__(self) -> None:
             """Initialize an empty receiver with its own writable stream."""
@@ -33,12 +33,8 @@ class TestsObservabilityLoggingFixtures:
                 ValueError: The selected stream is closed or otherwise unwritable.
 
             """
-            serialized = m.LoggingRecord.model_validate(
-                event,
-                from_attributes=True,
-            ).model_dump_json()
             try:
-                self.stream.write(serialized + "\n")
+                self.stream.write(event.message + "\n")
             except ValueError as error:
                 self.failure = error
                 raise

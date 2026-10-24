@@ -39,14 +39,12 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
             event["application_event"] = event["event"]
             return event
 
-        base = m.StructlogOptions.model_validate(
-            logging_runtime,
-            from_attributes=True,
-        ).model_copy(
-            update={
-                "observers": (unrelated,),
-                "processing_stages": (application_stage,),
-            },
+        base = m.StructlogOptions(
+            handlers=logging_runtime.handlers,
+            async_logging=logging_runtime.async_logging,
+            cache_logger_on_first_use=logging_runtime.cache_logger_on_first_use,
+            observers=(unrelated,),
+            processing_stages=(application_stage,),
         )
         logger = u.fetch_logger("observability.cached")
         tm.ok(logger.info("warm cached logger"))
@@ -163,17 +161,21 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         tm.that(FlextObservability.correlation_id(), eq=parent_context)
 
     def test_original_exception_is_local_and_capture_is_sanitized(
-        self, logging_runtime: p.StructlogOptions
+        self,
+        logging_runtime: p.StructlogOptions,
+        logging_streams: t.LoggingStreams,
     ) -> None:
         """Typed capture retains the causal reference but serialization excludes it."""
         capture = self.Capture()
         handler = FlextObservability.Handler()
         errors = u.Observability.ErrorObserver(handler)
         redacted_value = "private-capture-value"
-        base = m.StructlogOptions.model_validate(
-            logging_runtime,
-            from_attributes=True,
-        ).model_copy(update={"redacted_values": (redacted_value,)})
+        base = m.StructlogOptions(
+            handlers=logging_runtime.handlers,
+            async_logging=logging_runtime.async_logging,
+            cache_logger_on_first_use=logging_runtime.cache_logger_on_first_use,
+            redacted_values=(redacted_value,),
+        )
         options = FlextObservability.compose_logging(
             base,
             context_stage=FlextObservability.ContextStage(),
@@ -191,9 +193,11 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         tm.that(record.context["correlation_id"], eq="captured-operation")
         tm.that(record.context["payload"], eq={"values": [1, 2]})
         tm.that(capture.stream.getvalue(), lacks=redacted_value)
-        serialized = m.LoggingRecord.model_validate(
-            record, from_attributes=True
-        ).model_dump()
+        structured, _ = logging_streams
+        tm.that(structured.getvalue(), lacks=redacted_value)
+        serialized = u.Cli.JSON_MAPPING_ADAPTER.validate_json(
+            structured.getvalue().splitlines()[-1]
+        )
         tm.that("exception" in serialized, eq=False)
         error = m.Observability.ErrorEvent(
             error_type=type(original).__name__,
