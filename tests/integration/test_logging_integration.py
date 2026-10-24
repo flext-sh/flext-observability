@@ -33,20 +33,18 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         def application_stage(
             logger: p.OutputLogger,
             method_name: str,
-            event: p.LoggingEvent,
+            event_dict: p.LoggingEvent,
         ) -> p.LoggingEvent:
             _ = logger, method_name
-            event["application_event"] = event["event"]
-            return event
+            event_dict["application_event"] = event_dict["event"]
+            return event_dict
 
-        base = m.StructlogOptions.model_validate(
-            logging_runtime,
-            from_attributes=True,
-        ).model_copy(
-            update={
-                "observers": (unrelated,),
-                "processing_stages": (application_stage,),
-            },
+        base = m.StructlogOptions(
+            handlers=logging_runtime.handlers,
+            async_logging=logging_runtime.async_logging,
+            cache_logger_on_first_use=logging_runtime.cache_logger_on_first_use,
+            observers=(unrelated,),
+            processing_stages=(application_stage,),
         )
         logger = u.fetch_logger("observability.cached")
         tm.ok(logger.info("warm cached logger"))
@@ -90,7 +88,8 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
             eq="after removal",
         )
         tm.that(disabled.processing_stages[0] is application_stage, eq=True)
-        tm.that(disabled.handlers is base.handlers, eq=True)
+        for actual, original in zip(disabled.handlers, base.handlers, strict=True):
+            tm.that(actual is original, eq=True)
         tm.that(disabled.cache_logger_on_first_use, eq=base.cache_logger_on_first_use)
         tm.that(disabled.async_logging, eq=base.async_logging)
 
@@ -170,10 +169,12 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         handler = FlextObservability.Handler()
         errors = u.Observability.ErrorObserver(handler)
         redacted_value = "private-capture-value"
-        base = m.StructlogOptions.model_validate(
-            logging_runtime,
-            from_attributes=True,
-        ).model_copy(update={"redacted_values": (redacted_value,)})
+        base = m.StructlogOptions(
+            handlers=logging_runtime.handlers,
+            async_logging=logging_runtime.async_logging,
+            cache_logger_on_first_use=logging_runtime.cache_logger_on_first_use,
+            redacted_values=(redacted_value,),
+        )
         options = FlextObservability.compose_logging(
             base,
             context_stage=FlextObservability.ContextStage(),
