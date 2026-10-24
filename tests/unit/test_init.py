@@ -45,7 +45,7 @@ class TestsFlextObservabilityInit:
     @pytest.mark.parametrize(
         ("name", "value", "unit"),
         [
-            ("requests", 1.0, "count"),
+            ("requests", 1.0, c.Aggregation.COUNT),
             ("latency", 12.5, "ms"),
             ("throughput", 3.0, "rps"),
         ],

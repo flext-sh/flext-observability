@@ -74,11 +74,11 @@ class FlextObservabilitySolidDemo:
     def demonstrate_metrics_collection(self) -> None:
         """Demonstrate comprehensive metrics collection."""
         metrics = [
-            ("api_requests_total", 1500.0, "count"),
+            ("api_requests_total", 1500.0, c.Aggregation.COUNT),
             ("response_time_avg", 85.2, "milliseconds"),
             ("memory_usage", 68.5, "percent"),
             ("disk_usage", 45.8, "percent"),
-            ("active_connections", 127.0, "count"),
+            ("active_connections", 127.0, c.Aggregation.COUNT),
         ]
         for name, value, unit in metrics:
             self._observability.flext_metric(name, value, unit)
@@ -145,12 +145,14 @@ class FlextObservabilitySolidDemo:
 
     def demonstrate_factory_patterns(self) -> None:
         """Demonstrate factory pattern usage."""
-        self._observability.flext_metric("global_metric", 42.0, "count")
-        self._observability.flext_metric("custom_metric", 24.0, "count")
+        self._observability.flext_metric("global_metric", 42.0, c.Aggregation.COUNT)
+        self._observability.flext_metric("custom_metric", 24.0, c.Aggregation.COUNT)
 
     def demonstrate_validation(self) -> None:
         """Demonstrate entity validation."""
-        metric_res = self._observability.flext_metric("valid_metric", 100.0, "count")
+        metric_res = self._observability.flext_metric(
+            "valid_metric", 100.0, c.Aggregation.COUNT
+        )
         if metric_res.success:
             self._emit(f"Validation successful for {type(metric_res.value).__name__}")
         trace_res = self._observability.flext_trace("valid_operation")

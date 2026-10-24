@@ -95,9 +95,9 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
     @pytest.mark.parametrize(
         ("name", "value", "unit"),
         [
-            ("http.requests.total", 1.0, "counter"),
-            ("http.request.duration_ms", 12.5, "histogram"),
-            ("db.query.rows_returned", 42.0, "gauge"),
+            ("http.requests.total", 1.0, c.MetricType.COUNTER),
+            ("http.request.duration_ms", 12.5, c.MetricType.HISTOGRAM),
+            ("db.query.rows_returned", 42.0, c.MetricType.GAUGE),
         ],
     )
     def test_create_metric_returns_metric_with_requested_fields(
@@ -123,7 +123,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         result = factory.flext_metric(
             "http.requests.total",
             1.0,
-            "counter",
+            c.MetricType.COUNTER,
             tags={"method": "POST", "endpoint": "/api/users"},
         )
 
@@ -438,7 +438,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         tm.ok(sampler.update_operation_rate("e2e_workflow", 1.0))
         tm.ok(sampler.should_sample("e2e_workflow", "svc"))
 
-        tm.ok(factory.flext_metric("workflow.started", 1.0, "counter"))
+        tm.ok(factory.flext_metric("workflow.started", 1.0, c.MetricType.COUNTER))
 
         advanced_context.update_metadata("workflow_type", "integration_test")
         snapshot = advanced_context.snapshot(
@@ -452,4 +452,4 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
             severity=ErrorSeverity.WARNING,
         )
         tm.ok(error_handler.record_error(error))
-        tm.ok(factory.flext_metric("workflow.completed", 1.0, "counter"))
+        tm.ok(factory.flext_metric("workflow.completed", 1.0, c.MetricType.COUNTER))

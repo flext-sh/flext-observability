@@ -55,7 +55,7 @@ fixtures/
 def sample_metric() -> FlextMetric:
     """Provide consistent test metric."""
     return FlextMetric(
-        name="test_metric", value=42.0, unit="count", tags={"environment": "test"}
+        name="test_metric", value=42.0, unit=c.Aggregation.COUNT, tags={"environment": "test"}
     )
 
 
@@ -99,7 +99,7 @@ class MetricsTestDataFactory:
     def create_api_metric(value: float = 1.0) -> FlextMetric:
         """Create API request metric for testing."""
         return FlextMetric(
-            name="api_requests", value=value, unit="count", tags={"service": "test-api"}
+            name="api_requests", value=value, unit=c.Aggregation.COUNT, tags={"service": "test-api"}
         )
 
     @staticmethod

@@ -36,7 +36,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
             event_dict: p.LoggingEvent,
         ) -> p.LoggingEvent:
             _ = logger, method_name
-            event_dict["application_event"] = event_dict["event"]
+            event_dict["application_event"] = event_dict[c.HandlerType.EVENT]
             return event_dict
 
         base = m.StructlogOptions(

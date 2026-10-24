@@ -224,7 +224,7 @@ class FlextMetric(FlextModels.Entity):
     value: float | Decimal
     unit: str = ""
     tags: t.StringDict = field(default_factory=dict)
-    metric_type: str = "gauge"
+    metric_type: str = c.MetricType.GAUGE
 
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate metric domain rules."""
@@ -540,7 +540,7 @@ from flext_observability import flext_create_metric, flext_monitor_function
 @flext_monitor_function("order_processing")
 def process_order(order_data: dict) -> p.Result[m.Dict]:
     # Create business metrics
-    flext_create_metric("orders_processed", 1, "count")
+    flext_create_metric("orders_processed", 1, c.Aggregation.COUNT)
 
     # Business logic here
     return r[bool].ok({"status": "processed"})
@@ -573,7 +573,7 @@ class UserAPIService:
 
         # Record request metric
         metric_result = self.factory.create_metric(
-            "api_requests", 1, "count", tags={"endpoint": "/users"}
+            "api_requests", 1, c.Aggregation.COUNT, tags={"endpoint": "/users"}
         )
 
         # Process with observability
@@ -743,25 +743,25 @@ def create_business_metrics(operation: str, duration: float, success: bool) -> N
     status_result = flext_create_metric(
         name=f"{operation}_status",
         value=1,
-        unit="count",
+        unit=c.Aggregation.COUNT,
         tags={c.ContextScope.OPERATION: operation, "status": "success" if success else "failure"},
-        metric_type="counter",
+        metric_type=c.MetricType.COUNTER,
     )
 
     # Business KPI metric
     kpi_result = flext_create_metric(
         name="business_transactions",
         value=1,
-        unit="count",
+        unit=c.Aggregation.COUNT,
         tags={"type": operation, "outcome": "success" if success else "failure"},
-        metric_type="counter",
+        metric_type=c.MetricType.COUNTER,
     )
 
 
 # Advanced metric patterns with validation
 def create_validated_metric(name: str, value: float) -> p.Result[bool]:
     """Create metric with comprehensive validation."""
-    metric_result = flext_create_metric(name, value, "count")
+    metric_result = flext_create_metric(name, value, c.Aggregation.COUNT)
 
     if metric_result.failure:
         # Log metric creation failure
@@ -950,9 +950,9 @@ def create_business_alert(
     alert_metric_result = flext_create_metric(
         name="alerts_created",
         value=1,
-        unit="count",
+        unit=c.Aggregation.COUNT,
         tags={"severity": severity, "metric": metric_name},
-        metric_type="counter",
+        metric_type=c.MetricType.COUNTER,
     )
 
     return r[bool].ok(value=True)
@@ -1023,18 +1023,18 @@ from flext_observability import flext_create_metric, flext_create_trace
 
 def test_metric_creation_success():
     """Test successful metric creation."""
-    result = flext_create_metric("api_requests", 42.0, "count")
+    result = flext_create_metric("api_requests", 42.0, c.Aggregation.COUNT)
 
     tm.ok(result.success)
     tm.that(result.value.name, eq="api_requests")
     tm.that(result.value.value, eq=42.0)
-    tm.that(result.value.unit, eq="count")
+    tm.that(result.value.unit, eq=c.Aggregation.COUNT)
     assert result.error is None
 
 
 def test_metric_creation_failure():
     """Test metric creation validation failure."""
-    result = flext_create_metric("", 42.0, "count")  # Empty name
+    result = flext_create_metric("", 42.0, c.Aggregation.COUNT)  # Empty name
 
     tm.fail(result)
     assert result.value is None
@@ -1045,7 +1045,7 @@ def test_observability_chaining():
     """Test railway-oriented chaining of observability operations."""
 
     def create_observability_data(operation: str) -> p.Result[m.Dict]:
-        return flext_create_metric(f"{operation}_requests", 1, "count").flat_map(
+        return flext_create_metric(f"{operation}_requests", 1, c.Aggregation.COUNT).flat_map(
             lambda metric: flext_create_trace(operation, "test-service").map(
                 lambda trace: {"metric": metric, "trace": trace}
             )
@@ -1064,7 +1064,7 @@ def test_observability_failure_propagation():
     """Test failure propagation in observability chains."""
 
     def create_invalid_observability() -> p.Result[m.Dict]:
-        return flext_create_metric("", 1, "count").flat_map(  # Invalid metric name
+        return flext_create_metric("", 1, c.Aggregation.COUNT).flat_map(  # Invalid metric name
             lambda metric: flext_create_trace(
                 c.ContextScope.OPERATION, "service"
             ).map(  # Should not execute
@@ -1110,7 +1110,7 @@ class TestFlextMetric:
 
     def test_metric_validation_invalid_name(self):
         """Test metric validation with invalid name."""
-        metric = FlextMetric(name="", value=100.0, unit="count")
+        metric = FlextMetric(name="", value=100.0, unit=c.Aggregation.COUNT)
 
         validation_result = metric.validate_business_rules()
 
@@ -1193,7 +1193,7 @@ def observability_factory():
 def test_metrics_service_record_metric(metrics_service, observability_factory):
     """Test metrics service metric recording."""
     # Create metric using factory
-    metric_result = observability_factory.create_metric("test_metric", 100.0, "count")
+    metric_result = observability_factory.create_metric("test_metric", 100.0, c.Aggregation.COUNT)
     assert metric_result.success
 
     # Record metric using service
@@ -1208,7 +1208,7 @@ def test_metrics_service_prometheus_export(metrics_service, observability_factor
     """Test Prometheus format export."""
     # Create and record multiple metrics
     metrics_data = [
-        ("api_requests", 150.0, "count"),
+        ("api_requests", 150.0, c.Aggregation.COUNT),
         ("response_time", 250.5, "milliseconds"),
         ("error_rate", 0.05, "ratio"),
     ]
@@ -1238,7 +1238,7 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
     # Create metrics beyond memory limit to test cleanup
     for i in range(1200):  # Exceeds default limit of 1000
         metric_result = observability_factory.create_metric(
-            f"test_metric_{i}", float(i), "count"
+            f"test_metric_{i}", float(i), c.Aggregation.COUNT
         )
         assert metric_result.success
 
@@ -1315,7 +1315,7 @@ def create_business_metric(
 ) -> p.Result[FlextMetric]:
     """Create business metric with complete type safety."""
     return flext_create_metric(
-        name=f"business_{operation}", value=value, unit="count", tags=tags or {}
+        name=f"business_{operation}", value=value, unit=c.Aggregation.COUNT, tags=tags or {}
     )
 
 
@@ -1363,7 +1363,7 @@ from flext_core import m, p, r
 def create_comprehensive_observability(operation: str) -> p.Result[m.Dict]:
     """Create comprehensive observability data with error handling."""
     # Chain observability operations with proper error handling
-    metric_result = flext_create_metric(f"{operation}_requests", 1, "count")
+    metric_result = flext_create_metric(f"{operation}_requests", 1, c.Aggregation.COUNT)
     if metric_result.failure:
         return r[bool].fail(f"Failed to create metric: {metric_result.error}")
 
@@ -1384,7 +1384,7 @@ def monitor_business_operation(operation_data: dict) -> p.Result[m.Dict]:
     return (
         flext_create_trace("business_operation", "business-service")
         .flat_map(
-            lambda trace: flext_create_metric("operations_started", 1, "count").map(
+            lambda trace: flext_create_metric("operations_started", 1, c.Aggregation.COUNT).map(
                 lambda metric: {"trace": trace, "metric": metric}
             )
         )
@@ -1427,8 +1427,8 @@ def create_business_observability_dashboard(
         metrics_config: Configuration for metrics collection including names,
             types, and collection intervals. Example:
             {
-                "response_time": {"type": "histogram", "unit": "seconds"},
-                "request_count": {"type": "counter", "unit": "count"}
+                "response_time": {"type": c.MetricType.HISTOGRAM, "unit": "seconds"},
+                "request_count": {"type": c.MetricType.COUNTER, "unit": c.Aggregation.COUNT}
             }
         trace_config: Configuration for distributed tracing including sampling
             rates and context propagation. Example:
@@ -1444,7 +1444,7 @@ def create_business_observability_dashboard(
         Failure contains detailed error message explaining setup failure.
 
     Example:
-        >>> metrics = {"api_requests": {"type": "counter", "unit": "count"}}
+        >>> metrics = {"api_requests": {"type": c.MetricType.COUNTER, "unit": c.Aggregation.COUNT}}
         >>> traces = {"sampling_rate": 0.1}
         >>> result = create_business_observability_dashboard(
         ...     "user-api", metrics, traces
@@ -1476,8 +1476,8 @@ def create_business_observability_dashboard(
             metric_result = flext_create_metric(
                 name=f"{service_name}_{metric_name}",
                 value=0,  # Initial value
-                unit=settings.get("unit", "count"),
-                metric_type=settings.get("type", "gauge"),
+                unit=settings.get("unit", c.Aggregation.COUNT),
+                metric_type=settings.get("type", c.MetricType.GAUGE),
             )
 
             if metric_result.failure:
@@ -1536,7 +1536,7 @@ class FlextUserService:
         """Create user with automatic observability."""
         # Business metrics
         flext_create_metric(
-            "users_created", 1, "count", tags={"service": "user-service"}
+            "users_created", 1, c.Aggregation.COUNT, tags={"service": "user-service"}
         )
 
         # Business logic
@@ -1547,7 +1547,7 @@ class FlextUserService:
         flext_create_metric(
             "user_creation_status",
             1,
-            "count",
+            c.Aggregation.COUNT,
             tags={"status": status, "service": "user-service"},
         )
 
@@ -1576,7 +1576,7 @@ def sync_user_between_services(user_id: str) -> p.Result[m.Dict]:
 
     # Success metrics
     flext_create_metric(
-        "user_sync_completed", 1, "count", tags={c.ContextKey.CORRELATION_ID: trace_id}
+        "user_sync_completed", 1, c.Aggregation.COUNT, tags={c.ContextKey.CORRELATION_ID: trace_id}
     )
 
     return r[bool].ok({

@@ -66,7 +66,7 @@ def test_complete_observability_workflow():
     platform = FlextObservabilityPlatformV2()
 
     # 2. Create observability data
-    metric_result = platform.metric("api_requests", 1, "count")
+    metric_result = platform.metric("api_requests", 1, c.Aggregation.COUNT)
     trace_result = platform.trace("user_workflow", "web-service")
     alert_result = platform.alert("high_cpu", "warning", "CPU usage high")
 
@@ -94,7 +94,7 @@ def test_production_monitoring_scenario():
     # Simulate production load
     for i in range(100):
         # Create various metrics as they would appear in production
-        api_metric = flext_create_metric(f"api_request_{i}", 1, "count")
+        api_metric = flext_create_metric(f"api_request_{i}", 1, c.Aggregation.COUNT)
         response_time = flext_create_metric(
             "response_time", random.uniform(50, 500), "ms"
         )
@@ -217,7 +217,7 @@ def test_performance_under_load(benchmark):
 
     def create_observability_data():
         factory = FlextObservabilityMasterFactory()
-        return factory.create_metric("perf_test", 1.0, "count")
+        return factory.create_metric("perf_test", 1.0, c.Aggregation.COUNT)
 
     result = benchmark(create_observability_data)
     tm.ok(result.success)

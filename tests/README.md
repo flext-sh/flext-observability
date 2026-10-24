@@ -131,7 +131,7 @@ from __future__ import annotations
 
 def test_metric_creation_success():
     """Test successful metric creation with r validation."""
-    result = flext_create_metric("api_requests", 42.0, "count")
+    result = flext_create_metric("api_requests", 42.0, c.Aggregation.COUNT)
 
     tm.ok(result.success)
     tm.that(result.data.name, eq="api_requests")
@@ -141,7 +141,7 @@ def test_metric_creation_success():
 
 def test_metric_creation_failure():
     """Test metric creation failure with error handling."""
-    result = flext_create_metric("", 42.0, "count")  # Invalid name
+    result = flext_create_metric("", 42.0, c.Aggregation.COUNT)  # Invalid name
 
     assert result.is_failure
     assert result.data is None

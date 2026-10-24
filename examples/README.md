@@ -82,7 +82,7 @@ def create_business_metrics():
     user_count = flext_create_metric(
         name="active_users",
         value=1250,
-        unit="count",
+        unit=c.Aggregation.COUNT,
         tags={"region": "us-east", "tier": "premium"},
     )
 
@@ -112,7 +112,7 @@ class UserService:
         metric_result = self.factory.create_metric(
             name="users_created",
             value=1,
-            unit="count",
+            unit=c.Aggregation.COUNT,
             tags={"service": "user-service"},
         )
 
@@ -294,7 +294,7 @@ class FlextTapOracle:
         flext_create_metric(
             name="records_extracted",
             value=len(records),
-            unit="count",
+            unit=c.Aggregation.COUNT,
             tags={"table": table_name, "tap": "oracle"},
         )
 
@@ -328,7 +328,7 @@ class FlextAPIService:
         flext_create_metric(
             name="api_requests",
             value=1,
-            unit="count",
+            unit=c.Aggregation.COUNT,
             tags={"endpoint": "/users", "method": "POST", "service": "user-api"},
         )
 
@@ -340,7 +340,7 @@ class FlextAPIService:
         flext_create_metric(
             name="api_responses",
             value=1,
-            unit="count",
+            unit=c.Aggregation.COUNT,
             tags={"endpoint": "/users", "status": status, "service": "user-api"},
         )
 

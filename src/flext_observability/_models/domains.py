@@ -197,7 +197,7 @@ class FlextObservabilityModelsDomains:
             m.Field(description="Human-readable metric description"),
         ]
         unit: Annotated[str, m.Field(min_length=1, description="Measurement unit")] = (
-            "1"
+            c.ParserBooleanToken.ONE
         )
         labels: Annotated[
             t.StrMapping,

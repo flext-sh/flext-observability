@@ -18,7 +18,7 @@ class FlextObservabilityConstantsBase:
 
         DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
         DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-        DEFAULT_METRIC_UNIT: Final[str] = "1"
+        DEFAULT_METRIC_UNIT: Final[str] = c.ParserBooleanToken.ONE
 
 
 __all__: list[str] = ["FlextObservabilityConstantsBase"]

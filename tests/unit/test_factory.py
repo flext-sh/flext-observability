@@ -49,12 +49,14 @@ class TestsFlextObservabilityFactory:
     @staticmethod
     def test_flext_metric_returns_metric_with_public_fields() -> None:
         """A valid metric request succeeds and echoes name, value and unit."""
-        result = FlextObservability().flext_metric("test_metric", 42.5, "gauge")
+        result = FlextObservability().flext_metric(
+            "test_metric", 42.5, c.MetricType.GAUGE
+        )
         tm.ok(result.success)
         metric = result.value
         tm.that(metric.name, eq="test_metric")
         tm.that(abs(metric.value - 42.5), lt=1e-9)
-        tm.that(metric.unit, eq="gauge")
+        tm.that(metric.unit, eq=c.MetricType.GAUGE)
 
     @staticmethod
     def test_flext_metric_defaults_unit_to_count() -> None:
@@ -64,7 +66,7 @@ class TestsFlextObservabilityFactory:
         metric = result.value
         tm.that(metric.name, eq="cpu_usage")
         tm.that(abs(metric.value - 85.2), lt=1e-9)
-        tm.that(metric.unit, eq="count")
+        tm.that(metric.unit, eq=c.Aggregation.COUNT)
 
     @staticmethod
     def test_flext_metric_empty_name_fails_with_message() -> None:
@@ -175,7 +177,7 @@ class TestsFlextObservabilityFactory:
         result: p.Result[FlextObservability.Metric] = FlextObservability().flext_metric(
             "request_count",
             100.0,
-            "counter",
+            c.MetricType.COUNTER,
         )
         tm.ok(result.success)
         created_at = result.value.model_dump()["created_at"]

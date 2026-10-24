@@ -143,7 +143,7 @@ class FlextObservability(
     def flext_metric(
         name: str,
         value: float,
-        unit: str = "count",
+        unit: str = c.Aggregation.COUNT,
         **kwargs: t.JsonPayload,
     ) -> p.Result[FlextObservability.Metric]:
         """Create a metric entity directly.
