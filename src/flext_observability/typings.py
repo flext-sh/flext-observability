@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Observability Types.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -9,8 +10,10 @@ from __future__ import annotations
 
 from flext_cli import FlextCliTypes
 
-from flext_observability._typings.base import FlextObservabilityTypingsBase
-from flext_observability._typings.domains import FlextObservabilityTypingsDomains
+from flext_observability._typings import (
+    FlextObservabilityTypingsBase,
+    FlextObservabilityTypingsDomains,
+)
 
 
 class FlextObservabilityTypes(FlextCliTypes, FlextObservabilityTypingsBase):
