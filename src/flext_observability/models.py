@@ -31,5 +31,4 @@ class FlextObservabilityModels(FlextCliModels, FlextObservabilityModelsBase):
 
 
 m = FlextObservabilityModels
-
 __all__: list[str] = ["FlextObservabilityModels", "m"]

@@ -34,5 +34,4 @@ class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilities
 
 
 u = FlextObservabilityUtilities
-
 __all__: list[str] = ["FlextObservabilityUtilities", "u"]

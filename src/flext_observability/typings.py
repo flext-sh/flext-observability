@@ -27,5 +27,4 @@ class FlextObservabilityTypes(FlextCliTypes, FlextObservabilityTypingsBase):
 
 
 t = FlextObservabilityTypes
-
 __all__: list[str] = ["FlextObservabilityTypes", "t"]

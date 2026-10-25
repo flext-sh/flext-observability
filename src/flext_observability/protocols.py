@@ -51,5 +51,4 @@ class FlextObservabilityProtocols(FlextCliProtocols, FlextObservabilityProtocols
 
 
 p = FlextObservabilityProtocols
-
 __all__: list[str] = ["FlextObservabilityProtocols", "p"]

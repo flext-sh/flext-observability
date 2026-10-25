@@ -31,7 +31,6 @@ class FlextObservabilityConstants(FlextCliConstants):
     """
 
     class Observability(
-        FlextObservabilityConstantsBase,
         FlextObservabilityConstantsDomains,
         FlextObservabilityConstantsBase.Observability,
     ):
