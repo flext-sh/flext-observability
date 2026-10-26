@@ -99,7 +99,10 @@ class MetricsTestDataFactory:
     def create_api_metric(value: float = 1.0) -> FlextMetric:
         """Create API request metric for testing."""
         return FlextMetric(
-            name="api_requests", value=value, unit=c.Aggregation.COUNT, tags={"service": "test-api"}
+            name="api_requests",
+            value=value,
+            unit=c.Aggregation.COUNT,
+            tags={"service": "test-api"},
         )
 
     @staticmethod

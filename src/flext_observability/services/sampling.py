@@ -69,7 +69,7 @@ class FlextObservabilitySampling:
         """Sampling decision engine."""
 
         RATE_ADAPTER: ClassVar[
-            m.TypeAdapter[Annotated[float, m.Field(ge=0.0, le=1.0)]]
+            u.type_adapter[Annotated[float, m.Field(ge=0.0, le=1.0)]]
         ] = u.type_adapter(Annotated[float, m.Field(ge=0.0, le=1.0)])
 
         def __init__(self) -> None:

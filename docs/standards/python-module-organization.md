@@ -1064,7 +1064,9 @@ def test_observability_failure_propagation():
     """Test failure propagation in observability chains."""
 
     def create_invalid_observability() -> p.Result[m.Dict]:
-        return flext_create_metric("", 1, c.Aggregation.COUNT).flat_map(  # Invalid metric name
+        return flext_create_metric(
+            "", 1, c.Aggregation.COUNT
+        ).flat_map(  # Invalid metric name
             lambda metric: flext_create_trace(
                 c.ContextScope.OPERATION, "service"
             ).map(  # Should not execute
@@ -1315,7 +1317,10 @@ def create_business_metric(
 ) -> p.Result[FlextMetric]:
     """Create business metric with complete type safety."""
     return flext_create_metric(
-        name=f"business_{operation}", value=value, unit=c.Aggregation.COUNT, tags=tags or {}
+        name=f"business_{operation}",
+        value=value,
+        unit=c.Aggregation.COUNT,
+        tags=tags or {},
     )
 
 
@@ -1576,7 +1581,10 @@ def sync_user_between_services(user_id: str) -> p.Result[m.Dict]:
 
     # Success metrics
     flext_create_metric(
-        "user_sync_completed", 1, c.Aggregation.COUNT, tags={c.ContextKey.CORRELATION_ID: trace_id}
+        "user_sync_completed",
+        1,
+        c.Aggregation.COUNT,
+        tags={c.ContextKey.CORRELATION_ID: trace_id},
     )
 
     return r[bool].ok({
