@@ -15,11 +15,13 @@ from flext_core.lazy import install_lazy_exports
 if TYPE_CHECKING:
     from flext_tests import (
         api,
+        cli,
         config,
         d,
         e,
         h,
         install_local_packages,
+        main,
         r,
         settings,
         td,
@@ -29,7 +31,7 @@ if TYPE_CHECKING:
         x,
     )
 
-    from flext_observability import cli, main, observability
+    from flext_observability import observability
     from tests.base import TestsFlextObservabilityServiceBase, s
     from tests.constants import TestsFlextObservabilityConstants, c
     from tests.models import TestsFlextObservabilityModels, m
@@ -84,14 +86,14 @@ install_lazy_exports(
         "TestsFlextObservabilityUtilities": ".utilities",
         "api": "flext_tests",
         "c": ".constants",
-        "cli": "flext_observability",
+        "cli": "flext_tests",
         "config": "flext_tests",
         "d": "flext_tests",
         "e": "flext_tests",
         "h": "flext_tests",
         "install_local_packages": "flext_tests",
         "m": ".models",
-        "main": "flext_observability",
+        "main": "flext_tests",
         "observability": "flext_observability",
         "p": ".protocols",
         "r": "flext_tests",
