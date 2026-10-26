@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliUtilities
+from flext_cli import u
 
 from flext_observability._utilities import (
     FlextObservabilityUtilitiesBase,
@@ -19,7 +19,7 @@ from flext_observability._utilities import (
 )
 
 
-class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilitiesBase):
+class FlextObservabilityUtilities(u, FlextObservabilityUtilitiesBase):
     """Centralized utilities for FLEXT Observability.
 
     Inherits CLI FLEXT utilities, providing additional namespace classes
@@ -27,8 +27,8 @@ class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilities
     """
 
     class Observability(
-        FlextObservabilityUtilitiesBase,
         FlextObservabilityUtilitiesDomains,
+        FlextObservabilityUtilitiesBase,
     ):
         """Observability-specific project utilities."""
 

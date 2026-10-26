@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliConstants
+from flext_cli import c
 
 from flext_observability._constants import (
     FlextObservabilityConstantsBase,
@@ -18,7 +18,7 @@ from flext_observability._constants import (
 )
 
 
-class FlextObservabilityConstants(FlextCliConstants):
+class FlextObservabilityConstants(c):
     """Observability-specific constants extending flext-core patterns.
 
     Usage:
