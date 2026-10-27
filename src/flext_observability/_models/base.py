@@ -7,16 +7,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import m
+from flext_observability.config_models import FlextObservabilityConfigModels
 
 
-class FlextObservabilityModelsBase:
+class FlextObservabilityModelsBase(FlextObservabilityConfigModels):
     """Base models for flext-observability."""
-
-    class ObservabilityConfigNamespace(m.BaseModel):
-        """Open, frozen namespace exposing every ``config/*.yaml`` domain."""
-
-        model_config = m.ConfigDict(extra="allow", frozen=True)
 
 
 __all__: list[str] = ["FlextObservabilityModelsBase"]
