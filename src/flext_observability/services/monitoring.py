@@ -58,7 +58,7 @@ class FlextObservabilityMonitor:
         @staticmethod
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
-            args: t.VariadicTuple[t.Scalar],
+            args: tuple[t.Scalar, ...],
             kwargs: t.ConfigurationMapping | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
