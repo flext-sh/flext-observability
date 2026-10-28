@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import t
+from flext_cli import t as flext_cli_t
 
 from flext_observability._typings import (
     FlextObservabilityTypingsBase,
@@ -16,7 +16,7 @@ from flext_observability._typings import (
 )
 
 
-class FlextObservabilityTypes(t, FlextObservabilityTypingsBase):
+class FlextObservabilityTypes(flext_cli_t, FlextObservabilityTypingsBase):
     """Observability-specific type definitions extending t via MRO."""
 
     class Observability(

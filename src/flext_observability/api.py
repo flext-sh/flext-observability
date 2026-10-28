@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import math
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping
 from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar, Self
 from uuid import uuid4
@@ -19,25 +19,23 @@ from uuid import uuid4
 from flext_core import FlextContainer
 
 from flext_observability import c, m, p, r, t, u
-from flext_observability.services.advanced_context import (
+from flext_observability.services import (
     FlextObservabilityAdvancedContext,
-)
-from flext_observability.services.context import FlextObservabilityContext
-from flext_observability.services.custom_metrics import FlextObservabilityCustomMetrics
-from flext_observability.services.error_handling import FlextObservabilityErrorHandling
-from flext_observability.services.health import FlextObservabilityHealth
-from flext_observability.services.http_client_instrumentation import (
+    FlextObservabilityContext,
+    FlextObservabilityCustomMetrics,
+    FlextObservabilityErrorHandling,
+    FlextObservabilityHealth,
+    FlextObservabilityHTTP,
     FlextObservabilityHTTPClient,
+    FlextObservabilityLogging,
+    FlextObservabilityMonitor,
+    FlextObservabilityPerformance,
+    FlextObservabilitySampling,
+    FlextObservabilityServices,
 )
-from flext_observability.services.http_instrumentation import FlextObservabilityHTTP
-from flext_observability.services.logging_integration import FlextObservabilityLogging
-from flext_observability.services.monitoring import FlextObservabilityMonitor
-from flext_observability.services.performance import FlextObservabilityPerformance
-from flext_observability.services.sampling import FlextObservabilitySampling
-from flext_observability.services.service import FlextObservabilityServices
 
 if TYPE_CHECKING:
-    from flext_observability._settings import FlextObservabilitySettings
+    from flext_observability import FlextObservabilitySettings
 
 
 class FlextObservability(
@@ -169,7 +167,7 @@ class FlextObservability(
         name: str,
         value: float,
         unit: str,
-        kwargs: t.MappingKV[str, t.JsonPayload],
+        kwargs: Mapping[str, t.JsonPayload],
     ) -> p.Result[FlextObservability.Metric]:
         """Create a metric entity from validated direct-factory inputs.
 
@@ -232,15 +230,15 @@ class FlextObservability(
 
     @staticmethod
     def _flext_metric_labels(
-        kwargs: t.MappingKV[str, t.JsonPayload],
-    ) -> t.MutableScalarMapping:
+        kwargs: Mapping[str, t.JsonPayload],
+    ) -> MutableMapping[str, t.Scalar]:
         """Merge tags and labels into the metric labels payload.
 
         Returns:
-            The resulting ``t.MutableScalarMapping``.
+            The resulting ``MutableMapping[str, t.Scalar]``.
 
         """
-        all_labels_data: t.MutableScalarMapping = {}
+        all_labels_data: MutableMapping[str, t.Scalar] = {}
         for source_key in ("tags", "labels"):
             source = kwargs.get(source_key)
             if isinstance(source, Mapping):
@@ -253,7 +251,7 @@ class FlextObservability(
     @staticmethod
     def flext_trace(
         name: str,
-        attributes: t.ScalarMapping | None = None,
+        attributes: Mapping[str, t.Scalar] | None = None,
         trace_id: str | None = None,
     ) -> p.Result[FlextObservability.Trace]:
         """Create a trace entity directly.
@@ -273,7 +271,7 @@ class FlextObservability(
                     "create trace",
                     "Trace name must be non-empty string",
                 )
-            resolved_attrs: t.MutableScalarMapping = (
+            resolved_attrs: MutableMapping[str, t.Scalar] = (
                 dict(attributes) if attributes is not None else {}
             )
             trace = FlextObservability.Trace(
@@ -307,7 +305,7 @@ class FlextObservability(
             return r[FlextObservability.Alert].fail_op("create alert", e)
 
     @staticmethod
-    def _alert_payload(kwargs: t.MappingKV[str, t.JsonValue]) -> t.MutableJsonMapping:
+    def _alert_payload(kwargs: Mapping[str, t.JsonValue]) -> t.MutableJsonMapping:
         """Normalize alert factory kwargs into the canonical model payload.
 
         Returns:
@@ -338,7 +336,7 @@ class FlextObservability(
         component: str,
         status: c.Observability.HealthStatus = c.Observability.HealthStatus.HEALTHY,
         health_check_id: str | None = None,
-        details: t.ScalarMapping | None = None,
+        details: Mapping[str, t.Scalar] | None = None,
     ) -> p.Result[FlextObservability.HealthCheck]:
         """Create a health check entity directly.
 
@@ -364,7 +362,7 @@ class FlextObservability(
                     "create health check",
                     f"Invalid health status: {status}",
                 )
-            resolved_details: t.MutableScalarMapping = (
+            resolved_details: MutableMapping[str, t.Scalar] = (
                 dict(details) if details is not None else {}
             )
             health = FlextObservability.HealthCheck(
@@ -384,7 +382,7 @@ class FlextObservability(
         level: c.Observability.ErrorSeverity = c.Observability.ErrorSeverity.INFO,
         component: str = c.ContextScope.APPLICATION,
         timestamp: datetime | None = None,
-        context: t.ScalarMapping | None = None,
+        context: Mapping[str, t.Scalar] | None = None,
     ) -> p.Result[FlextObservability.LogEntry]:
         """Create a log entry entity directly.
 

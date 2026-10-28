@@ -17,16 +17,16 @@ import operator
 
 import pytest
 
-from flext_observability import FlextObservability, m, p
-from flext_observability.services.advanced_context import (
+from flext_observability import FlextObservability
+from flext_observability.services import (
     FlextObservabilityAdvancedContext,
+    FlextObservabilityContext,
+    FlextObservabilityCustomMetrics,
+    FlextObservabilityErrorHandling,
+    FlextObservabilityPerformance,
+    FlextObservabilitySampling,
 )
-from flext_observability.services.context import FlextObservabilityContext
-from flext_observability.services.custom_metrics import FlextObservabilityCustomMetrics
-from flext_observability.services.error_handling import FlextObservabilityErrorHandling
-from flext_observability.services.performance import FlextObservabilityPerformance
-from flext_observability.services.sampling import FlextObservabilitySampling
-from tests import c, tm
+from tests import c, m, p, tm
 
 MetricType = c.Observability.MetricType
 ErrorSeverity = c.Observability.ErrorSeverity

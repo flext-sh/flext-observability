@@ -196,6 +196,15 @@ modules depend on.
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # All ecosystem projects start with observability patterns here
 ```
 
@@ -213,6 +222,15 @@ validation.
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_observability import FlextMetric
 
@@ -254,6 +272,15 @@ external systems.
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import FlextMetricsService
 
 
@@ -262,7 +289,7 @@ class FlextMetricsService:
 
     def __init__(self, container: FlextContainer) -> None:
         self._container = container
-        self._metrics_store: t.MappingKV[str, FlextMetric] = {}
+        self._metrics_store: Mapping[str, FlextMetric] = {}
 
     def record_metric(self, metric: FlextMetric) -> p.Result[FlextMetric]:
         """Record metric with business validation."""
@@ -292,6 +319,15 @@ class FlextMetricsService:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_observability import FlextObservabilityMasterFactory
 
@@ -348,6 +384,15 @@ use cases.
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import flext_create_metric, flext_create_trace
 
 
@@ -369,6 +414,15 @@ def flext_create_trace(operation_name: str, service_name: str) -> p.Result[Flext
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_observability import flext_monitor_function
 
@@ -404,6 +458,15 @@ observability operations.
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import FlextObservabilityRepository
 
 
@@ -411,9 +474,9 @@ class FlextObservabilityRepository:
     """Repository for observability data access."""
 
     def __init__(self) -> None:
-        self._metrics: t.MappingKV[str, FlextMetric] = {}
-        self._traces: t.MappingKV[str, FlextTrace] = {}
-        self._alerts: t.MappingKV[str, FlextAlert] = {}
+        self._metrics: Mapping[str, FlextMetric] = {}
+        self._traces: Mapping[str, FlextTrace] = {}
+        self._alerts: Mapping[str, FlextAlert] = {}
 
     def store_metric(self, metric: FlextMetric) -> p.Result[bool]:
         """Store metric with validation."""
@@ -441,6 +504,15 @@ All public observability exports use the `Flext` prefix for namespace separation
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # Observability entities
 FlextMetric  # Metrics collection entity
@@ -474,6 +546,15 @@ entities across 33 projects.
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Module names focus on observability concerns
 entities.py  # Contains FlextMetric, FlextTrace, FlextAlert entities
 services.py  # Contains FlextMetricsService, FlextTracingService
@@ -490,6 +571,15 @@ obs_platform.py  # Contains FlextObservabilityPlatformV2 orchestration
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import p
 
@@ -532,6 +622,15 @@ def clear_global_factory() -> None: ...
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Import from main package - gets essential observability tools
 from flext_observability import flext_create_metric, flext_monitor_function
 
@@ -550,6 +649,15 @@ def process_order(order_data: dict) -> p.Result[m.Dict]:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # Import services for advanced integration
 from flext_observability import (
@@ -584,6 +692,15 @@ class UserAPIService:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # Import for infrastructure monitoring
 from flext_observability import (
@@ -634,6 +751,15 @@ class DatabaseConnectionService:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # ❌ Don't import everything
 from flext_observability import *
@@ -698,6 +824,15 @@ Infrastructure Layer  →  Foundation Layer  →  flext-core
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Handled via decorators and context management
 from flext_observability import correlation_id, flext_monitor_function
 
@@ -724,6 +859,15 @@ def process_payment(payment_data: dict) -> p.Result[m.Dict]:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import p, r
 
@@ -780,6 +924,15 @@ def create_validated_metric(name: str, value: float) -> p.Result[bool]:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_core import m, p, r
 
 
@@ -829,6 +982,15 @@ def validate_order_with_trace(
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import m, p, r
 
@@ -908,6 +1070,15 @@ def check_database_health() -> p.Result[FlextHealthCheck]:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import p, r
 
@@ -1018,6 +1189,15 @@ tests/
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import flext_create_metric, flext_create_trace
 
 
@@ -1084,6 +1264,15 @@ def test_observability_failure_propagation():
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from decimal import Decimal
 
@@ -1171,6 +1360,15 @@ class TestFlextTrace:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
 
 
@@ -1257,6 +1455,15 @@ def test_metrics_service_memory_management(metrics_service, observability_factor
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import time
 
 from flext_observability import flext_monitor_function
@@ -1305,6 +1512,15 @@ def test_function_monitoring_with_exception():
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from decimal import Decimal
 
@@ -1361,6 +1577,15 @@ def create_metric(name, value, unit):  # Missing types
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_core import m, p, r
 
 
@@ -1413,6 +1638,15 @@ def create_metric_bad(name: str, value: float) -> FlextMetric:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import m, p, r
 
@@ -1519,6 +1753,15 @@ def create_business_observability_dashboard(
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # ✅ Standard observability imports across ecosystem
 from flext_observability import (
     FlextMetricsService,
@@ -1608,6 +1851,15 @@ class OracleTrace:  # Use FlextTrace instead
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # ✅ Extend observability configuration patterns
 from flext_core import FlextSettings
 
@@ -1653,6 +1905,15 @@ class UserService:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # ✅ Consistent monitoring across ecosystem services
 from flext_observability import flext_monitor_function

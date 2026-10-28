@@ -64,6 +64,15 @@ Advanced demonstration of SOLID principles applied to observability:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Example from functional.py
 from flext_observability import flext_create_metric
 
@@ -93,6 +102,15 @@ def create_business_metrics():
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # Example service integration pattern
 from flext_observability import FlextMetricsService, FlextObservabilityMasterFactory
@@ -127,6 +145,15 @@ class UserService:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # Automatic function monitoring
 from flext_observability import flext_monitor_function
@@ -175,6 +202,15 @@ def process_payment(amount: float, currency: str) -> p.Result[m.Dict]:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Health check integration example
 from flext_observability import flext_create_health_check
 
@@ -218,6 +254,15 @@ def monitor_database_health() -> p.Result[m.Dict]:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # Parent-child trace correlation
 from flext_observability import flext_create_trace
@@ -276,6 +321,15 @@ def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Example Singer tap with observability
 from flext_observability import flext_create_metric, flext_monitor_function
 
@@ -284,7 +338,7 @@ class FlextTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> t.SequenceOf[m.Dict]:
+    def extract_records(self, table_name: str) -> Sequence[m.Dict]:
         """Extract records with automatic monitoring."""
 
         # Extract data (business logic)
@@ -312,6 +366,15 @@ class FlextTapOracle:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # Example FastAPI service with observability
 from flext_observability import flext_create_metric, flext_monitor_function

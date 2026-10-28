@@ -27,7 +27,7 @@ from collections.abc import MutableMapping
 from typing import Annotated, ClassVar
 
 from flext_observability import c, m, p, r, u
-from flext_observability.services.context import FlextObservabilityContext
+from flext_observability.services import FlextObservabilityContext
 
 
 class FlextObservabilitySampling:

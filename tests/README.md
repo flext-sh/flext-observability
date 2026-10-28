@@ -128,6 +128,15 @@ All tests validate r patterns:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def test_metric_creation_success():
     """Test successful metric creation with r validation."""
@@ -153,6 +162,15 @@ def test_metric_creation_failure():
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def test_metric_domain_validation():
     """Test domain rule validation for metrics."""
@@ -169,6 +187,15 @@ def test_metric_domain_validation():
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 def test_metrics_service_integration(metrics_service, observability_factory):
@@ -187,6 +214,15 @@ def test_metrics_service_integration(metrics_service, observability_factory):
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 def test_monitoring_decorator_functionality():

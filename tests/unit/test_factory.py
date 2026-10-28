@@ -22,8 +22,8 @@ from datetime import datetime
 
 from flext_core import FlextContainer
 
-from flext_observability import FlextObservability, p
-from tests import c, tm
+from flext_observability import FlextObservability
+from tests import c, p, tm
 
 
 class TestsFlextObservabilityFactory:

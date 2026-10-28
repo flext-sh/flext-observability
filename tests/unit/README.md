@@ -47,6 +47,15 @@ unit/
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def test_flext_metric_domain_validation():
     """Test domain validation in isolation."""

@@ -131,6 +131,15 @@ Base patterns and cross-cutting concerns:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import FlextMetric
 
 # Create metric with validation
@@ -151,6 +160,15 @@ if validation.success:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import FlextMetricsService
 
 container = FlextContainer()
@@ -165,6 +183,15 @@ if result.success:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_observability import FlextObservabilityMasterFactory
 
@@ -181,6 +208,15 @@ if metric_result.success:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import flext_create_metric, flext_create_trace
 
 # Quick metric creation
@@ -194,6 +230,15 @@ trace_result = flext_create_trace("user_login", "auth-service")
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_observability import flext_monitor_function
 
@@ -219,6 +264,15 @@ All modules follow FLEXT ecosystem standards:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 # Consistent observability across services

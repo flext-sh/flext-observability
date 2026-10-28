@@ -6,6 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 from flext_cli import t
 
 from flext_observability import c
@@ -14,7 +16,7 @@ from flext_observability import c
 class FlextObservabilityTypingsDomains:
     """Observability domain type aliases."""
 
-    type DomainLabels = t.ScalarMapping
+    type DomainLabels = Mapping[str, t.Scalar]
     type HealthMetricsDict = t.JsonMapping
     type ErrorSeverity = c.Observability.ErrorSeverity
 

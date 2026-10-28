@@ -25,6 +25,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
+from collections.abc import Mapping, MutableMapping
 from typing import TypeIs, override
 
 import flask
@@ -33,7 +34,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from flext_observability import c, m, p, r, t, u
-from flext_observability.services.context import FlextObservabilityContext
+from flext_observability.services import FlextObservabilityContext
 
 
 class FlextObservabilityHTTP:
@@ -111,14 +112,14 @@ class FlextObservabilityHTTP:
             )
 
         @classmethod
-        def _before_request_payload(cls) -> t.Triple[str, str, t.StrMapping]:
+        def _before_request_payload(cls) -> tuple[str, str, Mapping[str, str]]:
             """Prepare Flask before-request context and log payload.
 
             Returns:
-                The resulting ``t.Triple[str, str, t.StrMapping]``.
+                The resulting ``tuple[str, str, Mapping[str, str]]``.
 
             """
-            headers_dict: t.StrMapping = dict(flask.request.headers)
+            headers_dict: Mapping[str, str] = dict(flask.request.headers)
             FlextObservabilityContext.from_headers(headers_dict)
             correlation_id = FlextObservabilityContext.correlation_id()
             flask.g.flext_start_time = time.time()
@@ -194,11 +195,11 @@ class FlextObservabilityHTTP:
             return (time.time() - validated_start) * 1000
 
         @staticmethod
-        def _error_handler(error: Exception) -> t.Pair[m.Dict, int]:
+        def _error_handler(error: Exception) -> tuple[m.Dict, int]:
             """Handle exceptions with logging and alerting.
 
             Returns:
-                The resulting ``t.Pair[m.Dict, int]``.
+                The resulting ``tuple[m.Dict, int]``.
 
             """
             FlextObservabilityHTTP.logger.exception(
@@ -405,11 +406,11 @@ class FlextObservabilityHTTP:
             )
 
         @classmethod
-        def _request_log_extra(cls, request: Request) -> t.MutableScalarMapping:
+        def _request_log_extra(cls, request: Request) -> MutableMapping[str, t.Scalar]:
             """Build FastAPI request log metadata.
 
             Returns:
-                The resulting ``t.MutableScalarMapping``.
+                The resulting ``MutableMapping[str, t.Scalar]``.
 
             """
             return {

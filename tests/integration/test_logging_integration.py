@@ -10,8 +10,8 @@ import asyncio
 
 import pytest
 
-from flext_observability import FlextObservability, m, p, u
-from tests import c, t, tm
+from flext_observability import FlextObservability
+from tests import c, m, p, t, tm, u
 from tests.fixtures.logging import TestsObservabilityLoggingFixtures
 
 

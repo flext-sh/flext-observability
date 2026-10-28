@@ -10,10 +10,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
+from collections.abc import Sequence
 
 from flext_cli import cli
 
-from flext_observability import FlextObservability, c, t
+from flext_observability import FlextObservability, c
 
 
 class FlextObservabilityFunctionalExamples:
@@ -91,7 +92,7 @@ class FlextObservabilityFunctionalExamples:
     def demonstrate_health_monitoring(self) -> None:
         """Demonstrate health monitoring scenario."""
         services = ["database", "cache", "message-queue", "auth-service"]
-        statuses: t.SequenceOf[c.Observability.HealthStatus] = [
+        statuses: Sequence[c.Observability.HealthStatus] = [
             c.Observability.HealthStatus.HEALTHY,
             c.Observability.HealthStatus.HEALTHY,
             c.Observability.HealthStatus.DEGRADED,
@@ -102,9 +103,7 @@ class FlextObservabilityFunctionalExamples:
 
     def demonstrate_alerting_scenario(self) -> None:
         """Demonstrate alerting in different scenarios."""
-        alert_scenarios: t.SequenceOf[
-            t.Triple[c.Observability.AlertLevel, str, str]
-        ] = [
+        alert_scenarios: Sequence[tuple[c.Observability.AlertLevel, str, str]] = [
             (c.Observability.AlertLevel.INFO, "System started successfully", "system"),
             (
                 c.Observability.AlertLevel.WARNING,

@@ -23,9 +23,8 @@ from __future__ import annotations
 
 import time
 
-from flext_observability import c, m, p, r, t, u
-from flext_observability.base import s
-from flext_observability.services.context import FlextObservabilityContext
+from flext_observability import c, m, p, r, s, t, u
+from flext_observability.services import FlextObservabilityContext
 
 
 class FlextObservabilityErrorHandling:

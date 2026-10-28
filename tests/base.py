@@ -10,8 +10,7 @@ from typing import override
 
 from flext_tests import FlextTestsServiceBase
 
-from flext_observability import m, p
-from tests.settings import TestsFlextObservabilitySettings
+from tests import TestsFlextObservabilitySettings, m, p
 
 
 class TestsFlextObservabilityServiceBase(FlextTestsServiceBase):

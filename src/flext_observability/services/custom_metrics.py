@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Sequence
 from typing import ClassVar
 
 from flext_observability import c, e, m, p, r, t, u
@@ -72,7 +72,9 @@ class FlextObservabilityCustomMetrics:
                 str,
                 m.Observability.CustomMetricDefinition,
             ] = {}
-            self._metric_instances: t.MutableScalarMapping = dict[str, t.Scalar]()
+            self._metric_instances: MutableMapping[str, t.Scalar] = dict[
+                str, t.Scalar
+            ]()
             self._namespaces: t.MutableStrMapping = dict[str, str]()
 
         def clear_metrics(self, namespace: str | None = None) -> p.Result[bool]:
@@ -195,7 +197,7 @@ class FlextObservabilityCustomMetrics:
                 if metric.metric_type == metric_type
             })
 
-        def list_metrics(self) -> t.StrSequence:
+        def list_metrics(self) -> Sequence[str]:
             """List all registered metric names.
 
             Returns:
@@ -396,7 +398,7 @@ class FlextObservabilityCustomMetrics:
         return FlextObservabilityCustomMetrics._registry_instance
 
     @staticmethod
-    def list_all_metrics() -> t.StrSequence:
+    def list_all_metrics() -> Sequence[str]:
         """List all metrics.
 
         Returns:

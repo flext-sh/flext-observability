@@ -6,16 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import re
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
 import io
+from collections.abc import Iterator
 
 import pytest
 
@@ -50,7 +42,7 @@ class TestsObservabilityLoggingFixtures:
             self.records.append(event)
 
     @pytest.fixture
-    def logging_streams() -> t.IteratorOf[t.LoggingStreams]:
+    def logging_streams() -> Iterator[t.LoggingStreams]:
         """Keep real output streams alive until the composition is restored.
 
         Yields:
@@ -62,8 +54,8 @@ class TestsObservabilityLoggingFixtures:
 
     @pytest.fixture
     def logging_runtime(
-        logging_streams: t.LoggingStreams,
-    ) -> t.IteratorOf[p.StructlogOptions]:
+        self: t.LoggingStreams,
+    ) -> Iterator[p.StructlogOptions]:
         """Restore the captured provider/options/context, never fixed defaults.
 
         Yields:
@@ -77,7 +69,7 @@ class TestsObservabilityLoggingFixtures:
             FlextObservability.trace_id(),
             FlextObservability.span_id(),
         )
-        structured, console = logging_streams
+        structured, console = self
         options = m.StructlogOptions(
             handlers=(
                 u.create_logging_handler(stream=structured),

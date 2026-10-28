@@ -7,17 +7,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from flext_observability import t
+from collections.abc import Sequence
 
 
 class FlextObservabilityCli:
     """Flext-observability CLI facade — thin transport adapter over flext-cli."""
 
 
-def main(args: t.StrSequence | None = None) -> int:
+def main(args: Sequence[str] | None = None) -> int:
     """Console-script entry point — commands are not implemented yet.
 
     Returns:

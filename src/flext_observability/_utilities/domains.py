@@ -6,9 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import r, u
+from flext_cli import u
 
-from flext_observability import c, m, p
+from flext_observability import c, m, p, r
 
 
 class FlextObservabilityUtilitiesDomains:

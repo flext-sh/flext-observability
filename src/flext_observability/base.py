@@ -10,10 +10,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import MutableSequence
 
 from flext_core import FlextService
 
-from flext_observability import FlextObservabilitySettings, m, p, t
+from flext_observability import FlextObservabilitySettings, m, p
 
 
 class FlextObservabilityServiceBase[TDomainResult](FlextService[TDomainResult], ABC):
@@ -27,4 +28,4 @@ class FlextObservabilityServiceBase[TDomainResult](FlextService[TDomainResult], 
 
 s = FlextObservabilityServiceBase
 
-__all__: t.MutableSequenceOf[str] = ["FlextObservabilityServiceBase", "s"]
+__all__: MutableSequence[str] = ["FlextObservabilityServiceBase", "s"]
