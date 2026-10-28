@@ -45,7 +45,7 @@ class FlextObservabilityHTTP:
     Usage:
         ```python
         from fastapi import FastAPI
-        from flext_observability import FlextObservabilityHTTP
+        from flext_observability.services import FlextObservabilityHTTP
 
         app = FastAPI()
         FlextObservabilityHTTP.FastAPI.setup_instrumentation(app)
@@ -232,7 +232,7 @@ class FlextObservabilityHTTP:
             Example:
                 ```python
                 from flask import Flask
-                from flext_observability import FlextObservabilityHTTP
+                from flext_observability.services import FlextObservabilityHTTP
 
                 app = Flask(__name__)
                 FlextObservabilityHTTP.Flask.setup_instrumentation(app)
@@ -308,7 +308,7 @@ class FlextObservabilityHTTP:
             Example:
                 ```python
                 from fastapi import FastAPI
-                from flext_observability import FlextObservabilityHTTP
+                from flext_observability.services import FlextObservabilityHTTP
 
                 app = FastAPI()
                 FlextObservabilityHTTP.FastAPI.setup_instrumentation(app)

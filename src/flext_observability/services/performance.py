@@ -29,7 +29,7 @@ class FlextObservabilityPerformance:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityPerformance
+        from flext_observability.services import FlextObservabilityPerformance
 
         # Start monitoring operation
         monitor = FlextObservabilityPerformance.start_monitoring("http_request_tracing")

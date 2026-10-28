@@ -38,7 +38,7 @@ class FlextObservabilitySampling:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilitySampling
+        from flext_observability.services import FlextObservabilitySampling
 
         # Configure sampling
         sampler = FlextObservabilitySampling.active_sampler()

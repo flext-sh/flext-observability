@@ -40,7 +40,7 @@ class FlextObservabilityHTTPClient:
     Usage:
         ```python
         import httpx
-        from flext_observability import FlextObservabilityHTTPClient
+        from flext_observability.services import FlextObservabilityHTTPClient
 
         # Setup httpx client instrumentation
         client = httpx.Client()
@@ -490,7 +490,7 @@ class FlextObservabilityHTTPClient:
             Example:
                 ```python
                 import httpx
-                from flext_observability import FlextObservabilityHTTPClient
+                from flext_observability.services import FlextObservabilityHTTPClient
 
                 # Sync client
                 client = httpx.Client()
@@ -547,7 +547,7 @@ class FlextObservabilityHTTPClient:
             Example:
                 ```python
                 import aiohttp
-                from flext_observability import FlextObservabilityHTTPClient
+                from flext_observability.services import FlextObservabilityHTTPClient
 
                 async with aiohttp.ClientSession() as session:
                     FlextObservabilityHTTPClient.AIOHTTP.setup_instrumentation(session)

@@ -33,7 +33,7 @@ class FlextObservabilityAdvancedContext:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityAdvancedContext
+        from flext_observability.services import FlextObservabilityAdvancedContext
 
         ctx = FlextObservabilityAdvancedContext.active_context()
 

@@ -35,7 +35,7 @@ class FlextObservabilityCustomMetrics:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityCustomMetrics
+        from flext_observability.services import FlextObservabilityCustomMetrics
 
         # Define custom metrics
         metrics = FlextObservabilityCustomMetrics.active_registry()

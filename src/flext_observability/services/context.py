@@ -37,7 +37,7 @@ class FlextObservabilityContext:
 
     Example:
         ```python
-        from flext_observability import FlextObservabilityContext
+        from flext_observability.services import FlextObservabilityContext
 
         # Set correlation ID for request
         correlation_id = FlextObservabilityContext.update_correlation_id()
@@ -126,7 +126,7 @@ class FlextObservabilityContext:
         Example:
             ```python
             # Extract context from incoming request
-            from flext_observability import FlextObservabilityContext
+            from flext_observability.services import FlextObservabilityContext
 
             FlextObservabilityContext.from_headers(dict(request.headers))
 
