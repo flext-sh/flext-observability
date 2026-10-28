@@ -186,9 +186,13 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         result = sampler.update_environment(bad_environment)
 
         tm.fail(result)
+
+        def mentions_environment(value: str) -> bool:
+            return bad_environment in value or "environment" in value
+
         tm.that(
             result.error or "",
-            where=lambda value: bad_environment in value or "environment" in value,
+            where=mentions_environment,
         )
 
     @staticmethod
