@@ -68,19 +68,16 @@ class TestsFlextObservabilityPhase11Base:
     """Shared observability fixtures for the phase-11 contracts."""
 
     @pytest.fixture
-    @staticmethod
     def factory() -> FlextObservability:
         """Return a fresh master factory instance."""
         return _fresh_factory()
 
     @pytest.fixture
-    @staticmethod
     def sampler() -> FlextObservabilitySampling.Sampler:
         """Return the global sampler with a deterministic default rate."""
         return _deterministic_sampler()
 
     @pytest.fixture
-    @staticmethod
     def advanced_context() -> FlextObservabilityAdvancedContext.Context:
         """Return the global advanced context, cleared for isolation."""
         return _cleared_advanced_context()
@@ -274,13 +271,11 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
     """Error handling, metric registry, performance, and end-to-end contracts."""
 
     @pytest.fixture
-    @staticmethod
     def error_handler() -> p.Observability.ErrorHandler:
         """Return the global error handler with counts cleared."""
         return _cleared_error_handler()
 
     @pytest.fixture
-    @staticmethod
     def registry() -> FlextObservabilityCustomMetrics.Registry:
         """Return the global custom-metric registry."""
         return _registry()
