@@ -7,10 +7,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_observability.config_models import FlextObservabilityConfigModels
+from flext_observability.config_models import FlextObservabilityModelsConfig
 
 
-class FlextObservabilityModelsBase(FlextObservabilityConfigModels):
+class FlextObservabilityModelsBase(FlextObservabilityModelsConfig):
     """Base models for flext-observability."""
 
 

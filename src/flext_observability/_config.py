@@ -18,7 +18,7 @@ from flext_cli import FlextCliConfig
 from flext_core import FlextSettings
 from pydantic import Field
 
-from flext_observability.config_models import FlextObservabilityConfigModels
+from flext_observability.config_models import FlextObservabilityModelsConfig
 
 
 class FlextObservabilityConfig(FlextSettings, FlextCliConfig):
@@ -31,13 +31,13 @@ class FlextObservabilityConfig(FlextSettings, FlextCliConfig):
     """
 
     Observability: Annotated[
-        FlextObservabilityConfigModels.ObservabilityConfigNamespace,
+        FlextObservabilityModelsConfig.ObservabilityConfigNamespace,
         Field(
             description=(
                 "Open namespace exposing ``config/*.yaml`` under ``Observability``."
             ),
         ),
-    ] = FlextObservabilityConfigModels.ObservabilityConfigNamespace()
+    ] = FlextObservabilityModelsConfig.ObservabilityConfigNamespace()
 
 
 config: FlextObservabilityConfig = FlextObservabilityConfig.fetch_global()
