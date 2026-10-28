@@ -23,6 +23,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import time
 from collections.abc import Awaitable, Callable
 from typing import ClassVar, TypeIs
