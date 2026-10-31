@@ -238,6 +238,15 @@ FLEXT Observability integrates with the ecosystem through standardized patterns:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # All services use flext-core patterns
 from flext_observability import FlextMetricsService
 
@@ -257,6 +266,15 @@ def record_metric_example(container, metric):
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # Consistent monitoring across all FLEXT projects
 from flext_observability import flext_monitor_function
@@ -289,6 +307,15 @@ flext-observability
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 class FlextObservabilityMasterFactory:
     """Central factory for all observability entities."""
@@ -307,6 +334,15 @@ class FlextObservabilityMasterFactory:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 class FlextMetricsService:
@@ -329,6 +365,15 @@ class FlextMetricsService:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from typing import Protocol
 
@@ -405,6 +450,15 @@ class FlextMetricsRepository(Protocol):
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from typing import Protocol
 

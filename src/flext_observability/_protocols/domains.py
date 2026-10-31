@@ -9,10 +9,10 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_cli import m, p
+from flext_cli import p
 
 if TYPE_CHECKING:
-    from flext_core import t
+    from flext_observability import m, t
 
 
 class FlextObservabilityProtocolsDomains:
@@ -21,6 +21,71 @@ class FlextObservabilityProtocolsDomains:
     Provides the observability service contract plus HTTP framework
     instrumentation protocols.
     """
+
+    @runtime_checkable
+    class LoggingContext(Protocol):
+        """Read the selected operation's existing correlation and span context."""
+
+        def correlation_id(self) -> str: ...
+
+        def trace_id(self) -> str: ...
+
+        def span_id(self) -> str: ...
+
+    @runtime_checkable
+    class ErrorEvent(Protocol):
+        """Read-only domain error data at the recording boundary."""
+
+        @property
+        def error_type(self) -> str: ...
+
+        @property
+        def message(self) -> str: ...
+
+        @property
+        def severity(self) -> t.Observability.ErrorSeverity: ...
+
+        @property
+        def fingerprint(self) -> str: ...
+
+        @property
+        def correlation_id(self) -> str: ...
+
+    @runtime_checkable
+    class ErrorRecorder(Protocol):
+        """Record an actual domain error without coupling to its service class."""
+
+        def record_error(
+            self,
+            error: FlextObservabilityProtocolsDomains.ErrorEvent,
+        ) -> p.Result[FlextObservabilityProtocolsDomains.ErrorEvent]: ...
+
+    @runtime_checkable
+    class ErrorHandler(ErrorRecorder, Protocol):
+        """Actual error aggregation operations exposed by the service facade."""
+
+        def clear_error_counts(
+            self, older_than_sec: float | None = None
+        ) -> p.Result[bool]: ...
+
+        def resolve_error_count(self, fingerprint: str) -> int: ...
+
+        def resolve_escalated_severity(
+            self,
+            error: FlextObservabilityProtocolsDomains.ErrorEvent,
+        ) -> t.Observability.ErrorSeverity: ...
+
+        def record_alert_sent(
+            self, error: FlextObservabilityProtocolsDomains.ErrorEvent
+        ) -> None: ...
+
+        def update_alert_cooldown(self, seconds: float) -> p.Result[bool]: ...
+
+        def update_escalation_threshold(self, threshold: int) -> p.Result[bool]: ...
+
+        def should_alert_for_error(
+            self, error: FlextObservabilityProtocolsDomains.ErrorEvent
+        ) -> bool: ...
 
     @runtime_checkable
     class ObservabilityService(Protocol):

@@ -22,8 +22,8 @@ from datetime import datetime
 
 from flext_core import FlextContainer
 
-from flext_observability import FlextObservability, c, p
-from tests import tm
+from flext_observability import FlextObservability
+from tests import c, p, tm
 
 
 class TestsFlextObservabilityFactory:
@@ -36,7 +36,7 @@ class TestsFlextObservabilityFactory:
         """The container supplied at construction is the one the facade exposes."""
         container = FlextContainer()
         facade = FlextObservability(container)
-        tm.that(facade.container is container, eq=True)
+        tm.ok(facade.container is container)
 
     @staticmethod
     def test_facade_constructs_with_default_container() -> None:
@@ -49,28 +49,30 @@ class TestsFlextObservabilityFactory:
     @staticmethod
     def test_flext_metric_returns_metric_with_public_fields() -> None:
         """A valid metric request succeeds and echoes name, value and unit."""
-        result = FlextObservability().flext_metric("test_metric", 42.5, "gauge")
-        tm.that(result.success, eq=True)
+        result = FlextObservability().flext_metric(
+            "test_metric", 42.5, c.MetricType.GAUGE
+        )
+        tm.ok(result.success)
         metric = result.value
         tm.that(metric.name, eq="test_metric")
         tm.that(abs(metric.value - 42.5), lt=1e-9)
-        tm.that(metric.unit, eq="gauge")
+        tm.that(metric.unit, eq=c.MetricType.GAUGE)
 
     @staticmethod
     def test_flext_metric_defaults_unit_to_count() -> None:
         """Omitting the unit produces the canonical default unit."""
         result = FlextObservability().flext_metric("cpu_usage", 85.2)
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         metric = result.value
         tm.that(metric.name, eq="cpu_usage")
         tm.that(abs(metric.value - 85.2), lt=1e-9)
-        tm.that(metric.unit, eq="count")
+        tm.that(metric.unit, eq=c.Aggregation.COUNT)
 
     @staticmethod
     def test_flext_metric_empty_name_fails_with_message() -> None:
         """An empty metric name is rejected as a failure result, not a raise."""
         result = FlextObservability().flext_metric("", 10.0)
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
         tm.that(result.error, none=False)
         tm.that(result.error, has="must be non-empty string")
 
@@ -82,7 +84,7 @@ class TestsFlextObservabilityFactory:
         second = facade.flext_metric("cpu", 50.0).value
         tm.that(first.name, eq=second.name)
         tm.that(abs(first.value - second.value), lt=1e-9)
-        tm.that(first.unique_id != second.unique_id, eq=True)
+        tm.ok(first.unique_id != second.unique_id)
 
     # -- log ---------------------------------------------------------------
 
@@ -90,14 +92,14 @@ class TestsFlextObservabilityFactory:
     def test_flext_log_entry_creates_entry_with_message() -> None:
         """A valid log message produces a log entry echoing the message."""
         result = FlextObservability().flext_log_entry("hello world")
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(result.value.message, eq="hello world")
 
     @staticmethod
     def test_flext_log_entry_empty_message_fails_with_message() -> None:
         """An empty log message is rejected before model construction."""
         result = FlextObservability().flext_log_entry("")
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
         tm.that(result.error, none=False)
         tm.that(result.error, has="Log message cannot be empty")
 
@@ -111,7 +113,7 @@ class TestsFlextObservabilityFactory:
             message="Critical error detected",
             severity="critical",
         )
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         alert = result.value
         tm.that(alert.title, eq="Alert: monitoring")
         tm.that(alert.message, eq="Critical error detected")
@@ -123,7 +125,7 @@ class TestsFlextObservabilityFactory:
     def test_flext_trace_returns_named_trace_with_id() -> None:
         """A trace request succeeds with the operation name and a non-empty id."""
         result = FlextObservability().flext_trace("user_authentication")
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         trace = result.value
         tm.that(trace.name, eq="user_authentication")
         tm.that(trace.trace_id, ne="")
@@ -132,7 +134,7 @@ class TestsFlextObservabilityFactory:
     def test_flext_trace_preserves_explicit_trace_id() -> None:
         """An explicit trace_id is preserved on the produced trace."""
         result = FlextObservability().flext_trace("api_request", trace_id="trace-123")
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         trace = result.value
         tm.that(trace.name, eq="api_request")
         tm.that(trace.trace_id, eq="trace-123")
@@ -141,7 +143,7 @@ class TestsFlextObservabilityFactory:
     def test_flext_trace_empty_name_fails_with_message() -> None:
         """An empty trace name is rejected as a failure result."""
         result = FlextObservability().flext_trace("")
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
         tm.that(result.error, none=False)
         tm.that(result.error, has="must be non-empty string")
 
@@ -154,7 +156,7 @@ class TestsFlextObservabilityFactory:
             "database",
             c.Observability.HealthStatus.HEALTHY,
         )
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         health = result.value
         tm.that(health.component, eq="database")
         tm.that(health.status, eq="healthy")
@@ -163,7 +165,7 @@ class TestsFlextObservabilityFactory:
     def test_flext_health_check_empty_component_fails_with_message() -> None:
         """An empty component name is rejected as a failure result."""
         result = FlextObservability().flext_health_check("")
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
         tm.that(result.error, none=False)
         tm.that(result.error, has="Component name cannot be empty")
 
@@ -175,9 +177,9 @@ class TestsFlextObservabilityFactory:
         result: p.Result[FlextObservability.Metric] = FlextObservability().flext_metric(
             "request_count",
             100.0,
-            "counter",
+            c.MetricType.COUNTER,
         )
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         created_at = result.value.model_dump()["created_at"]
         tm.that(created_at, is_=datetime)
 
@@ -188,6 +190,6 @@ class TestsFlextObservabilityFactory:
             "",
             10.0,
         )
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
         tm.that(result.error, none=False)
         tm.that(result.error, has="must be non-empty string")

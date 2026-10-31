@@ -21,10 +21,10 @@ class TestsFlextObservabilityConstantsUnit:
     @pytest.mark.parametrize(
         ("member", "expected"),
         [
-            (_Obs.MetricType.COUNTER, "counter"),
-            (_Obs.MetricType.GAUGE, "gauge"),
-            (_Obs.MetricType.HISTOGRAM, "histogram"),
-            (_Obs.MetricType.SUMMARY, "summary"),
+            (_Obs.MetricType.COUNTER, c.MetricType.COUNTER),
+            (_Obs.MetricType.GAUGE, c.MetricType.GAUGE),
+            (_Obs.MetricType.HISTOGRAM, c.MetricType.HISTOGRAM),
+            (_Obs.MetricType.SUMMARY, c.MetricType.SUMMARY),
             (_Obs.AlertLevel.INFO, "info"),
             (_Obs.AlertLevel.WARNING, "warning"),
             (_Obs.AlertLevel.ERROR, "error"),

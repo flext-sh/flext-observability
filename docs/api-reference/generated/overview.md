@@ -29,8 +29,8 @@
   `FlextObservabilityProtocols`, `FlextObservabilityServiceBase`,
   `FlextObservabilitySettings`, `FlextObservabilityTypes`, `FlextObservabilityUtilities`
   (+5 more)
-- Exported module shortcuts: `services`
-- Generated module pages: `8`
+- Exported module shortcuts: _none_
+- Generated module pages: `9`
 
 ## Next Pages
 

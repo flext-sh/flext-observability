@@ -7,14 +7,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import ClassVar, override
 from uuid import uuid4
 
 from flext_core import FlextContainer
 
 from flext_observability import c, m, p, r, settings, t, u
-from flext_observability.services.service import FlextObservabilityServices
+from flext_observability.services import FlextObservabilityServices
 
 
 class FlextObservabilityMonitor:
@@ -58,7 +58,7 @@ class FlextObservabilityMonitor:
         @staticmethod
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
-            args: t.VariadicTuple[t.Scalar],
+            args: tuple[t.Scalar, ...],
             kwargs: t.ConfigurationMapping | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
@@ -523,4 +523,4 @@ class FlextObservabilityMonitor:
             return decorator
 
 
-__all__: t.StrSequence = ("FlextObservabilityMonitor",)
+__all__: Sequence[str] = ("FlextObservabilityMonitor",)

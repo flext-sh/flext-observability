@@ -16,10 +16,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
+from collections.abc import Mapping
 
 import psutil
 
-from flext_observability import c, m, p, r, t, u
+from flext_observability import c, m, p, r, u
 
 
 class FlextObservabilityPerformance:
@@ -29,7 +30,7 @@ class FlextObservabilityPerformance:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityPerformance
+        from flext_observability.services import FlextObservabilityPerformance
 
         # Start monitoring operation
         monitor = FlextObservabilityPerformance.start_monitoring("http_request_tracing")
@@ -85,7 +86,7 @@ class FlextObservabilityPerformance:
             cpu_percent = self._cpu_percent()
             self.metrics = self.metrics.model_copy(
                 update={
-                    "end_time": end_time,
+                    c.MetadataKey.END_TIME: end_time,
                     "memory_used_mb": memory_used_mb,
                     "cpu_percent": cpu_percent,
                 },
@@ -130,7 +131,7 @@ class FlextObservabilityPerformance:
             return float(memory_info.rss) / 1024 / 1024
 
     @staticmethod
-    def fetch_system_resources() -> t.MappingKV[str, float]:
+    def fetch_system_resources() -> Mapping[str, float]:
         """Fetch current system resource usage.
 
         Returns:
@@ -169,7 +170,7 @@ class FlextObservabilityPerformance:
             - Context operations: < 1ms overhead acceptable
 
         """
-        acceptable_latencies: t.MappingKV[str, float] = {
+        acceptable_latencies: Mapping[str, float] = {
             "http_": 50.0,
             "database_": 100.0,
             "context_": 10.0,
@@ -186,7 +187,7 @@ class FlextObservabilityPerformance:
     @staticmethod
     def _build_performance_log(
         metrics: m.Observability.PerformanceMetrics,
-    ) -> t.Pair[str, str]:
+    ) -> tuple[str, str]:
         """Build log level and message for performance metrics.
 
         Args:

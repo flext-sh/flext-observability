@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
+from collections.abc import Sequence
 
 from flext_cli import cli
 
@@ -39,7 +40,7 @@ class FlextObservabilitySolidDemo:
 
         """
         time.sleep(0.05)
-        return {"query": query, "rows": 42, "execution_time": 0.05}
+        return {c.HandlerMode.QUERY: query, "rows": 42, "execution_time": 0.05}
 
     @staticmethod
     def process_api_request(endpoint: str) -> t.JsonMapping:
@@ -74,11 +75,11 @@ class FlextObservabilitySolidDemo:
     def demonstrate_metrics_collection(self) -> None:
         """Demonstrate comprehensive metrics collection."""
         metrics = [
-            ("api_requests_total", 1500.0, "count"),
+            ("api_requests_total", 1500.0, c.Aggregation.COUNT),
             ("response_time_avg", 85.2, "milliseconds"),
             ("memory_usage", 68.5, "percent"),
             ("disk_usage", 45.8, "percent"),
-            ("active_connections", 127.0, "count"),
+            ("active_connections", 127.0, c.Aggregation.COUNT),
         ]
         for name, value, unit in metrics:
             self._observability.flext_metric(name, value, unit)
@@ -97,7 +98,7 @@ class FlextObservabilitySolidDemo:
 
     def demonstrate_health_monitoring(self) -> None:
         """Demonstrate comprehensive health monitoring."""
-        services_health: t.SequenceOf[t.Pair[str, c.Observability.HealthStatus]] = [
+        services_health: Sequence[tuple[str, c.Observability.HealthStatus]] = [
             ("database", c.Observability.HealthStatus.HEALTHY),
             ("cache", c.Observability.HealthStatus.HEALTHY),
             ("message_queue", c.Observability.HealthStatus.DEGRADED),
@@ -108,7 +109,7 @@ class FlextObservabilitySolidDemo:
 
     def demonstrate_alerting_system(self) -> None:
         """Demonstrate comprehensive alerting."""
-        alerts: t.SequenceOf[t.Triple[c.Observability.AlertLevel, str, str]] = [
+        alerts: Sequence[tuple[c.Observability.AlertLevel, str, str]] = [
             (c.Observability.AlertLevel.INFO, "System maintenance scheduled", "system"),
             (
                 c.Observability.AlertLevel.WARNING,
@@ -145,12 +146,14 @@ class FlextObservabilitySolidDemo:
 
     def demonstrate_factory_patterns(self) -> None:
         """Demonstrate factory pattern usage."""
-        self._observability.flext_metric("global_metric", 42.0, "count")
-        self._observability.flext_metric("custom_metric", 24.0, "count")
+        self._observability.flext_metric("global_metric", 42.0, c.Aggregation.COUNT)
+        self._observability.flext_metric("custom_metric", 24.0, c.Aggregation.COUNT)
 
     def demonstrate_validation(self) -> None:
         """Demonstrate entity validation."""
-        metric_res = self._observability.flext_metric("valid_metric", 100.0, "count")
+        metric_res = self._observability.flext_metric(
+            "valid_metric", 100.0, c.Aggregation.COUNT
+        )
         if metric_res.success:
             self._emit(f"Validation successful for {type(metric_res.value).__name__}")
         trace_res = self._observability.flext_trace("valid_operation")

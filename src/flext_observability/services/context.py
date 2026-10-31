@@ -16,6 +16,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, MutableMapping
 from contextvars import ContextVar
 from uuid import uuid4
 
@@ -37,7 +38,7 @@ class FlextObservabilityContext:
 
     Example:
         ```python
-        from flext_observability import FlextObservabilityContext
+        from flext_observability.services import FlextObservabilityContext
 
         # Set correlation ID for request
         correlation_id = FlextObservabilityContext.update_correlation_id()
@@ -54,7 +55,9 @@ class FlextObservabilityContext:
 
     """
 
-    _correlation_id: ContextVar[str] = ContextVar("correlation_id", default="")
+    _correlation_id: ContextVar[str] = ContextVar(
+        c.ContextKey.CORRELATION_ID, default=""
+    )
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
     _baggage: ContextVar[m.Dict | None] = ContextVar("baggage", default=None)
@@ -109,7 +112,7 @@ class FlextObservabilityContext:
         FlextObservabilityContext._trace_id.set("")
 
     @staticmethod
-    def from_headers(headers: m.Dict | t.ScalarMapping) -> p.Result[bool]:
+    def from_headers(headers: m.Dict | Mapping[str, t.Scalar]) -> p.Result[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -124,7 +127,7 @@ class FlextObservabilityContext:
         Example:
             ```python
             # Extract context from incoming request
-            from flext_observability import FlextObservabilityContext
+            from flext_observability.services import FlextObservabilityContext
 
             FlextObservabilityContext.from_headers(dict(request.headers))
 
@@ -144,7 +147,7 @@ class FlextObservabilityContext:
             return r[bool].ok(value=True)
 
     @staticmethod
-    def _apply_headers(headers: m.Dict | t.ScalarMapping) -> None:
+    def _apply_headers(headers: m.Dict | Mapping[str, t.Scalar]) -> None:
         """Apply normalized trace headers to the context variables."""
         normalized_headers = {
             header_key.lower(): str(header_value)
@@ -175,7 +178,7 @@ class FlextObservabilityContext:
             baggage = FlextObservabilityContext.resolve_baggage()
 
             # Get specific value
-            user_id = FlextObservabilityContext.resolve_baggage("user_id")
+            user_id = FlextObservabilityContext.resolve_baggage(c.ContextKey.USER_ID)
             ```
 
         """
@@ -203,10 +206,10 @@ class FlextObservabilityContext:
             context = FlextObservabilityContext.context_payload()
             logger.debug(f"Current context: {context}")
             # Output: {
-            #   "correlation_id": "abc-123",
+            #   c.ContextKey.CORRELATION_ID: "abc-123",
             #   "trace_id": "def-456",
             #   "span_id": "ghi-789",
-            #   "baggage": {"user_id": "user-123"}
+            #   "baggage": {c.ContextKey.USER_ID: "user-123"}
             # }
             ```
 
@@ -224,7 +227,7 @@ class FlextObservabilityContext:
         # nested union check when the narrower binding was type-checked
         # standalone).
         return m.Dict({
-            "correlation_id": FlextObservabilityContext.correlation_id(),
+            c.ContextKey.CORRELATION_ID: FlextObservabilityContext.correlation_id(),
             "trace_id": FlextObservabilityContext.trace_id(),
             "span_id": FlextObservabilityContext.span_id(),
             "baggage": u.Cli.json_dumps(baggage_payload).unwrap(),
@@ -276,7 +279,7 @@ class FlextObservabilityContext:
         Example:
             ```python
             # Set user context
-            FlextObservabilityContext.update_baggage("user_id", "user-123")
+            FlextObservabilityContext.update_baggage(c.ContextKey.USER_ID, "user-123")
             FlextObservabilityContext.update_baggage("tenant", "acme-corp")
 
             # Values automatically propagated to nested operations
@@ -392,7 +395,7 @@ class FlextObservabilityContext:
             ```
 
         """
-        headers: t.MutableMappingKV[str, t.JsonPayload] = {}
+        headers: MutableMapping[str, t.JsonPayload] = {}
         correlation_id = FlextObservabilityContext.correlation_id()
         if correlation_id:
             headers["X-Correlation-ID"] = correlation_id

@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
+from collections.abc import Mapping, MutableMapping
 from datetime import datetime
 from hashlib import sha256
 from types import MappingProxyType
@@ -14,9 +15,8 @@ from typing import Annotated, Self
 from uuid import uuid4
 
 from flext_cli import m
-from flext_core import t
 
-from flext_observability import c
+from flext_observability import c, t
 
 
 class FlextObservabilityModelsDomains:
@@ -60,7 +60,7 @@ class FlextObservabilityModelsDomains:
         unit: Annotated[t.NonEmptyStr, m.Field(description="Measurement unit")]
         metric_type: Annotated[t.NonEmptyStr, m.Field(description="Type of metric")]
         labels: Annotated[
-            t.ScalarMapping,
+            Mapping[str, t.Scalar],
             m.Field(
                 description="Metric labels for categorization",
             ),
@@ -77,7 +77,7 @@ class FlextObservabilityModelsDomains:
         ] = m.Field(default_factory=lambda: str(uuid4()))
         name: Annotated[t.NonEmptyStr, m.Field(description="Trace name")]
         attributes: Annotated[
-            t.ScalarMapping,
+            Mapping[str, t.Scalar],
             m.Field(
                 description="Trace attributes",
             ),
@@ -91,7 +91,7 @@ class FlextObservabilityModelsDomains:
         severity: Annotated[t.NonEmptyStr, m.Field(description="Alert severity level")]
         source: Annotated[t.NonEmptyStr, m.Field(description="Alert source")]
         labels: Annotated[
-            t.ScalarMapping,
+            Mapping[str, t.Scalar],
             m.Field(
                 description="Alert labels for categorization",
             ),
@@ -106,7 +106,7 @@ class FlextObservabilityModelsDomains:
         ]
         status: Annotated[t.NonEmptyStr, m.Field(description="Health check status")]
         details: Annotated[
-            t.ScalarMapping,
+            Mapping[str, t.Scalar],
             m.Field(
                 description="Health check details",
             ),
@@ -122,7 +122,7 @@ class FlextObservabilityModelsDomains:
             m.Field(default_factory=datetime.now)
         )
         context: Annotated[
-            t.ScalarMapping,
+            Mapping[str, t.Scalar],
             m.Field(
                 description="Log context metadata",
             ),
@@ -140,7 +140,7 @@ class FlextObservabilityModelsDomains:
         """Payload for validating HTTP client headers."""
 
         headers: Annotated[
-            t.StrMapping,
+            Mapping[str, str],
             m.Field(
                 description="HTTP header key-value pairs",
             ),
@@ -157,7 +157,7 @@ class FlextObservabilityModelsDomains:
         trace_id: Annotated[str, m.Field(description="Trace identifier")] = ""
         span_id: Annotated[str, m.Field(description="Span identifier")] = ""
         baggage: Annotated[
-            t.StrMapping,
+            Mapping[str, str],
             m.Field(
                 description="Propagated baggage key-value pairs",
             ),
@@ -197,10 +197,10 @@ class FlextObservabilityModelsDomains:
             m.Field(description="Human-readable metric description"),
         ]
         unit: Annotated[str, m.Field(min_length=1, description="Measurement unit")] = (
-            "1"
+            c.ParserBooleanToken.ONE
         )
         labels: Annotated[
-            t.StrMapping,
+            Mapping[str, str],
             m.Field(
                 description="Metric labels for categorization",
             ),
@@ -222,6 +222,27 @@ class FlextObservabilityModelsDomains:
             t.PositiveInt,
             m.Field(description="Error count threshold"),
         ]
+
+    class ErrorHandlingState(m.ArbitraryTypesModel):
+        """Mutable aggregation state consumed by the error recording service."""
+
+        error_counts: t.MutableIntMapping = m.Field(
+            default_factory=dict[str, int],
+            description="Observed error counts indexed by fingerprint.",
+        )
+        last_alert_time: MutableMapping[str, float] = m.Field(
+            default_factory=dict[str, float],
+            description="Last alert timestamp indexed by fingerprint.",
+        )
+        alert_cooldown_sec: float = m.Field(
+            default=60.0, description="Minimum seconds between repeated alerts."
+        )
+        escalation_threshold: int = m.Field(
+            default=5, description="Error count required to escalate an alert."
+        )
+        deduplication_window_sec: int = m.Field(
+            default=300, description="Seconds retained for error deduplication."
+        )
 
     class ErrorEvent(m.Value):
         """Error event with fingerprinting for deduplication and alerting."""
@@ -325,7 +346,7 @@ class FlextObservabilityModelsDomains:
                 end_time = time.time()
             duration_ms = max(0.0, (end_time - self.start_time) * 1000.0)
             return self.model_copy(
-                update={"end_time": end_time, "duration_ms": duration_ms},
+                update={c.MetadataKey.END_TIME: end_time, "duration_ms": duration_ms},
             )
 
 

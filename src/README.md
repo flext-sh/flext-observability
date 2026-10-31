@@ -82,10 +82,19 @@ src/flext_observability/
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import FlextObservability, flext_monitor_function, t
 
 # Create observability data
-metric_result = FlextObservability.flext_metric("api_requests", 42, "count")
+metric_result = FlextObservability.flext_metric("api_requests", 42, c.Aggregation.COUNT)
 trace_result = FlextObservability.flext_trace("user_login", {"service": "auth-service"})
 
 

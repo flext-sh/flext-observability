@@ -55,7 +55,7 @@ fixtures/
 def sample_metric() -> FlextMetric:
     """Provide consistent test metric."""
     return FlextMetric(
-        name="test_metric", value=42.0, unit="count", tags={"environment": "test"}
+        name="test_metric", value=42.0, unit=c.Aggregation.COUNT, tags={"environment": "test"}
     )
 
 
@@ -99,7 +99,10 @@ class MetricsTestDataFactory:
     def create_api_metric(value: float = 1.0) -> FlextMetric:
         """Create API request metric for testing."""
         return FlextMetric(
-            name="api_requests", value=value, unit="count", tags={"service": "test-api"}
+            name="api_requests",
+            value=value,
+            unit=c.Aggregation.COUNT,
+            tags={"service": "test-api"},
         )
 
     @staticmethod
@@ -121,15 +124,15 @@ class MetricsTestDataFactory:
 def test_metric_processing(sample_metric, mock_metrics_service):
     """Test using shared fixtures."""
     result = mock_metrics_service.record_metric(sample_metric)
-    assert result.success
-    assert result.data.name == "test_metric"
+    tm.ok(result.success)
+    tm.that(result.data.name, eq="test_metric")
 
 
 def test_with_factory_data():
     """Test using factory-created data."""
     metric = MetricsTestDataFactory.create_api_metric(value=5.0)
-    assert metric.value == 5.0
-    assert metric.name == "api_requests"
+    tm.that(metric.value, eq=5.0)
+    tm.that(metric.name, eq="api_requests")
 ```
 
 ### Fixture Composition
@@ -147,7 +150,7 @@ def configured_observability_platform(mock_container):
 ### Shared Configuration
 
 ```text
-@pytest.fixture(scope="session")
+@pytest.fixture(scope=c.ContextScope.SESSION)
 def test_config():
     """Shared test configuration."""
     return {

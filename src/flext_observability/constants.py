@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Observability constants extending flext-core patterns.
 
 Includes metric types, alert levels, trace statuses, and configuration defaults.
@@ -9,13 +10,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliConstants
+from flext_cli import c as flext_cli_c
 
-from flext_observability._constants import FlextObservabilityConstantsDomains
-from flext_observability._constants.base import FlextObservabilityConstantsBase
+from flext_observability._constants import (
+    FlextObservabilityConstantsBase,
+    FlextObservabilityConstantsDomains,
+)
 
 
-class FlextObservabilityConstants(FlextCliConstants):
+class FlextObservabilityConstants(flext_cli_c):
     """Observability-specific constants extending flext-core patterns.
 
     Usage:
@@ -28,8 +31,8 @@ class FlextObservabilityConstants(FlextCliConstants):
     """
 
     class Observability(
-        FlextObservabilityConstantsBase.Observability,
         FlextObservabilityConstantsDomains,
+        FlextObservabilityConstantsBase.Observability,
     ):
         """Observability domain constants namespace.
 

@@ -6,12 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from collections.abc import MutableSequence
 
 from flext_core import FlextConstants
-
-if TYPE_CHECKING:
-    from examples import t
 
 
 class ExamplesFlextObservabilityConstants(FlextConstants):
@@ -23,4 +20,4 @@ class ExamplesFlextObservabilityConstants(FlextConstants):
 
 c = ExamplesFlextObservabilityConstants
 
-__all__: t.MutableSequenceOf[str] = ["ExamplesFlextObservabilityConstants", "c"]
+__all__: MutableSequence[str] = ["ExamplesFlextObservabilityConstants", "c"]

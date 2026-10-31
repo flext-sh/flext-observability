@@ -10,10 +10,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
+from collections.abc import Sequence
 
 from flext_cli import cli
 
-from flext_observability import FlextObservability, c, t
+from flext_observability import FlextObservability, c
 
 
 class FlextObservabilityFunctionalExamples:
@@ -30,7 +31,7 @@ class FlextObservabilityFunctionalExamples:
 
     def demonstrate_simple_api(self) -> None:
         """Demonstrate the simple API for creating observability entities."""
-        self._observability.flext_metric("api_requests", 150.0, "count")
+        self._observability.flext_metric("api_requests", 150.0, c.Aggregation.COUNT)
         self._observability.flext_trace("user_registration")
         self._observability.flext_alert(
             source="monitoring",
@@ -73,13 +74,15 @@ class FlextObservabilityFunctionalExamples:
 
     def demonstrate_validation(self) -> None:
         """Demonstrate entity validation."""
-        metric_result = self._observability.flext_metric("valid_metric", 100.0, "count")
+        metric_result = self._observability.flext_metric(
+            "valid_metric", 100.0, c.Aggregation.COUNT
+        )
         if metric_result.success:
             self._emit(f"Created metric: {metric_result.value}")
         invalid_metric_result = self._observability.flext_metric(
             "invalid_metric",
             -10.0,
-            "count",
+            c.Aggregation.COUNT,
         )
         if invalid_metric_result.success:
             self._emit(f"Created invalid metric: {invalid_metric_result.value}")
@@ -89,7 +92,7 @@ class FlextObservabilityFunctionalExamples:
     def demonstrate_health_monitoring(self) -> None:
         """Demonstrate health monitoring scenario."""
         services = ["database", "cache", "message-queue", "auth-service"]
-        statuses: t.SequenceOf[c.Observability.HealthStatus] = [
+        statuses: Sequence[c.Observability.HealthStatus] = [
             c.Observability.HealthStatus.HEALTHY,
             c.Observability.HealthStatus.HEALTHY,
             c.Observability.HealthStatus.DEGRADED,
@@ -100,9 +103,7 @@ class FlextObservabilityFunctionalExamples:
 
     def demonstrate_alerting_scenario(self) -> None:
         """Demonstrate alerting in different scenarios."""
-        alert_scenarios: t.SequenceOf[
-            t.Triple[c.Observability.AlertLevel, str, str]
-        ] = [
+        alert_scenarios: Sequence[tuple[c.Observability.AlertLevel, str, str]] = [
             (c.Observability.AlertLevel.INFO, "System started successfully", "system"),
             (
                 c.Observability.AlertLevel.WARNING,
@@ -138,7 +139,7 @@ class FlextObservabilityFunctionalExamples:
 
     def demonstrate_global_factory(self) -> None:
         """Demonstrate repeated facade usage without factory indirection."""
-        self._observability.flext_metric("global_metric", 42.0, "count")
+        self._observability.flext_metric("global_metric", 42.0, c.Aggregation.COUNT)
 
     def run(self) -> None:
         """Run all functional examples."""

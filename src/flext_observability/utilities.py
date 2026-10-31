@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Observability Utilities - Centralized domain utilities.
 
 Unified utilities facade inheriting core FLEXT utilities.
@@ -10,13 +11,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliUtilities
+from flext_cli import u as flext_cli_u
 
-from flext_observability._utilities.base import FlextObservabilityUtilitiesBase
-from flext_observability._utilities.domains import FlextObservabilityUtilitiesDomains
+from flext_observability._utilities import (
+    FlextObservabilityUtilitiesBase,
+    FlextObservabilityUtilitiesDomains,
+)
 
 
-class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilitiesBase):
+class FlextObservabilityUtilities(flext_cli_u, FlextObservabilityUtilitiesBase):
     """Centralized utilities for FLEXT Observability.
 
     Inherits CLI FLEXT utilities, providing additional namespace classes
@@ -31,5 +34,4 @@ class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilities
 
 
 u = FlextObservabilityUtilities
-
 __all__: list[str] = ["FlextObservabilityUtilities", "u"]

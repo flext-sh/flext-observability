@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from typing import Final
 
+from flext_cli import c
+
 
 class FlextObservabilityConstantsBase:
     """Base constants for flext-observability."""
@@ -18,7 +20,7 @@ class FlextObservabilityConstantsBase:
 
         DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
         DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-        DEFAULT_METRIC_UNIT: Final[str] = "1"
+        DEFAULT_METRIC_UNIT: Final[str] = c.ParserBooleanToken.ONE
 
 
 __all__: list[str] = ["FlextObservabilityConstantsBase"]

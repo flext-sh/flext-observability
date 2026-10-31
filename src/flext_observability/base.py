@@ -10,39 +10,22 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import MutableSequence
 
 from flext_core import FlextService
 
-from flext_observability import FlextObservabilitySettings, m, p, t
+from flext_observability import FlextObservabilitySettings, m, p
 
 
-class FlextObservabilityServiceBase[
-    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload],
-](FlextService[TDomainResult], ABC):
+class FlextObservabilityServiceBase[TDomainResult](FlextService[TDomainResult], ABC):
     """Base class for flext-observability services with typed API settings access."""
 
-    def __init__(
-        self,
-        *,
-        settings_type: type | None = None,
-        runtime_settings: p.Settings | None = None,
-        settings_overrides: t.ScalarMapping | None = None,
-        initial_context: p.Context | None = None,
-    ) -> None:
-        """Bootstrap observability services with one concrete settings contract."""
-        super().__init__(
-            settings_type=settings_type or FlextObservabilitySettings,
-            runtime_settings=runtime_settings,
-            settings_overrides=settings_overrides,
-            initial_context=initial_context,
-        )
-
     @classmethod
-    def runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
+    def runtime_bootstrap_options(cls) -> p.RuntimeBootstrapOptions:
         """Return runtime bootstrap options for observability services."""
         return m.RuntimeBootstrapOptions(settings_type=FlextObservabilitySettings)
 
 
 s = FlextObservabilityServiceBase
 
-__all__: t.MutableSequenceOf[str] = ["FlextObservabilityServiceBase", "s"]
+__all__: MutableSequence[str] = ["FlextObservabilityServiceBase", "s"]

@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Observability Types.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -7,13 +8,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliTypes
+from flext_cli import t as flext_cli_t
 
-from flext_observability._typings.base import FlextObservabilityTypingsBase
-from flext_observability._typings.domains import FlextObservabilityTypingsDomains
+from flext_observability._typings import (
+    FlextObservabilityTypingsBase,
+    FlextObservabilityTypingsDomains,
+)
 
 
-class FlextObservabilityTypes(FlextCliTypes, FlextObservabilityTypingsBase):
+class FlextObservabilityTypes(flext_cli_t, FlextObservabilityTypingsBase):
     """Observability-specific type definitions extending t via MRO."""
 
     class Observability(
@@ -24,5 +27,4 @@ class FlextObservabilityTypes(FlextCliTypes, FlextObservabilityTypingsBase):
 
 
 t = FlextObservabilityTypes
-
 __all__: list[str] = ["FlextObservabilityTypes", "t"]
