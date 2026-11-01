@@ -57,7 +57,7 @@ required validation.
   classes listed under Module Map above.
 - Public extensions exposed by this project: `FlextObservability`,
   `FlextObservabilityCli`, `FlextObservabilityConfig`, `FlextObservabilityConstants`,
-  `FlextObservabilityModels`, `FlextObservabilityProtocols` (+5 more).
+  `FlextObservabilityModels`, `FlextObservabilityModelsConfig` (+6 more).
 - Library abstraction boundaries: see the project `AGENTS.md` and the referenced parent
   architecture rules.
 
