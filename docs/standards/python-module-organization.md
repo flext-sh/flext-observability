@@ -637,7 +637,7 @@ from flext_observability import flext_create_metric, flext_monitor_function
 
 # Use patterns directly in business logic
 @flext_monitor_function("order_processing")
-def process_order(order_data: dict) -> p.Result[m.Dict]:
+def process_order(order_data: dict) -> p.Result[p.Dict]:
     # Create business metrics
     flext_create_metric("orders_processed", 1, c.Aggregation.COUNT)
 
@@ -673,7 +673,7 @@ class UserAPIService:
         self.tracing = FlextTracingService(container)
         self.factory = FlextObservabilityMasterFactory()
 
-    def handle_user_request(self, request: dict) -> p.Result[m.Dict]:
+    def handle_user_request(self, request: dict) -> p.Result[p.Dict]:
         # Create request trace
         trace_result = self.factory.create_trace("user_request", "user-api")
         if trace_result.failure:
@@ -714,7 +714,7 @@ class DatabaseConnectionService:
     def __init__(self, container: FlextContainer) -> None:
         self.health_service = FlextHealthService(container)
 
-    def check_database_connectivity(self) -> p.Result[m.Dict]:
+    def check_database_connectivity(self) -> p.Result[p.Dict]:
         """Monitor database health with observability."""
         try:
             # Test connection
@@ -838,7 +838,7 @@ from flext_observability import correlation_id, flext_monitor_function
 
 
 @flext_monitor_function("critical_business_operation")
-def process_payment(payment_data: dict) -> p.Result[m.Dict]:
+def process_payment(payment_data: dict) -> p.Result[p.Dict]:
     """Function automatically gets observability patterns."""
     request_correlation_id = correlation_id()
 
@@ -937,7 +937,7 @@ from flext_core import m, p, r
 
 
 # Parent-child trace correlation
-def process_order_with_tracing(order_data: dict) -> p.Result[m.Dict]:
+def process_order_with_tracing(order_data: dict) -> p.Result[p.Dict]:
     """Process order with distributed tracing."""
     # Create parent trace
     parent_trace_result = flext_create_trace("process_order", "order-service")
@@ -960,7 +960,7 @@ def process_order_with_tracing(order_data: dict) -> p.Result[m.Dict]:
 
 def validate_order_with_trace(
     order_data: dict, parent_trace_id: str
-) -> p.Result[m.Dict]:
+) -> p.Result[p.Dict]:
     """Validate order with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="validate_order",
@@ -996,7 +996,7 @@ from flext_core import m, p, r
 
 
 # Comprehensive health monitoring
-def monitor_service_health() -> p.Result[m.Dict]:
+def monitor_service_health() -> p.Result[p.Dict]:
     """Comprehensive service health monitoring."""
     health_checks = []
 
@@ -1224,7 +1224,7 @@ def test_metric_creation_failure():
 def test_observability_chaining():
     """Test railway-oriented chaining of observability operations."""
 
-    def create_observability_data(operation: str) -> p.Result[m.Dict]:
+    def create_observability_data(operation: str) -> p.Result[p.Dict]:
         return flext_create_metric(f"{operation}_requests", 1, c.Aggregation.COUNT).flat_map(
             lambda metric: flext_create_trace(operation, "test-service").map(
                 lambda trace: {"metric": metric, "trace": trace}
@@ -1243,7 +1243,7 @@ def test_observability_chaining():
 def test_observability_failure_propagation():
     """Test failure propagation in observability chains."""
 
-    def create_invalid_observability() -> p.Result[m.Dict]:
+    def create_invalid_observability() -> p.Result[p.Dict]:
         return flext_create_metric(
             "", 1, c.Aggregation.COUNT
         ).flat_map(  # Invalid metric name
@@ -1590,7 +1590,7 @@ from flext_core import m, p, r
 
 
 # ✅ Always use r for observability error handling
-def create_comprehensive_observability(operation: str) -> p.Result[m.Dict]:
+def create_comprehensive_observability(operation: str) -> p.Result[p.Dict]:
     """Create comprehensive observability data with error handling."""
     # Chain observability operations with proper error handling
     metric_result = flext_create_metric(f"{operation}_requests", 1, c.Aggregation.COUNT)
@@ -1609,7 +1609,7 @@ def create_comprehensive_observability(operation: str) -> p.Result[m.Dict]:
 
 
 # ✅ Chain observability operations safely
-def monitor_business_operation(operation_data: dict) -> p.Result[m.Dict]:
+def monitor_business_operation(operation_data: dict) -> p.Result[p.Dict]:
     """Monitor business operation with comprehensive observability."""
     return (
         flext_create_trace("business_operation", "business-service")
@@ -1652,8 +1652,8 @@ from flext_core import m, p, r
 
 
 def create_business_observability_dashboard(
-    service_name: str, metrics_config: m.Dict, trace_config: m.Dict
-) -> p.Result[m.Dict]:
+    service_name: str, metrics_config: p.Dict, trace_config: p.Dict
+) -> p.Result[p.Dict]:
     """Create comprehensive business observability dashboard.
 
     This function implements the complete observability setup for a business
@@ -1678,7 +1678,7 @@ def create_business_observability_dashboard(
             }
 
     Returns:
-        r[m.Dict]: Success contains dashboard configuration
+        r[p.Dict]: Success contains dashboard configuration
         with metric definitions, trace setup, and health check configuration.
         Failure contains detailed error message explaining setup failure.
 
@@ -1780,7 +1780,7 @@ class FlextUserService:
         self.observability = FlextMetricsService(container)
 
     @flext_monitor_function("user_creation")
-    def create_user(self, user_data: dict) -> p.Result[m.Dict]:
+    def create_user(self, user_data: dict) -> p.Result[p.Dict]:
         """Create user with automatic observability."""
         # Business metrics
         flext_create_metric(
@@ -1803,7 +1803,7 @@ class FlextUserService:
 
 
 # ✅ Cross-service observability correlation
-def sync_user_between_services(user_id: str) -> p.Result[m.Dict]:
+def sync_user_between_services(user_id: str) -> p.Result[p.Dict]:
     """Sync user data between services with trace correlation."""
     # Create correlation trace
     correlation_trace = flext_create_trace("user_sync", "integration-service")
@@ -1923,7 +1923,7 @@ class FlextAPIService:
     """API service with ecosystem-standard monitoring."""
 
     @flext_monitor_function("api_endpoint")
-    def handle_user_request(self, request_data: dict) -> p.Result[m.Dict]:
+    def handle_user_request(self, request_data: dict) -> p.Result[p.Dict]:
         """Handle API request with automatic monitoring."""
         # Automatically gets:
         # - Request latency metrics
@@ -1934,7 +1934,7 @@ class FlextAPIService:
         return self._process_request(request_data)
 
     @flext_monitor_function("database_operation")
-    def query_user_data(self, user_id: str) -> p.Result[m.Dict]:
+    def query_user_data(self, user_id: str) -> p.Result[p.Dict]:
         """Database query with monitoring."""
         # Database-specific observability patterns
         return self._execute_database_query(user_id)
@@ -1944,7 +1944,7 @@ class FlextOracleService:
     """Oracle service with ecosystem-standard monitoring."""
 
     @flext_monitor_function("oracle_query")
-    def execute_wms_query(self, query: str) -> p.Result[Sequence[m.Dict]]:
+    def execute_wms_query(self, query: str) -> p.Result[Sequence[p.Dict]]:
         """Execute Oracle WMS query with monitoring."""
         # Oracle-specific observability patterns
         return self._execute_oracle_query(query)
@@ -1954,7 +1954,7 @@ class FlextLdapService:
     """LDAP service with ecosystem-standard monitoring."""
 
     @flext_monitor_function("ldap_operation")
-    def search_users(self, search_filter: str) -> p.Result[Sequence[m.Dict]]:
+    def search_users(self, search_filter: str) -> p.Result[Sequence[p.Dict]]:
         """LDAP search with monitoring."""
         # LDAP-specific observability patterns
         return self._execute_ldap_search(search_filter)

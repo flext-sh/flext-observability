@@ -60,7 +60,7 @@ class FlextObservabilityContext:
     )
     _trace_id: ContextVar[str] = ContextVar("trace_id", default="")
     _span_id: ContextVar[str] = ContextVar("span_id", default="")
-    _baggage: ContextVar[m.Dict | None] = ContextVar("baggage", default=None)
+    _baggage: ContextVar[p.Dict | None] = ContextVar("baggage", default=None)
     logger = u.fetch_logger(__name__)
 
     @staticmethod
@@ -112,7 +112,7 @@ class FlextObservabilityContext:
         FlextObservabilityContext._trace_id.set("")
 
     @staticmethod
-    def from_headers(headers: m.Dict | Mapping[str, t.Scalar]) -> p.Result[bool]:
+    def from_headers(headers: p.Dict | Mapping[str, t.Scalar]) -> p.Result[bool]:
         """Set context from HTTP headers.
 
         Extracts correlation ID, trace ID, and span ID from incoming
@@ -147,7 +147,7 @@ class FlextObservabilityContext:
             return r[bool].ok(value=True)
 
     @staticmethod
-    def _apply_headers(headers: m.Dict | Mapping[str, t.Scalar]) -> None:
+    def _apply_headers(headers: p.Dict | Mapping[str, t.Scalar]) -> None:
         """Apply normalized trace headers to the context variables."""
         normalized_headers = {
             header_key.lower(): str(header_value)
@@ -163,7 +163,7 @@ class FlextObservabilityContext:
     @staticmethod
     def resolve_baggage(
         key: str | None = None,
-    ) -> m.BaseModel | t.JsonValue | m.Dict | None:
+    ) -> p.BaseModel | t.JsonValue | m.Dict | None:
         """Resolve baggage value.
 
         Args:
@@ -192,7 +192,7 @@ class FlextObservabilityContext:
         return validated_value
 
     @staticmethod
-    def context_payload() -> m.Dict:
+    def context_payload() -> p.Dict:
         """Return complete context snapshot.
 
         Returns all context variables as a dictionary. Useful for
@@ -369,7 +369,7 @@ class FlextObservabilityContext:
         return trace_id
 
     @staticmethod
-    def to_headers() -> m.Dict:
+    def to_headers() -> p.Dict:
         """Get context as HTTP headers.
 
         Converts current context (correlation ID, trace ID, span ID) to

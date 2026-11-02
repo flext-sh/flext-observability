@@ -124,7 +124,7 @@ class UserService:
         self.metrics = FlextMetricsService(container)
         self.factory = FlextObservabilityMasterFactory()
 
-    def create_user(self, user_data: dict) -> p.Result[m.Dict]:
+    def create_user(self, user_data: dict) -> p.Result[p.Dict]:
         """Create user with comprehensive observability."""
         # Create business metrics
         metric_result = self.factory.create_metric(
@@ -181,7 +181,7 @@ def process_order(order_data: dict) -> t.JsonMapping:
 
 # Advanced monitoring with context
 @flext_monitor_function("payment_processing")
-def process_payment(amount: float, currency: str) -> p.Result[m.Dict]:
+def process_payment(amount: float, currency: str) -> p.Result[p.Dict]:
     """Process payment with error handling and monitoring."""
     if amount <= 0:
         return r[bool].fail("Invalid payment amount")
@@ -215,7 +215,7 @@ from collections.abc import (
 from flext_observability import flext_create_health_check
 
 
-def monitor_database_health() -> p.Result[m.Dict]:
+def monitor_database_health() -> p.Result[p.Dict]:
     """Monitor database connectivity and performance."""
     try:
         # Test database connection
@@ -268,7 +268,7 @@ from collections.abc import (
 from flext_observability import flext_create_trace
 
 
-def process_user_workflow(user_id: str) -> p.Result[m.Dict]:
+def process_user_workflow(user_id: str) -> p.Result[p.Dict]:
     """Process user workflow with distributed tracing."""
 
     # Create parent trace
@@ -299,7 +299,7 @@ def process_user_workflow(user_id: str) -> p.Result[m.Dict]:
     })
 
 
-def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[m.Dict]:
+def validate_user_data(user_id: str, parent_trace_id: str) -> p.Result[p.Dict]:
     """Validate user with child trace."""
     child_trace_result = flext_create_trace(
         operation_name="user_validation",
@@ -338,7 +338,7 @@ class FlextTapOracle:
     """Example Singer tap with integrated observability."""
 
     @flext_monitor_function("tap_oracle_extract")
-    def extract_records(self, table_name: str) -> Sequence[m.Dict]:
+    def extract_records(self, table_name: str) -> Sequence[p.Dict]:
         """Extract records with automatic monitoring."""
 
         # Extract data (business logic)
@@ -384,7 +384,7 @@ class FlextAPIService:
     """Example FastAPI service with observability."""
 
     @flext_monitor_function("api_endpoint")
-    def handle_user_request(self, request_data: dict) -> p.Result[m.Dict]:
+    def handle_user_request(self, request_data: dict) -> p.Result[p.Dict]:
         """Handle API request with comprehensive observability."""
 
         # Request metrics

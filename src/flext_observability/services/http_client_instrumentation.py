@@ -43,7 +43,7 @@ class FlextObservabilityHTTPClient:
         from flext_observability.services import FlextObservabilityHTTPClient
 
         # Setup httpx client instrumentation
-        client = httpx.Client()
+        client = u.Api.HttpxClient()
         FlextObservabilityHTTPClient.HTTPX.setup_instrumentation(client)
 
         # All outbound HTTP requests now automatically traced!
@@ -493,7 +493,7 @@ class FlextObservabilityHTTPClient:
                 from flext_observability.services import FlextObservabilityHTTPClient
 
                 # Sync client
-                client = httpx.Client()
+                client = u.Api.HttpxClient()
                 FlextObservabilityHTTPClient.HTTPX.setup_instrumentation(client)
 
                 response = client.get("https://api.example.com/users")

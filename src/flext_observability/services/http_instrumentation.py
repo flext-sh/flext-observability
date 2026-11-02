@@ -195,11 +195,11 @@ class FlextObservabilityHTTP:
             return (time.time() - validated_start) * 1000
 
         @staticmethod
-        def _error_handler(error: Exception) -> tuple[m.Dict, int]:
+        def _error_handler(error: Exception) -> tuple[p.Dict, int]:
             """Handle exceptions with logging and alerting.
 
             Returns:
-                The resulting ``tuple[m.Dict, int]``.
+                The resulting ``tuple[p.Dict, int]``.
 
             """
             FlextObservabilityHTTP.logger.exception(

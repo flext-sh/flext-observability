@@ -56,7 +56,7 @@ class FlextObservabilityPerformance:
     class Monitor:
         """Individual operation performance monitor."""
 
-        metrics: m.Observability.PerformanceMetrics
+        metrics: p.Observability.PerformanceMetrics
         _initial_memory: float
         _initial_cpu: float
 
@@ -71,7 +71,7 @@ class FlextObservabilityPerformance:
             self._initial_memory = self._memory_usage()
             self._initial_cpu = self._cpu_percent()
 
-        def finish(self) -> m.Observability.PerformanceMetrics:
+        def finish(self) -> p.Observability.PerformanceMetrics:
             """Finish monitoring and return metrics.
 
             Returns:
@@ -155,7 +155,7 @@ class FlextObservabilityPerformance:
             return {"memory_mb": 0.0, "memory_percent": 0.0, "cpu_percent": 0.0}
 
     @staticmethod
-    def performance_acceptable(metrics: m.Observability.PerformanceMetrics) -> bool:
+    def performance_acceptable(metrics: p.Observability.PerformanceMetrics) -> bool:
         """Check whether operation performance is acceptable.
 
         Args:
@@ -186,7 +186,7 @@ class FlextObservabilityPerformance:
 
     @staticmethod
     def _build_performance_log(
-        metrics: m.Observability.PerformanceMetrics,
+        metrics: p.Observability.PerformanceMetrics,
     ) -> tuple[str, str]:
         """Build log level and message for performance metrics.
 
@@ -214,7 +214,7 @@ class FlextObservabilityPerformance:
 
     @staticmethod
     def log_performance_metrics(
-        metrics: m.Observability.PerformanceMetrics,
+        metrics: p.Observability.PerformanceMetrics,
     ) -> p.Result[bool]:
         """Log performance metrics for operation.
 

@@ -296,7 +296,7 @@ class FlextObservabilityModelsDomains:
             str | None,
             m.Field(description="Serialized baggage string"),
         ] = None
-        extra: Annotated[m.Dict, m.Field(description="Additional context data")] = (
+        extra: Annotated[p.Dict, m.Field(description="Additional context data")] = (
             m.Field(default_factory=lambda: m.Dict({}))
         )
 

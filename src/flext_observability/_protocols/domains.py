@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 from flext_cli import p
 
 if TYPE_CHECKING:
-    from flext_observability import m, t
+    from flext_observability import t
 
 
 class FlextObservabilityProtocolsDomains:
@@ -91,11 +91,11 @@ class FlextObservabilityProtocolsDomains:
     class ObservabilityService(Protocol):
         """Protocol for observability services providing alerts and metrics."""
 
-        def create_alert(self, **kwargs: t.Scalar) -> p.Result[m.Dict]:
+        def create_alert(self, **kwargs: t.Scalar) -> p.Result[p.Dict]:
             """Create an alert with given parameters."""
             ...
 
-        def metrics_summary(self) -> p.Result[m.Dict]:
+        def metrics_summary(self) -> p.Result[p.Dict]:
             """Get summary of collected metrics."""
             ...
 
@@ -153,7 +153,7 @@ class FlextObservabilityProtocolsDomains:
         class Request(Protocol):
             """Protocol for HTTP request objects used by middleware."""
 
-            headers: m.Dict
+            headers: p.Dict
             method: str
             url: FlextObservabilityProtocolsDomains.Http.RequestURL
             client: FlextObservabilityProtocolsDomains.Http.RequestClient | None
@@ -163,7 +163,7 @@ class FlextObservabilityProtocolsDomains:
             """Protocol for HTTP response objects used by middleware."""
 
             status_code: int
-            headers: m.Dict
+            headers: p.Dict
 
     class HttpClient:
         """Protocols for httpx and aiohttp HTTP client instrumentation."""
