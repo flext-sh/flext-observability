@@ -14,7 +14,7 @@ from types import MappingProxyType
 from typing import Annotated, Self
 from uuid import uuid4
 
-from flext_cli import m, p
+from flext_cli import m
 
 from flext_observability import c, p, t
 
