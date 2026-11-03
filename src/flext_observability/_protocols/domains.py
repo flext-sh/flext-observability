@@ -6,19 +6,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping, MutableMapping
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import FlextCliProtocols
 
+from flext_observability import t
+
 if TYPE_CHECKING:
-    from collections.abc import Mapping, MutableMapping, Sequence
+    from collections.abc import Sequence
     from datetime import datetime
     from typing import Self
 
     from flext_cli import p
 
-    from flext_observability import t
     from flext_observability._constants import FlextObservabilityConstantsDomains
 
 
@@ -40,7 +41,7 @@ class FlextObservabilityProtocolsDomains:
         def span_id(self) -> str: ...
 
     @runtime_checkable
-    class ErrorEvent(FlextCliProtocols.Model, Protocol):
+    class ErrorEvent(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -247,7 +248,7 @@ class FlextObservabilityProtocolsDomains:
             ]
 
     @runtime_checkable
-    class MetricEntry(FlextCliProtocols.Model, Protocol):
+    class MetricEntry(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -255,33 +256,14 @@ class FlextObservabilityProtocolsDomains:
             """List of uncommitted domain events for event sourcing."""
             ...
 
-        @property
-        def metric_id(self) -> str:
-            """Unique metric entry identifier."""
-            ...
-
-        @property
-        def name(self) -> t.NonEmptyStr:
-            """Metric name."""
-            ...
-
-        @property
-        def value(self) -> t.Numeric:
-            """Metric value."""
-            ...
-
-        @property
-        def unit(self) -> t.NonEmptyStr:
-            """Measurement unit."""
-            ...
-
-        @property
-        def source(self) -> str:
-            """Metric data source."""
-            ...
+        metric_id: str
+        name: t.NonEmptyStr
+        value: t.Numeric
+        unit: t.NonEmptyStr
+        source: str
 
     @runtime_checkable
-    class _EntityWithId(FlextCliProtocols.Model, Protocol):
+    class _EntityWithId(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -289,13 +271,20 @@ class FlextObservabilityProtocolsDomains:
             """List of uncommitted domain events for event sourcing."""
             ...
 
-        @property
-        def id(self) -> str:
-            """Unique entity identifier."""
-            ...
+        id: str
 
     @runtime_checkable
-    class Metric(FlextCliProtocols.Model, Protocol):
+    class Metric(_EntityWithId, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        name: t.NonEmptyStr
+        value: t.PositiveFloat
+        unit: t.NonEmptyStr
+        metric_type: t.NonEmptyStr
+        labels: Mapping[str, t.Scalar]
+
+    @runtime_checkable
+    class Trace(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -303,169 +292,40 @@ class FlextObservabilityProtocolsDomains:
             """List of uncommitted domain events for event sourcing."""
             ...
 
-        @property
-        def id(self) -> str:
-            """Unique entity identifier."""
-            ...
-
-        @property
-        def name(self) -> t.NonEmptyStr:
-            """Metric name."""
-            ...
-
-        @property
-        def value(self) -> t.PositiveFloat:
-            """Metric value."""
-            ...
-
-        @property
-        def unit(self) -> t.NonEmptyStr:
-            """Measurement unit."""
-            ...
-
-        @property
-        def metric_type(self) -> t.NonEmptyStr:
-            """Type of metric."""
-            ...
-
-        @property
-        def labels(self) -> Mapping[str, t.Scalar]:
-            """Metric labels for categorization."""
-            ...
+        trace_id: str
+        name: t.NonEmptyStr
+        attributes: Mapping[str, t.Scalar]
 
     @runtime_checkable
-    class Trace(FlextCliProtocols.Model, Protocol):
+    class Alert(_EntityWithId, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def domain_events(self) -> Sequence[p.DomainEvent]:
-            """List of uncommitted domain events for event sourcing."""
-            ...
-
-        @property
-        def trace_id(self) -> str:
-            """Unique trace identifier."""
-            ...
-
-        @property
-        def name(self) -> t.NonEmptyStr:
-            """Trace name."""
-            ...
-
-        @property
-        def attributes(self) -> Mapping[str, t.Scalar]:
-            """Trace attributes."""
-            ...
+        title: t.NonEmptyStr
+        message: t.NonEmptyStr
+        severity: t.NonEmptyStr
+        source: t.NonEmptyStr
+        labels: Mapping[str, t.Scalar]
 
     @runtime_checkable
-    class Alert(FlextCliProtocols.Model, Protocol):
+    class HealthCheck(_EntityWithId, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def domain_events(self) -> Sequence[p.DomainEvent]:
-            """List of uncommitted domain events for event sourcing."""
-            ...
-
-        @property
-        def id(self) -> str:
-            """Unique entity identifier."""
-            ...
-
-        @property
-        def title(self) -> t.NonEmptyStr:
-            """Alert title."""
-            ...
-
-        @property
-        def message(self) -> t.NonEmptyStr:
-            """Alert message."""
-            ...
-
-        @property
-        def severity(self) -> t.NonEmptyStr:
-            """Alert severity level."""
-            ...
-
-        @property
-        def source(self) -> t.NonEmptyStr:
-            """Alert source."""
-            ...
-
-        @property
-        def labels(self) -> Mapping[str, t.Scalar]:
-            """Alert labels for categorization."""
-            ...
+        component: t.NonEmptyStr
+        status: t.NonEmptyStr
+        details: Mapping[str, t.Scalar]
 
     @runtime_checkable
-    class HealthCheck(FlextCliProtocols.Model, Protocol):
+    class LogEntry(_EntityWithId, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def domain_events(self) -> Sequence[p.DomainEvent]:
-            """List of uncommitted domain events for event sourcing."""
-            ...
-
-        @property
-        def id(self) -> str:
-            """Unique entity identifier."""
-            ...
-
-        @property
-        def component(self) -> t.NonEmptyStr:
-            """Component being checked."""
-            ...
-
-        @property
-        def status(self) -> t.NonEmptyStr:
-            """Health check status."""
-            ...
-
-        @property
-        def details(self) -> Mapping[str, t.Scalar]:
-            """Health check details."""
-            ...
+        message: t.NonEmptyStr
+        level: t.NonEmptyStr
+        component: t.NonEmptyStr
+        timestamp: datetime
+        context: Mapping[str, t.Scalar]
 
     @runtime_checkable
-    class LogEntry(FlextCliProtocols.Model, Protocol):
-        """Structural data contract projected from the owning model."""
-
-        @property
-        def domain_events(self) -> Sequence[p.DomainEvent]:
-            """List of uncommitted domain events for event sourcing."""
-            ...
-
-        @property
-        def id(self) -> str:
-            """Unique entity identifier."""
-            ...
-
-        @property
-        def message(self) -> t.NonEmptyStr:
-            """Log message."""
-            ...
-
-        @property
-        def level(self) -> t.NonEmptyStr:
-            """Log level."""
-            ...
-
-        @property
-        def component(self) -> t.NonEmptyStr:
-            """Source component."""
-            ...
-
-        @property
-        def timestamp(self) -> datetime:
-            """Log entry timestamp."""
-            ...
-
-        @property
-        def context(self) -> Mapping[str, t.Scalar]:
-            """Log context metadata."""
-            ...
-
-    @runtime_checkable
-    class StartTimePayload(FlextCliProtocols.Model, Protocol):
+    class StartTimePayload(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -474,7 +334,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
     @runtime_checkable
-    class HeadersPayload(FlextCliProtocols.Model, Protocol):
+    class HeadersPayload(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -483,7 +343,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
     @runtime_checkable
-    class ContextSnapshot(FlextCliProtocols.Model, Protocol):
+    class ContextSnapshot(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -512,7 +372,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
     @runtime_checkable
-    class BaggageKeyModel(FlextCliProtocols.Model, Protocol):
+    class BaggageKeyModel(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -521,7 +381,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
     @runtime_checkable
-    class MetricTypeInput(FlextCliProtocols.Model, Protocol):
+    class MetricTypeInput(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -530,7 +390,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
     @runtime_checkable
-    class CustomMetricDefinition(FlextCliProtocols.Model, Protocol):
+    class CustomMetricDefinition(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -559,7 +419,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
     @runtime_checkable
-    class CooldownInput(FlextCliProtocols.Model, Protocol):
+    class CooldownInput(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -568,7 +428,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
     @runtime_checkable
-    class ThresholdInput(FlextCliProtocols.Model, Protocol):
+    class ThresholdInput(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -577,7 +437,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
     @runtime_checkable
-    class ErrorHandlingState(FlextCliProtocols.Model, Protocol):
+    class ErrorHandlingState(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         error_counts: t.MutableIntMapping
@@ -587,7 +447,7 @@ class FlextObservabilityProtocolsDomains:
         deduplication_window_sec: int
 
     @runtime_checkable
-    class LogContext(FlextCliProtocols.Model, Protocol):
+    class LogContext(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -616,7 +476,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
     @runtime_checkable
-    class PerformanceMetrics(FlextCliProtocols.Model, Protocol):
+    class PerformanceMetrics(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
