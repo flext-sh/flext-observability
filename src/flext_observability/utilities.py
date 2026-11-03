@@ -28,7 +28,6 @@ class FlextObservabilityUtilities(flext_cli_u, FlextObservabilityUtilitiesBase):
 
     class Observability(
         FlextObservabilityUtilitiesDomains,
-        FlextObservabilityUtilitiesBase,
     ):
         """Observability-specific project utilities."""
 

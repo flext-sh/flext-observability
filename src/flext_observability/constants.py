@@ -31,8 +31,8 @@ class FlextObservabilityConstants(flext_cli_c):
     """
 
     class Observability(
-        FlextObservabilityConstantsDomains,
         FlextObservabilityConstantsBase.Observability,
+        FlextObservabilityConstantsDomains,
     ):
         """Observability domain constants namespace.
 

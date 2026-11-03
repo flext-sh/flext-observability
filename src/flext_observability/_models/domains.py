@@ -296,9 +296,11 @@ class FlextObservabilityModelsDomains:
             str | None,
             m.Field(description="Serialized baggage string"),
         ] = None
-        extra: Annotated[p.Dict, m.Field(description="Additional context data")] = (
-            m.Field(default_factory=lambda: p.Dict({}))
-        )
+        extra: Annotated[
+            p.Dict,
+            t.schema_for_model(m.Dict),
+            m.Field(description="Additional context data"),
+        ] = m.Field(default_factory=lambda: m.Dict({}))
 
     # --- Moved from performance.py ---
     class PerformanceMetrics(m.Value):

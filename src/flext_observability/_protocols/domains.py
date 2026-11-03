@@ -9,10 +9,17 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_cli import p
+from flext_cli import FlextCliProtocols
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping, MutableMapping, Sequence
+    from datetime import datetime
+    from typing import Self
+
+    from flext_cli import p
+
     from flext_observability import t
+    from flext_observability._constants import FlextObservabilityConstantsDomains
 
 
 class FlextObservabilityProtocolsDomains:
@@ -33,23 +40,37 @@ class FlextObservabilityProtocolsDomains:
         def span_id(self) -> str: ...
 
     @runtime_checkable
-    class ErrorEvent(Protocol):
-        """Read-only domain error data at the recording boundary."""
+    class ErrorEvent(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
 
         @property
-        def error_type(self) -> str: ...
+        def error_type(self) -> t.NonEmptyStr:
+            """Error classification type."""
+            ...
 
         @property
-        def message(self) -> str: ...
+        def message(self) -> t.NonEmptyStr:
+            """Error message."""
+            ...
 
         @property
-        def severity(self) -> t.Observability.ErrorSeverity: ...
+        def severity(self) -> FlextObservabilityConstantsDomains.ErrorSeverity:
+            """Error severity level."""
+            ...
 
         @property
-        def fingerprint(self) -> str: ...
+        def fingerprint(self) -> str:
+            """SHA256 deduplication fingerprint."""
+            ...
 
         @property
-        def correlation_id(self) -> str: ...
+        def correlation_id(self) -> str:
+            """Correlation identifier."""
+            ...
+
+        def calculate_fingerprint(self) -> Self:
+            """Calculate SHA256 fingerprint from error type and message."""
+            ...
 
     @runtime_checkable
     class ErrorRecorder(Protocol):
@@ -224,6 +245,426 @@ class FlextObservabilityProtocolsDomains:
                     FlextObservabilityProtocolsDomains.HttpClient.AIOHTTPResponse
                 ],
             ]
+
+    @runtime_checkable
+    class MetricEntry(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def domain_events(self) -> Sequence[p.DomainEvent]:
+            """List of uncommitted domain events for event sourcing."""
+            ...
+
+        @property
+        def metric_id(self) -> str:
+            """Unique metric entry identifier."""
+            ...
+
+        @property
+        def name(self) -> t.NonEmptyStr:
+            """Metric name."""
+            ...
+
+        @property
+        def value(self) -> t.Numeric:
+            """Metric value."""
+            ...
+
+        @property
+        def unit(self) -> t.NonEmptyStr:
+            """Measurement unit."""
+            ...
+
+        @property
+        def source(self) -> str:
+            """Metric data source."""
+            ...
+
+    @runtime_checkable
+    class _EntityWithId(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def domain_events(self) -> Sequence[p.DomainEvent]:
+            """List of uncommitted domain events for event sourcing."""
+            ...
+
+        @property
+        def id(self) -> str:
+            """Unique entity identifier."""
+            ...
+
+    @runtime_checkable
+    class Metric(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def domain_events(self) -> Sequence[p.DomainEvent]:
+            """List of uncommitted domain events for event sourcing."""
+            ...
+
+        @property
+        def id(self) -> str:
+            """Unique entity identifier."""
+            ...
+
+        @property
+        def name(self) -> t.NonEmptyStr:
+            """Metric name."""
+            ...
+
+        @property
+        def value(self) -> t.PositiveFloat:
+            """Metric value."""
+            ...
+
+        @property
+        def unit(self) -> t.NonEmptyStr:
+            """Measurement unit."""
+            ...
+
+        @property
+        def metric_type(self) -> t.NonEmptyStr:
+            """Type of metric."""
+            ...
+
+        @property
+        def labels(self) -> Mapping[str, t.Scalar]:
+            """Metric labels for categorization."""
+            ...
+
+    @runtime_checkable
+    class Trace(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def domain_events(self) -> Sequence[p.DomainEvent]:
+            """List of uncommitted domain events for event sourcing."""
+            ...
+
+        @property
+        def trace_id(self) -> str:
+            """Unique trace identifier."""
+            ...
+
+        @property
+        def name(self) -> t.NonEmptyStr:
+            """Trace name."""
+            ...
+
+        @property
+        def attributes(self) -> Mapping[str, t.Scalar]:
+            """Trace attributes."""
+            ...
+
+    @runtime_checkable
+    class Alert(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def domain_events(self) -> Sequence[p.DomainEvent]:
+            """List of uncommitted domain events for event sourcing."""
+            ...
+
+        @property
+        def id(self) -> str:
+            """Unique entity identifier."""
+            ...
+
+        @property
+        def title(self) -> t.NonEmptyStr:
+            """Alert title."""
+            ...
+
+        @property
+        def message(self) -> t.NonEmptyStr:
+            """Alert message."""
+            ...
+
+        @property
+        def severity(self) -> t.NonEmptyStr:
+            """Alert severity level."""
+            ...
+
+        @property
+        def source(self) -> t.NonEmptyStr:
+            """Alert source."""
+            ...
+
+        @property
+        def labels(self) -> Mapping[str, t.Scalar]:
+            """Alert labels for categorization."""
+            ...
+
+    @runtime_checkable
+    class HealthCheck(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def domain_events(self) -> Sequence[p.DomainEvent]:
+            """List of uncommitted domain events for event sourcing."""
+            ...
+
+        @property
+        def id(self) -> str:
+            """Unique entity identifier."""
+            ...
+
+        @property
+        def component(self) -> t.NonEmptyStr:
+            """Component being checked."""
+            ...
+
+        @property
+        def status(self) -> t.NonEmptyStr:
+            """Health check status."""
+            ...
+
+        @property
+        def details(self) -> Mapping[str, t.Scalar]:
+            """Health check details."""
+            ...
+
+    @runtime_checkable
+    class LogEntry(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def domain_events(self) -> Sequence[p.DomainEvent]:
+            """List of uncommitted domain events for event sourcing."""
+            ...
+
+        @property
+        def id(self) -> str:
+            """Unique entity identifier."""
+            ...
+
+        @property
+        def message(self) -> t.NonEmptyStr:
+            """Log message."""
+            ...
+
+        @property
+        def level(self) -> t.NonEmptyStr:
+            """Log level."""
+            ...
+
+        @property
+        def component(self) -> t.NonEmptyStr:
+            """Source component."""
+            ...
+
+        @property
+        def timestamp(self) -> datetime:
+            """Log entry timestamp."""
+            ...
+
+        @property
+        def context(self) -> Mapping[str, t.Scalar]:
+            """Log context metadata."""
+            ...
+
+    @runtime_checkable
+    class StartTimePayload(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def value(self) -> float:
+            """Request start time in seconds since epoch."""
+            ...
+
+    @runtime_checkable
+    class HeadersPayload(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def headers(self) -> Mapping[str, str]:
+            """HTTP header key-value pairs."""
+            ...
+
+    @runtime_checkable
+    class ContextSnapshot(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def correlation_id(self) -> str:
+            """Correlation identifier."""
+            ...
+
+        @property
+        def trace_id(self) -> str:
+            """Trace identifier."""
+            ...
+
+        @property
+        def span_id(self) -> str:
+            """Span identifier."""
+            ...
+
+        @property
+        def baggage(self) -> Mapping[str, str]:
+            """Propagated baggage key-value pairs."""
+            ...
+
+        @property
+        def metadata(self) -> t.ConfigurationMapping:
+            """Additional context metadata."""
+            ...
+
+    @runtime_checkable
+    class BaggageKeyModel(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def key(self) -> t.NonEmptyStr:
+            """Baggage key name."""
+            ...
+
+    @runtime_checkable
+    class MetricTypeInput(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def metric_type(self) -> FlextObservabilityConstantsDomains.MetricType:
+            """Type of metric to create."""
+            ...
+
+    @runtime_checkable
+    class CustomMetricDefinition(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def name(self) -> t.NonEmptyStr:
+            """Custom metric name."""
+            ...
+
+        @property
+        def metric_type(self) -> FlextObservabilityConstantsDomains.MetricType:
+            """Type of metric."""
+            ...
+
+        @property
+        def description(self) -> t.NonEmptyStr:
+            """Human-readable metric description."""
+            ...
+
+        @property
+        def unit(self) -> str:
+            """Measurement unit."""
+            ...
+
+        @property
+        def labels(self) -> Mapping[str, str]:
+            """Metric labels for categorization."""
+            ...
+
+    @runtime_checkable
+    class CooldownInput(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def seconds(self) -> t.PositiveFloat:
+            """Cooldown duration in seconds."""
+            ...
+
+    @runtime_checkable
+    class ThresholdInput(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def threshold(self) -> t.PositiveInt:
+            """Error count threshold."""
+            ...
+
+    @runtime_checkable
+    class ErrorHandlingState(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        error_counts: t.MutableIntMapping
+        last_alert_time: MutableMapping[str, float]
+        alert_cooldown_sec: float
+        escalation_threshold: int
+        deduplication_window_sec: int
+
+    @runtime_checkable
+    class LogContext(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def correlation_id(self) -> str | None:
+            """Correlation identifier."""
+            ...
+
+        @property
+        def trace_id(self) -> str | None:
+            """Trace identifier."""
+            ...
+
+        @property
+        def span_id(self) -> str | None:
+            """Span identifier."""
+            ...
+
+        @property
+        def baggage(self) -> str | None:
+            """Serialized baggage string."""
+            ...
+
+        @property
+        def extra(self) -> p.Dict:
+            """Additional context data."""
+            ...
+
+    @runtime_checkable
+    class PerformanceMetrics(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def operation(self) -> t.NonEmptyStr:
+            """Operation name being measured."""
+            ...
+
+        @property
+        def start_time(self) -> float:
+            """Operation start time in seconds since epoch."""
+            ...
+
+        @property
+        def end_time(self) -> float:
+            """Operation end time in seconds since epoch."""
+            ...
+
+        @property
+        def duration_ms(self) -> float:
+            """Operation duration in milliseconds."""
+            ...
+
+        @property
+        def memory_used_mb(self) -> float:
+            """Memory used in megabytes."""
+            ...
+
+        @property
+        def cpu_percent(self) -> float:
+            """CPU usage percentage."""
+            ...
+
+        @property
+        def success(self) -> bool:
+            """Whether the operation succeeded."""
+            ...
+
+        @property
+        def error_message(self) -> str:
+            """Error message if operation failed."""
+            ...
+
+        def calculate_duration(self) -> Self:
+            """Structural member projected from the owning model.
+
+            Calculate operation duration in milliseconds from start and end times.
+            """
+            ...
 
 
 __all__: list[str] = ["FlextObservabilityProtocolsDomains"]
