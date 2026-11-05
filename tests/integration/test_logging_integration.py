@@ -247,14 +247,14 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         capture.stream.close()
         original = OSError("business operation failed")
         if business_failure:
-            with pytest.raises(
+            with u.Tests.raises(
                 OSError, match="business operation failed"
             ) as business_caught:
                 u.failure("failed operation", exception=original)
             tm.ok(business_caught.value is original)
             tm.ok(original.__context__ is capture.failure)
         else:
-            with pytest.raises(ValueError, match="closed file") as capture_caught:
+            with u.Tests.raises(ValueError, match="closed file") as capture_caught:
                 u.warning("selected capture is closed")
             tm.ok(capture_caught.value is capture.failure)
         tm.that(capture.failure, none=False)

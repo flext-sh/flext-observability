@@ -15,7 +15,12 @@ from typing import ClassVar
 
 from flext_core import FlextContainer
 
-from flext_observability import c, m, p, r, t, u
+from flext_observability.constants import c
+from flext_observability.models import m
+from flext_observability.protocols import p
+from flext_observability.result import r
+from flext_observability.typings import t
+from flext_observability.utilities import u
 
 
 class FlextObservabilityServices:

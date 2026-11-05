@@ -1497,7 +1497,7 @@ def test_function_monitoring_with_exception():
         raise ValueError("Test error")
 
     # Execute function and expect exception
-    with pytest.raises(ValueError, match="Test error"):
+    with u.Tests.raises(ValueError, match="Test error"):
         failing_function()
 
     # In a real implementation, verify that error metrics were created

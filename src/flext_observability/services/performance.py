@@ -20,7 +20,11 @@ from collections.abc import Mapping
 
 import psutil
 
-from flext_observability import c, m, p, r, u
+from flext_observability.constants import c
+from flext_observability.models import m
+from flext_observability.protocols import p
+from flext_observability.result import r
+from flext_observability.utilities import u
 
 
 class FlextObservabilityPerformance:

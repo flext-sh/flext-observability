@@ -16,7 +16,9 @@ from uuid import uuid4
 
 from flext_cli import m
 
-from flext_observability import c, p, t
+from flext_observability.constants import c
+from flext_observability.protocols import p
+from flext_observability.typings import t
 
 
 class FlextObservabilityModelsDomains:
