@@ -10,8 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_observability.constants import c
-from flext_observability.protocols import p
+from flext_observability import c, p
 from flext_observability.services import FlextObservabilityContext
 
 

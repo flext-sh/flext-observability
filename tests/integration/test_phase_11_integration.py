@@ -15,8 +15,6 @@ from __future__ import annotations
 
 import operator
 
-import pytest
-
 from flext_observability import FlextObservability
 from flext_observability.services import (
     FlextObservabilityAdvancedContext,
@@ -26,7 +24,7 @@ from flext_observability.services import (
     FlextObservabilityPerformance,
     FlextObservabilitySampling,
 )
-from tests import c, m, p, tm
+from tests import c, m, p, tm, u
 
 MetricType = c.Observability.MetricType
 ErrorSeverity = c.Observability.ErrorSeverity
@@ -67,17 +65,17 @@ def _registry() -> FlextObservabilityCustomMetrics.Registry:
 class TestsFlextObservabilityPhase11Base:
     """Shared observability fixtures for the phase-11 contracts."""
 
-    @pytest.fixture
+    @u.Tests.fixture
     def factory() -> FlextObservability:
         """Return a fresh master factory instance."""
         return _fresh_factory()
 
-    @pytest.fixture
+    @u.Tests.fixture
     def sampler() -> FlextObservabilitySampling.Sampler:
         """Return the global sampler with a deterministic default rate."""
         return _deterministic_sampler()
 
-    @pytest.fixture
+    @u.Tests.fixture
     def advanced_context() -> FlextObservabilityAdvancedContext.Context:
         """Return the global advanced context, cleared for isolation."""
         return _cleared_advanced_context()
@@ -89,7 +87,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
     # -- metric creation -------------------------------------------------
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("name", "value", "unit"),
         [
             ("http.requests.total", 1.0, c.MetricType.COUNTER),
@@ -109,7 +107,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         tm.ok(result)
         metric = result.value
         tm.that(metric.name, eq=name)
-        tm.that(metric.value, eq=pytest.approx(value))
+        tm.that(metric.value, eq=u.Tests.approx(value))
         tm.that(metric.unit, eq=unit)
 
     @staticmethod
@@ -164,7 +162,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         tm.ok(sampler.update_default_rate(0.0))
         tm.ok(sampler.update_operation_rate("critical_op", 1.0))
 
-        tm.that(sampler.current_rate(operation="critical_op"), eq=pytest.approx(1.0))
+        tm.that(sampler.current_rate(operation="critical_op"), eq=u.Tests.approx(1.0))
         tm.ok(sampler.should_sample("critical_op", "api"))
 
     @staticmethod
@@ -174,10 +172,10 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         """A valid environment resolves to its documented default rate."""
         tm.ok(sampler.update_environment("production"))
 
-        tm.that(sampler.current_rate(), eq=pytest.approx(0.1))
+        tm.that(sampler.current_rate(), eq=u.Tests.approx(0.1))
 
     @staticmethod
-    @pytest.mark.parametrize("bad_environment", ["prod", "", "qa"])
+    @c.Tests.MARK.parametrize("bad_environment", ["prod", "", "qa"])
     def test_update_environment_rejects_unknown_environment(
         sampler: FlextObservabilitySampling.Sampler,
         bad_environment: str,
@@ -196,7 +194,7 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
         )
 
     @staticmethod
-    @pytest.mark.parametrize("bad_rate", [-0.1, 1.5, 42.0])
+    @c.Tests.MARK.parametrize("bad_rate", [-0.1, 1.5, 42.0])
     def test_update_default_rate_rejects_out_of_range(
         sampler: FlextObservabilitySampling.Sampler,
         bad_rate: float,
@@ -274,12 +272,12 @@ class TestsFlextObservabilityPhase11Sampling(TestsFlextObservabilityPhase11Base)
 class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11Base):
     """Error handling, metric registry, performance, and end-to-end contracts."""
 
-    @pytest.fixture
+    @u.Tests.fixture
     def error_handler() -> p.Observability.ErrorHandler:
         """Return the global error handler with counts cleared."""
         return _cleared_error_handler()
 
-    @pytest.fixture
+    @u.Tests.fixture
     def registry() -> FlextObservabilityCustomMetrics.Registry:
         """Return the global custom-metric registry."""
         return _registry()
@@ -336,7 +334,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
         )
 
     @staticmethod
-    @pytest.mark.parametrize("bad_threshold", [0, -1])
+    @c.Tests.MARK.parametrize("bad_threshold", [0, -1])
     def test_update_escalation_threshold_rejects_non_positive(
         error_handler: p.Observability.ErrorHandler,
         bad_threshold: int,
@@ -350,7 +348,7 @@ class TestsFlextObservabilityPhase11ErrorsMetrics(TestsFlextObservabilityPhase11
     # -- custom metric registry ------------------------------------------
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "metric_type",
         [MetricType.COUNTER, MetricType.GAUGE, MetricType.HISTOGRAM],
     )

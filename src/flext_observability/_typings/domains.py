@@ -10,7 +10,7 @@ from collections.abc import Mapping
 
 from flext_cli import t
 
-from flext_observability.constants import c
+from flext_observability import c
 
 
 class FlextObservabilityTypingsDomains:

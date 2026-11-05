@@ -24,13 +24,7 @@ from __future__ import annotations
 from collections.abc import MutableMapping, Sequence
 from typing import ClassVar
 
-from flext_observability.constants import c
-from flext_observability.exceptions import e
-from flext_observability.models import m
-from flext_observability.protocols import p
-from flext_observability.result import r
-from flext_observability.typings import t
-from flext_observability.utilities import u
+from flext_observability import c, e, m, p, r, t, u
 
 
 class FlextObservabilityCustomMetrics:

@@ -23,14 +23,8 @@ from __future__ import annotations
 
 import time
 
-from flext_observability.constants import c
-from flext_observability.models import m
-from flext_observability.protocols import p
-from flext_observability.result import r
-from flext_observability.service import s
+from flext_observability import c, m, p, r, s, t, u
 from flext_observability.services import FlextObservabilityContext
-from flext_observability.typings import t
-from flext_observability.utilities import u
 
 
 class FlextObservabilityErrorHandling:
