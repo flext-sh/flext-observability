@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
 from flext_core import FlextContainer
 
 from flext_observability import FlextObservability, __version__, __version_info__
@@ -42,7 +41,7 @@ class TestsFlextObservabilityInit:
         tm.that(c, none=False)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("name", "value", "unit"),
         [
             ("requests", 1.0, c.Aggregation.COUNT),
@@ -65,7 +64,7 @@ class TestsFlextObservabilityInit:
         tm.that(metric.unit, eq=unit)
 
     @staticmethod
-    @pytest.mark.parametrize(("name", "value"), [("", 1.0), ("valid", float("nan"))])
+    @c.Tests.MARK.parametrize(("name", "value"), [("", 1.0), ("valid", float("nan"))])
     def test_flext_metric_fails_on_invalid_input(name: str, value: float) -> None:
         """flext_metric reports failure with an error for invalid inputs."""
         result = flext_metric(name, value)
@@ -111,7 +110,7 @@ class TestsFlextObservabilityInit:
         tm.ok(bool(alert.severity))
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "status",
         [
             c.Observability.HealthStatus.HEALTHY,

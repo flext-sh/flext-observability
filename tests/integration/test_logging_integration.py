@@ -8,14 +8,12 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
 from flext_observability import FlextObservability
 from tests import c, m, p, t, tm, u
 from tests.fixtures.logging import TestsObservabilityLoggingFixtures
 
 
-@pytest.mark.usefixtures("test_runtime")
+@c.Tests.MARK.usefixtures("test_runtime")
 class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
     """Exercise the public composition with actual handlers and consumers."""
 
@@ -213,7 +211,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         tm.ok(u.log("plain ERROR is not an exception", level=c.LogLevel.ERROR))
         tm.that(handler.resolve_error_count(error.fingerprint), eq=before)
 
-    @pytest.mark.parametrize("correlation", ["", "captured-operation"])
+    @c.Tests.MARK.parametrize("correlation", ["", "captured-operation"])
     @staticmethod
     def test_error_handler_preserves_explicit_snapshot_after_context_changes(
         logging_runtime: p.StructlogOptions,
@@ -231,7 +229,7 @@ class TestsObservabilityLogging(TestsObservabilityLoggingFixtures):
         recorded = tm.ok(handler.record_error(event))
         tm.that(recorded.correlation_id, eq=event.correlation_id)
 
-    @pytest.mark.parametrize("business_failure", [False, True])
+    @c.Tests.MARK.parametrize("business_failure", [False, True])
     def test_capture_write_failure_is_not_swallowed(
         self, logging_runtime: p.StructlogOptions, *, business_failure: bool
     ) -> None:

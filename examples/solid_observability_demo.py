@@ -16,7 +16,8 @@ from collections.abc import Sequence
 
 from flext_cli import cli
 
-from flext_observability import FlextObservability, c, t
+from examples import c, t
+from flext_observability import FlextObservability
 
 
 class FlextObservabilitySolidDemo:
