@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping, Sequence
+from collections.abc import Mapping, MutableMapping, Sequence
 from typing import ClassVar
 
 from flext_observability import c, e, m, p, r, t, u
@@ -181,7 +181,7 @@ class FlextObservabilityCustomMetrics:
         def resolve_metrics_by_type(
             self,
             metric_type: c.Observability.MetricType,
-        ) -> p.Dict:
+        ) -> Mapping[str, m.Observability.CustomMetricDefinition]:
             """Resolve all metrics of a specific type.
 
             Args:
@@ -191,11 +191,11 @@ class FlextObservabilityCustomMetrics:
                 dict - Metrics matching the type
 
             """
-            return m.Dict({
+            return {
                 metric_name: metric
                 for metric_name, metric in self._metrics.items()
                 if metric.metric_type == metric_type
-            })
+            }
 
         def list_metrics(self) -> Sequence[str]:
             """List all registered metric names.

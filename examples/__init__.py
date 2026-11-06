@@ -12,14 +12,23 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_core import d, e, h, r, s, x
-
     from examples.constants import ExamplesFlextObservabilityConstants, c
     from examples.models import ExamplesFlextObservabilityModels, m
     from examples.protocols import ExamplesFlextObservabilityProtocols, p
     from examples.typings import ExamplesFlextObservabilityTypes, t
     from examples.utilities import ExamplesFlextObservabilityUtilities, u
-    from flext_observability import config, main, observability, settings
+    from flext_observability import (
+        config,
+        d,
+        e,
+        h,
+        main,
+        observability,
+        r,
+        s,
+        settings,
+        x,
+    )
 
 
 __all__: tuple[str, ...] = (
@@ -56,19 +65,19 @@ install_lazy_exports(
         "ExamplesFlextObservabilityUtilities": ".utilities",
         "c": ".constants",
         "config": "flext_observability",
-        "d": "flext_core",
-        "e": "flext_core",
-        "h": "flext_core",
+        "d": "flext_observability",
+        "e": "flext_observability",
+        "h": "flext_observability",
         "m": ".models",
         "main": "flext_observability",
         "observability": "flext_observability",
         "p": ".protocols",
-        "r": "flext_core",
-        "s": "flext_core",
+        "r": "flext_observability",
+        "s": "flext_observability",
         "settings": "flext_observability",
         "t": ".typings",
         "u": ".utilities",
-        "x": "flext_core",
+        "x": "flext_observability",
     },
     public_exports=__all__,
 )

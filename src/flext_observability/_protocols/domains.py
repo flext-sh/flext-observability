@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping, MutableMapping
+from datetime import datetime
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import FlextCliProtocols
@@ -15,12 +16,11 @@ from flext_observability import t
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from datetime import datetime
     from typing import Self
 
     from flext_cli import p
 
-    from flext_observability._constants import FlextObservabilityConstantsDomains
+    from flext_observability import c
 
 
 class FlextObservabilityProtocolsDomains:
@@ -55,7 +55,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
         @property
-        def severity(self) -> FlextObservabilityConstantsDomains.ErrorSeverity:
+        def severity(self) -> c.Observability.ErrorSeverity:
             """Error severity level."""
             ...
 
@@ -251,6 +251,16 @@ class FlextObservabilityProtocolsDomains:
     class MetricEntry(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
+        version: t.NonNegativeInt
+        unique_id: t.NonEmptyStr
+
+        @property
+        def created_at(self) -> datetime:
+            """Creation timestamp (configured timezone)."""
+            ...
+
+        updated_at: datetime | None
+
         @property
         def domain_events(self) -> Sequence[p.DomainEvent]:
             """List of uncommitted domain events for event sourcing."""
@@ -265,6 +275,16 @@ class FlextObservabilityProtocolsDomains:
     @runtime_checkable
     class _EntityWithId(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
+
+        version: t.NonNegativeInt
+        unique_id: t.NonEmptyStr
+
+        @property
+        def created_at(self) -> datetime:
+            """Creation timestamp (configured timezone)."""
+            ...
+
+        updated_at: datetime | None
 
         @property
         def domain_events(self) -> Sequence[p.DomainEvent]:
@@ -286,6 +306,16 @@ class FlextObservabilityProtocolsDomains:
     @runtime_checkable
     class Trace(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
+
+        version: t.NonNegativeInt
+        unique_id: t.NonEmptyStr
+
+        @property
+        def created_at(self) -> datetime:
+            """Creation timestamp (configured timezone)."""
+            ...
+
+        updated_at: datetime | None
 
         @property
         def domain_events(self) -> Sequence[p.DomainEvent]:
@@ -385,7 +415,7 @@ class FlextObservabilityProtocolsDomains:
         """Structural data contract projected from the owning model."""
 
         @property
-        def metric_type(self) -> FlextObservabilityConstantsDomains.MetricType:
+        def metric_type(self) -> c.Observability.MetricType:
             """Type of metric to create."""
             ...
 
@@ -399,7 +429,7 @@ class FlextObservabilityProtocolsDomains:
             ...
 
         @property
-        def metric_type(self) -> FlextObservabilityConstantsDomains.MetricType:
+        def metric_type(self) -> c.Observability.MetricType:
             """Type of metric."""
             ...
 
