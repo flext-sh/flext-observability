@@ -373,6 +373,15 @@ src/flext_observability/
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_observability import m, p, u
 
 
@@ -384,14 +393,14 @@ class FlextMetric(m.Ldif.Entity):
     value: float
     unit: str
     timestamp: datetime
-    tags: t.StrMapping
+    tags: Mapping[str, str]
 
 
 class FlextTrace(FlextModels.Entity):
     """Distributed trace entity with span hierarchy."""
 
     trace_id: str
-    spans: t.SequenceOf[Span]
+    spans: Sequence[Span]
     context: TraceContext
 
 
@@ -408,6 +417,15 @@ class FlextAlert(FlextModels.Entity):
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 class FlextObservabilityServices(u):
@@ -430,6 +448,15 @@ class FlextObservabilityServices(u):
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 class FlextObservabilityMasterFactory:

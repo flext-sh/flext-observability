@@ -53,6 +53,15 @@ integration/
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def test_metrics_service_with_factory_integration():
     """Test metrics service integration with factory."""

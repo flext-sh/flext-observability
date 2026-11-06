@@ -21,6 +21,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, MutableMapping
 from typing import ClassVar
 
 from flext_observability import c, e, m, p, r, t, u
@@ -33,12 +34,12 @@ class FlextObservabilityAdvancedContext:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityAdvancedContext
+        from flext_observability.services import FlextObservabilityAdvancedContext
 
         ctx = FlextObservabilityAdvancedContext.active_context()
 
         # Store request-local data
-        ctx.update_metadata("user_id", "user-123")
+        ctx.update_metadata(c.ContextKey.USER_ID, "user-123")
         ctx.update_metadata("api_key", "secret-key")
 
         # Get context snapshot
@@ -60,10 +61,10 @@ class FlextObservabilityAdvancedContext:
 
         def __init__(self) -> None:
             """Initialize advanced context."""
-            self._metadata: t.MutableScalarMapping = {}
+            self._metadata: MutableMapping[str, t.Scalar] = {}
             self._baggage: t.MutableStrMapping = {}
             self._request_id: str = ""
-            self._parent_context: m.Observability.ContextSnapshot | None = None
+            self._parent_context: p.Observability.ContextSnapshot | None = None
 
         def clear(self) -> p.Result[bool]:
             """Clear all request-local context.
@@ -82,7 +83,7 @@ class FlextObservabilityAdvancedContext:
                 return e.fail_operation("clear context", exc, result_type=r[bool])
 
         @property
-        def baggage(self) -> t.StrMapping:
+        def baggage(self) -> Mapping[str, str]:
             """All baggage items.
 
             Returns:
@@ -148,7 +149,7 @@ class FlextObservabilityAdvancedContext:
             except c.EXC_MAPPING_TYPE as exc:
                 return e.fail_operation("merge context", exc, result_type=r[bool])
 
-        def restore(self, snapshot: m.Observability.ContextSnapshot) -> p.Result[bool]:
+        def restore(self, snapshot: p.Observability.ContextSnapshot) -> p.Result[bool]:
             """Restore context from snapshot.
 
             Args:
@@ -223,7 +224,7 @@ class FlextObservabilityAdvancedContext:
             correlation_id: str = "",
             trace_id: str = "",
             span_id: str = "",
-        ) -> m.Observability.ContextSnapshot:
+        ) -> p.Observability.ContextSnapshot:
             """Create snapshot of current context.
 
             Args:

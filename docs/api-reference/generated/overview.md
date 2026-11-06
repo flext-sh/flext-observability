@@ -21,16 +21,16 @@
   `typed`
 - Main facades: `FlextObservability`, `FlextObservabilityCli`,
   `FlextObservabilityConfig`, `FlextObservabilityConstants`, `FlextObservabilityModels`,
-  `FlextObservabilityProtocols`, `FlextObservabilityServiceBase`,
-  `FlextObservabilitySettings` (+3 more)
+  `FlextObservabilityModelsConfig`, `FlextObservabilityProtocols`,
+  `FlextObservabilityServiceBase` (+4 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextObservability`, `FlextObservabilityCli`,
   `FlextObservabilityConfig`, `FlextObservabilityConstants`, `FlextObservabilityModels`,
-  `FlextObservabilityProtocols`, `FlextObservabilityServiceBase`,
-  `FlextObservabilitySettings`, `FlextObservabilityTypes`, `FlextObservabilityUtilities`
-  (+5 more)
-- Exported module shortcuts: `services`
-- Generated module pages: `8`
+  `FlextObservabilityModelsConfig`, `FlextObservabilityProtocols`,
+  `FlextObservabilityServiceBase`, `FlextObservabilitySettings`,
+  `FlextObservabilityTypes` (+6 more)
+- Exported module shortcuts: _none_
+- Generated module pages: `9`
 
 ## Next Pages
 

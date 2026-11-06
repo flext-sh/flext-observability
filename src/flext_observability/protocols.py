@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Observability protocols for FLEXT ecosystem.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -7,13 +8,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliProtocols
+from flext_cli import p as flext_cli_p
 
-from flext_observability._protocols.base import FlextObservabilityProtocolsBase
-from flext_observability._protocols.domains import FlextObservabilityProtocolsDomains
+from flext_observability._protocols import (
+    FlextObservabilityProtocolsBase,
+    FlextObservabilityProtocolsDomains,
+)
 
 
-class FlextObservabilityProtocols(FlextCliProtocols, FlextObservabilityProtocolsBase):
+class FlextObservabilityProtocols(flext_cli_p, FlextObservabilityProtocolsBase):
     """Unified observability protocols following FLEXT domain extension pattern.
 
     Extends p to inherit all foundation protocols (Result, Service, etc.)
@@ -48,5 +51,4 @@ class FlextObservabilityProtocols(FlextCliProtocols, FlextObservabilityProtocols
 
 
 p = FlextObservabilityProtocols
-
 __all__: list[str] = ["FlextObservabilityProtocols", "p"]

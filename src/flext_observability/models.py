@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Generic FLEXT Observability Models.
 
  Pydantic models with minimal code using composition and delegation.
@@ -10,13 +11,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliModels
+from flext_cli import m as flext_cli_m
 
-from flext_observability._models.base import FlextObservabilityModelsBase
-from flext_observability._models.domains import FlextObservabilityModelsDomains
+from flext_observability._models import (
+    FlextObservabilityModelsBase,
+    FlextObservabilityModelsDomains,
+)
 
 
-class FlextObservabilityModels(FlextCliModels, FlextObservabilityModelsBase):
+class FlextObservabilityModels(flext_cli_m, FlextObservabilityModelsBase):
     """Generic observability models with Pydantic patterns.
 
     Single class providing generic base models using composition and delegation.
@@ -28,5 +31,4 @@ class FlextObservabilityModels(FlextCliModels, FlextObservabilityModelsBase):
 
 
 m = FlextObservabilityModels
-
 __all__: list[str] = ["FlextObservabilityModels", "m"]

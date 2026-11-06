@@ -1,0 +1,27 @@
+rules:
+  - id: observability-live-context-provider
+    phase: contract-normalization
+    pattern: '${owner}.ContextStage()'
+    goal: 'u.Observability.ContextStage(context=${owner})'
+    arguments:
+      owner: name=flext_observability.api.FlextObservability
+    imports:
+      u: from flext_observability import u
+    bindings:
+      u.Observability.ContextStage: flext_observability._utilities.domains.FlextObservabilityUtilitiesDomains.ContextStage
+    ownership_transfer:
+      - flext_observability.services.logging_integration
+      - FlextObservabilityLogging.ContextStage
+  - id: observability-logging-composition-owner
+    phase: contract-normalization
+    pattern: '${owner}.compose_logging'
+    goal: 'u.Observability.compose_logging'
+    arguments:
+      owner: name=flext_observability.api.FlextObservability
+    imports:
+      u: from flext_observability import u
+    bindings:
+      u.Observability.compose_logging: flext_observability._utilities.domains.FlextObservabilityUtilitiesDomains.compose_logging
+    ownership_transfer:
+      - flext_observability.api
+      - FlextObservability.compose_logging

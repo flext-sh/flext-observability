@@ -7,8 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
 from tests import c, tm
 
 _Obs = c.Observability
@@ -18,13 +16,13 @@ class TestsFlextObservabilityConstantsUnit:
     """Public-contract behavior of the observability constants facade."""
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("member", "expected"),
         [
-            (_Obs.MetricType.COUNTER, "counter"),
-            (_Obs.MetricType.GAUGE, "gauge"),
-            (_Obs.MetricType.HISTOGRAM, "histogram"),
-            (_Obs.MetricType.SUMMARY, "summary"),
+            (_Obs.MetricType.COUNTER, c.MetricType.COUNTER),
+            (_Obs.MetricType.GAUGE, c.MetricType.GAUGE),
+            (_Obs.MetricType.HISTOGRAM, c.MetricType.HISTOGRAM),
+            (_Obs.MetricType.SUMMARY, c.MetricType.SUMMARY),
             (_Obs.AlertLevel.INFO, "info"),
             (_Obs.AlertLevel.WARNING, "warning"),
             (_Obs.AlertLevel.ERROR, "error"),
@@ -48,7 +46,7 @@ class TestsFlextObservabilityConstantsUnit:
         tm.that(member, eq=expected)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("alias", "source"),
         [
             (_Obs.ALERT_LEVEL_INFO, _Obs.AlertLevel.INFO),
@@ -77,7 +75,7 @@ class TestsFlextObservabilityConstantsUnit:
         tm.that(alias, eq=source)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "unit",
         [
             _Obs.METRIC_UNIT_COUNT,
@@ -104,7 +102,7 @@ class TestsFlextObservabilityConstantsUnit:
             tm.that(len(set(values)), eq=len(values))
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "length",
         [
             _Obs.MAX_METRIC_NAME_LENGTH,

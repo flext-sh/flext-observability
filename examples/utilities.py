@@ -6,12 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from collections.abc import MutableSequence
 
 from flext_core import FlextUtilities
-
-if TYPE_CHECKING:
-    from examples import t
 
 
 class ExamplesFlextObservabilityUtilities(FlextUtilities):
@@ -23,4 +20,4 @@ class ExamplesFlextObservabilityUtilities(FlextUtilities):
 
 u = ExamplesFlextObservabilityUtilities
 
-__all__: t.MutableSequenceOf[str] = ["ExamplesFlextObservabilityUtilities", "u"]
+__all__: MutableSequence[str] = ["ExamplesFlextObservabilityUtilities", "u"]

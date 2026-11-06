@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Sequence
 from typing import ClassVar
 
 from flext_observability import c, e, m, p, r, t, u
@@ -35,7 +35,7 @@ class FlextObservabilityCustomMetrics:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilityCustomMetrics
+        from flext_observability.services import FlextObservabilityCustomMetrics
 
         # Define custom metrics
         metrics = FlextObservabilityCustomMetrics.active_registry()
@@ -43,9 +43,9 @@ class FlextObservabilityCustomMetrics:
         # Register business metric
         metrics.register_metric(
             name="user_logins",
-            metric_type="counter",
+            metric_type=c.MetricType.COUNTER,
             description="Number of user logins",
-            unit="1",
+            unit=c.ParserBooleanToken.ONE,
         )
 
         # Use metric
@@ -72,7 +72,9 @@ class FlextObservabilityCustomMetrics:
                 str,
                 m.Observability.CustomMetricDefinition,
             ] = {}
-            self._metric_instances: t.MutableScalarMapping = dict[str, t.Scalar]()
+            self._metric_instances: MutableMapping[str, t.Scalar] = dict[
+                str, t.Scalar
+            ]()
             self._namespaces: t.MutableStrMapping = dict[str, str]()
 
         def clear_metrics(self, namespace: str | None = None) -> p.Result[bool]:
@@ -110,7 +112,7 @@ class FlextObservabilityCustomMetrics:
             )
             return r[bool].ok(value=True)
 
-        def resolve_metrics(self, namespace: str | None = None) -> m.Dict:
+        def resolve_metrics(self, namespace: str | None = None) -> p.Dict:
             """Resolve all registered metrics.
 
             Args:
@@ -133,7 +135,7 @@ class FlextObservabilityCustomMetrics:
             self,
             name: str,
             namespace: str = "default",
-        ) -> m.Observability.CustomMetricDefinition | None:
+        ) -> p.Observability.CustomMetricDefinition | None:
             """Resolve a metric definition by name.
 
             Args:
@@ -154,7 +156,7 @@ class FlextObservabilityCustomMetrics:
             self,
             name: str,
             namespace: str = "default",
-        ) -> m.Dict | None:
+        ) -> p.Dict | None:
             """Resolve detailed metric information.
 
             Args:
@@ -179,7 +181,7 @@ class FlextObservabilityCustomMetrics:
         def resolve_metrics_by_type(
             self,
             metric_type: c.Observability.MetricType,
-        ) -> m.Dict:
+        ) -> p.Dict:
             """Resolve all metrics of a specific type.
 
             Args:
@@ -195,7 +197,7 @@ class FlextObservabilityCustomMetrics:
                 if metric.metric_type == metric_type
             })
 
-        def list_metrics(self) -> t.StrSequence:
+        def list_metrics(self) -> Sequence[str]:
             """List all registered metric names.
 
             Returns:
@@ -209,7 +211,7 @@ class FlextObservabilityCustomMetrics:
             name: str,
             metric_type: str | c.Observability.MetricType,
             description: str,
-            unit: str = "1",
+            unit: str = c.ParserBooleanToken.ONE,
             namespace: str = "default",
         ) -> p.Result[bool]:
             """Register a custom metric.
@@ -218,7 +220,7 @@ class FlextObservabilityCustomMetrics:
                 name: Metric name (e.g., "user_logins")
                 metric_type: Type of metric (counter, gauge, histogram)
                 description: Metric description for documentation
-                unit: Metric unit (default "1")
+                unit: Metric unit (default c.ParserBooleanToken.ONE)
                 namespace: Namespace for metric organization
 
             Returns:
@@ -367,7 +369,7 @@ class FlextObservabilityCustomMetrics:
     def resolve_metric(
         name: str,
         namespace: str = "default",
-    ) -> m.Observability.CustomMetricDefinition | None:
+    ) -> p.Observability.CustomMetricDefinition | None:
         """Resolve a metric definition.
 
         Args:
@@ -396,7 +398,7 @@ class FlextObservabilityCustomMetrics:
         return FlextObservabilityCustomMetrics._registry_instance
 
     @staticmethod
-    def list_all_metrics() -> t.StrSequence:
+    def list_all_metrics() -> Sequence[str]:
         """List all metrics.
 
         Returns:
@@ -411,7 +413,7 @@ class FlextObservabilityCustomMetrics:
         name: str,
         metric_type: str | c.Observability.MetricType,
         description: str,
-        unit: str = "1",
+        unit: str = c.ParserBooleanToken.ONE,
         namespace: str = "default",
     ) -> p.Result[bool]:
         """Register a metric.
@@ -420,7 +422,7 @@ class FlextObservabilityCustomMetrics:
             name: Metric name
             metric_type: Metric type (counter, gauge, histogram)
             description: Metric description
-            unit: Metric unit (default "1")
+            unit: Metric unit (default c.ParserBooleanToken.ONE)
             namespace: Namespace (default "default")
 
         Returns:

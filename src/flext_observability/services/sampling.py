@@ -27,7 +27,7 @@ from collections.abc import MutableMapping
 from typing import Annotated, ClassVar
 
 from flext_observability import c, m, p, r, u
-from flext_observability.services.context import FlextObservabilityContext
+from flext_observability.services import FlextObservabilityContext
 
 
 class FlextObservabilitySampling:
@@ -38,7 +38,7 @@ class FlextObservabilitySampling:
 
     Usage:
         ```python
-        from flext_observability import FlextObservabilitySampling
+        from flext_observability.services import FlextObservabilitySampling
 
         # Configure sampling
         sampler = FlextObservabilitySampling.active_sampler()
@@ -69,7 +69,7 @@ class FlextObservabilitySampling:
         """Sampling decision engine."""
 
         RATE_ADAPTER: ClassVar[
-            m.TypeAdapter[Annotated[float, m.Field(ge=0.0, le=1.0)]]
+            u.type_adapter[Annotated[float, m.Field(ge=0.0, le=1.0)]]
         ] = u.type_adapter(Annotated[float, m.Field(ge=0.0, le=1.0)])
 
         def __init__(self) -> None:
@@ -245,7 +245,7 @@ class FlextObservabilitySampling:
             """
             return self._update_named_rate(
                 self._operation_overrides,
-                scope_name="operation",
+                scope_name=c.ContextScope.OPERATION,
                 scope_value=operation,
                 rate=rate,
             )

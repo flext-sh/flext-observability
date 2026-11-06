@@ -128,20 +128,29 @@ All tests validate r patterns:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def test_metric_creation_success():
     """Test successful metric creation with r validation."""
-    result = flext_create_metric("api_requests", 42.0, "count")
+    result = flext_create_metric("api_requests", 42.0, c.Aggregation.COUNT)
 
-    assert result.success
-    assert result.data.name == "api_requests"
-    assert result.data.value == 42.0
+    tm.ok(result.success)
+    tm.that(result.data.name, eq="api_requests")
+    tm.that(result.data.value, eq=42.0)
     assert result.error is None
 
 
 def test_metric_creation_failure():
     """Test metric creation failure with error handling."""
-    result = flext_create_metric("", 42.0, "count")  # Invalid name
+    result = flext_create_metric("", 42.0, c.Aggregation.COUNT)  # Invalid name
 
     assert result.is_failure
     assert result.data is None
@@ -153,6 +162,15 @@ def test_metric_creation_failure():
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def test_metric_domain_validation():
     """Test domain rule validation for metrics."""
@@ -161,14 +179,23 @@ def test_metric_domain_validation():
     validation_result = metric.validate_business_rules()
 
     assert validation_result.success
-    assert metric.name == "cpu_usage"
-    assert metric.value == 75.5
+    tm.that(metric.name, eq="cpu_usage")
+    tm.that(metric.value, eq=75.5)
 ```
 
 ### Service Integration Testing
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 def test_metrics_service_integration(metrics_service, observability_factory):
@@ -180,13 +207,22 @@ def test_metrics_service_integration(metrics_service, observability_factory):
     # Record via service
     record_result = metrics_service.record_metric(metric_result.data)
     assert record_result.success
-    assert record_result.data.name == "test_metric"
+    tm.that(record_result.data.name, eq="test_metric")
 ```
 
 ### Monitoring Decorator Testing
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 def test_monitoring_decorator_functionality():
@@ -197,7 +233,7 @@ def test_monitoring_decorator_functionality():
         return x + y
 
     result = monitored_function(5, 3)
-    assert result == 8
+    tm.that(result, eq=8)
     # Monitoring data validated separately
 ```
 

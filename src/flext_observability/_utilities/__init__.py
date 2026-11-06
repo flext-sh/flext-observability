@@ -7,22 +7,28 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from types import MappingProxyType
 from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
+    from flext_observability._utilities.base import FlextObservabilityUtilitiesBase
     from flext_observability._utilities.domains import (
         FlextObservabilityUtilitiesDomains,
     )
 
 
-__all__: tuple[str, ...] = ("FlextObservabilityUtilitiesDomains",)
+__all__: tuple[str, ...] = (
+    "FlextObservabilityUtilitiesBase",
+    "FlextObservabilityUtilitiesDomains",
+)
 
 install_lazy_exports(
     __name__,
     globals(),
-    MappingProxyType({"FlextObservabilityUtilitiesDomains": ".domains"}),
+    {
+        "FlextObservabilityUtilitiesBase": ".base",
+        "FlextObservabilityUtilitiesDomains": ".domains",
+    },
     public_exports=__all__,
 )

@@ -6,6 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import asyncio
+import io
+
 from flext_tests import FlextTestsTypes
 
 from flext_observability import FlextObservabilityTypes
@@ -13,6 +16,9 @@ from flext_observability import FlextObservabilityTypes
 
 class TestsFlextObservabilityTypes(FlextTestsTypes, FlextObservabilityTypes):
     """Test types for flext-observability."""
+
+    type LoggingStreams = tuple[io.StringIO, io.StringIO]
+    type LoggingBarrier = asyncio.Event
 
     class TestsFlextObservability(
         FlextTestsTypes.Tests,

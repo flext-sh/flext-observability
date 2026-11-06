@@ -150,6 +150,15 @@
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # CURRENT: BROKEN - T not exported from flext-core
 
 # SHOULD BE: Fixed in flext-core __init__.py

@@ -6,6 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import MutableSequence
+
 from flext_core import FlextTypes
 
 
@@ -18,4 +20,4 @@ class ExamplesFlextObservabilityTypes(FlextTypes):
 
 t = ExamplesFlextObservabilityTypes
 
-__all__: t.MutableSequenceOf[str] = ["ExamplesFlextObservabilityTypes", "t"]
+__all__: MutableSequence[str] = ["ExamplesFlextObservabilityTypes", "t"]

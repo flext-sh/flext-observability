@@ -58,6 +58,15 @@ e2e/
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def test_complete_observability_workflow():
     """Test complete observability workflow from creation to export."""
@@ -66,7 +75,7 @@ def test_complete_observability_workflow():
     platform = FlextObservabilityPlatformV2()
 
     # 2. Create observability data
-    metric_result = platform.metric("api_requests", 1, "count")
+    metric_result = platform.metric("api_requests", 1, c.Aggregation.COUNT)
     trace_result = platform.trace("user_workflow", "web-service")
     alert_result = platform.alert("high_cpu", "warning", "CPU usage high")
 
@@ -87,6 +96,15 @@ def test_complete_observability_workflow():
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def test_production_monitoring_scenario():
     """Test production-like monitoring scenario."""
@@ -94,7 +112,7 @@ def test_production_monitoring_scenario():
     # Simulate production load
     for i in range(100):
         # Create various metrics as they would appear in production
-        api_metric = flext_create_metric(f"api_request_{i}", 1, "count")
+        api_metric = flext_create_metric(f"api_request_{i}", 1, c.Aggregation.COUNT)
         response_time = flext_create_metric(
             "response_time", random.uniform(50, 500), "ms"
         )
@@ -110,6 +128,15 @@ def test_production_monitoring_scenario():
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 def test_factory_service_monitor_integration():
@@ -134,7 +161,7 @@ def test_factory_service_monitor_integration():
     # 4. Validate end-to-end data flow
     assert metric_result.success
     assert record_result.success
-    assert function_result == "monitored_result"
+    tm.that(function_result, eq="monitored_result")
 ```
 
 ## Test Environment Setup
@@ -211,16 +238,25 @@ pytest tests/e2e/ -v --benchmark-only
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def test_performance_under_load(benchmark):
     """Benchmark observability performance under load."""
 
     def create_observability_data():
         factory = FlextObservabilityMasterFactory()
-        return factory.create_metric("perf_test", 1.0, "count")
+        return factory.create_metric("perf_test", 1.0, c.Aggregation.COUNT)
 
     result = benchmark(create_observability_data)
-    assert result.success
+    tm.ok(result.success)
 ```
 
 ## Current Status

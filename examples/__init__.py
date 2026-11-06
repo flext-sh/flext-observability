@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from types import MappingProxyType
 from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
@@ -20,6 +19,7 @@ if TYPE_CHECKING:
     from examples.protocols import ExamplesFlextObservabilityProtocols, p
     from examples.typings import ExamplesFlextObservabilityTypes, t
     from examples.utilities import ExamplesFlextObservabilityUtilities, u
+    from flext_observability import config, main, observability, settings
 
 
 __all__: tuple[str, ...] = (
@@ -29,13 +29,17 @@ __all__: tuple[str, ...] = (
     "ExamplesFlextObservabilityTypes",
     "ExamplesFlextObservabilityUtilities",
     "c",
+    "config",
     "d",
     "e",
     "h",
     "m",
+    "main",
+    "observability",
     "p",
     "r",
     "s",
+    "settings",
     "t",
     "u",
     "x",
@@ -44,23 +48,27 @@ __all__: tuple[str, ...] = (
 install_lazy_exports(
     __name__,
     globals(),
-    MappingProxyType({
+    {
         "ExamplesFlextObservabilityConstants": ".constants",
         "ExamplesFlextObservabilityModels": ".models",
         "ExamplesFlextObservabilityProtocols": ".protocols",
         "ExamplesFlextObservabilityTypes": ".typings",
         "ExamplesFlextObservabilityUtilities": ".utilities",
         "c": ".constants",
+        "config": "flext_observability",
         "d": "flext_core",
         "e": "flext_core",
         "h": "flext_core",
         "m": ".models",
+        "main": "flext_observability",
+        "observability": "flext_observability",
         "p": ".protocols",
         "r": "flext_core",
         "s": "flext_core",
+        "settings": "flext_observability",
         "t": ".typings",
         "u": ".utilities",
         "x": "flext_core",
-    }),
+    },
     public_exports=__all__,
 )

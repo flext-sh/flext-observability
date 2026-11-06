@@ -7,14 +7,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import ClassVar, override
 from uuid import uuid4
 
 from flext_core import FlextContainer
 
 from flext_observability import c, m, p, r, settings, t, u
-from flext_observability.services.service import FlextObservabilityServices
+from flext_observability.services import FlextObservabilityServices
 
 
 class FlextObservabilityMonitor:
@@ -58,7 +58,7 @@ class FlextObservabilityMonitor:
         @staticmethod
         def execute_monitored_function(
             func: FlextObservabilityMonitor.object_callable,
-            args: t.VariadicTuple[t.Scalar],
+            args: tuple[t.Scalar, ...],
             kwargs: t.ConfigurationMapping | m.Dict,
             monitor: FlextObservabilityMonitor,
             metric_name: str | None,
@@ -229,23 +229,23 @@ class FlextObservabilityMonitor:
                 e,
             )
 
-    def flext_metrics_summary(self) -> p.Result[m.Dict]:
+    def flext_metrics_summary(self) -> p.Result[p.Dict]:
         """Resolve complete metrics summary.
 
         Returns:
-            The resulting ``p.Result[m.Dict]``.
+            The resulting ``p.Result[p.Dict]``.
 
         """
         if not self._metrics_service:
-            return r[m.Dict].fail_op(
+            return r[p.Dict].fail_op(
                 "resolve metrics summary",
                 "Metrics service not available",
             )
         result = self._metrics_service.metrics_summary()
         return (
-            r[m.Dict].ok(result.value)
+            r[p.Dict].ok(result.value)
             if result.success
-            else r[m.Dict].fail_op(
+            else r[p.Dict].fail_op(
                 "resolve metrics summary",
                 result.error or "Metrics summary failed",
             )
@@ -364,15 +364,15 @@ class FlextObservabilityMonitor:
         name: str,
         value: float,
         metric_type: str,
-    ) -> p.Result[m.Observability.MetricEntry]:
+    ) -> p.Result[p.Observability.MetricEntry]:
         """Build a monitoring metric entry.
 
         Returns:
-            The resulting ``p.Result[m.Observability.MetricEntry]``.
+            The resulting ``p.Result[p.Observability.MetricEntry]``.
 
         """
         try:
-            return r[m.Observability.MetricEntry].ok(
+            return r[p.Observability.MetricEntry].ok(
                 m.Observability.MetricEntry(
                     metric_id=str(uuid4()),
                     name=name,
@@ -383,7 +383,7 @@ class FlextObservabilityMonitor:
                 ),
             )
         except c.EXC_MAPPING_TYPE as e:
-            return r[m.Observability.MetricEntry].fail_op("build metric entry", e)
+            return r[p.Observability.MetricEntry].fail_op("build metric entry", e)
 
     def flext_start_monitoring(self) -> p.Result[bool]:
         """Start real observability monitoring with service coordination.
@@ -523,4 +523,4 @@ class FlextObservabilityMonitor:
             return decorator
 
 
-__all__: t.StrSequence = ("FlextObservabilityMonitor",)
+__all__: Sequence[str] = ("FlextObservabilityMonitor",)

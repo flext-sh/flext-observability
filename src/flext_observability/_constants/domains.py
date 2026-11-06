@@ -9,6 +9,8 @@ from __future__ import annotations
 from enum import StrEnum, unique
 from typing import ClassVar, Final
 
+from flext_cli import c
+
 
 class FlextObservabilityConstantsDomains:
     """Observability domain constants namespace.
@@ -25,7 +27,7 @@ class FlextObservabilityConstantsDomains:
     DEFAULT_ALERTS_ENABLED: Final[bool] = True
     HTTP_ERROR_STATUS_THRESHOLD: ClassVar[int] = 400
     METRIC_VALID_UNITS: ClassVar[frozenset[str]] = frozenset({
-        "count",
+        c.Aggregation.COUNT,
         "percent",
         "bytes",
         "seconds",
@@ -46,10 +48,10 @@ class FlextObservabilityConstantsDomains:
             or MetricType.COUNTER directly - no base strings needed.
         """
 
-        COUNTER = "counter"
-        GAUGE = "gauge"
-        HISTOGRAM = "histogram"
-        SUMMARY = "summary"
+        COUNTER = c.MetricType.COUNTER
+        GAUGE = c.MetricType.GAUGE
+        HISTOGRAM = c.MetricType.HISTOGRAM
+        SUMMARY = c.MetricType.SUMMARY
 
     @unique
     class AlertLevel(StrEnum):
@@ -161,7 +163,7 @@ class FlextObservabilityConstantsDomains:
         ERROR = "error"
         CRITICAL = "critical"
 
-    METRIC_UNIT_COUNT: ClassVar[str] = "count"
+    METRIC_UNIT_COUNT: ClassVar[str] = c.Aggregation.COUNT
     METRIC_UNIT_PERCENT: ClassVar[str] = "percent"
     METRIC_UNIT_BYTES: ClassVar[str] = "bytes"
     METRIC_UNIT_SECONDS: ClassVar[str] = "seconds"
