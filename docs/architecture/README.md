@@ -78,7 +78,7 @@ FLEXT Observability implements Clean Architecture with Domain-Driven Design (DDD
 patterns, serving as the foundational observability library for all 33 projects in the
 FLEXT ecosystem. This document outlines the architectural decisions,
 
-```
+```text
  layer responsibilities,
  and integration patterns that enable consistent monitoring across the entire data i ...
 ```
@@ -90,7 +90,7 @@ FLEXT ecosystem. This document outlines the architectural decisions,
 FLEXT Observability follows Uncle Bob's Clean Architecture with distinct, decoupled
 layers:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    EXTERNAL INTERFACES                     │
 │  Future: Prometheus | Grafana | Jaeger | OpenTelemetry     │
@@ -124,7 +124,7 @@ The observability domain is organized around core business concepts:
 
 ### Source Code Organization
 
-```
+```text
 src/flext_observability/
 ├── entities.py              # Domain Entities & Value Objects
 ├── services.py              # Application Services Layer
@@ -197,7 +197,7 @@ src/flext_observability/
 
 ### Request Processing Flow
 
-```
+```text
 External Request
        ↓
 Simple API / Decorators
@@ -215,7 +215,7 @@ r[T] Response
 
 ### Error Handling Flow
 
-```
+```text
 Domain Validation Error
        ↓
 r[bool].fail()
@@ -290,7 +290,7 @@ def process_api_request(_request_data):
 
 FLEXT Observability maintains minimal external dependencies:
 
-```
+```text
 flext-observability
 ├── flext-core (foundation patterns)
 ├── pydantic (domain validation)

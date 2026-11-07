@@ -35,7 +35,7 @@ This directory is designated for integration tests that:
 
 ### Planned Structure
 
-```
+```text
 integration/
 ├── README.md                        # This file
 ├── test_service_integration.py      # Service layer integration tests

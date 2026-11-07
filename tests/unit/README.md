@@ -29,7 +29,7 @@ This directory is designated for unit tests that:
 
 ### Planned Structure
 
-```
+```text
 unit/
 ├── README.md                    # This file
 ├── test_entities_unit.py        # Domain entity unit tests
