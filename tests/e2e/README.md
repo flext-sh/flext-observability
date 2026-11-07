@@ -39,7 +39,7 @@ This directory is designated for end-to-end (E2E) tests that:
 
 ### Planned Structure
 
-```
+```text
 e2e/
 ├── README.md                         # This file
 ├── test_observability_workflows.py  # Complete observability workflows

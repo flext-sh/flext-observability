@@ -43,7 +43,7 @@ FLEXT ecosystem standards with railway-oriented programming patterns and r valid
 
 ### Test Structure
 
-```
+```text
 tests/
 ├── unit/                    # Unit tests (currently empty - tests in root)
 ├── integration/             # Integration tests (currently empty - tests in root)

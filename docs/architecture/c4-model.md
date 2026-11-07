@@ -91,7 +91,7 @@ entire FLEXT ecosystem, providing consistent observability patterns across 33+ p
 
 ### Context Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                           FLEXT Ecosystem                               │
 │                                                                         │
@@ -154,7 +154,7 @@ entire FLEXT ecosystem, providing consistent observability patterns across 33+ p
 
 ### Container Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                      FLEXT Observability System                          │
 │                                                                         │
@@ -257,7 +257,7 @@ entire FLEXT ecosystem, providing consistent observability patterns across 33+ p
 
 ### Component Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                   FLEXT Observability Components                        │
 │                                                                         │
@@ -338,7 +338,7 @@ entire FLEXT ecosystem, providing consistent observability patterns across 33+ p
 
 ### Code Package Structure
 
-```
+```text
 src/flext_observability/
 ├── __init__.py                 # Public API exports (58 items)
 ├── __version__.py              # Version metadata
@@ -477,7 +477,7 @@ class FlextObservabilityMasterFactory:
 
 ### Observability Data Flow
 
-```
+```text
 User Request
      ↓
 Simple API / Decorators
@@ -493,7 +493,7 @@ External Monitoring Systems
 
 ### Error Handling Flow
 
-```
+```text
 Domain Validation Failure
      ↓
 r[T].fail(error_message)

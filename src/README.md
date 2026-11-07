@@ -35,7 +35,7 @@ Complete observability implementation with layered architecture:
 
 ## Architecture Overview
 
-```
+```text
 src/flext_observability/
 ├── entities.py              # Domain entities (FlextMetric, FlextTrace, etc.)
 ├── services.py              # Application services (business logic)

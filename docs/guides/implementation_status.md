@@ -304,6 +304,6 @@ use once import compatibility is resolved.
 **FLEXT-Observability v0.9.0** - Comprehensive observability foundation with complete
 architecture and extensive test suite,
 
-```
+```text
  currently blocked by import compatibility issues.
 ```
