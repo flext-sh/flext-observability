@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from collections.abc import MutableSequence
 
-from flext_core import FlextConstants
+from flext_observability import FlextObservabilityConstants
 
 
-class ExamplesFlextObservabilityConstants(FlextConstants):
+class ExamplesFlextObservabilityConstants(FlextObservabilityConstants):
     """Public examples constants facade — inherits canonical c."""
 
     class ExamplesFlextObservability:
