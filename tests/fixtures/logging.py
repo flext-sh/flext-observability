@@ -54,8 +54,9 @@ class TestsObservabilityLoggingFixtures:
             yield structured, console
 
     @pytest.fixture
+    @staticmethod
     def logging_runtime(
-        self: t.LoggingStreams,
+        logging_streams: t.LoggingStreams,
     ) -> Iterator[p.StructlogOptions]:
         """Restore the captured provider/options/context, never fixed defaults.
 
@@ -70,7 +71,7 @@ class TestsObservabilityLoggingFixtures:
             FlextObservability.trace_id(),
             FlextObservability.span_id(),
         )
-        structured, console = self
+        structured, console = logging_streams
         options = m.StructlogOptions(
             handlers=(
                 u.create_logging_handler(stream=structured),
