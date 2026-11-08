@@ -42,7 +42,6 @@ class TestsObservabilityLoggingFixtures:
             self.records.append(event)
 
     @pytest.fixture
-    @staticmethod
     def logging_streams() -> Iterator[t.LoggingStreams]:
         """Keep real output streams alive until the composition is restored.
 
