@@ -16,7 +16,7 @@ from uuid import uuid4
 
 from flext_cli import m
 
-from flext_observability import c, p, t
+from flext_observability import c, t
 
 
 class FlextObservabilityModelsDomains:
@@ -297,8 +297,7 @@ class FlextObservabilityModelsDomains:
             m.Field(description="Serialized baggage string"),
         ] = None
         extra: Annotated[
-            p.Dict,
-            t.schema_for_model(m.Dict),
+            m.Dict,
             m.Field(description="Additional context data"),
         ] = m.Field(default_factory=lambda: m.Dict({}))
 
