@@ -175,7 +175,7 @@ class FlextObservabilityCustomMetrics:
                 "type": metric.metric_type.value,
                 "description": metric.description,
                 "unit": metric.unit,
-                "labels": metric.labels,
+                "labels": dict(metric.labels),
             })
 
         def resolve_metrics_by_type(
