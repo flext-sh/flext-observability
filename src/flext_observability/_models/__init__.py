@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import install_lazy_exports
+from flext_core.lazy import defer_lazy_bases, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_observability._models.base import FlextObservabilityModelsBase
@@ -29,4 +29,37 @@ install_lazy_exports(
         "FlextObservabilityModelsDomains": ".domains",
     },
     public_exports=__all__,
+    deferred_members={
+        "FlextObservabilityModelsBase": (),
+        "FlextObservabilityModelsDomains": (
+            "MetricEntry",
+            "_EntityWithId",
+            "Metric",
+            "Trace",
+            "Alert",
+            "HealthCheck",
+            "LogEntry",
+            "StartTimePayload",
+            "HeadersPayload",
+            "ContextSnapshot",
+            "BaggageKeyModel",
+            "MetricTypeInput",
+            "CustomMetricDefinition",
+            "CooldownInput",
+            "ThresholdInput",
+            "ErrorHandlingState",
+            "ErrorEvent",
+            "LogContext",
+            "PerformanceMetrics",
+        ),
+    },
+)
+
+defer_lazy_bases(
+    __name__,
+    {
+        "FlextObservabilityModelsBase": (
+            ("flext_observability", "FlextObservabilityModelsConfig"),
+        ),
+    },
 )
