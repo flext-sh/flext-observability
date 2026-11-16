@@ -170,9 +170,7 @@ class FlextObservabilityCustomMetrics:
             metric = self.resolve_metric(name, namespace)
             if not metric:
                 return None
-            labels: t.JsonValue = u.json_value_adapter().validate_python(
-                metric.labels,
-            )
+            u.json_value_adapter().validate_python(metric.labels)
             return m.Dict({
                 "name": metric.name,
                 "type": metric.metric_type.value,
