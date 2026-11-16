@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Final
+from typing import ClassVar
 
 from flext_cli import c
 
@@ -18,9 +18,9 @@ class FlextObservabilityConstantsBase:
     class Observability:
         """Observability domain constants owned by ``_constants``."""
 
-        DEFAULT_SERVICE_NAME: Final[str] = "flext-service"
-        DEFAULT_LOG_LEVEL: Final[str] = "INFO"
-        DEFAULT_METRIC_UNIT: Final[str] = c.ParserBooleanToken.ONE
+        DEFAULT_SERVICE_NAME: ClassVar[str] = "flext-service"
+        DEFAULT_LOG_LEVEL: ClassVar[str] = "INFO"
+        DEFAULT_METRIC_UNIT: ClassVar[str] = c.ParserBooleanToken.ONE
 
 
 __all__: list[str] = ["FlextObservabilityConstantsBase"]

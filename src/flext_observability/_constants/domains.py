@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import StrEnum, unique
-from typing import ClassVar, Final
+from typing import ClassVar
 
 from flext_cli import c
 
@@ -19,12 +19,12 @@ class FlextObservabilityConstantsDomains:
     constants without redeclaring the base surface.
     """
 
-    DEFAULT_SETTINGS_SERVICE_NAME: Final[str] = "flext-observability"
-    DEFAULT_ENVIRONMENT: Final[str] = "development"
-    DEFAULT_FLUSH_INTERVAL: Final[int] = 30
-    DEFAULT_METRICS_ENABLED: Final[bool] = True
-    DEFAULT_TRACES_ENABLED: Final[bool] = True
-    DEFAULT_ALERTS_ENABLED: Final[bool] = True
+    DEFAULT_SETTINGS_SERVICE_NAME: ClassVar[str] = "flext-observability"
+    DEFAULT_ENVIRONMENT: ClassVar[str] = "development"
+    DEFAULT_FLUSH_INTERVAL: ClassVar[int] = 30
+    DEFAULT_METRICS_ENABLED: ClassVar[bool] = True
+    DEFAULT_TRACES_ENABLED: ClassVar[bool] = True
+    DEFAULT_ALERTS_ENABLED: ClassVar[bool] = True
     HTTP_ERROR_STATUS_THRESHOLD: ClassVar[int] = 400
     METRIC_VALID_UNITS: ClassVar[frozenset[str]] = frozenset({
         c.Aggregation.COUNT,
