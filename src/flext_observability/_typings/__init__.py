@@ -29,4 +29,11 @@ install_lazy_exports(
         "FlextObservabilityTypingsDomains": ".domains",
     },
     public_exports=__all__,
+    deferred_members={
+        "FlextObservabilityTypingsDomains": (
+            "DomainLabels",
+            "HealthMetricsDict",
+            "ErrorSeverity",
+        ),
+    },
 )

@@ -31,4 +31,13 @@ install_lazy_exports(
         "FlextObservabilityUtilitiesDomains": ".domains",
     },
     public_exports=__all__,
+    deferred_members={
+        "FlextObservabilityUtilitiesDomains": (
+            "ContextStage",
+            "ErrorObserver",
+            "compose_logging",
+            "Performance",
+            "Sampling",
+        ),
+    },
 )
