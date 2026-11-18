@@ -29,4 +29,8 @@ install_lazy_exports(
         "FlextObservabilityModelsDomains": ".domains",
     },
     public_exports=__all__,
+    deferred_members=(
+        "FlextObservabilityModelsBase",
+        "FlextObservabilityModelsDomains",
+    ),
 )
