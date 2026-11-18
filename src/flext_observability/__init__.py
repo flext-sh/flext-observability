@@ -116,6 +116,7 @@ install_lazy_exports(
         "x": "flext_cli",
     },
     public_exports=__all__,
+    deferred_members=("FlextObservabilityModelsConfig",),
 )
 
 if not TYPE_CHECKING:

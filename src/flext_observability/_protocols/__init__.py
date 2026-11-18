@@ -31,4 +31,5 @@ install_lazy_exports(
         "FlextObservabilityProtocolsDomains": ".domains",
     },
     public_exports=__all__,
+    deferred_members=("FlextObservabilityProtocolsDomains",),
 )
