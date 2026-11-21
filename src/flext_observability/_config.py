@@ -18,7 +18,7 @@ from flext_cli import FlextCliConfig
 from flext_core import FlextSettings
 from pydantic import Field
 
-from flext_observability.config_models import FlextObservabilityModelsConfig
+from flext_observability import FlextObservabilityModelsConfig
 
 
 class FlextObservabilityConfig(FlextSettings, FlextCliConfig):
