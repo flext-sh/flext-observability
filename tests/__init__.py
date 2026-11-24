@@ -12,13 +12,6 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from examples import (
-        ExamplesFlextObservabilityConstants,
-        ExamplesFlextObservabilityModels,
-        ExamplesFlextObservabilityProtocols,
-        ExamplesFlextObservabilityTypes,
-        ExamplesFlextObservabilityUtilities,
-    )
     from flext_tests import api, d, e, h, r, td, tf, tk, tm, x
 
     from flext_observability import (
@@ -39,6 +32,20 @@ if TYPE_CHECKING:
         observability,
         settings,
     )
+    from flext_observability.services import (
+        FlextObservabilityAdvancedContext,
+        FlextObservabilityContext,
+        FlextObservabilityCustomMetrics,
+        FlextObservabilityErrorHandling,
+        FlextObservabilityHealth,
+        FlextObservabilityHTTP,
+        FlextObservabilityHTTPClient,
+        FlextObservabilityLogging,
+        FlextObservabilityMonitor,
+        FlextObservabilityPerformance,
+        FlextObservabilitySampling,
+        FlextObservabilityServices,
+    )
     from tests.base import TestsFlextObservabilityServiceBase, s
     from tests.constants import TestsFlextObservabilityConstants, c
     from tests.models import TestsFlextObservabilityModels, m
@@ -49,19 +56,26 @@ if TYPE_CHECKING:
 
 
 __all__: tuple[str, ...] = (
-    "ExamplesFlextObservabilityConstants",
-    "ExamplesFlextObservabilityModels",
-    "ExamplesFlextObservabilityProtocols",
-    "ExamplesFlextObservabilityTypes",
-    "ExamplesFlextObservabilityUtilities",
     "FlextObservability",
+    "FlextObservabilityAdvancedContext",
     "FlextObservabilityCli",
     "FlextObservabilityConfig",
     "FlextObservabilityConstants",
+    "FlextObservabilityContext",
+    "FlextObservabilityCustomMetrics",
+    "FlextObservabilityErrorHandling",
+    "FlextObservabilityHTTP",
+    "FlextObservabilityHTTPClient",
+    "FlextObservabilityHealth",
+    "FlextObservabilityLogging",
     "FlextObservabilityModels",
     "FlextObservabilityModelsConfig",
+    "FlextObservabilityMonitor",
+    "FlextObservabilityPerformance",
     "FlextObservabilityProtocols",
+    "FlextObservabilitySampling",
     "FlextObservabilityServiceBase",
+    "FlextObservabilityServices",
     "FlextObservabilitySettings",
     "FlextObservabilityTypes",
     "FlextObservabilityUtilities",
@@ -99,19 +113,26 @@ install_lazy_exports(
     __name__,
     globals(),
     {
-        "ExamplesFlextObservabilityConstants": "examples",
-        "ExamplesFlextObservabilityModels": "examples",
-        "ExamplesFlextObservabilityProtocols": "examples",
-        "ExamplesFlextObservabilityTypes": "examples",
-        "ExamplesFlextObservabilityUtilities": "examples",
         "FlextObservability": "flext_observability",
+        "FlextObservabilityAdvancedContext": "flext_observability.services",
         "FlextObservabilityCli": "flext_observability",
         "FlextObservabilityConfig": "flext_observability",
         "FlextObservabilityConstants": "flext_observability",
+        "FlextObservabilityContext": "flext_observability.services",
+        "FlextObservabilityCustomMetrics": "flext_observability.services",
+        "FlextObservabilityErrorHandling": "flext_observability.services",
+        "FlextObservabilityHTTP": "flext_observability.services",
+        "FlextObservabilityHTTPClient": "flext_observability.services",
+        "FlextObservabilityHealth": "flext_observability.services",
+        "FlextObservabilityLogging": "flext_observability.services",
         "FlextObservabilityModels": "flext_observability",
         "FlextObservabilityModelsConfig": "flext_observability",
+        "FlextObservabilityMonitor": "flext_observability.services",
+        "FlextObservabilityPerformance": "flext_observability.services",
         "FlextObservabilityProtocols": "flext_observability",
+        "FlextObservabilitySampling": "flext_observability.services",
         "FlextObservabilityServiceBase": "flext_observability",
+        "FlextObservabilityServices": "flext_observability.services",
         "FlextObservabilitySettings": "flext_observability",
         "FlextObservabilityTypes": "flext_observability",
         "FlextObservabilityUtilities": "flext_observability",

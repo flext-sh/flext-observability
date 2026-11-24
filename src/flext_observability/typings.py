@@ -16,7 +16,7 @@ from flext_observability._typings import (
 )
 
 
-class FlextObservabilityTypes(FlextCliTypes, FlextObservabilityTypingsBase):
+class FlextObservabilityTypes(FlextCliTypes):
     """Observability-specific type definitions extending t via MRO."""
 
     class Observability(

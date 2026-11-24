@@ -13,13 +13,10 @@ from __future__ import annotations
 
 from flext_cli import FlextCliUtilities
 
-from flext_observability._utilities import (
-    FlextObservabilityUtilitiesBase,
-    FlextObservabilityUtilitiesDomains,
-)
+from flext_observability._utilities import FlextObservabilityUtilitiesDomains
 
 
-class FlextObservabilityUtilities(FlextCliUtilities, FlextObservabilityUtilitiesBase):
+class FlextObservabilityUtilities(FlextCliUtilities):
     """Centralized utilities for FLEXT Observability.
 
     Inherits CLI FLEXT utilities, providing additional namespace classes
