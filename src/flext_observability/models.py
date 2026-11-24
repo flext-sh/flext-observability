@@ -19,7 +19,7 @@ from flext_observability._models import (
 )
 
 
-class FlextObservabilityModels(FlextCliModels, FlextObservabilityModelsBase):
+class FlextObservabilityModels(FlextCliModels):
     """Generic observability models with Pydantic patterns.
 
     Single class providing generic base models using composition and delegation.

@@ -16,7 +16,7 @@ from flext_observability._protocols import (
 )
 
 
-class FlextObservabilityProtocols(FlextCliProtocols, FlextObservabilityProtocolsBase):
+class FlextObservabilityProtocols(FlextCliProtocols):
     """Unified observability protocols following FLEXT domain extension pattern.
 
     Extends p to inherit all foundation protocols (Result, Service, etc.)
