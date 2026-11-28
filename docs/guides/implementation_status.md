@@ -193,7 +193,7 @@ exported in flext-core's `__init__.py`.
 
 ```bash
 make check    # Lint, typing, security, and structural gates
-make test     # Runtime and behavioral suites
+make tests    # Runtime and behavioral suites
 ```
 
 **Expected Results**:
