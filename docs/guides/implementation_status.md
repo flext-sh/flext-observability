@@ -1,4 +1,21 @@
-# Implementation Status - FLEXT Observability v0.9.0
+# Implementation Status - FLEXT Observability
+
+**Validation snapshot — 2026-11-28**
+
+[CI 46149600018](https://github.com/flext-sh/flext-observability/actions/runs/46149600018)
+succeeded for commit `84239888e0fa7a3d0832ce85fd79c8cf4855ac58`. Its receipt
+covers `make setup`, the primary check phase, and the native `make tests` run.
+The complete qualification step was skipped, and Docs has not run on that head.
+These receipts do not establish complete documentation or production acceptance.
+
+The analysis below records the 2026-04-14 baseline. Its import failures, module
+counts, test counts, completion percentages, and release plans retain that
+historical context. This snapshot does not close those earlier findings or compare
+their scope with the current CI run.
+
+**Revision**: 1.1 · 2026-11-28 · Marlon Costa <marlon.costa@datacosmos.com.br>.
+
+## Table of Contents
 
 <!-- TOC START -->
 
@@ -30,43 +47,7 @@
 
 <!-- TOC END -->
 
-## Table of Contents
-
-- [Implementation Status - FLEXT Observability v0.9.0](#implementation-status---flext-observability-v090)
-  - [Table of Contents](#table-of-contents)
-  - [📊 Overall Project Status](#-overall-project-status)
-    - [**Architecture Completion**: 100% ✅](#architecture-completion-100-)
-    - [**Implementation Completion**: 100% ✅](#implementation-completion-100-)
-    - [**Quality Validation**: 0% ❌ (BLOCKED)](#quality-validation-0--blocked)
-  - [🔧 Current Implementation Details](#-current-implementation-details)
-    - [**Core Architecture** ✅](#core-architecture-)
-      - [Domain Layer (Entities \& Business Logic)](#domain-layer-entities--business-logic)
-      - [Application Layer (Services \& Use Cases)](#application-layer-services--use-cases)
-      - [Interface Layer (APIs \& External Integration)](#interface-layer-apis--external-integration)
-    - [**Test Suite** ✅ (READY BUT BLOCKED)](#test-suite--ready-but-blocked)
-      - [Test Coverage \& Quality](#test-coverage--quality)
-      - [Test Organization](#test-organization)
-    - [**Quality Gates** ❌ (BLOCKED)](#quality-gates--blocked)
-      - [**Import Compatibility Issue**](#import-compatibility-issue)
-      - [**Test Execution Status**](#test-execution-status)
-  - [🚧 Critical Path Resolution](#-critical-path-resolution)
-    - [**Phase 1: Fix Import Compatibility** (CRITICAL - BLOCKING)](#phase-1-fix-import-compatibility-critical---blocking)
-    - [**Phase 2: Quality Validation** (AFTER IMPORT FIX)](#phase-2-quality-validation-after-import-fix)
-    - [**Phase 3: Production Readiness** (AFTER QUALITY VALIDATION)](#phase-3-production-readiness-after-quality-validation)
-  - [📈 Progress Metrics](#-progress-metrics)
-    - [**Quantitative Metrics**](#quantitative-metrics)
-    - [**Qualitative Metrics**](#qualitative-metrics)
-  - [🎯 Next Steps Priority Order](#-next-steps-priority-order)
-    - [**IMMEDIATE (Critical Path)**](#immediate-critical-path)
-    - [**SHORT TERM (Post-Import Fix)**](#short-term-post-import-fix)
-    - [**MEDIUM TERM (v1.0.0 Release)**](#medium-term-v100-release)
-  - [🔍 Implementation Notes](#-implementation-notes)
-    - [**Architecture Strengths**](#architecture-strengths)
-    - [**Implementation Decisions**](#implementation-decisions)
-    - [**Current Blockers**](#current-blockers)
-  - [📋 Status Summary](#-status-summary)
-
-**Current Status**: Architecture Complete, Quality Validation Blocked **Last Updated**:
+**Historical status (2026-04-14)**: Architecture Complete, Quality Validation Blocked **Last Updated**:
 2026-04-14 **Critical Path**: Fix flext-core T export compatibility
 
 ---
@@ -192,7 +173,7 @@ exported in flext-core's `__init__.py`.
 **Once imports fixed, execute**:
 
 ```bash
-make check    # Lint, typing, security, and structural gates
+make check CHECK_PHASE=complete  # Complete configured validation
 make tests    # Runtime and behavioral suites
 ```
 
